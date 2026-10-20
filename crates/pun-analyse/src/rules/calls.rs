@@ -102,11 +102,11 @@ fn named_call<'arena>(
         .chain(fallback)
         .find_map(|n| c.function(n));
     if let Some((display, variants)) = found {
-        let acceptor = params::select(variants, counts.positional, counts.unpack);
+        let acceptor = params::select(variants, &counts);
         params::check(
             c,
             &acceptor,
-            counts,
+            &counts,
             id,
             params::Call {
                 kind: params::CallKind::Function,
@@ -217,8 +217,8 @@ fn arguments<'arena>(
     let counts = params::count(&call.argument_list);
     params::check(
         c,
-        &params::select(method.variants(), counts.positional, counts.unpack),
-        counts,
+        &params::select(method.variants(), &counts),
+        &counts,
         name,
         params::Call {
             kind: params::CallKind::Method,
@@ -391,8 +391,8 @@ pub fn static_method_call<'arena>(c: &mut Checker<'_, 'arena>, call: &StaticMeth
     let counts = params::count(&call.argument_list);
     params::check(
         c,
-        &params::select(method.variants(), counts.positional, counts.unpack),
-        counts,
+        &params::select(method.variants(), &counts),
+        &counts,
         name,
         params::Call {
             kind: params::CallKind::StaticMethod,

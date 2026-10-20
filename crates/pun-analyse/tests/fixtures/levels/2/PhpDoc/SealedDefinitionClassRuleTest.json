@@ -1,0 +1,50 @@
+{
+    "test": "PhpDoc/SealedDefinitionClassRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "PhpDoc/data/incompatible-sealed.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "PhpDoc/data/incompatible-sealed.php",
+                    "line": 11,
+                    "identifier": "sealed.onTrait",
+                    "message": "PHPDoc tag @phpstan-sealed is only valid on class or interface.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-sealed.php",
+                    "line": 16,
+                    "identifier": "sealed.onEnum",
+                    "message": "PHPDoc tag @phpstan-sealed is only valid on class or interface.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-sealed.php",
+                    "line": 21,
+                    "identifier": "class.notFound",
+                    "message": "PHPDoc tag @phpstan-sealed contains unknown class IncompatibleSealed\\UnknownClass.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-sealed.php",
+                    "line": 26,
+                    "identifier": "class.notFound",
+                    "message": "PHPDoc tag @phpstan-sealed contains unknown class IncompatibleSealed\\UnknownClass.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-sealed.php",
+                    "line": 46,
+                    "identifier": "class.notFound",
+                    "message": "PHPDoc tag @phpstan-sealed contains unknown class IncompatibleSealed\\UnknownClass.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                }
+            ],
+            "general": []
+        }
+    ]
+}

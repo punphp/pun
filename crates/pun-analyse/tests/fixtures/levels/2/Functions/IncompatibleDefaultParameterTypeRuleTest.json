@@ -1,0 +1,35 @@
+{
+    "test": "Functions/IncompatibleDefaultParameterTypeRuleTest",
+    "cases": [
+        {
+            "method": "testFunctions",
+            "files": [
+                "Functions/data/incompatible-default-parameter-type-functions.php"
+            ],
+            "scan": [
+                "Functions/data/incompatible-default-parameter-type-functions.php"
+            ],
+            "errors": [
+                {
+                    "file": "Functions/data/incompatible-default-parameter-type-functions.php",
+                    "line": 15,
+                    "identifier": "parameter.defaultValue",
+                    "message": "Default value of the parameter #1 $string (false) of function IncompatibleDefaultParameter\\takesString() is incompatible with type string.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug3349",
+            "files": [
+                "Functions/data/bug-3349.php"
+            ],
+            "scan": [
+                "Functions/data/define-bug-3349.php"
+            ],
+            "errors": [],
+            "general": []
+        }
+    ]
+}

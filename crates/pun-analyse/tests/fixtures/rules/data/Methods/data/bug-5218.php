@@ -1,0 +1,29 @@
+<?php
+
+namespace Bug5218;
+
+/**
+ * @phpstan-implements \IteratorAggregate<string, int>
+ */
+final class IA implements \IteratorAggregate
+{
+	/** @var array<string, mixed> */
+	private $data = [];
+
+	public function getIterator() : \Traversable {
+		return new \ArrayIterator($this->data);
+	}
+}
+
+class Foo
+{
+
+	/**
+	 * @return mixed
+	 */
+	public function doFoo()
+	{
+		return 1;
+	}
+
+}

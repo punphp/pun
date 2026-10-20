@@ -90,7 +90,7 @@ pub(crate) fn parse<'arena>(
 
 /// Scans `file`, then resets `arena`, so one arena serves many files.
 fn scan(arena: &mut LocalArena, file: &File, version: PHPVersion) -> CodebaseMetadata {
-    let scanned = {
+    let mut scanned = {
         let arena = &*arena;
         let (program, names) = parse(arena, file);
         // Mago's scanner trips a debug assertion (an empty TUnion::from_vec, debug builds only) on an intersection
@@ -114,6 +114,9 @@ fn scan(arena: &mut LocalArena, file: &File, version: PHPVersion) -> CodebaseMet
         .unwrap_or_default()
     };
     arena.reset();
+    if file.file_type == FileType::Patch {
+        scanned.convert_partial_to_patch();
+    }
     scanned
 }
 
@@ -227,6 +230,7 @@ pub(crate) fn build_with_sources(
         .iter()
         .map(|p| (p, FileType::Host))
         .chain(project.scanned.iter().map(|p| (p, FileType::Vendored)))
+        .chain(project.stubs.iter().map(|p| (p, FileType::Patch)))
         .filter(|(p, _)| seen.insert(*p))
         .collect();
     // psr-4 and psr-0 files after them, scanned once a scanned file names their class (a file below two directories
@@ -316,6 +320,20 @@ pub(crate) fn build_with_sources(
     if let Some(api) = api.into_inner() {
         metadata.extend(api.join().expect("the API stub scan never panics"));
     }
+    // ponytail: Mago leaves a user-defined (analysed) class unpatched, where PHPStan's stub wins; stubs of vendor
+    // classes, the usual kind, apply alike
+    metadata.apply_patches_pass();
+    // Mago materialises a patch's method over an existing one only; a stub's `@method` adds one, as PHPStan's does
+    let pseudo: Vec<_> = (metadata.patch_function_likes.iter())
+        .filter(|(key, _)| !metadata.function_likes.contains_key(*key))
+        .filter(|((class, name), _)| {
+            (metadata.class_likes.get(class)).is_some_and(|k| {
+                k.pseudo_methods.contains(name) || k.static_pseudo_methods.contains(name)
+            })
+        })
+        .map(|(key, f)| (*key, f.clone()))
+        .collect();
+    metadata.function_likes.extend(pseudo);
     populate_codebase_parallel(
         &mut metadata,
         &mut references,

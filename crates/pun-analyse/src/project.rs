@@ -49,6 +49,8 @@ pub struct Project {
     pub bleeding_edge: bool,
     /// `featureToggles.unusedLabel` (on with bleedingEdge).
     pub unused_label: bool,
+    /// `checkUninitializedProperties`: UninitializedPropertyRule (config.neon's conditional rule).
+    pub check_uninitialized_properties: bool,
     /// `deprecationRulesInstalled`: the config includes phpstan-deprecation-rules' rules.neon.
     pub deprecation_rules: bool,
     /// The `strictRules` switches of phpstan-strict-rules' rules.neon that Pun ports (all off without it).
@@ -57,7 +59,17 @@ pub struct Project {
     pub relative_path: RelativePath,
     /// Larastan's rules and their switches, when the config includes Larastan's extension.neon.
     pub larastan: Option<crate::Larastan>,
+    /// `typeAliases`: the global type aliases (name, type string).
+    pub type_aliases: Vec<(String, String)>,
+    /// `stubFiles`: scanned as Mago patches, whose declarations override the symbols they name.
+    pub stubs: Vec<PathBuf>,
+    /// Which identifiers the run reports, `None` for all: the others are dropped before any ignore sees them, as
+    /// PHPStan never reports the errors of a rule it doesn't run.
+    pub reported: Option<Reported>,
 }
+
+/// [`Project::reported`].
+pub type Reported = std::sync::Arc<dyn Fn(&str) -> bool + Send + Sync>;
 
 /// phpstan-strict-rules' `strictRules.*` switches of the ported rules.
 #[derive(Clone, Copy, Default)]
@@ -193,11 +205,26 @@ impl Project {
             only_files: strings(params, "paths").iter().all(|p| Path::new(p).is_file()),
             bleeding_edge: toggle("bleedingEdge"),
             unused_label: toggle("unusedLabel"),
+            check_uninitialized_properties: flag("checkUninitializedProperties"),
             deprecation_rules: flag("deprecationRulesInstalled"),
             strict_rules: StrictRules::from_params(params),
             precise_unused_parameter_line: toggle("reportPreciseLineForUnusedFunctionParameter"),
             relative_path: RelativePath::of(&paths),
             larastan: crate::Larastan::from_params(root, params),
+            type_aliases: params
+                .get_str("typeAliases")
+                .and_then(Value::as_array)
+                .map(|a| {
+                    a.iter()
+                        .filter_map(|(k, v)| Some((k.as_string(), v.as_str()?.to_string())))
+                        .collect()
+                })
+                .unwrap_or_default(),
+            stubs: strings(params, "stubFiles")
+                .into_iter()
+                .map(PathBuf::from)
+                .collect(),
+            reported: None,
         }
     }
 
@@ -221,10 +248,14 @@ impl Project {
             only_files: true,
             bleeding_edge: false,
             unused_label: false,
+            check_uninitialized_properties: false,
             deprecation_rules: false,
             strict_rules: StrictRules::default(),
             precise_unused_parameter_line: false,
             larastan: None,
+            type_aliases: Vec::new(),
+            stubs: Vec::new(),
+            reported: None,
         }
     }
 }

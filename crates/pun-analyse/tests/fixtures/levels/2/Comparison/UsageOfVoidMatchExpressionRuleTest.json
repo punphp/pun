@@ -1,0 +1,22 @@
+{
+    "test": "Comparison/UsageOfVoidMatchExpressionRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Comparison/data/void-match.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Comparison/data/void-match.php",
+                    "line": 21,
+                    "identifier": "match.void",
+                    "message": "Result of match expression (void) is used.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

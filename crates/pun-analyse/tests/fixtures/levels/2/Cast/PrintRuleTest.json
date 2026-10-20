@@ -1,0 +1,66 @@
+{
+    "test": "Cast/PrintRuleTest",
+    "cases": [
+        {
+            "method": "testPrintRule",
+            "files": [
+                "Cast/data/print.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Cast/data/print.php",
+                    "line": 5,
+                    "identifier": "print.nonString",
+                    "message": "Parameter array{} of print cannot be converted to string.",
+                    "tip": null
+                },
+                {
+                    "file": "Cast/data/print.php",
+                    "line": 7,
+                    "identifier": "print.nonString",
+                    "message": "Parameter stdClass of print cannot be converted to string.",
+                    "tip": null
+                },
+                {
+                    "file": "Cast/data/print.php",
+                    "line": 9,
+                    "identifier": "print.nonString",
+                    "message": "Parameter Closure(): void of print cannot be converted to string.",
+                    "tip": null
+                },
+                {
+                    "file": "Cast/data/print.php",
+                    "line": 13,
+                    "identifier": "print.nonString",
+                    "message": "Parameter array{} of print cannot be converted to string.",
+                    "tip": null
+                },
+                {
+                    "file": "Cast/data/print.php",
+                    "line": 15,
+                    "identifier": "print.nonString",
+                    "message": "Parameter stdClass of print cannot be converted to string.",
+                    "tip": null
+                },
+                {
+                    "file": "Cast/data/print.php",
+                    "line": 17,
+                    "identifier": "print.nonString",
+                    "message": "Parameter Closure(): void of print cannot be converted to string.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testRuleWithNullsafeVariant",
+            "files": [
+                "Cast/data/print-nullsafe.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        }
+    ]
+}

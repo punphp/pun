@@ -6,3 +6,4 @@
 *.profraw
 target-*/
 /dist/
+/target-bench

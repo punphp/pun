@@ -1,0 +1,269 @@
+{
+    "test": "Operators/InvalidComparisonOperationRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Operators/data/invalid-comparison.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Operators/data/invalid-comparison.php",
+                    "line": 15,
+                    "identifier": "equal.invalid",
+                    "message": "Comparison operation \"==\" between stdClass and int results in an error.",
+                    "tip": null
+                },
+                {
+                    "file": "Operators/data/invalid-comparison.php",
+                    "line": 16,
+                    "identifier": "notEqual.invalid",
+                    "message": "Comparison operation \"!=\" between stdClass and int results in an error.",
+                    "tip": null
+                },
+                {
+                    "file": "Operators/data/invalid-comparison.php",
+                    "line": 17,
+                    "identifier": "smaller.invalid",
+                    "message": "Comparison operation \"<\" between stdClass and int results in an error.",
+                    "tip": null
+                },
+                {
+                    "file": "Operators/data/invalid-comparison.php",
+                    "line": 18,
+                    "identifier": "greater.invalid",
+                    "message": "Comparison operation \">\" between stdClass and int results in an error.",
+                    "tip": null
+                },
+                {
+                    "file": "Operators/data/invalid-comparison.php",
+                    "line": 19,
+                    "identifier": "smallerOrEqual.invalid",
+                    "message": "Comparison operation \"<=\" between stdClass and int results in an error.",
+                    "tip": null
+                },
+                {
+                    "file": "Operators/data/invalid-comparison.php",
+                    "line": 20,
+                    "identifier": "greaterOrEqual.invalid",
+                    "message": "Comparison operation \">=\" between stdClass and int results in an error.",
+                    "tip": null
+                },
+                {
+                    "file": "Operators/data/invalid-comparison.php",
+                    "line": 21,
+                    "identifier": "spaceship.invalid",
+                    "message": "Comparison operation \"<=>\" between stdClass and int results in an error.",
+                    "tip": null
+                },
+                {
+                    "file": "Operators/data/invalid-comparison.php",
+                    "line": 48,
+                    "identifier": "equal.invalid",
+                    "message": "Comparison operation \"==\" between stdClass and 1 results in an error.",
+                    "tip": null
+                },
+                {
+                    "file": "Operators/data/invalid-comparison.php",
+                    "line": 49,
+                    "identifier": "smaller.invalid",
+                    "message": "Comparison operation \"<\" between stdClass and 1 results in an error.",
+                    "tip": null
+                },
+                {
+                    "file": "Operators/data/invalid-comparison.php",
+                    "line": 61,
+                    "identifier": "equal.invalid",
+                    "message": "Comparison operation \"==\" between array and int results in an error.",
+                    "tip": null
+                },
+                {
+                    "file": "Operators/data/invalid-comparison.php",
+                    "line": 62,
+                    "identifier": "notEqual.invalid",
+                    "message": "Comparison operation \"!=\" between array and int results in an error.",
+                    "tip": null
+                },
+                {
+                    "file": "Operators/data/invalid-comparison.php",
+                    "line": 63,
+                    "identifier": "smaller.invalid",
+                    "message": "Comparison operation \"<\" between array and int results in an error.",
+                    "tip": null
+                },
+                {
+                    "file": "Operators/data/invalid-comparison.php",
+                    "line": 64,
+                    "identifier": "greater.invalid",
+                    "message": "Comparison operation \">\" between array and int results in an error.",
+                    "tip": null
+                },
+                {
+                    "file": "Operators/data/invalid-comparison.php",
+                    "line": 65,
+                    "identifier": "smallerOrEqual.invalid",
+                    "message": "Comparison operation \"<=\" between array and int results in an error.",
+                    "tip": null
+                },
+                {
+                    "file": "Operators/data/invalid-comparison.php",
+                    "line": 66,
+                    "identifier": "greaterOrEqual.invalid",
+                    "message": "Comparison operation \">=\" between array and int results in an error.",
+                    "tip": null
+                },
+                {
+                    "file": "Operators/data/invalid-comparison.php",
+                    "line": 67,
+                    "identifier": "spaceship.invalid",
+                    "message": "Comparison operation \"<=>\" between array and int results in an error.",
+                    "tip": null
+                },
+                {
+                    "file": "Operators/data/invalid-comparison.php",
+                    "line": 89,
+                    "identifier": "equal.invalid",
+                    "message": "Comparison operation \"==\" between array and 1 results in an error.",
+                    "tip": null
+                },
+                {
+                    "file": "Operators/data/invalid-comparison.php",
+                    "line": 90,
+                    "identifier": "smaller.invalid",
+                    "message": "Comparison operation \"<\" between array and 1 results in an error.",
+                    "tip": null
+                },
+                {
+                    "file": "Operators/data/invalid-comparison.php",
+                    "line": 111,
+                    "identifier": "equal.invalid",
+                    "message": "Comparison operation \"==\" between (SimpleXMLElement|null) and 1 results in an error.",
+                    "tip": null
+                },
+                {
+                    "file": "Operators/data/invalid-comparison.php",
+                    "line": 112,
+                    "identifier": "greater.invalid",
+                    "message": "Comparison operation \">\" between (SimpleXMLElement|null) and 1 results in an error.",
+                    "tip": null
+                },
+                {
+                    "file": "Operators/data/invalid-comparison.php",
+                    "line": 115,
+                    "identifier": "greater.invalid",
+                    "message": "Comparison operation \">\" between array{1} and 2147483647|9223372036854775807 results in an error.",
+                    "tip": null
+                },
+                {
+                    "file": "Operators/data/invalid-comparison.php",
+                    "line": 119,
+                    "identifier": "smaller.invalid",
+                    "message": "Comparison operation \"<\" between numeric-string and DateTimeImmutable results in an error.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testRuleWithNullsafeVariant",
+            "files": [
+                "Operators/data/invalid-comparison-nullsafe.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Operators/data/invalid-comparison-nullsafe.php",
+                    "line": 12,
+                    "identifier": "equal.invalid",
+                    "message": "Comparison operation \"==\" between stdClass|null and int results in an error.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug3364",
+            "files": [
+                "Operators/data/bug-3364.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Operators/data/bug-3364.php",
+                    "line": 18,
+                    "identifier": "notEqual.invalid",
+                    "message": "Comparison operation \"!=\" between array<int|string>|null and 1 results in an error.",
+                    "tip": null
+                },
+                {
+                    "file": "Operators/data/bug-3364.php",
+                    "line": 26,
+                    "identifier": "notEqual.invalid",
+                    "message": "Comparison operation \"!=\" between object|null and 1 results in an error.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug11119",
+            "files": [
+                "Operators/data/bug-11119.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Operators/data/bug-11119.php",
+                    "line": 14,
+                    "identifier": "smaller.invalid",
+                    "message": "Comparison operation \"<\" between (DateTime&TIn)|(DateTime&TReturn) and DateTime results in an error.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug13001",
+            "files": [
+                "Operators/data/bug-13001.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Operators/data/bug-13001.php",
+                    "line": 10,
+                    "identifier": "greater.invalid",
+                    "message": "Comparison operation \">\" between BcMath\\Number and 0.2 results in an error.",
+                    "tip": null
+                },
+                {
+                    "file": "Operators/data/bug-13001.php",
+                    "line": 11,
+                    "identifier": "spaceship.invalid",
+                    "message": "Comparison operation \"<=>\" between 0.2 and BcMath\\Number results in an error.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug9386",
+            "files": [
+                "Operators/data/bug-9386.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug7280Comment",
+            "files": [
+                "Operators/data/bug-7280-comment.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        }
+    ]
+}

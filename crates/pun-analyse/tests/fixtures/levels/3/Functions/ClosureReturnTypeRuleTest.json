@@ -1,0 +1,307 @@
+{
+    "test": "Functions/ClosureReturnTypeRuleTest",
+    "cases": [
+        {
+            "method": "testClosureReturnTypeRule",
+            "files": [
+                "Functions/data/closureReturnTypes.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/closureReturnTypes.php",
+                    "line": 21,
+                    "identifier": "return.type",
+                    "message": "Anonymous function should return int but returns string.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/closureReturnTypes.php",
+                    "line": 28,
+                    "identifier": "return.type",
+                    "message": "Anonymous function should return string but returns int.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/closureReturnTypes.php",
+                    "line": 31,
+                    "identifier": "class.notFound",
+                    "message": "Anonymous function has invalid return type ClosureReturnTypes\\Foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/closureReturnTypes.php",
+                    "line": 32,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class ClosureReturnTypes\\Foo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Functions/data/closureReturnTypes.php",
+                    "line": 34,
+                    "identifier": "class.notFound",
+                    "message": "Anonymous function has invalid return type ClosureReturnTypes\\Foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/closureReturnTypes.php",
+                    "line": 35,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class ClosureReturnTypes\\Bar not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Functions/data/closureReturnTypes.php",
+                    "line": 35,
+                    "identifier": "return.type",
+                    "message": "Anonymous function should return ClosureReturnTypes\\Bar&ClosureReturnTypes\\Foo but returns ClosureReturnTypes\\Bar.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/closureReturnTypes.php",
+                    "line": 38,
+                    "identifier": "class.notFound",
+                    "message": "Anonymous function has invalid return type SomeOtherNamespace\\Foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/closureReturnTypes.php",
+                    "line": 39,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class ClosureReturnTypes\\Foo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Functions/data/closureReturnTypes.php",
+                    "line": 39,
+                    "identifier": "return.type",
+                    "message": "Anonymous function should return ClosureReturnTypes\\Foo&SomeOtherNamespace\\Foo but returns ClosureReturnTypes\\Foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/closureReturnTypes.php",
+                    "line": 41,
+                    "identifier": "class.notFound",
+                    "message": "Anonymous function has invalid return type SomeOtherNamespace\\Foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/closureReturnTypes.php",
+                    "line": 42,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class SomeOtherNamespace\\Foo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Functions/data/closureReturnTypes.php",
+                    "line": 45,
+                    "identifier": "class.notFound",
+                    "message": "Anonymous function has invalid return type SomeOtherNamespace\\Baz.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/closureReturnTypes.php",
+                    "line": 46,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class ClosureReturnTypes\\Foo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Functions/data/closureReturnTypes.php",
+                    "line": 46,
+                    "identifier": "return.type",
+                    "message": "Anonymous function should return ClosureReturnTypes\\Foo&SomeOtherNamespace\\Baz but returns ClosureReturnTypes\\Foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/closureReturnTypes.php",
+                    "line": 48,
+                    "identifier": "class.notFound",
+                    "message": "Anonymous function has invalid return type SomeOtherNamespace\\Baz.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/closureReturnTypes.php",
+                    "line": 49,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class SomeOtherNamespace\\Baz not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Functions/data/closureReturnTypes.php",
+                    "line": 54,
+                    "identifier": "function.notFound",
+                    "message": "Function doFoo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Functions/data/closureReturnTypes.php",
+                    "line": 88,
+                    "identifier": "return.empty",
+                    "message": "Anonymous function should return array{}|null but empty return statement found.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/closureReturnTypes.php",
+                    "line": 105,
+                    "identifier": "return.type",
+                    "message": "Anonymous function should return string but returns int.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/closureReturnTypes.php",
+                    "line": 115,
+                    "identifier": "return.type",
+                    "message": "Anonymous function should return string but returns int.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/closureReturnTypes.php",
+                    "line": 118,
+                    "identifier": "return.type",
+                    "message": "Anonymous function should return string but returns int.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testClosureReturnTypeRulePhp70",
+            "files": [
+                "Functions/data/closureReturnTypes-7.0.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/closureReturnTypes-7.0.php",
+                    "line": 4,
+                    "identifier": "return.empty",
+                    "message": "Anonymous function should return int but empty return statement found.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/closureReturnTypes-7.0.php",
+                    "line": 8,
+                    "identifier": "return.empty",
+                    "message": "Anonymous function should return string but empty return statement found.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testClosureReturnTypePhp71Typehints",
+            "files": [
+                "Functions/data/closure-7.1ReturnTypes.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/closure-7.1ReturnTypes.php",
+                    "line": 9,
+                    "identifier": "return.type",
+                    "message": "Anonymous function should return int|null but returns string.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/closure-7.1ReturnTypes.php",
+                    "line": 22,
+                    "identifier": "return.type",
+                    "message": "Anonymous function should return iterable but returns string.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug3891",
+            "files": [
+                "Functions/data/bug-3891.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug6806",
+            "files": [
+                "Functions/data/bug-6806.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug4739",
+            "files": [
+                "Functions/data/bug-4739.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug4739b",
+            "files": [
+                "Functions/data/bug-4739b.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug5753",
+            "files": [
+                "Functions/data/bug-5753.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug6559",
+            "files": [
+                "Functions/data/bug-6559.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug6902",
+            "files": [
+                "Functions/data/bug-6902.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug7220",
+            "files": [
+                "Functions/data/bug-7220.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBugFunctionMethodConstants",
+            "files": [
+                "Functions/data/bug-anonymous-function-method-constant.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug13964",
+            "files": [
+                "Functions/data/bug-13964.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        }
+    ]
+}

@@ -1,0 +1,313 @@
+{
+ "general": [],
+ "errors": [
+  {
+   "file": "bug-10302-extended-implements-trait.php",
+   "line": 21,
+   "identifier": "class.missingImplements",
+   "message": "Trait Bug10302ExtendedImplementsTrait\\Foo requires using class to implement Bug10302ExtendedImplementsTrait\\Interface1, but Bug10302ExtendedImplementsTrait\\Baz does not.",
+   "tip": null
+  },
+  {
+   "file": "bug-10302-extended-interface.php",
+   "line": 34,
+   "identifier": "class.missingExtends",
+   "message": "Interface Bug10302ExtendedInterface\\BatchAware requires implementing class to extend Bug10302ExtendedInterface\\Model, but Bug10302ExtendedInterface\\AnotherModel does not.",
+   "tip": null
+  },
+  {
+   "file": "bug-10302-extended-trait.php",
+   "line": 21,
+   "identifier": "class.missingExtends",
+   "message": "Trait Bug10302ExtendedTrait\\Foo requires using class to extend Bug10302ExtendedTrait\\Father, but Bug10302ExtendedTrait\\Baz does not.",
+   "tip": null
+  },
+  {
+   "file": "incompatible-require-extends.php",
+   "line": 8,
+   "identifier": "requireExtends.trait",
+   "message": "PHPDoc tag @phpstan-require-extends cannot contain non-class type IncompatibleRequireExtends\\SomeTrait.",
+   "tip": null
+  },
+  {
+   "file": "incompatible-require-extends.php",
+   "line": 13,
+   "identifier": "requireExtends.interface",
+   "message": "PHPDoc tag @phpstan-require-extends cannot contain an interface IncompatibleRequireExtends\\SomeInterface, expected a class.",
+   "tip": "If you meant an interface, use @phpstan-require-implements instead."
+  },
+  {
+   "file": "incompatible-require-extends.php",
+   "line": 18,
+   "identifier": "requireExtends.enum",
+   "message": "PHPDoc tag @phpstan-require-extends cannot contain non-class type IncompatibleRequireExtends\\SomeEnum.",
+   "tip": null
+  },
+  {
+   "file": "incompatible-require-extends.php",
+   "line": 34,
+   "identifier": "requireExtends.nonObject",
+   "message": "PHPDoc tag @phpstan-require-extends contains non-object type int.",
+   "tip": null
+  },
+  {
+   "file": "incompatible-require-extends.php",
+   "line": 39,
+   "identifier": "requireExtends.onClass",
+   "message": "PHPDoc tag @phpstan-require-extends is only valid on trait or interface.",
+   "tip": null
+  },
+  {
+   "file": "incompatible-require-extends.php",
+   "line": 44,
+   "identifier": "requireExtends.onEnum",
+   "message": "PHPDoc tag @phpstan-require-extends is only valid on trait or interface.",
+   "tip": null
+  },
+  {
+   "file": "incompatible-require-extends.php",
+   "line": 46,
+   "identifier": "class.missingExtends",
+   "message": "Trait IncompatibleRequireExtends\\ValidTrait requires using class to extend IncompatibleRequireExtends\\SomeClass, but IncompatibleRequireExtends\\InValidTraitUse2 does not.",
+   "tip": null
+  },
+  {
+   "file": "incompatible-require-extends.php",
+   "line": 51,
+   "identifier": "class.missingExtends",
+   "message": "Trait IncompatibleRequireExtends\\ValidTrait requires using class to extend IncompatibleRequireExtends\\SomeClass, but IncompatibleRequireExtends\\InValidTraitUse does not.",
+   "tip": null
+  },
+  {
+   "file": "incompatible-require-extends.php",
+   "line": 56,
+   "identifier": "class.missingExtends",
+   "message": "Interface IncompatibleRequireExtends\\ValidInterface requires implementing class to extend IncompatibleRequireExtends\\SomeClass, but IncompatibleRequireExtends\\InvalidInterfaceUse2 does not.",
+   "tip": null
+  },
+  {
+   "file": "incompatible-require-extends.php",
+   "line": 58,
+   "identifier": "class.missingExtends",
+   "message": "Interface IncompatibleRequireExtends\\ValidInterface requires implementing class to extend IncompatibleRequireExtends\\SomeClass, but IncompatibleRequireExtends\\InvalidInterfaceUse does not.",
+   "tip": null
+  },
+  {
+   "file": "incompatible-require-extends.php",
+   "line": 121,
+   "identifier": "requireExtends.finalClass",
+   "message": "PHPDoc tag @phpstan-require-extends cannot contain final class IncompatibleRequireExtends\\SomeFinalClass.",
+   "tip": null
+  },
+  {
+   "file": "incompatible-require-extends.php",
+   "line": 126,
+   "identifier": "requireExtends.finalClass",
+   "message": "PHPDoc tag @phpstan-require-extends cannot contain final class IncompatibleRequireExtends\\SomeFinalClass.",
+   "tip": null
+  },
+  {
+   "file": "incompatible-require-extends.php",
+   "line": 128,
+   "identifier": "class.missingExtends",
+   "message": "Trait IncompatibleRequireExtends\\InvalidTrait requires using class to extend IncompatibleRequireExtends\\SomeFinalClass, but IncompatibleRequireExtends\\InvalidClass2 does not.",
+   "tip": null
+  },
+  {
+   "file": "incompatible-require-extends.php",
+   "line": 135,
+   "identifier": "requireExtends.interface",
+   "message": "PHPDoc tag @phpstan-require-extends cannot contain an interface IncompatibleRequireExtends\\UnresolvableExtendsInterface, expected a class.",
+   "tip": "If you meant an interface, use @phpstan-require-implements instead."
+  },
+  {
+   "file": "incompatible-require-extends.php",
+   "line": 140,
+   "identifier": "requireExtends.nonObject",
+   "message": "PHPDoc tag @phpstan-require-extends contains non-object type *NEVER*.",
+   "tip": null
+  },
+  {
+   "file": "incompatible-require-extends.php",
+   "line": 146,
+   "identifier": "class.missingExtends",
+   "message": "Trait IncompatibleRequireExtends\\ValidTrait requires using class to extend IncompatibleRequireExtends\\SomeClass, but class@anonymous/incompatible-require-extends.php:146 does not.",
+   "tip": null
+  },
+  {
+   "file": "incompatible-require-extends.php",
+   "line": 163,
+   "identifier": "class.missingExtends",
+   "message": "Trait IncompatibleRequireExtends\\ValidPsalmTrait requires using class to extend IncompatibleRequireExtends\\SomeClass, but class@anonymous/incompatible-require-extends.php:163 does not.",
+   "tip": null
+  },
+  {
+   "file": "incompatible-require-extends.php",
+   "line": 171,
+   "identifier": "requireExtends.duplicate",
+   "message": "PHPDoc tag @phpstan-require-extends can only be used once.",
+   "tip": null
+  },
+  {
+   "file": "incompatible-require-extends.php",
+   "line": 178,
+   "identifier": "requireExtends.duplicate",
+   "message": "PHPDoc tag @phpstan-require-extends can only be used once.",
+   "tip": null
+  },
+  {
+   "file": "incompatible-require-extends.php",
+   "line": 185,
+   "identifier": "class.missingExtends",
+   "message": "Interface IncompatibleRequireExtends\\RequireNonExisstentUnionClassinterface requires implementing class to extend IncompatibleRequireExtends\\NonExistentClass|IncompatibleRequireExtends\\SomeClass, but IncompatibleRequireExtends\\RequireNonExisstentUnionClassinterface@anonymous/incompatible-require-extends.php:185 does not.",
+   "tip": null
+  },
+  {
+   "file": "incompatible-require-extends.php",
+   "line": 187,
+   "identifier": "class.missingExtends",
+   "message": "Interface IncompatibleRequireExtends\\RequireNonExisstentUnionClassinterface requires implementing class to extend IncompatibleRequireExtends\\NonExistentClass|IncompatibleRequireExtends\\SomeClass, but IncompatibleRequireExtends\\SomeClass@anonymous/incompatible-require-extends.php:187 does not.",
+   "tip": null
+  },
+  {
+   "file": "incompatible-require-extends.php",
+   "line": 194,
+   "identifier": "class.missingExtends",
+   "message": "Trait IncompatibleRequireExtends\\RequireNonExisstentUnionClassTrait requires using class to extend IncompatibleRequireExtends\\NonExistentClass|IncompatibleRequireExtends\\SomeClass, but class@anonymous/incompatible-require-extends.php:194 does not.",
+   "tip": null
+  },
+  {
+   "file": "incompatible-require-extends.php",
+   "line": 198,
+   "identifier": "class.missingExtends",
+   "message": "Trait IncompatibleRequireExtends\\RequireNonExisstentUnionClassTrait requires using class to extend IncompatibleRequireExtends\\NonExistentClass|IncompatibleRequireExtends\\SomeClass, but IncompatibleRequireExtends\\SomeClass@anonymous/incompatible-require-extends.php:198 does not.",
+   "tip": null
+  },
+  {
+   "file": "incompatible-require-implements.php",
+   "line": 8,
+   "identifier": "requireImplements.trait",
+   "message": "PHPDoc tag @phpstan-require-implements cannot contain non-interface type IncompatibleRequireImplements\\SomeTrait.",
+   "tip": null
+  },
+  {
+   "file": "incompatible-require-implements.php",
+   "line": 13,
+   "identifier": "requireImplements.enum",
+   "message": "PHPDoc tag @phpstan-require-implements cannot contain non-interface type IncompatibleRequireImplements\\SomeEnum.",
+   "tip": null
+  },
+  {
+   "file": "incompatible-require-implements.php",
+   "line": 24,
+   "identifier": "requireImplements.class",
+   "message": "PHPDoc tag @phpstan-require-implements cannot contain non-interface type IncompatibleRequireImplements\\SomeClass.",
+   "tip": null
+  },
+  {
+   "file": "incompatible-require-implements.php",
+   "line": 29,
+   "identifier": "requireImplements.nonObject",
+   "message": "PHPDoc tag @phpstan-require-implements contains non-object type int.",
+   "tip": null
+  },
+  {
+   "file": "incompatible-require-implements.php",
+   "line": 34,
+   "identifier": "requireImplements.nonObject",
+   "message": "PHPDoc tag @phpstan-require-implements contains non-object type *NEVER*.",
+   "tip": null
+  },
+  {
+   "file": "incompatible-require-implements.php",
+   "line": 40,
+   "identifier": "requireImplements.onClass",
+   "message": "PHPDoc tag @phpstan-require-implements is only valid on trait.",
+   "tip": null
+  },
+  {
+   "file": "incompatible-require-implements.php",
+   "line": 45,
+   "identifier": "requireImplements.onEnum",
+   "message": "PHPDoc tag @phpstan-require-implements is only valid on trait.",
+   "tip": null
+  },
+  {
+   "file": "incompatible-require-implements.php",
+   "line": 47,
+   "identifier": "class.missingImplements",
+   "message": "Trait IncompatibleRequireImplements\\ValidTrait requires using class to implement IncompatibleRequireImplements\\RequiredInterface, but IncompatibleRequireImplements\\InValidTraitUseB does not.",
+   "tip": null
+  },
+  {
+   "file": "incompatible-require-implements.php",
+   "line": 52,
+   "identifier": "class.missingImplements",
+   "message": "Trait IncompatibleRequireImplements\\ValidTrait requires using class to implement IncompatibleRequireImplements\\RequiredInterface, but IncompatibleRequireImplements\\InvalidEnumTraitUse does not.",
+   "tip": null
+  },
+  {
+   "file": "incompatible-require-implements.php",
+   "line": 56,
+   "identifier": "class.missingImplements",
+   "message": "Trait IncompatibleRequireImplements\\ValidTrait requires using class to implement IncompatibleRequireImplements\\RequiredInterface, but IncompatibleRequireImplements\\InValidTraitUse does not.",
+   "tip": null
+  },
+  {
+   "file": "incompatible-require-implements.php",
+   "line": 117,
+   "identifier": "class.missingImplements",
+   "message": "Trait IncompatibleRequireImplements\\ValidTrait requires using class to implement IncompatibleRequireImplements\\RequiredInterface, but class@anonymous/incompatible-require-implements.php:117 does not.",
+   "tip": null
+  },
+  {
+   "file": "incompatible-require-implements.php",
+   "line": 125,
+   "identifier": "class.missingImplements",
+   "message": "Trait IncompatibleRequireImplements\\InvalidTrait1 requires using class to implement IncompatibleRequireImplements\\SomeTrait, but IncompatibleRequireImplements\\InvalidTraitUse1 does not.",
+   "tip": null
+  },
+  {
+   "file": "incompatible-require-implements.php",
+   "line": 129,
+   "identifier": "class.missingImplements",
+   "message": "Trait IncompatibleRequireImplements\\InvalidTrait2 requires using class to implement IncompatibleRequireImplements\\SomeEnum, but IncompatibleRequireImplements\\InvalidTraitUse2 does not.",
+   "tip": null
+  },
+  {
+   "file": "incompatible-require-implements.php",
+   "line": 133,
+   "identifier": "class.missingImplements",
+   "message": "Trait IncompatibleRequireImplements\\InvalidTrait3 requires using class to implement IncompatibleRequireImplements\\TypeDoesNotExist, but IncompatibleRequireImplements\\InvalidTraitUse3 does not.",
+   "tip": null
+  },
+  {
+   "file": "incompatible-require-implements.php",
+   "line": 137,
+   "identifier": "class.missingImplements",
+   "message": "Trait IncompatibleRequireImplements\\InvalidTrait4 requires using class to implement IncompatibleRequireImplements\\SomeClass<T>, but IncompatibleRequireImplements\\InvalidTraitUse4 does not.",
+   "tip": null
+  },
+  {
+   "file": "incompatible-require-implements.php",
+   "line": 164,
+   "identifier": "class.missingImplements",
+   "message": "Trait IncompatibleRequireImplements\\ValidPsalmTrait requires using class to implement IncompatibleRequireImplements\\RequiredInterface2, but IncompatibleRequireImplements\\RequiredInterface@anonymous/incompatible-require-implements.php:164 does not.",
+   "tip": null
+  },
+  {
+   "file": "incompatible-require-implements.php",
+   "line": 168,
+   "identifier": "class.missingImplements",
+   "message": "Trait IncompatibleRequireImplements\\ValidPsalmTrait requires using class to implement IncompatibleRequireImplements\\RequiredInterface, but class@anonymous/incompatible-require-implements.php:168 does not.",
+   "tip": null
+  },
+  {
+   "file": "incompatible-require-implements.php",
+   "line": 168,
+   "identifier": "class.missingImplements",
+   "message": "Trait IncompatibleRequireImplements\\ValidPsalmTrait requires using class to implement IncompatibleRequireImplements\\RequiredInterface2, but class@anonymous/incompatible-require-implements.php:168 does not.",
+   "tip": null
+  }
+ ]
+}

@@ -1,0 +1,1269 @@
+{
+    "test": "PhpDoc/IncompatiblePhpDocTypeRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "PhpDoc/data/incompatible-types.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "PhpDoc/data/incompatible-types.php",
+                    "line": 12,
+                    "identifier": "parameter.notFound",
+                    "message": "PHPDoc tag @param references unknown parameter: $unknown",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-types.php",
+                    "line": 12,
+                    "identifier": "parameter.phpDocType",
+                    "message": "PHPDoc tag @param for parameter $b with type array is incompatible with native type string.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-types.php",
+                    "line": 12,
+                    "identifier": "parameter.phpDocType",
+                    "message": "PHPDoc tag @param for parameter $d with type float|int is not subtype of native type int.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-types.php",
+                    "line": 39,
+                    "identifier": "return.missing",
+                    "message": "Function InvalidPhpDoc\\testReturnIntOk() should return int but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-types.php",
+                    "line": 48,
+                    "identifier": "return.missing",
+                    "message": "Function InvalidPhpDoc\\testReturnBoolOk() should return bool but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-types.php",
+                    "line": 57,
+                    "identifier": "return.missing",
+                    "message": "Function InvalidPhpDoc\\testReturnTrueOk() should return true but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-types.php",
+                    "line": 66,
+                    "identifier": "return.missing",
+                    "message": "Function InvalidPhpDoc\\testReturnIntInvalid() should return int but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-types.php",
+                    "line": 66,
+                    "identifier": "return.phpDocType",
+                    "message": "PHPDoc tag @return with type string is incompatible with native type int.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-types.php",
+                    "line": 75,
+                    "identifier": "return.missing",
+                    "message": "Function InvalidPhpDoc\\testReturnIntNotSubType() should return int but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-types.php",
+                    "line": 75,
+                    "identifier": "return.phpDocType",
+                    "message": "PHPDoc tag @return with type int|string is not subtype of native type int.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-types.php",
+                    "line": 91,
+                    "identifier": "parameter.phpDocType",
+                    "message": "PHPDoc tag @param for parameter $strings with type array<int> is incompatible with native type string.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-types.php",
+                    "line": 99,
+                    "identifier": "parameter.phpDocType",
+                    "message": "PHPDoc tag @param for parameter $numbers with type string is incompatible with native type int.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-types.php",
+                    "line": 117,
+                    "identifier": "parameter.notFound",
+                    "message": "PHPDoc tag @param references unknown parameter: $arrX",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-types.php",
+                    "line": 117,
+                    "identifier": "parameter.unresolvableType",
+                    "message": "PHPDoc tag @param for parameter $arr contains unresolvable type.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-types.php",
+                    "line": 117,
+                    "identifier": "return.missing",
+                    "message": "Function InvalidPhpDoc\\unresolvableTypes() should return bool but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-types.php",
+                    "line": 126,
+                    "identifier": "class.notFound",
+                    "message": "Function InvalidPhpDoc\\neverTypes() has invalid return type InvalidPhpDoc\\Bar.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-types.php",
+                    "line": 126,
+                    "identifier": "class.notFound",
+                    "message": "Function InvalidPhpDoc\\neverTypes() has invalid return type InvalidPhpDoc\\Foo.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-types.php",
+                    "line": 126,
+                    "identifier": "class.notFound",
+                    "message": "Parameter $foo of function InvalidPhpDoc\\neverTypes() has invalid type InvalidPhpDoc\\Bar.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-types.php",
+                    "line": 126,
+                    "identifier": "class.notFound",
+                    "message": "Parameter $foo of function InvalidPhpDoc\\neverTypes() has invalid type InvalidPhpDoc\\Foo.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-types.php",
+                    "line": 126,
+                    "identifier": "return.missing",
+                    "message": "Function InvalidPhpDoc\\neverTypes() should return InvalidPhpDoc\\Bar&InvalidPhpDoc\\Foo but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-types.php",
+                    "line": 141,
+                    "identifier": "return.missing",
+                    "message": "Function InvalidPhpDoc\\genericWithTypeHints() should return U of DateTimeInterface but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-types.php",
+                    "line": 154,
+                    "identifier": "method.templateTypeNotInParameter",
+                    "message": "Template type T of function InvalidPhpDoc\\genericWithTypeHintsNotSubType() is not referenced in a parameter.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-types.php",
+                    "line": 154,
+                    "identifier": "method.templateTypeNotInParameter",
+                    "message": "Template type U of function InvalidPhpDoc\\genericWithTypeHintsNotSubType() is not referenced in a parameter.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-types.php",
+                    "line": 154,
+                    "identifier": "parameter.phpDocType",
+                    "message": "PHPDoc tag @param for parameter $a with type T is not subtype of native type int.",
+                    "tip": "Write @template T of int to fix this."
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-types.php",
+                    "line": 154,
+                    "identifier": "parameter.phpDocType",
+                    "message": "PHPDoc tag @param for parameter $b with type U of DateTimeInterface is not subtype of native type DateTime.",
+                    "tip": "Write @template U of DateTime to fix this."
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-types.php",
+                    "line": 154,
+                    "identifier": "return.missing",
+                    "message": "Function InvalidPhpDoc\\genericWithTypeHintsNotSubType() should return DateTime but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-types.php",
+                    "line": 154,
+                    "identifier": "return.phpDocType",
+                    "message": "PHPDoc tag @return with type U of DateTimeInterface is not subtype of native type DateTime.",
+                    "tip": "Write @template U of DateTime to fix this."
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-types.php",
+                    "line": 163,
+                    "identifier": "return.missing",
+                    "message": "Function InvalidPhpDoc\\genericWithTypeHintsSupertype() should return T of DateTime but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-types.php",
+                    "line": 185,
+                    "identifier": "class.notFound",
+                    "message": "Function InvalidPhpDoc\\generics() has invalid return type InvalidPhpDocDefinitions\\Foo.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-types.php",
+                    "line": 185,
+                    "identifier": "class.notFound",
+                    "message": "Parameter $bar of function InvalidPhpDoc\\generics() has invalid type InvalidPhpDocDefinitions\\FooGeneric.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-types.php",
+                    "line": 185,
+                    "identifier": "class.notFound",
+                    "message": "Parameter $baz of function InvalidPhpDoc\\generics() has invalid type InvalidPhpDocDefinitions\\FooGeneric.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-types.php",
+                    "line": 185,
+                    "identifier": "class.notFound",
+                    "message": "Parameter $dolor of function InvalidPhpDoc\\generics() has invalid type InvalidPhpDocDefinitions\\FooGeneric.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-types.php",
+                    "line": 185,
+                    "identifier": "class.notFound",
+                    "message": "Parameter $foo of function InvalidPhpDoc\\generics() has invalid type InvalidPhpDocDefinitions\\Foo.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-types.php",
+                    "line": 185,
+                    "identifier": "class.notFound",
+                    "message": "Parameter $ipsum of function InvalidPhpDoc\\generics() has invalid type InvalidPhpDocDefinitions\\FooGeneric.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-types.php",
+                    "line": 185,
+                    "identifier": "class.notFound",
+                    "message": "Parameter $lorem of function InvalidPhpDoc\\generics() has invalid type InvalidPhpDocDefinitions\\FooGeneric.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-types.php",
+                    "line": 185,
+                    "identifier": "return.missing",
+                    "message": "Function InvalidPhpDoc\\generics() should return InvalidPhpDocDefinitions\\Foo<stdClass> but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-types.php",
+                    "line": 193,
+                    "identifier": "class.notFound",
+                    "message": "Function InvalidPhpDoc\\genericsBar() has invalid return type InvalidPhpDocDefinitions\\FooGeneric.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-types.php",
+                    "line": 193,
+                    "identifier": "return.missing",
+                    "message": "Function InvalidPhpDoc\\genericsBar() should return InvalidPhpDocDefinitions\\FooGeneric<int, InvalidArgumentException> but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-types.php",
+                    "line": 201,
+                    "identifier": "class.notFound",
+                    "message": "Function InvalidPhpDoc\\genericsBaz() has invalid return type InvalidPhpDocDefinitions\\FooGeneric.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-types.php",
+                    "line": 201,
+                    "identifier": "return.missing",
+                    "message": "Function InvalidPhpDoc\\genericsBaz() should return InvalidPhpDocDefinitions\\FooGeneric<int> but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-types.php",
+                    "line": 209,
+                    "identifier": "class.notFound",
+                    "message": "Function InvalidPhpDoc\\genericsLorem() has invalid return type InvalidPhpDocDefinitions\\FooGeneric.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-types.php",
+                    "line": 209,
+                    "identifier": "return.missing",
+                    "message": "Function InvalidPhpDoc\\genericsLorem() should return InvalidPhpDocDefinitions\\FooGeneric<int, InvalidArgumentException, string> but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-types.php",
+                    "line": 217,
+                    "identifier": "class.notFound",
+                    "message": "Function InvalidPhpDoc\\genericsIpsum() has invalid return type InvalidPhpDocDefinitions\\FooGeneric.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-types.php",
+                    "line": 217,
+                    "identifier": "return.missing",
+                    "message": "Function InvalidPhpDoc\\genericsIpsum() should return InvalidPhpDocDefinitions\\FooGeneric<int, Throwable> but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-types.php",
+                    "line": 225,
+                    "identifier": "class.notFound",
+                    "message": "Function InvalidPhpDoc\\genericsDolor() has invalid return type InvalidPhpDocDefinitions\\FooGeneric.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-types.php",
+                    "line": 225,
+                    "identifier": "return.missing",
+                    "message": "Function InvalidPhpDoc\\genericsDolor() should return InvalidPhpDocDefinitions\\FooGeneric<int, stdClass> but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-types.php",
+                    "line": 242,
+                    "identifier": "class.notFound",
+                    "message": "Parameter $t of function InvalidPhpDoc\\genericGenerics() has invalid type InvalidPhpDocDefinitions\\FooGeneric.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-types.php",
+                    "line": 242,
+                    "identifier": "class.notFound",
+                    "message": "Parameter $u of function InvalidPhpDoc\\genericGenerics() has invalid type InvalidPhpDocDefinitions\\FooGeneric.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-types.php",
+                    "line": 242,
+                    "identifier": "class.notFound",
+                    "message": "Parameter $v of function InvalidPhpDoc\\genericGenerics() has invalid type InvalidPhpDocDefinitions\\FooGeneric.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-types.php",
+                    "line": 242,
+                    "identifier": "class.notFound",
+                    "message": "Parameter $w of function InvalidPhpDoc\\genericGenerics() has invalid type InvalidPhpDocDefinitions\\FooGeneric.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-types.php",
+                    "line": 242,
+                    "identifier": "class.notFound",
+                    "message": "Parameter $x of function InvalidPhpDoc\\genericGenerics() has invalid type InvalidPhpDocDefinitions\\FooGeneric.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-types.php",
+                    "line": 250,
+                    "identifier": "class.notFound",
+                    "message": "Function InvalidPhpDoc\\genericNestedWrongTemplateArgs() has invalid return type InvalidPhpDocDefinitions\\FooGeneric.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-types.php",
+                    "line": 250,
+                    "identifier": "class.notFound",
+                    "message": "Function InvalidPhpDoc\\genericNestedWrongTemplateArgs() has invalid return type InvalidPhpDocDefinitions\\FooGeneric.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-types.php",
+                    "line": 250,
+                    "identifier": "return.missing",
+                    "message": "Function InvalidPhpDoc\\genericNestedWrongTemplateArgs() should return InvalidPhpDocDefinitions\\FooGeneric<InvalidPhpDocDefinitions\\FooGeneric<int, stdClass>, Exception> but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-types.php",
+                    "line": 258,
+                    "identifier": "class.notFound",
+                    "message": "Function InvalidPhpDoc\\genericNestedOkTemplateArgs() has invalid return type InvalidPhpDocDefinitions\\FooGeneric.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-types.php",
+                    "line": 258,
+                    "identifier": "class.notFound",
+                    "message": "Function InvalidPhpDoc\\genericNestedOkTemplateArgs() has invalid return type InvalidPhpDocDefinitions\\FooGeneric.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-types.php",
+                    "line": 258,
+                    "identifier": "return.missing",
+                    "message": "Function InvalidPhpDoc\\genericNestedOkTemplateArgs() should return InvalidPhpDocDefinitions\\FooGeneric<InvalidPhpDocDefinitions\\FooGeneric<int, Exception>, Exception> but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-types.php",
+                    "line": 266,
+                    "identifier": "class.notFound",
+                    "message": "Function InvalidPhpDoc\\genericNestedWrongArgCount() has invalid return type InvalidPhpDocDefinitions\\FooGeneric.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-types.php",
+                    "line": 266,
+                    "identifier": "class.notFound",
+                    "message": "Function InvalidPhpDoc\\genericNestedWrongArgCount() has invalid return type InvalidPhpDocDefinitions\\FooGeneric.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-types.php",
+                    "line": 266,
+                    "identifier": "return.missing",
+                    "message": "Function InvalidPhpDoc\\genericNestedWrongArgCount() should return InvalidPhpDocDefinitions\\FooGeneric<InvalidPhpDocDefinitions\\FooGeneric<int>, Exception> but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-types.php",
+                    "line": 274,
+                    "identifier": "class.notFound",
+                    "message": "Function InvalidPhpDoc\\genericNestedNonTemplateArgs() has invalid return type InvalidPhpDocDefinitions\\Foo.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-types.php",
+                    "line": 274,
+                    "identifier": "class.notFound",
+                    "message": "Function InvalidPhpDoc\\genericNestedNonTemplateArgs() has invalid return type InvalidPhpDocDefinitions\\FooGeneric.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-types.php",
+                    "line": 274,
+                    "identifier": "return.missing",
+                    "message": "Function InvalidPhpDoc\\genericNestedNonTemplateArgs() should return InvalidPhpDocDefinitions\\FooGeneric<InvalidPhpDocDefinitions\\Foo<int, Exception>, Exception> but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-types.php",
+                    "line": 283,
+                    "identifier": "method.templateTypeNotInParameter",
+                    "message": "Template type TFoo of function InvalidPhpDoc\\genericWrongBound() is not referenced in a parameter.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-types.php",
+                    "line": 283,
+                    "identifier": "parameter.phpDocType",
+                    "message": "PHPDoc tag @param for parameter $i with type TFoo is not subtype of native type int.",
+                    "tip": "Write @template TFoo of int to fix this."
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-types.php",
+                    "line": 292,
+                    "identifier": "class.notFound",
+                    "message": "Function InvalidPhpDoc\\genericCompatibleInvariantType() has invalid return type InvalidPhpDocDefinitions\\FooCovariantGeneric.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-types.php",
+                    "line": 292,
+                    "identifier": "class.notFound",
+                    "message": "Parameter $foo of function InvalidPhpDoc\\genericCompatibleInvariantType() has invalid type InvalidPhpDocDefinitions\\FooCovariantGeneric.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-types.php",
+                    "line": 292,
+                    "identifier": "return.missing",
+                    "message": "Function InvalidPhpDoc\\genericCompatibleInvariantType() should return InvalidPhpDocDefinitions\\FooCovariantGeneric<int> but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-types.php",
+                    "line": 301,
+                    "identifier": "class.notFound",
+                    "message": "Function InvalidPhpDoc\\genericRedundantTypeProjection() has invalid return type InvalidPhpDocDefinitions\\FooCovariantGeneric.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-types.php",
+                    "line": 301,
+                    "identifier": "class.notFound",
+                    "message": "Parameter $foo of function InvalidPhpDoc\\genericRedundantTypeProjection() has invalid type InvalidPhpDocDefinitions\\FooCovariantGeneric.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-types.php",
+                    "line": 301,
+                    "identifier": "return.missing",
+                    "message": "Function InvalidPhpDoc\\genericRedundantTypeProjection() should return InvalidPhpDocDefinitions\\FooCovariantGeneric<covariant int> but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-types.php",
+                    "line": 310,
+                    "identifier": "class.notFound",
+                    "message": "Function InvalidPhpDoc\\genericCompatibleStarProjection() has invalid return type InvalidPhpDocDefinitions\\FooCovariantGeneric.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-types.php",
+                    "line": 310,
+                    "identifier": "class.notFound",
+                    "message": "Parameter $foo of function InvalidPhpDoc\\genericCompatibleStarProjection() has invalid type InvalidPhpDocDefinitions\\FooCovariantGeneric.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-types.php",
+                    "line": 310,
+                    "identifier": "return.missing",
+                    "message": "Function InvalidPhpDoc\\genericCompatibleStarProjection() should return InvalidPhpDocDefinitions\\FooCovariantGeneric<*> but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-types.php",
+                    "line": 319,
+                    "identifier": "class.notFound",
+                    "message": "Function InvalidPhpDoc\\genericIncompatibleTypeProjection() has invalid return type InvalidPhpDocDefinitions\\FooCovariantGeneric.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-types.php",
+                    "line": 319,
+                    "identifier": "class.notFound",
+                    "message": "Parameter $foo of function InvalidPhpDoc\\genericIncompatibleTypeProjection() has invalid type InvalidPhpDocDefinitions\\FooCovariantGeneric.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-types.php",
+                    "line": 319,
+                    "identifier": "return.missing",
+                    "message": "Function InvalidPhpDoc\\genericIncompatibleTypeProjection() should return InvalidPhpDocDefinitions\\FooCovariantGeneric<contravariant int> but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-types.php",
+                    "line": 328,
+                    "identifier": "parameter.unresolvableType",
+                    "message": "PHPDoc tag @param for parameter $cb contains unresolvable type.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-types.php",
+                    "line": 328,
+                    "identifier": "parameter.unresolvableType",
+                    "message": "PHPDoc tag @param for parameter $cl contains unresolvable type.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug4643",
+            "files": [
+                "PhpDoc/data/bug-4643.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug3753",
+            "files": [
+                "PhpDoc/data/bug-3753.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "PhpDoc/data/bug-3753.php",
+                    "line": 20,
+                    "identifier": "parameter.unresolvableType",
+                    "message": "PHPDoc tag @param for parameter $foo contains unresolvable type.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testTemplateTypeNativeTypeObject",
+            "files": [
+                "PhpDoc/data/template-type-native-type-object.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "PhpDoc/data/template-type-native-type-object.php",
+                    "line": 23,
+                    "identifier": "return.phpDocType",
+                    "message": "PHPDoc tag @return with type T is not subtype of native type object.",
+                    "tip": "Write @template T of object to fix this."
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testEnums",
+            "files": [
+                "PhpDoc/data/generic-enum-param.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "PhpDoc/data/generic-enum-param.php",
+                    "line": 16,
+                    "identifier": "generics.notGeneric",
+                    "message": "PHPDoc tag @param for parameter $e contains generic type GenericEnumParam\\FooEnum<int> but enum GenericEnumParam\\FooEnum is not generic.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testValueOfEnum",
+            "files": [
+                "PhpDoc/data/value-of-enum.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "PhpDoc/data/value-of-enum.php",
+                    "line": 29,
+                    "identifier": "parameter.phpDocType",
+                    "message": "PHPDoc tag @param for parameter $shouldError with type string is incompatible with native type int.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/value-of-enum.php",
+                    "line": 36,
+                    "identifier": "parameter.phpDocType",
+                    "message": "PHPDoc tag @param for parameter $shouldError with type int is incompatible with native type string.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testConditionalReturnType",
+            "files": [
+                "PhpDoc/data/incompatible-conditional-return-type.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "PhpDoc/data/incompatible-conditional-return-type.php",
+                    "line": 11,
+                    "identifier": "return.missing",
+                    "message": "Method IncompatibleConditionalReturnType\\Foo::doFoo() should return int|string but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-conditional-return-type.php",
+                    "line": 25,
+                    "identifier": "return.missing",
+                    "message": "Method IncompatibleConditionalReturnType\\Bar::doFoo() should return int but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-conditional-return-type.php",
+                    "line": 25,
+                    "identifier": "return.phpDocType",
+                    "message": "PHPDoc tag @return with type ($p is int ? int : string) is not subtype of native type int.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testParamOut",
+            "files": [
+                "PhpDoc/data/param-out.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "PhpDoc/data/param-out.php",
+                    "line": 23,
+                    "identifier": "parameter.notFound",
+                    "message": "PHPDoc tag @param-out references unknown parameter: $z",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/param-out.php",
+                    "line": 37,
+                    "identifier": "parameter.notByRef",
+                    "message": "Parameter $i for PHPDoc tag @param-out is not passed by reference.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/param-out.php",
+                    "line": 51,
+                    "identifier": "generics.notGeneric",
+                    "message": "PHPDoc tag @param-out for parameter $i contains generic type Exception<int, float> but class Exception is not generic.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/param-out.php",
+                    "line": 58,
+                    "identifier": "generics.lessTypes",
+                    "message": "Generic type ParamOutPhpDocRule\\FooBar<mixed> in PHPDoc tag @param-out for parameter $i does not specify all template types of class ParamOutPhpDocRule\\FooBar: T, TT",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/param-out.php",
+                    "line": 58,
+                    "identifier": "generics.notSubtype",
+                    "message": "Type mixed in generic type ParamOutPhpDocRule\\FooBar<mixed> in PHPDoc tag @param-out for parameter $i is not subtype of template type T of int of class ParamOutPhpDocRule\\FooBar.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/param-out.php",
+                    "line": 65,
+                    "identifier": "generics.lessTypes",
+                    "message": "Generic type ParamOutPhpDocRule\\FooBar<int> in PHPDoc tag @param-out for parameter $i does not specify all template types of class ParamOutPhpDocRule\\FooBar: T, TT",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/param-out.php",
+                    "line": 85,
+                    "identifier": "method.templateTypeNotInParameter",
+                    "message": "Template type S of method ParamOutPhpDocRule\\FooBar::genericSelf() is not referenced in a parameter.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/param-out.php",
+                    "line": 93,
+                    "identifier": "generics.notSupportedBound",
+                    "message": "PHPDoc tag @template S for method ParamOutPhpDocRule\\FooBar::genericStatic() with bound type static(ParamOutPhpDocRule\\FooBar<T of int, TT of string>) is not supported.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/param-out.php",
+                    "line": 93,
+                    "identifier": "method.templateTypeNotInParameter",
+                    "message": "Template type S of method ParamOutPhpDocRule\\FooBar::genericStatic() is not referenced in a parameter.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug10097",
+            "files": [
+                "PhpDoc/data/bug-10097.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testGenericCallables",
+            "files": [
+                "PhpDoc/data/generic-callables-incompatible.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "PhpDoc/data/generic-callables-incompatible.php",
+                    "line": 11,
+                    "identifier": "generics.existingClass",
+                    "message": "PHPDoc tag @param for parameter $existingClass template of Closure<stdClass of mixed>(stdClass): stdClass cannot have existing class stdClass as its name.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/generic-callables-incompatible.php",
+                    "line": 25,
+                    "identifier": "class.notFound",
+                    "message": "PHPDoc tag @param for parameter $invalidBoundType template T of Closure<T of GenericCallablesIncompatible\\Invalid>(T): T has invalid bound type GenericCallablesIncompatible\\Invalid.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/generic-callables-incompatible.php",
+                    "line": 25,
+                    "identifier": "class.notFound",
+                    "message": "Parameter $invalidBoundType of function GenericCallablesIncompatible\\invalidBoundType() has invalid type GenericCallablesIncompatible\\Invalid.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/generic-callables-incompatible.php",
+                    "line": 25,
+                    "identifier": "class.notFound",
+                    "message": "Parameter $invalidBoundType of function GenericCallablesIncompatible\\invalidBoundType() has invalid type GenericCallablesIncompatible\\Invalid.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/generic-callables-incompatible.php",
+                    "line": 40,
+                    "identifier": "callable.shadowTemplate",
+                    "message": "PHPDoc tag @param for parameter $shadows template T of Closure<T of mixed>(T): T shadows @template T for function GenericCallablesIncompatible\\testShadowFunction.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/generic-callables-incompatible.php",
+                    "line": 47,
+                    "identifier": "generics.existingClass",
+                    "message": "PHPDoc tag @param-out for parameter $existingClass template of Closure<stdClass of mixed>(stdClass): stdClass cannot have existing class stdClass as its name.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/generic-callables-incompatible.php",
+                    "line": 60,
+                    "identifier": "callable.shadowTemplate",
+                    "message": "PHPDoc tag @param for parameter $shadows template T of Closure<T of mixed, U of mixed>(T): T shadows @template T for method GenericCallablesIncompatible\\Test::testShadowMethod.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/generic-callables-incompatible.php",
+                    "line": 60,
+                    "identifier": "callable.shadowTemplate",
+                    "message": "PHPDoc tag @param for parameter $shadows template U of Closure<T of mixed, U of mixed>(T): T shadows @template U for class GenericCallablesIncompatible\\Test.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/generic-callables-incompatible.php",
+                    "line": 68,
+                    "identifier": "callable.shadowTemplate",
+                    "message": "PHPDoc tag @return template T of Closure<T of mixed, U of mixed>(T): T shadows @template T for method GenericCallablesIncompatible\\Test::testShadowMethodReturn.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/generic-callables-incompatible.php",
+                    "line": 68,
+                    "identifier": "callable.shadowTemplate",
+                    "message": "PHPDoc tag @return template U of Closure<T of mixed, U of mixed>(T): T shadows @template U for class GenericCallablesIncompatible\\Test.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/generic-callables-incompatible.php",
+                    "line": 68,
+                    "identifier": "method.templateTypeNotInParameter",
+                    "message": "Template type T of method GenericCallablesIncompatible\\Test::testShadowMethodReturn() is not referenced in a parameter.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/generic-callables-incompatible.php",
+                    "line": 68,
+                    "identifier": "return.missing",
+                    "message": "Method GenericCallablesIncompatible\\Test::testShadowMethodReturn() should return Closure but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/generic-callables-incompatible.php",
+                    "line": 76,
+                    "identifier": "generics.existingClass",
+                    "message": "PHPDoc tag @return template of Closure<stdClass of mixed>(stdClass): stdClass cannot have existing class stdClass as its name.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/generic-callables-incompatible.php",
+                    "line": 76,
+                    "identifier": "return.missing",
+                    "message": "Function GenericCallablesIncompatible\\existingClassReturn() should return Closure but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/generic-callables-incompatible.php",
+                    "line": 83,
+                    "identifier": "return.missing",
+                    "message": "Function GenericCallablesIncompatible\\existingTypeAliasReturn() should return Closure but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/generic-callables-incompatible.php",
+                    "line": 90,
+                    "identifier": "class.notFound",
+                    "message": "Function GenericCallablesIncompatible\\invalidBoundTypeReturn() has invalid return type GenericCallablesIncompatible\\Invalid.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/generic-callables-incompatible.php",
+                    "line": 90,
+                    "identifier": "class.notFound",
+                    "message": "Function GenericCallablesIncompatible\\invalidBoundTypeReturn() has invalid return type GenericCallablesIncompatible\\Invalid.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/generic-callables-incompatible.php",
+                    "line": 90,
+                    "identifier": "class.notFound",
+                    "message": "PHPDoc tag @return template T of Closure<T of GenericCallablesIncompatible\\Invalid>(T): T has invalid bound type GenericCallablesIncompatible\\Invalid.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/generic-callables-incompatible.php",
+                    "line": 90,
+                    "identifier": "return.missing",
+                    "message": "Function GenericCallablesIncompatible\\invalidBoundTypeReturn() should return Closure but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/generic-callables-incompatible.php",
+                    "line": 97,
+                    "identifier": "return.missing",
+                    "message": "Function GenericCallablesIncompatible\\nullReturn() should return Closure but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/generic-callables-incompatible.php",
+                    "line": 105,
+                    "identifier": "callable.shadowTemplate",
+                    "message": "PHPDoc tag @return template T of Closure<T of mixed>(T): T shadows @template T for function GenericCallablesIncompatible\\testShadowFunctionReturn.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/generic-callables-incompatible.php",
+                    "line": 105,
+                    "identifier": "method.templateTypeNotInParameter",
+                    "message": "Template type T of function GenericCallablesIncompatible\\testShadowFunctionReturn() is not referenced in a parameter.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/generic-callables-incompatible.php",
+                    "line": 105,
+                    "identifier": "return.missing",
+                    "message": "Function GenericCallablesIncompatible\\testShadowFunctionReturn() should return Closure but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/generic-callables-incompatible.php",
+                    "line": 117,
+                    "identifier": "generics.existingClass",
+                    "message": "PHPDoc tag @param for parameter $existingClass template of Closure<stdClass of mixed>(stdClass): stdClass cannot have existing class stdClass as its name.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/generic-callables-incompatible.php",
+                    "line": 131,
+                    "identifier": "class.notFound",
+                    "message": "PHPDoc tag @param for parameter $invalidBoundType template T of Closure<T of GenericCallablesIncompatible\\Invalid>(T): T has invalid bound type GenericCallablesIncompatible\\Invalid.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/generic-callables-incompatible.php",
+                    "line": 131,
+                    "identifier": "class.notFound",
+                    "message": "Parameter $invalidBoundType of method GenericCallablesIncompatible\\Test2::invalidBoundType() has invalid type GenericCallablesIncompatible\\Invalid.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/generic-callables-incompatible.php",
+                    "line": 131,
+                    "identifier": "class.notFound",
+                    "message": "Parameter $invalidBoundType of method GenericCallablesIncompatible\\Test2::invalidBoundType() has invalid type GenericCallablesIncompatible\\Invalid.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/generic-callables-incompatible.php",
+                    "line": 145,
+                    "identifier": "generics.existingClass",
+                    "message": "PHPDoc tag @return template of Closure<stdClass of mixed>(stdClass): stdClass cannot have existing class stdClass as its name.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/generic-callables-incompatible.php",
+                    "line": 145,
+                    "identifier": "return.missing",
+                    "message": "Method GenericCallablesIncompatible\\Test2::existingClassReturn() should return Closure but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/generic-callables-incompatible.php",
+                    "line": 152,
+                    "identifier": "return.missing",
+                    "message": "Method GenericCallablesIncompatible\\Test2::existingTypeAliasReturn() should return Closure but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/generic-callables-incompatible.php",
+                    "line": 159,
+                    "identifier": "class.notFound",
+                    "message": "Method GenericCallablesIncompatible\\Test2::invalidBoundTypeReturn() has invalid return type GenericCallablesIncompatible\\Invalid.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/generic-callables-incompatible.php",
+                    "line": 159,
+                    "identifier": "class.notFound",
+                    "message": "Method GenericCallablesIncompatible\\Test2::invalidBoundTypeReturn() has invalid return type GenericCallablesIncompatible\\Invalid.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/generic-callables-incompatible.php",
+                    "line": 159,
+                    "identifier": "class.notFound",
+                    "message": "PHPDoc tag @return template T of Closure<T of GenericCallablesIncompatible\\Invalid>(T): T has invalid bound type GenericCallablesIncompatible\\Invalid.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/generic-callables-incompatible.php",
+                    "line": 159,
+                    "identifier": "return.missing",
+                    "message": "Method GenericCallablesIncompatible\\Test2::invalidBoundTypeReturn() should return Closure but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/generic-callables-incompatible.php",
+                    "line": 166,
+                    "identifier": "return.missing",
+                    "message": "Method GenericCallablesIncompatible\\Test2::nullReturn() should return Closure but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/generic-callables-incompatible.php",
+                    "line": 175,
+                    "identifier": "callable.shadowTemplate",
+                    "message": "PHPDoc tag @param-out for parameter $existingClass template T of Closure<T of mixed>(T): T shadows @template T for function GenericCallablesIncompatible\\shadowsParamOut.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/generic-callables-incompatible.php",
+                    "line": 175,
+                    "identifier": "method.templateTypeNotInParameter",
+                    "message": "Template type T of function GenericCallablesIncompatible\\shadowsParamOut() is not referenced in a parameter.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/generic-callables-incompatible.php",
+                    "line": 183,
+                    "identifier": "callable.shadowTemplate",
+                    "message": "PHPDoc tag @param-out for parameter $existingClasses template T of Closure<T of mixed>(T): T shadows @template T for function GenericCallablesIncompatible\\shadowsParamOutArray.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/generic-callables-incompatible.php",
+                    "line": 183,
+                    "identifier": "method.templateTypeNotInParameter",
+                    "message": "Template type T of function GenericCallablesIncompatible\\shadowsParamOutArray() is not referenced in a parameter.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/generic-callables-incompatible.php",
+                    "line": 191,
+                    "identifier": "callable.shadowTemplate",
+                    "message": "PHPDoc tag @return template T of Closure<T of mixed>(T): T shadows @template T for function GenericCallablesIncompatible\\shadowsReturnArray.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/generic-callables-incompatible.php",
+                    "line": 191,
+                    "identifier": "method.templateTypeNotInParameter",
+                    "message": "Template type T of function GenericCallablesIncompatible\\shadowsReturnArray() is not referenced in a parameter.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/generic-callables-incompatible.php",
+                    "line": 191,
+                    "identifier": "return.missing",
+                    "message": "Function GenericCallablesIncompatible\\shadowsReturnArray() should return list<Closure> but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/generic-callables-incompatible.php",
+                    "line": 203,
+                    "identifier": "callable.shadowTemplate",
+                    "message": "PHPDoc tag @param for parameter $shadows template T of Closure<T of mixed>(T): T shadows @template T for class GenericCallablesIncompatible\\Test3.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug10622",
+            "files": [
+                "PhpDoc/data/bug-10622.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "PhpDoc/data/bug-10622.php",
+                    "line": 29,
+                    "identifier": "return.missing",
+                    "message": "Method Bug10622\\Collection::map() should return Bug10622\\Collection<TKey of (int|string), Bug10622\\Model&TMapValue>|Bug10622\\SupportCollection<TKey of (int|string), TMapValue of mixed> but return statement is missing.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug10622B",
+            "files": [
+                "PhpDoc/data/bug-10622b.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testParamClosureThis",
+            "files": [
+                "PhpDoc/data/param-closure-this.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "PhpDoc/data/param-closure-this.php",
+                    "line": 20,
+                    "identifier": "parameter.notFound",
+                    "message": "PHPDoc tag @param-closure-this references unknown parameter: $b",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/param-closure-this.php",
+                    "line": 27,
+                    "identifier": "parameter.unresolvableType",
+                    "message": "PHPDoc tag @param-closure-this for parameter $i contains unresolvable type.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/param-closure-this.php",
+                    "line": 34,
+                    "identifier": "parameter.unresolvableType",
+                    "message": "PHPDoc tag @param-closure-this for parameter $i contains unresolvable type.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/param-closure-this.php",
+                    "line": 41,
+                    "identifier": "paramClosureThis.nonClosure",
+                    "message": "PHPDoc tag @param-closure-this is for parameter $i with non-Closure type string.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/param-closure-this.php",
+                    "line": 48,
+                    "identifier": "generics.notGeneric",
+                    "message": "PHPDoc tag @param-closure-this for parameter $i contains generic type Exception<int, float> but class Exception is not generic.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/param-closure-this.php",
+                    "line": 55,
+                    "identifier": "generics.lessTypes",
+                    "message": "Generic type ParamClosureThisPhpDocRule\\FooBar<mixed> in PHPDoc tag @param-closure-this for parameter $i does not specify all template types of class ParamClosureThisPhpDocRule\\FooBar: T, TT",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/param-closure-this.php",
+                    "line": 55,
+                    "identifier": "generics.notSubtype",
+                    "message": "Type mixed in generic type ParamClosureThisPhpDocRule\\FooBar<mixed> in PHPDoc tag @param-closure-this for parameter $i is not subtype of template type T of int of class ParamClosureThisPhpDocRule\\FooBar.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/param-closure-this.php",
+                    "line": 62,
+                    "identifier": "generics.lessTypes",
+                    "message": "Generic type ParamClosureThisPhpDocRule\\FooBar<int> in PHPDoc tag @param-closure-this for parameter $i does not specify all template types of class ParamClosureThisPhpDocRule\\FooBar: T, TT",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testGenericStatic",
+            "files": [
+                "PhpDoc/data/incompatible-phpdoc-generic-static.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "PhpDoc/data/incompatible-phpdoc-generic-static.php",
+                    "line": 14,
+                    "identifier": "generics.moreTypes",
+                    "message": "Generic type static(IncompatiblePhpDocGenericStatic\\Foo<int, string>) in PHPDoc tag @return specifies 2 template types, but class IncompatiblePhpDocGenericStatic\\Foo supports only 1: T",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-phpdoc-generic-static.php",
+                    "line": 14,
+                    "identifier": "return.missing",
+                    "message": "Method IncompatiblePhpDocGenericStatic\\Foo::doFoo() should return static(IncompatiblePhpDocGenericStatic\\Foo<int, string>) but return statement is missing.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug13452",
+            "files": [
+                "PhpDoc/data/bug-13452.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug13652",
+            "files": [
+                "PhpDoc/data/bug-13652.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "PhpDoc/data/bug-13652.php",
+                    "line": 28,
+                    "identifier": "return.phpDocType",
+                    "message": "PHPDoc tag @return with type array{a: string, b: bool, c: int, d: float}[TKey] is not subtype of native type bool|int|string.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/bug-13652.php",
+                    "line": 48,
+                    "identifier": "parameter.phpDocType",
+                    "message": "PHPDoc tag @param for parameter $value with type array{a: string, b: bool, c: int, d: float}[TKey] is not subtype of native type bool|int|string.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug9708",
+            "files": [
+                "PhpDoc/data/bug-9708.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug11463",
+            "files": [
+                "PhpDoc/data/bug-11463.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug11463b",
+            "files": [
+                "PhpDoc/data/bug-11463b.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testExplainUnresolvable",
+            "files": [
+                "PhpDoc/data/explain-unresolvable-method-parameter.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "PhpDoc/data/explain-unresolvable-method-parameter.php",
+                    "line": 11,
+                    "identifier": "parameter.unresolvableType",
+                    "message": "PHPDoc tag @param for parameter $a contains unresolvable type.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

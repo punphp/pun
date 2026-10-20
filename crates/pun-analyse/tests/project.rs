@@ -128,3 +128,53 @@ fn level_is_zero_when_unset() {
     let config = resolve(&options).unwrap_or_else(|e| panic!("{e}"));
     assert_eq!(Project::from_config(&dir, &config.parameters).level, 0);
 }
+
+/// `stubFiles` patch the symbols they name: a stub's `@method` is the class's (PHPStan's run on
+/// tests/fixtures/project with phpstan-stubs.neon), while a symbol only a stub declares stays unknown.
+#[test]
+fn stub_files() {
+    check("phpstan-stubs");
+}
+
+/// `Project::reported` drops the errors of identifiers the run doesn't report before any ignore sees them, as
+/// PHPStan never reports a rule it doesn't run: a trait's too, and the `@phpstan-ignore` naming one is unmatched.
+/// An `ignoreErrors` entry without a file path nothing matched is a not-file-specific error. Messages: PHPStan's
+/// (ClassNameCheck, LocalIgnoresProcessor, IgnoredErrorHelperResult).
+#[test]
+fn reported_identifiers_and_general_errors() {
+    use pun_phpstan::{Array, Key, Value};
+    let file = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/project/reported/a.php");
+    let mut project = Project::new(vec![file.clone()], Vec::new());
+    project.reported = Some(std::sync::Arc::new(|id: &str| id != "function.notFound"));
+    let mut entry = Array::new();
+    entry.set(Key::from("message"), Value::str("#^Nothing$#"));
+    let paths = Array::list([Value::str("/a/*"), Value::str("/b/*")]);
+    entry.set(Key::from("paths"), Value::Array(paths));
+    project.ignore_errors =
+        pun_phpstan::ignore::IgnoredErrors::new(&Array::list([Value::Array(entry)]), true);
+    let analysis = pun_analyse::analyse_project(&project).unwrap();
+    let got: Vec<_> = (analysis.errors.iter())
+        .map(|e| (e.line, e.identifier.as_str(), e.message.as_str()))
+        .collect();
+    assert_eq!(
+        got,
+        [
+            (
+                16,
+                "ignore.unmatchedIdentifier",
+                "No error with identifier function.notFound is reported on line 16."
+            ),
+            (
+                17,
+                "class.notFound",
+                "Instantiated class ReportedMissing not found."
+            ),
+        ]
+    );
+    assert_eq!(
+        analysis.general,
+        [
+            "Ignored error pattern #^Nothing$# in paths: /a/*, /b/* was not matched in reported errors."
+        ]
+    );
+}

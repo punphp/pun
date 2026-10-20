@@ -1,0 +1,184 @@
+{
+    "test": "Constants/ConstantRuleTest",
+    "cases": [
+        {
+            "method": "testConstants",
+            "files": [
+                "Constants/data/constants.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Constants/data/constants.php",
+                    "line": 5,
+                    "identifier": "constant.notFound",
+                    "message": "Used constant OtherConstants\\BAZ_CONSTANT not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Constants/data/constants.php",
+                    "line": 7,
+                    "identifier": "constant.notFound",
+                    "message": "Constant FOO_CONSTANT not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Constants/data/constants.php",
+                    "line": 8,
+                    "identifier": "constant.notFound",
+                    "message": "Constant BAR_CONSTANT not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Constants/data/constants.php",
+                    "line": 9,
+                    "identifier": "constant.notFound",
+                    "message": "Constant OtherConstants\\BAZ_CONSTANT not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Constants/data/constants.php",
+                    "line": 10,
+                    "identifier": "constant.notFound",
+                    "message": "Constant NONEXISTENT_CONSTANT not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Constants/data/constants.php",
+                    "line": 21,
+                    "identifier": "constant.notFound",
+                    "message": "Constant DEFINED_CONSTANT_IF not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testCompilerHaltOffsetConstantFalseDetection",
+            "files": [
+                "Constants/data/compiler-halt-offset-const-defined.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testCompilerHaltOffsetConstantIsUndefinedDetection",
+            "files": [
+                "Constants/data/compiler-halt-offset-const-not-defined.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Constants/data/compiler-halt-offset-const-not-defined.php",
+                    "line": 3,
+                    "identifier": "constant.notFound",
+                    "message": "Constant __COMPILER_HALT_OFFSET__ not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testConstEquals",
+            "files": [
+                "Constants/data/const-equals.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testConstEqualsNoNamespace",
+            "files": [
+                "Constants/data/const-equals-no-namespace.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testDefinedScopeMerge",
+            "files": [
+                "Constants/data/defined-scope-merge.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Constants/data/defined-scope-merge.php",
+                    "line": 8,
+                    "identifier": "constant.notFound",
+                    "message": "Constant TEST not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Constants/data/defined-scope-merge.php",
+                    "line": 11,
+                    "identifier": "constant.notFound",
+                    "message": "Constant TEST not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testRememberedConstructorScope",
+            "files": [
+                "Constants/data/remembered-constructor-scope.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Constants/data/remembered-constructor-scope.php",
+                    "line": 23,
+                    "identifier": "constant.notFound",
+                    "message": "Constant REMEMBERED_FOO not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Constants/data/remembered-constructor-scope.php",
+                    "line": 38,
+                    "identifier": "constant.notFound",
+                    "message": "Constant REMEMBERED_FOO not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Constants/data/remembered-constructor-scope.php",
+                    "line": 51,
+                    "identifier": "constant.notFound",
+                    "message": "Constant REMEMBERED_FOO not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Constants/data/remembered-constructor-scope.php",
+                    "line": 65,
+                    "identifier": "constant.notFound",
+                    "message": "Constant REMEMBERED_FOO not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Constants/data/remembered-constructor-scope.php",
+                    "line": 87,
+                    "identifier": "constant.notFound",
+                    "message": "Constant XYZ22 not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Constants/data/remembered-constructor-scope.php",
+                    "line": 88,
+                    "identifier": "constant.notFound",
+                    "message": "Constant XYZ not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Constants/data/remembered-constructor-scope.php",
+                    "line": 98,
+                    "identifier": "constant.notFound",
+                    "message": "Constant XYZ33 not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                }
+            ],
+            "general": []
+        }
+    ]
+}

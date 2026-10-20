@@ -1,0 +1,38 @@
+[
+    [
+        {
+            "PunAlias": "int|string",
+            "PunNested": "list<PunAlias>",
+            "PunClass": "Countable"
+        },
+        "PunAlias",
+        "int|string"
+    ],
+    [
+        {
+            "PunAlias": "int|string",
+            "PunNested": "list<PunAlias>",
+            "PunClass": "Countable"
+        },
+        "PunNested",
+        "list<int|string>"
+    ],
+    [
+        {
+            "PunAlias": "int|string",
+            "PunNested": "list<PunAlias>",
+            "PunClass": "Countable"
+        },
+        "array<PunAlias, PunClass>",
+        "array<int|string, Countable>"
+    ],
+    [
+        {
+            "PunAlias": "int|string",
+            "PunNested": "list<PunAlias>",
+            "PunClass": "Countable"
+        },
+        "punalias",
+        "PunProbe\\punalias"
+    ]
+]

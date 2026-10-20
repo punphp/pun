@@ -430,7 +430,7 @@ fn reference(node: &Node, doc: &Doc, seen: &mut HashSet<String>) {
             }
         }
         Node::ObjectShape(items) => items.iter().for_each(|(_, _, n)| go(n)),
-        Node::This | Node::Star(_) | Node::Const(_) => {}
+        Node::This | Node::Star(_) | Node::Const(_) | Node::OffsetAccess(..) => {}
     }
 }
 
@@ -507,7 +507,7 @@ fn referenced(c: &Checker, node: &Node, templates: &[String], out: &mut Vec<Stri
                 referenced(c, n, templates, out);
             }
         }
-        Node::This | Node::Star(_) | Node::Const(_) => {}
+        Node::This | Node::Star(_) | Node::Const(_) | Node::OffsetAccess(..) => {}
     }
 }
 

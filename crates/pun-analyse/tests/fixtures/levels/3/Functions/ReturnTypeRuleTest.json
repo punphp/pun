@@ -1,0 +1,695 @@
+{
+    "test": "Functions/ReturnTypeRuleTest",
+    "cases": [
+        {
+            "method": "testReturnTypeRule",
+            "files": [
+                "Functions/data/returnTypes.php"
+            ],
+            "scan": [
+                "Functions/data/returnTypes.php"
+            ],
+            "errors": [
+                {
+                    "file": "Functions/data/returnTypes.php",
+                    "line": 17,
+                    "identifier": "return.type",
+                    "message": "Function ReturnTypes\\returnInteger() should return int but returns string.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/returnTypes.php",
+                    "line": 19,
+                    "identifier": "return.missing",
+                    "message": "Function ReturnTypes\\returnInteger() should return int but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/returnTypes.php",
+                    "line": 24,
+                    "identifier": "class.notFound",
+                    "message": "Function ReturnTypes\\returnObject() has invalid return type ReturnTypes\\Bar.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/returnTypes.php",
+                    "line": 27,
+                    "identifier": "return.type",
+                    "message": "Function ReturnTypes\\returnObject() should return ReturnTypes\\Bar but returns int.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/returnTypes.php",
+                    "line": 31,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class ReturnTypes\\Foo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Functions/data/returnTypes.php",
+                    "line": 31,
+                    "identifier": "return.type",
+                    "message": "Function ReturnTypes\\returnObject() should return ReturnTypes\\Bar but returns ReturnTypes\\Foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/returnTypes.php",
+                    "line": 34,
+                    "identifier": "return.missing",
+                    "message": "Function ReturnTypes\\returnObject() should return ReturnTypes\\Bar but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/returnTypes.php",
+                    "line": 35,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class ReturnTypes\\Bar not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Functions/data/returnTypes.php",
+                    "line": 39,
+                    "identifier": "class.notFound",
+                    "message": "Function ReturnTypes\\returnChild() has invalid return type ReturnTypes\\Foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/returnTypes.php",
+                    "line": 42,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class ReturnTypes\\Foo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Functions/data/returnTypes.php",
+                    "line": 46,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class ReturnTypes\\FooChild not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Functions/data/returnTypes.php",
+                    "line": 46,
+                    "identifier": "return.type",
+                    "message": "Function ReturnTypes\\returnChild() should return ReturnTypes\\Foo but returns ReturnTypes\\FooChild.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/returnTypes.php",
+                    "line": 49,
+                    "identifier": "return.missing",
+                    "message": "Function ReturnTypes\\returnChild() should return ReturnTypes\\Foo but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/returnTypes.php",
+                    "line": 50,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class ReturnTypes\\OtherInterfaceImpl not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Functions/data/returnTypes.php",
+                    "line": 50,
+                    "identifier": "return.type",
+                    "message": "Function ReturnTypes\\returnChild() should return ReturnTypes\\Foo but returns ReturnTypes\\OtherInterfaceImpl.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/returnTypes.php",
+                    "line": 63,
+                    "identifier": "return.missing",
+                    "message": "Function ReturnTypes\\returnNullable() should return string|null but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/returnTypes.php",
+                    "line": 68,
+                    "identifier": "class.notFound",
+                    "message": "Function ReturnTypes\\returnInterface() has invalid return type ReturnTypes\\FooInterface.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/returnTypes.php",
+                    "line": 70,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class ReturnTypes\\Foo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Functions/data/returnTypes.php",
+                    "line": 70,
+                    "identifier": "return.type",
+                    "message": "Function ReturnTypes\\returnInterface() should return ReturnTypes\\FooInterface but returns ReturnTypes\\Foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/returnTypes.php",
+                    "line": 83,
+                    "identifier": "return.void",
+                    "message": "Function ReturnTypes\\returnVoid() with return type void returns null but should not return anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/returnTypes.php",
+                    "line": 87,
+                    "identifier": "return.void",
+                    "message": "Function ReturnTypes\\returnVoid() with return type void returns int but should not return anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/returnTypes.php",
+                    "line": 91,
+                    "identifier": "class.notFound",
+                    "message": "Function ReturnTypes\\returnAlias() has invalid return type ReturnTypes\\Foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/returnTypes.php",
+                    "line": 93,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class ReturnTypes\\FooAlias not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Functions/data/returnTypes.php",
+                    "line": 93,
+                    "identifier": "return.type",
+                    "message": "Function ReturnTypes\\returnAlias() should return ReturnTypes\\Foo but returns ReturnTypes\\FooAlias.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/returnTypes.php",
+                    "line": 96,
+                    "identifier": "class.notFound",
+                    "message": "Function ReturnTypes\\returnAnotherAlias() has invalid return type ReturnTypes\\FooAlias.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/returnTypes.php",
+                    "line": 98,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class ReturnTypes\\Foo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Functions/data/returnTypes.php",
+                    "line": 98,
+                    "identifier": "return.type",
+                    "message": "Function ReturnTypes\\returnAnotherAlias() should return ReturnTypes\\FooAlias but returns ReturnTypes\\Foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/returnTypes.php",
+                    "line": 106,
+                    "identifier": "generator.returnType",
+                    "message": "Yield can be used only with these return types: Generator, Iterator, Traversable, iterable.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/returnTypes.php",
+                    "line": 115,
+                    "identifier": "function.notFound",
+                    "message": "Function something not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Functions/data/returnTypes.php",
+                    "line": 140,
+                    "identifier": "generator.valueType",
+                    "message": "Generator expects value type string, int given.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/returnTypes.php",
+                    "line": 152,
+                    "identifier": "return.empty",
+                    "message": "Function ReturnTypes\\returnFromGeneratorString() should return string but empty return statement found.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/returnTypes.php",
+                    "line": 155,
+                    "identifier": "return.type",
+                    "message": "Function ReturnTypes\\returnFromGeneratorString() should return string but returns int.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/returnTypes.php",
+                    "line": 173,
+                    "identifier": "return.void",
+                    "message": "Function ReturnTypes\\returnVoidFromGenerator2() with return type void returns int but should not return anything.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/returnTypes.php",
+                    "line": 181,
+                    "identifier": "return.never",
+                    "message": "Function ReturnTypes\\returnNever() should never return but return statement found.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testReturnTypeRulePhp70",
+            "files": [
+                "Functions/data/returnTypes-7.0.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/returnTypes-7.0.php",
+                    "line": 7,
+                    "identifier": "return.empty",
+                    "message": "Function ReturnTypes\\Php70\\returnInteger() should return int but empty return statement found.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testIsGenerator",
+            "files": [
+                "Functions/data/is-generator.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug2568",
+            "files": [
+                "Functions/data/bug-2568.php"
+            ],
+            "scan": [
+                "Functions/data/bug-2568.php"
+            ],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug2723",
+            "files": [
+                "Functions/data/bug-2723.php"
+            ],
+            "scan": [
+                "Functions/data/bug-2723.php"
+            ],
+            "errors": [
+                {
+                    "file": "Functions/data/bug-2723.php",
+                    "line": 55,
+                    "identifier": "return.type",
+                    "message": "Function Bug2723\\baz() should return Bug2723\\Bar<Bug2723\\Foo<T4>> but returns Bug2723\\BarOfFoo<string>.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug5706",
+            "files": [
+                "Functions/data/bug-5706.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug5844",
+            "files": [
+                "Functions/data/bug-5844.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug7218",
+            "files": [
+                "Functions/data/bug-7218.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug5751",
+            "files": [
+                "Functions/data/bug-5751.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug3931",
+            "files": [
+                "Functions/data/bug-3931.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug3801",
+            "files": [
+                "Functions/data/bug-3801.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/bug-3801.php",
+                    "line": 17,
+                    "identifier": "return.type",
+                    "message": "Function Bug3801\\do_foo() should return array{bool, null}|array{null, bool} but returns array{false, true}.",
+                    "tip": "• Type #1 from the union: Offset 1 (null) does not accept type true.\n• Type #2 from the union: Offset 0 (null) does not accept type false."
+                },
+                {
+                    "file": "Functions/data/bug-3801.php",
+                    "line": 21,
+                    "identifier": "return.type",
+                    "message": "Function Bug3801\\do_foo() should return array{bool, null}|array{null, bool} but returns array{false, false}.",
+                    "tip": "• Type #1 from the union: Offset 1 (null) does not accept type false.\n• Type #2 from the union: Offset 0 (null) does not accept type false."
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testListWithNullablesChecked",
+            "files": [
+                "Functions/data/return-list-nullables.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testListWithNullablesUnchecked",
+            "files": [
+                "Functions/data/return-list-nullables.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug6787",
+            "files": [
+                "Functions/data/bug-6787.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug6568",
+            "files": [
+                "Functions/data/bug-6568.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug7766",
+            "files": [
+                "Functions/data/bug-7766.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/bug-7766.php",
+                    "line": 20,
+                    "identifier": "return.type",
+                    "message": "Function Bug7766\\problem() should return array<array{id: int, created: DateTimeInterface, updated: DateTimeInterface, valid_from: DateTimeInterface, valid_till: DateTimeInterface, string: string, other_string: string, another_string: string, ...}> but returns array{array{id: 1, created: DateTimeImmutable, updated: DateTimeImmutable, valid_from: DateTimeImmutable, valid_till: DateTimeImmutable, string: 'string', other_string: 'string', another_string: 'string', ...}}.",
+                    "tip": "Offset 'count' (int<0, max>) does not accept type '4'."
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug8846",
+            "files": [
+                "Functions/data/bug-8846.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug10077",
+            "files": [
+                "Functions/data/bug-10077.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/bug-10077.php",
+                    "line": 56,
+                    "identifier": "return.type",
+                    "message": "Function Bug10077\\mergeMediaQueries() should return list<Bug10077\\CssMediaQuery>|null but returns list<Bug10077\\MediaQueryMergeResult>.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug8683",
+            "files": [
+                "Functions/data/bug-8683.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug7984",
+            "files": [
+                "Functions/data/bug-7984.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug5594",
+            "files": [
+                "Functions/data/bug-5594.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug5592",
+            "files": [
+                "Functions/data/bug-5592.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug10732",
+            "files": [
+                "Functions/data/bug-10732.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/bug-10732.php",
+                    "line": 16,
+                    "identifier": "generics.variance",
+                    "message": "Template type TValue is declared as covariant, but occurs in invariant position in property Bug10732\\Collection::$items.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/bug-10732.php",
+                    "line": 28,
+                    "identifier": "return.type",
+                    "message": "Method Bug10732\\Collection::map() should return static(Bug10732\\Collection<TMapValue>) but returns Bug10732\\Collection<TMapValue>.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug10960",
+            "files": [
+                "Functions/data/bug-10960.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug11518",
+            "files": [
+                "Functions/data/bug-11518.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug8881",
+            "files": [
+                "Functions/data/bug-8881.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug11126",
+            "files": [
+                "Functions/data/bug-11126.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/bug-11126.php",
+                    "line": 15,
+                    "identifier": "return.type",
+                    "message": "Method Bug11126\\Collection::map() should return static(Bug11126\\Collection<TRet>) but returns $this(Bug11126\\Collection<T>).",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug11032",
+            "files": [
+                "Functions/data/bug-11032.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug11549",
+            "files": [
+                "Functions/data/bug-11549.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug11301",
+            "files": [
+                "Functions/data/bug-11301.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/bug-11301.php",
+                    "line": 35,
+                    "identifier": "return.type",
+                    "message": "Function Bug11301\\cString() should return array<string, string> but returns array<int, string>.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug13638",
+            "files": [
+                "Functions/data/bug-13638.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug13484",
+            "files": [
+                "Functions/data/bug-13484.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug9401",
+            "files": [
+                "Functions/data/bug-9401.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug3028",
+            "files": [
+                "Functions/data/bug-3028.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/bug-3028.php",
+                    "line": 50,
+                    "identifier": "return.type",
+                    "message": "Function Bug3028\\run() should return Bug3028\\Format<Bug3028\\Output> but returns Bug3028\\Format<O of Bug3028\\Output>.",
+                    "tip": "Template type O on class Bug3028\\Format is not covariant. Learn more: https://phpstan.org/blog/whats-up-with-template-covariant"
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug12397",
+            "files": [
+                "Functions/data/bug-12397.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug13000",
+            "files": [
+                "Functions/data/bug-13000.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug13565",
+            "files": [
+                "Functions/data/bug-13565.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug13190TemplateGeneric",
+            "files": [
+                "Functions/data/bug-13190-template-generic.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug13190",
+            "files": [
+                "Functions/data/bug-13190.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/bug-13190.php",
+                    "line": 81,
+                    "identifier": "return.type",
+                    "message": "Function Bug13190\\inbox_concrete_impl() should return Bug13190\\Box<T> but returns Bug13190\\BoxImpl<Bug13190\\Box<T>|T of mixed>.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

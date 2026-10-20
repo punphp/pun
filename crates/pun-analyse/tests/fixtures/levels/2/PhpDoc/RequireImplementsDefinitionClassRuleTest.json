@@ -1,0 +1,162 @@
+{
+    "test": "PhpDoc/RequireImplementsDefinitionClassRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "PhpDoc/data/incompatible-require-implements.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "PhpDoc/data/incompatible-require-implements.php",
+                    "line": 8,
+                    "identifier": "requireImplements.trait",
+                    "message": "PHPDoc tag @phpstan-require-implements cannot contain non-interface type IncompatibleRequireImplements\\SomeTrait.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-require-implements.php",
+                    "line": 13,
+                    "identifier": "requireImplements.enum",
+                    "message": "PHPDoc tag @phpstan-require-implements cannot contain non-interface type IncompatibleRequireImplements\\SomeEnum.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-require-implements.php",
+                    "line": 18,
+                    "identifier": "class.notFound",
+                    "message": "PHPDoc tag @phpstan-require-implements contains unknown class IncompatibleRequireImplements\\TypeDoesNotExist.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-require-implements.php",
+                    "line": 24,
+                    "identifier": "requireImplements.class",
+                    "message": "PHPDoc tag @phpstan-require-implements cannot contain non-interface type IncompatibleRequireImplements\\SomeClass.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-require-implements.php",
+                    "line": 29,
+                    "identifier": "requireImplements.nonObject",
+                    "message": "PHPDoc tag @phpstan-require-implements contains non-object type int.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-require-implements.php",
+                    "line": 34,
+                    "identifier": "requireImplements.nonObject",
+                    "message": "PHPDoc tag @phpstan-require-implements contains non-object type *NEVER*.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-require-implements.php",
+                    "line": 40,
+                    "identifier": "requireImplements.onClass",
+                    "message": "PHPDoc tag @phpstan-require-implements is only valid on trait.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-require-implements.php",
+                    "line": 45,
+                    "identifier": "requireImplements.onEnum",
+                    "message": "PHPDoc tag @phpstan-require-implements is only valid on trait.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-require-implements.php",
+                    "line": 47,
+                    "identifier": "class.missingImplements",
+                    "message": "Trait IncompatibleRequireImplements\\ValidTrait requires using class to implement IncompatibleRequireImplements\\RequiredInterface, but IncompatibleRequireImplements\\InValidTraitUse2 does not.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-require-implements.php",
+                    "line": 52,
+                    "identifier": "class.missingImplements",
+                    "message": "Trait IncompatibleRequireImplements\\ValidTrait requires using class to implement IncompatibleRequireImplements\\RequiredInterface, but IncompatibleRequireImplements\\InvalidEnumTraitUse does not.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-require-implements.php",
+                    "line": 56,
+                    "identifier": "class.missingImplements",
+                    "message": "Trait IncompatibleRequireImplements\\ValidTrait requires using class to implement IncompatibleRequireImplements\\RequiredInterface, but IncompatibleRequireImplements\\InValidTraitUse does not.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-require-implements.php",
+                    "line": 117,
+                    "identifier": "class.missingImplements",
+                    "message": "Trait IncompatibleRequireImplements\\ValidTrait requires using class to implement IncompatibleRequireImplements\\RequiredInterface, but class@anonymous/pun/.oracle/phpstan-src/tests/PHPStan/Rules/PhpDoc/data/incompatible-require-implements.php:117 does not.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-require-implements.php",
+                    "line": 125,
+                    "identifier": "class.missingImplements",
+                    "message": "Trait IncompatibleRequireImplements\\InvalidTrait1 requires using class to implement IncompatibleRequireImplements\\SomeTrait, but IncompatibleRequireImplements\\InvalidTraitUse1 does not.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-require-implements.php",
+                    "line": 129,
+                    "identifier": "class.missingImplements",
+                    "message": "Trait IncompatibleRequireImplements\\InvalidTrait2 requires using class to implement IncompatibleRequireImplements\\SomeEnum, but IncompatibleRequireImplements\\InvalidTraitUse2 does not.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-require-implements.php",
+                    "line": 129,
+                    "identifier": "class.nameInUse",
+                    "message": "Cannot declare class IncompatibleRequireImplements\\InvalidTraitUse2 because the name is already in use.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-require-implements.php",
+                    "line": 133,
+                    "identifier": "class.missingImplements",
+                    "message": "Trait IncompatibleRequireImplements\\InvalidTrait3 requires using class to implement IncompatibleRequireImplements\\TypeDoesNotExist, but IncompatibleRequireImplements\\InvalidTraitUse3 does not.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-require-implements.php",
+                    "line": 137,
+                    "identifier": "class.missingImplements",
+                    "message": "Trait IncompatibleRequireImplements\\InvalidTrait4 requires using class to implement IncompatibleRequireImplements\\SomeClass<T>, but IncompatibleRequireImplements\\InvalidTraitUse4 does not.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-require-implements.php",
+                    "line": 164,
+                    "identifier": "class.missingImplements",
+                    "message": "Trait IncompatibleRequireImplements\\ValidPsalmTrait requires using class to implement IncompatibleRequireImplements\\RequiredInterface2, but IncompatibleRequireImplements\\RequiredInterface@anonymous/pun/.oracle/phpstan-src/tests/PHPStan/Rules/PhpDoc/data/incompatible-require-implements.php:164 does not.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-require-implements.php",
+                    "line": 168,
+                    "identifier": "class.missingImplements",
+                    "message": "Trait IncompatibleRequireImplements\\ValidPsalmTrait requires using class to implement IncompatibleRequireImplements\\RequiredInterface, but class@anonymous/pun/.oracle/phpstan-src/tests/PHPStan/Rules/PhpDoc/data/incompatible-require-implements.php:168 does not.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-require-implements.php",
+                    "line": 168,
+                    "identifier": "class.missingImplements",
+                    "message": "Trait IncompatibleRequireImplements\\ValidPsalmTrait requires using class to implement IncompatibleRequireImplements\\RequiredInterface2, but class@anonymous/pun/.oracle/phpstan-src/tests/PHPStan/Rules/PhpDoc/data/incompatible-require-implements.php:168 does not.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-require-implements.php",
+                    "line": 175,
+                    "identifier": "class.notFound",
+                    "message": "PHPDoc tag @phpstan-require-implements contains unknown class IncompatibleRequireImplements\\TypeDoesNotExist.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                }
+            ],
+            "general": []
+        }
+    ]
+}

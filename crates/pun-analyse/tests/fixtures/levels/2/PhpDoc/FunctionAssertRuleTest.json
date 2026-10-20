@@ -1,0 +1,136 @@
+{
+    "test": "PhpDoc/FunctionAssertRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "PhpDoc/data/function-assert.php"
+            ],
+            "scan": [
+                "PhpDoc/data/function-assert.php"
+            ],
+            "errors": [
+                {
+                    "file": "PhpDoc/data/function-assert.php",
+                    "line": 8,
+                    "identifier": "assert.alreadyNarrowedType",
+                    "message": "Asserted type int for $i with type int does not narrow down the type.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/function-assert.php",
+                    "line": 17,
+                    "identifier": "assert.alreadyNarrowedType",
+                    "message": "Asserted type int for $i with type int does not narrow down the type.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/function-assert.php",
+                    "line": 17,
+                    "identifier": "method.templateTypeNotInParameter",
+                    "message": "Template type T of function FunctionAssert\\fill2() is not referenced in a parameter.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/function-assert.php",
+                    "line": 17,
+                    "identifier": "parameter.notFound",
+                    "message": "PHPDoc tag @param references unknown parameter: $p",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/function-assert.php",
+                    "line": 17,
+                    "identifier": "return.missing",
+                    "message": "Function FunctionAssert\\fill2() should return array but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/function-assert.php",
+                    "line": 26,
+                    "identifier": "assert.alreadyNarrowedType",
+                    "message": "Asserted type int for $i with type int does not narrow down the type.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/function-assert.php",
+                    "line": 26,
+                    "identifier": "method.templateTypeNotInParameter",
+                    "message": "Template type T of function FunctionAssert\\fill3() is not referenced in a parameter.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/function-assert.php",
+                    "line": 26,
+                    "identifier": "parameter.notFound",
+                    "message": "PHPDoc tag @param references unknown parameter: $p",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/function-assert.php",
+                    "line": 26,
+                    "identifier": "return.missing",
+                    "message": "Function FunctionAssert\\fill3() should return array but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/function-assert.php",
+                    "line": 35,
+                    "identifier": "method.templateTypeNotInParameter",
+                    "message": "Template type T of function FunctionAssert\\fill4() is not referenced in a parameter.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/function-assert.php",
+                    "line": 35,
+                    "identifier": "parameter.notFound",
+                    "message": "PHPDoc tag @param references unknown parameter: $p",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/function-assert.php",
+                    "line": 35,
+                    "identifier": "return.missing",
+                    "message": "Function FunctionAssert\\fill4() should return array but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/function-assert.php",
+                    "line": 42,
+                    "identifier": "assert.alreadyNarrowedType",
+                    "message": "Asserted type int|string for $i with type int does not narrow down the type.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/function-assert.php",
+                    "line": 49,
+                    "identifier": "assert.impossibleType",
+                    "message": "Asserted type string for $i with type int can never happen.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/function-assert.php",
+                    "line": 56,
+                    "identifier": "parameter.notFound",
+                    "message": "Assert references unknown parameter $j.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/function-assert.php",
+                    "line": 63,
+                    "identifier": "assert.impossibleType",
+                    "message": "Asserted negated type int for $i with type int can never happen.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/function-assert.php",
+                    "line": 70,
+                    "identifier": "assert.alreadyNarrowedType",
+                    "message": "Asserted negated type string for $i with type int does not narrow down the type.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

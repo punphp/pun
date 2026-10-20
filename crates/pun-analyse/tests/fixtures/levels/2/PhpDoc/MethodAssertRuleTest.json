@@ -1,0 +1,313 @@
+{
+    "test": "PhpDoc/MethodAssertRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "PhpDoc/data/method-assert.php"
+            ],
+            "scan": [
+                "PhpDoc/data/method-assert.php"
+            ],
+            "errors": [
+                {
+                    "file": "PhpDoc/data/method-assert.php",
+                    "line": 10,
+                    "identifier": "assert.alreadyNarrowedType",
+                    "message": "Asserted type int for $i with type int does not narrow down the type.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/method-assert.php",
+                    "line": 19,
+                    "identifier": "assert.alreadyNarrowedType",
+                    "message": "Asserted type int for $i with type int does not narrow down the type.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/method-assert.php",
+                    "line": 19,
+                    "identifier": "method.templateTypeNotInParameter",
+                    "message": "Template type T of method MethodAssert\\Foo::fill2() is not referenced in a parameter.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/method-assert.php",
+                    "line": 19,
+                    "identifier": "parameter.notFound",
+                    "message": "PHPDoc tag @param references unknown parameter: $p",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/method-assert.php",
+                    "line": 19,
+                    "identifier": "return.missing",
+                    "message": "Method MethodAssert\\Foo::fill2() should return array but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/method-assert.php",
+                    "line": 28,
+                    "identifier": "assert.alreadyNarrowedType",
+                    "message": "Asserted type int for $i with type int does not narrow down the type.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/method-assert.php",
+                    "line": 28,
+                    "identifier": "method.templateTypeNotInParameter",
+                    "message": "Template type T of method MethodAssert\\Foo::fill3() is not referenced in a parameter.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/method-assert.php",
+                    "line": 28,
+                    "identifier": "parameter.notFound",
+                    "message": "PHPDoc tag @param references unknown parameter: $p",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/method-assert.php",
+                    "line": 28,
+                    "identifier": "return.missing",
+                    "message": "Method MethodAssert\\Foo::fill3() should return array but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/method-assert.php",
+                    "line": 37,
+                    "identifier": "method.templateTypeNotInParameter",
+                    "message": "Template type T of method MethodAssert\\Foo::fill4() is not referenced in a parameter.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/method-assert.php",
+                    "line": 37,
+                    "identifier": "parameter.notFound",
+                    "message": "PHPDoc tag @param references unknown parameter: $p",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/method-assert.php",
+                    "line": 37,
+                    "identifier": "return.missing",
+                    "message": "Method MethodAssert\\Foo::fill4() should return array but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/method-assert.php",
+                    "line": 44,
+                    "identifier": "assert.alreadyNarrowedType",
+                    "message": "Asserted type int|string for $i with type int does not narrow down the type.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/method-assert.php",
+                    "line": 51,
+                    "identifier": "assert.impossibleType",
+                    "message": "Asserted type string for $i with type int can never happen.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/method-assert.php",
+                    "line": 58,
+                    "identifier": "parameter.notFound",
+                    "message": "Assert references unknown parameter $j.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/method-assert.php",
+                    "line": 65,
+                    "identifier": "assert.impossibleType",
+                    "message": "Asserted negated type int for $i with type int can never happen.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/method-assert.php",
+                    "line": 72,
+                    "identifier": "assert.alreadyNarrowedType",
+                    "message": "Asserted negated type string for $i with type int does not narrow down the type.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/method-assert.php",
+                    "line": 94,
+                    "identifier": "assert.unresolvableType",
+                    "message": "PHPDoc tag @phpstan-assert for $this->fooProp contains unresolvable type.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/method-assert.php",
+                    "line": 94,
+                    "identifier": "assert.unresolvableType",
+                    "message": "PHPDoc tag @phpstan-assert-if-true for $a contains unresolvable type.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/method-assert.php",
+                    "line": 94,
+                    "identifier": "return.missing",
+                    "message": "Method MethodAssert\\AbsentTypeChecks::doFoo() should return bool but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/method-assert.php",
+                    "line": 105,
+                    "identifier": "assert.trait",
+                    "message": "PHPDoc tag @phpstan-assert for $b contains invalid type MethodAssert\\FooTrait.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/method-assert.php",
+                    "line": 105,
+                    "identifier": "assert.unknownExpr",
+                    "message": "Assert references unknown $this->barProp.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/method-assert.php",
+                    "line": 105,
+                    "identifier": "class.nameCase",
+                    "message": "Class MethodAssert\\Foo referenced with incorrect case: MethodAssert\\fOO.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/method-assert.php",
+                    "line": 105,
+                    "identifier": "class.notFound",
+                    "message": "PHPDoc tag @phpstan-assert for $a contains unknown class MethodAssert\\Nonexistent.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/method-assert.php",
+                    "line": 105,
+                    "identifier": "return.missing",
+                    "message": "Method MethodAssert\\AbsentTypeChecks::doBar() should return bool but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/method-assert.php",
+                    "line": 113,
+                    "identifier": "parameter.notFound",
+                    "message": "Assert references unknown parameter $this.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/method-assert.php",
+                    "line": 131,
+                    "identifier": "generics.notGeneric",
+                    "message": "PHPDoc tag @phpstan-assert for $m contains generic type Exception<int, float> but class Exception is not generic.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/method-assert.php",
+                    "line": 138,
+                    "identifier": "generics.lessTypes",
+                    "message": "Generic type MethodAssert\\FooBar<mixed> in PHPDoc tag @phpstan-assert for $m does not specify all template types of class MethodAssert\\FooBar: T, TT",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/method-assert.php",
+                    "line": 138,
+                    "identifier": "generics.notSubtype",
+                    "message": "Type mixed in generic type MethodAssert\\FooBar<mixed> in PHPDoc tag @phpstan-assert for $m is not subtype of template type T of int of class MethodAssert\\FooBar.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/method-assert.php",
+                    "line": 145,
+                    "identifier": "generics.lessTypes",
+                    "message": "Generic type MethodAssert\\FooBar<int> in PHPDoc tag @phpstan-assert for $m does not specify all template types of class MethodAssert\\FooBar: T, TT",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/method-assert.php",
+                    "line": 152,
+                    "identifier": "generics.moreTypes",
+                    "message": "Generic type MethodAssert\\FooBar<int, string, float> in PHPDoc tag @phpstan-assert for $m specifies 3 template types, but class MethodAssert\\FooBar supports only 2: T, TT",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/method-assert.php",
+                    "line": 175,
+                    "identifier": "method.templateTypeNotInParameter",
+                    "message": "Template type S of method MethodAssert\\FooBar::genericSelf() is not referenced in a parameter.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/method-assert.php",
+                    "line": 183,
+                    "identifier": "generics.notSupportedBound",
+                    "message": "PHPDoc tag @template S for method MethodAssert\\FooBar::genericStatic() with bound type static(MethodAssert\\FooBar<T of int, TT of string>) is not supported.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/method-assert.php",
+                    "line": 183,
+                    "identifier": "method.templateTypeNotInParameter",
+                    "message": "Template type S of method MethodAssert\\FooBar::genericStatic() is not referenced in a parameter.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug10573",
+            "files": [
+                "PhpDoc/data/bug-10573.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug10214",
+            "files": [
+                "PhpDoc/data/bug-10214.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug10594",
+            "files": [
+                "PhpDoc/data/bug-10594.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBugIncompatibleAssertTypeWithMethodReturnType",
+            "files": [
+                "PhpDoc/data/incompatible-assert-type-with-method-return-type.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "PhpDoc/data/incompatible-assert-type-with-method-return-type.php",
+                    "line": 11,
+                    "identifier": "return.missing",
+                    "message": "Method IncompatibleAssertTypeWithMethodReturnType\\Foo::getValues() should return list<int> but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-assert-type-with-method-return-type.php",
+                    "line": 19,
+                    "identifier": "assert.impossibleType",
+                    "message": "Asserted type non-empty-list<static(IncompatibleAssertTypeWithMethodReturnType\\Foo)> for $this->getValues() with type list<int> can never happen.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-assert-type-with-method-return-type.php",
+                    "line": 19,
+                    "identifier": "return.missing",
+                    "message": "Method IncompatibleAssertTypeWithMethodReturnType\\Foo::isEmpty() should return bool but return statement is missing.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

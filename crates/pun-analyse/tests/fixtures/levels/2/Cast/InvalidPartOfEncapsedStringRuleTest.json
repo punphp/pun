@@ -1,0 +1,31 @@
+{
+    "test": "Cast/InvalidPartOfEncapsedStringRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Cast/data/invalid-encapsed-part.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Cast/data/invalid-encapsed-part.php",
+                    "line": 8,
+                    "identifier": "encapsedStringPart.nonString",
+                    "message": "Part $std (stdClass) of encapsed string cannot be cast to string.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testRuleWithNullsafeVariant",
+            "files": [
+                "Cast/data/invalid-encapsed-part-nullsafe.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        }
+    ]
+}

@@ -92,9 +92,23 @@ pub(crate) struct Finding {
     pub(crate) tip: Option<String>,
 }
 
+impl Finding {
+    /// PHPStan's `canBeIgnored()`: false for the errors about ignores themselves (`ignore.*`).
+    pub(crate) fn ignorable(&self) -> bool {
+        !self.identifier.starts_with("ignore.")
+    }
+
+    /// PHPStan's `getLine()`: none (0 here) for an `ignoreErrors` entry nothing matched.
+    pub(crate) fn line(&self) -> Option<u32> {
+        (self.line > 0).then_some(self.line)
+    }
+}
+
 /// What an analysis found.
 pub(crate) struct Analysed {
     pub(crate) findings: Vec<Finding>,
+    /// PHPStan's not-file-specific errors: `[[analyse.ignore]]` entries without a file path nothing matched.
+    pub(crate) general: Vec<String>,
     /// The files analysed.
     pub(crate) files: usize,
     /// Baseline entries (counts) no error matched any more.
@@ -110,23 +124,31 @@ pub(crate) fn load_config(root: &Path, config: Option<PathBuf>) -> Result<Config
         config,
         ..Default::default()
     };
-    pun_config::load(root, &opts).map_err(|e| {
-        let message = format!("{e:#}");
-        let error = RunError {
-            path: None,
-            line: None,
-            message: message.clone(),
-            hint: None,
-        };
-        Abort::pun(message, error).into()
-    })
+    pun_config::load(root, &opts).map_err(|e| run_error(format!("{e:#}"), None))
+}
+
+/// The engine's rule for PHPStan's errors about ignores (`ignore.unmatched`, `ignore.count`, ...), which no rule
+/// reports.
+const UNMATCHED_IGNORE: &str = "unmatched-ignore";
+
+fn run_error(message: String, hint: Option<String>) -> anyhow::Error {
+    let error = RunError {
+        path: None,
+        line: None,
+        message: message.clone(),
+        hint,
+    };
+    Abort::pun(message, error).into()
 }
 
 /// The project pun-analyse works on: the analysed files, Composer's autoloaded files for symbols (minus the
-/// excludes), the target PHP version.
+/// excludes), the target PHP version, and `[analyse]` as PHPStan's parameters (the level, `stubFiles`,
+/// `ignoreErrors`, Larastan, rule options). Only the enabled rules' identifiers are reported.
 fn project(cfg: &Config, analysed: Vec<PathBuf>) -> Result<pun_analyse::Project> {
+    use pun_phpstan::ignore::IgnoredErrors;
     use pun_phpstan::{Array, Key, Value};
-    let mut params = Array::new();
+    let mut params = cfg.analyse.parameters(&cfg.root);
+    pun_phpstan::config::validate_ignore_errors(&params).map_err(|e| run_error(e, None))?;
     let mut extensions = Array::new();
     extensions.push(Value::Str("php".into()));
     params.set(Key::Str("fileExtensions".into()), Value::Array(extensions));
@@ -141,6 +163,14 @@ fn project(cfg: &Config, analysed: Vec<PathBuf>) -> Result<pun_analyse::Project>
         .autoloaded
         .retain(|a| !excluded.is_excluded(&a.path));
     project.analysed = analysed;
+    let ignores = (params.get_str("ignoreErrors").and_then(Value::as_array)).cloned();
+    project.ignore_errors =
+        IgnoredErrors::new(&ignores.unwrap_or_default(), true).with_rules(rule_of_identifier);
+    let on: std::collections::HashSet<String> =
+        cfg.analyse.rules.iter().map(|r| r.id.clone()).collect();
+    project.reported = Some(std::sync::Arc::new(move |id| {
+        rule_of_identifier(id).is_some_and(|r| on.contains(r))
+    }));
     Ok(project)
 }
 
@@ -150,36 +180,24 @@ pub(crate) fn analyse(cfg: &Config, paths: &[PathBuf], use_baseline: bool) -> Re
     let files = pun_workspace::files(cfg, Some(Command::Analyse), paths)?;
     let count = files.len();
     let project = project(cfg, files)?;
-    let errors = pun_analyse::run(&project).map_err(|e| {
-        let message = e.to_string();
-        let error = RunError {
-            path: None,
-            line: None,
-            message: message.clone(),
-            hint: None,
-        };
-        anyhow::Error::new(Abort::pun(message, error))
-    })?;
-    let on: std::collections::HashSet<&str> =
-        cfg.analyse.rules.iter().map(|r| r.id.as_str()).collect();
-    let mut findings: Vec<Finding> = errors
-        .into_iter()
-        .filter_map(|e| {
-            let rule = rule_of_identifier(&e.identifier)?;
-            on.contains(rule).then(|| {
-                // PHPStan reports, sorts and relativises normalised paths (a configured `../x` included).
-                let file = PathBuf::from(normalize_path(&e.file));
-                Finding {
-                    rel: relative(&cfg.root, &file),
-                    file,
-                    // ponytail: PHPStan's -1 (a node without a position) prints as 0
-                    line: u32::try_from(e.line).unwrap_or(0),
-                    identifier: e.identifier,
-                    rule: rule.to_string(),
-                    message: e.message,
-                    tip: e.tip,
-                }
-            })
+    let analysis =
+        pun_analyse::analyse_project(&project).map_err(|e| run_error(e.to_string(), None))?;
+    // pun-analyse reported the enabled rules' errors only, and the errors about ignores
+    let mut findings: Vec<Finding> = (analysis.errors.into_iter())
+        .map(|e| {
+            let rule = rule_of_identifier(&e.identifier).unwrap_or(UNMATCHED_IGNORE);
+            // PHPStan reports, sorts and relativises normalised paths (a configured `../x` included).
+            let file = PathBuf::from(normalize_path(&e.file));
+            Finding {
+                rel: relative(&cfg.root, &file),
+                file,
+                // ponytail: PHPStan's -1 (a node without a position) prints as 0
+                line: u32::try_from(e.line).unwrap_or(0),
+                identifier: e.identifier,
+                rule: rule.to_string(),
+                message: e.message,
+                tip: e.tip,
+            }
         })
         .collect();
     let malformed = apply_ignores(&mut findings, &cfg.root);
@@ -200,6 +218,7 @@ pub(crate) fn analyse(cfg: &Config, paths: &[PathBuf], use_baseline: bool) -> Re
     }
     Ok(Analysed {
         findings,
+        general: analysis.general,
         files: count,
         unmatched_baseline,
         malformed,
@@ -272,17 +291,26 @@ pub(crate) fn run(a: AnalyseArgs) -> Result<u8> {
     let started = Instant::now();
     let root = root()?;
     let cfg = load_config(&root, a.config.clone())?;
+    // as PHPStan stops without a level (`pun check` runs the other commands instead)
+    if cfg.analyse.rules.is_empty() {
+        let hint = "set [analyse] preset, or turn rules on under [analyse.rules]";
+        return Err(run_error("No rules detected".into(), Some(hint.into())));
+    }
     if let Some(path) = &a.generate_baseline {
         return generate_baseline(&a, &cfg, path.as_deref(), started);
     }
     let analysed = analyse(&cfg, &a.paths, true)?;
-    let errors = analysed.findings.len() + analysed.malformed.len();
+    let errors = analysed.findings.len() + analysed.malformed.len() + analysed.general.len();
     match a.format.as_deref() {
         Some(format) => {
             let cx = analyse_report::Context {
                 verbose: a.verbose > 0 || agent::enabled(),
                 root: &root,
                 paths: &analysed.paths,
+                general: &analysed.general,
+                config: (cfg.sources.iter())
+                    .find(|s| s.extension().is_some_and(|e| e == "toml"))
+                    .map(|s| relative(&root, s)),
             };
             print!(
                 "{}",
@@ -307,14 +335,8 @@ pub(crate) fn run(a: AnalyseArgs) -> Result<u8> {
 }
 
 fn unsupported_format(e: &anyhow::Error) -> anyhow::Error {
-    let message = e.to_string();
-    let error = RunError {
-        path: None,
-        line: None,
-        message: message.clone(),
-        hint: Some(format!("use {}", analyse_report::FORMATS.join(", "))),
-    };
-    Abort::pun(message, error).into()
+    let hint = format!("use {}", analyse_report::FORMATS.join(", "));
+    run_error(e.to_string(), Some(hint))
 }
 
 /// `--generate-baseline [file]`: every error into the baseline; nothing is reported, the exit code is 0.
@@ -328,7 +350,9 @@ fn generate_baseline(
         Some(path) => path.to_path_buf(),
         None => PathBuf::from(cfg.analyse.baseline.as_deref().unwrap_or(baseline::DEFAULT)),
     };
-    let analysed = analyse(cfg, &a.paths, false)?;
+    let mut analysed = analyse(cfg, &a.paths, false)?;
+    // PHPStan's baseline leaves out the errors that can't be ignored
+    analysed.findings.retain(Finding::ignorable);
     let b = baseline::Baseline::of(&analysed.findings);
     b.write(&cfg.root.join(&path))?;
     let n = analysed.findings.len();
@@ -371,6 +395,10 @@ pub(crate) fn human(
     let mut r = Renderer::new(look, root);
     r.concise = concise;
     let mut out = problem_blocks(&r, analysed);
+    let glyph = r.look.paint(render::Role::Error, r.look.glyph("✖", "x"));
+    for g in &analysed.general {
+        out.push_str(&format!("{glyph} {g}\n"));
+    }
     if !out.is_empty() {
         out.push('\n');
     }
@@ -378,7 +406,7 @@ pub(crate) fn human(
         out.push_str(&baseline_note(&r, analysed.unmatched_baseline));
     }
     out.push_str(&r.summary(&Summary {
-        errors: analysed.findings.len() + analysed.malformed.len(),
+        errors: analysed.findings.len() + analysed.malformed.len() + analysed.general.len(),
         warnings: 0,
         fixable: 0,
         fix_command: "",
@@ -495,6 +523,12 @@ pub(crate) fn agent_items(analysed: &Analysed) -> Vec<String> {
     items.extend(
         (analysed.malformed.iter())
             .map(|m| format!("{} {} {}", m.path.display(), m.rule, m.message)),
+    );
+    items.extend(
+        analysed
+            .general
+            .iter()
+            .map(|g| format!("{UNMATCHED_IGNORE} {g}")),
     );
     items
 }

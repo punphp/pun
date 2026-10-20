@@ -1,0 +1,436 @@
+{
+    "test": "PhpDoc/IncompatiblePropertyPhpDocTypeRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "PhpDoc/data/incompatible-property-phpdoc.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "PhpDoc/data/incompatible-property-phpdoc.php",
+                    "line": 9,
+                    "identifier": "class.notFound",
+                    "message": "Property InvalidPhpDoc\\FooWithProperty::$foo has unknown class InvalidPhpDoc\\aray as its type.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-property-phpdoc.php",
+                    "line": 12,
+                    "identifier": "class.notFound",
+                    "message": "Property InvalidPhpDoc\\FooWithProperty::$bar has unknown class InvalidPhpDoc\\Bar as its type.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-property-phpdoc.php",
+                    "line": 12,
+                    "identifier": "class.notFound",
+                    "message": "Property InvalidPhpDoc\\FooWithProperty::$bar has unknown class InvalidPhpDoc\\Foo as its type.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-property-phpdoc.php",
+                    "line": 18,
+                    "identifier": "property.unresolvableType",
+                    "message": "PHPDoc tag @var for property InvalidPhpDoc\\FooWithProperty::$classStringInt contains unresolvable type.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-property-phpdoc.php",
+                    "line": 21,
+                    "identifier": "class.notFound",
+                    "message": "Property InvalidPhpDoc\\FooWithProperty::$classStringValid has unknown class InvalidPhpDoc\\stdClass as its type.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-property-phpdoc.php",
+                    "line": 24,
+                    "identifier": "class.notFound",
+                    "message": "Property InvalidPhpDoc\\FooWithProperty::$fooGeneric has unknown class InvalidPhpDocDefinitions\\Foo as its type.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-property-phpdoc.php",
+                    "line": 27,
+                    "identifier": "class.notFound",
+                    "message": "Property InvalidPhpDoc\\FooWithProperty::$validGenericFoo has unknown class InvalidPhpDocDefinitions\\FooGeneric as its type.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-property-phpdoc.php",
+                    "line": 30,
+                    "identifier": "class.notFound",
+                    "message": "Property InvalidPhpDoc\\FooWithProperty::$notEnoughTypesGenericfoo has unknown class InvalidPhpDocDefinitions\\FooGeneric as its type.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-property-phpdoc.php",
+                    "line": 33,
+                    "identifier": "class.notFound",
+                    "message": "Property InvalidPhpDoc\\FooWithProperty::$tooManyTypesGenericfoo has unknown class InvalidPhpDocDefinitions\\FooGeneric as its type.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-property-phpdoc.php",
+                    "line": 36,
+                    "identifier": "class.notFound",
+                    "message": "Property InvalidPhpDoc\\FooWithProperty::$invalidTypeGenericfoo has unknown class InvalidPhpDocDefinitions\\FooGeneric as its type.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-property-phpdoc.php",
+                    "line": 39,
+                    "identifier": "class.notFound",
+                    "message": "Property InvalidPhpDoc\\FooWithProperty::$anotherInvalidTypeGenericfoo has unknown class InvalidPhpDocDefinitions\\FooGeneric as its type.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-property-phpdoc.php",
+                    "line": 42,
+                    "identifier": "property.unresolvableType",
+                    "message": "PHPDoc tag @var for property InvalidPhpDoc\\FooWithProperty::$unknownClassConstant contains unresolvable type.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-property-phpdoc.php",
+                    "line": 45,
+                    "identifier": "property.unresolvableType",
+                    "message": "PHPDoc tag @var for property InvalidPhpDoc\\FooWithProperty::$unknownClassConstant2 contains unresolvable type.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-property-phpdoc.php",
+                    "line": 48,
+                    "identifier": "class.notFound",
+                    "message": "Property InvalidPhpDoc\\FooWithProperty::$genericCompatibleInvariantType has unknown class InvalidPhpDocDefinitions\\FooCovariantGeneric as its type.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-property-phpdoc.php",
+                    "line": 51,
+                    "identifier": "class.notFound",
+                    "message": "Property InvalidPhpDoc\\FooWithProperty::$genericRedundantTypeProjection has unknown class InvalidPhpDocDefinitions\\FooCovariantGeneric as its type.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-property-phpdoc.php",
+                    "line": 54,
+                    "identifier": "class.notFound",
+                    "message": "Property InvalidPhpDoc\\FooWithProperty::$genericCompatibleStarProjection has unknown class InvalidPhpDocDefinitions\\FooCovariantGeneric as its type.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-property-phpdoc.php",
+                    "line": 57,
+                    "identifier": "class.notFound",
+                    "message": "Property InvalidPhpDoc\\FooWithProperty::$genericIncompatibleTypeProjection has unknown class InvalidPhpDocDefinitions\\FooCovariantGeneric as its type.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testNativeTypes",
+            "files": [
+                "PhpDoc/data/incompatible-property-native-types.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "PhpDoc/data/incompatible-property-native-types.php",
+                    "line": 12,
+                    "identifier": "property.phpDocType",
+                    "message": "PHPDoc tag @var for property IncompatiblePhpDocPropertyNativeType\\Foo::$selfTwo with type object is not subtype of native type IncompatiblePhpDocPropertyNativeType\\Foo.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-property-native-types.php",
+                    "line": 15,
+                    "identifier": "property.phpDocType",
+                    "message": "PHPDoc tag @var for property IncompatiblePhpDocPropertyNativeType\\Foo::$foo with type IncompatiblePhpDocPropertyNativeType\\Bar is incompatible with native type IncompatiblePhpDocPropertyNativeType\\Foo.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-property-native-types.php",
+                    "line": 21,
+                    "identifier": "property.phpDocType",
+                    "message": "PHPDoc tag @var for property IncompatiblePhpDocPropertyNativeType\\Foo::$stringOrInt with type int|string is not subtype of native type string.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-property-native-types.php",
+                    "line": 45,
+                    "identifier": "property.phpDocType",
+                    "message": "PHPDoc tag @var for property IncompatiblePhpDocPropertyNativeType\\Lorem::$string with type T is not subtype of native type string.",
+                    "tip": "Write @template T of string to fix this."
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testPromotedProperties",
+            "files": [
+                "PhpDoc/data/incompatible-property-promoted.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "PhpDoc/data/incompatible-property-promoted.php",
+                    "line": 13,
+                    "identifier": "class.notFound",
+                    "message": "Parameter $foo of method InvalidPhpDocPromotedProperties\\FooWithProperty::__construct() has invalid type InvalidPhpDocPromotedProperties\\aray.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-property-promoted.php",
+                    "line": 13,
+                    "identifier": "class.notFound",
+                    "message": "Property InvalidPhpDocPromotedProperties\\FooWithProperty::$foo has unknown class InvalidPhpDocPromotedProperties\\aray as its type.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-property-promoted.php",
+                    "line": 16,
+                    "identifier": "class.notFound",
+                    "message": "Parameter $bar of method InvalidPhpDocPromotedProperties\\FooWithProperty::__construct() has invalid type InvalidPhpDoc\\Bar.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-property-promoted.php",
+                    "line": 16,
+                    "identifier": "class.notFound",
+                    "message": "Parameter $bar of method InvalidPhpDocPromotedProperties\\FooWithProperty::__construct() has invalid type InvalidPhpDoc\\Foo.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-property-promoted.php",
+                    "line": 16,
+                    "identifier": "class.notFound",
+                    "message": "Property InvalidPhpDocPromotedProperties\\FooWithProperty::$bar has unknown class InvalidPhpDoc\\Bar as its type.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-property-promoted.php",
+                    "line": 16,
+                    "identifier": "class.notFound",
+                    "message": "Property InvalidPhpDocPromotedProperties\\FooWithProperty::$bar has unknown class InvalidPhpDoc\\Foo as its type.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-property-promoted.php",
+                    "line": 22,
+                    "identifier": "property.unresolvableType",
+                    "message": "PHPDoc type for property InvalidPhpDocPromotedProperties\\FooWithProperty::$classStringInt contains unresolvable type.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-property-promoted.php",
+                    "line": 25,
+                    "identifier": "class.notFound",
+                    "message": "Parameter $classStringValid of method InvalidPhpDocPromotedProperties\\FooWithProperty::__construct() has invalid type InvalidPhpDocPromotedProperties\\stdClass.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-property-promoted.php",
+                    "line": 25,
+                    "identifier": "class.notFound",
+                    "message": "Property InvalidPhpDocPromotedProperties\\FooWithProperty::$classStringValid has unknown class InvalidPhpDocPromotedProperties\\stdClass as its type.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-property-promoted.php",
+                    "line": 28,
+                    "identifier": "class.notFound",
+                    "message": "Parameter $fooGeneric of method InvalidPhpDocPromotedProperties\\FooWithProperty::__construct() has invalid type InvalidPhpDocDefinitions\\Foo.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-property-promoted.php",
+                    "line": 28,
+                    "identifier": "class.notFound",
+                    "message": "Property InvalidPhpDocPromotedProperties\\FooWithProperty::$fooGeneric has unknown class InvalidPhpDocDefinitions\\Foo as its type.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-property-promoted.php",
+                    "line": 31,
+                    "identifier": "class.notFound",
+                    "message": "Parameter $validGenericFoo of method InvalidPhpDocPromotedProperties\\FooWithProperty::__construct() has invalid type InvalidPhpDocDefinitions\\FooGeneric.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-property-promoted.php",
+                    "line": 31,
+                    "identifier": "class.notFound",
+                    "message": "Property InvalidPhpDocPromotedProperties\\FooWithProperty::$validGenericFoo has unknown class InvalidPhpDocDefinitions\\FooGeneric as its type.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-property-promoted.php",
+                    "line": 34,
+                    "identifier": "class.notFound",
+                    "message": "Parameter $notEnoughTypesGenericfoo of method InvalidPhpDocPromotedProperties\\FooWithProperty::__construct() has invalid type InvalidPhpDocDefinitions\\FooGeneric.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-property-promoted.php",
+                    "line": 34,
+                    "identifier": "class.notFound",
+                    "message": "Property InvalidPhpDocPromotedProperties\\FooWithProperty::$notEnoughTypesGenericfoo has unknown class InvalidPhpDocDefinitions\\FooGeneric as its type.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-property-promoted.php",
+                    "line": 37,
+                    "identifier": "class.notFound",
+                    "message": "Parameter $tooManyTypesGenericfoo of method InvalidPhpDocPromotedProperties\\FooWithProperty::__construct() has invalid type InvalidPhpDocDefinitions\\FooGeneric.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-property-promoted.php",
+                    "line": 37,
+                    "identifier": "class.notFound",
+                    "message": "Property InvalidPhpDocPromotedProperties\\FooWithProperty::$tooManyTypesGenericfoo has unknown class InvalidPhpDocDefinitions\\FooGeneric as its type.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-property-promoted.php",
+                    "line": 40,
+                    "identifier": "class.notFound",
+                    "message": "Parameter $invalidTypeGenericfoo of method InvalidPhpDocPromotedProperties\\FooWithProperty::__construct() has invalid type InvalidPhpDocDefinitions\\FooGeneric.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-property-promoted.php",
+                    "line": 40,
+                    "identifier": "class.notFound",
+                    "message": "Property InvalidPhpDocPromotedProperties\\FooWithProperty::$invalidTypeGenericfoo has unknown class InvalidPhpDocDefinitions\\FooGeneric as its type.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-property-promoted.php",
+                    "line": 43,
+                    "identifier": "class.notFound",
+                    "message": "Parameter $anotherInvalidTypeGenericfoo of method InvalidPhpDocPromotedProperties\\FooWithProperty::__construct() has invalid type InvalidPhpDocDefinitions\\FooGeneric.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-property-promoted.php",
+                    "line": 43,
+                    "identifier": "class.notFound",
+                    "message": "Property InvalidPhpDocPromotedProperties\\FooWithProperty::$anotherInvalidTypeGenericfoo has unknown class InvalidPhpDocDefinitions\\FooGeneric as its type.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-property-promoted.php",
+                    "line": 46,
+                    "identifier": "property.unresolvableType",
+                    "message": "PHPDoc type for property InvalidPhpDocPromotedProperties\\FooWithProperty::$unknownClassConstant contains unresolvable type.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-property-promoted.php",
+                    "line": 49,
+                    "identifier": "property.unresolvableType",
+                    "message": "PHPDoc type for property InvalidPhpDocPromotedProperties\\FooWithProperty::$unknownClassConstant2 contains unresolvable type.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-property-promoted.php",
+                    "line": 61,
+                    "identifier": "parameter.phpDocType",
+                    "message": "PHPDoc tag @param for parameter $bar with type string is incompatible with native type int.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-property-promoted.php",
+                    "line": 61,
+                    "identifier": "property.phpDocType",
+                    "message": "PHPDoc type for property InvalidPhpDocPromotedProperties\\BazWithProperty::$bar with type string is incompatible with native type int.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug4227",
+            "files": [
+                "PhpDoc/data/bug-4227.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug7240",
+            "files": [
+                "PhpDoc/data/bug-7240.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testGenericCallables",
+            "files": [
+                "PhpDoc/data/generic-callable-properties.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "PhpDoc/data/generic-callable-properties.php",
+                    "line": 16,
+                    "identifier": "callable.shadowTemplate",
+                    "message": "PHPDoc tag @var template T of Closure<T of mixed>(T): T shadows @template T for class GenericCallableProperties\\Test.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/generic-callable-properties.php",
+                    "line": 21,
+                    "identifier": "generics.existingClass",
+                    "message": "PHPDoc tag @var template of Closure<stdClass of mixed>(stdClass): stdClass cannot have existing class stdClass as its name.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/generic-callable-properties.php",
+                    "line": 36,
+                    "identifier": "class.notFound",
+                    "message": "PHPDoc tag @var template TInvalid of callable<TInvalid of GenericCallableProperties\\Invalid>(TInvalid): TInvalid has invalid bound type GenericCallableProperties\\Invalid.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/generic-callable-properties.php",
+                    "line": 36,
+                    "identifier": "class.notFound",
+                    "message": "Property GenericCallableProperties\\Test::$invalid has unknown class GenericCallableProperties\\Invalid as its type.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "PhpDoc/data/generic-callable-properties.php",
+                    "line": 36,
+                    "identifier": "class.notFound",
+                    "message": "Property GenericCallableProperties\\Test::$invalid has unknown class GenericCallableProperties\\Invalid as its type.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "PhpDoc/data/generic-callable-properties.php",
+                    "line": 41,
+                    "identifier": "callable.shadowTemplate",
+                    "message": "PHPDoc tag @param for parameter $notReported template T of Closure<T of mixed>(T): T shadows @template T for class GenericCallableProperties\\Test.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug11033",
+            "files": [
+                "PhpDoc/data/bug-11033.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        }
+    ]
+}

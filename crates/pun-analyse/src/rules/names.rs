@@ -695,46 +695,88 @@ pub fn use_classes<'arena>(c: &mut Checker<'_, 'arena>, u: &Use<'arena>) {
     class_names::check(c, &pairs, true);
 }
 
-/// ExistingNamesInUseRule and ExistingNamesInGroupUseRule for `use function`.
+/// ExistingNamesInUseRule and ExistingNamesInGroupUseRule for `use function` and `use const`.
 pub fn use_functions<'arena>(c: &mut Checker<'_, 'arena>, u: &Use<'arena>) {
-    let mut functions: Vec<(String, Span)> = Vec::new();
+    // (is a function, the name, the item)
+    let mut used: Vec<(bool, String, Span)> = Vec::new();
     let text = |id: &Identifier| {
         String::from_utf8_lossy(id.value())
             .trim_start_matches('\\')
             .to_string()
     };
+    let is_function = |t: &UseType| matches!(t, UseType::Function(_));
     match &u.items {
-        UseItems::TypedSequence(s) if matches!(s.r#type, UseType::Function(_)) => {
+        UseItems::TypedSequence(s) => {
             for item in s.items.iter() {
-                functions.push((text(&item.name), item.span()));
+                used.push((is_function(&s.r#type), text(&item.name), item.span()));
             }
         }
-        UseItems::TypedList(l) if matches!(l.r#type, UseType::Function(_)) => {
+        UseItems::TypedList(l) => {
             let prefix = text(&l.namespace);
             for item in l.items.iter() {
-                functions.push((format!("{prefix}\\{}", text(&item.name)), item.span()));
+                used.push((is_function(&l.r#type), format!("{prefix}\\{}", text(&item.name)), item.span()));
             }
         }
         UseItems::MixedList(l) => {
             let prefix = text(&l.namespace);
-            for item in l
-                .items
-                .iter()
-                .filter(|i| matches!(i.r#type, Some(UseType::Function(_))))
-            {
-                functions.push((format!("{prefix}\\{}", text(&item.item.name)), item.span()));
+            for item in l.items.iter() {
+                if let Some(t) = &item.r#type {
+                    used.push((is_function(t), format!("{prefix}\\{}", text(&item.item.name)), item.span()));
+                }
             }
         }
-        _ => {}
+        UseItems::Sequence(_) => {}
     }
-    for (name, at) in functions {
-        if c.function(name.as_bytes()).is_none() {
-            c.report(
-                at,
-                "function.notFound",
-                format!("Used function {name} not found."),
-                Some(DISCOVERING_SYMBOLS_TIP),
-            );
+    for (function, name, at) in used {
+        let (kind, identifier, found) = if function {
+            ("function", "function.notFound", c.function(name.as_bytes()).is_some())
+        } else {
+            ("constant", "constant.notFound", has_constant(c, &name))
+        };
+        if !found {
+            c.report(at, identifier, format!("Used {kind} {name} not found."), Some(DISCOVERING_SYMBOLS_TIP));
         }
     }
+}
+
+/// ConstantRule (level 1): a constant fetch that `$scope->hasConstant()` does not know: not defined in the project or
+/// built in, at the namespaced name and then the global one for an unqualified name, nor guarded by `defined()`.
+pub fn constant_fetch(c: &mut Checker, id: &Identifier) {
+    if c.level < 1 {
+        return;
+    }
+    let resolved = String::from_utf8_lossy(c.names.get(&id.span())).into_owned();
+    let written = String::from_utf8_lossy(id.value()).trim_start_matches('\\').to_string();
+    // an unqualified name that no `use const` imports falls back to the global constant
+    let fallback = matches!(id, Identifier::Local(l) if !c.names.is_imported(&l.span));
+    let mut candidates = vec![resolved.clone()];
+    if fallback {
+        candidates.push(written.clone());
+    }
+    let found = |name: &String| {
+        if name == "__COMPILER_HALT_OFFSET__" {
+            // ponytail: any `__halt_compiler` in the file, where PHPStan wants a top-level statement
+            return c.file.contents.to_ascii_lowercase().windows(15).any(|w| w == b"__halt_compiler");
+        }
+        ["true", "false", "null"].iter().any(|k| name.eq_ignore_ascii_case(k))
+            || has_constant(c, name)
+            || c.guards.contains(&Guard::Constant(name.clone()))
+    };
+    if !candidates.iter().any(found) {
+        let name = if fallback { written } else { resolved };
+        c.report(id, "constant.notFound", format!("Constant {name} not found."), Some(DISCOVERING_SYMBOLS_TIP));
+    }
+}
+
+/// `ReflectionProvider::hasConstant()` of a fully qualified name: a project `const` or `define()` (analysed or
+/// scanned), else a built-in.
+fn has_constant(c: &Checker, name: &str) -> bool {
+    // PHPStan does not discover a `define()` inside a class-like
+    c.codebase.get_constant(name.as_bytes()).is_some_and(|k| {
+        !k.flags.is_built_in()
+            && !c.codebase.class_likes.values().any(|o| {
+                o.span.file_id == k.span.file_id && o.span.start.offset <= k.span.start.offset && k.span.end.offset <= o.span.end.offset
+            })
+    })
+        || c.builtins.constants.contains_key(name)
 }

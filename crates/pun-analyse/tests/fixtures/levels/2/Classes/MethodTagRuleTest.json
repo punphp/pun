@@ -1,0 +1,85 @@
+{
+    "test": "Classes/MethodTagRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Classes/data/method-tag.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Classes/data/method-tag.php",
+                    "line": 12,
+                    "identifier": "class.notFound",
+                    "message": "PHPDoc tag @method for method MethodTag\\Foo::doFoo() return type contains unknown class MethodTag\\intt.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Classes/data/method-tag.php",
+                    "line": 12,
+                    "identifier": "methodTag.unresolvableType",
+                    "message": "PHPDoc tag @method for method MethodTag\\Foo::doBar() parameter #1 $a contains unresolvable type.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/method-tag.php",
+                    "line": 12,
+                    "identifier": "methodTag.unresolvableType",
+                    "message": "PHPDoc tag @method for method MethodTag\\Foo::doBaz2() parameter #1 $a default value contains unresolvable type.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/method-tag.php",
+                    "line": 39,
+                    "identifier": "generics.lessTypes",
+                    "message": "Generic type MethodTag\\Generic<int> in PHPDoc tag @method for method MethodTag\\TestGenerics::doB() return type does not specify all template types of class MethodTag\\Generic: T, U",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/method-tag.php",
+                    "line": 39,
+                    "identifier": "generics.moreTypes",
+                    "message": "Generic type MethodTag\\Generic<int, string, float> in PHPDoc tag @method for method MethodTag\\TestGenerics::doC() return type specifies 3 template types, but class MethodTag\\Generic supports only 2: T, U",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/method-tag.php",
+                    "line": 39,
+                    "identifier": "generics.notGeneric",
+                    "message": "PHPDoc tag @method for method MethodTag\\TestGenerics::doA() return type contains generic type Exception<int> but class Exception is not generic.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/method-tag.php",
+                    "line": 39,
+                    "identifier": "generics.notSubtype",
+                    "message": "Type string in generic type MethodTag\\Generic<string, string> in PHPDoc tag @method for method MethodTag\\TestGenerics::doD() return type is not subtype of template type T of int of class MethodTag\\Generic.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/method-tag.php",
+                    "line": 73,
+                    "identifier": "class.nameCase",
+                    "message": "Class MethodTag\\Foo referenced with incorrect case: MethodTag\\fOO.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/method-tag.php",
+                    "line": 73,
+                    "identifier": "class.notFound",
+                    "message": "PHPDoc tag @method for method MethodTag\\NonexistentClasses::doA() return type contains unknown class MethodTag\\Nonexistent.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Classes/data/method-tag.php",
+                    "line": 73,
+                    "identifier": "class.notFound",
+                    "message": "PHPDoc tag @method for method MethodTag\\NonexistentClasses::doB() return type contains unknown class PropertyTagTrait\\Foo.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                }
+            ],
+            "general": []
+        }
+    ]
+}

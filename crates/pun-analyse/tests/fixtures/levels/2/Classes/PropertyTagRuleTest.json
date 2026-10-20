@@ -1,0 +1,134 @@
+{
+    "test": "Classes/PropertyTagRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Classes/data/property-tag.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Classes/data/property-tag.php",
+                    "line": 23,
+                    "identifier": "class.notFound",
+                    "message": "PHPDoc tag @property for property PropertyTag\\Foo::$a contains unknown class PropertyTag\\intt.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Classes/data/property-tag.php",
+                    "line": 23,
+                    "identifier": "class.notFound",
+                    "message": "PHPDoc tag @property for property PropertyTag\\Foo::$b contains unknown class PropertyTag\\intt.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Classes/data/property-tag.php",
+                    "line": 23,
+                    "identifier": "class.notFound",
+                    "message": "PHPDoc tag @property for property PropertyTag\\Foo::$c contains unknown class PropertyTag\\intt.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Classes/data/property-tag.php",
+                    "line": 23,
+                    "identifier": "class.notFound",
+                    "message": "PHPDoc tag @property for property PropertyTag\\Foo::$c contains unknown class PropertyTag\\stringg.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Classes/data/property-tag.php",
+                    "line": 23,
+                    "identifier": "class.notFound",
+                    "message": "PHPDoc tag @property for property PropertyTag\\Foo::$d contains unknown class PropertyTag\\intt.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Classes/data/property-tag.php",
+                    "line": 23,
+                    "identifier": "class.notFound",
+                    "message": "PHPDoc tag @property for property PropertyTag\\Foo::$e contains unknown class PropertyTag\\intt.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Classes/data/property-tag.php",
+                    "line": 23,
+                    "identifier": "class.notFound",
+                    "message": "PHPDoc tag @property for property PropertyTag\\Foo::$e contains unknown class PropertyTag\\stringg.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Classes/data/property-tag.php",
+                    "line": 23,
+                    "identifier": "class.notFound",
+                    "message": "PHPDoc tag @property-read for property PropertyTag\\Foo::$f contains unknown class PropertyTag\\intt.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Classes/data/property-tag.php",
+                    "line": 23,
+                    "identifier": "class.notFound",
+                    "message": "PHPDoc tag @property-write for property PropertyTag\\Foo::$g contains unknown class PropertyTag\\stringg.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Classes/data/property-tag.php",
+                    "line": 31,
+                    "identifier": "propertyTag.unresolvableType",
+                    "message": "PHPDoc tag @property for property PropertyTag\\Bar::$unresolvable contains unresolvable type.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/property-tag.php",
+                    "line": 51,
+                    "identifier": "generics.lessTypes",
+                    "message": "Generic type PropertyTag\\Generic<int> in PHPDoc tag @property for property PropertyTag\\TestGenerics::$b does not specify all template types of class PropertyTag\\Generic: T, U",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/property-tag.php",
+                    "line": 51,
+                    "identifier": "generics.moreTypes",
+                    "message": "Generic type PropertyTag\\Generic<int, string, float> in PHPDoc tag @property for property PropertyTag\\TestGenerics::$c specifies 3 template types, but class PropertyTag\\Generic supports only 2: T, U",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/property-tag.php",
+                    "line": 51,
+                    "identifier": "generics.notGeneric",
+                    "message": "PHPDoc tag @property for property PropertyTag\\TestGenerics::$a contains generic type Exception<int> but class Exception is not generic.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/property-tag.php",
+                    "line": 51,
+                    "identifier": "generics.notSubtype",
+                    "message": "Type string in generic type PropertyTag\\Generic<string, string> in PHPDoc tag @property for property PropertyTag\\TestGenerics::$d is not subtype of template type T of int of class PropertyTag\\Generic.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/property-tag.php",
+                    "line": 85,
+                    "identifier": "class.nameCase",
+                    "message": "Class PropertyTag\\Foo referenced with incorrect case: PropertyTag\\fOO.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/property-tag.php",
+                    "line": 85,
+                    "identifier": "class.notFound",
+                    "message": "PHPDoc tag @property for property PropertyTag\\NonexistentClasses::$a contains unknown class PropertyTag\\Nonexistent.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Classes/data/property-tag.php",
+                    "line": 85,
+                    "identifier": "class.notFound",
+                    "message": "PHPDoc tag @property for property PropertyTag\\NonexistentClasses::$b contains unknown class PropertyTagTrait\\Foo.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                }
+            ],
+            "general": []
+        }
+    ]
+}

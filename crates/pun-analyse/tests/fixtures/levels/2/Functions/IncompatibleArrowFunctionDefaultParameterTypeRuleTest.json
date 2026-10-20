@@ -1,0 +1,29 @@
+{
+    "test": "Functions/IncompatibleArrowFunctionDefaultParameterTypeRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Functions/data/incompatible-default-parameter-type-arrow-functions.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Functions/data/incompatible-default-parameter-type-arrow-functions.php",
+                    "line": 10,
+                    "identifier": "parameter.implicitlyNullable",
+                    "message": "Deprecated in PHP 8.4: Parameter #1 $i (int) is implicitly nullable via default value null.",
+                    "tip": null
+                },
+                {
+                    "file": "Functions/data/incompatible-default-parameter-type-arrow-functions.php",
+                    "line": 13,
+                    "identifier": "parameter.defaultValue",
+                    "message": "Default value of the parameter #1 $i (string) of anonymous function is incompatible with type int.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

@@ -1,0 +1,71 @@
+{
+    "test": "PhpDoc/IncompatibleParamImmediatelyInvokedCallableRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "PhpDoc/data/incompatible-param-immediately-invoked-callable.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "PhpDoc/data/incompatible-param-immediately-invoked-callable.php",
+                    "line": 21,
+                    "identifier": "parameter.notFound",
+                    "message": "PHPDoc tag @param-immediately-invoked-callable references unknown parameter: $b",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-param-immediately-invoked-callable.php",
+                    "line": 21,
+                    "identifier": "parameter.notFound",
+                    "message": "PHPDoc tag @param-later-invoked-callable references unknown parameter: $c",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-param-immediately-invoked-callable.php",
+                    "line": 30,
+                    "identifier": "paramImmediatelyInvokedCallable.nonCallable",
+                    "message": "PHPDoc tag @param-immediately-invoked-callable is for parameter $b with non-callable type int.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-param-immediately-invoked-callable.php",
+                    "line": 39,
+                    "identifier": "paramLaterInvokedCallable.nonCallable",
+                    "message": "PHPDoc tag @param-later-invoked-callable is for parameter $b with non-callable type int.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-param-immediately-invoked-callable.php",
+                    "line": 59,
+                    "identifier": "parameter.notFound",
+                    "message": "PHPDoc tag @param-immediately-invoked-callable references unknown parameter: $b",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-param-immediately-invoked-callable.php",
+                    "line": 59,
+                    "identifier": "parameter.notFound",
+                    "message": "PHPDoc tag @param-later-invoked-callable references unknown parameter: $c",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-param-immediately-invoked-callable.php",
+                    "line": 68,
+                    "identifier": "paramImmediatelyInvokedCallable.nonCallable",
+                    "message": "PHPDoc tag @param-immediately-invoked-callable is for parameter $b with non-callable type int.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-param-immediately-invoked-callable.php",
+                    "line": 77,
+                    "identifier": "paramLaterInvokedCallable.nonCallable",
+                    "message": "PHPDoc tag @param-later-invoked-callable is for parameter $b with non-callable type int.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

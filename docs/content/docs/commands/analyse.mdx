@@ -23,7 +23,9 @@ paths = ["app", "tests"]
 
 The five [analyse presets](/docs/configuration/presets#analyse-presets) group PHPStan levels. Individual rules use `"on"` or `"off"`.
 
-`pun migrate` converts PHPStan configuration, but the CLI does not yet apply migrated `stubs`, `[[analyse.ignore]]`, rule options, or preset type switches. Config conversion alone does not establish equivalent analysis results.
+The enabled rules set the PHPStan level Pun analyses at: the highest level of a core rule that is on, or of a preset type switch. `stubs`, `[[analyse.ignore]]` and the rule options `pun migrate` writes apply as PHPStan's `stubFiles`, `ignoreErrors` and parameters do. An ignore entry nothing matched is an error, with PHPStan's message. Larastan's knowledge and rules are on when composer.lock pins a Laravel that Larastan 3 supports (11.44.2 and later 11.x, 12.4.1 and later 12.x, 13.x).
+
+With every analyse rule off, `pun analyse` stops with "No rules detected", as PHPStan does without a level, and exits 2.
 
 ## Rule names
 

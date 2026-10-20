@@ -237,8 +237,8 @@ fn check_class(
     let counts = args.unwrap_or_default();
     params::check(
         c,
-        &params::select(constructor.variants(), counts.positional, counts.unpack),
-        counts,
+        &params::select(constructor.variants(), &counts),
+        &counts,
         new,
         params::Call {
             kind: params::CallKind::New,

@@ -8,7 +8,9 @@ use std::sync::Arc;
 
 use common::fixture;
 use pun_phpstan::phpdoc;
-use pun_phpstan::resolve::{Scope, resolve_in, resolve_str};
+use pun_phpstan::resolve::{
+    Scope, const_expr, has_global_alias, resolve_in, resolve_str, with_type_aliases,
+};
 use pun_phpstan::symbols::{self, Class, Template};
 use pun_phpstan::types::{Level, Type, ancestor_args, decide_type, is_super_type_of};
 
@@ -118,6 +120,16 @@ fn class(name: &str) -> Option<Arc<Class>> {
             &[],
             HashMap::new(),
         ))),
+        "PunProbe\\Suit" => Some(Arc::new(Class {
+            cases: vec!["Hearts".to_string()],
+            is_enum: true,
+            is_final: true,
+            ..class(name, &[], Vec::new(), &[("X", "1")], HashMap::new())
+        })),
+        "PunProbe\\Tr" => Some(Arc::new(Class {
+            is_trait: true,
+            ..class(name, &[], Vec::new(), &[], HashMap::new())
+        })),
         "PunProbe\\Defaults" => Some(Arc::new(class(
             name,
             &[],
@@ -327,4 +339,95 @@ fn generic_argument_variance() {
         phpdoc::parse("ArrayIterator<int, covariant string>").unwrap(),
         phpdoc::parse("ArrayIterator<int, string>").unwrap()
     );
+}
+
+/// `tryResolvePseudoTypeClassType()`: `use Foo as integer;` makes `integer` that class; in a namespace a keyword
+/// that names no class of it stays the keyword.
+#[test]
+fn pseudo_type_keywords_imported_or_namespaced() {
+    struct Imported;
+    impl Scope for Imported {
+        fn parent(&self) -> Option<String> {
+            None
+        }
+        fn resolve_name(&self, name: &str) -> String {
+            qualify(name)
+        }
+        fn has_use_alias(&self, name: &str) -> bool {
+            name == "integer"
+        }
+        fn in_namespace(&self) -> bool {
+            true
+        }
+    }
+    let describe =
+        |s: &str| resolve_in(&phpdoc::parse(s).unwrap(), &Imported).describe(Level::Precise);
+    assert_eq!(describe("integer"), "PunProbe\\integer");
+    assert_eq!(describe("scalar"), "bool|float|int|string");
+}
+
+#[test]
+fn object_class_names() {
+    let f = fixture("type-object-class-names.json");
+    symbols::with_classes(&class, || {
+        for row in f.as_array().unwrap() {
+            let input = row[0].as_str().unwrap();
+            let want: Vec<String> = row[1]
+                .as_array()
+                .unwrap()
+                .iter()
+                .map(|n| n.as_str().unwrap().to_string())
+                .collect();
+            let ty = resolve_in(&phpdoc::parse(input).unwrap(), &InNamespace);
+            assert_eq!(ty.object_class_names(), want, "{input}");
+        }
+    });
+}
+
+/// ConstExprNodeResolver on a `@method` parameter's default value.
+#[test]
+fn constant_expressions() {
+    let f = fixture("type-const-expr.json");
+    let mut failures = Vec::new();
+    symbols::with_classes(&class, || {
+        for row in f.as_array().unwrap() {
+            let input = row[1].as_str().unwrap();
+            let want = row[2].as_str().unwrap();
+            let tags = phpdoc::tags(&format!("/** @method void m($a = {input}) */")).unwrap();
+            let phpdoc::TagValue::Method { params, .. } = &tags[0].value else {
+                panic!("{input}: no method tag");
+            };
+            let default = params[0].default.as_ref().unwrap();
+            let ty = match row[0].as_str() {
+                Some(class) => const_expr(default, &InClass(class)),
+                None => const_expr(default, &InNamespace),
+            };
+            let got = ty.describe(Level::Precise);
+            if got != want {
+                failures.push(format!("{} {input}: want {want}, got {got}", row[0]));
+            }
+        }
+    });
+    assert!(failures.is_empty(), "{}", failures.join("\n"));
+}
+
+/// The `typeAliases` parameter's global type aliases.
+#[test]
+fn global_type_aliases() {
+    let f = fixture("type-global-aliases.json");
+    for row in f.as_array().unwrap() {
+        let aliases: Vec<(String, String)> = row[0]
+            .as_object()
+            .unwrap()
+            .iter()
+            .map(|(k, v)| (k.clone(), v.as_str().unwrap().to_string()))
+            .collect();
+        let input = row[1].as_str().unwrap();
+        let got = with_type_aliases(&aliases, || {
+            assert!(has_global_alias("PunAlias"));
+            resolve_in(&phpdoc::parse(input).unwrap(), &InNamespace).describe(Level::Precise)
+        });
+        assert_eq!(got, row[2].as_str().unwrap(), "{input}");
+    }
+    assert!(!has_global_alias("PunAlias"));
 }

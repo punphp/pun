@@ -9,6 +9,13 @@ use std::cmp::Ordering;
 
 use crate::symbols;
 
+mod accepts;
+mod casts;
+mod verbosity;
+pub use accepts::{StrictMixed, accepts, accepts_with};
+pub use casts::{Cast, cast_is_error, is_numeric};
+pub use verbosity::recommended_level;
+
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub enum Tri {
     No = 0,
@@ -367,7 +374,7 @@ impl Type {
         })
     }
 
-    fn is_float(&self) -> Tri {
+    pub fn is_float(&self) -> Tri {
         self.query(&|t| Tri::from(matches!(t, Type::Float | Type::ConstFloat(_))))
     }
 
@@ -626,15 +633,30 @@ impl Type {
     }
 
     /// `getObjectClassNames()`
-    fn object_class_names(&self) -> Vec<String> {
+    pub fn object_class_names(&self) -> Vec<String> {
         match self {
             Type::Object(class, _)
             | Type::Static(class, _)
             | Type::This(class)
             | Type::EnumCase(class, _) => vec![class.clone()],
             Type::Closure(_) => vec!["Closure".to_string()],
-            // ponytail: intersections and templates are compound, so isSuperTypeOf() never asks them; add their
-            // arms when something else does
+            Type::Union(types) | Type::Intersection(types) => {
+                let mut names = Vec::new();
+                for inner in types.iter().map(Type::object_class_names) {
+                    // `pickFromTypes()`: a union member without names leaves none
+                    if inner.is_empty() && matches!(self, Type::Union(_)) {
+                        return Vec::new();
+                    }
+                    for name in inner {
+                        if !names.contains(&name) {
+                            names.push(name);
+                        }
+                    }
+                }
+                names
+            }
+            // ponytail: templates are compound, so isSuperTypeOf() never asks them; add their arm when something
+            // else does
             _ => vec![],
         }
     }
@@ -967,8 +989,10 @@ impl Accessory {
 
 /// `StaticType::getStaticObjectType()`: the class, with its own templates as arguments when it is generic.
 fn static_object(class: &str) -> Type {
-    // the resolver makes `static` / `$this` of built-in classes only
-    let c = symbols::lookup(class).expect("a built-in class");
+    // a class the lookup does not know (outside `declared::with_classes()`) has no templates to pass on
+    let Some(c) = symbols::lookup(class) else {
+        return Type::Object(class.to_string(), Vec::new());
+    };
     let args = c
         .templates
         .iter()
@@ -1811,18 +1835,18 @@ fn is_valid_identifier(s: &str) -> bool {
 }
 
 /// `ConstantArrayTypeBuilder` (array degradation disabled, as for PHPDoc shapes).
-pub(crate) struct ShapeBuilder {
+pub struct ShapeBuilder {
     array: ConstArray,
 }
 
 impl ShapeBuilder {
-    pub(crate) fn new() -> Self {
+    pub fn new() -> Self {
         ShapeBuilder {
             array: ConstArray::empty(),
         }
     }
 
-    pub(crate) fn set(&mut self, key: Option<Type>, value: Type, optional: bool) {
+    pub fn set(&mut self, key: Option<Type>, value: Type, optional: bool) {
         let a = &mut self.array;
         // a PHPDoc item without a key is never optional (`value?` is not a shape item)
         let Some(key) = key else {
@@ -1875,11 +1899,11 @@ impl ShapeBuilder {
         }
     }
 
-    pub(crate) fn make_unsealed(&mut self, key: Type, value: Type) {
+    pub fn make_unsealed(&mut self, key: Type, value: Type) {
         self.array.unsealed = Some((key, value));
     }
 
-    pub(crate) fn get(self) -> Type {
+    pub fn get(self) -> Type {
         let mut array = self.array;
         // without keys nothing was set: still an empty list
         if array.keys.is_empty() {
@@ -2107,12 +2131,12 @@ pub fn is_super_type_of(a: &Type, b: &Type) -> Tri {
         T::Callable(sig) => {
             let callable = b.is_callable();
             match sig {
-                Some(ours) if !callable.no() => callable.and(signature_super(ours, b)),
+                Some(ours) if !callable.no() => callable.and(signature_super(ours, b, None)),
                 _ => callable,
             }
         }
         T::Closure(ours) => match b {
-            T::Closure(_) => signature_super(ours, b),
+            T::Closure(_) => signature_super(ours, b, None),
             T::Object(c, _) if canonical_class(c) == "Closure" => Tri::Maybe,
             _ => object_super("Closure", &[], b),
         },
@@ -2214,7 +2238,9 @@ fn conditional_super(c: &Conditional, b: &Type) -> Tri {
 /// `CallableTypeHelper::isParametersAcceptorSuperTypeOf()` against `$b`'s callable variant (a callable without
 /// a signature is the trivial `(...): mixed` one).
 /// A function name's variants are its signatures (`'Class::method'` strings are taken as trivial).
-fn signature_super(ours: &Signature, b: &Type) -> Tri {
+/// `CallableTypeHelper::isParametersAcceptorSuperTypeOf()` over `b`'s variants; `accept` is `Some(strictTypes)` for
+/// `$treatMixedAsAny` (accepts() compares parameters and return with accepts()).
+fn signature_super(ours: &Signature, b: &Type, accept: Option<bool>) -> Tri {
     let variants = match b {
         Type::Callable(Some(s)) | Type::Closure(s) => vec![(**s).clone()],
         Type::ConstString(name) if let Some(f) = symbols::function(name) => f
@@ -2242,12 +2268,16 @@ fn signature_super(ours: &Signature, b: &Type) -> Tri {
     };
     variants
         .iter()
-        .map(|theirs| variant_super(ours, theirs))
+        .map(|theirs| variant_super(ours, theirs, accept))
         .reduce(Tri::or)
         .expect("a variant")
 }
 
-fn variant_super(ours: &Signature, theirs: &Signature) -> Tri {
+fn variant_super(ours: &Signature, theirs: &Signature, accept: Option<bool>) -> Tri {
+    let compare = |a: &Type, b: &Type, strict: bool| match accept {
+        Some(_) => accepts::accepts(a, b, strict),
+        None => is_super_type_of(a, b),
+    };
     let mut their_params: Vec<&Param> = theirs.params.iter().collect();
     if let Some(last) = theirs.params.last()
         && last.variadic
@@ -2267,12 +2297,12 @@ fn variant_super(ours: &Signature, theirs: &Signature) -> Tri {
         if ours.optional && !theirs.optional {
             result = result.and(Tri::No);
         }
-        result = result.and(is_super_type_of(&theirs.ty, &ours.ty));
+        result = result.and(compare(&theirs.ty, &ours.ty, accept.unwrap_or(true)));
     }
-    if theirs.params.len() < ours.params.len() {
+    if accept.is_none() && theirs.params.len() < ours.params.len() {
         result = result.and(Tri::Maybe);
     }
-    result.and(is_super_type_of(&ours.ret, &theirs.ret))
+    result.and(compare(&ours.ret, &theirs.ret, true))
 }
 
 /// `TypeUtils::toBenevolentUnion()`
@@ -2339,7 +2369,11 @@ fn object_super(class: &str, args: &[Type], b: &Type) -> Tri {
     let that = &names[0];
     let result = match (symbols::lookup(class), symbols::lookup(that)) {
         (Some(this), Some(other)) => {
-            if this.name == other.name || other.ancestors.contains(&this.name) {
+            if this.name == other.name {
+                Tri::Yes
+            } else if this.is_trait || other.is_trait {
+                Tri::No
+            } else if other.ancestors.contains(&this.name) {
                 Tri::Yes
             } else if this.ancestors.contains(&other.name)
                 || (this.is_interface && !other.is_final)

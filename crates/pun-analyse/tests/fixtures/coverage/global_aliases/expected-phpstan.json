@@ -1,0 +1,82 @@
+{
+ "general": [],
+ "errors": [
+  {
+   "file": "aliases.php",
+   "line": 17,
+   "identifier": "generics.existingTypeAlias",
+   "message": "PHPDoc tag @template for class CoverageGlobalAliases\\Duplicates cannot have existing type alias GlobalAlias as its name.",
+   "tip": null
+  },
+  {
+   "file": "aliases.php",
+   "line": 17,
+   "identifier": "typeAlias.duplicate",
+   "message": "Type alias GlobalAlias already exists as a global type alias.",
+   "tip": null
+  },
+  {
+   "file": "aliases.php",
+   "line": 17,
+   "identifier": "typeAlias.duplicate",
+   "message": "Type alias GlobalList already exists as a global type alias.",
+   "tip": null
+  },
+  {
+   "file": "aliases.php",
+   "line": 24,
+   "identifier": "generics.existingTypeAlias",
+   "message": "PHPDoc tag @template for method CoverageGlobalAliases\\Duplicates::method() cannot have existing type alias GlobalList as its name.",
+   "tip": null
+  },
+  {
+   "file": "aliases.php",
+   "line": 24,
+   "identifier": "method.templateTypeNotInParameter",
+   "message": "Template type GlobalList of method CoverageGlobalAliases\\Duplicates::method() is not referenced in a parameter.",
+   "tip": null
+  },
+  {
+   "file": "aliases.php",
+   "line": 34,
+   "identifier": "void.pure",
+   "message": "Function CoverageGlobalAliases\\generic() returns void but does not have any side effects.",
+   "tip": null
+  },
+  {
+   "file": "aliases.php",
+   "line": 34,
+   "identifier": "generics.existingTypeAlias",
+   "message": "PHPDoc tag @template for function CoverageGlobalAliases\\generic() cannot have existing type alias GlobalAlias as its name.",
+   "tip": null
+  },
+  {
+   "file": "aliases.php",
+   "line": 34,
+   "identifier": "method.templateTypeNotInParameter",
+   "message": "Template type GlobalAlias of function CoverageGlobalAliases\\generic() is not referenced in a parameter.",
+   "tip": null
+  },
+  {
+   "file": "aliases.php",
+   "line": 39,
+   "identifier": "class.notFound",
+   "message": "PHPDoc tag @var for variable $missing contains unknown class CoverageGlobalAliases\\MissingClass.",
+   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+  },
+  {
+   "file": "aliases.php",
+   "line": 39,
+   "identifier": "varTag.nativeType",
+   "message": "PHPDoc tag @var with type CoverageGlobalAliases\\MissingClass is not subtype of native type 2.",
+   "tip": null
+  },
+  {
+   "file": "aliases.php",
+   "line": 45,
+   "identifier": "generics.existingTypeAlias",
+   "message": "PHPDoc tag @template for interface CoverageGlobalAliases\\Templated cannot have existing type alias GlobalAlias as its name.",
+   "tip": null
+  }
+ ]
+}

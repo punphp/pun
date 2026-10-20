@@ -1,0 +1,149 @@
+{
+    "test": "Methods/IncompatibleDefaultParameterTypeRuleTest",
+    "cases": [
+        {
+            "method": "testMethods",
+            "files": [
+                "Methods/data/incompatible-default-parameter-type-methods.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/incompatible-default-parameter-type-methods.php",
+                    "line": 45,
+                    "identifier": "parameter.defaultValue",
+                    "message": "Default value of the parameter #6 $resource (false) of method IncompatibleDefaultParameter\\Foo::baz() is incompatible with type resource.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/incompatible-default-parameter-type-methods.php",
+                    "line": 55,
+                    "identifier": "parameter.defaultValue",
+                    "message": "Default value of the parameter #6 $resource (false) of method IncompatibleDefaultParameter\\Foo::bar() is incompatible with type resource.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testTraitCrash",
+            "files": [
+                "Methods/data/incompatible-default-parameter-type-trait-crash.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug4011",
+            "files": [
+                "Methods/data/bug-4011.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/bug-4011.php",
+                    "line": 7,
+                    "identifier": "constructor.unusedParameter",
+                    "message": "Constructor of class Bug4011\\ParseException has an unused parameter $code.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/bug-4011.php",
+                    "line": 7,
+                    "identifier": "constructor.unusedParameter",
+                    "message": "Constructor of class Bug4011\\ParseException has an unused parameter $message.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug2573",
+            "files": [
+                "Methods/data/bug-2573.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testNewInInitializers",
+            "files": [
+                "Methods/data/new-in-initializers.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/new-in-initializers.php",
+                    "line": 11,
+                    "identifier": "parameter.defaultValue",
+                    "message": "Default value of the parameter #1 $i (stdClass) of method MethodNewInInitializers\\Foo::doFoo() is incompatible with type int.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testDefaultValueForPromotedProperty",
+            "files": [
+                "Methods/data/default-value-for-promoted-property.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Methods/data/default-value-for-promoted-property.php",
+                    "line": 8,
+                    "identifier": "parameter.duplicate",
+                    "message": "Redefinition of parameter $foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/default-value-for-promoted-property.php",
+                    "line": 9,
+                    "identifier": "parameter.defaultValue",
+                    "message": "Default value of the parameter #1 $foo (string) of method DefaultValueForPromotedProperty\\Foo::__construct() is incompatible with type int.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/default-value-for-promoted-property.php",
+                    "line": 10,
+                    "identifier": "class.duplicateProperty",
+                    "message": "Cannot redeclare property DefaultValueForPromotedProperty\\Foo::$foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/default-value-for-promoted-property.php",
+                    "line": 10,
+                    "identifier": "parameter.defaultValue",
+                    "message": "Default value of the parameter #2 $foo (string) of method DefaultValueForPromotedProperty\\Foo::__construct() is incompatible with type int.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/default-value-for-promoted-property.php",
+                    "line": 12,
+                    "identifier": "parameter.defaultValue",
+                    "message": "Default value of the parameter #4 $intProp (null) of method DefaultValueForPromotedProperty\\Foo::__construct() is incompatible with type int.",
+                    "tip": null
+                },
+                {
+                    "file": "Methods/data/default-value-for-promoted-property.php",
+                    "line": 12,
+                    "identifier": "parameter.implicitlyNullable",
+                    "message": "Deprecated in PHP 8.4: Parameter #4 $intProp (int) is implicitly nullable via default value null.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug10956",
+            "files": [
+                "Methods/data/bug-10956.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        }
+    ]
+}

@@ -5,7 +5,7 @@
 //! `processCalledMethod()` for `$this->method()` in the constructor, an ancestor constructor's promoted properties).
 //! ponytail: the flow merges branches, loops (run zero or more times), `try`/`catch` (a catch from before or after
 //! the try) and closures (their parent's scope); `break`, `continue` and `goto` end a branch without leaving it, and
-//! only `throw`, `exit` and calls to functions declared `never` terminate one. No ReadWritePropertiesExtension or
+//! only `throw`, `exit` and calls to functions and `$this` methods declared `never` terminate one. No ReadWritePropertiesExtension or
 //! AdditionalConstructorsExtension runs, nor `additionalConstructors`.
 
 use std::cell::RefCell;
@@ -513,6 +513,10 @@ impl<'w, 'c, 'x> Walk<'w, 'c, 'x> {
                 {
                     merge_initialized(s, &end);
                 }
+                // ponytail: only a `$this` method declared to return `never` terminates, not other objects'
+                if flow == Flow::Next && method.is_some_and(|m| self.ctx.method_never(m)) {
+                    return Flow::Exit;
+                }
                 flow
             }
             Node::MethodPartialApplication(m) => {
@@ -777,6 +781,14 @@ impl<'c, 'x> Ctx<'c, 'x> {
                 .as_ref()
                 .is_some_and(|t| t.type_union.is_never())
         })
+    }
+
+    /// A method of the class declared to return `never`.
+    fn method_never(&self, method: &[u8]) -> bool {
+        matches!(
+            super::members::method(self.c, self.k, method),
+            Some(super::members::Method::User { f, .. }) if f.return_type_metadata.as_ref().is_some_and(|t| t.type_union.is_never())
+        )
     }
 
     /// The initialization state at the method's start: its promoted parameters.
@@ -1226,6 +1238,23 @@ fn uninitialized(ctx: &Ctx, nodes: Vec<PropertyNode>, constructor: Option<String
         }
     };
     let mut out: Vec<Reported> = Vec::new();
+    if ctx.c.uninitialized_properties {
+        // UninitializedPropertyRule: the properties neither rule above reports
+        let plain = |name: &str| original.get(name).is_some_and(|n| !n.readonly && !n.readonly_by_phpdoc);
+        for name in remaining.iter().filter(|n| plain(n)) {
+            let message = format!(
+                "Class {display} has an uninitialized property ${name}. Give it default value or assign it in the constructor."
+            );
+            out.push(("property.uninitialized", message, original[name].line, None));
+        }
+        for (name, line, source) in premature.iter().filter(|(n, ..)| plain(n)) {
+            let file = ctx.sources[*source]
+                .label
+                .clone()
+                .map(|l| (l, text(&ctx.sources[*source].file.name)));
+            out.push(("property.uninitialized", format!("Access to an uninitialized property {display}::${name}."), *line, file));
+        }
+    }
     for (by_phpdoc, ident, assign, label) in [
         (false, "property.uninitializedReadonly", "assign.readOnlyProperty", "readonly"),
         (true, "property.uninitializedReadonlyByPhpDoc", "assign.readOnlyPropertyByPhpDoc", "@readonly"),

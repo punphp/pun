@@ -23,7 +23,7 @@ pub fn implements_serializable(k: &ClassLikeMetadata) -> bool {
 
 impl Checker<'_, '_> {
     /// The PHPDoc right before a class-like's declaration (`getResolvedPhpDoc()` of its own comment).
-    fn class_doc(&self, k: &ClassLikeMetadata) -> Option<Vec<u8>> {
+    pub(super) fn class_doc(&self, k: &ClassLikeMetadata) -> Option<Vec<u8>> {
         let contents = self.file_contents(k.span.file_id)?;
         doc_before(&contents, k.span.start.offset as usize).map(<[u8]>::to_vec)
     }

@@ -10,6 +10,40 @@ use crate::types::{
     intersect, is_super_type_of, mixed, to_benevolent, union,
 };
 
+thread_local! {
+    /// The `typeAliases` parameter while [`with_type_aliases()`] runs, and the aliases being resolved.
+    static GLOBAL_ALIASES: std::cell::RefCell<(Vec<(String, String)>, Vec<String>)> = Default::default();
+}
+
+/// Runs `f` with the `typeAliases` parameter's global type aliases (name, type string) in effect.
+pub fn with_type_aliases<R>(aliases: &[(String, String)], f: impl FnOnce() -> R) -> R {
+    let previous = GLOBAL_ALIASES.with(|g| std::mem::replace(&mut g.borrow_mut().0, aliases.to_vec()));
+    let out = f();
+    GLOBAL_ALIASES.with(|g| g.borrow_mut().0 = previous);
+    out
+}
+
+/// `UsefulTypeAliasResolver::hasTypeAlias()` of a global type alias.
+pub fn has_global_alias(name: &str) -> bool {
+    GLOBAL_ALIASES.with(|g| g.borrow().0.iter().any(|(n, _)| n == name))
+}
+
+/// `resolveGlobalTypeAlias()`: the alias's type string resolved in no namespace.
+fn global_alias(name: &str) -> Option<Type> {
+    let definition = GLOBAL_ALIASES.with(|g| {
+        let g = g.borrow();
+        g.0.iter().find(|(n, _)| n == name).map(|(_, t)| t.clone())
+    })?;
+    if GLOBAL_ALIASES.with(|g| g.borrow().1.iter().any(|n| n == name)) {
+        // PHPStan throws ShouldNotHappenException on a circular definition; see COVERAGE.md
+        return Some(Type::Error);
+    }
+    GLOBAL_ALIASES.with(|g| g.borrow_mut().1.push(name.to_string()));
+    let ty = resolve_str(&definition, None);
+    GLOBAL_ALIASES.with(|g| g.borrow_mut().1.pop());
+    Some(ty)
+}
+
 /// `TypeStringResolver::resolve($type, new NameScope(null, [], $class))`; a parse error is an `ErrorType`.
 pub fn resolve_str(input: &str, class: Option<&str>) -> Type {
     match phpdoc::parse(input) {
@@ -205,6 +239,9 @@ pub fn resolve_in(node: &Node, scope: &dyn Scope) -> Type {
                 let key = item.key.as_ref().map(|k| match k {
                     ShapeKey::Int(i) => Type::ConstInt(int_value(i)),
                     ShapeKey::Str(s) | ShapeKey::Ident(s) => Type::ConstString(s.clone()),
+                    ShapeKey::Fetch(class, name) => {
+                        constant(&ConstExpr::Fetch(class.clone(), name.clone()), scope)
+                    }
                 });
                 explicit.extend(key.clone());
                 builder.set(key, r(&item.value), item.optional);
@@ -265,6 +302,8 @@ pub fn resolve_in(node: &Node, scope: &dyn Scope) -> Type {
                 .collect(),
         ),
         Node::Const(c) => constant(c, scope),
+        // ponytail: PHPStan's OffsetAccessType is not modelled
+        Node::OffsetAccess(..) => Type::Error,
     }
 }
 
@@ -445,6 +484,9 @@ fn identifier(name: &str, scope: &dyn Scope) -> Type {
             }
             _ => {}
         }
+    }
+    if let Some(alias) = global_alias(name) {
+        return alias;
     }
     if let Some(template) = scope.template(name) {
         return template;
@@ -721,6 +763,8 @@ fn constant(c: &ConstExpr, scope: &dyn Scope) -> Type {
         ConstExpr::Int(i) => Type::ConstInt(int_value(i)),
         ConstExpr::Float(f) => Type::ConstFloat(f.replace('_', "").parse().unwrap_or(0.0)),
         ConstExpr::Str(s) => Type::ConstString(s.clone()),
+        // PHPStan throws ShouldNotHappenException here (a bare `null` is an identifier); see COVERAGE.md
+        ConstExpr::True | ConstExpr::False | ConstExpr::Null | ConstExpr::Array(_) => Type::Error,
         ConstExpr::Fetch(class_name, name) => {
             let is_static = class.is_some() && class_name.eq_ignore_ascii_case("static");
             let class_name = match (class, class_name.to_ascii_lowercase().as_str()) {
@@ -773,6 +817,50 @@ fn constant(c: &ConstExpr, scope: &dyn Scope) -> Type {
             }
             union(types)
         }
+    }
+}
+
+/// `ConstExprNodeResolver::resolve()`: a constant expression's type (a `@method` parameter's default value).
+pub fn const_expr(c: &ConstExpr, scope: &dyn Scope) -> Type {
+    match c {
+        ConstExpr::Array(items) => {
+            let mut builder = ShapeBuilder::new();
+            for (key, value) in items {
+                let key = key.as_ref().map(|k| const_expr(k, scope));
+                builder.set(key, const_expr(value, scope), false);
+            }
+            builder.get()
+        }
+        ConstExpr::False => Type::ConstBool(false),
+        ConstExpr::True => Type::ConstBool(true),
+        ConstExpr::Null => Type::Null,
+        ConstExpr::Fetch(class_name, name) => {
+            // ponytail: `parent` in a class PHPStan does not know resolves as a class name there
+            let class_name = match (scope.class(), class_name.to_ascii_lowercase().as_str()) {
+                (Some(c), "self" | "static") => c.to_string(),
+                (Some(_), "parent") => match scope.parent() {
+                    Some(p) => p,
+                    None => return Type::Error,
+                },
+                _ => scope.resolve_name(class_name),
+            };
+            let Some(reflection) = symbols::lookup(&class_name) else {
+                return Type::Error;
+            };
+            if reflection.cases.iter().any(|c| c == name) {
+                return Type::EnumCase(reflection.name.clone(), name.clone());
+            }
+            std::iter::once(reflection.clone())
+                .chain(reflection.ancestors.iter().filter_map(|a| symbols::lookup(a)))
+                .find_map(|c| {
+                    c.constants
+                        .iter()
+                        .find(|(n, _)| n == name)
+                        .map(|(_, t)| resolve_str(t, Some(&c.name)))
+                })
+                .unwrap_or(Type::Error)
+        }
+        _ => constant(c, scope),
     }
 }
 

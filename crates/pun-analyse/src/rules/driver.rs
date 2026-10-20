@@ -47,6 +47,10 @@ pub(crate) struct Checks {
     internal: Option<super::internal::Names>,
     /// `featureToggles.internalTag`: RestrictedInternalFunctionUsageExtension & co. (config.level0.neon).
     internal_tag: bool,
+    /// [`Project::type_aliases`].
+    pub(super) type_aliases: Vec<(String, String)>,
+    /// [`Project::reported`].
+    reported: Option<crate::project::Reported>,
     /// [`Project::precise_unused_parameter_line`].
     precise_unused_parameter_line: bool,
     /// The method and property extensions of `featureToggles.internalTag`, at level 2 (config.level2.neon).
@@ -56,8 +60,19 @@ pub(crate) struct Checks {
     bleeding_edge: bool,
     /// UnusedLabelRule: level 4 with [`Project::unused_label`].
     unused_label: bool,
+    /// [`Project::check_uninitialized_properties`].
+    uninitialized_properties: bool,
     /// [`Project::strict_rules`].
     pub(super) strict: crate::StrictRules,
+}
+
+impl Checks {
+    /// Drops the errors of identifiers the run doesn't report.
+    pub(crate) fn keep_reported(&self, errors: &mut Vec<Error>) {
+        if let Some(reported) = &self.reported {
+            errors.retain(|e| reported(e.identifier.as_deref().unwrap_or_default()));
+        }
+    }
 }
 
 impl Checks {
@@ -80,11 +95,14 @@ impl Checks {
             internal: (internal_members || project.deprecation_rules)
                 .then(|| super::internal::Names::of(codebase, project.php_version, internal_members, project.deprecation_rules)),
             internal_tag: project.internal_tag,
+            type_aliases: project.type_aliases.clone(),
+            reported: project.reported.clone(),
             precise_unused_parameter_line: project.precise_unused_parameter_line,
             internal_members,
             deprecations: project.deprecation_rules,
             bleeding_edge: project.bleeding_edge,
             unused_label: project.level >= 4 && project.unused_label,
+            uninitialized_properties: project.check_uninitialized_properties,
             strict: project.strict_rules,
         }
     }
@@ -118,6 +136,7 @@ fn checker<'a, 'arena>(
     typed.extend(super::function_checks::typed_expressions(
         names, codebase, program,
     ));
+    typed.extend(super::types::typed_expressions(program, &file.contents, project.level));
     typed.extend(super::strict::typed_expressions(project, codebase, program));
     Checker {
         anonymous: anonymous::names(file, program, names, &project.relative_path),
@@ -142,6 +161,7 @@ fn checker<'a, 'arena>(
         vars: HashMap::new(),
         saved: Vec::new(),
         functions: Vec::new(),
+        var_tag_functions: Vec::new(),
         in_exists_call: 0,
         top_level: HashSet::new(),
         piped: HashSet::new(),
@@ -184,6 +204,7 @@ fn checker<'a, 'arena>(
         deprecations: project.deprecations,
         bleeding_edge: project.bleeding_edge,
         unused_label: project.unused_label,
+        uninitialized_properties: project.uninitialized_properties,
         strict: project.strict,
         closure_bind: 0,
         errors: Vec::new(),
@@ -208,7 +229,9 @@ pub(crate) fn check_file(
     let mut checker = checker(
         &arena, file, program, &names, codebase, project, files, sources,
     );
-    checker.walk_program(program, &mut ());
+    pun_phpstan::resolve::with_type_aliases(&project.type_aliases, || {
+        checker.walk_program(program, &mut ())
+    });
     let name = checker.file_name();
     let (mut lines, parse) = lines_to_ignore(&file.contents);
     let mut unmatched = lines.clone();
@@ -220,6 +243,7 @@ pub(crate) fn check_file(
     });
     let mut errors = std::mem::take(&mut checker.errors);
     errors.extend(parse_errors(&name, &parse));
+    project.keep_reported(&mut errors);
     let mut out = Vec::new();
     if project.report_ignores_without_comments {
         out.extend(ignores_without_comments(&name, &mut lines, &mut unmatched));
@@ -292,7 +316,9 @@ fn in_trait_context(
         trait_name: String::from_utf8_lossy(t.name.as_bytes()).into_owned(),
         renames: u.renames.clone(),
     });
-    checker.walk_program(program, &mut ());
+    pun_phpstan::resolve::with_type_aliases(&project.type_aliases, || {
+        checker.walk_program(program, &mut ())
+    });
     let label = checker.label.clone();
     let (mut lines, _) = lines_to_ignore(&file.contents);
     lines.retain(|line, _| {
@@ -302,11 +328,8 @@ fn in_trait_context(
             .any(|(a, b)| a <= line && line <= b)
     });
     let mut unmatched = lines.clone();
-    let (kept, _) = local_ignores(
-        &label,
-        std::mem::take(&mut checker.errors),
-        &mut lines,
-        &mut unmatched,
-    );
+    let mut errors = std::mem::take(&mut checker.errors);
+    project.keep_reported(&mut errors);
+    let (kept, _) = local_ignores(&label, errors, &mut lines, &mut unmatched);
     (kept, checker.trait_uses)
 }

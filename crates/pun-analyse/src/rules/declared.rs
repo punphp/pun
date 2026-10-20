@@ -228,6 +228,10 @@ pub fn native(c: &Checker, hint: &Hint, class: Option<&ClassLikeMetadata>) -> Ty
                     h => members.push(native(c, h, class)),
                 }
             }
+            // ParserNodeTypeToPHPStanType: a member that is not an object makes the intersection `never`
+            if !members.iter().all(|m| matches!(m, Type::Object(..) | Type::Static(..) | Type::ObjectWithoutClass)) {
+                return Type::Never(NeverKind::Implicit);
+            }
             intersect(members)
         }
         Hint::Null(_) => Type::Null,
@@ -465,8 +469,13 @@ fn inherit(
     {
         return Some(found);
     }
-    for interface in class.direct_parent_interfaces.iter() {
-        if let Some(i) = c.codebase.get_class_like(interface.as_bytes())
+    // Mago gives a backed enum an internal `__internal_do_not_use__IntBackedEnum` (or String) interface, which
+    // stands for BackedEnum in PHPStan's reflection
+    let interfaces = class.direct_parent_interfaces.iter().map(|i| {
+        if i.as_bytes().starts_with(b"__internal_do_not_use__") { &b"BackedEnum"[..] } else { i.as_bytes() }
+    });
+    for interface in interfaces {
+        if let Some(i) = c.codebase.get_class_like(interface)
             && let Some(found) = from(i)
         {
             return Some(found);
@@ -668,7 +677,8 @@ fn signature(
             let name = text(&p.variable.name[1..]);
             let native = p.hint.as_ref().map(|h| {
                 let t = native(c, h, class);
-                if default_is_null(p) { t.add_null() } else { t }
+                // `isParameterValueNullable($parameter) && $parameter->flags === 0`: not for a promoted property
+                if default_is_null(p) && p.modifiers.is_empty() { t.add_null() } else { t }
             });
             let promoted = if method.is_some_and(|m| m.eq_ignore_ascii_case(b"__construct")) {
                 promoted_var(c, p, class)
@@ -704,7 +714,14 @@ fn signature(
 /// `PhpMethodReflection::getReturnType()` of a magic method without a native return type.
 fn magic_return(name: &[u8]) -> Option<Type> {
     match name.to_ascii_lowercase().as_slice() {
-        b"__construct" | b"__destruct" | b"__unset" | b"__wakeup" | b"__clone" => Some(Type::Void),
+        b"__construct" | b"__destruct" | b"__unset" | b"__wakeup" | b"__clone" | b"__set" | b"__unserialize" => {
+            Some(Type::Void)
+        }
+        b"__serialize" => Some(Type::array(Type::Mixed { explicit: true }, Type::Mixed { explicit: true })),
+        b"__debuginfo" => Some(Type::Union(vec![
+            Type::array(Type::Mixed { explicit: true }, Type::Mixed { explicit: true }),
+            Type::Null,
+        ])),
         b"__tostring" => Some(Type::String),
         b"__isset" => Some(Type::Bool),
         b"__sleep" => Some(Type::array(Type::Int, Type::String)),

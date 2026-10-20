@@ -1,0 +1,177 @@
+{
+    "test": "Operators/InvalidUnaryOperationRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Operators/data/invalid-unary.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Operators/data/invalid-unary.php",
+                    "line": 11,
+                    "identifier": "unaryOp.invalid",
+                    "message": "Unary operation \"+\" on string results in an error.",
+                    "tip": null
+                },
+                {
+                    "file": "Operators/data/invalid-unary.php",
+                    "line": 12,
+                    "identifier": "unaryOp.invalid",
+                    "message": "Unary operation \"-\" on string results in an error.",
+                    "tip": null
+                },
+                {
+                    "file": "Operators/data/invalid-unary.php",
+                    "line": 19,
+                    "identifier": "unaryOp.invalid",
+                    "message": "Unary operation \"+\" on 'bla' results in an error.",
+                    "tip": null
+                },
+                {
+                    "file": "Operators/data/invalid-unary.php",
+                    "line": 20,
+                    "identifier": "unaryOp.invalid",
+                    "message": "Unary operation \"-\" on 'bla' results in an error.",
+                    "tip": null
+                },
+                {
+                    "file": "Operators/data/invalid-unary.php",
+                    "line": 24,
+                    "identifier": "unaryOp.invalid",
+                    "message": "Unary operation \"~\" on array{} results in an error.",
+                    "tip": null
+                },
+                {
+                    "file": "Operators/data/invalid-unary.php",
+                    "line": 32,
+                    "identifier": "void.pure",
+                    "message": "Function InvalidUnary\\foo() returns void but does not have any side effects.",
+                    "tip": null
+                },
+                {
+                    "file": "Operators/data/invalid-unary.php",
+                    "line": 36,
+                    "identifier": "unaryOp.invalid",
+                    "message": "Unary operation \"~\" on bool results in an error.",
+                    "tip": null
+                },
+                {
+                    "file": "Operators/data/invalid-unary.php",
+                    "line": 38,
+                    "identifier": "unaryOp.invalid",
+                    "message": "Unary operation \"+\" on array results in an error.",
+                    "tip": null
+                },
+                {
+                    "file": "Operators/data/invalid-unary.php",
+                    "line": 39,
+                    "identifier": "unaryOp.invalid",
+                    "message": "Unary operation \"-\" on array results in an error.",
+                    "tip": null
+                },
+                {
+                    "file": "Operators/data/invalid-unary.php",
+                    "line": 40,
+                    "identifier": "unaryOp.invalid",
+                    "message": "Unary operation \"~\" on array results in an error.",
+                    "tip": null
+                },
+                {
+                    "file": "Operators/data/invalid-unary.php",
+                    "line": 50,
+                    "identifier": "unaryOp.invalid",
+                    "message": "Unary operation \"+\" on resource results in an error.",
+                    "tip": null
+                },
+                {
+                    "file": "Operators/data/invalid-unary.php",
+                    "line": 51,
+                    "identifier": "unaryOp.invalid",
+                    "message": "Unary operation \"-\" on resource results in an error.",
+                    "tip": null
+                },
+                {
+                    "file": "Operators/data/invalid-unary.php",
+                    "line": 52,
+                    "identifier": "unaryOp.invalid",
+                    "message": "Unary operation \"~\" on resource results in an error.",
+                    "tip": null
+                },
+                {
+                    "file": "Operators/data/invalid-unary.php",
+                    "line": 61,
+                    "identifier": "unaryOp.invalid",
+                    "message": "Unary operation \"~\" on null results in an error.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testMixed",
+            "files": [
+                "Operators/data/invalid-unary-mixed.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBcMathNumber",
+            "files": [
+                "Operators/data/unary-bcmath-number.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Operators/data/unary-bcmath-number.php",
+                    "line": 7,
+                    "identifier": "void.pure",
+                    "message": "Function UnaryBcMathNumber\\testUnaryMinus() returns void but does not have any side effects.",
+                    "tip": null
+                },
+                {
+                    "file": "Operators/data/unary-bcmath-number.php",
+                    "line": 11,
+                    "identifier": "void.pure",
+                    "message": "Function UnaryBcMathNumber\\testUnaryPlus() returns void but does not have any side effects.",
+                    "tip": null
+                },
+                {
+                    "file": "Operators/data/unary-bcmath-number.php",
+                    "line": 19,
+                    "identifier": "void.pure",
+                    "message": "Function UnaryBcMathNumber\\testBitwiseNot() returns void but does not have any side effects.",
+                    "tip": null
+                },
+                {
+                    "file": "Operators/data/unary-bcmath-number.php",
+                    "line": 20,
+                    "identifier": "unaryOp.invalid",
+                    "message": "Unary operation \"~\" on BcMath\\Number results in an error.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testUnion",
+            "files": [
+                "Operators/data/unary-union.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Operators/data/unary-union.php",
+                    "line": 11,
+                    "identifier": "void.pure",
+                    "message": "Function UnaryBenevolentUnion\\foo() returns void but does not have any side effects.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

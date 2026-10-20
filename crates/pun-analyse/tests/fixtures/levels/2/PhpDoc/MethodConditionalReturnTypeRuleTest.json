@@ -1,0 +1,369 @@
+{
+    "test": "PhpDoc/MethodConditionalReturnTypeRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "PhpDoc/data/method-conditional-return-type.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "PhpDoc/data/method-conditional-return-type.php",
+                    "line": 11,
+                    "identifier": "return.missing",
+                    "message": "Method MethodConditionalReturnType\\Foo::fill() should return array but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/method-conditional-return-type.php",
+                    "line": 21,
+                    "identifier": "method.templateTypeNotInParameter",
+                    "message": "Template type T of method MethodConditionalReturnType\\Foo::fill2() is not referenced in a parameter.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/method-conditional-return-type.php",
+                    "line": 21,
+                    "identifier": "parameter.notFound",
+                    "message": "PHPDoc tag @param references unknown parameter: $p",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/method-conditional-return-type.php",
+                    "line": 21,
+                    "identifier": "return.missing",
+                    "message": "Method MethodConditionalReturnType\\Foo::fill2() should return array but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/method-conditional-return-type.php",
+                    "line": 31,
+                    "identifier": "method.templateTypeNotInParameter",
+                    "message": "Template type T of method MethodConditionalReturnType\\Foo::fill3() is not referenced in a parameter.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/method-conditional-return-type.php",
+                    "line": 31,
+                    "identifier": "parameter.notFound",
+                    "message": "PHPDoc tag @param references unknown parameter: $p",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/method-conditional-return-type.php",
+                    "line": 31,
+                    "identifier": "return.missing",
+                    "message": "Method MethodConditionalReturnType\\Foo::fill3() should return array but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/method-conditional-return-type.php",
+                    "line": 48,
+                    "identifier": "conditionalType.subjectNotFound",
+                    "message": "Conditional return type uses subject type stdClass which is not part of PHPDoc @template tags.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/method-conditional-return-type.php",
+                    "line": 48,
+                    "identifier": "return.missing",
+                    "message": "Method MethodConditionalReturnType\\Bar::doFoo() should return MethodConditionalReturnType\\Foo but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/method-conditional-return-type.php",
+                    "line": 57,
+                    "identifier": "return.missing",
+                    "message": "Method MethodConditionalReturnType\\Bar::doFoo2() should return MethodConditionalReturnType\\Bar|MethodConditionalReturnType\\Foo but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/method-conditional-return-type.php",
+                    "line": 65,
+                    "identifier": "parameter.notFound",
+                    "message": "Conditional return type references unknown parameter $j.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/method-conditional-return-type.php",
+                    "line": 65,
+                    "identifier": "return.missing",
+                    "message": "Method MethodConditionalReturnType\\Bar::doFoo3() should return MethodConditionalReturnType\\Bar|MethodConditionalReturnType\\Foo but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/method-conditional-return-type.php",
+                    "line": 73,
+                    "identifier": "conditionalType.alwaysTrue",
+                    "message": "Condition \"int is int\" in conditional return type is always true.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/method-conditional-return-type.php",
+                    "line": 73,
+                    "identifier": "return.missing",
+                    "message": "Method MethodConditionalReturnType\\Bar::fill() should return array but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/method-conditional-return-type.php",
+                    "line": 83,
+                    "identifier": "conditionalType.alwaysTrue",
+                    "message": "Condition \"T of int is int\" in conditional return type is always true.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/method-conditional-return-type.php",
+                    "line": 83,
+                    "identifier": "method.templateTypeNotInParameter",
+                    "message": "Template type T of method MethodConditionalReturnType\\Bar::fill2() is not referenced in a parameter.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/method-conditional-return-type.php",
+                    "line": 83,
+                    "identifier": "parameter.notFound",
+                    "message": "PHPDoc tag @param references unknown parameter: $p",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/method-conditional-return-type.php",
+                    "line": 83,
+                    "identifier": "return.missing",
+                    "message": "Method MethodConditionalReturnType\\Bar::fill2() should return array but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/method-conditional-return-type.php",
+                    "line": 93,
+                    "identifier": "conditionalType.alwaysTrue",
+                    "message": "Condition \"T of int is int\" in conditional return type is always true.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/method-conditional-return-type.php",
+                    "line": 93,
+                    "identifier": "method.templateTypeNotInParameter",
+                    "message": "Template type T of method MethodConditionalReturnType\\Bar::fill3() is not referenced in a parameter.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/method-conditional-return-type.php",
+                    "line": 93,
+                    "identifier": "parameter.notFound",
+                    "message": "PHPDoc tag @param references unknown parameter: $p",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/method-conditional-return-type.php",
+                    "line": 93,
+                    "identifier": "return.missing",
+                    "message": "Method MethodConditionalReturnType\\Bar::fill3() should return array but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/method-conditional-return-type.php",
+                    "line": 101,
+                    "identifier": "conditionalType.alwaysFalse",
+                    "message": "Condition \"int is not int\" in conditional return type is always false.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/method-conditional-return-type.php",
+                    "line": 101,
+                    "identifier": "return.missing",
+                    "message": "Method MethodConditionalReturnType\\Bar::fill4() should return array but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/method-conditional-return-type.php",
+                    "line": 114,
+                    "identifier": "conditionalType.alwaysFalse",
+                    "message": "Condition \"int is string\" in conditional return type is always false.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/method-conditional-return-type.php",
+                    "line": 114,
+                    "identifier": "return.missing",
+                    "message": "Method MethodConditionalReturnType\\Baz::fill() should return array but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/method-conditional-return-type.php",
+                    "line": 124,
+                    "identifier": "conditionalType.alwaysFalse",
+                    "message": "Condition \"T of int is string\" in conditional return type is always false.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/method-conditional-return-type.php",
+                    "line": 124,
+                    "identifier": "method.templateTypeNotInParameter",
+                    "message": "Template type T of method MethodConditionalReturnType\\Baz::fill2() is not referenced in a parameter.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/method-conditional-return-type.php",
+                    "line": 124,
+                    "identifier": "parameter.notFound",
+                    "message": "PHPDoc tag @param references unknown parameter: $p",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/method-conditional-return-type.php",
+                    "line": 124,
+                    "identifier": "return.missing",
+                    "message": "Method MethodConditionalReturnType\\Baz::fill2() should return array but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/method-conditional-return-type.php",
+                    "line": 134,
+                    "identifier": "conditionalType.alwaysFalse",
+                    "message": "Condition \"T of int is string\" in conditional return type is always false.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/method-conditional-return-type.php",
+                    "line": 134,
+                    "identifier": "method.templateTypeNotInParameter",
+                    "message": "Template type T of method MethodConditionalReturnType\\Baz::fill3() is not referenced in a parameter.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/method-conditional-return-type.php",
+                    "line": 134,
+                    "identifier": "parameter.notFound",
+                    "message": "PHPDoc tag @param references unknown parameter: $p",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/method-conditional-return-type.php",
+                    "line": 134,
+                    "identifier": "return.missing",
+                    "message": "Method MethodConditionalReturnType\\Baz::fill3() should return array but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/method-conditional-return-type.php",
+                    "line": 142,
+                    "identifier": "conditionalType.alwaysTrue",
+                    "message": "Condition \"int is not string\" in conditional return type is always true.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/method-conditional-return-type.php",
+                    "line": 142,
+                    "identifier": "return.missing",
+                    "message": "Method MethodConditionalReturnType\\Baz::fill4() should return array but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/method-conditional-return-type.php",
+                    "line": 156,
+                    "identifier": "conditionalType.alwaysFalse",
+                    "message": "Condition \"array{foo: string} is array{foo: int}\" in conditional return type is always false.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/method-conditional-return-type.php",
+                    "line": 156,
+                    "identifier": "return.missing",
+                    "message": "Method MethodConditionalReturnType\\MoreVerboseDescription::fill() should return array but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/method-conditional-return-type.php",
+                    "line": 172,
+                    "identifier": "return.missing",
+                    "message": "Method MethodConditionalReturnType\\ConditionalThis::foo() should return true but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/method-conditional-return-type.php",
+                    "line": 185,
+                    "identifier": "conditionalType.alwaysTrue",
+                    "message": "Condition \"int is int\" in conditional return type is always true.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug8284",
+            "files": [
+                "PhpDoc/data/bug-8284.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "PhpDoc/data/bug-8284.php",
+                    "line": 14,
+                    "identifier": "parameter.implicitlyNullable",
+                    "message": "Deprecated in PHP 8.4: Parameter #5 $count (int) is implicitly nullable via default value null.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/bug-8284.php",
+                    "line": 14,
+                    "identifier": "parameter.notFound",
+                    "message": "Conditional return type references unknown parameter $callable.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/bug-8284.php",
+                    "line": 31,
+                    "identifier": "phpstan.dumpType",
+                    "message": "Dumped type: array<int|string, array{string|null, int<-1, max>}|string|null>",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/bug-8284.php",
+                    "line": 36,
+                    "identifier": "phpstan.dumpType",
+                    "message": "Dumped type: array<int|string, array{string|null, int<-1, max>}|string|null>",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug8609",
+            "files": [
+                "PhpDoc/data/bug-8609.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug8408",
+            "files": [
+                "PhpDoc/data/bug-8408.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug7310",
+            "files": [
+                "PhpDoc/data/bug-7310.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug11939",
+            "files": [
+                "PhpDoc/data/bug-11939.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        }
+    ]
+}

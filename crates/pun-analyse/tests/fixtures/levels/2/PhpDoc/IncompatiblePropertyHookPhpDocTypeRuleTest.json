@@ -1,0 +1,71 @@
+{
+    "test": "PhpDoc/IncompatiblePropertyHookPhpDocTypeRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "PhpDoc/data/incompatible-property-hook-phpdoc-types.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "PhpDoc/data/incompatible-property-hook-phpdoc-types.php",
+                    "line": 10,
+                    "identifier": "return.phpDocType",
+                    "message": "PHPDoc tag @return with type string is incompatible with native type int.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-property-hook-phpdoc-types.php",
+                    "line": 17,
+                    "identifier": "return.phpDocType",
+                    "message": "PHPDoc tag @return with type string is incompatible with native type void.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-property-hook-phpdoc-types.php",
+                    "line": 27,
+                    "identifier": "parameter.notByRef",
+                    "message": "Parameter $value for PHPDoc tag @param-out is not passed by reference.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-property-hook-phpdoc-types.php",
+                    "line": 27,
+                    "identifier": "parameter.phpDocType",
+                    "message": "PHPDoc tag @param for parameter $value with type string is incompatible with native type int.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-property-hook-phpdoc-types.php",
+                    "line": 34,
+                    "identifier": "parameter.unresolvableType",
+                    "message": "PHPDoc tag @param for parameter $value contains unresolvable type.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-property-hook-phpdoc-types.php",
+                    "line": 41,
+                    "identifier": "generics.notGeneric",
+                    "message": "PHPDoc tag @param for parameter $value contains generic type Exception<int> but class Exception is not generic.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-property-hook-phpdoc-types.php",
+                    "line": 54,
+                    "identifier": "callable.shadowTemplate",
+                    "message": "PHPDoc tag @param for parameter $value template T of callable<T of mixed>(T): T shadows @template T for class IncompatiblePropertyHookPhpDocTypes\\GenericFoo.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-property-hook-phpdoc-types.php",
+                    "line": 61,
+                    "identifier": "generics.existingClass",
+                    "message": "PHPDoc tag @param for parameter $value template of callable<\\stdClass of mixed>(T): T cannot have existing class \\stdClass as its name.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

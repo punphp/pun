@@ -229,3 +229,89 @@ fn long_constant_string_truncates_before_punctuation() {
     let ty = resolve_str("'aaaa bbbbbbbbbbbbbb\u{7f}cccc'", None);
     assert_eq!(ty.describe(Level::Value), "'aaaa…'");
 }
+
+const VERBOSITY_GAPS: &[&str] = &["Traversable<int>"];
+
+/// ponytail: a callable array's offsets (IntersectionType::hasOffsetValueType()) are not ported; checkOurKeys() sees a
+/// plain array's
+const ACCEPT_GAPS: &[(&str, &str)] = &[("array{ArrayIterator<int, string>, ArrayIterator<int, int>}", "callable&array")];
+
+/// `$a->accepts($b, $strictTypes)` (strict and not) and `VerbosityLevel::getRecommendedLevelByType($a, $b)` for every
+/// ordered pair of the accept atoms; `strict-mixed` is RuleLevelHelper's StrictMixedType, an explicit `mixed` (or a
+/// template of mixed) under `StrictMixed`.
+#[test]
+fn accepts() {
+    use pun_phpstan::types::{StrictMixed, accepts_with, recommended_level};
+    let f = fixture("type-accepts.json");
+    let rows = f.as_array().unwrap();
+    let mut failures = Vec::new();
+    for row in rows {
+        let [ctx, a, b, strict, loose, level] = [0, 1, 2, 3, 4, 5].map(|i| row[i].as_str());
+        let at = resolve_str(a.unwrap(), ctx);
+        let got_level = match b {
+            None => recommended_level(&at, None),
+            Some("strict-mixed") => recommended_level(&at, Some(&resolve_str("mixed", None))),
+            Some(b) => recommended_level(&at, Some(&resolve_str(b, ctx))),
+        };
+        let mut got = vec![format!("{got_level:?}")];
+        let mut want = vec![level.unwrap().to_string()];
+        if let Some(b) = b {
+            let (bts, sm) = if b == "strict-mixed" {
+                let all = StrictMixed { explicit: true, implicit: true };
+                (vec![resolve_str("mixed", None), resolve_str("__template<T, 'function probe()', mixed>", None)], all)
+            } else {
+                (vec![resolve_str(b, ctx)], StrictMixed::default())
+            };
+            for bt in &bts {
+                got.push(format!("{:?}", accepts_with(&at, bt, true, sm)));
+                got.push(format!("{:?}", accepts_with(&at, bt, false, sm)));
+                want.extend([strict, loose].map(|w| w.unwrap().to_string()));
+            }
+        }
+        // ponytail: the symbols carry no template variance, so a covariant built-in template (Traversable's) counts as
+        // invariant in getRecommendedLevelByType()
+        if VERBOSITY_GAPS.contains(&a.unwrap()) {
+            got.remove(0);
+            want.remove(0);
+        }
+        if got != want && !ACCEPT_GAPS.contains(&(a.unwrap(), b.unwrap_or(""))) {
+            failures.push(format!("{ctx:?} {} accepts {}: want {want:?}, got {got:?}", row[1], row[2]));
+        }
+    }
+    eprintln!("type-accepts.json: {}/{} match", rows.len() - failures.len(), rows.len());
+    assert!(failures.is_empty(), "{}", failures.join("\n"));
+}
+
+/// Whether `toString()`, `toNumber()`, `toInteger()`, `toFloat()` and `toBitwiseNotType()` are an ErrorType
+/// (`toBoolean()` never is).
+#[test]
+fn casts() {
+    use pun_phpstan::types::{Cast, StrictMixed, cast_is_error};
+    let f = fixture("type-casts.json");
+    let mut failures = Vec::new();
+    for row in f.as_array().unwrap() {
+        let (ctx, a) = (row[0].as_str(), row[1].as_str().unwrap());
+        let (t, sm) = if a == "strict-mixed" {
+            (resolve_str("mixed", None), StrictMixed { explicit: true, implicit: false })
+        } else {
+            (resolve_str(a, ctx), StrictMixed::default())
+        };
+        let casts = [Cast::String, Cast::Number, Cast::Integer, Cast::Float, Cast::BitwiseNot];
+        let got: Vec<bool> = casts.iter().map(|&c| cast_is_error(&t, c, sm)).collect();
+        let want: Vec<bool> = (2..7).map(|i| row[i].as_bool().unwrap()).collect();
+        if got != want || cast_is_error(&t, Cast::Boolean, sm) {
+            failures.push(format!("{ctx:?} {a}: want {want:?}, got {got:?}"));
+        }
+    }
+    assert!(failures.is_empty(), "{}", failures.join("\n"));
+}
+
+/// A StaticType of a class the symbols do not know is its plain object (`["Nope", "static", "static", "Yes", ...]` in
+/// type-accepts.json); the resolver makes an ErrorType of such a `static`, the analyser a StaticType of a project
+/// class outside `declared::with_classes()`.
+#[test]
+fn static_of_unknown_class() {
+    use pun_phpstan::types::{Type, accepts};
+    let s = Type::Static("Nope".into(), vec![]);
+    assert_eq!(format!("{:?}", accepts(&s, &s, true)), "Yes");
+}
