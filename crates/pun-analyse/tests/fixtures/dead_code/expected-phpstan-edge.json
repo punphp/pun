@@ -1,0 +1,3001 @@
+{
+ "general": [],
+ "errors": [
+  {
+   "file": "src/anonymous-in-trait.php",
+   "line": 5,
+   "identifier": "method.unused",
+   "message": "Method class@anonymous/anonymous-in-trait.php:4::unused() is unused.",
+   "tip": null
+  },
+  {
+   "file": "src/anonymous-in-trait.php",
+   "line": 5,
+   "identifier": "method.unused",
+   "message": "Method class@anonymous/anonymous-in-trait.php:4::unused() is unused.",
+   "tip": null
+  },
+  {
+   "file": "src/anonymous-in-trait.php",
+   "line": 5,
+   "identifier": "method.unused",
+   "message": "Method class@anonymous/anonymous-in-trait.php:4::unused() is unused.",
+   "tip": null
+  },
+  {
+   "file": "src/anonymous-in-trait.php",
+   "line": 6,
+   "identifier": "property.onlyWritten",
+   "message": "Property class@anonymous/anonymous-in-trait.php:4::$x is never read, only written.",
+   "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+  },
+  {
+   "file": "src/anonymous-in-trait.php",
+   "line": 6,
+   "identifier": "property.onlyWritten",
+   "message": "Property class@anonymous/anonymous-in-trait.php:4::$x is never read, only written.",
+   "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+  },
+  {
+   "file": "src/anonymous-in-trait.php",
+   "line": 6,
+   "identifier": "property.onlyWritten",
+   "message": "Property class@anonymous/anonymous-in-trait.php:4::$x is never read, only written.",
+   "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+  },
+  {
+   "file": "src/branches.php",
+   "line": 17,
+   "identifier": "property.onlyWritten",
+   "message": "Property DeadCodeFixture\\Branches\\Members::$keyed is never read, only written.",
+   "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+  },
+  {
+   "file": "src/branches.php",
+   "line": 21,
+   "identifier": "property.onlyWritten",
+   "message": "Property DeadCodeFixture\\Branches\\Members::$fresh is never read, only written.",
+   "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+  },
+  {
+   "file": "src/branches.php",
+   "line": 23,
+   "identifier": "property.onlyWritten",
+   "message": "Property DeadCodeFixture\\Branches\\Members::$name is never read, only written.",
+   "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+  },
+  {
+   "file": "src/branches.php",
+   "line": 24,
+   "identifier": "property.onlyWritten",
+   "message": "Property DeadCodeFixture\\Branches\\Members::$onArray is never read, only written.",
+   "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+  },
+  {
+   "file": "src/branches.php",
+   "line": 25,
+   "identifier": "property.onlyWritten",
+   "message": "Property DeadCodeFixture\\Branches\\Members::$onOther is never read, only written.",
+   "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+  },
+  {
+   "file": "src/branches.php",
+   "line": 27,
+   "identifier": "property.onlyWritten",
+   "message": "Property DeadCodeFixture\\Branches\\Members::$skipped is never read, only written.",
+   "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+  },
+  {
+   "file": "src/branches.php",
+   "line": 45,
+   "identifier": "property.nonObject",
+   "message": "Cannot access property $onArray on array.",
+   "tip": null
+  },
+  {
+   "file": "src/branches.php",
+   "line": 47,
+   "identifier": "class.notFound",
+   "message": "Access to static property $onUnknown on an unknown class Nowhere\\Missing.",
+   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+  },
+  {
+   "file": "src/branches.php",
+   "line": 53,
+   "identifier": "function.inner",
+   "message": "Inner named functions are not supported by PHPStan. Consider refactoring to an anonymous function, class method, or a top-level-defined function. See issue #165 (https://github.com/phpstan/phpstan/issues/165) for more details.",
+   "tip": null
+  },
+  {
+   "file": "src/branches.php",
+   "line": 82,
+   "identifier": "deadCode.unreachable",
+   "message": "Unreachable statement - code above always terminates.",
+   "tip": null
+  },
+  {
+   "file": "src/branches.php",
+   "line": 91,
+   "identifier": "deadCode.unreachable",
+   "message": "Unreachable statement - code above always terminates.",
+   "tip": null
+  },
+  {
+   "file": "src/branches.php",
+   "line": 100,
+   "identifier": "deadCode.unreachable",
+   "message": "Unreachable statement - code above always terminates.",
+   "tip": null
+  },
+  {
+   "file": "src/branches.php",
+   "line": 109,
+   "identifier": "deadCode.unreachable",
+   "message": "Unreachable statement - code above always terminates.",
+   "tip": null
+  },
+  {
+   "file": "src/branches.php",
+   "line": 113,
+   "identifier": "function.unusedParameter",
+   "message": "Function DeadCodeFixture\\Branches\\terminating() has an unused parameter $i.",
+   "tip": null
+  },
+  {
+   "file": "src/branches.php",
+   "line": 118,
+   "identifier": "deadCode.unreachable",
+   "message": "Unreachable statement - code above always terminates.",
+   "tip": null
+  },
+  {
+   "file": "src/checks.php",
+   "line": 47,
+   "identifier": "method.alreadyNarrowedType",
+   "message": "Call to method DeadCode\\Checks\\Checker::assertString() with string will always evaluate to true.",
+   "tip": null
+  },
+  {
+   "file": "src/checks.php",
+   "line": 48,
+   "identifier": "method.impossibleType",
+   "message": "Call to method DeadCode\\Checks\\Checker::assertString() with int will always evaluate to false.",
+   "tip": null
+  },
+  {
+   "file": "src/checks.php",
+   "line": 50,
+   "identifier": "staticMethod.alreadyNarrowedType",
+   "message": "Call to static method DeadCode\\Checks\\Checker::staticString() with string will always evaluate to true.",
+   "tip": null
+  },
+  {
+   "file": "src/checks.php",
+   "line": 51,
+   "identifier": "staticMethod.impossibleType",
+   "message": "Call to static method DeadCode\\Checks\\Checker::staticString() with int will always evaluate to false.",
+   "tip": null
+  },
+  {
+   "file": "src/checks.php",
+   "line": 58,
+   "identifier": "function.alreadyNarrowedType",
+   "message": "Call to function is_int() with int will always evaluate to true.",
+   "tip": null
+  },
+  {
+   "file": "src/checks.php",
+   "line": 59,
+   "identifier": "function.impossibleType",
+   "message": "Call to function is_string() with int will always evaluate to false.",
+   "tip": null
+  },
+  {
+   "file": "src/checks.php",
+   "line": 61,
+   "identifier": "function.alreadyNarrowedType",
+   "message": "Call to function assert() with true will always evaluate to true.",
+   "tip": null
+  },
+  {
+   "file": "src/checks.php",
+   "line": 62,
+   "identifier": "function.alreadyNarrowedType",
+   "message": "Call to function assertInt() with int will always evaluate to true.",
+   "tip": null
+  },
+  {
+   "file": "src/checks.php",
+   "line": 63,
+   "identifier": "function.impossibleType",
+   "message": "Call to function assertInt() with string will always evaluate to false.",
+   "tip": null
+  },
+  {
+   "file": "src/checks.php",
+   "line": 65,
+   "identifier": "function.alreadyNarrowedType",
+   "message": "Call to function assertInt() with int will always evaluate to true.",
+   "tip": null
+  },
+  {
+   "file": "src/checks.php",
+   "line": 66,
+   "identifier": "function.alreadyNarrowedType",
+   "message": "Call to function assertNotNull() with int will always evaluate to true.",
+   "tip": null
+  },
+  {
+   "file": "src/checks.php",
+   "line": 68,
+   "identifier": "function.alreadyNarrowedType",
+   "message": "Call to function assertThree() with arguments 1, 2 and 'c' will always evaluate to true.",
+   "tip": null
+  },
+  {
+   "file": "src/checks.php",
+   "line": 69,
+   "identifier": "function.impossibleType",
+   "message": "Call to function assertThree() with arguments 1, 2 and 3 will always evaluate to false.",
+   "tip": null
+  },
+  {
+   "file": "src/checks.php",
+   "line": 71,
+   "identifier": "function.alreadyNarrowedType",
+   "message": "Call to function is_int() with int will always evaluate to true.",
+   "tip": null
+  },
+  {
+   "file": "src/checks.php",
+   "line": 81,
+   "identifier": "function.alreadyNarrowedType",
+   "message": "Call to function isInt() with int will always evaluate to true.",
+   "tip": null
+  },
+  {
+   "file": "src/condition-traits.php",
+   "line": 17,
+   "identifier": "if.alwaysTrue",
+   "message": "If condition is always true.",
+   "tip": null
+  },
+  {
+   "file": "src/condition-traits.php",
+   "line": 20,
+   "identifier": "booleanNot.alwaysFalse",
+   "message": "Negated boolean expression is always false.",
+   "tip": null
+  },
+  {
+   "file": "src/condition-traits.php",
+   "line": 23,
+   "identifier": "greater.alwaysTrue",
+   "message": "Comparison operation \">\" between 1 and 0 is always true.",
+   "tip": null
+  },
+  {
+   "file": "src/condition-traits.php (in context of class DeadCode\\ConditionTraits\\IntChecker)",
+   "line": 83,
+   "identifier": "method.alreadyNarrowedType",
+   "message": "Call to method DeadCode\\ConditionTraits\\IntChecker::isNumber() with int will always evaluate to true.",
+   "tip": null
+  },
+  {
+   "file": "src/condition-traits.php (in context of class DeadCode\\ConditionTraits\\StringChecker)",
+   "line": 83,
+   "identifier": "method.alreadyNarrowedType",
+   "message": "Call to method DeadCode\\ConditionTraits\\StringChecker::isNumber() with int will always evaluate to true.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 42,
+   "identifier": "if.alwaysTrue",
+   "message": "If condition is always true.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 49,
+   "identifier": "if.alwaysFalse",
+   "message": "If condition is always false.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 58,
+   "identifier": "elseif.alwaysTrue",
+   "message": "Elseif condition is always true.",
+   "tip": "Remove remaining cases below this one and this error will disappear too."
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 89,
+   "identifier": "elseif.alwaysFalse",
+   "message": "Elseif condition is always false.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 98,
+   "identifier": "booleanNot.alwaysFalse",
+   "message": "Negated boolean expression is always false.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 107,
+   "identifier": "booleanNot.alwaysTrue",
+   "message": "Negated boolean expression is always true.",
+   "tip": "Remove remaining cases below this one and this error will disappear too."
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 127,
+   "identifier": "booleanOr.rightAlwaysTrue",
+   "message": "Right side of || is always true.",
+   "tip": "Remove remaining cases below this one and this error will disappear too."
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 147,
+   "identifier": "logicalXor.rightAlwaysTrue",
+   "message": "Right side of xor is always true.",
+   "tip": "Remove remaining cases below this one and this error will disappear too."
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 167,
+   "identifier": "booleanAnd.leftAlwaysTrue",
+   "message": "Left side of && is always true.",
+   "tip": "Remove remaining cases below this one and this error will disappear too."
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 167,
+   "identifier": "booleanAnd.rightAlwaysTrue",
+   "message": "Right side of && is always true.",
+   "tip": "Remove remaining cases below this one and this error will disappear too."
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 185,
+   "identifier": "if.alwaysTrue",
+   "message": "If condition is always true.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 188,
+   "identifier": "function.alreadyNarrowedType",
+   "message": "Call to function is_int() with int will always evaluate to true.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 191,
+   "identifier": "function.alreadyNarrowedType",
+   "message": "Call to function isInt() with int will always evaluate to true.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 194,
+   "identifier": "method.alreadyNarrowedType",
+   "message": "Call to method Conditions\\Checks::isInt() with int will always evaluate to true.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 197,
+   "identifier": "staticMethod.alreadyNarrowedType",
+   "message": "Call to static method Conditions\\Checks::isIntStatic() with int will always evaluate to true.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 200,
+   "identifier": "if.alwaysTrue",
+   "message": "If condition is always true.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 203,
+   "identifier": "if.alwaysTrue",
+   "message": "If condition is always true.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 281,
+   "identifier": "booleanAnd.leftAlwaysTrue",
+   "message": "Left side of && is always true.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 281,
+   "identifier": "assign.overwritten",
+   "message": "Value assigned to variable $x is never read before being overwritten.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 282,
+   "identifier": "booleanAnd.rightAlwaysTrue",
+   "message": "Right side of && is always true.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 282,
+   "identifier": "assign.overwritten",
+   "message": "Value assigned to variable $x is never read before being overwritten.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 283,
+   "identifier": "booleanAnd.rightAlwaysFalse",
+   "message": "Right side of && is always false.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 283,
+   "identifier": "assign.overwritten",
+   "message": "Value assigned to variable $x is never read before being overwritten.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 284,
+   "identifier": "booleanOr.rightAlwaysTrue",
+   "message": "Right side of || is always true.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 284,
+   "identifier": "assign.overwritten",
+   "message": "Value assigned to variable $x is never read before being overwritten.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 285,
+   "identifier": "booleanOr.rightAlwaysFalse",
+   "message": "Right side of || is always false.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 285,
+   "identifier": "assign.overwritten",
+   "message": "Value assigned to variable $x is never read before being overwritten.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 286,
+   "identifier": "logicalAnd.leftAlwaysTrue",
+   "message": "Left side of and is always true.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 286,
+   "identifier": "assign.overwritten",
+   "message": "Value assigned to variable $x is never read before being overwritten.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 287,
+   "identifier": "logicalOr.rightAlwaysTrue",
+   "message": "Right side of or is always true.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 287,
+   "identifier": "assign.overwritten",
+   "message": "Value assigned to variable $x is never read before being overwritten.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 288,
+   "identifier": "logicalXor.leftAlwaysTrue",
+   "message": "Left side of xor is always true.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 288,
+   "identifier": "assign.overwritten",
+   "message": "Value assigned to variable $x is never read before being overwritten.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 289,
+   "identifier": "logicalXor.rightAlwaysFalse",
+   "message": "Right side of xor is always false.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 289,
+   "identifier": "assign.overwritten",
+   "message": "Value assigned to variable $x is never read before being overwritten.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 290,
+   "identifier": "booleanNot.alwaysFalse",
+   "message": "Negated boolean expression is always false.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 290,
+   "identifier": "assign.overwritten",
+   "message": "Value assigned to variable $x is never read before being overwritten.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 291,
+   "identifier": "booleanNot.alwaysTrue",
+   "message": "Negated boolean expression is always true.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 291,
+   "identifier": "assign.overwritten",
+   "message": "Value assigned to variable $x is never read before being overwritten.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 292,
+   "identifier": "assign.overwritten",
+   "message": "Value assigned to variable $x is never read before being overwritten.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 293,
+   "identifier": "ternary.alwaysTrue",
+   "message": "Ternary operator condition is always true.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 293,
+   "identifier": "assign.overwritten",
+   "message": "Value assigned to variable $x is never read before being overwritten.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 294,
+   "identifier": "ternary.alwaysFalse",
+   "message": "Ternary operator condition is always false.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 295,
+   "identifier": "booleanAnd.resultUnused",
+   "message": "Unused result of \"&&\" operator.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 296,
+   "identifier": "booleanOr.resultUnused",
+   "message": "Unused result of \"||\" operator.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 302,
+   "identifier": "booleanAnd.leftAlwaysFalse",
+   "message": "Left side of && is always false.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 308,
+   "identifier": "booleanOr.leftAlwaysTrue",
+   "message": "Left side of || is always true.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 314,
+   "identifier": "booleanNot.alwaysFalse",
+   "message": "Negated boolean expression is always false.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 314,
+   "identifier": "booleanAnd.alwaysFalse",
+   "message": "Result of && is always false.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 320,
+   "identifier": "while.alwaysFalse",
+   "message": "While loop condition is always false.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 345,
+   "identifier": "while.alwaysTrue",
+   "message": "While loop condition is always true.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 346,
+   "identifier": "foreach.unusedValue",
+   "message": "Foreach value variable $v is never read.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 357,
+   "identifier": "while.alwaysTrue",
+   "message": "While loop condition is always true.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 375,
+   "identifier": "doWhile.alwaysTrue",
+   "message": "Do-while loop condition is always true.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 393,
+   "identifier": "doWhile.alwaysTrue",
+   "message": "Do-while loop condition is always true.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 399,
+   "identifier": "foreach.unusedValue",
+   "message": "Foreach value variable $v is never read.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 402,
+   "identifier": "doWhile.alwaysTrue",
+   "message": "Do-while loop condition is always true.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 409,
+   "identifier": "doWhile.alwaysFalse",
+   "message": "Do-while loop condition is always false.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 444,
+   "identifier": "while.alwaysTrue",
+   "message": "While loop condition is always true.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 445,
+   "identifier": "variable.unused",
+   "message": "Variable $f is never read.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 448,
+   "identifier": "variable.unused",
+   "message": "Variable $g is never read.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 449,
+   "identifier": "variable.unused",
+   "message": "Variable $h is never read.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 460,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"match ($b) {\u2026\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 469,
+   "identifier": "identical.alwaysTrue",
+   "message": "Strict comparison using === between 1 and 1 will always evaluate to true.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 469,
+   "identifier": "assign.overwritten",
+   "message": "Value assigned to variable $a is never read before being overwritten.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 470,
+   "identifier": "notIdentical.alwaysFalse",
+   "message": "Strict comparison using !== between 1 and 1 will always evaluate to false.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 470,
+   "identifier": "assign.overwritten",
+   "message": "Value assigned to variable $a is never read before being overwritten.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 471,
+   "identifier": "equal.alwaysFalse",
+   "message": "Loose comparison using == between 1 and 2 will always evaluate to false.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 471,
+   "identifier": "assign.overwritten",
+   "message": "Value assigned to variable $a is never read before being overwritten.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 472,
+   "identifier": "notEqual.alwaysTrue",
+   "message": "Loose comparison using != between 1 and 2 will always evaluate to true.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 472,
+   "identifier": "assign.overwritten",
+   "message": "Value assigned to variable $a is never read before being overwritten.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 473,
+   "identifier": "smaller.alwaysTrue",
+   "message": "Comparison operation \"<\" between 1 and 2 is always true.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 473,
+   "identifier": "assign.overwritten",
+   "message": "Value assigned to variable $a is never read before being overwritten.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 474,
+   "identifier": "greater.alwaysFalse",
+   "message": "Comparison operation \">\" between 1 and 2 is always false.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 474,
+   "identifier": "assign.overwritten",
+   "message": "Value assigned to variable $a is never read before being overwritten.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 475,
+   "identifier": "smallerOrEqual.alwaysTrue",
+   "message": "Comparison operation \"<=\" between 1 and 2 is always true.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 475,
+   "identifier": "assign.overwritten",
+   "message": "Value assigned to variable $a is never read before being overwritten.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 476,
+   "identifier": "greaterOrEqual.alwaysFalse",
+   "message": "Comparison operation \">=\" between 1 and 2 is always false.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 476,
+   "identifier": "assign.overwritten",
+   "message": "Value assigned to variable $a is never read before being overwritten.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 477,
+   "identifier": "instanceof.alwaysTrue",
+   "message": "Instanceof between Conditions\\Checks and Conditions\\Checks will always evaluate to true.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 477,
+   "identifier": "assign.overwritten",
+   "message": "Value assigned to variable $a is never read before being overwritten.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 478,
+   "identifier": "instanceof.alwaysFalse",
+   "message": "Instanceof between Conditions\\Checks and Exception will always evaluate to false.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 486,
+   "identifier": "identical.alwaysTrue",
+   "message": "Strict comparison using === between 1 and 1 will always evaluate to true.",
+   "tip": "Remove remaining cases below this one and this error will disappear too."
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 498,
+   "identifier": "equal.alwaysTrue",
+   "message": "Loose comparison using == between 1 and 1 will always evaluate to true.",
+   "tip": "Remove remaining cases below this one and this error will disappear too."
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 505,
+   "identifier": "instanceof.alwaysTrue",
+   "message": "Instanceof between Conditions\\Checks and Conditions\\Checks will always evaluate to true.",
+   "tip": "Remove remaining cases below this one and this error will disappear too."
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 519,
+   "identifier": "identical.alwaysTrue",
+   "message": "Strict comparison using === between Conditions\\Suit::Hearts and Conditions\\Suit::Hearts will always evaluate to true.",
+   "tip": "Use match expression instead. PHPStan will report unhandled enum cases."
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 522,
+   "identifier": "identical.alwaysTrue",
+   "message": "Strict comparison using === between Conditions\\Suit::Hearts and Conditions\\Suit::Hearts will always evaluate to true.",
+   "tip": "\u2022 Remove remaining cases below this one and this error will disappear too.\n\u2022 Use match expression instead. PHPStan will report unhandled enum cases."
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 528,
+   "identifier": "identical.alwaysTrue",
+   "message": "Strict comparison using === between Conditions\\Suit::Hearts and Conditions\\Suit::Hearts will always evaluate to true.",
+   "tip": "Remove remaining cases below this one and this error will disappear too."
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 552,
+   "identifier": "while.alwaysTrue",
+   "message": "While loop condition is always true.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 556,
+   "identifier": "variable.unused",
+   "message": "Variable $g is never read.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 602,
+   "identifier": "smaller.alwaysTrue",
+   "message": "Comparison operation \"<\" between 0 and 1 is always true.",
+   "tip": null
+  },
+  {
+   "file": "src/conditions.php",
+   "line": 612,
+   "identifier": "foreach.unusedValue",
+   "message": "Foreach value variable $v is never read.",
+   "tip": null
+  },
+  {
+   "file": "src/impure-points.php",
+   "line": 9,
+   "identifier": "variable.unused",
+   "message": "Variable $c is never read.",
+   "tip": null
+  },
+  {
+   "file": "src/impure-points.php",
+   "line": 71,
+   "identifier": "function.inner",
+   "message": "Inner named functions are not supported by PHPStan. Consider refactoring to an anonymous function, class method, or a top-level-defined function. See issue #165 (https://github.com/phpstan/phpstan/issues/165) for more details.",
+   "tip": null
+  },
+  {
+   "file": "src/impure-points.php",
+   "line": 89,
+   "identifier": "throws.unusedType",
+   "message": "Function DeadCode\\ImpurePoints\\throwsTag() has Exception in PHPDoc @throws tag but it's not thrown.",
+   "tip": null
+  },
+  {
+   "file": "src/impure-points.php",
+   "line": 99,
+   "identifier": "function.unusedParameter",
+   "message": "Function DeadCode\\ImpurePoints\\byRef() has an unused parameter $i.",
+   "tip": null
+  },
+  {
+   "file": "src/impure-points.php",
+   "line": 132,
+   "identifier": "new.resultUnused",
+   "message": "Call to new DeadCode\\ImpurePoints\\Box() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/impure-points.php",
+   "line": 157,
+   "identifier": "method.resultUnused",
+   "message": "Call to method DeadCode\\ImpurePoints\\Open::hidden() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/impure-points.php",
+   "line": 168,
+   "identifier": "function.resultUnused",
+   "message": "Call to function DeadCode\\ImpurePoints\\pure() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/impure-points.php",
+   "line": 169,
+   "identifier": "function.resultUnused",
+   "message": "Call to function DeadCode\\ImpurePoints\\dependsOnPure() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/impure-points.php",
+   "line": 175,
+   "identifier": "function.resultUnused",
+   "message": "Call to function DeadCode\\ImpurePoints\\declaresClass() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/impure-points.php",
+   "line": 177,
+   "identifier": "function.resultUnused",
+   "message": "Call to function DeadCode\\ImpurePoints\\declares() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/impure-points.php",
+   "line": 181,
+   "identifier": "variable.undefined",
+   "message": "Undefined variable: $i",
+   "tip": null
+  },
+  {
+   "file": "src/impure-points.php",
+   "line": 182,
+   "identifier": "method.resultUnused",
+   "message": "Call to method DeadCode\\ImpurePoints\\Box::get() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/impure-points.php",
+   "line": 183,
+   "identifier": "method.resultUnused",
+   "message": "Call to method DeadCode\\ImpurePoints\\Box::viaThis() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/impure-points.php",
+   "line": 184,
+   "identifier": "method.resultUnused",
+   "message": "Call to method DeadCode\\ImpurePoints\\Box::viaNew() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/impure-points.php",
+   "line": 186,
+   "identifier": "method.resultUnused",
+   "message": "Call to method DeadCode\\ImpurePoints\\Box::get() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/impure-points.php",
+   "line": 187,
+   "identifier": "staticMethod.resultUnused",
+   "message": "Call to DeadCode\\ImpurePoints\\Box::make() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/impure-points.php",
+   "line": 188,
+   "identifier": "staticMethod.resultUnused",
+   "message": "Call to DeadCode\\ImpurePoints\\Box::viaStatic() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/impure-points.php",
+   "line": 189,
+   "identifier": "new.resultUnused",
+   "message": "Call to new DeadCode\\ImpurePoints\\Box() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/impure-points.php",
+   "line": 194,
+   "identifier": "method.resultUnused",
+   "message": "Call to method DeadCode\\ImpurePoints\\Open::get() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/impure-points.php",
+   "line": 195,
+   "identifier": "assign.overwritten",
+   "message": "Value assigned to variable $reused is never read before being overwritten.",
+   "tip": null
+  },
+  {
+   "file": "src/impure-points.php",
+   "line": 198,
+   "identifier": "function.resultUnused",
+   "message": "Call to function DeadCode\\ImpurePoints\\pure() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/impure-points.php",
+   "line": 199,
+   "identifier": "staticMethod.resultUnused",
+   "message": "Call to DeadCode\\ImpurePoints\\Box::make() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/impure-points.php",
+   "line": 200,
+   "identifier": "method.resultUnused",
+   "message": "Call to method DeadCode\\ImpurePoints\\Box::get() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/impure-points.php",
+   "line": 201,
+   "identifier": "function.resultUnused",
+   "message": "Call to function DeadCode\\ImpurePoints\\pure() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/impure-points.php",
+   "line": 202,
+   "identifier": "binaryOp.invalid",
+   "message": "Binary operation \"|>\" between 5 and int results in an error.",
+   "tip": null
+  },
+  {
+   "file": "src/impure-points.php",
+   "line": 202,
+   "identifier": "callable.nonCallable",
+   "message": "Trying to invoke int but it's not a callable.",
+   "tip": null
+  },
+  {
+   "file": "src/impure-points.php",
+   "line": 203,
+   "identifier": "function.resultUnused",
+   "message": "Call to function DeadCode\\ImpurePoints\\pure() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/impure-points.php",
+   "line": 204,
+   "identifier": "variable.unused",
+   "message": "Variable $closure is never read.",
+   "tip": null
+  },
+  {
+   "file": "src/impure-points.php",
+   "line": 205,
+   "identifier": "method.resultUnused",
+   "message": "Call to method DeadCode\\ImpurePoints\\Open::get() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/impure-points.php",
+   "line": 207,
+   "identifier": "closure.unusedUse",
+   "message": "Anonymous function has an unused use $fresh.",
+   "tip": null
+  },
+  {
+   "file": "src/impure-points.php",
+   "line": 207,
+   "identifier": "variable.unused",
+   "message": "Variable $byRefUse is never read.",
+   "tip": null
+  },
+  {
+   "file": "src/impure-points.php",
+   "line": 209,
+   "identifier": "assign.overwritten",
+   "message": "Value assigned to variable $listed is never read before being overwritten.",
+   "tip": null
+  },
+  {
+   "file": "src/impure-points.php",
+   "line": 218,
+   "identifier": "method.resultUnused",
+   "message": "Call to method DeadCode\\ImpurePoints\\Open::get() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/matches.php",
+   "line": 13,
+   "identifier": "match.unhandled",
+   "message": "Match expression does not handle remaining value: DeadCode\\Matches\\Suit::Clubs",
+   "tip": null
+  },
+  {
+   "file": "src/matches.php",
+   "line": 26,
+   "identifier": "match.unhandled",
+   "message": "Match expression does not handle remaining values: DeadCode\\Matches\\Suit::Clubs|DeadCode\\Matches\\Suit::Spades",
+   "tip": null
+  },
+  {
+   "file": "src/matches.php",
+   "line": 34,
+   "identifier": "match.unhandled",
+   "message": "Match expression does not handle remaining values: int<min, 0>|int<3, max>",
+   "tip": null
+  },
+  {
+   "file": "src/matches.php",
+   "line": 40,
+   "identifier": "match.alwaysTrue",
+   "message": "Match arm comparison between false and false is always true.",
+   "tip": "Remove remaining cases below this one and this error will disappear too."
+  },
+  {
+   "file": "src/matches.php",
+   "line": 43,
+   "identifier": "match.unhandled",
+   "message": "Match expression does not handle remaining value: false",
+   "tip": null
+  },
+  {
+   "file": "src/matches.php",
+   "line": 71,
+   "identifier": "match.alwaysTrue",
+   "message": "Match arm comparison between $this(DeadCode\\Matches\\Pair)&DeadCode\\Matches\\Pair::Two and DeadCode\\Matches\\Pair::Two is always true.",
+   "tip": "Remove remaining cases below this one and this error will disappear too."
+  },
+  {
+   "file": "src/matches.php",
+   "line": 85,
+   "identifier": "match.alwaysTrue",
+   "message": "Match arm comparison between DeadCode\\Matches\\Single::Only and DeadCode\\Matches\\Single::Only is always true.",
+   "tip": "Remove remaining cases below this one and this error will disappear too."
+  },
+  {
+   "file": "src/matches.php",
+   "line": 90,
+   "identifier": "function.unusedParameter",
+   "message": "Function DeadCode\\Matches\\nested() has an unused parameter $i.",
+   "tip": null
+  },
+  {
+   "file": "src/matches.php",
+   "line": 108,
+   "identifier": "function.unusedParameter",
+   "message": "Function DeadCode\\Matches\\shortArms() has an unused parameter $i.",
+   "tip": null
+  },
+  {
+   "file": "src/matches.php",
+   "line": 115,
+   "identifier": "match.unhandled",
+   "message": "Match expression does not handle remaining value: string",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 20,
+   "identifier": "function.unusedParameter",
+   "message": "Function NoopFixture\\impure() has an unused parameter $i.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 20,
+   "identifier": "impureFunction.pure",
+   "message": "Function NoopFixture\\impure() is marked as impure but does not have any side effects.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 29,
+   "identifier": "throws.unusedType",
+   "message": "Function NoopFixture\\pureThrows() has RuntimeException in PHPDoc @throws tag but it's not thrown.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 95,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"$a\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 97,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"$list[0]\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 98,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"$box->value\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 99,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"$maybe?->value\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 101,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"$box::$shared\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 102,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"\\NoopFixture\\Box::LIMIT\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 103,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"$box::LIMIT\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 104,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"ANSWER\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 105,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"__LINE__\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 106,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"1.5\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 107,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"null\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 108,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"@$a\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 109,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"+$a\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 110,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"-$a\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 111,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"!$a\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 112,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"~$a\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 113,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"(string) $a\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 114,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"(int) $s\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 115,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"(bool) $a\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 116,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"(float) $a\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 117,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"(array) $a\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 118,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"(object) $a\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 119,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"isset($a, $list[1])\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 119,
+   "identifier": "isset.variable",
+   "message": "Variable $a in isset() always exists and is not nullable.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 120,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"empty($a)\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 121,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"\"value {$a} and {$box->value}\"\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 122,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"[1, 'k' => 2, ...$list]\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 123,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"clone $box\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 124,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"$a + 1\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 125,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"$a . 'x'\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 126,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"$a instanceof \\NoopFixture\\Box\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 126,
+   "identifier": "instanceof.alwaysFalse",
+   "message": "Instanceof between int and NoopFixture\\Box will always evaluate to false.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 127,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"$box->value\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 128,
+   "identifier": "logicalXor.resultUnused",
+   "message": "Unused result of \"xor\" operator.",
+   "tip": "This operator has unexpected precedence, try disambiguating the logic with parentheses ()."
+  },
+  {
+   "file": "src/noop.php",
+   "line": 129,
+   "identifier": "logicalAnd.resultUnused",
+   "message": "Unused result of \"and\" operator.",
+   "tip": "This operator has unexpected precedence, try disambiguating the logic with parentheses ()."
+  },
+  {
+   "file": "src/noop.php",
+   "line": 130,
+   "identifier": "logicalOr.resultUnused",
+   "message": "Unused result of \"or\" operator.",
+   "tip": "This operator has unexpected precedence, try disambiguating the logic with parentheses ()."
+  },
+  {
+   "file": "src/noop.php",
+   "line": 131,
+   "identifier": "logicalAnd.resultUnused",
+   "message": "Unused result of \"and\" operator.",
+   "tip": "This operator has unexpected precedence, try disambiguating the logic with parentheses ()."
+  },
+  {
+   "file": "src/noop.php",
+   "line": 132,
+   "identifier": "booleanAnd.resultUnused",
+   "message": "Unused result of \"&&\" operator.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 133,
+   "identifier": "booleanOr.resultUnused",
+   "message": "Unused result of \"||\" operator.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 134,
+   "identifier": "ternary.resultUnused",
+   "message": "Unused result of ternary operator.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 135,
+   "identifier": "ternary.resultUnused",
+   "message": "Unused result of ternary operator.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 136,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"match ($a) {\u2026\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 140,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"fn() => 1\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 148,
+   "identifier": "function.resultUnused",
+   "message": "Call to function strlen() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 149,
+   "identifier": "function.resultUnused",
+   "message": "Call to function strlen() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 151,
+   "identifier": "function.resultUnused",
+   "message": "Call to function NoopFixture\\pure() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 152,
+   "identifier": "function.resultUnused",
+   "message": "Call to function NoopFixture\\sideEffectFree() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 156,
+   "identifier": "function.resultUnused",
+   "message": "Call to function NoopFixture\\pure() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 157,
+   "identifier": "function.resultUnused",
+   "message": "Call to function strlen() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 158,
+   "identifier": "function.resultUnused",
+   "message": "Call to function array_map() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 159,
+   "identifier": "function.resultUnused",
+   "message": "Call to function array_map() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 166,
+   "identifier": "function.resultUnused",
+   "message": "Call to function array_map() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 168,
+   "identifier": "function.resultUnused",
+   "message": "Call to function array_filter() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 169,
+   "identifier": "function.resultUnused",
+   "message": "Call to function array_filter() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 170,
+   "identifier": "function.resultUnused",
+   "message": "Call to function array_filter() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 171,
+   "identifier": "function.resultUnused",
+   "message": "Call to function var_export() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 173,
+   "identifier": "function.resultUnused",
+   "message": "Call to function print_r() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 174,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"('strlen')($s)\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 175,
+   "identifier": "callable.nonCallable",
+   "message": "Trying to invoke 'nothing' but it's not a callable.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 176,
+   "identifier": "method.resultUnused",
+   "message": "Call to method NoopFixture\\Box::get() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 178,
+   "identifier": "method.resultUnused",
+   "message": "Call to method NoopFixture\\Box::get() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 179,
+   "identifier": "staticMethod.resultUnused",
+   "message": "Call to static method NoopFixture\\Box::make() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 180,
+   "identifier": "staticMethod.resultUnused",
+   "message": "Call to static method NoopFixture\\Box::make() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 181,
+   "identifier": "method.resultUnused",
+   "message": "Call to method NoopFixture\\Box::get() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 182,
+   "identifier": "staticMethod.resultUnused",
+   "message": "Call to static method NoopFixture\\Box::make() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 184,
+   "identifier": "new.resultUnused",
+   "message": "Call to NoopFixture\\Box::__construct() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 185,
+   "identifier": "new.resultUnused",
+   "message": "Call to new NoopFixture\\Plain() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 187,
+   "identifier": "new.resultUnused",
+   "message": "Call to new stdClass() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 189,
+   "identifier": "class.notFound",
+   "message": "Instantiated class NoopFixture\\Missing not found.",
+   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+  },
+  {
+   "file": "src/noop.php",
+   "line": 190,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"new class\u2026\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 192,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"new class(1) extends \\NoopFixture\\Plain\u2026\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 193,
+   "identifier": "constructor.unusedParameter",
+   "message": "Constructor of an anonymous class has an unused parameter $i.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 197,
+   "identifier": "function.resultUnused",
+   "message": "Call to function NoopFixture\\pure() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 198,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"'NoopFixture\\pure'\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 200,
+   "identifier": "method.resultUnused",
+   "message": "Call to method NoopFixture\\Box::get() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 201,
+   "identifier": "staticMethod.resultUnused",
+   "message": "Call to static method NoopFixture\\Box::make() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 205,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"${$s}\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 206,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"${'a' . 'b'}\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 206,
+   "identifier": "variable.undefined",
+   "message": "Undefined variable: $ab",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 208,
+   "identifier": "assign.unused",
+   "message": "Value assigned to variable $q is never read.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 212,
+   "identifier": "postInc.type",
+   "message": "Cannot use ++ on string.",
+   "tip": "Operator ++ is deprecated for non-numeric-strings. Either narrow the type to numeric-string, or use str_increment()."
+  },
+  {
+   "file": "src/noop.php",
+   "line": 215,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"\\NoopFixture\\Box::LIMIT\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 216,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"new class(i: 1) extends \\NoopFixture\\Plain\u2026\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 217,
+   "identifier": "constructor.unusedParameter",
+   "message": "Constructor of an anonymous class has an unused parameter $i.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 222,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"($a + 1) * 2\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 223,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"(int) $a\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 223,
+   "identifier": "cast.deprecated",
+   "message": "Non-standard (integer) cast is deprecated in PHP 8.5. Use (int) instead.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 224,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"(bool) $a\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 224,
+   "identifier": "cast.deprecated",
+   "message": "Non-standard (boolean) cast is deprecated in PHP 8.5. Use (bool) instead.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 225,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"(double) $a\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 225,
+   "identifier": "cast.deprecated",
+   "message": "Non-standard (double) cast is deprecated in PHP 8.5. Use (float) instead.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 226,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"(string) $a\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 226,
+   "identifier": "cast.deprecated",
+   "message": "Non-standard (binary) cast is deprecated in PHP 8.5. Use (string) instead.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 227,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"$box->{$s}\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "src/noop.php",
+   "line": 228,
+   "identifier": "expr.resultUnused",
+   "message": "Expression \"$box->{$s . 'x'}\" on a separate line does not do anything.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 59,
+   "identifier": "nullCoalesce.property",
+   "message": "Property DeadCode\\NullCoalesce\\Holder::$typedDefault (int) on left side of ?? is not nullable.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 60,
+   "identifier": "nullCoalesce.property",
+   "message": "Property DeadCode\\NullCoalesce\\Holder::$phpDoc (string) on left side of ?? is not nullable.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 61,
+   "identifier": "nullCoalesce.property",
+   "message": "Property DeadCode\\NullCoalesce\\Holder::$alwaysNull (null) on left side of ?? is always null.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 64,
+   "identifier": "nullCoalesce.initializedProperty",
+   "message": "Property DeadCode\\NullCoalesce\\Holder::$promoted on left side of ?? is not nullable nor uninitialized.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 65,
+   "identifier": "nullCoalesce.initializedProperty",
+   "message": "Property DeadCode\\NullCoalesce\\Holder::$promotedMutable on left side of ?? is not nullable nor uninitialized.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 66,
+   "identifier": "nullCoalesce.property",
+   "message": "Static property DeadCode\\NullCoalesce\\Holder::$staticTyped (int) on left side of ?? is not nullable.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 67,
+   "identifier": "nullCoalesce.property",
+   "message": "Static property DeadCode\\NullCoalesce\\Holder::$staticTyped (int) on left side of ?? is not nullable.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 68,
+   "identifier": "nullCoalesce.initializedProperty",
+   "message": "Property DeadCode\\NullCoalesce\\Holder::$self on left side of ?? is not nullable nor uninitialized.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 69,
+   "identifier": "nullCoalesce.offset",
+   "message": "Offset 'a' on array{a: int, b?: string} on left side of ?? always exists and is not nullable.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 73,
+   "identifier": "nullCoalesce.initializedProperty",
+   "message": "Property DeadCode\\NullCoalesce\\Holder::$typed on left side of ?? is not nullable nor uninitialized.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 75,
+   "identifier": "nullCoalesce.initializedProperty",
+   "message": "Property DeadCode\\NullCoalesce\\Holder::$nullNative on left side of ?? is always null and initialized.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 83,
+   "identifier": "nullCoalesce.property",
+   "message": "Static property DeadCode\\NullCoalesce\\Holder::$staticTyped (int) on left side of ?? is not nullable.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 89,
+   "identifier": "nullCoalesce.variable",
+   "message": "Variable $i on left side of ?? always exists and is not nullable.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 92,
+   "identifier": "nullCoalesce.variable",
+   "message": "Variable $undefined on left side of ?? is never defined.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 97,
+   "identifier": "nullCoalesce.variable",
+   "message": "Variable $_GET on left side of ?? always exists and is not nullable.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 100,
+   "identifier": "nullCoalesce.variable",
+   "message": "Variable $null on left side of ?? always exists and is always null.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 101,
+   "identifier": "nullCoalesce.variable",
+   "message": "Variable $i on left side of ??= always exists and is not nullable.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 102,
+   "identifier": "nullCoalesce.variable",
+   "message": "Variable $undefinedAssign on left side of ??= is never defined.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 103,
+   "identifier": "nullCoalesce.variable",
+   "message": "Variable $i on left side of ?? always exists and is not nullable.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 106,
+   "identifier": "nullCoalesce.variable",
+   "message": "Variable $v on left side of ?? always exists and is not nullable.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 109,
+   "identifier": "nullCoalesce.variable",
+   "message": "Variable $later on left side of ?? always exists and is not nullable.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 125,
+   "identifier": "nullCoalesce.offset",
+   "message": "Offset 'a' on array{a: 1, b: null, c: array{d: 1}} on left side of ?? always exists and is not nullable.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 126,
+   "identifier": "nullCoalesce.offset",
+   "message": "Offset 'b' on array{a: 1, b: null, c: array{d: 1}} on left side of ?? always exists and is always null.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 127,
+   "identifier": "nullCoalesce.offset",
+   "message": "Offset 'x' on array{a: 1, b: null, c: array{d: 1}} on left side of ?? does not exist.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 128,
+   "identifier": "nullCoalesce.offset",
+   "message": "Offset 'x' on array{a: 1, b: null, c: array{d: 1}} on left side of ?? does not exist.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 129,
+   "identifier": "nullCoalesce.offset",
+   "message": "Offset 'd' on array{d: 1} on left side of ?? always exists and is not nullable.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 130,
+   "identifier": "nullCoalesce.offset",
+   "message": "Offset 'e' on array{d: 1} on left side of ?? does not exist.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 133,
+   "identifier": "nullCoalesce.offset",
+   "message": "Offset 1 on array<string, int> on left side of ?? does not exist.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 135,
+   "identifier": "nullCoalesce.offset",
+   "message": "Offset 'a' on list<int> on left side of ?? does not exist.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 136,
+   "identifier": "nullCoalesce.offset",
+   "message": "Offset 0 on non-empty-list<int> on left side of ?? always exists and is not nullable.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 138,
+   "identifier": "nullCoalesce.offset",
+   "message": "Offset '1' on array{1: int, 2: int} on left side of ?? always exists and is not nullable.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 139,
+   "identifier": "nullCoalesce.offset",
+   "message": "Offset true on array{1: int, 2: int} on left side of ?? always exists and is not nullable.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 140,
+   "identifier": "offsetAccess.invalidOffset",
+   "message": "Invalid array key type float.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 140,
+   "identifier": "nullCoalesce.offset",
+   "message": "Offset 1.5 on array{1: int, 2: int} on left side of ?? always exists and is not nullable.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 141,
+   "identifier": "offsetAccess.invalidOffset",
+   "message": "Invalid array key type null.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 141,
+   "identifier": "nullCoalesce.offset",
+   "message": "Offset null on array{1: int, 2: int} on left side of ?? does not exist.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 143,
+   "identifier": "nullCoalesce.offset",
+   "message": "Offset 0 on non-empty-list<int> on left side of ?? always exists and is not nullable.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 144,
+   "identifier": "nullCoalesce.offset",
+   "message": "Offset 0 on 'abc'|array{int} on left side of ?? always exists and is not nullable.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 147,
+   "identifier": "nullCoalesce.offset",
+   "message": "Offset 'a' on string on left side of ?? does not exist.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 152,
+   "identifier": "nullCoalesce.variable",
+   "message": "Variable $undefinedArray on left side of ?? is never defined.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 153,
+   "identifier": "nullCoalesce.variable",
+   "message": "Variable $undefinedArray on left side of ?? is never defined.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 154,
+   "identifier": "nullCoalesce.offset",
+   "message": "Offset 'a' on array{a: 1, b: null, c: array{d: 1}} on left side of ??= always exists and is not nullable.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 154,
+   "identifier": "assign.unused",
+   "message": "Value assigned to $shape['a'] is never read.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 155,
+   "identifier": "assign.unused",
+   "message": "Value assigned to $map['a'] is never read.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 157,
+   "identifier": "nullCoalesce.offset",
+   "message": "Offset 'a' on null on left side of ?? does not exist.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 162,
+   "identifier": "property.nonObject",
+   "message": "Cannot access property $bar on string.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 162,
+   "identifier": "nullsafe.neverNull",
+   "message": "Using nullsafe property access \"?->bar\" on left side of ?? is unnecessary. Use -> instead.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 163,
+   "identifier": "nullCoalesce.property",
+   "message": "Property DeadCode\\NullCoalesce\\Holder::$typedDefault (int) on left side of ?? is not nullable.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 164,
+   "identifier": "nullCoalesce.property",
+   "message": "Property DeadCode\\NullCoalesce\\Holder::$phpDoc (string) on left side of ?? is not nullable.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 169,
+   "identifier": "nullsafe.neverNull",
+   "message": "Using nullsafe property access \"?->typedDefault\" on left side of ?? is unnecessary. Use -> instead.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 170,
+   "identifier": "nullCoalesce.expr",
+   "message": "Expression on left side of ?? is not nullable.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 171,
+   "identifier": "nullsafe.neverNull",
+   "message": "Using nullsafe property access \"?->(Expression)\" on left side of ?? is unnecessary. Use -> instead.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 173,
+   "identifier": "nullCoalesce.property",
+   "message": "Static property DeadCode\\NullCoalesce\\Holder::$staticTyped (int) on left side of ?? is not nullable.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 174,
+   "identifier": "nullCoalesce.property",
+   "message": "Static property DeadCode\\NullCoalesce\\Holder::$staticTyped (int) on left side of ?? is not nullable.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 175,
+   "identifier": "nullCoalesce.variable",
+   "message": "Variable $undefinedHolder on left side of ?? is never defined.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 176,
+   "identifier": "nullCoalesce.variable",
+   "message": "Variable $undefinedHolder on left side of ?? is never defined.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 177,
+   "identifier": "class.notFound",
+   "message": "Access to static property $x on an unknown class DeadCode\\NullCoalesce\\Missing.",
+   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 180,
+   "identifier": "nullCoalesce.variable",
+   "message": "Variable $undefinedHolder on left side of ?? is never defined.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 181,
+   "identifier": "nullCoalesce.offset",
+   "message": "Offset 'a' on array{a: int, b?: string} on left side of ?? always exists and is not nullable.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 182,
+   "identifier": "nullCoalesce.property",
+   "message": "Property DeadCode\\NullCoalesce\\Holder::$typedDefault (int) on left side of ??= is not nullable.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 187,
+   "identifier": "nullCoalesce.expr",
+   "message": "Expression on left side of ?? is not nullable.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 188,
+   "identifier": "nullCoalesce.expr",
+   "message": "Expression on left side of ?? is always null.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 189,
+   "identifier": "nullCoalesce.expr",
+   "message": "Expression on left side of ?? is not nullable.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 191,
+   "identifier": "nullCoalesce.expr",
+   "message": "Expression on left side of ?? is not nullable.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 191,
+   "identifier": "variable.unused",
+   "message": "Variable $a is never read.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 192,
+   "identifier": "nullCoalesce.expr",
+   "message": "Expression on left side of ?? is not nullable.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 195,
+   "identifier": "return.unusedType",
+   "message": "Function DeadCode\\NullCoalesce\\maybeInt() never returns int so it can be removed from the return type.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 205,
+   "identifier": "nullCoalesce.variable",
+   "message": "Variable $i on left side of ?? always exists and is not nullable.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 206,
+   "identifier": "nullCoalesce.unnecessary",
+   "message": "Coalesce operator ?? is unnecessary because the left side is always set and the right side is null.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 207,
+   "identifier": "nullCoalesce.variable",
+   "message": "Variable $undefined on left side of ?? is never defined.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 208,
+   "identifier": "nullCoalesce.variable",
+   "message": "Variable $i on left side of ?? always exists and is not nullable.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 209,
+   "identifier": "nullCoalesce.variable",
+   "message": "Variable $i on left side of ?? always exists and is not nullable.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 210,
+   "identifier": "nullCoalesce.property",
+   "message": "Property DeadCode\\NullCoalesce\\Holder::$typedDefault (int) on left side of ?? is not nullable.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 214,
+   "identifier": "nullCoalesce.offset",
+   "message": "Offset 'a' on array{a: 1} on left side of ?? always exists and is not nullable.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 215,
+   "identifier": "nullCoalesce.offset",
+   "message": "Offset int on array{a: 1} on left side of ?? does not exist.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 217,
+   "identifier": "nullCoalesce.offset",
+   "message": "Offset 0 on 'a' on left side of ?? always exists and is not nullable.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 218,
+   "identifier": "nullCoalesce.property",
+   "message": "Static property DeadCode\\NullCoalesce\\Holder::$staticTyped (int) on left side of ?? is not nullable.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 220,
+   "identifier": "nullCoalesce.expr",
+   "message": "Expression on left side of ?? is not nullable.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 221,
+   "identifier": "nullCoalesce.unnecessary",
+   "message": "Coalesce operator ?? is unnecessary because the left side is always set and the right side is null.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 222,
+   "identifier": "nullCoalesce.unnecessary",
+   "message": "Coalesce operator ?? is unnecessary because the left side is always set and the right side is null.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 232,
+   "identifier": "nullCoalesce.variable",
+   "message": "Variable $s on left side of ?? always exists and is not nullable.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php (in context of class DeadCode\\NullCoalesce\\UsesTraitA)",
+   "line": 234,
+   "identifier": "nullCoalesce.property",
+   "message": "Property DeadCode\\NullCoalesce\\UsesTraitA::$same (int) on left side of ?? is not nullable.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php (in context of class DeadCode\\NullCoalesce\\UsesTraitB)",
+   "line": 234,
+   "identifier": "nullCoalesce.property",
+   "message": "Property DeadCode\\NullCoalesce\\UsesTraitB::$same (int) on left side of ?? is not nullable.",
+   "tip": null
+  },
+  {
+   "file": "src/special-checks.php",
+   "line": 15,
+   "identifier": "trait.unused",
+   "message": "Trait DeadCode\\SpecialChecks\\SomeTrait is used zero times and is not analysed.",
+   "tip": "See: https://phpstan.org/blog/how-phpstan-analyses-traits"
+  },
+  {
+   "file": "src/special-checks.php",
+   "line": 73,
+   "identifier": "function.resultUnused",
+   "message": "Call to function in_array() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/special-checks.php",
+   "line": 74,
+   "identifier": "function.resultUnused",
+   "message": "Call to function in_array() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/special-checks.php",
+   "line": 75,
+   "identifier": "function.resultUnused",
+   "message": "Call to function in_array() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/special-checks.php",
+   "line": 76,
+   "identifier": "function.resultUnused",
+   "message": "Call to function in_array() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/special-checks.php",
+   "line": 77,
+   "identifier": "function.resultUnused",
+   "message": "Call to function in_array() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/special-checks.php",
+   "line": 78,
+   "identifier": "function.resultUnused",
+   "message": "Call to function in_array() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/special-checks.php",
+   "line": 78,
+   "identifier": "function.impossibleType",
+   "message": "Call to function in_array() with arguments 'a', array{} and true will always evaluate to false.",
+   "tip": null
+  },
+  {
+   "file": "src/special-checks.php",
+   "line": 79,
+   "identifier": "function.resultUnused",
+   "message": "Call to function in_array() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/special-checks.php",
+   "line": 80,
+   "identifier": "function.resultUnused",
+   "message": "Call to function in_array() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/special-checks.php",
+   "line": 80,
+   "identifier": "function.alreadyNarrowedType",
+   "message": "Call to function in_array() with arguments 'a', array{'a'} and true will always evaluate to true.",
+   "tip": null
+  },
+  {
+   "file": "src/special-checks.php",
+   "line": 81,
+   "identifier": "function.resultUnused",
+   "message": "Call to function in_array() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/special-checks.php",
+   "line": 82,
+   "identifier": "function.resultUnused",
+   "message": "Call to function in_array() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/special-checks.php",
+   "line": 83,
+   "identifier": "function.resultUnused",
+   "message": "Call to function in_array() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/special-checks.php",
+   "line": 84,
+   "identifier": "function.resultUnused",
+   "message": "Call to function in_array() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/special-checks.php",
+   "line": 85,
+   "identifier": "function.resultUnused",
+   "message": "Call to function in_array() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/special-checks.php",
+   "line": 85,
+   "identifier": "function.impossibleType",
+   "message": "Call to function in_array() with DeadCode\\SpecialChecks\\Suit and array{'a'} will always evaluate to false.",
+   "tip": null
+  },
+  {
+   "file": "src/special-checks.php",
+   "line": 86,
+   "identifier": "function.resultUnused",
+   "message": "Call to function in_array() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/special-checks.php",
+   "line": 110,
+   "identifier": "function.resultUnused",
+   "message": "Call to function method_exists() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/special-checks.php",
+   "line": 110,
+   "identifier": "function.impossibleType",
+   "message": "Call to function method_exists() with 'DeadCode\u2026' and 'native' will always evaluate to false.",
+   "tip": null
+  },
+  {
+   "file": "src/special-checks.php",
+   "line": 111,
+   "identifier": "function.resultUnused",
+   "message": "Call to function method_exists() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/special-checks.php",
+   "line": 112,
+   "identifier": "function.resultUnused",
+   "message": "Call to function method_exists() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/special-checks.php",
+   "line": 112,
+   "identifier": "function.alreadyNarrowedType",
+   "message": "Call to function method_exists() with DeadCode\\SpecialChecks\\Open and 'native' will always evaluate to true.",
+   "tip": null
+  },
+  {
+   "file": "src/special-checks.php",
+   "line": 113,
+   "identifier": "function.resultUnused",
+   "message": "Call to function method_exists() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/special-checks.php",
+   "line": 114,
+   "identifier": "function.resultUnused",
+   "message": "Call to function method_exists() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/special-checks.php",
+   "line": 115,
+   "identifier": "function.resultUnused",
+   "message": "Call to function method_exists() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/special-checks.php",
+   "line": 115,
+   "identifier": "function.alreadyNarrowedType",
+   "message": "Call to function method_exists() with DeadCode\\SpecialChecks\\Closed and 'native' will always evaluate to true.",
+   "tip": null
+  },
+  {
+   "file": "src/special-checks.php",
+   "line": 116,
+   "identifier": "function.resultUnused",
+   "message": "Call to function method_exists() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/special-checks.php",
+   "line": 116,
+   "identifier": "function.impossibleType",
+   "message": "Call to function method_exists() with DeadCode\\SpecialChecks\\Closed and 'missing' will always evaluate to false.",
+   "tip": null
+  },
+  {
+   "file": "src/special-checks.php",
+   "line": 117,
+   "identifier": "function.resultUnused",
+   "message": "Call to function method_exists() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/special-checks.php",
+   "line": 117,
+   "identifier": "function.impossibleType",
+   "message": "Call to function method_exists() with 'DeadCode\\\\SpecialChecks\\\\Closed' and 'missing' will always evaluate to false.",
+   "tip": null
+  },
+  {
+   "file": "src/special-checks.php",
+   "line": 118,
+   "identifier": "function.resultUnused",
+   "message": "Call to function method_exists() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/special-checks.php",
+   "line": 119,
+   "identifier": "function.resultUnused",
+   "message": "Call to function method_exists() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/special-checks.php",
+   "line": 120,
+   "identifier": "function.resultUnused",
+   "message": "Call to function method_exists() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/special-checks.php",
+   "line": 120,
+   "identifier": "function.alreadyNarrowedType",
+   "message": "Call to function method_exists() with DeadCode\\SpecialChecks\\Suit::Hearts and 'cases' will always evaluate to true.",
+   "tip": null
+  },
+  {
+   "file": "src/special-checks.php",
+   "line": 122,
+   "identifier": "function.resultUnused",
+   "message": "Call to function property_exists() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/special-checks.php",
+   "line": 123,
+   "identifier": "function.resultUnused",
+   "message": "Call to function property_exists() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/special-checks.php",
+   "line": 124,
+   "identifier": "function.resultUnused",
+   "message": "Call to function property_exists() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/special-checks.php",
+   "line": 124,
+   "identifier": "function.alreadyNarrowedType",
+   "message": "Call to function property_exists() with DeadCode\\SpecialChecks\\Open and 'declared' will always evaluate to true.",
+   "tip": null
+  },
+  {
+   "file": "src/special-checks.php",
+   "line": 125,
+   "identifier": "function.resultUnused",
+   "message": "Call to function property_exists() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/special-checks.php",
+   "line": 126,
+   "identifier": "function.resultUnused",
+   "message": "Call to function property_exists() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/special-checks.php",
+   "line": 127,
+   "identifier": "function.resultUnused",
+   "message": "Call to function property_exists() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/special-checks.php",
+   "line": 127,
+   "identifier": "function.alreadyNarrowedType",
+   "message": "Call to function property_exists() with DeadCode\\SpecialChecks\\Closed and 'counter' will always evaluate to true.",
+   "tip": null
+  },
+  {
+   "file": "src/special-checks.php",
+   "line": 128,
+   "identifier": "function.resultUnused",
+   "message": "Call to function property_exists() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/special-checks.php",
+   "line": 128,
+   "identifier": "function.impossibleType",
+   "message": "Call to function property_exists() with DeadCode\\SpecialChecks\\Closed and 'missing' will always evaluate to false.",
+   "tip": null
+  },
+  {
+   "file": "src/special-checks.php",
+   "line": 129,
+   "identifier": "function.resultUnused",
+   "message": "Call to function property_exists() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/special-checks.php",
+   "line": 130,
+   "identifier": "function.resultUnused",
+   "message": "Call to function property_exists() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/special-checks.php",
+   "line": 131,
+   "identifier": "function.resultUnused",
+   "message": "Call to function property_exists() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/special-checks.php",
+   "line": 132,
+   "identifier": "function.resultUnused",
+   "message": "Call to function property_exists() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/special-checks.php",
+   "line": 133,
+   "identifier": "function.resultUnused",
+   "message": "Call to function property_exists() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/special-checks.php",
+   "line": 137,
+   "identifier": "function.impossibleType",
+   "message": "Call to function class_exists() with 'DeadCode\\\\SpecialChecks\\\\SomeInterface' will always evaluate to false.",
+   "tip": null
+  },
+  {
+   "file": "src/special-checks.php",
+   "line": 138,
+   "identifier": "function.impossibleType",
+   "message": "Call to function class_exists() with 'DeadCode\\\\SpecialChecks\\\\SomeTrait' will always evaluate to false.",
+   "tip": null
+  },
+  {
+   "file": "src/special-checks.php",
+   "line": 140,
+   "identifier": "function.impossibleType",
+   "message": "Call to function interface_exists() with 'DeadCode\\\\SpecialChecks\\\\Open' will always evaluate to false.",
+   "tip": null
+  },
+  {
+   "file": "src/special-checks.php",
+   "line": 142,
+   "identifier": "function.impossibleType",
+   "message": "Call to function trait_exists() with 'DeadCode\\\\SpecialChecks\\\\Open' will always evaluate to false.",
+   "tip": null
+  },
+  {
+   "file": "src/special-checks.php",
+   "line": 144,
+   "identifier": "function.impossibleType",
+   "message": "Call to function enum_exists() with 'DeadCode\\\\SpecialChecks\\\\Open' will always evaluate to false.",
+   "tip": null
+  },
+  {
+   "file": "src/special-checks.php",
+   "line": 152,
+   "identifier": "class.notFound",
+   "message": "Parameter $unknown of method DeadCode\\SpecialChecks\\Child::doFoo() has invalid type DeadCode\\SpecialChecks\\Unknown.",
+   "tip": null
+  },
+  {
+   "file": "src/special-checks.php",
+   "line": 154,
+   "identifier": "instanceof.alwaysTrue",
+   "message": "Instanceof between $this(DeadCode\\SpecialChecks\\Child) and DeadCode\\SpecialChecks\\Child will always evaluate to true.",
+   "tip": null
+  },
+  {
+   "file": "src/special-checks.php",
+   "line": 156,
+   "identifier": "instanceof.alwaysTrue",
+   "message": "Instanceof between $this(DeadCode\\SpecialChecks\\Child) and DeadCode\\SpecialChecks\\Child will always evaluate to true.",
+   "tip": null
+  },
+  {
+   "file": "src/special-checks.php",
+   "line": 158,
+   "identifier": "instanceof.invalidExprType",
+   "message": "Instanceof between DeadCode\\SpecialChecks\\Unknown and int results in an error.",
+   "tip": null
+  },
+  {
+   "file": "src/special-checks.php",
+   "line": 160,
+   "identifier": "function.impossibleType",
+   "message": "Call to function class_exists() with 'DeadCode\\\\SpecialChecks\\\\SomeInterface'|'DeadCode\\\\SpecialChecks\\\\SomeTrait' will always evaluate to false.",
+   "tip": null
+  },
+  {
+   "file": "src/special-checks.php",
+   "line": 162,
+   "identifier": "function.resultUnused",
+   "message": "Call to function method_exists() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "src/toggles.php",
+   "line": 7,
+   "identifier": "label.unused",
+   "message": "Label 'unused' is unused.",
+   "tip": null
+  },
+  {
+   "file": "src/toggles.php",
+   "line": 17,
+   "identifier": "constructor.unusedParameter",
+   "message": "Constructor of class DeadCodeFixture\\Toggles has an unused parameter $unused.",
+   "tip": null
+  },
+  {
+   "file": "src/toggles.php",
+   "line": 18,
+   "identifier": "property.onlyWritten",
+   "message": "Property DeadCodeFixture\\Toggles::$promoted is never read, only written.",
+   "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties"
+  },
+  {
+   "file": "src/toggles.php",
+   "line": 22,
+   "identifier": "variable.unused",
+   "message": "Variable $f is never read.",
+   "tip": null
+  },
+  {
+   "file": "src/toggles.php",
+   "line": 23,
+   "identifier": "closure.unusedUse",
+   "message": "Anonymous function has an unused use $a.",
+   "tip": null
+  },
+  {
+   "file": "src/traits.php",
+   "line": 6,
+   "identifier": "trait.unused",
+   "message": "Trait DeadCodeFixture\\NeverUsed is used zero times and is not analysed.",
+   "tip": "See: https://phpstan.org/blog/how-phpstan-analyses-traits"
+  },
+  {
+   "file": "src/traits.php",
+   "line": 11,
+   "identifier": "attribute.trait",
+   "message": "Trait cannot be an Attribute class.",
+   "tip": null
+  },
+  {
+   "file": "src/traits.php",
+   "line": 14,
+   "identifier": "classConstant.unused",
+   "message": "Constant DeadCodeFixture\\UsesTrait::TRAIT_CONST is unused.",
+   "tip": "See: https://phpstan.org/developing-extensions/always-used-class-constants"
+  },
+  {
+   "file": "src/traits.php",
+   "line": 24,
+   "identifier": "trait.unused",
+   "message": "Trait DeadCodeFixture\\UsedByTrait is used zero times and is not analysed.",
+   "tip": "See: https://phpstan.org/blog/how-phpstan-analyses-traits"
+  },
+  {
+   "file": "src/traits.php",
+   "line": 28,
+   "identifier": "trait.unused",
+   "message": "Trait DeadCodeFixture\\Outer is used zero times and is not analysed.",
+   "tip": "See: https://phpstan.org/blog/how-phpstan-analyses-traits"
+  }
+ ]
+}

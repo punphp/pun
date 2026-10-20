@@ -2,11 +2,14 @@
 //! file, only over the declarations that hold such an expression.
 
 use std::collections::HashMap;
+use std::sync::{Arc, Mutex};
 
 use mago_allocator::{Arena, LocalArena};
 use mago_analyzer::Analyzer;
 use mago_analyzer::analysis_result::AnalysisResult;
-use mago_analyzer::plugin::PluginRegistry;
+use mago_analyzer::plugin::{
+    ExpressionHook, ExpressionHookResult, HookContext, HookResult, PluginRegistry, Provider, ProviderMeta,
+};
 use mago_analyzer::settings::Settings;
 use mago_codex::metadata::CodebaseMetadata;
 use mago_codex::reference::SymbolReferences;
@@ -17,6 +20,7 @@ use mago_names::ResolvedNames;
 use mago_span::{HasSpan, Span};
 use mago_syntax::cst::*;
 use mago_syntax::walker::MutWalker;
+use pun_phpstan::types::Tri;
 
 use super::{Checker, assign, dead_code};
 
@@ -97,7 +101,7 @@ pub(super) fn infer<'arena>(
     php_version: u32,
     level: u8,
     extra: Vec<Span>,
-) -> HashMap<Span, TUnion> {
+) -> (HashMap<Span, TUnion>, HashMap<Span, Tri>) {
     let mut wanted = TypedExpressions {
         spans: Vec::new(),
         names,
@@ -109,7 +113,9 @@ pub(super) fn infer<'arena>(
     let mut wanted = wanted.spans;
     wanted.extend(extra);
     wanted.extend(dead_code::flow_types(program, level));
-    analyse(arena, file, program, names, codebase, php_version, wanted)
+    let (typed, watched) = dead_code::coalesce_types(program, level);
+    wanted.extend(typed);
+    analyse(arena, file, program, names, codebase, php_version, wanted, watched)
 }
 
 /// Mago's types of the `wanted` expressions, analysing only the declarations that hold them.
@@ -121,11 +127,23 @@ pub(super) fn analyse<'arena>(
     codebase: &CodebaseMetadata,
     php_version: u32,
     wanted: Vec<Span>,
-) -> HashMap<Span, TUnion> {
+    watched: Vec<Span>,
+) -> (HashMap<Span, TUnion>, HashMap<Span, Tri>) {
     if wanted.is_empty() {
-        return HashMap::new();
+        return Default::default();
     }
-    let registry = PluginRegistry::new();
+    let mut registry = PluginRegistry::new();
+    let found = Arc::<Mutex<Found>>::default();
+    if !watched.is_empty() {
+        let ids = watched
+            .into_iter()
+            .map(|s| {
+                let text = &file.contents[s.start.offset as usize..s.end.offset as usize];
+                (s, text.iter().filter(|b| !b.is_ascii_whitespace()).copied().collect())
+            })
+            .collect();
+        registry.register_expression_hook(Definedness { ids, found: Arc::clone(&found) });
+    }
     let settings = Settings::new(crate::codebase::php_version(php_version));
     let analyzer = Analyzer::new(arena, file, names, codebase, &registry, settings);
     let mut result = AnalysisResult::new(SymbolReferences::new());
@@ -143,11 +161,70 @@ pub(super) fn analyse<'arena>(
     let analysed = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         analyzer.analyze_with_artifacts(program, &mut result)
     }));
-    let Ok(Ok(artifacts)) = analysed else { return HashMap::new() };
-    wanted
+    let Ok(Ok(artifacts)) = analysed else { return Default::default() };
+    let mut types: HashMap<Span, TUnion> = wanted
         .into_iter()
         .filter_map(|span| Some((span, artifacts.get_expression_type(&span)?.clone())))
-        .collect()
+        .collect();
+    let found = std::mem::take(&mut *found.lock().expect("no hook panics while holding the lock"));
+    types.extend(found.read);
+    (types, found.defined)
+}
+
+/// `$scope->hasVariableType()` of the watched direct variables, and `hasExpressionType()` of the other watched
+/// expressions (by Mago's expression id, their text without whitespace), from Mago's block context where it reads
+/// them. A loop body is analysed more than once: answers that differ are a maybe.
+struct Definedness {
+    ids: HashMap<Span, Vec<u8>>,
+    found: Arc<Mutex<Found>>,
+}
+
+/// What [`Definedness`] found: the certainties, and the watched variables' types where they are read (Mago keeps a
+/// `??=` target's type after the assignment).
+#[derive(Default)]
+struct Found {
+    defined: HashMap<Span, Tri>,
+    read: HashMap<Span, TUnion>,
+}
+
+impl Provider for Definedness {
+    fn meta() -> &'static ProviderMeta {
+        static META: ProviderMeta = ProviderMeta::new("pun-definedness", "definedness", "variable certainty");
+        &META
+    }
+}
+
+impl ExpressionHook for Definedness {
+    fn before_expression(&self, expr: &Expression<'_>, context: &mut HookContext<'_, '_>) -> HookResult<ExpressionHookResult> {
+        let span = expr.span();
+        if let Some(id) = self.ids.get(&span) {
+            let block = context.block_context();
+            let name = mago_word::word(id);
+            let variable = matches!(expr, Expression::Variable(_));
+            let local = block.locals.get(&name);
+            let now = match local {
+                Some(t) if t.possibly_undefined() || t.possibly_undefined_from_try() => Tri::Maybe,
+                Some(_) => Tri::Yes,
+                // (`canAnyVariableExist()` outside a function)
+                None if variable
+                    && (block.variables_possibly_in_scope.contains(&name)
+                        || context.scope().get_function_like().is_none()) =>
+                {
+                    Tri::Maybe
+                }
+                None => Tri::No,
+            };
+            let mut found = self.found.lock().expect("no hook panics while holding the lock");
+            if let Some(t) = local.filter(|_| variable) {
+                found.read.insert(span, (**t).clone());
+            }
+            let entry = found.defined.entry(span).or_insert(now);
+            if *entry != now {
+                *entry = Tri::Maybe;
+            }
+        }
+        Ok(ExpressionHookResult::Continue)
+    }
 }
 
 /// A copy of a program's statements without the functions, class-likes and methods that hold none of `wanted`. Every

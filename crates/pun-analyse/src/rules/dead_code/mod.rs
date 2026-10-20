@@ -4,6 +4,7 @@ mod conditions;
 mod finally;
 mod function_discard;
 mod impure_points;
+mod null_coalesce;
 mod no_discard;
 mod noop;
 mod unreachable;
@@ -44,6 +45,7 @@ pub(super) fn flow_types(program: &Program, level: u8) -> Vec<Span> {
 }
 
 pub(super) use unused_private::class as unused_private;
+pub(super) use null_coalesce::{coalesce as null_coalesce, coalesce_types};
 
 pub(super) fn statement(c: &mut Checker, s: &ExpressionStatement) {
     no_discard::statement(c, s);

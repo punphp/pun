@@ -1,6 +1,6 @@
 //! Branches of the dead-code rules that PHPStan's own rule fixtures miss: NotAnalysedTraitRule (it stays quiet when
 //! only files are analysed, as the level fixtures are), the bleedingEdge toggles (reportPreciseLineForUnusedFunction-
-//! Parameter, unusedLabel) and the private members of traits. Expected: PHPStan's run on tests/fixtures/dead_code for
+//! Parameter, unusedLabel, then all of bleedingEdge.neon) and the private members of traits. Expected: PHPStan's run on tests/fixtures/dead_code for
 //! each phpstan*.neon there, restricted to the identifiers Pun reports.
 
 use std::path::Path;
@@ -76,4 +76,9 @@ fn default_toggles() {
 #[test]
 fn bleeding_edge_toggles() {
     check("phpstan-bleeding");
+}
+
+#[test]
+fn bleeding_edge() {
+    check("phpstan-edge");
 }

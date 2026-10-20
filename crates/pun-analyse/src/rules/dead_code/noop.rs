@@ -1157,7 +1157,19 @@ fn print(c: &Checker, e: &Expression) -> String {
                 .collect::<Vec<_>>()
                 .join(", ")
         ),
+        // (a `new` binds tighter than any operator)
+        Expression::Parenthesized(p) if matches!(p.expression, Expression::Instantiation(_)) => print(c, p.expression),
         Expression::Parenthesized(p) => format!("({})", print(c, p.expression)),
+        Expression::Instantiation(n) if matches!(n.class, Expression::Identifier(_)) => format!(
+            "new {}({})",
+            print(c, n.class),
+            n.argument_list
+                .iter()
+                .flat_map(|args| args.arguments.iter())
+                .map(|a| print(c, a.value()))
+                .collect::<Vec<_>>()
+                .join(", ")
+        ),
         Expression::ArrayAccess(a) => format!("{}[{}]", print(c, a.array), print(c, a.index)),
         Expression::Access(Access::Property(a)) => {
             format!("{}->{}", print(c, a.object), selector(c, &a.property))

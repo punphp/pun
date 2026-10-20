@@ -1640,6 +1640,545 @@
    "tip": null
   },
   {
+   "file": "src/null-coalesce.php",
+   "line": 59,
+   "identifier": "nullCoalesce.property",
+   "message": "Property DeadCode\\NullCoalesce\\Holder::$typedDefault (int) on left side of ?? is not nullable.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 60,
+   "identifier": "nullCoalesce.property",
+   "message": "Property DeadCode\\NullCoalesce\\Holder::$phpDoc (string) on left side of ?? is not nullable.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 61,
+   "identifier": "nullCoalesce.property",
+   "message": "Property DeadCode\\NullCoalesce\\Holder::$alwaysNull (null) on left side of ?? is always null.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 64,
+   "identifier": "nullCoalesce.initializedProperty",
+   "message": "Property DeadCode\\NullCoalesce\\Holder::$promoted on left side of ?? is not nullable nor uninitialized.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 65,
+   "identifier": "nullCoalesce.initializedProperty",
+   "message": "Property DeadCode\\NullCoalesce\\Holder::$promotedMutable on left side of ?? is not nullable nor uninitialized.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 66,
+   "identifier": "nullCoalesce.property",
+   "message": "Static property DeadCode\\NullCoalesce\\Holder::$staticTyped (int) on left side of ?? is not nullable.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 67,
+   "identifier": "nullCoalesce.property",
+   "message": "Static property DeadCode\\NullCoalesce\\Holder::$staticTyped (int) on left side of ?? is not nullable.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 68,
+   "identifier": "nullCoalesce.initializedProperty",
+   "message": "Property DeadCode\\NullCoalesce\\Holder::$self on left side of ?? is not nullable nor uninitialized.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 69,
+   "identifier": "nullCoalesce.offset",
+   "message": "Offset 'a' on array{a: int, b?: string} on left side of ?? always exists and is not nullable.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 73,
+   "identifier": "nullCoalesce.initializedProperty",
+   "message": "Property DeadCode\\NullCoalesce\\Holder::$typed on left side of ?? is not nullable nor uninitialized.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 75,
+   "identifier": "nullCoalesce.initializedProperty",
+   "message": "Property DeadCode\\NullCoalesce\\Holder::$nullNative on left side of ?? is always null and initialized.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 83,
+   "identifier": "nullCoalesce.property",
+   "message": "Static property DeadCode\\NullCoalesce\\Holder::$staticTyped (int) on left side of ?? is not nullable.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 89,
+   "identifier": "nullCoalesce.variable",
+   "message": "Variable $i on left side of ?? always exists and is not nullable.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 92,
+   "identifier": "nullCoalesce.variable",
+   "message": "Variable $undefined on left side of ?? is never defined.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 97,
+   "identifier": "nullCoalesce.variable",
+   "message": "Variable $_GET on left side of ?? always exists and is not nullable.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 100,
+   "identifier": "nullCoalesce.variable",
+   "message": "Variable $null on left side of ?? always exists and is always null.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 101,
+   "identifier": "nullCoalesce.variable",
+   "message": "Variable $i on left side of ??= always exists and is not nullable.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 102,
+   "identifier": "nullCoalesce.variable",
+   "message": "Variable $undefinedAssign on left side of ??= is never defined.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 103,
+   "identifier": "nullCoalesce.variable",
+   "message": "Variable $i on left side of ?? always exists and is not nullable.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 106,
+   "identifier": "nullCoalesce.variable",
+   "message": "Variable $v on left side of ?? always exists and is not nullable.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 109,
+   "identifier": "nullCoalesce.variable",
+   "message": "Variable $later on left side of ?? always exists and is not nullable.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 125,
+   "identifier": "nullCoalesce.offset",
+   "message": "Offset 'a' on array{a: 1, b: null, c: array{d: 1}} on left side of ?? always exists and is not nullable.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 126,
+   "identifier": "nullCoalesce.offset",
+   "message": "Offset 'b' on array{a: 1, b: null, c: array{d: 1}} on left side of ?? always exists and is always null.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 127,
+   "identifier": "nullCoalesce.offset",
+   "message": "Offset 'x' on array{a: 1, b: null, c: array{d: 1}} on left side of ?? does not exist.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 128,
+   "identifier": "nullCoalesce.offset",
+   "message": "Offset 'x' on array{a: 1, b: null, c: array{d: 1}} on left side of ?? does not exist.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 129,
+   "identifier": "nullCoalesce.offset",
+   "message": "Offset 'd' on array{d: 1} on left side of ?? always exists and is not nullable.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 130,
+   "identifier": "nullCoalesce.offset",
+   "message": "Offset 'e' on array{d: 1} on left side of ?? does not exist.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 133,
+   "identifier": "nullCoalesce.offset",
+   "message": "Offset 1 on array<string, int> on left side of ?? does not exist.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 135,
+   "identifier": "nullCoalesce.offset",
+   "message": "Offset 'a' on list<int> on left side of ?? does not exist.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 136,
+   "identifier": "nullCoalesce.offset",
+   "message": "Offset 0 on non-empty-list<int> on left side of ?? always exists and is not nullable.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 138,
+   "identifier": "nullCoalesce.offset",
+   "message": "Offset '1' on array{1: int, 2: int} on left side of ?? always exists and is not nullable.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 139,
+   "identifier": "nullCoalesce.offset",
+   "message": "Offset true on array{1: int, 2: int} on left side of ?? always exists and is not nullable.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 140,
+   "identifier": "offsetAccess.invalidOffset",
+   "message": "Invalid array key type float.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 140,
+   "identifier": "nullCoalesce.offset",
+   "message": "Offset 1.5 on array{1: int, 2: int} on left side of ?? always exists and is not nullable.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 141,
+   "identifier": "offsetAccess.invalidOffset",
+   "message": "Invalid array key type null.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 141,
+   "identifier": "nullCoalesce.offset",
+   "message": "Offset null on array{1: int, 2: int} on left side of ?? does not exist.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 143,
+   "identifier": "nullCoalesce.offset",
+   "message": "Offset 0 on non-empty-list<int> on left side of ?? always exists and is not nullable.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 144,
+   "identifier": "nullCoalesce.offset",
+   "message": "Offset 0 on 'abc'|array{int} on left side of ?? always exists and is not nullable.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 147,
+   "identifier": "nullCoalesce.offset",
+   "message": "Offset 'a' on string on left side of ?? does not exist.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 152,
+   "identifier": "nullCoalesce.variable",
+   "message": "Variable $undefinedArray on left side of ?? is never defined.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 153,
+   "identifier": "nullCoalesce.variable",
+   "message": "Variable $undefinedArray on left side of ?? is never defined.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 154,
+   "identifier": "nullCoalesce.offset",
+   "message": "Offset 'a' on array{a: 1, b: null, c: array{d: 1}} on left side of ??= always exists and is not nullable.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 157,
+   "identifier": "nullCoalesce.offset",
+   "message": "Offset 'a' on null on left side of ?? does not exist.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 162,
+   "identifier": "property.nonObject",
+   "message": "Cannot access property $bar on string.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 162,
+   "identifier": "nullsafe.neverNull",
+   "message": "Using nullsafe property access \"?->bar\" on left side of ?? is unnecessary. Use -> instead.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 163,
+   "identifier": "nullCoalesce.property",
+   "message": "Property DeadCode\\NullCoalesce\\Holder::$typedDefault (int) on left side of ?? is not nullable.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 164,
+   "identifier": "nullCoalesce.property",
+   "message": "Property DeadCode\\NullCoalesce\\Holder::$phpDoc (string) on left side of ?? is not nullable.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 169,
+   "identifier": "nullsafe.neverNull",
+   "message": "Using nullsafe property access \"?->typedDefault\" on left side of ?? is unnecessary. Use -> instead.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 170,
+   "identifier": "nullCoalesce.expr",
+   "message": "Expression on left side of ?? is not nullable.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 171,
+   "identifier": "nullsafe.neverNull",
+   "message": "Using nullsafe property access \"?->(Expression)\" on left side of ?? is unnecessary. Use -> instead.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 173,
+   "identifier": "nullCoalesce.property",
+   "message": "Static property DeadCode\\NullCoalesce\\Holder::$staticTyped (int) on left side of ?? is not nullable.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 174,
+   "identifier": "nullCoalesce.property",
+   "message": "Static property DeadCode\\NullCoalesce\\Holder::$staticTyped (int) on left side of ?? is not nullable.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 175,
+   "identifier": "nullCoalesce.variable",
+   "message": "Variable $undefinedHolder on left side of ?? is never defined.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 176,
+   "identifier": "nullCoalesce.variable",
+   "message": "Variable $undefinedHolder on left side of ?? is never defined.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 177,
+   "identifier": "class.notFound",
+   "message": "Access to static property $x on an unknown class DeadCode\\NullCoalesce\\Missing.",
+   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 180,
+   "identifier": "nullCoalesce.variable",
+   "message": "Variable $undefinedHolder on left side of ?? is never defined.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 181,
+   "identifier": "nullCoalesce.offset",
+   "message": "Offset 'a' on array{a: int, b?: string} on left side of ?? always exists and is not nullable.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 182,
+   "identifier": "nullCoalesce.property",
+   "message": "Property DeadCode\\NullCoalesce\\Holder::$typedDefault (int) on left side of ??= is not nullable.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 187,
+   "identifier": "nullCoalesce.expr",
+   "message": "Expression on left side of ?? is not nullable.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 188,
+   "identifier": "nullCoalesce.expr",
+   "message": "Expression on left side of ?? is always null.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 189,
+   "identifier": "nullCoalesce.expr",
+   "message": "Expression on left side of ?? is not nullable.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 191,
+   "identifier": "nullCoalesce.expr",
+   "message": "Expression on left side of ?? is not nullable.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 192,
+   "identifier": "nullCoalesce.expr",
+   "message": "Expression on left side of ?? is not nullable.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 195,
+   "identifier": "return.unusedType",
+   "message": "Function DeadCode\\NullCoalesce\\maybeInt() never returns int so it can be removed from the return type.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 205,
+   "identifier": "nullCoalesce.variable",
+   "message": "Variable $i on left side of ?? always exists and is not nullable.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 207,
+   "identifier": "nullCoalesce.variable",
+   "message": "Variable $undefined on left side of ?? is never defined.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 208,
+   "identifier": "nullCoalesce.variable",
+   "message": "Variable $i on left side of ?? always exists and is not nullable.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 209,
+   "identifier": "nullCoalesce.variable",
+   "message": "Variable $i on left side of ?? always exists and is not nullable.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 210,
+   "identifier": "nullCoalesce.property",
+   "message": "Property DeadCode\\NullCoalesce\\Holder::$typedDefault (int) on left side of ?? is not nullable.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 214,
+   "identifier": "nullCoalesce.offset",
+   "message": "Offset 'a' on array{a: 1} on left side of ?? always exists and is not nullable.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 215,
+   "identifier": "nullCoalesce.offset",
+   "message": "Offset int on array{a: 1} on left side of ?? does not exist.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 217,
+   "identifier": "nullCoalesce.offset",
+   "message": "Offset 0 on 'a' on left side of ?? always exists and is not nullable.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 218,
+   "identifier": "nullCoalesce.property",
+   "message": "Static property DeadCode\\NullCoalesce\\Holder::$staticTyped (int) on left side of ?? is not nullable.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 220,
+   "identifier": "nullCoalesce.expr",
+   "message": "Expression on left side of ?? is not nullable.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php",
+   "line": 232,
+   "identifier": "nullCoalesce.variable",
+   "message": "Variable $s on left side of ?? always exists and is not nullable.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php (in context of class DeadCode\\NullCoalesce\\UsesTraitA)",
+   "line": 234,
+   "identifier": "nullCoalesce.property",
+   "message": "Property DeadCode\\NullCoalesce\\UsesTraitA::$same (int) on left side of ?? is not nullable.",
+   "tip": null
+  },
+  {
+   "file": "src/null-coalesce.php (in context of class DeadCode\\NullCoalesce\\UsesTraitB)",
+   "line": 234,
+   "identifier": "nullCoalesce.property",
+   "message": "Property DeadCode\\NullCoalesce\\UsesTraitB::$same (int) on left side of ?? is not nullable.",
+   "tip": null
+  },
+  {
    "file": "src/special-checks.php",
    "line": 15,
    "identifier": "trait.unused",

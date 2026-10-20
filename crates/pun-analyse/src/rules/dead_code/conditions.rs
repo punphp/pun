@@ -112,6 +112,8 @@ pub(in super::super) struct Facts {
     throws: HashSet<Span>,
     /// The variables holding only `new` objects of named classes, whose classes NewHandler makes final.
     pub(in super::super) exact: HashSet<Span>,
+    /// The `$this->name` fetches of initialized properties (PropertyInitializationExpr).
+    pub(in super::super) initialized: HashMap<Span, bool>,
 }
 
 pub(in super::super) fn facts(c: &Checker, program: &Program) -> Facts {
@@ -124,6 +126,9 @@ pub(in super::super) fn facts(c: &Checker, program: &Program) -> Facts {
     if c.level >= 4 {
         pass.walk_program(program, &mut ());
         pass.facts.exact = super::impure_points::exact_variables(program);
+    }
+    if c.level >= 1 {
+        pass.facts.initialized = super::null_coalesce::initialized(program);
     }
     pass.facts
 }
@@ -1357,7 +1362,7 @@ const IN_TRAIT: &str = "\u{1e}in-trait\u{1f}";
 
 impl Checker<'_, '_> {
     /// A constant-condition error, collected per class context in a trait (ConstantConditionInTraitHelper::emitError()).
-    fn condition_error(&mut self, key: Span, line: i64, identifier: &str, value: bool, message: String, tip: Option<&str>) {
+    pub(super) fn condition_error(&mut self, key: Span, line: i64, identifier: &str, value: bool, message: String, tip: Option<&str>) {
         let message = match self.in_trait() {
             Some(t) => format!("{IN_TRAIT}{}\u{1f}{t}\u{1f}{}\u{1f}{value}\u{1f}{message}", rule(identifier), key.start.offset),
             None => message,
@@ -1366,7 +1371,7 @@ impl Checker<'_, '_> {
     }
 
     /// emitNoError(): the rule found nothing at `key` in this class context.
-    fn no_condition(&mut self, key: Span, identifier: &str) {
+    pub(super) fn no_condition(&mut self, key: Span, identifier: &str) {
         if let Some(t) = self.in_trait() {
             let message = format!("{IN_TRAIT}{}\u{1f}{t}\u{1f}{}\u{1f}-\u{1f}", rule(identifier), key.start.offset);
             let line = self.line_of(key);
@@ -1481,7 +1486,7 @@ pub(in super::super) fn match_subject_types(
         let copy = File::new(file.name.clone(), file.file_type, file.path.clone(), Cow::Owned(contents));
         let arena = LocalArena::new();
         let (program, names) = parse(&arena, &copy);
-        types.extend(super::super::infer::analyse(&arena, &copy, program, &names, codebase, php_version, subjects));
+        types.extend(super::super::infer::analyse(&arena, &copy, program, &names, codebase, php_version, subjects, Vec::new()).0);
     }
     (types, unknown)
 }

@@ -19,6 +19,8 @@ const GAPS: &[(&str, &str, i64, &str)] = &[
     // PHPStan 2.3.1's loop scope: `while (true) { ...; $x = 1; if ($x) break; }` never reaches a second iteration, so
     // $x is undefined at the loop start; Pun merges the end-of-body scope back in
     ("var_names", "vars.php", 84, "varTag.variableNotFound"),
+    // Mago types an int mixed after an invalid `$i += 'x'`, so NullCoalesceRule cannot tell it is not nullable
+    ("types", "offsets.php", 216, "nullCoalesce.variable"),
 ];
 
 fn check(dir: &Path, neon: &str) -> Result<(), String> {
