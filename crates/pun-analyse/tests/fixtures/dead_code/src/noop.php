@@ -196,7 +196,6 @@ function run(int $a, string $s, ?Box $maybe, Box $box, array $list, object $o, m
     };
     5 |> pure(...);
     5 |> 'NoopFixture\pure';
-    5 |> 'nothing';
     5 |> impure(...);
     5 |> $box->get(...);
     5 |> Box::make(...);
