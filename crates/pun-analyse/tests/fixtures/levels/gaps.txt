@@ -756,19 +756,6 @@
 4 Comparison/ImpossibleCheckTypeMethodCallRuleTest::testInTrait
 4 Comparison/ImpossibleCheckTypeStaticMethodCallRuleTest::testBug12087b
 4 Comparison/ImpossibleCheckTypeStaticMethodCallRuleTest::testInTrait
-# an-types: class constant values: `self::C` of a constant with a @var reads the @var type, not the value; generics.notGeneric and IncompatibleClassConstantPhpDocTypeRule are not ported
-# an-types: property writes: trait context, `already assigned`, WeakMap's template default, array offset and list values, generic declaring-class display, set-hook parameter types, accepts tips, @param-out values, clone with, constant/range types where Mago's differ
-# an-types: generic objects without their template arguments: parameter defaults and template bounds (generics.notSupportedBound) where Mago's types differ
-# an-types: a namespaced @param class that does not exist replaces the native \SplObjectStorage, so foreach reports it
-# an-dead: MatchExpressionRule: Mago's types differ (rand() and <=> are int, in_array() and gettype() narrowing), the subject `$this` of a trait, TypeCombinator::remove() for class strings and templates, an unnarrowed enum subject described after removing a case
-4 Comparison/MatchExpressionRuleTest::testEnums
-4 Comparison/MatchExpressionRuleTest::testBug7176
-4 Comparison/MatchExpressionRuleTest::testBug6064
-4 Comparison/MatchExpressionRuleTest::testBug8614
-4 Comparison/MatchExpressionRuleTest::testBug9436
-4 Comparison/MatchExpressionRuleTest::testBug12998
-4 Comparison/MatchExpressionRuleTest::testBug12790
-4 Comparison/MatchExpressionRuleTest::testInTrait
 # an-types2: the level 5 and 9 fixtures with the comparison, offset and property-write rules merged from main (their
 # Mago inference and impure-call differences), and property.private/protected on by-ref and clone-with writes
 3 Properties/ReadOnlyByPhpDocPropertyAssignRefRuleTest::testRule
@@ -806,6 +793,31 @@
 # an-types: a property's type is not checked against a write through its offset (`$this->items[$k] = ...`)
 3 Arrays/OffsetAccessAssignmentRuleTest::testBug14054
 3 Arrays/OffsetAccessAssignmentRuleTest::testBug14054Hook
+# an-types: class constant values: `self::C` of a constant with a @var reads the @var type, not the value; generics.notGeneric and IncompatibleClassConstantPhpDocTypeRule are not ported
+# an-types: property writes: trait context, `already assigned`, WeakMap's template default, array offset and list values, generic declaring-class display, set-hook parameter types, accepts tips, @param-out values, clone with, constant/range types where Mago's differ
+# an-types: generic objects without their template arguments: parameter defaults and template bounds (generics.notSupportedBound) where Mago's types differ
+# an-types: a namespaced @param class that does not exist replaces the native \SplObjectStorage, so foreach reports it
+# an-dead: MatchExpressionRule: Mago's types differ (rand() and <=> are int, in_array() and gettype() narrowing), the subject `$this` of a trait, TypeCombinator::remove() for class strings and templates, an unnarrowed enum subject described after removing a case
+4 Comparison/MatchExpressionRuleTest::testEnums
+4 Comparison/MatchExpressionRuleTest::testBug7176
+4 Comparison/MatchExpressionRuleTest::testBug6064
+4 Comparison/MatchExpressionRuleTest::testBug8614
+4 Comparison/MatchExpressionRuleTest::testBug9436
+4 Comparison/MatchExpressionRuleTest::testBug12998
+4 Comparison/MatchExpressionRuleTest::testBug12790
+4 Comparison/MatchExpressionRuleTest::testInTrait
+# pipe calls (`|>`) are not checked as calls (restored after the pipe binaryOp fix dropped them)
+4 DeadCode/CallToFunctionStatementWithoutImpurePointsRuleTest::testPipeOperator
+4 DeadCode/CallToMethodStatementWithoutImpurePointsRuleTest::testPipeOperator
+4 DeadCode/CallToStaticMethodStatementWithoutImpurePointsRuleTest::testPipeOperator
+4 Functions/CallToFunctionStatementWithoutSideEffectsRuleTest::testPipeOperator
+4 Methods/CallToStaticMethodStatementWithoutSideEffectsRuleTest::testPipeOperator
+5 Functions/CallToFunctionParametersRuleTest::testPipeOperator
+5 Methods/CallMethodsRuleTest::testPipeOperator
+5 Methods/CallStaticMethodsRuleTest::testPipeOperator
+9 Functions/CallToFunctionParametersRuleTest::testPipeOperator
+9 Methods/CallMethodsRuleTest::testPipeOperator
+9 Methods/CallStaticMethodsRuleTest::testPipeOperator
 # an-dead: ImpossibleInstanceOfRule: the treatPhpDocTypesAsCertain and possibly impure tips need native types; Mago's types differ (`instanceof self` narrows to `$this`, narrowing in loops and after early returns, a `new` object's exact class, the trait's `$this`)
 4 Classes/ImpossibleInstanceOfRuleTest::testInstanceof
 4 Classes/ImpossibleInstanceOfRuleTest::testDoNotReportTypesFromPhpDocs
@@ -826,8 +838,3 @@
 4 Classes/ImpossibleInstanceOfRuleTest::testBug13975#1
 4 Classes/ImpossibleInstanceOfRuleTest::testPossiblyImpureTip
 4 Classes/ImpossibleInstanceOfRuleTest::testInTrait
-# an-types: class constant values: `self::C` of a constant with a @var reads the @var type, not the value; generics.notGeneric and IncompatibleClassConstantPhpDocTypeRule are not ported
-# an-types: property writes: trait context, `already assigned`, WeakMap's template default, array offset and list values, generic declaring-class display, set-hook parameter types, accepts tips, @param-out values, clone with, constant/range types where Mago's differ
-# an-types: generic objects without their template arguments: parameter defaults and template bounds (generics.notSupportedBound) where Mago's types differ
-# an-types: a namespaced @param class that does not exist replaces the native \SplObjectStorage, so foreach reports it
-# an-dead: MatchExpressionRule: Mago's types differ (rand() and <=> are int, in_array() and gettype() narrowing), the subject `$this` of a trait, TypeCombinator::remove() for class strings and templates, an unnarrowed enum subject described after removing a case

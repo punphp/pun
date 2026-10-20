@@ -69,7 +69,6 @@ pub struct Template {
     pub bound: String,
     pub default: Option<String>,
     /// `TemplateTypeVariance::describe()`
-    // ponytail: a built-in class's templates are read as invariant (symbols.json has no variance)
     pub variance: &'static str,
 }
 
@@ -179,6 +178,8 @@ struct RawClass {
     name: String,
     ancestors: Vec<String>,
     templates: Entries<(String, Option<String>)>,
+    /// the non-invariant templates' variance
+    variances: Option<Entries<String>>,
     cases: Vec<String>,
     interface: bool,
     #[serde(rename = "final")]
@@ -252,6 +253,7 @@ fn read_function(v: RawFunction) -> Function {
 }
 
 fn read_class(v: RawClass) -> Class {
+    let variances = v.variances.map(|e| e.0).unwrap_or_default();
     Class {
         name: v.name,
         ancestors: v.ancestors,
@@ -260,10 +262,13 @@ fn read_class(v: RawClass) -> Class {
             .0
             .into_iter()
             .map(|(name, (bound, default))| Template {
+                // (a template is declared invariant, covariant or contravariant)
+                variance: variances.iter().find(|(n, _)| *n == name).map_or("invariant", |(_, v)| {
+                    if v == "covariant" { "covariant" } else { "contravariant" }
+                }),
                 name,
                 bound,
                 default,
-                variance: "invariant",
             })
             .collect(),
         is_enum: !v.cases.is_empty(),
