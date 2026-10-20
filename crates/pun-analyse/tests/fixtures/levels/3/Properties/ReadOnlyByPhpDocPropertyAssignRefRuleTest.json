@@ -1,0 +1,123 @@
+{
+    "test": "Properties/ReadOnlyByPhpDocPropertyAssignRefRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Properties/data/readonly-assign-ref-phpdoc.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/readonly-assign-ref-phpdoc.php",
+                    "line": 22,
+                    "identifier": "property.readOnlyByPhpDocAssignByRef",
+                    "message": "@readonly property ReadOnlyPropertyAssignRefPhpDoc\\Foo::$foo is assigned by reference.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/readonly-assign-ref-phpdoc.php",
+                    "line": 23,
+                    "identifier": "property.readOnlyByPhpDocAssignByRef",
+                    "message": "@readonly property ReadOnlyPropertyAssignRefPhpDoc\\Foo::$bar is assigned by reference.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/readonly-assign-ref-phpdoc.php",
+                    "line": 33,
+                    "identifier": "property.assignByRef",
+                    "message": "Property ReadOnlyPropertyAssignRefPhpDoc\\Foo::$foo with private visibility is assigned by reference.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/readonly-assign-ref-phpdoc.php",
+                    "line": 34,
+                    "identifier": "property.readOnlyByPhpDocAssignByRef",
+                    "message": "@readonly property ReadOnlyPropertyAssignRefPhpDoc\\Foo::$bar is assigned by reference.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/readonly-assign-ref-phpdoc.php",
+                    "line": 51,
+                    "identifier": "property.readOnlyByPhpDocAssignByRef",
+                    "message": "@readonly property ReadOnlyPropertyAssignRefPhpDoc\\Immutable::$foo is assigned by reference.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/readonly-assign-ref-phpdoc.php",
+                    "line": 52,
+                    "identifier": "property.readOnlyByPhpDocAssignByRef",
+                    "message": "@readonly property ReadOnlyPropertyAssignRefPhpDoc\\Immutable::$bar is assigned by reference.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/readonly-assign-ref-phpdoc.php",
+                    "line": 66,
+                    "identifier": "property.readOnlyByPhpDocAssignByRef",
+                    "message": "@readonly property ReadOnlyPropertyAssignRefPhpDoc\\A::$a is assigned by reference.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/readonly-assign-ref-phpdoc.php",
+                    "line": 79,
+                    "identifier": "property.readOnlyByPhpDocAssignByRef",
+                    "message": "@readonly property ReadOnlyPropertyAssignRefPhpDoc\\B::$b is assigned by reference.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/readonly-assign-ref-phpdoc.php",
+                    "line": 80,
+                    "identifier": "property.readOnlyByPhpDocAssignByRef",
+                    "message": "@readonly property ReadOnlyPropertyAssignRefPhpDoc\\A::$a is assigned by reference.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/readonly-assign-ref-phpdoc.php",
+                    "line": 93,
+                    "identifier": "property.readOnlyByPhpDocAssignByRef",
+                    "message": "@readonly property ReadOnlyPropertyAssignRefPhpDoc\\C::$c is assigned by reference.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testRuleIgnoresNativeReadonly",
+            "files": [
+                "Properties/data/readonly-assign-ref-phpdoc-and-native.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Properties/data/readonly-assign-ref-phpdoc-and-native.php",
+                    "line": 9,
+                    "identifier": "property.uninitializedReadonly",
+                    "message": "Class ReadOnlyPropertyAssignRefPhpDocAndNative\\Foo has an uninitialized readonly property $foo. Assign it in the constructor.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/readonly-assign-ref-phpdoc-and-native.php",
+                    "line": 12,
+                    "identifier": "property.uninitializedReadonly",
+                    "message": "Class ReadOnlyPropertyAssignRefPhpDocAndNative\\Foo has an uninitialized readonly property $bar. Assign it in the constructor.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/readonly-assign-ref-phpdoc-and-native.php",
+                    "line": 16,
+                    "identifier": "property.readOnlyAssignByRef",
+                    "message": "Readonly property ReadOnlyPropertyAssignRefPhpDocAndNative\\Foo::$foo is assigned by reference.",
+                    "tip": null
+                },
+                {
+                    "file": "Properties/data/readonly-assign-ref-phpdoc-and-native.php",
+                    "line": 17,
+                    "identifier": "property.readOnlyAssignByRef",
+                    "message": "Readonly property ReadOnlyPropertyAssignRefPhpDocAndNative\\Foo::$bar is assigned by reference.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

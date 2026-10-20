@@ -1055,7 +1055,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "dead-code/boolean-and-always-constant" = { preset = "recommended", ported = true, status = "decided" }
 "dead-code/boolean-not-always-constant" = { preset = "recommended", ported = true, status = "decided" }
 "dead-code/boolean-or-always-constant" = { preset = "recommended", ported = true, status = "decided" }
-"dead-code/call-condition-always-constant" = { preset = "recommended", status = "decided" }
+"dead-code/call-condition-always-constant" = { preset = "recommended", ported = true, status = "decided" }
 "dead-code/discarded-function-result" = { preset = "basic", status = "decided" }
 "dead-code/discarded-method-result" = { preset = "basic", ported = true, status = "decided" }
 "dead-code/discarded-static-method-result" = { preset = "basic", ported = true, status = "decided" }
@@ -1065,9 +1065,9 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "dead-code/if-always-constant" = { preset = "recommended", ported = true, status = "decided" }
 "dead-code/impossible-in-array" = { preset = "recommended", status = "decided" }
 "dead-code/impossible-instanceof" = { preset = "recommended", ported = true, fixed_by = ["lint/dead-code/no-always-true-instanceof"], status = "decided" }
-"dead-code/impossible-method-type-check" = { preset = "recommended", status = "decided" }
-"dead-code/impossible-static-type-check" = { preset = "recommended", status = "decided" }
-"dead-code/impossible-type-check" = { preset = "recommended", status = "decided" }
+"dead-code/impossible-method-type-check" = { preset = "recommended", ported = true, status = "decided" }
+"dead-code/impossible-static-type-check" = { preset = "recommended", ported = true, status = "decided" }
+"dead-code/impossible-type-check" = { preset = "recommended", ported = true, status = "decided" }
 "dead-code/loose-comparison-always-constant" = { preset = "recommended", ported = true, status = "decided" }
 "dead-code/number-comparison-always-constant" = { preset = "recommended", ported = true, status = "decided" }
 "dead-code/pure-function-result-unused" = { preset = "recommended", ported = true, status = "decided" }
@@ -1210,7 +1210,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "types/by-ref-foreach-on-expression" = { preset = "basic", status = "decided" }
 "types/call-user-func-argument" = { preset = "recommended", status = "decided" }
 "types/catch-non-throwable" = { preset = "basic", ported = true, status = "decided" }
-"types/class-constant-value" = { preset = "essential", status = "decided" }
+"types/class-constant-value" = { preset = "essential", ported = true, status = "decided" }
 "types/clone-non-object" = { preset = "essential", ported = true, status = "decided" }
 "types/closure-param-default" = { preset = "essential", ported = true, status = "decided" }
 "types/closure-return" = { preset = "essential", ported = true, status = "decided" }
@@ -1279,16 +1279,16 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "types/param-default" = { preset = "essential", ported = true, status = "decided" }
 "types/param-out" = { preset = "essential", status = "decided" }
 "types/param-out-at-end" = { preset = "essential", status = "decided" }
-"types/phpdoc-readonly-by-ref" = { preset = "essential", status = "decided" }
-"types/phpdoc-readonly-property-write" = { preset = "essential", status = "decided" }
+"types/phpdoc-readonly-by-ref" = { preset = "essential", ported = true, status = "decided" }
+"types/phpdoc-readonly-property-write" = { preset = "essential", ported = true, status = "decided" }
 "types/print-non-string" = { preset = "essential", ported = true, status = "decided" }
 "types/printf-argument" = { preset = "recommended", status = "decided" }
-"types/property-assign" = { preset = "essential", status = "decided" }
+"types/property-assign" = { preset = "essential", ported = true, status = "decided" }
 "types/property-default" = { preset = "essential", ported = true, status = "decided" }
 "types/property-variance" = { preset = "essential", status = "decided" }
 "types/random-int-range" = { preset = "recommended", status = "decided" }
-"types/readonly-property-by-ref" = { preset = "essential", status = "decided" }
-"types/readonly-property-write" = { preset = "essential", status = "decided" }
+"types/readonly-property-by-ref" = { preset = "essential", ported = true, status = "decided" }
+"types/readonly-property-write" = { preset = "essential", ported = true, status = "decided" }
 "types/redundant-array-values" = { preset = "recommended", status = "decided" }
 "types/redundant-nullsafe" = { preset = "recommended", fixed_by = ["lint/complexity/no-redundant-nullsafe"], status = "decided" }
 "types/redundant-nullsafe-method-call" = { preset = "recommended", status = "decided" }
@@ -1316,7 +1316,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "types/unused-throws-type" = { preset = "recommended", status = "decided" }
 "types/useless-array-filter" = { preset = "recommended", status = "decided" }
 "types/void-match-used" = { preset = "essential", ported = true, status = "decided" }
-"types/write-to-readonly-property" = { preset = "basic", status = "decided" }
+"types/write-to-readonly-property" = { preset = "basic", ported = true, status = "decided" }
 "types/yield-from-non-iterable" = { preset = "essential", ported = true, status = "decided" }
 "types/yield-outside-function" = { preset = "essential", ported = true, status = "decided" }
 "undefined/assigned-property" = { preset = "basic", ported = true, status = "decided" }

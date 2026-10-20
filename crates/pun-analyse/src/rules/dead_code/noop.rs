@@ -1079,7 +1079,7 @@ fn print(c: &Checker, e: &Expression) -> String {
     }
 }
 
-fn source(c: &Checker, span: Span) -> String {
+pub(super) fn source(c: &Checker, span: Span) -> String {
     String::from_utf8_lossy(&c.file.contents[span.to_range_usize()]).into_owned()
 }
 

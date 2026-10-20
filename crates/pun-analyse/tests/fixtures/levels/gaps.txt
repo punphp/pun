@@ -105,6 +105,25 @@
 4 Functions/HelperDeadCode::testRule
 7 Functions/HelperDeadCode::testRule
 8 Functions/HelperDeadCode::testRule
+# offsetAccess.invalidOffset: array_rand() is list<int|string> by Mago, array<int, int|string> by PHPStan's dynamic
+# return type extension
+3 Arrays/InvalidKeyInArrayDimFetchRuleTest::testBug12981
+# throw.notThrowable: an inline `@var` without a variable name above `throw $foo` is not applied by Mago
+3 Exceptions/ThrowExprTypeRuleTest::testRule
+# generator.valueType, property.defaultValue: the accepts reasons tip (acceptsReasonsTip()) is not ported
+3 Generators/YieldFromTypeRuleTest::testRule
+3 Generators/YieldTypeRuleTest::testRule
+6 Properties/MissingPropertyTypehintRuleTest::testBug14012
+# foreach.emptyArray: Mago keeps `array{}` where PHPStan's scope does not (a branch `!empty()` makes dead, a property
+# a called closure assigns, an array written through a reference)
+4 Arrays/DeadForeachRuleTest::testBug7913
+4 Arrays/DeadForeachRuleTest::testBug14888
+4 Arrays/DeadForeachRuleTest::testBug8056
+# class.notFound of an inline `@var` tag naming an unknown class (a variable its scope does not know yet)
+# expr.resultUnused: `null?->foo` printed `(null)?->foo`
+4 Properties/NullsafePropertyFetchRuleTest::testRule
+# class.notFound: Mago reads `callable-array` as a class name
+6 Methods/MissingMethodParameterTypehintRuleTest::testBug14549
 # an-dead: ConstantConditionInTraitRule (the trait collector) is unported: nothing reports a constant condition in a trait
 4 Comparison/BooleanAndConstantConditionRuleTest::testInTrait
 4 Comparison/BooleanNotConstantConditionRuleTest::testInTrait
@@ -241,3 +260,77 @@
 4 DeadCode/UnreachableStatementRuleTest::testBug7531
 4 DeadCode/UnreachableStatementRuleTest::testMultipleUnreachable
 4 DeadCode/UnusedPrivateConstantRuleTest::testRule
+# an-types: class constant values: `self::C` of a constant with a @var reads the @var type, not the value; generics.notGeneric and IncompatibleClassConstantPhpDocTypeRule are not ported
+2 Constants/ValueAssignedToClassConstantRuleTest::testRule
+# an-types: property writes: trait context, `already assigned`, WeakMap's template default, array offset and list values, generic declaring-class display, set-hook parameter types, accepts tips, @param-out values, clone with, constant/range types where Mago's differ
+3 Properties/ReadOnlyByPhpDocPropertyAssignRuleTest::testRule
+3 Properties/ReadOnlyByPhpDocPropertyAssignRuleTest::testFeature7648
+3 Properties/ReadOnlyPropertyAssignRuleTest::testRule
+3 Properties/ReadOnlyPropertyAssignRuleTest::testFeature7648
+3 Properties/ReadOnlyPropertyAssignRuleTest::testBug11495
+3 Properties/TypesAssignedToPropertiesRuleTest::testTypesAssignedToProperties
+3 Properties/TypesAssignedToPropertiesRuleTest::testTypesAssignedToPropertiesExpressionNames
+3 Properties/TypesAssignedToPropertiesRuleTest::testTypesAssignedToStaticPropertiesExpressionNames
+3 Properties/TypesAssignedToPropertiesRuleTest::testBug3777/0
+3 Properties/TypesAssignedToPropertiesRuleTest::testBug3777/1
+3 Properties/TypesAssignedToPropertiesRuleTest::testAppendendArrayKey
+3 Properties/TypesAssignedToPropertiesRuleTest::testAppendedArrayItemType
+3 Properties/TypesAssignedToPropertiesRuleTest::testBug6286
+3 Properties/TypesAssignedToPropertiesRuleTest::testBug3703
+3 Properties/TypesAssignedToPropertiesRuleTest::testBug3383
+3 Properties/TypesAssignedToPropertiesRuleTest::testBug6356b
+3 Properties/TypesAssignedToPropertiesRuleTest::testIntegerRangesAndConstants
+3 Properties/TypesAssignedToPropertiesRuleTest::testWritingReadonlyProperty
+3 Properties/TypesAssignedToPropertiesRuleTest::testBug4174
+3 Properties/TypesAssignedToPropertiesRuleTest::testShortBodySetHook
+3 Properties/TypesAssignedToPropertiesRuleTest::testPropertyHooks
+3 Properties/TypesAssignedToPropertiesRuleTest::testBug13438d
+3 Properties/TypesAssignedToPropertiesRuleTest::testBug13438e
+3 Properties/TypesAssignedToPropertiesRuleTest::testBug13438f
+3 Properties/TypesAssignedToPropertiesRuleTest::testBug7912
+3 Properties/TypesAssignedToPropertiesRuleTest::testCloneWith
+3 Properties/TypesAssignedToPropertiesRuleTest::testBug12688
+3 Properties/TypesAssignedToPropertiesRuleTest::testBug10924
+# an-types: generic objects without their template arguments: parameter defaults and template bounds (generics.notSupportedBound) where Mago's types differ
+3 Properties/TypesAssignedToPropertiesRuleTest::testGenericObjectWithUnspecifiedTemplateTypes
+3 Properties/TypesAssignedToPropertiesRuleTest::testGenericObjectWithUnspecifiedTemplateTypesLevel8
+3 Properties/TypesAssignedToPropertiesRuleTest::testBug10749
+# an-types: a namespaced @param class that does not exist replaces the native \SplObjectStorage, so foreach reports it
+4 Comparison/StrictComparisonOfDifferentTypesRuleTest::testBug10884
+# an-dead: ImpossibleCheckType{Function,Method,StaticMethod}CallRule: ImpossibleCheckTypeHelper's in_array/method_exists/property_exists/class_exists special cases and type-specifying extensions are not ported (the value comes from Mago's return type or a void function's @phpstan-assert); the treatPhpDocTypesAsCertain tip needs native types; the trait collector; Mago's types differ (superglobal keys, narrowing after method_exists())
+4 Comparison/ImpossibleCheckTypeFunctionCallRuleTest::testImpossibleCheckTypeFunctionCall
+4 Comparison/ImpossibleCheckTypeFunctionCallRuleTest::testStructExists
+4 Comparison/ImpossibleCheckTypeFunctionCallRuleTest::testDoNotReportTypesFromPhpDocs
+4 Comparison/ImpossibleCheckTypeFunctionCallRuleTest::testReportTypesFromPhpDocs
+4 Comparison/ImpossibleCheckTypeFunctionCallRuleTest::testArrayIsList
+4 Comparison/ImpossibleCheckTypeFunctionCallRuleTest::testBug6305
+4 Comparison/ImpossibleCheckTypeFunctionCallRuleTest::testBug13713
+4 Comparison/ImpossibleCheckTypeFunctionCallRuleTest::testBugInArrayDateFormat
+4 Comparison/ImpossibleCheckTypeFunctionCallRuleTest::testBug3314
+4 Comparison/ImpossibleCheckTypeFunctionCallRuleTest::testBug5695
+4 Comparison/ImpossibleCheckTypeFunctionCallRuleTest::testImpossibleMethodExistOnGenericClassString
+4 Comparison/ImpossibleCheckTypeFunctionCallRuleTest::testObjectShapes
+4 Comparison/ImpossibleCheckTypeFunctionCallRuleTest::testLooseComparisonAgainstEnums
+4 Comparison/ImpossibleCheckTypeFunctionCallRuleTest::testLooseComparisonAgainstEnumsNoPhpdoc
+4 Comparison/ImpossibleCheckTypeFunctionCallRuleTest::testBug4890b
+4 Comparison/ImpossibleCheckTypeFunctionCallRuleTest::testBug10502
+4 Comparison/ImpossibleCheckTypeFunctionCallRuleTest::testBugPR3404
+4 Comparison/ImpossibleCheckTypeFunctionCallRuleTest::testBug12755
+4 Comparison/ImpossibleCheckTypeFunctionCallRuleTest::testBug14873
+4 Comparison/ImpossibleCheckTypeFunctionCallRuleTest::testBug2730
+4 Comparison/ImpossibleCheckTypeFunctionCallRuleTest::testBug12087
+4 Comparison/ImpossibleCheckTypeFunctionCallRuleTest::testBug12087c
+4 Comparison/ImpossibleCheckTypeFunctionCallRuleTest::testBug10394
+4 Comparison/ImpossibleCheckTypeFunctionCallRuleTest::testBug13474
+4 Comparison/ImpossibleCheckTypeFunctionCallRuleTest::testBug4570
+4 Comparison/ImpossibleCheckTypeFunctionCallRuleTest::testBug9666
+4 Comparison/ImpossibleCheckTypeFunctionCallRuleTest::testBug14429
+4 Comparison/ImpossibleCheckTypeFunctionCallRuleTest::testBug13799
+4 Comparison/ImpossibleCheckTypeFunctionCallRuleTest::testInTrait
+4 Comparison/ImpossibleCheckTypeFunctionCallRuleTest::testBug8980
+4 Comparison/ImpossibleCheckTypeFunctionCallRuleTest::testBug6211
+4 Comparison/ImpossibleCheckTypeMethodCallRuleTest::testBug12473
+4 Comparison/ImpossibleCheckTypeMethodCallRuleTest::testBug12087b
+4 Comparison/ImpossibleCheckTypeMethodCallRuleTest::testInTrait
+4 Comparison/ImpossibleCheckTypeStaticMethodCallRuleTest::testBug12087b
+4 Comparison/ImpossibleCheckTypeStaticMethodCallRuleTest::testInTrait

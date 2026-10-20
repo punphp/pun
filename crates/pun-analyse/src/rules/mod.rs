@@ -654,6 +654,12 @@ pub const IDENTIFIERS: &[&str] = &[
     "smallerOrEqual.alwaysFalse",
     "instanceof.alwaysTrue",
     "instanceof.alwaysFalse",
+    "function.alreadyNarrowedType",
+    "function.impossibleType",
+    "method.alreadyNarrowedType",
+    "method.impossibleType",
+    "staticMethod.alreadyNarrowedType",
+    "staticMethod.impossibleType",
 ];
 
 pub const DISCOVERING_SYMBOLS_TIP: &str =
@@ -1776,6 +1782,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         assign::property_assign_ref(self, a);
         types::assignment(self, a);
         operators::assignment(self, a);
+        types::property_assignment(self, a);
         if let AssignmentOperator::Assign(_) = a.operator {
             arrays::destructuring(self, a.lhs, true);
         }
@@ -1816,6 +1823,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
     }
 
     fn walk_in_function_call(&mut self, call: &'ast FunctionCall<'arena>, _: &mut ()) {
+        dead_code::function_check(self, call);
         larastan::function_call(self, call);
         types::function_call(self, call);
         function_checks::function_call(self, call);
@@ -1850,6 +1858,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         strict::dynamic_call(self, call.span(), call.object, &call.method);
     }
     fn walk_in_method_call(&mut self, call: &'ast MethodCall<'arena>, _: &mut ()) {
+        dead_code::method_check(self, call);
         internal::method_call(self, call.span(), call.object, &call.method);
         strict::dynamic_call(self, call.span(), call.object, &call.method);
         larastan::method_call(self, call);
@@ -1898,6 +1907,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         internal::static_method_callable(self, m);
     }
     fn walk_in_static_method_call(&mut self, call: &'ast StaticMethodCall<'arena>, _: &mut ()) {
+        dead_code::static_method_check(self, call);
         through_static::method(self, call);
         internal::static_method_call(self, call);
         larastan::static_method_call(self, call);
@@ -2016,6 +2026,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         constants::class_constant(self, k);
         missing_types::class_constant(self, k);
         phpdoc_types::class_constant(self, k);
+        types::class_constant(self, k);
         attributes::check(
             self,
             k.attribute_lists.as_slice(),
@@ -2281,12 +2292,16 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
             assign::increment(self, u.operand);
             self.incremented(u.operand);
         }
+        if u.operator.is_increment_or_decrement() {
+            types::property_increment(self, u.operand);
+        }
     }
     fn walk_in_unary_postfix(&mut self, u: &'ast UnaryPostfix<'arena>, _: &mut ()) {
         types::postfix(self, u);
         operators::unary_postfix(self, u);
         assign::increment(self, u.operand);
         self.incremented(u.operand);
+        types::property_increment(self, u.operand);
     }
     fn walk_out_for(&mut self, _: &'ast For<'arena>, _: &mut ()) {
         self.syntax.parents.pop();
@@ -2349,6 +2364,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
     }
     fn walk_in_unset(&mut self, u: &'ast Unset<'arena>, _: &mut ()) {
         assign::unset(self, u);
+        types::property_unset(self, u);
     }
     fn walk_in_array_append(&mut self, a: &'ast ArrayAppend<'arena>, _: &mut ()) {
         assign::array_append(self, a);

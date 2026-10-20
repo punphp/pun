@@ -915,31 +915,57 @@ fn inherited_property_doc(
                 .get(&text(name))
                 .map(|t| pun_phpstan::resolve::resolve_str(t, Some(&class.name)));
         }
-        // Mago gives a plain property only its name's span: its declaration starts at the modifiers and type before it
-        // ponytail: not past an attribute, nor to the first item of `public $a, $b`
-        let span = p.span.or_else(|| {
-            let mut span = p.name_span?;
-            let contents = file_contents(c, span.file_id)?;
-            let before = contents[..span.start.offset as usize]
-                .iter()
-                .rev()
-                .take_while(|b| b.is_ascii_alphanumeric() || b" \t\r\n_\\?|&()".contains(b))
-                .count();
-            span.start.offset -= before as u32;
-            Some(span)
-        });
-        let own = span.and_then(|span| {
-            let (doc, _) = doc_at(c, span)?;
-            let doc = Doc::parse(&doc);
-            let scope = scope_at(c, span, Some(declaring));
-            doc.var_types(&scope)
-                .into_iter()
-                .find(|(n, _)| n.is_empty() || n.as_bytes() == name)
-                .map(|(_, t)| t)
-        });
+        let own = own_property_doc(c, declaring, p, name);
         return own.or_else(|| inherited_property_doc(c, declaring, name, depth + 1));
     }
     None
+}
+
+/// A property's declaration: Mago gives a plain property only its name's span, and the declaration starts at the
+/// modifiers and type before it.
+// ponytail: not past an attribute, nor to the first item of `public $a, $b`
+pub fn property_span(c: &Checker, p: &mago_codex::metadata::property::PropertyMetadata) -> Option<Span> {
+    p.span.or_else(|| {
+        let mut span = p.name_span?;
+        let contents = file_contents(c, span.file_id)?;
+        let before = contents[..span.start.offset as usize]
+            .iter()
+            .rev()
+            .take_while(|b| b.is_ascii_alphanumeric() || b" \t\r\n_\\?|&()".contains(b))
+            .count();
+        span.start.offset -= before as u32;
+        Some(span)
+    })
+}
+
+/// The `@var` of property `name` (without `$`) in its own declaration's PHPDoc.
+fn own_property_doc(
+    c: &Checker,
+    declaring: &ClassLikeMetadata,
+    p: &mago_codex::metadata::property::PropertyMetadata,
+    name: &[u8],
+) -> Option<Type> {
+    property_span(c, p).and_then(|span| {
+        let (doc, _) = doc_at(c, span)?;
+        let doc = Doc::parse(&doc);
+        let scope = scope_at(c, span, Some(declaring));
+        doc.var_types(&scope).into_iter().find(|(n, _)| n.is_empty() || n.as_bytes() == name).map(|(_, t)| t)
+    })
+}
+
+/// A property of any file: `decideType()` of its native type and its `@var` (its own, else an inherited one).
+pub fn property_of(
+    c: &Checker,
+    declaring: &ClassLikeMetadata,
+    p: &mago_codex::metadata::property::PropertyMetadata,
+    name: &[u8],
+) -> Type {
+    let native = p.type_declaration_metadata.as_ref().map(|t| from_tunion(c, &t.type_union, declaring));
+    let phpdoc = own_property_doc(c, declaring, p, name).or_else(|| inherited_property_doc(c, declaring, name, 0));
+    match native {
+        Some(n) => decide_type(n, phpdoc),
+        None => phpdoc.unwrap_or_else(mixed),
+    }
 }
 
 /// The `NameScope` of a class-like's own PHPDoc (at `span`), with its templates.
