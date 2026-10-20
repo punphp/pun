@@ -2,6 +2,223 @@
  "general": [],
  "errors": [
   {
+   "file": "callable_tags.php",
+   "line": 11,
+   "identifier": "phpDoc.parseError",
+   "message": "PHPDoc tag @param-later-invoked-callable has invalid value (): Unexpected token \"\\n \", expected variable at offset 248 on line 7",
+   "tip": null
+  },
+  {
+   "file": "callable_tags.php",
+   "line": 13,
+   "identifier": "parameter.implicitlyNullable",
+   "message": "Deprecated in PHP 8.4: Parameter #1 $a (int) is implicitly nullable via default value null.",
+   "tip": null
+  },
+  {
+   "file": "callable_tags.php",
+   "line": 13,
+   "identifier": "parameter.notFound",
+   "message": "PHPDoc tag @param-immediately-invoked-callable references unknown parameter: $missing",
+   "tip": null
+  },
+  {
+   "file": "callable_tags.php",
+   "line": 13,
+   "identifier": "paramLaterInvokedCallable.nonCallable",
+   "message": "PHPDoc tag @param-later-invoked-callable is for parameter $a with non-callable type int|null.",
+   "tip": null
+  },
+  {
+   "file": "class_tags.php",
+   "line": 28,
+   "identifier": "generics.moreTypes",
+   "message": "Generic type CoverageClassTags\\Box<int, int> in PHPDoc tag @property-write for property CoverageClassTags\\Tagged::$c specifies 2 template types, but class CoverageClassTags\\Box supports only 1: T",
+   "tip": null
+  },
+  {
+   "file": "class_tags.php",
+   "line": 28,
+   "identifier": "class.notFound",
+   "message": "PHPDoc tag @method for method CoverageClassTags\\Tagged::second() parameter #1 $value contains unknown class CoverageClassTags\\Missing.",
+   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+  },
+  {
+   "file": "class_tags.php",
+   "line": 28,
+   "identifier": "class.notFound",
+   "message": "PHPDoc tag @method for method CoverageClassTags\\Tagged::second() return type contains unknown class CoverageClassTags\\Missing.",
+   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+  },
+  {
+   "file": "class_tags.php",
+   "line": 28,
+   "identifier": "methodTag.trait",
+   "message": "PHPDoc tag @method for method CoverageClassTags\\Tagged::third() return type contains invalid type CoverageClassTags\\SomeTrait.",
+   "tip": null
+  },
+  {
+   "file": "class_tags.php",
+   "line": 28,
+   "identifier": "class.notFound",
+   "message": "PHPDoc tag @method template T for method CoverageClassTags\\Tagged::second() has invalid bound type CoverageClassTags\\Missing.",
+   "tip": null
+  },
+  {
+   "file": "class_tags.php",
+   "line": 28,
+   "identifier": "mixin.trait",
+   "message": "PHPDoc tag @mixin contains invalid type CoverageClassTags\\SomeTrait.",
+   "tip": null
+  },
+  {
+   "file": "class_tags.php",
+   "line": 28,
+   "identifier": "propertyTag.trait",
+   "message": "PHPDoc tag @property for property CoverageClassTags\\Tagged::$a contains invalid type CoverageClassTags\\SomeTrait.",
+   "tip": null
+  },
+  {
+   "file": "class_tags.php",
+   "line": 28,
+   "identifier": "class.notFound",
+   "message": "PHPDoc tag @property-read for property CoverageClassTags\\Tagged::$d contains unknown class CoverageClassTags\\Missing.",
+   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+  },
+  {
+   "file": "class_tags.php",
+   "line": 38,
+   "identifier": "mixin.nonObject",
+   "message": "PHPDoc tag @mixin contains non-object type int.",
+   "tip": null
+  },
+  {
+   "file": "class_tags.php",
+   "line": 50,
+   "identifier": "method.templateTypeNotInParameter",
+   "message": "Template type T of function CoverageClassTags\\generic() is not referenced in a parameter.",
+   "tip": null
+  },
+  {
+   "file": "class_tags.php",
+   "line": 55,
+   "identifier": "varTag.trait",
+   "message": "PHPDoc tag @var has invalid type CoverageClassTags\\SomeTrait.",
+   "tip": null
+  },
+  {
+   "file": "class_tags.php",
+   "line": 55,
+   "identifier": "varTag.nativeType",
+   "message": "PHPDoc tag @var with type CoverageClassTags\\SomeTrait is not subtype of native type 2.",
+   "tip": null
+  },
+  {
+   "file": "class_tags.php",
+   "line": 57,
+   "identifier": "generics.moreTypes",
+   "message": "Generic type CoverageClassTags\\Box<int, int> in PHPDoc tag @var for variable $box specifies 2 template types, but class CoverageClassTags\\Box supports only 1: T",
+   "tip": null
+  },
+  {
+   "file": "class_tags.php",
+   "line": 57,
+   "identifier": "varTag.nativeType",
+   "message": "PHPDoc tag @var with type CoverageClassTags\\Box<int, int> is not subtype of native type 3.",
+   "tip": null
+  },
+  {
+   "file": "class_tags.php",
+   "line": 60,
+   "identifier": "varTag.nativeType",
+   "message": "PHPDoc tag @var with type CoverageClassTags\\Guarded is not subtype of native type 4.",
+   "tip": null
+  },
+  {
+   "file": "class_tags.php",
+   "line": 62,
+   "identifier": "echo.nonString",
+   "message": "Parameter #3 (CoverageClassTags\\Box<int, int>) of echo cannot be converted to string.",
+   "tip": null
+  },
+  {
+   "file": "class_tags.php",
+   "line": 63,
+   "identifier": "class.notFound",
+   "message": "PHPDoc tag @var for variable $nop contains unknown class CoverageClassTags\\Missing.",
+   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+  },
+  {
+   "file": "class_tags.php",
+   "line": 63,
+   "identifier": "varTag.variableNotFound",
+   "message": "Variable $nop in PHPDoc tag @var does not exist.",
+   "tip": null
+  },
+  {
+   "file": "class_tags.php",
+   "line": 71,
+   "identifier": "method.templateTypeNotInParameter",
+   "message": "Template type U of method CoverageClassTags\\Methods::method() is not referenced in a parameter.",
+   "tip": null
+  },
+  {
+   "file": "class_tags.php",
+   "line": 75,
+   "identifier": "class.notFound",
+   "message": "PHPDoc tag @var for variable $value contains unknown class CoverageClassTags\\MissingToo.",
+   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+  },
+  {
+   "file": "class_tags.php",
+   "line": 78,
+   "identifier": "class.notFound",
+   "message": "PHPDoc tag @var for variable $nop contains unknown class CoverageClassTags\\MissingInClass.",
+   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+  },
+  {
+   "file": "class_tags.php",
+   "line": 84,
+   "identifier": "phpDoc.parseError",
+   "message": "PHPDoc tag @mixin has invalid value (): Unexpected token \"\\n \", expected type at offset 71 on line 4",
+   "tip": null
+  },
+  {
+   "file": "class_tags.php",
+   "line": 86,
+   "identifier": "mixin.nonObject",
+   "message": "PHPDoc tag @mixin contains non-object type int|stdClass.",
+   "tip": null
+  },
+  {
+   "file": "class_tags.php",
+   "line": 90,
+   "identifier": "class.notFound",
+   "message": "PHPDoc tag @var for variable $nop contains unknown class CoverageClassTags\\MissingAtEnd.",
+   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+  },
+  {
+   "file": "class_tags.php (in context of class CoverageClassTags\\UsesTaggedTrait)",
+   "line": 38,
+   "identifier": "class.notFound",
+   "message": "PHPDoc tag @method for method CoverageClassTags\\TaggedTrait::traitMethod() return type contains unknown class CoverageClassTags\\Unknown.",
+   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+  },
+  {
+   "file": "class_tags.php (in context of class CoverageClassTags\\UsesTaggedTrait)",
+   "line": 38,
+   "identifier": "mixin.unresolvableType",
+   "message": "PHPDoc tag @mixin contains unresolvable type.",
+   "tip": null
+  },
+  {
+   "file": "class_tags.php (in context of class CoverageClassTags\\UsesTaggedTrait)",
+   "line": 38,
+   "identifier": "class.notFound",
+   "message": "PHPDoc tag @property for property CoverageClassTags\\TaggedTrait::$traitProperty contains unknown class CoverageClassTags\\Unknown.",
+   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+  },
+  {
    "file": "generics.php",
    "line": 37,
    "identifier": "class.notFound",
@@ -111,6 +328,55 @@
    "line": 158,
    "identifier": "generics.lessTypes",
    "message": "Generic type CoverageGenerics\\Quad<int, int> in PHPDoc tag @extends does not specify all template types of class CoverageGenerics\\Quad: A, B, C, D (3-4 required).",
+   "tip": null
+  },
+  {
+   "file": "phpdoc_tags.php",
+   "line": 10,
+   "identifier": "phpDoc.phpstanTag",
+   "message": "Unknown PHPDoc tag: @phpstan-elseif",
+   "tip": null
+  },
+  {
+   "file": "phpdoc_tags.php",
+   "line": 14,
+   "identifier": "phpDoc.phpstanTag",
+   "message": "Unknown PHPDoc tag: @phpstan-else",
+   "tip": null
+  },
+  {
+   "file": "phpdoc_tags.php",
+   "line": 20,
+   "identifier": "phpDoc.phpstanTag",
+   "message": "Unknown PHPDoc tag: @phpstan-colon-elseif",
+   "tip": null
+  },
+  {
+   "file": "phpdoc_tags.php",
+   "line": 23,
+   "identifier": "phpDoc.phpstanTag",
+   "message": "Unknown PHPDoc tag: @phpstan-colon-else",
+   "tip": null
+  },
+  {
+   "file": "phpdoc_tags.php",
+   "line": 27,
+   "identifier": "phpDoc.parseError",
+   "message": "PHPDoc tag @Foo has invalid value ((1 2) @phpstan-unknown): Unexpected token \"2\", expected ')' at offset 11 on line 1",
+   "tip": null
+  },
+  {
+   "file": "phpdoc_tags.php",
+   "line": 32,
+   "identifier": "phpDoc.parseError",
+   "message": "PHPDoc tag @phpstan-require-extends has invalid value (): Unexpected token \"\\n \", expected type at offset 31 on line 2",
+   "tip": null
+  },
+  {
+   "file": "phpdoc_tags.php",
+   "line": 41,
+   "identifier": "sealed.nonObject",
+   "message": "PHPDoc tag @phpstan-sealed contains non-object type int.",
    "tip": null
   },
   {

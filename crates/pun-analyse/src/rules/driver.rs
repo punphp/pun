@@ -47,6 +47,8 @@ pub(crate) struct Checks {
     internal: Option<super::internal::Names>,
     /// `featureToggles.internalTag`: RestrictedInternalFunctionUsageExtension & co. (config.level0.neon).
     internal_tag: bool,
+    /// [`Project::type_aliases`].
+    pub(super) type_aliases: Vec<(String, String)>,
     /// [`Project::reported`].
     reported: Option<crate::project::Reported>,
     /// [`Project::precise_unused_parameter_line`].
@@ -93,6 +95,7 @@ impl Checks {
             internal: (internal_members || project.deprecation_rules)
                 .then(|| super::internal::Names::of(codebase, project.php_version, internal_members, project.deprecation_rules)),
             internal_tag: project.internal_tag,
+            type_aliases: project.type_aliases.clone(),
             reported: project.reported.clone(),
             precise_unused_parameter_line: project.precise_unused_parameter_line,
             internal_members,
@@ -158,6 +161,7 @@ fn checker<'a, 'arena>(
         vars: HashMap::new(),
         saved: Vec::new(),
         functions: Vec::new(),
+        var_tag_functions: Vec::new(),
         in_exists_call: 0,
         top_level: HashSet::new(),
         piped: HashSet::new(),
@@ -224,7 +228,9 @@ pub(crate) fn check_file(
     let mut checker = checker(
         &arena, file, program, &names, codebase, project, files, sources,
     );
-    checker.walk_program(program, &mut ());
+    pun_phpstan::resolve::with_type_aliases(&project.type_aliases, || {
+        checker.walk_program(program, &mut ())
+    });
     let name = checker.file_name();
     let (mut lines, parse) = lines_to_ignore(&file.contents);
     let mut unmatched = lines.clone();
@@ -309,7 +315,9 @@ fn in_trait_context(
         trait_name: String::from_utf8_lossy(t.name.as_bytes()).into_owned(),
         renames: u.renames.clone(),
     });
-    checker.walk_program(program, &mut ());
+    pun_phpstan::resolve::with_type_aliases(&project.type_aliases, || {
+        checker.walk_program(program, &mut ())
+    });
     let label = checker.label.clone();
     let (mut lines, _) = lines_to_ignore(&file.contents);
     lines.retain(|line, _| {

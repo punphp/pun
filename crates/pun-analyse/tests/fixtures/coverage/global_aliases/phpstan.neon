@@ -1,0 +1,7 @@
+parameters:
+    level: 2
+    phpVersion: 80500
+    paths: [.]
+    typeAliases:
+        GlobalAlias: 'int|string'
+        GlobalList: 'list<GlobalAlias>'

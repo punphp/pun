@@ -4,7 +4,7 @@
 //! InterfaceAncestorsRule, EnumAncestorsRule, UsedTraitsRule), both through GenericObjectTypeCheck.
 //!
 //! ponytail: call-site variance (`Foo<covariant T>`), template variance (VarianceCheck), unresolvable ancestor
-//! types, CrossCheckInterfacesHelper and the `typeAliases` config parameter are not ported yet.
+//! types and CrossCheckInterfacesHelper are not ported yet.
 
 use std::cell::RefCell;
 
@@ -12,7 +12,7 @@ use mago_names::kind::NameKind;
 use mago_names::scope::NamespaceScope;
 use mago_span::{HasSpan, Span};
 use mago_syntax::cst::*;
-use pun_phpstan::resolve::{Scope, resolve_in, resolve_str};
+use pun_phpstan::resolve::{Scope, has_global_alias, resolve_in, resolve_str};
 use pun_phpstan::symbols::{self, Class as Reflected};
 use pun_phpstan::types::{Level, Template, Type, ancestor_args, is_super_type_of};
 
@@ -43,8 +43,8 @@ pub const IDENTIFIERS: &[&str] = &[
 
 /// What a check found: (identifier, message); and the class names ClassNameCheck reads.
 #[derive(Default)]
-struct Found {
-    errors: Vec<(&'static str, String)>,
+pub(super) struct Found {
+    pub(super) errors: Vec<(&'static str, String)>,
     names: Vec<String>,
 }
 
@@ -87,7 +87,7 @@ fn intval(s: &str) -> String {
 }
 
 /// `SprintfHelper::escapeFormatString()`
-fn escape(s: &str) -> String {
+pub(super) fn escape(s: &str) -> String {
     s.replace('%', "%%")
 }
 
@@ -121,7 +121,7 @@ fn class_templates(c: &Reflected) -> Vec<Type> {
 }
 
 /// `getReferencedClasses()`
-fn referenced_classes(ty: &Type) -> Vec<String> {
+pub(super) fn referenced_classes(ty: &Type) -> Vec<String> {
     fn walk(t: &Type, out: &RefCell<Vec<String>>) {
         if let Type::Object(name, _)
         | Type::Static(name, _)
@@ -184,11 +184,11 @@ fn infer(pattern: &Type, received: &Type, out: &mut TemplateMap) {
 }
 
 /// GenericObjectTypeCheck's messages (the call-site variance ones are not ported).
-struct GenericMessages {
-    not_generic: String,
-    less: String,
-    more: String,
-    not_subtype: String,
+pub(super) struct GenericMessages {
+    pub(super) not_generic: String,
+    pub(super) less: String,
+    pub(super) more: String,
+    pub(super) not_subtype: String,
 }
 
 /// `getGenericTypes()`: each generic object or `static` type, resolved to its bounds, outermost first: the type,
@@ -213,7 +213,7 @@ fn generic_types(ty: &Type) -> Vec<(Type, String, Vec<Type>)> {
 }
 
 /// GenericObjectTypeCheck::check()
-fn generic_object_check(ty: &Type, m: &GenericMessages, out: &mut Found) {
+pub(super) fn generic_object_check(ty: &Type, m: &GenericMessages, out: &mut Found) {
     for (generic, name, args) in generic_types(ty) {
         let Some(class) = symbols::lookup(&name) else {
             continue;
@@ -611,7 +611,7 @@ fn class_like(c: &Checker, l: &ClassLike) -> Found {
     }
     let aliases = aliases_of(c, &parsed, &l.names, 0);
     let resolve_name = class_resolve_name(l.name, parent.as_deref());
-    let has_alias = |name: &str| aliases.iter().any(|a| a == name);
+    let has_alias = |name: &str| has_global_alias(name) || aliases.iter().any(|a| a == name);
     declared::with_classes(c, || {
         let templates = template_inputs(&parsed.templates, &scope);
         match &l.subject {
@@ -1092,7 +1092,7 @@ pub fn trait_(c: &mut Checker, t: &Trait) {
     let display = c.display(k);
     let scope = declared::class_scope(c, t.span(), k);
     let aliases = aliases_of(c, &parsed, &names, 0);
-    let has_alias = |n: &str| aliases.iter().any(|a| a == n);
+    let has_alias = |n: &str| has_global_alias(n) || aliases.iter().any(|a| a == n);
     // not in a class: names resolve as written
     let resolve_name = |n: &str| n.to_string();
     let mut found = Found::default();
@@ -1145,7 +1145,7 @@ pub fn function(c: &mut Checker, f: &Function) {
                 method_tag: false,
             },
             &|n: &str| n.to_string(),
-            &|_: &str| false,
+            &|n: &str| has_global_alias(n),
             &mut found,
         );
     });
@@ -1190,7 +1190,7 @@ pub fn method(c: &mut Checker, m: &Method, method: &str) {
     );
     let parent = scope.parent.clone();
     let aliases = type_aliases(c, &class, 0);
-    let has_alias = |n: &str| aliases.iter().any(|a| a == n);
+    let has_alias = |n: &str| has_global_alias(n) || aliases.iter().any(|a| a == n);
     let resolve_name = class_resolve_name(&class, parent.as_deref());
     let subject = format!("method {}::{}()", escape(&display), escape(method));
     let mut found = Found::default();

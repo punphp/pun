@@ -305,7 +305,7 @@ const PROBES = [
     'callable(int): void', 'callable(int=, string...): mixed', 'callable(int &$x): bool', 'Closure(int): string',
     'Closure(int $a, string ...$b): (int|string)', 'Foo(int): void',
     'callable(): callable(): int', 'callable(int|string): (int|false)', 'Closure', 'callable(): void|int', 'callable(Countable): int',
-    'callable(int): void|callable(string): void', 'callable(): int|callable(): string', 'callable(): mixed|Closure(): int',
+    "array{DateTimeInterface::ATOM: int}", "int['a']", 'null::FOO', 'callable(int): void|callable(string): void', 'callable(): int|callable(): string', 'callable(): mixed|Closure(): int',
     'callable(int, int): int|callable(int): int', 'callable(int...): int|callable(int): int', 'callable&string', 'callable&object',
     'callable&Countable', 'callable-string|Closure', 'callable|string', 'callable(): int|string',
     'array{a: int, b?: string}', 'array{int, string}', 'list{int, string}', 'non-empty-array{a?: int}', 'non-empty-list{0?: int}',
@@ -630,10 +630,41 @@ if (($argv[1] ?? '') === 'probes') {
     $scope = new NameScope('PunProbe', []);
     $projectSuper = [];
     foreach ([['Coll<int, string>', 'Child<string>'], ['Coll<int, string>', 'Child<int>'], ['Coll', 'Child<string>'], ['Child<string>', 'Coll<int, string>'],
-        ['Coll<string, string>', 'Child<string>'], ['Child', 'Child<int>'], ['Coll<int, string>', 'Plain'], ['Coll', 'Plain']] as [$a, $b]) {
+        ['Coll<string, string>', 'Child<string>'], ['Child', 'Child<int>'], ['Coll<int, string>', 'Plain'], ['Coll', 'Plain'], ['Coll', 'Tr'],
+        ['Tr', 'Coll'], ['Tr', 'Tr'], ['Tr&\\stdClass', 'Tr']] as [$a, $b]) {
         $projectSuper[] = [$a, $b, $resolver->resolve($a, $scope)->isSuperTypeOf($resolver->resolve($b, $scope))->result->describe()];
     }
     file_put_contents($root.'/crates/pun-phpstan/tests/fixtures/type-project-super.json', json_encode($projectSuper, $flags | JSON_PRETTY_PRINT)."\n");
+    // ConstExprNodeResolver::resolve() (a `@method` parameter's default value): [class or null, expression, described]
+    $constParser = new PHPStan\PhpDocParser\Parser\ConstExprParser(new PHPStan\PhpDocParser\ParserConfig([]));
+    $lexer = new PHPStan\PhpDocParser\Lexer\Lexer(new PHPStan\PhpDocParser\ParserConfig([]));
+    $constResolver = container(80400)->getByType(PHPStan\PhpDoc\ConstExprNodeResolver::class);
+    $constants = [];
+    foreach (['PunProbe\\Child', 'PunProbe\\Coll', null] as $class) {
+        foreach (["[1, 'a' => true]", 'false', 'true', 'null', '1', '1.5', "'x'", 'self::A', 'parent::A', 'static::C', 'Coll::B',
+            'Child::A', 'Nope::A', 'Coll::NOPE', 'FOO', 'Coll::class', 'Suit::Hearts', 'Suit::X'] as $s) {
+            $node = $constParser->parse(new PHPStan\PhpDocParser\Parser\TokenIterator($lexer->tokenize($s)));
+            $constants[] = [$class, $s, $constResolver->resolve($node, new NameScope('PunProbe', [], $class))->describe(VerbosityLevel::precise())];
+        }
+    }
+    file_put_contents($root.'/crates/pun-phpstan/tests/fixtures/type-const-expr.json', json_encode($constants, $flags | JSON_PRETTY_PRINT)."\n");
+    // the typeAliases parameter's global type aliases: [aliases, type, described in namespace PunProbe]
+    $globalAliases = ['PunAlias' => 'int|string', 'PunNested' => 'list<PunAlias>', 'PunClass' => 'Countable'];
+    $tmp = sys_get_temp_dir().'/pun-symbols-aliases';
+    @mkdir($tmp);
+    file_put_contents($tmp.'/v.neon', "parameters:\n\tphpVersion: 80400\n\ttypeAliases:\n".implode('', array_map(fn ($k, $v) => "\t\t$k: '$v'\n", array_keys($globalAliases), $globalAliases)));
+    $aliasResolver = (new ContainerFactory($tmp))->create($tmp, [$tmp.'/v.neon'], [])->getByType(TypeStringResolver::class);
+    $aliased = [];
+    foreach (['PunAlias', 'PunNested', 'array<PunAlias, PunClass>', 'punalias'] as $s) {
+        $aliased[] = [$globalAliases, $s, $aliasResolver->resolve($s, new NameScope('PunProbe', []))->describe(VerbosityLevel::precise())];
+    }
+    file_put_contents($root.'/crates/pun-phpstan/tests/fixtures/type-global-aliases.json', json_encode($aliased, $flags | JSON_PRETTY_PRINT)."\n");
+    // getObjectClassNames(): [type, names]
+    $names = [];
+    foreach (['Coll|Child<int>|int', 'Coll&\\Countable', 'Coll|Coll<int, int>'] as $t) {
+        $names[] = [$t, $resolver->resolve($t, $scope)->getObjectClassNames()];
+    }
+    file_put_contents($root.'/crates/pun-phpstan/tests/fixtures/type-object-class-names.json', json_encode($names, $flags | JSON_PRETTY_PRINT)."\n");
     // getIterableKeyType() / getIterableValueType() and getAncestorWithClassName(): [type, key, value, Coll ancestor]
     $project = [];
     foreach (['Child<string>', 'Nope<int>', 'Coll<int, string>'] as $t) {

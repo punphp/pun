@@ -406,7 +406,7 @@ fn described(class: &symbols::Class) -> &'static str {
 }
 
 /// Every type in `ty`, outer first (TypeTraverser's order).
-fn each(ty: &Type, f: &mut dyn FnMut(&Type)) {
+pub(super) fn each(ty: &Type, f: &mut dyn FnMut(&Type)) {
     f(ty);
     let f = RefCell::new(f);
     ty.traverse(&|inner| {
@@ -476,6 +476,14 @@ fn definition_context(r: &Resolver, k: &ClassLikeMetadata, display: &str, out: &
             ));
             continue;
         }
+        if pun_phpstan::resolve::has_global_alias(name) {
+            out.push((
+                "typeAlias.duplicate",
+                format!("Type alias {name} already exists as a global type alias."),
+                None,
+            ));
+            continue;
+        }
         if let Some(as_) = &import.imported_as
             && !valid_name(r, &doc, as_)
         {
@@ -505,6 +513,14 @@ fn definition_context(r: &Resolver, k: &ClassLikeMetadata, display: &str, out: &
             out.push((
                 "typeAlias.duplicate",
                 format!("Type alias {name} already exists as {kind} in scope of {display}."),
+                None,
+            ));
+            continue;
+        }
+        if pun_phpstan::resolve::has_global_alias(name) {
+            out.push((
+                "typeAlias.duplicate",
+                format!("Type alias {name} already exists as a global type alias."),
                 None,
             ));
             continue;

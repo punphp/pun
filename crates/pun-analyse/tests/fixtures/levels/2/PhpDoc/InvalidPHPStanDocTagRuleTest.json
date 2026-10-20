@@ -1,0 +1,135 @@
+{
+    "test": "PhpDoc/InvalidPHPStanDocTagRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "PhpDoc/data/invalid-phpstan-doc.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "PhpDoc/data/invalid-phpstan-doc.php",
+                    "line": 6,
+                    "identifier": "phpDoc.phpstanTag",
+                    "message": "Unknown PHPDoc tag: @phpstan-extens",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/invalid-phpstan-doc.php",
+                    "line": 11,
+                    "identifier": "phpDoc.phpstanTag",
+                    "message": "Unknown PHPDoc tag: @phpstan-pararm",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/invalid-phpstan-doc.php",
+                    "line": 14,
+                    "identifier": "method.templateTypeNotInParameter",
+                    "message": "Template type T of method InvalidPHPStanDoc\\Boo::foo() is not referenced in a parameter.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/invalid-phpstan-doc.php",
+                    "line": 14,
+                    "identifier": "return.missing",
+                    "message": "Method InvalidPHPStanDoc\\Boo::foo() should return T but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/invalid-phpstan-doc.php",
+                    "line": 43,
+                    "identifier": "phpDoc.phpstanTag",
+                    "message": "Unknown PHPDoc tag: @phpstan-varr",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/invalid-phpstan-doc.php",
+                    "line": 46,
+                    "identifier": "phpDoc.phpstanTag",
+                    "message": "Unknown PHPDoc tag: @phpstan-varr",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/invalid-phpstan-doc.php",
+                    "line": 56,
+                    "identifier": "phpDoc.phpstanTag",
+                    "message": "Unknown PHPDoc tag: @phpstan-varr",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/invalid-phpstan-doc.php",
+                    "line": 57,
+                    "identifier": "function.notFound",
+                    "message": "Function doFoo not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug8697",
+            "files": [
+                "PhpDoc/data/bug-8697.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testAssignOperator",
+            "files": [
+                "PhpDoc/data/invalid-phpstan-doc-assign-operator.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "PhpDoc/data/invalid-phpstan-doc-assign-operator.php",
+                    "line": 5,
+                    "identifier": "class.notFound",
+                    "message": "Class InvalidPHPStanDocAssignOperator\\Boo extends unknown class InvalidPHPStanDocAssignOperator\\Baz.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "PhpDoc/data/invalid-phpstan-doc-assign-operator.php",
+                    "line": 9,
+                    "identifier": "phpDoc.phpstanTag",
+                    "message": "Unknown PHPDoc tag: @phpstan-va",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/invalid-phpstan-doc-assign-operator.php",
+                    "line": 10,
+                    "identifier": "nullCoalesce.variable",
+                    "message": "Variable $c on left side of ??= is never defined.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testPropertyHooks",
+            "files": [
+                "PhpDoc/data/invalid-phpstan-tag-property-hooks.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "PhpDoc/data/invalid-phpstan-tag-property-hooks.php",
+                    "line": 9,
+                    "identifier": "phpDoc.phpstanTag",
+                    "message": "Unknown PHPDoc tag: @phpstan-what",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/invalid-phpstan-tag-property-hooks.php",
+                    "line": 10,
+                    "identifier": "return.missing",
+                    "message": "Get hook for property InvalidPHPStanTagPropertyHooks\\Foo::$i should return int but return statement is missing.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

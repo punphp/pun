@@ -1,0 +1,197 @@
+{
+    "test": "PhpDoc/RequireExtendsDefinitionTraitRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "PhpDoc/data/incompatible-require-extends.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "PhpDoc/data/incompatible-require-extends.php",
+                    "line": 8,
+                    "identifier": "requireExtends.trait",
+                    "message": "PHPDoc tag @phpstan-require-extends cannot contain non-class type IncompatibleRequireExtends\\SomeTrait.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-require-extends.php",
+                    "line": 13,
+                    "identifier": "requireExtends.interface",
+                    "message": "PHPDoc tag @phpstan-require-extends cannot contain an interface IncompatibleRequireExtends\\SomeInterface, expected a class.",
+                    "tip": "If you meant an interface, use @phpstan-require-implements instead."
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-require-extends.php",
+                    "line": 18,
+                    "identifier": "requireExtends.enum",
+                    "message": "PHPDoc tag @phpstan-require-extends cannot contain non-class type IncompatibleRequireExtends\\SomeEnum.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-require-extends.php",
+                    "line": 23,
+                    "identifier": "class.notFound",
+                    "message": "PHPDoc tag @phpstan-require-extends contains unknown class IncompatibleRequireExtends\\TypeDoesNotExist.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-require-extends.php",
+                    "line": 34,
+                    "identifier": "requireExtends.nonObject",
+                    "message": "PHPDoc tag @phpstan-require-extends contains non-object type int.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-require-extends.php",
+                    "line": 39,
+                    "identifier": "requireExtends.onClass",
+                    "message": "PHPDoc tag @phpstan-require-extends is only valid on trait or interface.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-require-extends.php",
+                    "line": 44,
+                    "identifier": "requireExtends.onEnum",
+                    "message": "PHPDoc tag @phpstan-require-extends is only valid on trait or interface.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-require-extends.php",
+                    "line": 46,
+                    "identifier": "class.missingExtends",
+                    "message": "Trait IncompatibleRequireExtends\\ValidTrait requires using class to extend IncompatibleRequireExtends\\SomeClass, but IncompatibleRequireExtends\\InValidTraitUse2 does not.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-require-extends.php",
+                    "line": 51,
+                    "identifier": "class.missingExtends",
+                    "message": "Trait IncompatibleRequireExtends\\ValidTrait requires using class to extend IncompatibleRequireExtends\\SomeClass, but IncompatibleRequireExtends\\InValidTraitUse does not.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-require-extends.php",
+                    "line": 56,
+                    "identifier": "class.missingExtends",
+                    "message": "Interface IncompatibleRequireExtends\\ValidInterface requires implementing class to extend IncompatibleRequireExtends\\SomeClass, but IncompatibleRequireExtends\\InvalidInterfaceUse2 does not.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-require-extends.php",
+                    "line": 58,
+                    "identifier": "class.missingExtends",
+                    "message": "Interface IncompatibleRequireExtends\\ValidInterface requires implementing class to extend IncompatibleRequireExtends\\SomeClass, but IncompatibleRequireExtends\\InvalidInterfaceUse does not.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-require-extends.php",
+                    "line": 121,
+                    "identifier": "requireExtends.finalClass",
+                    "message": "PHPDoc tag @phpstan-require-extends cannot contain final class IncompatibleRequireExtends\\SomeFinalClass.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-require-extends.php",
+                    "line": 126,
+                    "identifier": "requireExtends.finalClass",
+                    "message": "PHPDoc tag @phpstan-require-extends cannot contain final class IncompatibleRequireExtends\\SomeFinalClass.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-require-extends.php",
+                    "line": 128,
+                    "identifier": "class.missingExtends",
+                    "message": "Trait IncompatibleRequireExtends\\InvalidTrait requires using class to extend IncompatibleRequireExtends\\SomeFinalClass, but IncompatibleRequireExtends\\InvalidClass2 does not.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-require-extends.php",
+                    "line": 135,
+                    "identifier": "requireExtends.interface",
+                    "message": "PHPDoc tag @phpstan-require-extends cannot contain an interface IncompatibleRequireExtends\\UnresolvableExtendsInterface, expected a class.",
+                    "tip": "If you meant an interface, use @phpstan-require-implements instead."
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-require-extends.php",
+                    "line": 140,
+                    "identifier": "requireExtends.nonObject",
+                    "message": "PHPDoc tag @phpstan-require-extends contains non-object type *NEVER*.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-require-extends.php",
+                    "line": 146,
+                    "identifier": "class.missingExtends",
+                    "message": "Trait IncompatibleRequireExtends\\ValidTrait requires using class to extend IncompatibleRequireExtends\\SomeClass, but class@anonymous/pun/.oracle/phpstan-src/tests/PHPStan/Rules/PhpDoc/data/incompatible-require-extends.php:146 does not.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-require-extends.php",
+                    "line": 163,
+                    "identifier": "class.missingExtends",
+                    "message": "Trait IncompatibleRequireExtends\\ValidPsalmTrait requires using class to extend IncompatibleRequireExtends\\SomeClass, but class@anonymous/pun/.oracle/phpstan-src/tests/PHPStan/Rules/PhpDoc/data/incompatible-require-extends.php:163 does not.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-require-extends.php",
+                    "line": 171,
+                    "identifier": "requireExtends.duplicate",
+                    "message": "PHPDoc tag @phpstan-require-extends can only be used once.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-require-extends.php",
+                    "line": 178,
+                    "identifier": "requireExtends.duplicate",
+                    "message": "PHPDoc tag @phpstan-require-extends can only be used once.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-require-extends.php",
+                    "line": 183,
+                    "identifier": "class.notFound",
+                    "message": "PHPDoc tag @phpstan-require-extends contains unknown class IncompatibleRequireExtends\\NonExistentClass.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-require-extends.php",
+                    "line": 185,
+                    "identifier": "class.missingExtends",
+                    "message": "Interface IncompatibleRequireExtends\\RequireNonExisstentUnionClassinterface requires implementing class to extend IncompatibleRequireExtends\\NonExistentClass|IncompatibleRequireExtends\\SomeClass, but IncompatibleRequireExtends\\RequireNonExisstentUnionClassinterface@anonymous/pun/.oracle/phpstan-src/tests/PHPStan/Rules/PhpDoc/data/incompatible-require-extends.php:185 does not.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-require-extends.php",
+                    "line": 187,
+                    "identifier": "class.missingExtends",
+                    "message": "Interface IncompatibleRequireExtends\\RequireNonExisstentUnionClassinterface requires implementing class to extend IncompatibleRequireExtends\\NonExistentClass|IncompatibleRequireExtends\\SomeClass, but IncompatibleRequireExtends\\SomeClass@anonymous/pun/.oracle/phpstan-src/tests/PHPStan/Rules/PhpDoc/data/incompatible-require-extends.php:187 does not.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-require-extends.php",
+                    "line": 192,
+                    "identifier": "class.notFound",
+                    "message": "PHPDoc tag @phpstan-require-extends contains unknown class IncompatibleRequireExtends\\NonExistentClass.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-require-extends.php",
+                    "line": 194,
+                    "identifier": "class.missingExtends",
+                    "message": "Trait IncompatibleRequireExtends\\RequireNonExisstentUnionClassTrait requires using class to extend IncompatibleRequireExtends\\NonExistentClass|IncompatibleRequireExtends\\SomeClass, but class@anonymous/pun/.oracle/phpstan-src/tests/PHPStan/Rules/PhpDoc/data/incompatible-require-extends.php:194 does not.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-require-extends.php",
+                    "line": 198,
+                    "identifier": "class.missingExtends",
+                    "message": "Trait IncompatibleRequireExtends\\RequireNonExisstentUnionClassTrait requires using class to extend IncompatibleRequireExtends\\NonExistentClass|IncompatibleRequireExtends\\SomeClass, but IncompatibleRequireExtends\\SomeClass@anonymous/pun/.oracle/phpstan-src/tests/PHPStan/Rules/PhpDoc/data/incompatible-require-extends.php:198 does not.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

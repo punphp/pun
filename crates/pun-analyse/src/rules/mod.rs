@@ -51,6 +51,11 @@ mod type_aliases;
 mod types;
 mod unused_trait;
 mod write_only;
+mod phpdoc_tags;
+mod require_tags;
+mod var_tags;
+mod callable_tags;
+mod class_tags;
 
 use std::collections::{HashMap, HashSet};
 use std::path::PathBuf;
@@ -84,6 +89,11 @@ pub fn reports(identifier: &str) -> bool {
         || generics::IDENTIFIERS.contains(&identifier)
         || larastan::IDENTIFIERS.contains(&identifier)
         || types::IDENTIFIERS.iter().any(|ids| ids.contains(&identifier))
+        || phpdoc_tags::IDENTIFIERS.contains(&identifier)
+        || require_tags::IDENTIFIERS.contains(&identifier)
+        || var_tags::IDENTIFIERS.contains(&identifier)
+        || class_tags::IDENTIFIERS.contains(&identifier)
+        || callable_tags::IDENTIFIERS.contains(&identifier)
 }
 
 pub const IDENTIFIERS: &[&str] = &[
@@ -650,6 +660,8 @@ pub struct Checker<'a, 'arena> {
     vars: HashMap<Vec<u8>, Vec<Guard>>,
     saved: Vec<Saved>,
     functions: Vec<FunctionScope>,
+    /// The functions and methods the walk is in (var_tags.rs reads their templates).
+    var_tag_functions: Vec<mago_span::Span>,
     /// Inside the arguments of class_exists() & co. (`inFunctionCallsStack`).
     in_exists_call: usize,
     /// Spans of expressions PHPStan processes in a top-level ExpressionContext (`isInFirstLevelStatement()`):
@@ -1054,6 +1066,8 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
             hierarchy::in_class(self, class.span(), k);
             require_ancestors::check(self, class.span(), k);
             hierarchy::allowed_subtypes(self, class.span(), k);
+            require_tags::class_like(self, class.span(), k);
+            class_tags::class_like(self, class.span(), k);
             dead_code::unused_private(self, k, class.members.as_slice());
             readonly_init::class(self, k, class.members.as_slice());
         }
@@ -1063,7 +1077,8 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         larastan::class(self, class);
         constants::read_only_class(self, class.span(), class.modifiers.as_slice(), false);
     }
-    fn walk_out_class(&mut self, _: &'ast Class<'arena>, _: &mut ()) {
+    fn walk_out_class(&mut self, class: &'ast Class<'arena>, _: &mut ()) {
+        phpdoc_tags::nop(self, class.right_brace);
         self.classes.pop();
         self.decls.pop();
         self.pop_frame();
@@ -1101,12 +1116,15 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         );
         if let Some(k) = self.codebase.get_class_like(name.as_bytes()) {
             hierarchy::allowed_subtypes(self, i.span(), k);
+            require_tags::class_like(self, i.span(), k);
+            class_tags::class_like(self, i.span(), k);
         }
         type_aliases::class_like(self, i.span());
         missing_types::interface(self, i);
         generics::interface(self, i);
     }
-    fn walk_out_interface(&mut self, _: &'ast Interface<'arena>, _: &mut ()) {
+    fn walk_out_interface(&mut self, i: &'ast Interface<'arena>, _: &mut ()) {
+        phpdoc_tags::nop(self, i.right_brace);
         self.classes.pop();
         self.decls.pop();
         self.pop_frame();
@@ -1145,13 +1163,16 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
             hierarchy::in_class(self, e.span(), k);
             require_ancestors::check(self, e.span(), k);
             hierarchy::allowed_subtypes(self, e.span(), k);
+            require_tags::class_like(self, e.span(), k);
+            class_tags::class_like(self, e.span(), k);
             dead_code::unused_private(self, k, e.members.as_slice());
         }
         type_aliases::class_like(self, e.span());
         missing_types::enum_(self, e);
         generics::enum_(self, e);
     }
-    fn walk_out_enum(&mut self, _: &'ast Enum<'arena>, _: &mut ()) {
+    fn walk_out_enum(&mut self, e: &'ast Enum<'arena>, _: &mut ()) {
+        phpdoc_tags::nop(self, e.right_brace);
         self.classes.pop();
         self.decls.pop();
         self.pop_frame();
@@ -1165,6 +1186,8 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
             attributes::trait_declaration(self, t);
             hierarchy::sealed_trait(self, t);
             let name = self.resolved_span(t.name.span);
+            require_tags::trait_(self, t.span(), &name);
+            class_tags::trait_definition(self, t.span(), &name);
             type_aliases::trait_definition(self, t.span(), &name);
             missing_types::trait_(self, t);
             generics::trait_(self, t);
@@ -1192,6 +1215,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         declarations::trait_duplicates(self, t.members.as_slice(), &display);
         attributes::trait_in_context(self, t);
         type_aliases::trait_use(self, t.span(), &name, &class);
+        class_tags::trait_use(self, t.span(), &name, &class);
         for member in t.members.iter() {
             if let ClassLikeMember::Method(m) = member {
                 let original = String::from_utf8_lossy(m.name.value).into_owned();
@@ -1282,6 +1306,8 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
             hierarchy::in_class(self, a.span(), k);
             require_ancestors::check(self, a.span(), k);
             hierarchy::allowed_subtypes(self, a.span(), k);
+            require_tags::class_like(self, a.span(), k);
+            class_tags::class_like(self, a.span(), k);
             dead_code::unused_private(self, k, a.members.as_slice());
             readonly_init::class(self, k, a.members.as_slice());
         }
@@ -1290,6 +1316,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
     }
 
     fn walk_in_function(&mut self, f: &'ast Function<'arena>, _: &mut ()) {
+        callable_tags::function_like(self, f.span(), &f.parameter_list);
         self.enter_this(false);
         functions::inner_function(self, f);
         self.larastan_enter_function(&f.parameter_list);
@@ -1344,6 +1371,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         syntax::function_like_types(self, Some(&f.parameter_list), f.return_type_hint.as_ref());
         self.syntax.by_ref.push(f.ampersand.is_some());
         self.enter_function(Vec::new());
+        self.var_tag_functions.push(f.span());
         let deprecated = self.entered_deprecated("", false, f.span());
         self.functions.push(FunctionScope {
             name: String::from_utf8_lossy(f.name.value).into_owned(),
@@ -1353,6 +1381,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         });
     }
     fn walk_out_function(&mut self, _: &'ast Function<'arena>, _: &mut ()) {
+        self.var_tag_functions.pop();
         self.leave_this();
         self.larastan_leave_function();
         self.syntax.by_ref.pop();
@@ -1361,6 +1390,8 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         self.functions.pop();
     }
     fn walk_in_method(&mut self, m: &'ast Method<'arena>, _: &mut ()) {
+        phpdoc_tags::node(self, m.span());
+        callable_tags::function_like(self, m.span(), &m.parameter_list);
         self.enter_this(!m.modifiers.iter().any(|x| matches!(x, Modifier::Static(_))));
         functions::function_like(self, m, &m.parameter_list);
         statements::constructor_return_type(self, m);
@@ -1496,6 +1527,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
                 .unwrap_or_default()
         };
         self.enter_function(guards);
+        self.var_tag_functions.push(m.span());
         let deprecated = self.entered_deprecated(&method, true, m.span());
         self.functions.push(FunctionScope {
             deprecated,
@@ -1507,6 +1539,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         });
     }
     fn walk_out_method(&mut self, _: &'ast Method<'arena>, _: &mut ()) {
+        self.var_tag_functions.pop();
         self.leave_this();
         self.larastan_leave_function();
         self.syntax.by_ref.pop();
@@ -1518,7 +1551,8 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
     fn walk_in_block(&mut self, _: &'ast Block<'arena>, _: &mut ()) {
         self.marks.push(self.guards.len());
     }
-    fn walk_out_block(&mut self, _: &'ast Block<'arena>, _: &mut ()) {
+    fn walk_out_block(&mut self, b: &'ast Block<'arena>, _: &mut ()) {
+        phpdoc_tags::nop(self, b.right_brace);
         let mark = self.marks.pop().expect("pushed");
         self.guards.truncate(mark);
     }
@@ -1538,6 +1572,12 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
                 if let Some(e) = &b.else_clause {
                     branches.push((None, vec![e.statement]));
                 }
+                b.else_if_clauses
+                    .iter()
+                    .for_each(|e| phpdoc_tags::clause(self, e.span()));
+                b.else_clause
+                    .iter()
+                    .for_each(|e| phpdoc_tags::clause(self, e.span()));
                 b.else_clause.is_some()
             }
             IfBody::ColonDelimited(b) => {
@@ -1550,6 +1590,12 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
                 if let Some(e) = &b.else_clause {
                     branches.push((None, e.statements.iter().collect()));
                 }
+                b.else_if_clauses
+                    .iter()
+                    .for_each(|e| phpdoc_tags::clause(self, e.span()));
+                b.else_clause
+                    .iter()
+                    .for_each(|e| phpdoc_tags::clause(self, e.span()));
                 b.else_clause.is_some()
             }
         };
@@ -1671,7 +1717,8 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         through_static::property(self, p);
         internal::static_property_fetch(self, p);
     }
-    fn walk_out_anonymous_class(&mut self, _: &'ast AnonymousClass<'arena>, _: &mut ()) {
+    fn walk_out_anonymous_class(&mut self, a: &'ast AnonymousClass<'arena>, _: &mut ()) {
+        phpdoc_tags::nop(self, a.right_brace);
         self.classes.pop();
         self.pop_frame();
         self.decls.pop();
@@ -1817,6 +1864,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         }
     }
     fn walk_in_trait_use(&mut self, u: &'ast mago_syntax::cst::TraitUse<'arena>, _: &mut ()) {
+        phpdoc_tags::clause(self, u.span());
         hierarchy::trait_use(self, u);
         generics::trait_use(self, u);
     }
@@ -1827,6 +1875,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         class_names::use_statement(self, u);
     }
     fn walk_in_property(&mut self, p: &'ast Property<'arena>, _: &mut ()) {
+        phpdoc_tags::node(self, p.span());
         let names: Vec<&[u8]> = p.variables().iter().map(|v| v.name).collect();
         names::property_type(self, p.span(), p.hint(), &names);
         signatures::property(self, p.span(), p.hint(), &names);
@@ -1857,6 +1906,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         }
     }
     fn walk_in_class_like_constant(&mut self, k: &'ast ClassLikeConstant<'arena>, _: &mut ()) {
+        phpdoc_tags::node(self, k.span());
         declarations::constant(self, k);
         constants::class_constant(self, k);
         missing_types::class_constant(self, k);
@@ -1868,6 +1918,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         );
     }
     fn walk_in_enum_case(&mut self, case: &'ast EnumCase<'arena>, _: &mut ()) {
+        phpdoc_tags::clause(self, case.span());
         enums::case_outside(self, case);
         attributes::check(
             self,
@@ -1944,6 +1995,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         dead_code::try_statement(self, t);
     }
     fn walk_in_try_catch_clause(&mut self, clause: &'ast TryCatchClause<'arena>, _: &mut ()) {
+        phpdoc_tags::clause(self, clause.span());
         statements::noncapturing_catch(self, clause);
         names::catch(self, clause);
         assign::catch(self, clause);
@@ -2005,7 +2057,9 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         self.unreachable = dead_code::unreachable_statements(self, program);
         self.push_frame(FrameKind::Top);
     }
-    fn walk_out_program(&mut self, _: &'ast Program<'arena>, _: &mut ()) {
+    fn walk_out_program(&mut self, program: &'ast Program<'arena>, _: &mut ()) {
+        let end = mago_span::Position::new(program.source_text.len() as u32);
+        phpdoc_tags::nop(self, Span::new(program.file_id, end, end));
         self.pop_frame();
     }
     fn walk_in_namespace(&mut self, n: &'ast Namespace<'arena>, _: &mut ()) {
@@ -2019,6 +2073,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         self.namespaces.pop();
     }
     fn walk_in_property_hook(&mut self, h: &'ast PropertyHook<'arena>, _: &mut ()) {
+        phpdoc_tags::node(self, h.span());
         self.enter_this(true);
         attributes::property_hook(self, h);
         if let Some(params) = &h.parameter_list {
@@ -2055,6 +2110,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         self.pop_frame();
     }
     fn walk_in_statement(&mut self, s: &'ast Statement<'arena>, _: &mut ()) {
+        phpdoc_tags::statement(self, s);
         statements::statement_position(self, s);
         if self.unreachable.contains(&s.span()) {
             self.report(s, "deadCode.unreachable", "Unreachable statement - code above always terminates.".into(), None);

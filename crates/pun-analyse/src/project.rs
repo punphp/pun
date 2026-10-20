@@ -59,6 +59,8 @@ pub struct Project {
     pub relative_path: RelativePath,
     /// Larastan's rules and their switches, when the config includes Larastan's extension.neon.
     pub larastan: Option<crate::Larastan>,
+    /// `typeAliases`: the global type aliases (name, type string).
+    pub type_aliases: Vec<(String, String)>,
     /// `stubFiles`: scanned as Mago patches, whose declarations override the symbols they name.
     pub stubs: Vec<PathBuf>,
     /// Which identifiers the run reports, `None` for all: the others are dropped before any ignore sees them, as
@@ -209,6 +211,15 @@ impl Project {
             precise_unused_parameter_line: toggle("reportPreciseLineForUnusedFunctionParameter"),
             relative_path: RelativePath::of(&paths),
             larastan: crate::Larastan::from_params(root, params),
+            type_aliases: params
+                .get_str("typeAliases")
+                .and_then(Value::as_array)
+                .map(|a| {
+                    a.iter()
+                        .filter_map(|(k, v)| Some((k.as_string(), v.as_str()?.to_string())))
+                        .collect()
+                })
+                .unwrap_or_default(),
             stubs: strings(params, "stubFiles")
                 .into_iter()
                 .map(PathBuf::from)
@@ -242,6 +253,7 @@ impl Project {
             strict_rules: StrictRules::default(),
             precise_unused_parameter_line: false,
             larastan: None,
+            type_aliases: Vec::new(),
             stubs: Vec::new(),
             reported: None,
         }

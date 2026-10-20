@@ -1,0 +1,31 @@
+{
+    "test": "Classes/PropertyTagTraitUseRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Classes/data/property-tag-trait.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Classes/data/property-tag-trait.php (in context of class PropertyTagTrait\\Usages)",
+                    "line": 9,
+                    "identifier": "class.notFound",
+                    "message": "PHPDoc tag @property for property PropertyTagTrait\\Foo::$foo contains unknown class PropertyTagTrait\\intt.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug11591",
+            "files": [
+                "Classes/data/bug-11591-property-tag.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        }
+    ]
+}

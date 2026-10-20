@@ -10,14 +10,11 @@
 | punphp-format | 1022 | 1022 | 100.00% | ok |
 | punphp-harness | 232 | 232 | 100.00% | ok |
 | punphp-lint | 18425 | 18425 | 100.00% | ok |
-| punphp-phpstan | 7192 | 7163 | 99.60% | ok |
+| punphp-phpstan | 8254 | 8254 | 100.00% | ok |
 | punphp-problem | 105 | 105 | 100.00% | ok |
 | punphp-tokens | 3897 | 3897 | 100.00% | ok |
 | punphp-workspace | 457 | 457 | 100.00% | ok |
 
-Uncovered lines:
-
-- `crates/pun-phpstan/src/types.rs` 98.83% (29 lines): 2321, 2927-2929, 2940, 2973-2976, 3023, 3026, 3031, 3097, 3131, 3137, 3277, 3303, 3314, 3333, 3358-3367
 <!-- coverage:end -->
 
 ## Exclusions
@@ -32,6 +29,8 @@ Uncovered lines:
 - `crates/pun-cli/src/run.rs:887` the panic hook's call of the default hook: it prints a panic outside a file's isolated fixing, which only a Pun bug causes; every panic a test can trigger is a fixer's, inside `isolated`.
 - `crates/pun-cli/src/pint_error.rs:77` `Thrown::of`'s fallback to Laravel Zero's ConsoleException for an untyped error: every error a format, lint or check run can hit today is typed (Finder, annotation, read/write) or already an `Abort`, so the fallback only guards future errors.
 - `crates/pun-cli/src/watch.rs:56` the watch channel's `Disconnected`: the notify watcher holds the sender and lives as long as the loop, so the channel never disconnects while it waits.
+- `crates/pun-phpstan/src/resolve.rs:39` a global type alias whose definition refers to itself: PHPStan's UsefulTypeAliasResolver throws ShouldNotHappenException ("Circular definition for type alias"); Pun resolves `*ERROR*` instead of recursing forever.
+- `crates/pun-phpstan/src/resolve.rs:767` a `true`/`false`/`null`/array constant expression as a type: phpdoc-parser reads only `@var null ::X`-like tag values so, and PHPStan's TypeNodeResolver throws ShouldNotHappenException on them; Pun resolves `*ERROR*` instead of crashing.
 - `crates/pun-cli/src/migrate.rs:557` closest_preset's "nothing to switch" return: every PHPStan level leaves some rules of its closest Pun preset off (level 0: the basic preset's 11-12 non-level-0 rules, with or without bleedingEdge), so a migrated `[analyse]` always has on/off lines.
 - `crates/pun-analyse/src/laravel/mod.rs:464-471` `Provider::meta()` of the model-attribute hook: Mago's `Provider` trait requires it, but `PluginRegistry` reads `meta()` only for its own library plugins, never for a registered expression hook, and the hook struct is private.
 - `crates/pun-analyse/src/rules/larastan/relations.rs:180` RelationExistenceRule's relation method declared by one of PHP's own classes: a model extends Eloquent's Model, which extends none of them, so its methods are always the user's.

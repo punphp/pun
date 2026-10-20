@@ -1,0 +1,1378 @@
+{
+    "test": "PhpDoc/WrongVariableNameInVarTagRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "PhpDoc/data/wrong-variable-name-var.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "PhpDoc/data/wrong-variable-name-var.php",
+                    "line": 11,
+                    "identifier": "function.void",
+                    "message": "Result of function WrongVariableNameVarTag\\doFoo (void) is used.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-variable-name-var.php",
+                    "line": 11,
+                    "identifier": "varTag.nativeType",
+                    "message": "PHPDoc tag @var with type int is not subtype of native type void.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-variable-name-var.php",
+                    "line": 14,
+                    "identifier": "function.void",
+                    "message": "Result of function WrongVariableNameVarTag\\doFoo (void) is used.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-variable-name-var.php",
+                    "line": 14,
+                    "identifier": "varTag.nativeType",
+                    "message": "PHPDoc tag @var with type int is not subtype of native type void.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-variable-name-var.php",
+                    "line": 17,
+                    "identifier": "function.void",
+                    "message": "Result of function WrongVariableNameVarTag\\doFoo (void) is used.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-variable-name-var.php",
+                    "line": 17,
+                    "identifier": "varTag.differentVariable",
+                    "message": "Variable $foo in PHPDoc tag @var does not match assigned variable $test.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-variable-name-var.php",
+                    "line": 23,
+                    "identifier": "function.void",
+                    "message": "Result of function WrongVariableNameVarTag\\doFoo (void) is used.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-variable-name-var.php",
+                    "line": 23,
+                    "identifier": "varTag.multipleTags",
+                    "message": "Multiple PHPDoc @var tags above single variable assignment are not supported.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-variable-name-var.php",
+                    "line": 66,
+                    "identifier": "varTag.differentVariable",
+                    "message": "Variable $foo in PHPDoc tag @var does not match any variable in the foreach loop: $list, $key, $val",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-variable-name-var.php",
+                    "line": 71,
+                    "identifier": "varTag.noVariable",
+                    "message": "PHPDoc tag @var above foreach loop does not specify variable name.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-variable-name-var.php",
+                    "line": 85,
+                    "identifier": "varTag.noVariable",
+                    "message": "PHPDoc tag @var above multiple static variables does not specify variable name.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-variable-name-var.php",
+                    "line": 91,
+                    "identifier": "varTag.noVariable",
+                    "message": "PHPDoc tag @var above multiple static variables does not specify variable name.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-variable-name-var.php",
+                    "line": 91,
+                    "identifier": "varTag.noVariable",
+                    "message": "PHPDoc tag @var above multiple static variables does not specify variable name.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-variable-name-var.php",
+                    "line": 94,
+                    "identifier": "varTag.differentVariable",
+                    "message": "Variable $foo in PHPDoc tag @var does not match any static variable: $test",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-variable-name-var.php",
+                    "line": 100,
+                    "identifier": "function.void",
+                    "message": "Result of function WrongVariableNameVarTag\\doFoo (void) is used.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-variable-name-var.php",
+                    "line": 103,
+                    "identifier": "method.nonObject",
+                    "message": "Cannot call method foo() on int.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-variable-name-var.php",
+                    "line": 103,
+                    "identifier": "varTag.noVariable",
+                    "message": "PHPDoc tag @var does not specify variable name.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-variable-name-var.php",
+                    "line": 106,
+                    "identifier": "method.nonObject",
+                    "message": "Cannot call method foo() on int.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-variable-name-var.php",
+                    "line": 109,
+                    "identifier": "method.nonObject",
+                    "message": "Cannot call method foo() on int.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-variable-name-var.php",
+                    "line": 109,
+                    "identifier": "varTag.variableNotFound",
+                    "message": "Variable $foo in PHPDoc tag @var does not exist.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-variable-name-var.php",
+                    "line": 120,
+                    "identifier": "function.void",
+                    "message": "Result of function WrongVariableNameVarTag\\doFoo (void) is used.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-variable-name-var.php",
+                    "line": 120,
+                    "identifier": "varTag.nativeType",
+                    "message": "PHPDoc tag @var with type int is not subtype of native type void.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-variable-name-var.php",
+                    "line": 126,
+                    "identifier": "function.void",
+                    "message": "Result of function WrongVariableNameVarTag\\doFoo (void) is used.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-variable-name-var.php",
+                    "line": 126,
+                    "identifier": "varTag.multipleTags",
+                    "message": "Multiple PHPDoc @var tags above single variable assignment are not supported.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-variable-name-var.php",
+                    "line": 135,
+                    "identifier": "varTag.variableNotFound",
+                    "message": "Variable $b in PHPDoc tag @var does not exist.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-variable-name-var.php",
+                    "line": 156,
+                    "identifier": "varTag.noVariable",
+                    "message": "PHPDoc tag @var does not specify variable name.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-variable-name-var.php",
+                    "line": 177,
+                    "identifier": "varTag.noVariable",
+                    "message": "PHPDoc tag @var does not specify variable name.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-variable-name-var.php",
+                    "line": 183,
+                    "identifier": "class.notFound",
+                    "message": "Call to method demo() on an unknown class WrongVariableNameVarTag\\Repository.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "PhpDoc/data/wrong-variable-name-var.php",
+                    "line": 183,
+                    "identifier": "class.notFound",
+                    "message": "PHPDoc tag @var for variable $this contains unknown class WrongVariableNameVarTag\\Repository.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "PhpDoc/data/wrong-variable-name-var.php",
+                    "line": 183,
+                    "identifier": "varTag.nativeType",
+                    "message": "PHPDoc tag @var with type WrongVariableNameVarTag\\Repository is not subtype of native type $this(WrongVariableNameVarTag\\Foo).",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-variable-name-var.php",
+                    "line": 189,
+                    "identifier": "class.notFound",
+                    "message": "Call to method demo() on an unknown class WrongVariableNameVarTag\\Repository.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "PhpDoc/data/wrong-variable-name-var.php",
+                    "line": 189,
+                    "identifier": "class.notFound",
+                    "message": "PHPDoc tag @var for variable $this contains unknown class WrongVariableNameVarTag\\Repository.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "PhpDoc/data/wrong-variable-name-var.php",
+                    "line": 189,
+                    "identifier": "varTag.nativeType",
+                    "message": "PHPDoc tag @var with type WrongVariableNameVarTag\\Repository is not subtype of native type $this(WrongVariableNameVarTag\\Foo).",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-variable-name-var.php",
+                    "line": 197,
+                    "identifier": "varTag.nativeType",
+                    "message": "PHPDoc tag @var with type int is not subtype of native type 'foo'.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-variable-name-var.php",
+                    "line": 211,
+                    "identifier": "varTag.variableNotFound",
+                    "message": "Variable $foo in PHPDoc tag @var does not exist.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-variable-name-var.php",
+                    "line": 235,
+                    "identifier": "varTag.noVariable",
+                    "message": "PHPDoc tag @var above foreach loop does not specify variable name.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-variable-name-var.php",
+                    "line": 249,
+                    "identifier": "varTag.variableNotFound",
+                    "message": "Variable $bar in PHPDoc tag @var does not exist.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-variable-name-var.php",
+                    "line": 249,
+                    "identifier": "varTag.variableNotFound",
+                    "message": "Variable $foo in PHPDoc tag @var does not exist.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-variable-name-var.php",
+                    "line": 263,
+                    "identifier": "varTag.variableNotFound",
+                    "message": "Variable $slots in PHPDoc tag @var does not exist.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-variable-name-var.php",
+                    "line": 269,
+                    "identifier": "varTag.variableNotFound",
+                    "message": "Variable $slots in PHPDoc tag @var does not exist.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-variable-name-var.php",
+                    "line": 275,
+                    "identifier": "varTag.noVariable",
+                    "message": "PHPDoc tag @var above assignment does not specify variable name.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-variable-name-var.php",
+                    "line": 281,
+                    "identifier": "varTag.differentVariable",
+                    "message": "Variable $slots in PHPDoc tag @var does not match assigned variable $itemSlots.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-variable-name-var.php",
+                    "line": 284,
+                    "identifier": "function.void",
+                    "message": "Result of function WrongVariableNameVarTag\\doFoo (void) is used.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-variable-name-var.php",
+                    "line": 293,
+                    "identifier": "function.void",
+                    "message": "Result of function WrongVariableNameVarTag\\doFoo (void) is used.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-variable-name-var.php",
+                    "line": 301,
+                    "identifier": "varTag.misplaced",
+                    "message": "PHPDoc tag @var above a class has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-variable-name-var.php",
+                    "line": 305,
+                    "identifier": "varTag.misplaced",
+                    "message": "PHPDoc tag @var above a method has no effect.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-variable-name-var.php",
+                    "line": 313,
+                    "identifier": "varTag.misplaced",
+                    "message": "PHPDoc tag @var above a function has no effect.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testEmptyFileWithVarThis",
+            "files": [
+                "PhpDoc/data/wrong-variable-name-var-empty-this.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "PhpDoc/data/wrong-variable-name-var-empty-this.php",
+                    "line": 7,
+                    "identifier": "class.notFound",
+                    "message": "PHPDoc tag @var for variable $this contains unknown class AMP_Post_Template.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testAboveUse",
+            "files": [
+                "PhpDoc/data/var-above-use.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testAboveDeclare",
+            "files": [
+                "PhpDoc/data/var-above-declare.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug3515",
+            "files": [
+                "PhpDoc/data/bug-3515.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug4500",
+            "files": [
+                "PhpDoc/data/bug-4500.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "PhpDoc/data/bug-4500.php",
+                    "line": 23,
+                    "identifier": "varTag.noVariable",
+                    "message": "PHPDoc tag @var above multiple global variables does not specify variable name.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/bug-4500.php",
+                    "line": 43,
+                    "identifier": "varTag.differentVariable",
+                    "message": "Variable $baz in PHPDoc tag @var does not match any global variable: $lorem",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/bug-4500.php",
+                    "line": 49,
+                    "identifier": "varTag.differentVariable",
+                    "message": "Variable $baz in PHPDoc tag @var does not match any global variable: $lorem",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug4504",
+            "files": [
+                "PhpDoc/data/bug-4504.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "PhpDoc/data/bug-4504.php",
+                    "line": 11,
+                    "identifier": "class.notFound",
+                    "message": "PHPDoc tag @var for variable $models contains unknown class Bug4504\\A.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug4505",
+            "files": [
+                "PhpDoc/data/bug-4505.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug12458",
+            "files": [
+                "PhpDoc/data/bug-12458.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug11015",
+            "files": [
+                "PhpDoc/data/bug-11015.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "PhpDoc/data/bug-11015.php",
+                    "line": 7,
+                    "identifier": "class.notFound",
+                    "message": "Parameter $date of method Bug11015\\HelloWorld::sayHello() has invalid type Bug11015\\PDOStatement.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/bug-11015.php",
+                    "line": 9,
+                    "identifier": "class.notFound",
+                    "message": "Call to method fetch() on an unknown class Bug11015\\PDOStatement.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "PhpDoc/data/bug-11015.php",
+                    "line": 18,
+                    "identifier": "class.notFound",
+                    "message": "Parameter $date of method Bug11015\\HelloWorld::sayHello2() has invalid type Bug11015\\PDOStatement.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/bug-11015.php",
+                    "line": 20,
+                    "identifier": "class.notFound",
+                    "message": "Call to method fetch() on an unknown class Bug11015\\PDOStatement.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug10861",
+            "files": [
+                "PhpDoc/data/bug-10861.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testBug11535",
+            "files": [
+                "PhpDoc/data/bug-11535.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "PhpDoc/data/bug-11535.php",
+                    "line": 6,
+                    "identifier": "varTag.nativeType",
+                    "message": "PHPDoc tag @var with type Closure(string): array<int> is not subtype of native type Closure(string): array{1, 2, 3}.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testEnums",
+            "files": [
+                "PhpDoc/data/wrong-var-enum.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "PhpDoc/data/wrong-var-enum.php",
+                    "line": 13,
+                    "identifier": "varTag.misplaced",
+                    "message": "PHPDoc tag @var above an enum has no effect.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testEmptyArrayInitWithWiderPhpDoc#0",
+            "files": [
+                "PhpDoc/data/var-above-empty-array-widening.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "PhpDoc/data/var-above-empty-array-widening.php",
+                    "line": 24,
+                    "identifier": "varTag.nativeType",
+                    "message": "PHPDoc tag @var with type int is not subtype of native type array{}.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testEmptyArrayInitWithWiderPhpDoc#1",
+            "files": [
+                "PhpDoc/data/var-above-empty-array-widening.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "PhpDoc/data/var-above-empty-array-widening.php",
+                    "line": 24,
+                    "identifier": "varTag.nativeType",
+                    "message": "PHPDoc tag @var with type int is not subtype of native type array{}.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testReportWrongType#0",
+            "files": [
+                "PhpDoc/data/wrong-var-native-type.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "PhpDoc/data/wrong-var-native-type.php",
+                    "line": 14,
+                    "identifier": "varTag.nativeType",
+                    "message": "PHPDoc tag @var with type string|null is not subtype of native type string.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-var-native-type.php",
+                    "line": 23,
+                    "identifier": "varTag.nativeType",
+                    "message": "PHPDoc tag @var with type stdClass is not subtype of native type SplObjectStorage<object, mixed>.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-var-native-type.php",
+                    "line": 26,
+                    "identifier": "varTag.nativeType",
+                    "message": "PHPDoc tag @var with type int is not subtype of native type 'foo'.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-var-native-type.php",
+                    "line": 38,
+                    "identifier": "varTag.nativeType",
+                    "message": "PHPDoc tag @var with type Iterator<mixed, int> is not subtype of native type array.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-var-native-type.php",
+                    "line": 50,
+                    "identifier": "return.missing",
+                    "message": "Method WrongVarNativeType\\Foo::doBar() should return string but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-var-native-type.php",
+                    "line": 58,
+                    "identifier": "return.missing",
+                    "message": "Method WrongVarNativeType\\Foo::doBaz() should return string but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-var-native-type.php",
+                    "line": 66,
+                    "identifier": "return.missing",
+                    "message": "Method WrongVarNativeType\\Foo::returnsListOfIntegers() should return list<int> but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-var-native-type.php",
+                    "line": 74,
+                    "identifier": "return.missing",
+                    "message": "Method WrongVarNativeType\\Foo::returnsIteratorOfIntegers() should return Iterator<int, int> but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-var-native-type.php",
+                    "line": 80,
+                    "identifier": "return.missing",
+                    "message": "Method WrongVarNativeType\\Foo::returnsArrayOfIntegers() should return array<int, int> but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-var-native-type.php",
+                    "line": 99,
+                    "identifier": "varTag.nativeType",
+                    "message": "PHPDoc tag @var with type string is not subtype of native type 1.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-var-native-type.php",
+                    "line": 109,
+                    "identifier": "varTag.nativeType",
+                    "message": "PHPDoc tag @var with type int is not subtype of native type string.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-var-native-type.php",
+                    "line": 148,
+                    "identifier": "varTag.nativeType",
+                    "message": "PHPDoc tag @var with type int is not subtype of native type 'foo'.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-var-native-type.php",
+                    "line": 167,
+                    "identifier": "return.missing",
+                    "message": "Method WrongVarNativeType\\Foo::arrayOfLists() should return array<list<string|null>> but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-var-native-type.php",
+                    "line": 186,
+                    "identifier": "varTag.nativeType",
+                    "message": "PHPDoc tag @var with type stdClass is not subtype of native type PHPStan\\Type\\Type|null.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-var-native-type.php",
+                    "line": 189,
+                    "identifier": "phpstanApi.varTagAssumption",
+                    "message": "PHPDoc tag @var assumes the expression with type PHPStan\\Type\\Type|null is always PHPStan\\Type\\ObjectType|null but it's error-prone and dangerous.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-var-native-type.php",
+                    "line": 192,
+                    "identifier": "phpstanApi.varTagAssumption",
+                    "message": "PHPDoc tag @var assumes the expression with type PHPStan\\Type\\Type|null is always PHPStan\\Type\\ObjectType but it's error-prone and dangerous.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-var-native-type.php",
+                    "line": 195,
+                    "identifier": "phpstanApi.varTagAssumption",
+                    "message": "PHPDoc tag @var assumes the expression with type PHPStan\\Type\\ObjectType|null is always PHPStan\\Type\\ObjectType but it's error-prone and dangerous.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-var-native-type.php",
+                    "line": 201,
+                    "identifier": "varTag.nativeType",
+                    "message": "PHPDoc tag @var with type PHPStan\\Type\\Type|null is not subtype of native type PHPStan\\Type\\ObjectType|null.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-var-native-type.php",
+                    "line": 204,
+                    "identifier": "varTag.type",
+                    "message": "PHPDoc tag @var with type PHPStan\\Type\\ObjectType|null is not subtype of type PHPStan\\Type\\Generic\\GenericObjectType|null.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-var-native-type.php",
+                    "line": 207,
+                    "identifier": "return.missing",
+                    "message": "Method WrongVarNativeType\\PHPStanType::doBar() should return PHPStan\\Type\\Type|null but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-var-native-type.php",
+                    "line": 212,
+                    "identifier": "return.missing",
+                    "message": "Method WrongVarNativeType\\PHPStanType::doBaz() should return PHPStan\\Type\\ObjectType|null but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-var-native-type.php",
+                    "line": 220,
+                    "identifier": "return.missing",
+                    "message": "Method WrongVarNativeType\\PHPStanType::doBazPhpDoc() should return PHPStan\\Type\\Generic\\GenericObjectType|null but return statement is missing.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testReportWrongType#1",
+            "files": [
+                "PhpDoc/data/wrong-var-native-type.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "PhpDoc/data/wrong-var-native-type.php",
+                    "line": 14,
+                    "identifier": "varTag.nativeType",
+                    "message": "PHPDoc tag @var with type string|null is not subtype of native type string.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-var-native-type.php",
+                    "line": 23,
+                    "identifier": "varTag.nativeType",
+                    "message": "PHPDoc tag @var with type stdClass is not subtype of native type SplObjectStorage<object, mixed>.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-var-native-type.php",
+                    "line": 26,
+                    "identifier": "varTag.nativeType",
+                    "message": "PHPDoc tag @var with type int is not subtype of native type 'foo'.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-var-native-type.php",
+                    "line": 38,
+                    "identifier": "varTag.nativeType",
+                    "message": "PHPDoc tag @var with type Iterator<mixed, int> is not subtype of native type array.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-var-native-type.php",
+                    "line": 50,
+                    "identifier": "return.missing",
+                    "message": "Method WrongVarNativeType\\Foo::doBar() should return string but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-var-native-type.php",
+                    "line": 58,
+                    "identifier": "return.missing",
+                    "message": "Method WrongVarNativeType\\Foo::doBaz() should return string but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-var-native-type.php",
+                    "line": 66,
+                    "identifier": "return.missing",
+                    "message": "Method WrongVarNativeType\\Foo::returnsListOfIntegers() should return list<int> but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-var-native-type.php",
+                    "line": 74,
+                    "identifier": "return.missing",
+                    "message": "Method WrongVarNativeType\\Foo::returnsIteratorOfIntegers() should return Iterator<int, int> but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-var-native-type.php",
+                    "line": 80,
+                    "identifier": "return.missing",
+                    "message": "Method WrongVarNativeType\\Foo::returnsArrayOfIntegers() should return array<int, int> but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-var-native-type.php",
+                    "line": 99,
+                    "identifier": "varTag.nativeType",
+                    "message": "PHPDoc tag @var with type string is not subtype of native type 1.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-var-native-type.php",
+                    "line": 109,
+                    "identifier": "varTag.nativeType",
+                    "message": "PHPDoc tag @var with type int is not subtype of native type string.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-var-native-type.php",
+                    "line": 148,
+                    "identifier": "varTag.nativeType",
+                    "message": "PHPDoc tag @var with type int is not subtype of native type 'foo'.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-var-native-type.php",
+                    "line": 167,
+                    "identifier": "return.missing",
+                    "message": "Method WrongVarNativeType\\Foo::arrayOfLists() should return array<list<string|null>> but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-var-native-type.php",
+                    "line": 186,
+                    "identifier": "varTag.nativeType",
+                    "message": "PHPDoc tag @var with type stdClass is not subtype of native type PHPStan\\Type\\Type|null.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-var-native-type.php",
+                    "line": 189,
+                    "identifier": "phpstanApi.varTagAssumption",
+                    "message": "PHPDoc tag @var assumes the expression with type PHPStan\\Type\\Type|null is always PHPStan\\Type\\ObjectType|null but it's error-prone and dangerous.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-var-native-type.php",
+                    "line": 192,
+                    "identifier": "phpstanApi.varTagAssumption",
+                    "message": "PHPDoc tag @var assumes the expression with type PHPStan\\Type\\Type|null is always PHPStan\\Type\\ObjectType but it's error-prone and dangerous.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-var-native-type.php",
+                    "line": 195,
+                    "identifier": "phpstanApi.varTagAssumption",
+                    "message": "PHPDoc tag @var assumes the expression with type PHPStan\\Type\\ObjectType|null is always PHPStan\\Type\\ObjectType but it's error-prone and dangerous.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-var-native-type.php",
+                    "line": 201,
+                    "identifier": "varTag.nativeType",
+                    "message": "PHPDoc tag @var with type PHPStan\\Type\\Type|null is not subtype of native type PHPStan\\Type\\ObjectType|null.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-var-native-type.php",
+                    "line": 204,
+                    "identifier": "varTag.type",
+                    "message": "PHPDoc tag @var with type PHPStan\\Type\\ObjectType|null is not subtype of type PHPStan\\Type\\Generic\\GenericObjectType|null.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-var-native-type.php",
+                    "line": 207,
+                    "identifier": "return.missing",
+                    "message": "Method WrongVarNativeType\\PHPStanType::doBar() should return PHPStan\\Type\\Type|null but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-var-native-type.php",
+                    "line": 212,
+                    "identifier": "return.missing",
+                    "message": "Method WrongVarNativeType\\PHPStanType::doBaz() should return PHPStan\\Type\\ObjectType|null but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-var-native-type.php",
+                    "line": 220,
+                    "identifier": "return.missing",
+                    "message": "Method WrongVarNativeType\\PHPStanType::doBazPhpDoc() should return PHPStan\\Type\\Generic\\GenericObjectType|null but return statement is missing.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testReportWrongType#2",
+            "files": [
+                "PhpDoc/data/wrong-var-native-type.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "PhpDoc/data/wrong-var-native-type.php",
+                    "line": 14,
+                    "identifier": "varTag.nativeType",
+                    "message": "PHPDoc tag @var with type string|null is not subtype of native type string.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-var-native-type.php",
+                    "line": 23,
+                    "identifier": "varTag.nativeType",
+                    "message": "PHPDoc tag @var with type stdClass is not subtype of native type SplObjectStorage<object, mixed>.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-var-native-type.php",
+                    "line": 26,
+                    "identifier": "varTag.nativeType",
+                    "message": "PHPDoc tag @var with type int is not subtype of native type 'foo'.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-var-native-type.php",
+                    "line": 38,
+                    "identifier": "varTag.nativeType",
+                    "message": "PHPDoc tag @var with type Iterator<mixed, int> is not subtype of native type array.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-var-native-type.php",
+                    "line": 50,
+                    "identifier": "return.missing",
+                    "message": "Method WrongVarNativeType\\Foo::doBar() should return string but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-var-native-type.php",
+                    "line": 58,
+                    "identifier": "return.missing",
+                    "message": "Method WrongVarNativeType\\Foo::doBaz() should return string but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-var-native-type.php",
+                    "line": 66,
+                    "identifier": "return.missing",
+                    "message": "Method WrongVarNativeType\\Foo::returnsListOfIntegers() should return list<int> but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-var-native-type.php",
+                    "line": 74,
+                    "identifier": "return.missing",
+                    "message": "Method WrongVarNativeType\\Foo::returnsIteratorOfIntegers() should return Iterator<int, int> but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-var-native-type.php",
+                    "line": 80,
+                    "identifier": "return.missing",
+                    "message": "Method WrongVarNativeType\\Foo::returnsArrayOfIntegers() should return array<int, int> but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-var-native-type.php",
+                    "line": 99,
+                    "identifier": "varTag.nativeType",
+                    "message": "PHPDoc tag @var with type string is not subtype of native type 1.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-var-native-type.php",
+                    "line": 109,
+                    "identifier": "varTag.nativeType",
+                    "message": "PHPDoc tag @var with type int is not subtype of native type string.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-var-native-type.php",
+                    "line": 148,
+                    "identifier": "varTag.nativeType",
+                    "message": "PHPDoc tag @var with type int is not subtype of native type 'foo'.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-var-native-type.php",
+                    "line": 167,
+                    "identifier": "return.missing",
+                    "message": "Method WrongVarNativeType\\Foo::arrayOfLists() should return array<list<string|null>> but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-var-native-type.php",
+                    "line": 186,
+                    "identifier": "varTag.nativeType",
+                    "message": "PHPDoc tag @var with type stdClass is not subtype of native type PHPStan\\Type\\Type|null.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-var-native-type.php",
+                    "line": 189,
+                    "identifier": "phpstanApi.varTagAssumption",
+                    "message": "PHPDoc tag @var assumes the expression with type PHPStan\\Type\\Type|null is always PHPStan\\Type\\ObjectType|null but it's error-prone and dangerous.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-var-native-type.php",
+                    "line": 192,
+                    "identifier": "phpstanApi.varTagAssumption",
+                    "message": "PHPDoc tag @var assumes the expression with type PHPStan\\Type\\Type|null is always PHPStan\\Type\\ObjectType but it's error-prone and dangerous.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-var-native-type.php",
+                    "line": 195,
+                    "identifier": "phpstanApi.varTagAssumption",
+                    "message": "PHPDoc tag @var assumes the expression with type PHPStan\\Type\\ObjectType|null is always PHPStan\\Type\\ObjectType but it's error-prone and dangerous.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-var-native-type.php",
+                    "line": 201,
+                    "identifier": "varTag.nativeType",
+                    "message": "PHPDoc tag @var with type PHPStan\\Type\\Type|null is not subtype of native type PHPStan\\Type\\ObjectType|null.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-var-native-type.php",
+                    "line": 204,
+                    "identifier": "varTag.type",
+                    "message": "PHPDoc tag @var with type PHPStan\\Type\\ObjectType|null is not subtype of type PHPStan\\Type\\Generic\\GenericObjectType|null.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-var-native-type.php",
+                    "line": 207,
+                    "identifier": "return.missing",
+                    "message": "Method WrongVarNativeType\\PHPStanType::doBar() should return PHPStan\\Type\\Type|null but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-var-native-type.php",
+                    "line": 212,
+                    "identifier": "return.missing",
+                    "message": "Method WrongVarNativeType\\PHPStanType::doBaz() should return PHPStan\\Type\\ObjectType|null but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-var-native-type.php",
+                    "line": 220,
+                    "identifier": "return.missing",
+                    "message": "Method WrongVarNativeType\\PHPStanType::doBazPhpDoc() should return PHPStan\\Type\\Generic\\GenericObjectType|null but return statement is missing.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testReportWrongType#3",
+            "files": [
+                "PhpDoc/data/wrong-var-native-type.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "PhpDoc/data/wrong-var-native-type.php",
+                    "line": 14,
+                    "identifier": "varTag.nativeType",
+                    "message": "PHPDoc tag @var with type string|null is not subtype of native type string.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-var-native-type.php",
+                    "line": 23,
+                    "identifier": "varTag.nativeType",
+                    "message": "PHPDoc tag @var with type stdClass is not subtype of native type SplObjectStorage<object, mixed>.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-var-native-type.php",
+                    "line": 26,
+                    "identifier": "varTag.nativeType",
+                    "message": "PHPDoc tag @var with type int is not subtype of native type 'foo'.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-var-native-type.php",
+                    "line": 38,
+                    "identifier": "varTag.nativeType",
+                    "message": "PHPDoc tag @var with type Iterator<mixed, int> is not subtype of native type array.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-var-native-type.php",
+                    "line": 50,
+                    "identifier": "return.missing",
+                    "message": "Method WrongVarNativeType\\Foo::doBar() should return string but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-var-native-type.php",
+                    "line": 58,
+                    "identifier": "return.missing",
+                    "message": "Method WrongVarNativeType\\Foo::doBaz() should return string but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-var-native-type.php",
+                    "line": 66,
+                    "identifier": "return.missing",
+                    "message": "Method WrongVarNativeType\\Foo::returnsListOfIntegers() should return list<int> but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-var-native-type.php",
+                    "line": 74,
+                    "identifier": "return.missing",
+                    "message": "Method WrongVarNativeType\\Foo::returnsIteratorOfIntegers() should return Iterator<int, int> but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-var-native-type.php",
+                    "line": 80,
+                    "identifier": "return.missing",
+                    "message": "Method WrongVarNativeType\\Foo::returnsArrayOfIntegers() should return array<int, int> but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-var-native-type.php",
+                    "line": 99,
+                    "identifier": "varTag.nativeType",
+                    "message": "PHPDoc tag @var with type string is not subtype of native type 1.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-var-native-type.php",
+                    "line": 109,
+                    "identifier": "varTag.nativeType",
+                    "message": "PHPDoc tag @var with type int is not subtype of native type string.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-var-native-type.php",
+                    "line": 148,
+                    "identifier": "varTag.nativeType",
+                    "message": "PHPDoc tag @var with type int is not subtype of native type 'foo'.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-var-native-type.php",
+                    "line": 167,
+                    "identifier": "return.missing",
+                    "message": "Method WrongVarNativeType\\Foo::arrayOfLists() should return array<list<string|null>> but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-var-native-type.php",
+                    "line": 186,
+                    "identifier": "varTag.nativeType",
+                    "message": "PHPDoc tag @var with type stdClass is not subtype of native type PHPStan\\Type\\Type|null.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-var-native-type.php",
+                    "line": 189,
+                    "identifier": "phpstanApi.varTagAssumption",
+                    "message": "PHPDoc tag @var assumes the expression with type PHPStan\\Type\\Type|null is always PHPStan\\Type\\ObjectType|null but it's error-prone and dangerous.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-var-native-type.php",
+                    "line": 192,
+                    "identifier": "phpstanApi.varTagAssumption",
+                    "message": "PHPDoc tag @var assumes the expression with type PHPStan\\Type\\Type|null is always PHPStan\\Type\\ObjectType but it's error-prone and dangerous.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-var-native-type.php",
+                    "line": 195,
+                    "identifier": "phpstanApi.varTagAssumption",
+                    "message": "PHPDoc tag @var assumes the expression with type PHPStan\\Type\\ObjectType|null is always PHPStan\\Type\\ObjectType but it's error-prone and dangerous.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-var-native-type.php",
+                    "line": 201,
+                    "identifier": "varTag.nativeType",
+                    "message": "PHPDoc tag @var with type PHPStan\\Type\\Type|null is not subtype of native type PHPStan\\Type\\ObjectType|null.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-var-native-type.php",
+                    "line": 204,
+                    "identifier": "varTag.type",
+                    "message": "PHPDoc tag @var with type PHPStan\\Type\\ObjectType|null is not subtype of type PHPStan\\Type\\Generic\\GenericObjectType|null.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-var-native-type.php",
+                    "line": 207,
+                    "identifier": "return.missing",
+                    "message": "Method WrongVarNativeType\\PHPStanType::doBar() should return PHPStan\\Type\\Type|null but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-var-native-type.php",
+                    "line": 212,
+                    "identifier": "return.missing",
+                    "message": "Method WrongVarNativeType\\PHPStanType::doBaz() should return PHPStan\\Type\\ObjectType|null but return statement is missing.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-var-native-type.php",
+                    "line": 220,
+                    "identifier": "return.missing",
+                    "message": "Method WrongVarNativeType\\PHPStanType::doBazPhpDoc() should return PHPStan\\Type\\Generic\\GenericObjectType|null but return statement is missing.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testAssignOperator",
+            "files": [
+                "PhpDoc/data/wrong-variable-name-var-assign-op.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "PhpDoc/data/wrong-variable-name-var-assign-op.php",
+                    "line": 11,
+                    "identifier": "function.void",
+                    "message": "Result of function WrongVariableNameVarTagAssignOperator\\doFoo (void) is used.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-variable-name-var-assign-op.php",
+                    "line": 11,
+                    "identifier": "nullCoalesce.variable",
+                    "message": "Variable $test on left side of ??= is never defined.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-variable-name-var-assign-op.php",
+                    "line": 11,
+                    "identifier": "varTag.nativeType",
+                    "message": "PHPDoc tag @var with type int is not subtype of native type void.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-variable-name-var-assign-op.php",
+                    "line": 14,
+                    "identifier": "function.void",
+                    "message": "Result of function WrongVariableNameVarTagAssignOperator\\doFoo (void) is used.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-variable-name-var-assign-op.php",
+                    "line": 14,
+                    "identifier": "nullCoalesce.variable",
+                    "message": "Variable $test on left side of ??= always exists and is always null.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-variable-name-var-assign-op.php",
+                    "line": 14,
+                    "identifier": "varTag.nativeType",
+                    "message": "PHPDoc tag @var with type int is not subtype of native type void.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-variable-name-var-assign-op.php",
+                    "line": 20,
+                    "identifier": "function.void",
+                    "message": "Result of function WrongVariableNameVarTagAssignOperator\\doFoo (void) is used.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-variable-name-var-assign-op.php",
+                    "line": 20,
+                    "identifier": "varTag.nativeType",
+                    "message": "PHPDoc tag @var with type int is not subtype of native type string.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-variable-name-var-assign-op.php",
+                    "line": 20,
+                    "identifier": "varTag.nativeType",
+                    "message": "PHPDoc tag @var with type int is not subtype of native type void.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-variable-name-var-assign-op.php",
+                    "line": 23,
+                    "identifier": "function.void",
+                    "message": "Result of function WrongVariableNameVarTagAssignOperator\\doFoo (void) is used.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/wrong-variable-name-var-assign-op.php",
+                    "line": 23,
+                    "identifier": "varTag.nativeType",
+                    "message": "PHPDoc tag @var with type int is not subtype of native type void.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug12457",
+            "files": [
+                "PhpDoc/data/bug-12457.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        },
+        {
+            "method": "testGenericSubtypeWithStrictCheck",
+            "files": [
+                "PhpDoc/data/generic-subtype.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "PhpDoc/data/generic-subtype.php",
+                    "line": 83,
+                    "identifier": "arguments.count",
+                    "message": "Method GenericSubtype\\HasOne<E of GenericSubtype\\IEntity>::test() invoked with 1 parameter, 0 required.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/generic-subtype.php",
+                    "line": 92,
+                    "identifier": "phpDoc.parseError",
+                    "message": "PHPDoc tag @param has invalid value (IRepository<IEntity>): Unexpected token \"\\n\\t \", expected variable at offset 35 on line 2",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testGenericSubtypeWithoutStrictCheck",
+            "files": [
+                "PhpDoc/data/generic-subtype.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "PhpDoc/data/generic-subtype.php",
+                    "line": 83,
+                    "identifier": "arguments.count",
+                    "message": "Method GenericSubtype\\HasOne<E of GenericSubtype\\IEntity>::test() invoked with 1 parameter, 0 required.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/generic-subtype.php",
+                    "line": 92,
+                    "identifier": "phpDoc.parseError",
+                    "message": "PHPDoc tag @param has invalid value (IRepository<IEntity>): Unexpected token \"\\n\\t \", expected variable at offset 35 on line 2",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testNewIsAlwaysFinalClass",
+            "files": [
+                "PhpDoc/data/new-is-always-final-var-tag-type.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        }
+    ]
+}

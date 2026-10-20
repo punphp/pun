@@ -1,0 +1,76 @@
+{
+    "test": "PhpDoc/IncompatibleClassConstantPhpDocTypeRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "PhpDoc/data/incompatible-class-constant-phpdoc.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "PhpDoc/data/incompatible-class-constant-phpdoc.php",
+                    "line": 9,
+                    "identifier": "classConstant.phpDocType",
+                    "message": "PHPDoc tag @var for constant IncompatibleClassConstantPhpDoc\\Foo::FOO with type *NEVER* is incompatible with value 1.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-class-constant-phpdoc.php",
+                    "line": 9,
+                    "identifier": "classConstant.unresolvableType",
+                    "message": "PHPDoc tag @var for constant IncompatibleClassConstantPhpDoc\\Foo::FOO contains unresolvable type.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-class-constant-phpdoc.php",
+                    "line": 12,
+                    "identifier": "classConstant.phpDocType",
+                    "message": "PHPDoc tag @var for constant IncompatibleClassConstantPhpDoc\\Foo::DOLOR with type IncompatibleClassConstantPhpDoc\\Foo<int> is incompatible with value 1.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-class-constant-phpdoc.php",
+                    "line": 12,
+                    "identifier": "generics.notGeneric",
+                    "message": "PHPDoc tag @var for constant IncompatibleClassConstantPhpDoc\\Foo::DOLOR contains generic type IncompatibleClassConstantPhpDoc\\Foo<int> but class IncompatibleClassConstantPhpDoc\\Foo is not generic.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testNativeType",
+            "files": [
+                "PhpDoc/data/incompatible-class-constant-phpdoc-native-type.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "PhpDoc/data/incompatible-class-constant-phpdoc-native-type.php",
+                    "line": 14,
+                    "identifier": "classConstant.phpDocType",
+                    "message": "PHPDoc tag @var for constant IncompatibleClassConstantPhpDocNativeType\\Foo::BAZ with type string is incompatible with native type int.",
+                    "tip": null
+                },
+                {
+                    "file": "PhpDoc/data/incompatible-class-constant-phpdoc-native-type.php",
+                    "line": 17,
+                    "identifier": "classConstant.phpDocType",
+                    "message": "PHPDoc tag @var for constant IncompatibleClassConstantPhpDocNativeType\\Foo::LOREM with type int|string is not subtype of native type int.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testBug10911",
+            "files": [
+                "PhpDoc/data/bug-10911.php"
+            ],
+            "scan": [],
+            "errors": [],
+            "general": []
+        }
+    ]
+}

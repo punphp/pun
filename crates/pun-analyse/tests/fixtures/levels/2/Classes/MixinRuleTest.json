@@ -1,0 +1,123 @@
+{
+    "test": "Classes/MixinRuleTest",
+    "cases": [
+        {
+            "method": "testRule",
+            "files": [
+                "Classes/data/mixin.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Classes/data/mixin.php",
+                    "line": 16,
+                    "identifier": "mixin.nonObject",
+                    "message": "PHPDoc tag @mixin contains non-object type int.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/mixin.php",
+                    "line": 24,
+                    "identifier": "mixin.unresolvableType",
+                    "message": "PHPDoc tag @mixin contains unresolvable type.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/mixin.php",
+                    "line": 34,
+                    "identifier": "generics.moreTypes",
+                    "message": "Generic type Traversable<int, int, int> in PHPDoc tag @mixin specifies 3 template types, but interface Traversable supports only 2: TKey, TValue",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/mixin.php",
+                    "line": 34,
+                    "identifier": "generics.notGeneric",
+                    "message": "PHPDoc tag @mixin contains generic type Exception<MixinRule\\Foo> but class Exception is not generic.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/mixin.php",
+                    "line": 34,
+                    "identifier": "generics.notSubtype",
+                    "message": "Type string in generic type ReflectionClass<string> in PHPDoc tag @mixin is not subtype of template type T of object of class ReflectionClass.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/mixin.php",
+                    "line": 50,
+                    "identifier": "class.notFound",
+                    "message": "PHPDoc tag @mixin contains unknown class MixinRule\\UnknownestClass.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Classes/data/mixin.php",
+                    "line": 50,
+                    "identifier": "mixin.trait",
+                    "message": "PHPDoc tag @mixin contains invalid type MixinRule\\FooTrait.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/mixin.php",
+                    "line": 59,
+                    "identifier": "class.notFound",
+                    "message": "PHPDoc tag @mixin contains unknown class MixinRule\\U.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+                },
+                {
+                    "file": "Classes/data/mixin.php",
+                    "line": 76,
+                    "identifier": "generics.lessTypes",
+                    "message": "Generic type MixinRule\\Consecteur<MixinRule\\Foo> in PHPDoc tag @mixin does not specify all template types of class MixinRule\\Consecteur: T, U",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/mixin.php",
+                    "line": 84,
+                    "identifier": "class.nameCase",
+                    "message": "Class MixinRule\\Foo referenced with incorrect case: MixinRule\\foo.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/mixin.php",
+                    "line": 92,
+                    "identifier": "mixin.nonObject",
+                    "message": "PHPDoc tag @mixin contains non-object type int.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/mixin.php",
+                    "line": 108,
+                    "identifier": "generics.callSiteVarianceConflict",
+                    "message": "Call-site variance of contravariant MixinRule\\Foo in generic type MixinRule\\Adipiscing<contravariant MixinRule\\Foo> in PHPDoc tag @mixin is in conflict with covariant template type T of class MixinRule\\Adipiscing.",
+                    "tip": null
+                },
+                {
+                    "file": "Classes/data/mixin.php",
+                    "line": 116,
+                    "identifier": "generics.callSiteVarianceRedundant",
+                    "message": "Call-site variance of covariant MixinRule\\Foo in generic type MixinRule\\Adipiscing<covariant MixinRule\\Foo> in PHPDoc tag @mixin is redundant, template type T of class MixinRule\\Adipiscing has the same variance.",
+                    "tip": "You can safely remove the call-site variance annotation."
+                }
+            ],
+            "general": []
+        },
+        {
+            "method": "testEnums",
+            "files": [
+                "Classes/data/mixin-enums.php"
+            ],
+            "scan": [],
+            "errors": [
+                {
+                    "file": "Classes/data/mixin-enums.php",
+                    "line": 16,
+                    "identifier": "mixin.nonObject",
+                    "message": "PHPDoc tag @mixin contains non-object type int.",
+                    "tip": null
+                }
+            ],
+            "general": []
+        }
+    ]
+}

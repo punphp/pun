@@ -633,15 +633,30 @@ impl Type {
     }
 
     /// `getObjectClassNames()`
-    fn object_class_names(&self) -> Vec<String> {
+    pub fn object_class_names(&self) -> Vec<String> {
         match self {
             Type::Object(class, _)
             | Type::Static(class, _)
             | Type::This(class)
             | Type::EnumCase(class, _) => vec![class.clone()],
             Type::Closure(_) => vec!["Closure".to_string()],
-            // ponytail: intersections and templates are compound, so isSuperTypeOf() never asks them; add their
-            // arms when something else does
+            Type::Union(types) | Type::Intersection(types) => {
+                let mut names = Vec::new();
+                for inner in types.iter().map(Type::object_class_names) {
+                    // `pickFromTypes()`: a union member without names leaves none
+                    if inner.is_empty() && matches!(self, Type::Union(_)) {
+                        return Vec::new();
+                    }
+                    for name in inner {
+                        if !names.contains(&name) {
+                            names.push(name);
+                        }
+                    }
+                }
+                names
+            }
+            // ponytail: templates are compound, so isSuperTypeOf() never asks them; add their arm when something
+            // else does
             _ => vec![],
         }
     }
@@ -2354,7 +2369,11 @@ fn object_super(class: &str, args: &[Type], b: &Type) -> Tri {
     let that = &names[0];
     let result = match (symbols::lookup(class), symbols::lookup(that)) {
         (Some(this), Some(other)) => {
-            if this.name == other.name || other.ancestors.contains(&this.name) {
+            if this.name == other.name {
+                Tri::Yes
+            } else if this.is_trait || other.is_trait {
+                Tri::No
+            } else if other.ancestors.contains(&this.name) {
                 Tri::Yes
             } else if this.ancestors.contains(&other.name)
                 || (this.is_interface && !other.is_final)
