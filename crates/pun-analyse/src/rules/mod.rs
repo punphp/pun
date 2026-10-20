@@ -1765,6 +1765,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         assign::property_assign_ref(self, a);
         types::assignment(self, a);
         operators::assignment(self, a);
+        types::property_assignment(self, a);
         if let AssignmentOperator::Assign(_) = a.operator {
             arrays::destructuring(self, a.lhs, true);
         }
@@ -2005,6 +2006,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         constants::class_constant(self, k);
         missing_types::class_constant(self, k);
         phpdoc_types::class_constant(self, k);
+        types::class_constant(self, k);
         attributes::check(
             self,
             k.attribute_lists.as_slice(),
@@ -2255,12 +2257,16 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
             assign::increment(self, u.operand);
             self.incremented(u.operand);
         }
+        if u.operator.is_increment_or_decrement() {
+            types::property_increment(self, u.operand);
+        }
     }
     fn walk_in_unary_postfix(&mut self, u: &'ast UnaryPostfix<'arena>, _: &mut ()) {
         types::postfix(self, u);
         operators::unary_postfix(self, u);
         assign::increment(self, u.operand);
         self.incremented(u.operand);
+        types::property_increment(self, u.operand);
     }
     fn walk_out_for(&mut self, _: &'ast For<'arena>, _: &mut ()) {
         self.syntax.parents.pop();
@@ -2323,6 +2329,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
     }
     fn walk_in_unset(&mut self, u: &'ast Unset<'arena>, _: &mut ()) {
         assign::unset(self, u);
+        types::property_unset(self, u);
     }
     fn walk_in_array_append(&mut self, a: &'ast ArrayAppend<'arena>, _: &mut ()) {
         assign::array_append(self, a);

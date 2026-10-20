@@ -506,7 +506,7 @@ fn is_static_hooked(c: &Checker, p: &mago_codex::metadata::property::PropertyMet
 
 /// `ClassReflection::hasInstanceProperty()`: a non-static native property, else (when dynamic properties are
 /// allowed) an `@property` tag.
-fn has_instance_property(c: &Checker, k: &ClassLikeMetadata, property: &[u8]) -> bool {
+pub(super) fn has_instance_property(c: &Checker, k: &ClassLikeMetadata, property: &[u8]) -> bool {
     if native_property(c, k, property) == Some(false) {
         return true;
     }
@@ -625,7 +625,7 @@ enum Holder<'a> {
 }
 
 /// `ClassReflection::hasStaticProperty()`.
-fn has_static_property(c: &Checker, k: &ClassLikeMetadata, property: &[u8]) -> bool {
+pub(super) fn has_static_property(c: &Checker, k: &ClassLikeMetadata, property: &[u8]) -> bool {
     native_property(c, k, property) == Some(true)
 }
 
