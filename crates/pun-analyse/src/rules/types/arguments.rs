@@ -4,7 +4,7 @@
 
 use mago_span::Span;
 use pun_phpstan::symbols::ByRef;
-use pun_phpstan::types::{Type, mixed, recommended_level};
+use pun_phpstan::types::{Template, TemplateMap, Type, infer_template_types, mixed, recommended_level, resolve_template_types, union};
 
 use super::super::params::{Acceptor, ArgKind, Call, Entry, ParamType};
 use super::super::{Checker, declared};
@@ -55,9 +55,48 @@ pub(in super::super) fn is_late(t: &Type) -> bool {
 }
 
 /// The parameter's type for the check, `None` when it is not checked.
-// ponytail: types resolved per call in PHPStan (see [`is_late()`]) are skipped
-fn parameter_type(c: &Checker, acceptor: &Acceptor, p: usize) -> Option<Type> {
-    declared_type(c, acceptor, p).filter(|t| !is_late(t) && *t != mixed())
+// ponytail: the types resolved per call in PHPStan (see [`is_late()`]) other than the callee's own templates are skipped
+fn parameter_type(resolved: &[Option<Type>], p: usize) -> Option<Type> {
+    resolved[p].clone().filter(|t| !is_late(t) && *t != mixed())
+}
+
+/// `GenericParametersAcceptorResolver::resolve()`: the parameters' types with the callee's templates inferred from
+/// the arguments' types (an uninferred one by its default or bound).
+// ponytail: no default values or unpassed variadics take part, nor callables' type predicates
+fn resolved_types(c: &Checker, acceptor: &Acceptor, args: &[Entry], parameters: &[Option<usize>]) -> Vec<Option<Type>> {
+    let declared: Vec<Option<Type>> = (0..acceptor.names.len()).map(|p| declared_type(c, acceptor, p)).collect();
+    let templates = std::cell::RefCell::new(Vec::new());
+    fn collect(t: &Type, out: &std::cell::RefCell<Vec<Template>>) {
+        if let Type::Template(tt) = t
+            && (tt.scope.starts_with("function ") || tt.scope.starts_with("method "))
+        {
+            out.borrow_mut().push((**tt).clone());
+        }
+        t.traverse(&|i| {
+            collect(i, out);
+            i.clone()
+        });
+    }
+    declared.iter().flatten().for_each(|t| collect(t, &templates));
+    let templates = templates.into_inner();
+    if templates.is_empty() {
+        return declared;
+    }
+    let mut passed: Vec<Option<Type>> = vec![None; declared.len()];
+    for (e, p) in args.iter().zip(parameters) {
+        if let Some(p) = *p
+            && let Some(t) = c.type_at(e.value)
+        {
+            let t = if e.unpack { t.iterable_value_type() } else { t };
+            passed[p] = Some(passed[p].take().map_or(t.clone(), |o| union(vec![o, t])));
+        }
+    }
+    let map = declared.iter().zip(&passed).fold(TemplateMap::default(), |map, (d, a)| match (d, a) {
+        (Some(d), Some(a)) => map.union(declared::with_classes(c, || infer_template_types(d, a))),
+        _ => map,
+    });
+    let map = map.with_errors(&templates.iter().collect::<Vec<_>>());
+    declared.into_iter().map(|d| d.map(|d| resolve_template_types(&d, &map))).collect()
 }
 
 /// `$methodReflection->returnsByReference()->yes()` of method `name` of class `class`.
@@ -79,6 +118,7 @@ pub(in super::super) fn arguments(c: &mut Checker, acceptor: &Acceptor, args: &[
     let of = call.subject[..1].to_ascii_lowercase() + &call.subject[1..];
     let strict = strict_types(c);
     let levels = c.levels();
+    let resolved = resolved_types(c, acceptor, args, parameters);
     for (i, (e, p)) in args.iter().zip(parameters).enumerate() {
         if e.unpack {
             let ty = c.type_at(e.value);
@@ -98,7 +138,7 @@ pub(in super::super) fn arguments(c: &mut Checker, acceptor: &Acceptor, args: &[
         let value = c.type_at(e.value).map(|t| if e.unpack { t.iterable_value_type() } else { t });
         // a built-in's by-reference parameter that creates the variable takes anything
         if (by_ref != ByRef::CreatesNewVariable || !acceptor.builtin)
-            && let (Some(param), Some(value)) = (parameter_type(c, acceptor, p), value)
+            && let (Some(param), Some(value)) = (parameter_type(&resolved, p), value)
         {
             let strict = strict && (!acceptor.builtin || !param.is_callable().yes());
             let message = declared::with_classes(c, || {

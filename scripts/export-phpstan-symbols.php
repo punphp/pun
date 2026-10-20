@@ -519,6 +519,41 @@ if (($argv[1] ?? '') === 'accepts') {
     exit;
 }
 
+// php scripts/export-phpstan-symbols.php infer: tests/fixtures/type-infer.json, each pattern against each received type as
+// [pattern, received, inferTemplateTypes() as {template: precise description}, the pattern resolved as a resolved
+// function variant's parameter (TemplateTypeHelper::resolveTemplateTypes() over the inferred map, an uninferred
+// template by its default or bound)]
+if (($argv[1] ?? '') === 'infer') {
+    $resolver = container(80400)->getByType(TypeStringResolver::class);
+    $templates = probe_templates($resolver);
+    $pun = fn (string $s) => preg_replace_callback('~\\b[TUV]\\b~', fn ($m) => sprintf("__template<%s, 'function probe()', %s>", $m[0], PROBE_TEMPLATES[$m[0]] ?? 'mixed'), $s);
+    $scope = new NameScope(null, [], null, null, $templates);
+    $patterns = ['T', 'U', 'V', 'array<T>', 'array<U, T>', 'list<T>', 'iterable<U, T>', 'T|null', 'T|int', 'T|array<T>', 'array<T>|T',
+        'array{a: T, b?: U}', 'callable(T): U', 'Closure(T): U', 'callable(T, U): void', 'class-string<T>', 'class-string<V>', 'ArrayIterator<U, T>',
+        'Traversable<U, T>', 'V&Traversable<U, T>', 'object{a: T, b?: U}', '__benevolent<T|int>', 'array<T>|iterable<T>', 'int', 'U|string',
+        'callable(T, T): void', 'callable(T, int): void', 'ArrayIterator<U, covariant T>', 'class-string<ArrayIterator<U, T>>'];
+    $received = ['int', '1', "'a'", 'int|string', "1|'a'", 'null', 'int|null', 'float|null', 'array<int, string>', 'list<int>', "array{a: 1, b: 'x'}", 'array{a: 1}',
+        'iterable<int, string>', 'ArrayIterator<int, string>', 'ArrayIterator', 'Generator<int, string>', 'Closure(int): string', 'callable(string): int',
+        "'strlen'", 'callable', "'ArrayIterator'", 'class-string<Countable>', 'class-string', 'Countable', 'stdClass', 'mixed', 'never', 'object{a: int}',
+        'T', 'U', 'array<int|string>|null', 'int|array<int>', '__benevolent<int|string>', 'Countable&Traversable<int, string>', 'float|array<float>', 'object|null'];
+    $rows = [];
+    foreach ($patterns as $a) {
+        $at = $resolver->resolve($a, $scope);
+        foreach ($received as $b) {
+            $bt = $resolver->resolve($b, $scope);
+            $map = $at->inferTemplateTypes($bt);
+            $inferred = array_map(fn (Type $t) => $t->describe(VerbosityLevel::precise()), $map->getTypes());
+            ksort($inferred);
+            $standins = new PHPStan\Type\Generic\TemplateTypeMap(array_merge($templates->map(fn () => new PHPStan\Type\ErrorType())->getTypes(), $map->getTypes()));
+            $resolved = PHPStan\Type\Generic\TemplateTypeHelper::resolveTemplateTypes($at, $standins, PHPStan\Type\Generic\TemplateTypeVarianceMap::createEmpty(), PHPStan\Type\Generic\TemplateTypeVariance::createContravariant());
+            $rows[] = json_encode([$pun($a), $pun($b), (object) $inferred, $resolved->describe(VerbosityLevel::precise())], $flags);
+        }
+    }
+    file_put_contents($root.'/crates/pun-phpstan/tests/fixtures/type-infer.json', "[\n".implode(",\n", $rows)."\n]\n");
+    echo count($rows), " infer pairs\n";
+    exit;
+}
+
 if (($argv[1] ?? '') === 'probes') {
     $probes = array_map(fn ($s) => [null, $s], PROBES);
     foreach (['static|Countable', '$this|ArrayIterator', 'ArrayIterator|static', 'static|ArrayIterator', 'ArrayIterator|$this', '$this|static', 'static|$this', 'static&Countable', 'callable(static, $this): void', 'callable(): static', 'class-string<static>', 'static|SeekableIterator', 'SeekableIterator|static', 'Iterator&static', 'static&Iterator', 'stdClass|static', 'static|stdClass', 'static', '$this', 'self', 'static::class', 'self::class', 'ArrayIterator::class', 'self::STD_PROP_LIST', 'ArrayIterator::*', 'ArrayIterator::STD*LIST', 'ArrayIterator::*_PROP_*', 'ArrayIterator::*X*Y', 'ArrayIterator::S*P*T', 'ArrayIterator::*P*O*', 'list<static>', 'Countable::FOO', 'Nope::FOO'] as $s) {

@@ -44,6 +44,5 @@ Api/ApiClassImplementsRuleTest::testRuleOutOfPhpStan
 Functions/FilterVarRuleTest::testRule
 # argument.missing on built-ins called with named arguments: PHPStan's named-argument variant selection (and
 # combined parameter types) differ from Pun's for DatePeriod's constructor and implode()/join()
-Functions/CallToFunctionParametersRuleTest::testImplodeNamedParameters
 # argument.namedNotSupported in a `PHP_VERSION_ID < 80000` branch needs the scope's narrowed PHP version
 Methods/CallMethodsRuleTest::testDisallowNamedArgumentsInPhpVersionScope

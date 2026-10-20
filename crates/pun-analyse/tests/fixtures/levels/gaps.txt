@@ -185,22 +185,17 @@
 9 Methods/CallStaticMethodsRuleTest::testBug6249
 9 Methods/CallStaticMethodsRuleTest::testBug7489
 9 Methods/CallStaticMethodsRuleTest::testStaticCallsToInstanceMethods
-# an-types2: ResolvedFunctionVariant is not ported: template parameters and callback signatures (array_map, usort,
-# array_filter, ...) resolved from the arguments
+# an-types2: callbacks: a closure's parameter types are not narrowed by the callable it is passed to (ClosureTypeResolver),
+# Mago's closure return types differ (`<=>` is -1|0|1), accepts-reason tips, curl_setopt()'s option types, conditional
+# parameter types and parameter default values in template inference
 5 Functions/CallToFunctionParametersRuleTest::testArrayAllCallback
 5 Functions/CallToFunctionParametersRuleTest::testArrayAnyCallback
 5 Functions/CallToFunctionParametersRuleTest::testArrayDiffUassoc
 5 Functions/CallToFunctionParametersRuleTest::testArrayDiffUkey
-5 Functions/CallToFunctionParametersRuleTest::testArrayFilterCallback#0
-5 Functions/CallToFunctionParametersRuleTest::testArrayFilterCallback#1
 5 Functions/CallToFunctionParametersRuleTest::testArrayFindCallback
 5 Functions/CallToFunctionParametersRuleTest::testArrayFindKeyCallback
 5 Functions/CallToFunctionParametersRuleTest::testArrayIntersectUassoc
 5 Functions/CallToFunctionParametersRuleTest::testArrayIntersectUkey
-5 Functions/CallToFunctionParametersRuleTest::testArrayMapMultiple#0
-5 Functions/CallToFunctionParametersRuleTest::testArrayMapMultiple#1
-5 Functions/CallToFunctionParametersRuleTest::testArrayReduceArrowFunctionCallback
-5 Functions/CallToFunctionParametersRuleTest::testArrayReduceCallback
 5 Functions/CallToFunctionParametersRuleTest::testArrayUdiffAssoc
 5 Functions/CallToFunctionParametersRuleTest::testArrayUdiffCallback
 5 Functions/CallToFunctionParametersRuleTest::testArrayUdiffUasssoc
@@ -210,21 +205,10 @@
 5 Functions/CallToFunctionParametersRuleTest::testArrayWalkArrowFunctionCallback
 5 Functions/CallToFunctionParametersRuleTest::testArrayWalkCallback
 5 Functions/CallToFunctionParametersRuleTest::testBug12317
-5 Functions/CallToFunctionParametersRuleTest::testBug1954
-5 Functions/CallToFunctionParametersRuleTest::testBug2782
 5 Functions/CallToFunctionParametersRuleTest::testBug3506
-5 Functions/CallToFunctionParametersRuleTest::testBug5356
 5 Functions/CallToFunctionParametersRuleTest::testCurlSetOptArray
 5 Functions/CallToFunctionParametersRuleTest::testCurlSetOptCallback
 5 Functions/CallToFunctionParametersRuleTest::testCurlSetOptPrereqCallback
-5 Functions/CallToFunctionParametersRuleTest::testDiscussion10454
-5 Functions/CallToFunctionParametersRuleTest::testUasortArrowFunctionCallback
-5 Functions/CallToFunctionParametersRuleTest::testUasortCallback
-5 Functions/CallToFunctionParametersRuleTest::testUksortArrowFunctionCallback
-5 Functions/CallToFunctionParametersRuleTest::testUksortCallback
-5 Functions/CallToFunctionParametersRuleTest::testUsortArrowFunctionCallback
-5 Functions/CallToFunctionParametersRuleTest::testUsortCallback
-5 Functions/CallToFunctionParametersRuleTest::testVaryingAcceptor
 5 Methods/CallMethodsRuleTest::testBug14549
 5 Methods/CallMethodsRuleTest::testBug14893
 5 Methods/CallMethodsRuleTest::testInvokeMagicInvokeMethod
@@ -253,25 +237,14 @@
 9 Functions/CallToFunctionParametersRuleTest::testArrayWalkArrowFunctionCallback
 9 Functions/CallToFunctionParametersRuleTest::testArrayWalkCallback
 9 Functions/CallToFunctionParametersRuleTest::testBug12317
-9 Functions/CallToFunctionParametersRuleTest::testBug1954
 9 Functions/CallToFunctionParametersRuleTest::testBug2343
-9 Functions/CallToFunctionParametersRuleTest::testBug2782
 9 Functions/CallToFunctionParametersRuleTest::testBug2846
 9 Functions/CallToFunctionParametersRuleTest::testBug3506
 9 Functions/CallToFunctionParametersRuleTest::testBug3608
 9 Functions/CallToFunctionParametersRuleTest::testBug3920
-9 Functions/CallToFunctionParametersRuleTest::testBug5356
 9 Functions/CallToFunctionParametersRuleTest::testCurlSetOptArray
 9 Functions/CallToFunctionParametersRuleTest::testCurlSetOptCallback
 9 Functions/CallToFunctionParametersRuleTest::testCurlSetOptPrereqCallback
-9 Functions/CallToFunctionParametersRuleTest::testDiscussion10454
-9 Functions/CallToFunctionParametersRuleTest::testUasortArrowFunctionCallback
-9 Functions/CallToFunctionParametersRuleTest::testUasortCallback
-9 Functions/CallToFunctionParametersRuleTest::testUksortArrowFunctionCallback
-9 Functions/CallToFunctionParametersRuleTest::testUksortCallback
-9 Functions/CallToFunctionParametersRuleTest::testUsortArrowFunctionCallback
-9 Functions/CallToFunctionParametersRuleTest::testUsortCallback
-9 Functions/CallToFunctionParametersRuleTest::testVaryingAcceptor
 9 Methods/CallMethodsRuleTest::testBug14549
 9 Methods/CallMethodsRuleTest::testBug14893
 9 Methods/CallMethodsRuleTest::testCallMethods
@@ -345,13 +318,10 @@
 5 Functions/CallToFunctionParametersRuleTest::testCurlSetOpt
 5 Functions/CallToFunctionParametersRuleTest::testCurlSetOptInvalidShare
 5 Functions/CallToFunctionParametersRuleTest::testGenericFunction
-5 Functions/CallToFunctionParametersRuleTest::testImplodeOnLessThanPhp74
-5 Functions/CallToFunctionParametersRuleTest::testImplodeOnPhp74
 5 Functions/CallToFunctionParametersRuleTest::testIsSubclassAllowString
 5 Functions/CallToFunctionParametersRuleTest::testProcOpen
 5 Functions/CallUserFuncRuleTest::testRule
 5 Functions/CallUserFuncRuleTest::testRuleCallUserFuncArray
-5 Functions/ImplodeParameterCastableToStringRuleTest::testNamedArguments
 5 Functions/ParameterCastableToStringRuleTest::testBug3946
 5 Functions/ParameterCastableToStringRuleTest::testEnum
 5 Functions/ParameterCastableToStringRuleTest::testRule
@@ -363,7 +333,6 @@
 5 Methods/CallMethodsRuleTest::testBug14732
 5 Methods/CallMethodsRuleTest::testBug1661
 5 Methods/CallMethodsRuleTest::testBug3555
-5 Methods/CallMethodsRuleTest::testBug4552
 5 Methods/CallMethodsRuleTest::testBug5372
 5 Methods/CallMethodsRuleTest::testBug6371
 5 Methods/CallMethodsRuleTest::testBug6464
@@ -386,7 +355,6 @@
 5 Methods/CallMethodsRuleTest::testNewInstanceArgsIssue8679
 5 Methods/CallMethodsRuleTest::testNonEmptyArray
 5 Methods/CallMethodsRuleTest::testObjectShapes
-5 Methods/CallMethodsRuleTest::testOnlyRelevantUnableToResolveTemplateType
 5 Methods/CallMethodsRuleTest::testRandomizer
 5 Methods/CallMethodsRuleTest::testReadOnlyPropertyPassedByReference
 5 Methods/CallMethodsRuleTest::testRecursiveIteratorIterator
@@ -430,7 +398,6 @@
 9 Functions/CallToFunctionParametersRuleTest::testBug2911
 9 Functions/CallToFunctionParametersRuleTest::testBug2940
 9 Functions/CallToFunctionParametersRuleTest::testBug4371
-9 Functions/CallToFunctionParametersRuleTest::testBug5760
 9 Functions/CallToFunctionParametersRuleTest::testBug5872
 9 Functions/CallToFunctionParametersRuleTest::testBug5986
 9 Functions/CallToFunctionParametersRuleTest::testBug6175
@@ -451,8 +418,6 @@
 9 Functions/CallToFunctionParametersRuleTest::testDiscussion7450WithoutCheckExplicitMixed
 9 Functions/CallToFunctionParametersRuleTest::testFunctionWithNumericParameterThatCreatedByAddition
 9 Functions/CallToFunctionParametersRuleTest::testGenericFunction
-9 Functions/CallToFunctionParametersRuleTest::testImplodeOnLessThanPhp74
-9 Functions/CallToFunctionParametersRuleTest::testImplodeOnPhp74
 9 Functions/CallToFunctionParametersRuleTest::testIsSubclassAllowString
 9 Functions/CallToFunctionParametersRuleTest::testProcOpen
 9 Methods/CallMethodsRuleTest::testAcceptThrowable
@@ -474,7 +439,6 @@
 9 Methods/CallMethodsRuleTest::testBug3589
 9 Methods/CallMethodsRuleTest::testBug4188
 9 Methods/CallMethodsRuleTest::testBug4199
-9 Methods/CallMethodsRuleTest::testBug4552
 9 Methods/CallMethodsRuleTest::testBug5372
 9 Methods/CallMethodsRuleTest::testBug5623
 9 Methods/CallMethodsRuleTest::testBug5868
@@ -506,7 +470,6 @@
 9 Methods/CallMethodsRuleTest::testNewInstanceArgsIssue8679
 9 Methods/CallMethodsRuleTest::testNonEmptyArray
 9 Methods/CallMethodsRuleTest::testObjectShapes
-9 Methods/CallMethodsRuleTest::testOnlyRelevantUnableToResolveTemplateType
 9 Methods/CallMethodsRuleTest::testRandomizer
 9 Methods/CallMethodsRuleTest::testReadOnlyPropertyPassedByReference
 9 Methods/CallMethodsRuleTest::testRecursiveIteratorIterator

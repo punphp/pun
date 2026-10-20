@@ -11,9 +11,11 @@ use crate::symbols;
 
 mod accepts;
 mod casts;
+mod templates;
 mod verbosity;
 pub use accepts::{StrictMixed, accepts, accepts_with};
 pub use casts::{Cast, cast_is_error, is_numeric};
+pub use templates::{TemplateMap, infer_template_types, resolve_template_types};
 pub use verbosity::recommended_level;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
@@ -2407,6 +2409,17 @@ fn conditional_super(c: &Conditional, b: &Type) -> Tri {
 /// method Pun knows no signature of, is the trivial `(...): mixed` one); `accept` is `Some(strictTypes)` for
 /// `$treatMixedAsAny` (accepts() compares parameters and return with accepts()).
 fn signature_super(ours: &Signature, b: &Type, accept: Option<bool>) -> Tri {
+    let variants = callable_signatures(b);
+    variants
+        .iter()
+        .map(|theirs| variant_super(ours, theirs, accept))
+        .reduce(Tri::or)
+        .expect("a variant")
+}
+
+/// `getCallableParametersAcceptors()`: a callable without a signature, or a method Pun knows no signature of, is
+/// the trivial `(...): mixed` one.
+fn callable_signatures(b: &Type) -> Vec<Signature> {
     let of = |f: &symbols::Function| -> Vec<Signature> {
         f.variants
             .iter()
@@ -2456,10 +2469,6 @@ fn signature_super(ours: &Signature, b: &Type, accept: Option<bool>) -> Tri {
         });
     }
     variants
-        .iter()
-        .map(|theirs| variant_super(ours, theirs, accept))
-        .reduce(Tri::or)
-        .expect("a variant")
 }
 
 fn variant_super(ours: &Signature, theirs: &Signature, accept: Option<bool>) -> Tri {

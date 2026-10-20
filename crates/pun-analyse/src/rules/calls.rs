@@ -102,6 +102,8 @@ fn named_call<'arena>(
         .chain(fallback)
         .find_map(|n| c.function(n));
     if let Some((display, variants)) = found {
+        let written = c.written(id.span()).trim_start_matches('\\').to_ascii_lowercase();
+        let variants = super::selector::select_from_args(c, &written, &counts, variants);
         let acceptor = params::select(c, variants, &counts);
         params::check(
             c,

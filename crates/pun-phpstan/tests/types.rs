@@ -319,3 +319,40 @@ fn static_of_unknown_class() {
     let s = Type::Static("Nope".into(), vec![]);
     assert_eq!(format!("{:?}", accepts(&s, &s, true)), "Yes");
 }
+
+/// `inferTemplateTypes()` of each pattern from each received type, and the pattern resolved over the inferred map
+/// (type-infer.json).
+#[test]
+fn infer_template_types() {
+    use pun_phpstan::types::{Template, Type, infer_template_types, resolve_template_types};
+    let f = fixture("type-infer.json");
+    let rows = f.as_array().unwrap();
+    let mut failures = Vec::new();
+    for row in rows {
+        let (a, b) = (row[0].as_str().unwrap(), row[1].as_str().unwrap());
+        let (at, bt) = (resolve_str(a, None), resolve_str(b, None));
+        let map = infer_template_types(&at, &bt);
+        let mut got: Vec<(String, String)> = map.types().into_iter().map(|(n, _, t)| (n.to_string(), t.describe(Level::Precise))).collect();
+        got.sort();
+        let want: Vec<(String, String)> =
+            row[2].as_object().unwrap().iter().map(|(k, v)| (k.clone(), v.as_str().unwrap().to_string())).collect();
+        let templates = std::cell::RefCell::new(Vec::<Template>::new());
+        fn collect(t: &Type, out: &std::cell::RefCell<Vec<Template>>) {
+            if let Type::Template(tt) = t {
+                out.borrow_mut().push((**tt).clone());
+            }
+            t.traverse(&|i| {
+                collect(i, out);
+                i.clone()
+            });
+        }
+        collect(&at, &templates);
+        let templates = templates.into_inner();
+        let resolved = resolve_template_types(&at, &map.with_errors(&templates.iter().collect::<Vec<_>>())).describe(Level::Precise);
+        if got != want || resolved != row[3].as_str().unwrap() {
+            failures.push(format!("{a} from {b}: want {want:?} {}, got {got:?} {resolved}", row[3]));
+        }
+    }
+    eprintln!("type-infer.json: {}/{} match", rows.len() - failures.len(), rows.len());
+    assert!(failures.is_empty(), "{}", failures.join("\n"));
+}
