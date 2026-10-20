@@ -1701,8 +1701,8 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
     }
 
     fn walk_binary(&mut self, b: &'ast Binary<'arena>, c: &mut ()) {
-        dead_code::binary(self, b);
         types::binary(self, b);
+        dead_code::binary(self, b);
         if matches!(b.operator, BinaryOperator::Instanceof(_)) {
             names::instanceof(self, b.lhs, b.rhs);
         }
