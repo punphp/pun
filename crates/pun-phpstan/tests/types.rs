@@ -356,3 +356,22 @@ fn infer_template_types() {
     eprintln!("type-infer.json: {}/{} match", rows.len() - failures.len(), rows.len());
     assert!(failures.is_empty(), "{}", failures.join("\n"));
 }
+
+/// The reasons `accepts()` gives (type-reasons.json): every ordered pair of the reason atoms.
+#[test]
+fn accepts_reasons() {
+    use pun_phpstan::types::{StrictMixed, accepts_reasons};
+    let f = fixture("type-reasons.json");
+    let rows = f.as_array().unwrap();
+    let mut failures = Vec::new();
+    for row in rows {
+        let (a, b) = (row[0].as_str().unwrap(), row[1].as_str().unwrap());
+        let got = accepts_reasons(&resolve_str(a, None), &resolve_str(b, None), true, StrictMixed::default());
+        let want: Vec<String> = row[2].as_array().unwrap().iter().map(|r| r.as_str().unwrap().to_string()).collect();
+        if got != want {
+            failures.push(format!("{a} accepts {b}: want {want:?}, got {got:?}"));
+        }
+    }
+    eprintln!("type-reasons.json: {}/{} match", rows.len() - failures.len(), rows.len());
+    assert!(failures.is_empty(), "{}", failures.join("\n"));
+}

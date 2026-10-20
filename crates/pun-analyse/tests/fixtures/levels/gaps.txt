@@ -29,7 +29,6 @@
 3 Methods/ReturnTypeRuleTest::testBug3997
 3 Methods/ReturnTypeRuleTest::testBug3118
 3 Methods/ReturnTypeRuleTest::testBug12739
-3 Methods/ReturnTypeRuleTest::testBug10924
 6 Methods/MissingMethodReturnTypehintRuleTest::testIndirectInheritanceBug2740
 # Mago's inference differs from PHPStan's: `static`/`$this` lost on fluent and `new $class` returns, array shapes
 # and lists, SimpleXMLElement and DateTime::format() return types, intersections and narrowing, a trait method
@@ -202,8 +201,6 @@
 5 Functions/CallToFunctionParametersRuleTest::testArrayUintersect
 5 Functions/CallToFunctionParametersRuleTest::testArrayUintersectAssoc
 5 Functions/CallToFunctionParametersRuleTest::testArrayUintersectUassoc
-5 Functions/CallToFunctionParametersRuleTest::testArrayWalkArrowFunctionCallback
-5 Functions/CallToFunctionParametersRuleTest::testArrayWalkCallback
 5 Functions/CallToFunctionParametersRuleTest::testBug12317
 5 Functions/CallToFunctionParametersRuleTest::testBug3506
 5 Functions/CallToFunctionParametersRuleTest::testCurlSetOptArray
@@ -212,7 +209,6 @@
 5 Methods/CallMethodsRuleTest::testBug14549
 5 Methods/CallMethodsRuleTest::testBug14893
 5 Methods/CallMethodsRuleTest::testInvokeMagicInvokeMethod
-5 Methods/CallMethodsRuleTest::testTrickyCallables
 5 Methods/CallStaticMethodsRuleTest::testBug1971Php8
 9 Functions/CallToFunctionParametersRuleTest::testArrayAllCallback
 9 Functions/CallToFunctionParametersRuleTest::testArrayAnyCallback
@@ -234,8 +230,6 @@
 9 Functions/CallToFunctionParametersRuleTest::testArrayUintersect
 9 Functions/CallToFunctionParametersRuleTest::testArrayUintersectAssoc
 9 Functions/CallToFunctionParametersRuleTest::testArrayUintersectUassoc
-9 Functions/CallToFunctionParametersRuleTest::testArrayWalkArrowFunctionCallback
-9 Functions/CallToFunctionParametersRuleTest::testArrayWalkCallback
 9 Functions/CallToFunctionParametersRuleTest::testBug12317
 9 Functions/CallToFunctionParametersRuleTest::testBug2343
 9 Functions/CallToFunctionParametersRuleTest::testBug2846
@@ -256,7 +250,6 @@
 9 Methods/CallMethodsRuleTest::testExplicitMixed#0
 9 Methods/CallMethodsRuleTest::testExplicitMixed#1
 9 Methods/CallMethodsRuleTest::testPureCallable
-9 Methods/CallMethodsRuleTest::testTrickyCallables
 9 Methods/CallStaticMethodsRuleTest::testMixed#0
 9 Methods/CallStaticMethodsRuleTest::testMixed#1
 9 Methods/CallStaticMethodsRuleTest::testMixed#2
@@ -296,7 +289,6 @@
 4 DeadCode/NoopRuleTest::testBug11001
 4 DeadCode/UnusedPrivateMethodRuleTest::testFalsePositiveWithTraitUse
 5 Classes/InstantiationRuleTest::testBug14138
-5 Classes/InstantiationRuleTest::testBug3311a
 5 Classes/InstantiationRuleTest::testBug3425
 5 Classes/InstantiationRuleTest::testBug7048
 5 Classes/InstantiationRuleTest::testClassString
@@ -353,9 +345,7 @@
 5 Methods/CallMethodsRuleTest::testMixin
 5 Methods/CallMethodsRuleTest::testNegatedInstanceof
 5 Methods/CallMethodsRuleTest::testNewInstanceArgsIssue8679
-5 Methods/CallMethodsRuleTest::testNonEmptyArray
 5 Methods/CallMethodsRuleTest::testObjectShapes
-5 Methods/CallMethodsRuleTest::testRandomizer
 5 Methods/CallMethodsRuleTest::testReadOnlyPropertyPassedByReference
 5 Methods/CallMethodsRuleTest::testRecursiveIteratorIterator
 5 Methods/CallMethodsRuleTest::testRequireExtends
@@ -371,7 +361,6 @@
 5 Methods/CallStaticMethodsRuleTest::testConditionalParam
 5 Methods/CallStaticMethodsRuleTest::testDynamicCall
 5 Methods/CallStaticMethodsRuleTest::testRequireExtends
-5 Methods/CallStaticMethodsRuleTest::testTemplateTypeInOneBranchOfConditional
 5 Properties/AccessPropertiesRuleTest::testBug12645
 5 Properties/AccessPropertiesRuleTest::testBug13537
 5 Properties/AccessPropertiesRuleTest::testBug393
@@ -468,9 +457,7 @@
 9 Methods/CallMethodsRuleTest::testMixin
 9 Methods/CallMethodsRuleTest::testNegatedInstanceof
 9 Methods/CallMethodsRuleTest::testNewInstanceArgsIssue8679
-9 Methods/CallMethodsRuleTest::testNonEmptyArray
 9 Methods/CallMethodsRuleTest::testObjectShapes
-9 Methods/CallMethodsRuleTest::testRandomizer
 9 Methods/CallMethodsRuleTest::testReadOnlyPropertyPassedByReference
 9 Methods/CallMethodsRuleTest::testRecursiveIteratorIterator
 9 Methods/CallMethodsRuleTest::testRequireExtends
@@ -491,7 +478,6 @@
 9 Methods/CallStaticMethodsRuleTest::testDiscussion7004
 9 Methods/CallStaticMethodsRuleTest::testDynamicCall
 9 Methods/CallStaticMethodsRuleTest::testRequireExtends
-9 Methods/CallStaticMethodsRuleTest::testTemplateTypeInOneBranchOfConditional
 # offsetAccess.invalidOffset: array_rand() is list<int|string> by Mago, array<int, int|string> by PHPStan's dynamic
 # return type extension
 3 Arrays/InvalidKeyInArrayDimFetchRuleTest::testBug12981
@@ -610,7 +596,6 @@
 3 Properties/TypesAssignedToPropertiesRuleTest::testBug7912
 3 Properties/TypesAssignedToPropertiesRuleTest::testCloneWith
 3 Properties/TypesAssignedToPropertiesRuleTest::testBug12688
-3 Properties/TypesAssignedToPropertiesRuleTest::testBug10924
 # an-types: generic objects without their template arguments: parameter defaults and template bounds (generics.notSupportedBound) where Mago's types differ
 3 Properties/TypesAssignedToPropertiesRuleTest::testGenericObjectWithUnspecifiedTemplateTypes
 3 Properties/TypesAssignedToPropertiesRuleTest::testGenericObjectWithUnspecifiedTemplateTypesLevel8

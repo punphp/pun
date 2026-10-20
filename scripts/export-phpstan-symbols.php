@@ -554,6 +554,33 @@ if (($argv[1] ?? '') === 'infer') {
     exit;
 }
 
+// php scripts/export-phpstan-symbols.php reasons: tests/fixtures/type-reasons.json, every ordered pair of these atoms as
+// [a, b, accepts(b, strict)->reasons] (the tips of the argument and return type errors)
+if (($argv[1] ?? '') === 'reasons') {
+    $resolver = container(80400)->getByType(TypeStringResolver::class);
+    $scope = new NameScope(null, [], null, null, probe_templates($resolver));
+    $pun = fn (string $s) => preg_replace_callback('~\\b[TUV]\\b~', fn ($m) => sprintf("__template<%s, 'function probe()', %s>", $m[0], PROBE_TEMPLATES[$m[0]] ?? 'mixed'), $s);
+    $atoms = ['int', 'string', "'a'", 'int|string', 'int|null', '(callable(): mixed)|null', 'callable(int): void', 'callable(int=): void',
+        'callable(int, string): int', 'callable(string): int', 'Closure(int): void', 'Closure(string, int=): int', 'Closure(int ...$a): void',
+        'Closure(int $a): string', 'Closure(int $a, string $b): void', 'Closure(1|2 $a): void', 'callable', 'list<int>', 'non-empty-array<int>',
+        'non-empty-list<int>', 'array<int>', 'array<string>', 'array{a: int, b: string}', 'array{a: int, b?: string}', "array{a: 1, b: 'x'}",
+        "array{a: 'x'}", 'array{a: int, b: string}|null', 'array{0: string}', 'array<int, string>', 'iterable<int>', 'ArrayIterator<int, string>',
+        'ArrayIterator<int, int|string>', 'ArrayIterator<int, 1>', 'ArrayIterator', 'Countable&Traversable<int>', 'array{array<int>}', 'array{0: int}|null',
+        'T', 'U', 'int|array<int>', 'string|list<int>', 'Closure(int): string|null', 'mixed', '(T is int ? list<int> : int)', 'list<int>|list<string>',
+        'callable(int|string): void', 'Closure(string $a): void', 'array{a: int}', 'Traversable<int, string>', '(callable(): mixed)|Closure(): void'];
+    $rows = [];
+    foreach ($atoms as $a) {
+        $at = $resolver->resolve($a, $scope);
+        foreach ($atoms as $b) {
+            $bt = $resolver->resolve($b, $scope);
+            $rows[] = json_encode([$pun($a), $pun($b), $at->accepts($bt, true)->reasons], $flags);
+        }
+    }
+    file_put_contents($root.'/crates/pun-phpstan/tests/fixtures/type-reasons.json', "[\n".implode(",\n", $rows)."\n]\n");
+    echo count($rows), " reasons pairs\n";
+    exit;
+}
+
 if (($argv[1] ?? '') === 'probes') {
     $probes = array_map(fn ($s) => [null, $s], PROBES);
     foreach (['static|Countable', '$this|ArrayIterator', 'ArrayIterator|static', 'static|ArrayIterator', 'ArrayIterator|$this', '$this|static', 'static|$this', 'static&Countable', 'callable(static, $this): void', 'callable(): static', 'class-string<static>', 'static|SeekableIterator', 'SeekableIterator|static', 'Iterator&static', 'static&Iterator', 'stdClass|static', 'static|stdClass', 'static', '$this', 'self', 'static::class', 'self::class', 'ArrayIterator::class', 'self::STD_PROP_LIST', 'ArrayIterator::*', 'ArrayIterator::STD*LIST', 'ArrayIterator::*_PROP_*', 'ArrayIterator::*X*Y', 'ArrayIterator::S*P*T', 'ArrayIterator::*P*O*', 'list<static>', 'Countable::FOO', 'Nope::FOO'] as $s) {

@@ -11,10 +11,12 @@ use crate::symbols;
 
 mod accepts;
 mod casts;
+mod reasons;
 mod templates;
 mod verbosity;
 pub use accepts::{StrictMixed, accepts, accepts_with};
 pub use casts::{Cast, cast_is_error, is_numeric};
+pub use reasons::accepts_reasons;
 pub use templates::{TemplateMap, infer_template_types, resolve_template_types};
 pub use verbosity::recommended_level;
 
@@ -332,10 +334,12 @@ impl Type {
 
     fn query(&self, f: &dyn Fn(&Type) -> Tri) -> Tri {
         match self {
-            Type::Union(types) => Tri::extreme_identity(types.iter().map(f)),
-            Type::Benevolent(types) => types.iter().map(f).fold(Tri::No, Tri::or),
-            Type::Intersection(types) => Tri::max_min(types.iter().map(f)),
+            Type::Union(types) => Tri::extreme_identity(types.iter().map(|t| t.query(f))),
+            Type::Benevolent(types) => types.iter().map(|t| t.query(f)).fold(Tri::No, Tri::or),
+            Type::Intersection(types) => Tri::max_min(types.iter().map(|t| t.query(f))),
             Type::Template(t) => t.bound.query(f),
+            // LateResolvableTypeTrait
+            Type::Conditional(c) => c.resolve().query(f),
             Type::Mixed { .. } | Type::Error => Tri::Maybe,
             Type::Never(_) => Tri::No,
             _ => f(self),
@@ -400,13 +404,13 @@ impl Type {
     fn is_class_string(&self) -> Tri {
         self.query_c(&|t| match t {
             Type::ClassString(_) => Tri::Yes,
-            Type::String | Type::StringAcceptingStringable | Type::StringNotAcceptingStringable => {
+            Type::String
+            | Type::StringAcceptingStringable
+            | Type::StringNotAcceptingStringable
+            | Type::Accessory(Accessory::NonEmptyString | Accessory::NonFalsyString | Accessory::LiteralString) => {
                 Tri::Maybe
             }
             Type::ConstString(s) => Tri::from(symbols::lookup(s).is_some()),
-            Type::Accessory(
-                Accessory::NonEmptyString | Accessory::NonFalsyString | Accessory::LiteralString,
-            ) => Tri::Maybe,
             _ => Tri::No,
         })
     }
@@ -471,7 +475,8 @@ impl Type {
             Type::Array(key, _) if is_super_type_of(&Type::int_range(Some(0), None), key).no() => {
                 Tri::No
             }
-            Type::Array(..) | Type::Accessory(Accessory::NonEmptyArray) => Tri::Maybe,
+            // (MaybeArrayTypeTrait)
+            Type::Array(..) | Type::Accessory(Accessory::NonEmptyArray) | Type::Iterable(..) => Tri::Maybe,
             _ => Tri::No,
         })
     }
@@ -2876,9 +2881,9 @@ pub fn union(types: Vec<Type>) -> Type {
             generic[2] = true;
         } else if t.is_integer().yes() && !matches!(t, Type::IntRange(..)) {
             generic[1] = true;
-        } else if t.is_string().yes() && t.is_class_string().no() && !has_accessory(&t) {
-            generic[3] = true;
         }
+        // (a string that is no class-string, without accessories, is only a `mixed~string` subtraction PHPStan
+        // intersects with a string, which Pun has no type for: generic[3] stays false)
         if let Type::IntRange(..) = t {
             ranges.push(t);
             continue;
@@ -2984,9 +2989,6 @@ fn scalar_class(t: &Type) -> u8 {
 
 /// `TypeUtils::getAccessoryTypes() !== []` of a string type that is not a class string (plain `string` answers
 /// maybe to that, so only intersections get here)
-fn has_accessory(t: &Type) -> bool {
-    matches!(t, Type::Intersection(types) if types.iter().any(|t| matches!(t, Type::Accessory(_))))
-}
 
 enum Merge {
     A(Type),

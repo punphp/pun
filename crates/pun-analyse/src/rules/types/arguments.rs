@@ -144,16 +144,17 @@ pub(in super::super) fn arguments(c: &mut Checker, acceptor: &Acceptor, args: &[
             let message = declared::with_classes(c, || {
                 (!levels.accepts(&param, &value, strict)).then(|| {
                     let level = recommended_level(&param, Some(&value));
-                    format!(
+                    let message = format!(
                         "{} of {of} expects {}, {} given.",
                         describe(acceptor, p, Some(e.name.map_or(Ok(i), Err))),
                         param.describe(level),
                         value.describe(level)
-                    )
+                    );
+                    (message, levels.accepts_tip(&param, &value, strict))
                 })
             });
-            if let Some(message) = message {
-                c.report(e.span, "argument.type", message, None);
+            if let Some((message, tip)) = message {
+                c.report(e.span, "argument.type", message, tip.as_deref());
             }
         }
         if by_ref == ByRef::No {

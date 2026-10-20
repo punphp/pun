@@ -253,7 +253,7 @@ fn generic(pattern: &Type, received: &Type) -> TemplateMap {
 }
 
 /// The arguments of `class` as an ancestor of `name<args>` (a class without arguments over its templates' bounds).
-fn ancestor(name: &str, args: &[Type], class: &str) -> Option<Vec<Type>> {
+pub(super) fn ancestor(name: &str, args: &[Type], class: &str) -> Option<Vec<Type>> {
     let c = symbols::lookup(name)?;
     if c.name.eq_ignore_ascii_case(class) {
         let own = c.templates.iter().map(|t| {

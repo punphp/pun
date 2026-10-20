@@ -2,7 +2,7 @@
 //! `checkExplicitMixed`, `checkImplicitMixed`), and `findTypeToCheck()` of an expression.
 
 use mago_syntax::cst::*;
-use pun_phpstan::types::{StrictMixed, Type, accepts_with, to_benevolent, union};
+use pun_phpstan::types::{StrictMixed, Type, accepts_reasons, accepts_with, to_benevolent, union};
 
 use super::super::Checker;
 
@@ -51,6 +51,17 @@ impl Levels {
         let accepted = self.transform_accepted(accepting, accepted);
         let r = accepts_with(accepting, &accepted, strict_types, self.strict_mixed());
         if self.check_union_types { r.yes() } else { !r.no() }
+    }
+
+    /// `RuleLevelHelper::accepts()->reasons` as an error's tip (`acceptsReasonsTip()`: one reason as is, more as a
+    /// bullet list).
+    pub fn accepts_tip(self, accepting: &Type, accepted: &Type, strict_types: bool) -> Option<String> {
+        let accepted = self.transform_accepted(accepting, accepted);
+        match accepts_reasons(accepting, &accepted, strict_types, self.strict_mixed()).as_slice() {
+            [] => None,
+            [one] => Some(one.clone()),
+            all => Some(all.iter().map(|r| format!("• {r}")).collect::<Vec<_>>().join("\n")),
+        }
     }
 }
 
