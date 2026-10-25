@@ -36,9 +36,10 @@ Static calls check PHPDoc `@method` signatures, including inherited tags. Pun ch
 Dynamic `new $class` expressions report unknown class names even when another possible name exists.
 
 Inline non-static closures and arrow functions use the class named by `@param-closure-this`.
-Pun resolves these tags on named functions and methods called through a class name, `$this`, or a `new` expression.
+Pun resolves these tags on named functions and methods called through a class name or a single known object class, including nullable receivers.
+Bindings from multiple possible receiver classes remain unsupported.
 
-An [ignore comment](/docs/configuration/ignore-comments) suppresses a matching finding:
+An [ignore comment](/docs/configuration/ignore-comments) suppresses a matching ignorable finding:
 
 ```php
 legacy_hook(); // @pun-ignore analyse/undefined/function -- provided at runtime
@@ -66,6 +67,8 @@ baseline = "pun-baseline.toml"
 ```
 
 Entries match by file, rule, message, and count, not line number. Pun notes entries that no longer match. PHPStan baselines are not read or copied.
+
+Errors PHPStan marks as non-ignorable, such as a duplicate parameter, remain visible even when an ignore comment or baseline entry matches. Baseline generation omits these errors. JSON reports identify them with `"ignorable": false`.
 
 ## Output and exit codes
 

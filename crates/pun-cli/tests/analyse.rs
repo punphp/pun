@@ -22,6 +22,7 @@ const FORMATS: [&str; 9] = [
 
 const ERRORS: &str = "<?php\n\nnamespace App;\n\nfunction f(): void\n{\n    undefined_fn();\n    new Missing();\n}\n\nclass B\n{\n    public function g(): void\n    {\n        $this->nope();\n    }\n}\n";
 const CLEAN: &str = "<?php\n\nnamespace App;\n\nfunction f(): int\n{\n    return 1;\n}\n";
+const NON_IGNORABLE: &str = "<?php\nfunction duplicate($value, $value): void {}\nundefined_fn();\n";
 
 fn phpstan() -> Option<PathBuf> {
     let p = Path::new(env!("CARGO_MANIFEST_DIR"))
@@ -62,7 +63,11 @@ fn run(dir: &Path, program: &[&str], args: &[&str]) -> (String, Option<i32>) {
 fn formats_match_phpstan() {
     let Some(phar) = phpstan() else { return };
     let phar = phar.to_str().unwrap();
-    for (name, source) in [("errors", ERRORS), ("clean", CLEAN)] {
+    for (name, source) in [
+        ("errors", ERRORS),
+        ("clean", CLEAN),
+        ("non-ignorable", NON_IGNORABLE),
+    ] {
         let d = sample(name, source);
         for f in FORMATS {
             let format = format!("--error-format={f}");
@@ -108,6 +113,65 @@ fn unknown_format_is_a_run_error() {
     let d = sample("unknown", CLEAN);
     let (out, code) = run(&d, &[PUN, "analyse"], &["--format=nope"]);
     assert_eq!((out.as_str(), code), ("", Some(2)));
+}
+
+#[test]
+fn non_ignorable_errors_survive_comments_and_baselines() {
+    let d = sample("non-ignorable-baseline", NON_IGNORABLE);
+    let source = NON_IGNORABLE
+        .replace(
+            "void {}",
+            "void {} // @pun-ignore analyse/functions/duplicate-parameter",
+        )
+        .replace(
+            "undefined_fn();",
+            "undefined_fn(); // @pun-ignore analyse/undefined/function",
+        );
+    std::fs::write(d.join("src/a.php"), source).unwrap();
+    let (out, code) = run(&d, &[PUN, "analyse"], &["--format=json"]);
+    let json: serde_json::Value = serde_json::from_str(&out).unwrap();
+    assert_eq!(code, Some(1), "{out}");
+    assert_eq!(json["totals"]["file_errors"], 1, "{out}");
+    let file = d.join("src/a.php").to_string_lossy().into_owned();
+    assert_eq!(
+        json["files"][&file]["messages"][0]["identifier"], "parameter.duplicate",
+        "{out}"
+    );
+    assert_eq!(
+        json["files"][&file]["messages"][0]["ignorable"], false,
+        "{out}"
+    );
+
+    std::fs::write(d.join("src/a.php"), NON_IGNORABLE).unwrap();
+    let (out, code) = run(
+        &d,
+        &[PUN, "analyse"],
+        &["--generate-baseline", "--color=never"],
+    );
+    assert_eq!(code, Some(0), "{out}");
+    assert!(out.contains("Baseline generated with 1 error in"), "{out}");
+    let mut baseline = std::fs::read_to_string(d.join("pun-baseline.toml")).unwrap();
+    assert!(
+        baseline.contains("Function undefined_fn not found."),
+        "{baseline}"
+    );
+    assert!(!baseline.contains("Redefinition"), "{baseline}");
+    // A manually added entry cannot hide a non-ignorable error either.
+    baseline.push_str("\n[[issues]]\nfile = 'src/a.php'\ncode = 'analyse/functions/duplicate-parameter'\nmessage = 'Redefinition of parameter $value.'\ncount = 1\n");
+    std::fs::write(d.join("pun-baseline.toml"), baseline).unwrap();
+    std::fs::write(
+        d.join("pun.toml"),
+        "[analyse]\npaths = [\"src\"]\nbaseline = \"pun-baseline.toml\"\n",
+    )
+    .unwrap();
+    let (out, code) = run(&d, &[PUN, "analyse"], &["--format=json"]);
+    let json: serde_json::Value = serde_json::from_str(&out).unwrap();
+    assert_eq!(code, Some(1), "{out}");
+    assert_eq!(json["totals"]["file_errors"], 1, "{out}");
+    assert_eq!(
+        json["files"][&file]["messages"][0]["identifier"], "parameter.duplicate",
+        "{out}"
+    );
 }
 
 #[test]

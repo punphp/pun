@@ -99,6 +99,9 @@ impl Baseline {
             .map(|i| ((i.file.clone(), i.code.clone(), i.message.clone()), i.count))
             .collect();
         findings.retain(|f| {
+            if !f.ignorable() {
+                return true;
+            }
             let key = (f.rel.replace('\\', "/"), f.rule.clone(), f.message.clone());
             match left.get_mut(&key) {
                 Some(n) if *n > 0 => {

@@ -90,12 +90,13 @@ pub(crate) struct Finding {
     pub(crate) rule: String,
     pub(crate) message: String,
     pub(crate) tip: Option<String>,
+    pub(crate) can_be_ignored: bool,
 }
 
 impl Finding {
-    /// PHPStan's `canBeIgnored()`: false for the errors about ignores themselves (`ignore.*`).
+    /// PHPStan's `canBeIgnored()`, preserved from the rule that reported the error.
     pub(crate) fn ignorable(&self) -> bool {
-        !self.identifier.starts_with("ignore.")
+        self.can_be_ignored
     }
 
     /// PHPStan's `getLine()`: none (0 here) for an `ignoreErrors` entry nothing matched.
@@ -197,6 +198,7 @@ pub(crate) fn analyse(cfg: &Config, paths: &[PathBuf], use_baseline: bool) -> Re
                 rule: rule.to_string(),
                 message: e.message,
                 tip: e.tip,
+                can_be_ignored: e.can_be_ignored,
             }
         })
         .collect();
@@ -245,7 +247,7 @@ fn apply_ignores(findings: &mut Vec<Finding>, root: &Path) -> Vec<Problem> {
         let source = String::from_utf8_lossy(&source);
         let mut ignores = Ignores::parse(&source);
         if !ignores.is_empty() {
-            list.retain(|f| !ignores.ignores(&f.rule, f.line as usize));
+            list.retain(|f| !f.ignorable() || !ignores.ignores(&f.rule, f.line as usize));
             let rel = relative(root, &file);
             malformed.extend(ignores.malformed.iter().map(|m| ignore_problem(&rel, m)));
         }

@@ -31,6 +31,8 @@ pub struct Error {
     pub identifier: String,
     pub message: String,
     pub tip: Option<String>,
+    /// Whether ignore comments, configured ignores and baselines may suppress this error.
+    pub can_be_ignored: bool,
 }
 
 /// Identifiers Pun reports. Errors with other identifiers are PHPStan's alone for now.
@@ -103,6 +105,7 @@ pub fn analyse_project(project: &Project) -> Result<Analysis, CouldNotReadFile> 
             identifier: e.identifier.unwrap_or_default(),
             message: e.message,
             tip: e.tip,
+            can_be_ignored: e.can_be_ignored,
         })
         .collect();
     errors.sort();
