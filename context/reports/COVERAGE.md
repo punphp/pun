@@ -4,7 +4,7 @@
 | crate | lines | hit | line % | tests |
 |---|---:|---:|---:|---|
 | punphp | 5397 | 5397 | 100.00% | ok |
-| punphp-analyse | 35826 | 35826 | 100.00% | ok |
+| punphp-analyse | 36205 | 36205 | 100.00% | ok |
 | punphp-config | 2604 | 2604 | 100.00% | ok |
 | punphp-fixers | 34895 | 34895 | 100.00% | ok |
 | punphp-format | 1022 | 1022 | 100.00% | ok |
@@ -40,8 +40,8 @@ Uncovered lines:
 - `crates/pun-analyse/src/rules/larastan/relations.rs:180` RelationExistenceRule's relation method declared by one of PHP's own classes: a model extends Eloquent's Model, which extends none of them, so its methods are always the user's.
 - `crates/pun-analyse/src/laravel/mod.rs:506-513` `Provider::meta()` of the model-attribute hook: Mago's `Provider` trait requires it, but `PluginRegistry` reads `meta()` only for its own library plugins, never for a registered expression hook, and the hook struct is private.
 - `crates/pun-analyse/src/rules/infer.rs:231-234` `Provider::meta()` of the definedness hook: as for the model-attribute hook's above, `PluginRegistry` never reads it for a registered expression hook.
-- `crates/pun-analyse/src/rules/infer.rs:178` the upstream-failure fallback that drops only the failing file's inferred types. The Methods fixture panics enter the separate codex scanner's intersection-masking retry. A signed-division panic producer is tracked in PLAN.md for correction, not retained solely to cover this guard.
-- `crates/pun-analyse/src/mago.rs:74` the upstream-panic fallback that skips only the failing file. The former debug-panic.php (`int&mixed`) no longer triggers it; the newly discovered signed-division producer has a separate correction pending integration. The containment guard remains for unexpected upstream failures.
+- `crates/pun-analyse/src/rules/infer.rs:178` the upstream-failure fallback that drops only the failing file's inferred types. The Methods fixture panics enter the separate codex scanner's intersection-masking retry. Signed integer division overflow is now fixed in the maintained analyzer and has a public regression; no known panic producer is retained solely to cover this guard.
+- `crates/pun-analyse/src/mago.rs:74` the upstream-panic fallback that skips only the failing file. The former debug-panic.php (`int&mixed`) no longer triggers it, and signed integer division overflow is now fixed in the maintained analyzer. The containment guard remains for unexpected upstream failures.
 - `crates/pun-analyse/src/rules/types/convert.rs:369-371` a callable alias (`TCallable::Alias`) as an expression's type: Mago's analyser expands the alias it gives a variable assigned a closure when the variable is read, and `Closure::getCurrent()` in a generic closure is the only other source; the arm stays so such a type describes as PHPStan's ClosureType.
 - `crates/pun-analyse/src/rules/types/convert.rs:548` an array shape key naming a class constant (`array{Foo::BAR: int}`): Mago resolves it to the constant's value when it expands the type, so an expression's type never carries one.
 - `crates/pun-phpstan/src/symbols.rs:115-117` `Visitor::expecting()` of the symbols.json map reader: serde calls it only to word the error for malformed input, and symbols.json is compiled in (every map in it is an object or `[]`).
