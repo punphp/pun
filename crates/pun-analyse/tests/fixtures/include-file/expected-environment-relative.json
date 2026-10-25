@@ -1,0 +1,34 @@
+[
+  {
+    "file": "$ROOT/paths.php",
+    "line": 2,
+    "identifier": "include.fileNotFound",
+    "message": "Path in include() \"cwd.txt\" is not a file or it does not exist.",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "$ROOT/paths.php",
+    "line": 5,
+    "identifier": "include.fileNotFound",
+    "message": "Path in include() \"./cwd.txt\" is not a file or it does not exist.",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "$ROOT/paths.php",
+    "line": 8,
+    "identifier": "include.fileNotFound",
+    "message": "Path in include() \"nested/../script.txt\" is not a file or it does not exist.",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "$ROOT/paths.php",
+    "line": 9,
+    "identifier": "include.fileNotFound",
+    "message": "Path in include() \"/not-a-real-pun-include-path/missing.php\" is not a file or it does not exist.",
+    "tip": null,
+    "ignorable": true
+  }
+]

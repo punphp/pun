@@ -23,6 +23,7 @@ mod function_checks;
 mod functions;
 mod generics;
 mod hierarchy;
+mod include_file;
 mod infer;
 mod internal;
 mod internal_usage;
@@ -119,6 +120,10 @@ pub fn reports(identifier: &str) -> bool {
 }
 
 pub const IDENTIFIERS: &[&str] = &[
+    "include.fileNotFound",
+    "includeOnce.fileNotFound",
+    "require.fileNotFound",
+    "requireOnce.fileNotFound",
     "phpstan.dumpType",
     "phpstan.dumpPhpDocType",
     "pipe.byRef",
@@ -869,6 +874,8 @@ pub struct Checker<'a, 'arena> {
     missing_callable_signature: bool,
     /// The phpstan-strict-rules switches.
     strict: crate::StrictRules,
+    include_settings: &'a include_file::Settings,
+    include_state: include_file::State,
     /// How many `Closure::bind()` calls the walk is inside (`isInClosureBind()`).
     closure_bind: usize,
     errors: Vec<Error>,
@@ -1887,7 +1894,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
             arrays::destructuring(self, a.lhs, true);
         }
         if let Expression::Variable(Variable::Direct(v)) = a.lhs {
-            let guards = self.truthy(a.rhs);
+            let guards = self.truthy(a.rhs).into_iter().filter(|g| !matches!(g, Guard::File(_))).collect::<Vec<_>>();
             if guards.is_empty() {
                 self.vars.remove(v.name);
             } else {
@@ -1897,6 +1904,10 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
     }
     fn walk_out_assignment(&mut self, a: &'ast Assignment<'arena>, _: &mut ()) {
         property_access::assigned(self, a);
+        include_file::assigned(self, a.lhs);
+    }
+    fn walk_in_construct(&mut self, construct: &'ast Construct<'arena>, _: &mut ()) {
+        include_file::construct(self, construct);
     }
     fn walk_in_property_access(&mut self, p: &'ast PropertyAccess<'arena>, _: &mut ()) {
         property_access::read(self, p);

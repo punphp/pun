@@ -1,0 +1,770 @@
+[
+  {
+    "file": "$ROOT/cases.php",
+    "line": 4,
+    "identifier": "include.fileNotFound",
+    "message": "Path in include() \"missing.php\" is not a file or it does not exist.",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "$ROOT/cases.php",
+    "line": 5,
+    "identifier": "includeOnce.fileNotFound",
+    "message": "Path in include_once() \"missing-once.php\" is not a file or it does not exist.",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "$ROOT/cases.php",
+    "line": 6,
+    "identifier": "require.fileNotFound",
+    "message": "Path in require() \"missing-required.php\" is not a file or it does not exist.",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "$ROOT/cases.php",
+    "line": 7,
+    "identifier": "requireOnce.fileNotFound",
+    "message": "Path in require_once() \"missing-required-once.php\" is not a file or it does not exist.",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "$ROOT/cases.php",
+    "line": 9,
+    "identifier": "include.fileNotFound",
+    "message": "Path in include() \".\" is not a file or it does not exist.",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "$ROOT/cases.php",
+    "line": 10,
+    "identifier": "include.fileNotFound",
+    "message": "Path in include() \"\" is not a file or it does not exist.",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "$ROOT/cases.php",
+    "line": 11,
+    "identifier": "include.fileNotFound",
+    "message": "Path in include() \"vfs://unavailable/file.php\" is not a file or it does not exist.",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "$ROOT/cases.php",
+    "line": 12,
+    "identifier": "include.fileNotFound",
+    "message": "Path in include() \"NOT-A-WRAPPER://missing.php\" is not a file or it does not exist.",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "$ROOT/cases.php",
+    "line": 18,
+    "identifier": "require.fileNotFound",
+    "message": "Path in require() \"missing-a.php\" is not a file or it does not exist.",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "$ROOT/cases.php",
+    "line": 18,
+    "identifier": "require.fileNotFound",
+    "message": "Path in require() \"missing-b.php\" is not a file or it does not exist.",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "$ROOT/cases.php",
+    "line": 28,
+    "identifier": "include.fileNotFound",
+    "message": "Path in include() \"missing-conditional.php\" is not a file or it does not exist.",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "$ROOT/cases.php",
+    "line": 33,
+    "identifier": "include.fileNotFound",
+    "message": "Path in include() \"folder/missing.php\" is not a file or it does not exist.",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "$ROOT/cases.php",
+    "line": 34,
+    "identifier": "include.fileNotFound",
+    "message": "Path in include() \"folder/../script.txt\" is not a file or it does not exist.",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "$ROOT/cases.php",
+    "line": 38,
+    "identifier": "include.fileNotFound",
+    "message": "Path in include() \"missing-return.php\" is not a file or it does not exist.",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "$ROOT/cases.php",
+    "line": 49,
+    "identifier": "include.fileNotFound",
+    "message": "Path in include() \"a:b\" is not a file or it does not exist.",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "$ROOT/cases.php",
+    "line": 49,
+    "identifier": "include.fileNotFound",
+    "message": "Path in include() \"a;b\" is not a file or it does not exist.",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "$ROOT/cases.php",
+    "line": 51,
+    "identifier": "include.fileNotFound",
+    "message": "Path in include() \"file://script.txt\" is not a file or it does not exist.",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "$ROOT/cases.php",
+    "line": 57,
+    "identifier": "include.fileNotFound",
+    "message": "Path in include() \"template-one.php\" is not a file or it does not exist.",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "$ROOT/cases.php",
+    "line": 57,
+    "identifier": "include.fileNotFound",
+    "message": "Path in include() \"template-two.php\" is not a file or it does not exist.",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "$ROOT/cases.php",
+    "line": 60,
+    "identifier": "include.fileNotFound",
+    "message": "Path in include() \"intersection.php\" is not a file or it does not exist.",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "$ROOT/cases.php",
+    "line": 65,
+    "identifier": "include.fileNotFound",
+    "message": "Path in include() \"a-b\" is not a file or it does not exist.",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "$ROOT/cases.php",
+    "line": 66,
+    "identifier": "include.fileNotFound",
+    "message": "Path in include() \"a#b\" is not a file or it does not exist.",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "$ROOT/guards-global.php",
+    "line": 8,
+    "identifier": "require.fileNotFound",
+    "message": "Path in require() \"guarded.php\" is not a file or it does not exist.",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "$ROOT/guards-global.php",
+    "line": 11,
+    "identifier": "require.fileNotFound",
+    "message": "Path in require() \"guarded.php\" is not a file or it does not exist.",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "$ROOT/guards-global.php",
+    "line": 12,
+    "identifier": "require.fileNotFound",
+    "message": "Path in require() \"guarded.php\" is not a file or it does not exist.",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "$ROOT/guards-global.php",
+    "line": 13,
+    "identifier": "require.fileNotFound",
+    "message": "Path in require() \"guarded.php\" is not a file or it does not exist.",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "$ROOT/guards-global.php",
+    "line": 14,
+    "identifier": "require.fileNotFound",
+    "message": "Path in require() \"guarded.php\" is not a file or it does not exist.",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "$ROOT/guards-global.php",
+    "line": 17,
+    "identifier": "include.fileNotFound",
+    "message": "Path in include() \"guarded.php\" is not a file or it does not exist.",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "$ROOT/guards-global.php",
+    "line": 19,
+    "identifier": "include.fileNotFound",
+    "message": "Path in include() \"guarded.php\" is not a file or it does not exist.",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "$ROOT/guards-global.php",
+    "line": 24,
+    "identifier": "require.fileNotFound",
+    "message": "Path in require() \"a.php\" is not a file or it does not exist.",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "$ROOT/guards-global.php",
+    "line": 24,
+    "identifier": "require.fileNotFound",
+    "message": "Path in require() \"b.php\" is not a file or it does not exist.",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "$ROOT/guards-global.php",
+    "line": 27,
+    "identifier": "require.fileNotFound",
+    "message": "Path in require() \"changed.php\" is not a file or it does not exist.",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "$ROOT/guards-global.php",
+    "line": 37,
+    "identifier": "include.fileNotFound",
+    "message": "Path in include() \"aliased.php\" is not a file or it does not exist.",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "$ROOT/guards-global.php",
+    "line": 44,
+    "identifier": "include.fileNotFound",
+    "message": "Path in include() \"third.php\" is not a file or it does not exist.",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "$ROOT/guards-global.php",
+    "line": 47,
+    "identifier": "include.fileNotFound",
+    "message": "Path in include() \"same.php\" is not a file or it does not exist.",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "$ROOT/guards-global.php",
+    "line": 48,
+    "identifier": "include.fileNotFound",
+    "message": "Path in include() \"same.php\" is not a file or it does not exist.",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "$ROOT/guards-global.php",
+    "line": 49,
+    "identifier": "include.fileNotFound",
+    "message": "Path in include() \"compare.php\" is not a file or it does not exist.",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "$ROOT/guards-global.php",
+    "line": 50,
+    "identifier": "include.fileNotFound",
+    "message": "Path in include() \"double.php\" is not a file or it does not exist.",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "$ROOT/guards-global.php",
+    "line": 63,
+    "identifier": "include.fileNotFound",
+    "message": "Path in include() \"constructor.php\" is not a file or it does not exist.",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "$ROOT/guards.php",
+    "line": 6,
+    "identifier": "require.fileNotFound",
+    "message": "Path in require() \"guarded.php\" is not a file or it does not exist.",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "$ROOT/guards.php",
+    "line": 7,
+    "identifier": "require.fileNotFound",
+    "message": "Path in require() \"guarded.php\" is not a file or it does not exist.",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "$ROOT/guards.php",
+    "line": 8,
+    "identifier": "require.fileNotFound",
+    "message": "Path in require() \"guarded.php\" is not a file or it does not exist.",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "$ROOT/guards.php",
+    "line": 9,
+    "identifier": "require.fileNotFound",
+    "message": "Path in require() \"guarded.php\" is not a file or it does not exist.",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "$ROOT/guards.php",
+    "line": 10,
+    "identifier": "require.fileNotFound",
+    "message": "Path in require() \"guarded.php\" is not a file or it does not exist.",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "$ROOT/guards.php",
+    "line": 11,
+    "identifier": "require.fileNotFound",
+    "message": "Path in require() \"guarded.php\" is not a file or it does not exist.",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "$ROOT/guards.php",
+    "line": 13,
+    "identifier": "require.fileNotFound",
+    "message": "Path in require() \"guarded.php\" is not a file or it does not exist.",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "$ROOT/guards.php",
+    "line": 14,
+    "identifier": "require.fileNotFound",
+    "message": "Path in require() \"guarded.php\" is not a file or it does not exist.",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "$ROOT/guards.php",
+    "line": 15,
+    "identifier": "require.fileNotFound",
+    "message": "Path in require() \"guarded.php\" is not a file or it does not exist.",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "$ROOT/guards.php",
+    "line": 16,
+    "identifier": "require.fileNotFound",
+    "message": "Path in require() \"guarded.php\" is not a file or it does not exist.",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "$ROOT/guards.php",
+    "line": 17,
+    "identifier": "require.fileNotFound",
+    "message": "Path in require() \"guarded.php\" is not a file or it does not exist.",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "$ROOT/guards.php",
+    "line": 18,
+    "identifier": "require.fileNotFound",
+    "message": "Path in require() \"guarded.php\" is not a file or it does not exist.",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "$ROOT/guards.php",
+    "line": 19,
+    "identifier": "require.fileNotFound",
+    "message": "Path in require() \"guarded.php\" is not a file or it does not exist.",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "$ROOT/guards.php",
+    "line": 20,
+    "identifier": "require.fileNotFound",
+    "message": "Path in require() \"guarded.php\" is not a file or it does not exist.",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "$ROOT/guards.php",
+    "line": 21,
+    "identifier": "include.fileNotFound",
+    "message": "Path in include() \"guarded.php\" is not a file or it does not exist.",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "$ROOT/guards.php",
+    "line": 22,
+    "identifier": "include.fileNotFound",
+    "message": "Path in include() \"guarded.php\" is not a file or it does not exist.",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "$ROOT/guards.php",
+    "line": 23,
+    "identifier": "include.fileNotFound",
+    "message": "Path in include() \"guarded.php\" is not a file or it does not exist.",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "$ROOT/guards.php",
+    "line": 24,
+    "identifier": "include.fileNotFound",
+    "message": "Path in include() \"guarded.php\" is not a file or it does not exist.",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "$ROOT/guards.php",
+    "line": 24,
+    "identifier": "include.fileNotFound",
+    "message": "Path in include() \"guarded.php\" is not a file or it does not exist.",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "$ROOT/guards.php",
+    "line": 28,
+    "identifier": "require.fileNotFound",
+    "message": "Path in require() \"a.php\" is not a file or it does not exist.",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "$ROOT/guards.php",
+    "line": 28,
+    "identifier": "require.fileNotFound",
+    "message": "Path in require() \"b.php\" is not a file or it does not exist.",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "$ROOT/guards.php",
+    "line": 29,
+    "identifier": "require.fileNotFound",
+    "message": "Path in require() \"a.php\" is not a file or it does not exist.",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "$ROOT/guards.php",
+    "line": 29,
+    "identifier": "require.fileNotFound",
+    "message": "Path in require() \"b.php\" is not a file or it does not exist.",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "$ROOT/guards.php",
+    "line": 32,
+    "identifier": "require.fileNotFound",
+    "message": "Path in require() \"changed.php\" is not a file or it does not exist.",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "$ROOT/guards.php",
+    "line": 38,
+    "identifier": "include.fileNotFound",
+    "message": "Path in include() \"early.php\" is not a file or it does not exist.",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "$ROOT/guards.php",
+    "line": 42,
+    "identifier": "include.fileNotFound",
+    "message": "Path in include() \"aliased.php\" is not a file or it does not exist.",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "$ROOT/guards.php",
+    "line": 45,
+    "identifier": "require.fileNotFound",
+    "message": "Path in require() __DIR__ . '/guarded.php' is not a file or it does not exist.",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "$ROOT/guards.php",
+    "line": 47,
+    "identifier": "require.fileNotFound",
+    "message": "Path in require() __DIR__ . '/another.php' is not a file or it does not exist.",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "$ROOT/guards.php",
+    "line": 52,
+    "identifier": "require.fileNotFound",
+    "message": "Path in require() \"shadow.php\" is not a file or it does not exist.",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "$ROOT/magic.php",
+    "line": 4,
+    "identifier": "include.fileNotFound",
+    "message": "Path in include() __DIR__ . '/missing.php' is not a file or it does not exist.",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "$ROOT/magic.php",
+    "line": 5,
+    "identifier": "include.fileNotFound",
+    "message": "Path in include() __DIR__ . '/missing-parenthesized.php' is not a file or it does not exist.",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "$ROOT/magic.php",
+    "line": 10,
+    "identifier": "include.fileNotFound",
+    "message": "Path in include() __DIR__ . $path is not a file or it does not exist.",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "$ROOT/magic.php",
+    "line": 13,
+    "identifier": "include.fileNotFound",
+    "message": "Path in include() __DIR__ . '/' . $part . '/' . $file is not a file or it does not exist.",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "$ROOT/magic.php",
+    "line": 14,
+    "identifier": "include.fileNotFound",
+    "message": "Path in include() __DIR__ . \"/{$part}/{$file}\" is not a file or it does not exist.",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "$ROOT/magic.php",
+    "line": 15,
+    "identifier": "include.fileNotFound",
+    "message": "Path in include() __DIR__ . DIRECTORY_SEPARATOR . $part . '/' . $file is not a file or it does not exist.",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "$ROOT/magic.php",
+    "line": 16,
+    "identifier": "include.fileNotFound",
+    "message": "Path in include() \"a/b\" is not a file or it does not exist.",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "$ROOT/magic.php",
+    "line": 17,
+    "identifier": "include.fileNotFound",
+    "message": "Path in include() \"missing/separator.php\" is not a file or it does not exist.",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "$ROOT/magic.php",
+    "line": 18,
+    "identifier": "include.fileNotFound",
+    "message": "Path in include() \"missing/separator.php\" is not a file or it does not exist.",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "$ROOT/magic.php",
+    "line": 19,
+    "identifier": "include.fileNotFound",
+    "message": "Path in include() \"/prefix$ROOT/suffix.php\" is not a file or it does not exist.",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "$ROOT/magic.php",
+    "line": 20,
+    "identifier": "include.fileNotFound",
+    "message": "Path in include() __DIR__ . '/a.php' . (__DIR__ . '/b.php') is not a file or it does not exist.",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "$ROOT/magic.php",
+    "line": 23,
+    "identifier": "include.fileNotFound",
+    "message": "Path in include() __DIR__ . $path is not a file or it does not exist.",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "$ROOT/magic.php",
+    "line": 23,
+    "identifier": "include.fileNotFound",
+    "message": "Path in include() __DIR__ . $path is not a file or it does not exist.",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "$ROOT/magic.php",
+    "line": 30,
+    "identifier": "include.fileNotFound",
+    "message": "Path in include() __DIR__ . '/' . ('missing' . '.php') is not a file or it does not exist.",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "$ROOT/magic.php",
+    "line": 31,
+    "identifier": "include.fileNotFound",
+    "message": "Path in include() __DIR__ . '/quoted\"file.php' is not a file or it does not exist.",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "$ROOT/magic.php",
+    "line": 32,
+    "identifier": "include.fileNotFound",
+    "message": "Path in include() __DIR__ . \"/{$part}/{$file}\" is not a file or it does not exist.",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "$ROOT/magic.php",
+    "line": 37,
+    "identifier": "include.fileNotFound",
+    "message": "Path in include() __DIR__ . (null . '/null.php') is not a file or it does not exist.",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "$ROOT/magic.php",
+    "line": 43,
+    "identifier": "include.fileNotFound",
+    "message": "Path in include() \"missing-reset.php\" is not a file or it does not exist.",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "$ROOT/magic.php",
+    "line": 47,
+    "identifier": "include.fileNotFound",
+    "message": "Path in include() \"missing-literal-array.php\" is not a file or it does not exist.",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "$ROOT/paths.php",
+    "line": 2,
+    "identifier": "include.fileNotFound",
+    "message": "Path in include() \"cwd.txt\" is not a file or it does not exist.",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "$ROOT/paths.php",
+    "line": 3,
+    "identifier": "include.fileNotFound",
+    "message": "Path in include() \"include.txt\" is not a file or it does not exist.",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "$ROOT/paths.php",
+    "line": 5,
+    "identifier": "include.fileNotFound",
+    "message": "Path in include() \"./cwd.txt\" is not a file or it does not exist.",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "$ROOT/paths.php",
+    "line": 6,
+    "identifier": "include.fileNotFound",
+    "message": "Path in include() \"./include.txt\" is not a file or it does not exist.",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "$ROOT/paths.php",
+    "line": 7,
+    "identifier": "include.fileNotFound",
+    "message": "Path in include() \"../cwd/cwd.txt\" is not a file or it does not exist.",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "$ROOT/paths.php",
+    "line": 8,
+    "identifier": "include.fileNotFound",
+    "message": "Path in include() \"nested/../script.txt\" is not a file or it does not exist.",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "$ROOT/paths.php",
+    "line": 9,
+    "identifier": "include.fileNotFound",
+    "message": "Path in include() \"/not-a-real-pun-include-path/missing.php\" is not a file or it does not exist.",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "$ROOT/trait-dir/Loader.php (in context of class IncludeFileTraits\\User)",
+    "line": 6,
+    "identifier": "include.fileNotFound",
+    "message": "Path in include() \"class.txt\" is not a file or it does not exist.",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "$ROOT/trait-dir/Loader.php (in context of class IncludeFileTraits\\User)",
+    "line": 8,
+    "identifier": "include.fileNotFound",
+    "message": "Path in include() __DIR__ . '/class.txt' is not a file or it does not exist.",
+    "tip": null,
+    "ignorable": true
+  }
+]

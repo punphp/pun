@@ -1,0 +1,11 @@
+parameters:
+    level: 0
+    phpVersion: 80400
+    paths:
+        - cases.php
+        - guards.php
+        - guards-global.php
+        - magic.php
+        - paths.php
+        - trait-dir/Loader.php
+        - class-dir/User.php

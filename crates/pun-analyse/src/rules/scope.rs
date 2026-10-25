@@ -33,6 +33,8 @@ pub enum Guard {
     PhpVersion(Option<i64>, Option<i64>),
     /// An expression with a type in the scope (`hasExpressionType()`), by its key (`$this->name`).
     Expr(String),
+    /// A remembered true file-existence call, read by RequireFileExistsRule.
+    File(super::include_file::FileGuard),
 }
 
 impl PartialEq for Guard {
@@ -50,6 +52,7 @@ impl PartialEq for Guard {
             | (Self::ThisNotInstanceOf(a), Self::ThisNotInstanceOf(b))
             | (Self::Expr(a), Self::Expr(b)) => a == b,
             (Self::PhpVersion(a, b), Self::PhpVersion(c, d)) => (a, b) == (c, d),
+            (Self::File(a), Self::File(b)) => a == b,
             _ => false,
         }
     }
@@ -431,11 +434,11 @@ impl<'a, 'arena> Checker<'a, 'arena> {
                 && b.else_clause.is_none()
                 && terminates(b.statement)
             {
-                // a `$this` check holds in the constructor alone
+                // `$this` and file-existence expression types hold in the constructor alone.
                 guards.extend(
                     self.falsy(i.condition)
                         .into_iter()
-                        .filter(|g| !matches!(g, Guard::ThisNotInstanceOf(_))),
+                        .filter(|g| !matches!(g, Guard::ThisNotInstanceOf(_) | Guard::File(_))),
                 );
             }
         }
@@ -455,19 +458,23 @@ impl<'a, 'arena> Checker<'a, 'arena> {
     }
 
     pub(super) fn truthy(&self, e: &Expression<'arena>) -> Vec<Guard> {
-        truthy(
+        let mut guards = truthy(
             e,
             &|v| self.vars.get(v).cloned().unwrap_or_default(),
             &|id| self.resolved(id),
-        )
+        );
+        guards.extend(super::include_file::guards(self, e, true));
+        guards
     }
 
     pub(super) fn falsy(&self, e: &Expression<'arena>) -> Vec<Guard> {
-        falsy(
+        let mut guards = falsy(
             e,
             &|v| self.vars.get(v).cloned().unwrap_or_default(),
             &|id| self.resolved(id),
-        )
+        );
+        guards.extend(super::include_file::guards(self, e, false));
+        guards
     }
 
     /// `isInClassExists($name)`.

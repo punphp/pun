@@ -24,6 +24,15 @@ pub struct Project {
     pub autoloaded: Vec<Autoloaded>,
     /// `PHP_VERSION_ID`.
     pub php_version: u32,
+    /// IncludedFilePathResolver's `currentWorkingDirectory`, independent of the analysed script's directory.
+    pub current_working_directory: PathBuf,
+    /// PHP's runtime `include_path`, supplied without starting PHP. The portable default is `.`; callers that
+    /// need a distro's php.ini paths or bootstrap changes must supply those entries explicitly.
+    pub include_paths: Vec<PathBuf>,
+    /// `featureToggles.magicDirInInclude`: check the __DIR__ concatenation fallback (off by default).
+    pub check_magic_dir_in_include: bool,
+    /// `usePathConstantsAsConstantString`: retain literal __DIR__/__FILE__ types (off by default).
+    pub use_path_constants_as_constant_string: bool,
     /// `reportUnmatchedIgnoredErrors`.
     pub report_unmatched_ignores: bool,
     /// `reportIgnoresWithoutComments`.
@@ -211,6 +220,10 @@ impl Project {
             scanned,
             autoloaded,
             php_version,
+            current_working_directory: root.to_path_buf(),
+            include_paths: vec![PathBuf::from(".")],
+            check_magic_dir_in_include: toggle("magicDirInInclude"),
+            use_path_constants_as_constant_string: flag("usePathConstantsAsConstantString"),
             report_unmatched_ignores,
             report_ignores_without_comments: flag("reportIgnoresWithoutComments"),
             ignore_errors: IgnoredErrors::new(ignore_errors, report_unmatched_ignores),
@@ -261,6 +274,10 @@ impl Project {
             scanned,
             autoloaded: Vec::new(),
             php_version: RUNTIME_PHP_VERSION,
+            current_working_directory: std::env::current_dir().unwrap_or_default(),
+            include_paths: vec![PathBuf::from(".")],
+            check_magic_dir_in_include: false,
+            use_path_constants_as_constant_string: false,
             report_unmatched_ignores: true,
             report_ignores_without_comments: false,
             ignore_errors: IgnoredErrors::new(&Array::new(), true),

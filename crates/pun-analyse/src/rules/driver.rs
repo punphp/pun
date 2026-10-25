@@ -76,6 +76,8 @@ pub(crate) struct Checks {
     missing_callable_signature: bool,
     /// [`Project::strict_rules`].
     pub(super) strict: crate::StrictRules,
+    /// RequireFileExistsRule's path and feature-toggle settings.
+    include_file: super::include_file::Settings,
 }
 
 impl Checks {
@@ -122,6 +124,12 @@ impl Checks {
             uninitialized_properties: project.check_uninitialized_properties,
             missing_callable_signature: project.check_missing_callable_signature,
             strict: project.strict_rules,
+            include_file: super::include_file::Settings {
+                cwd: project.current_working_directory.clone(),
+                include_paths: project.include_paths.clone(),
+                magic_dir: project.check_magic_dir_in_include,
+                path_constants: project.use_path_constants_as_constant_string,
+            },
         }
     }
 }
@@ -164,6 +172,8 @@ fn checker<'a, 'arena>(
     typed.extend(super::types::typed_expressions(program, &file.contents, project.level));
     typed.extend(super::strict::typed_expressions(project, codebase, program));
     typed.extend(super::operators::typed_expressions(project.strict, program));
+    let (include_typed, include_state) = super::include_file::prepare(arena, file, program, names, codebase, php_version, &project.include_file);
+    typed.extend(include_typed);
     let (mut types, defined, origins) = infer(arena, file, program, names, codebase, php_version, project.level, typed);
     if project.level >= 4 {
         let (subjects, unknown) = super::dead_code::match_subject_types(file, program, codebase, php_version);
@@ -239,6 +249,8 @@ fn checker<'a, 'arena>(
         uninitialized_properties: project.uninitialized_properties,
         missing_callable_signature: project.missing_callable_signature,
         strict: project.strict,
+        include_settings: &project.include_file,
+        include_state,
         closure_bind: 0,
         errors: Vec::new(),
     }

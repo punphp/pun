@@ -1,0 +1,4 @@
+includes:
+    - phpstan-magic.neon
+parameters:
+    usePathConstantsAsConstantString: true
