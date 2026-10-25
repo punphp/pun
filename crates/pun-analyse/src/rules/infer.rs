@@ -181,6 +181,7 @@ fn analyse_observed<'arena>(
         let (_, unset_scopes, unset_roots) = super::unset::expressions(program);
         registry.register_expression_hook(Definedness {
             ids,
+            wanted: wanted.iter().copied().collect(),
             builtins: super::reflection::builtins(php_version),
             unset_scopes,
             unset_roots,
@@ -248,6 +249,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for ArrayChildren<'_> {
 /// them. A loop body is analysed more than once: answers that differ are a maybe.
 struct Definedness {
     ids: HashMap<Span, Vec<u8>>,
+    wanted: HashSet<Span>,
     builtins: &'static pun_phpstan::symbols::Symbols,
     unset_scopes: HashSet<Span>,
     unset_roots: HashMap<Span, Vec<(Span, Vec<u8>)>>,
@@ -374,9 +376,11 @@ impl ExpressionHook for Definedness {
     }
 
     fn after_expression(&self, expr: &Expression<'_>, context: &mut HookContext<'_, '_>) -> HookResult<()> {
-        // A compound assignment later rewrites its target's artifacts, including the holder
-        // offsets. Keep the completed source read before those virtual writes take place.
-        if self.ids.contains_key(&expr.span()) && !matches!(expr, Expression::Variable(_))
+        // Compound assignments and output references can later overwrite an input's artifacts.
+        // Keep its completed read; scoped unset and coalesce variables have their own observations.
+        if self.wanted.contains(&expr.span())
+            && !self.unset_scopes.contains(&expr.span())
+            && !(self.ids.contains_key(&expr.span()) && matches!(expr, Expression::Variable(_)))
             && let Some(ty) = context.get_expression_type(expr)
         {
             self.found.lock().expect("no hook panics while holding the lock").read.insert(expr.span(), ty.clone());
