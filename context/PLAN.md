@@ -9,14 +9,16 @@ DECISIONS.md, TASKS.md and REQUESTS.md (their history is in git). Finished work 
 One lead agent works on `main` and spawns subagents for independent slices in worktrees (AGENTS.md "How work runs").
 Pushpak resumed all commands on 2026-10-25. CI stays disabled.
 
-- **Counts** (local mapping.toml `ported = true`): format 168 of 168, lint 306 of 703, analyse 293 of 385.
-- **Rule docs:** steps 1–5 built locally: all 1,249 rule pages, 64 command/group pages, 8 presets, 8 sets, six
+- **Counts** (local mapping.toml `ported = true`): format 168 of 168, lint 306 of 703, analyse 299 of 385.
+- **Rule docs:** steps 1–5 built locally: all 1,256 rule pages, 67 command/group pages, 8 presets, 8 sets, six
   migration mappings and the URL-filtered directory. CLI links need the public docs origin; none is configured.
   The docs build passes on Linux (1,446 pages); public deployment has not been verified.
 - **Verification:** `cargo test -p punphp-analyse --test levels` passed on Rust 1.99/Linux (2,787 fixture cases,
-  1,293 seconds). This checks ported identifiers against PHPStan with the existing explicit gaps; it is not full
-  level parity. The instrumented full-crate baseline passed at 33,257/33,257 lines; subsequent analyse batches
-  need a refreshed full-crate measurement.
+  1,432 seconds). This checks ported identifiers against PHPStan with the existing explicit gaps; it is not full
+  level parity. The full-crate run and corrective rule/coverage reruns pass all 151 tests, with 35,826/35,826
+  production lines covered. The rule harness passes in 555 seconds after removing two resolved callable gaps.
+  Coverage combines the full run with corrective reruns and current executable mappings, not a second fresh
+  full-suite profile. Harness coverage is freshly measured at 235/235 lines, with all five tests passing.
 - **CLI coverage:** fresh full-registry measurement is 5,397/5,397 lines, with 147 tests passing. Non-ignorable
   errors retain their rule's flag in reports and cannot be hidden by ignore comments or baselines.
 - **Lint coverage:** Linux full-registry measurement is 21,786/21,786 lines, with 243 tests passing on main.
@@ -28,16 +30,19 @@ Pushpak resumed all commands on 2026-10-25. CI stays disabled.
   identifiers. This does not cover unported rules or higher levels.
 - **Closure bindings:** inline `@param-closure-this` callbacks use single-class typed and nullable receivers at
   level 0, without enabling level-2 method checks. Multi-class receiver bindings remain unported.
-- **Current local batch:** the two type-dump rules are wired into production inference but not pushed. Broad
-  fixture checks exposed declaration-shape ordering, explicit mixed, generic callback returns, array slicing and
-  guarded class-string accessories. Per-file declaration metadata, array slicing and literal method accessories
-  are integrated without adding gap exemptions. Parent hints match 93 oracle diagnostics. Template equality
-  ignores argument strategy, while traversal retains strategy changes. Generic conversion now keeps invariant
-  alternatives using project class metadata; Properties levels pass. Combined core suites pass (88 analyse,
-  48 PHPStan-model tests). Broad rule fixtures, raw callback gathering and full coverage refresh remain in progress.
+- **Integrated inference batch:** production type dumps, source array/template metadata, raw callback gathering,
+  array slicing, required-parent receiver identities, first-class callables, pipes, invalid throws and constant
+  covariance pass their oracle regressions. Config's 54 tests, all 12 analyse CLI tests and the 1,446-page docs
+  build pass. Sealed unpacking and inferred duplicate keys remove one Arrays gap, but float and constant-key
+  boundaries still block whole-rule activation. Include checks and restored upstream targets pass. A default-off
+  partial native lane is integrated; native-dependent debug rules stay unported. Laravel callback regressions
+  match the real Larastan oracle after selective observer filtering and property-cache synchronization, with
+  27/27 changed production lines covered separately, including the maintained analyzer dependency. Pinkary's
+  canonicalized corpus harness matches all eight level-0 oracle diagnostics. Attribute, dynamic-instantiation,
+  scalar-constant, native-operator and arithmetic corrections are ready in worktrees for the next batch.
 - **Earlier parked work:** `wt-lint-rules2`, `wt-lint-types` and `wt-check` are absent from this checkout and origin's
   current refs. Inspect history before recreating any of their work.
-- **PHPStan parity metric:** context/reference/phpstan-identifiers.txt: the 947 identifiers phpstan.org/error-identifiers lists for phpstan/phpstan-src 2.3.x (latest release 2.3.1); Pun emits 659 (2026-10-20). Extensions are tracked apart, not targets yet: phpstan-strict-rules-identifiers.txt (29 of 53) and phpstan-deprecation-rules-identifiers.txt (72 of 120). The oracle is PHPStan 2.3.1 (wt-oracle-23).
+- **PHPStan parity metric:** context/reference/phpstan-identifiers.txt: the 947 identifiers phpstan.org/error-identifiers lists for phpstan/phpstan-src 2.3.x (latest release 2.3.1); `pun_analyse::reports()` recognizes 670 (2026-10-25), checked against the compiled public API. This is identifier coverage, not full behavioral parity. Extensions are tracked apart: phpstan-strict-rules-identifiers.txt (29 of 53) and phpstan-deprecation-rules-identifiers.txt (72 of 120). The oracle is PHPStan 2.3.1 (wt-oracle-23).
 - **Priorities, in order:** (1) done (levels test green, with documented gaps); (2) done (lint vs Rector: `scripts/lint-vs-rector.py`, residuals in §3); (3) done (pun-lint at 100% on Linux); (4) analyse level 0, then the
   Larastan groundwork and levels 1-10; (5) lint rules by usage; (6) `pun check` in one pass; (7) perf rounds with
   `scripts/bench.py`.
@@ -320,16 +325,18 @@ Gate passed ea7a84bc2d4c4f4b90ad177d911e6ade3accf253
 | Work | Status |
 | --- | --- |
 | analyse 3: finish level 0 and the level-2 class rules; the current rule counts are in §0. Not yet: DebugScopeRule, DumpNativeTypeRule and FileAssertRule | todo |
-| analyse level 0: finish FunctionCallableRule beyond named missing functions: function-name case and expression callability, preserving version guards and PHP 8.5 partial/pipe distinctions | doing (independent worktree) |
-| analyse level 2: port InvalidThrowsPhpDocValueRule's statement/property-hook checks, including conditional throws and required-extends interface types, from PHPStan 2.3.1 | doing (independent worktree) |
+| analyse level 0 named arguments: port MethodCallWithPossiblyRenamedNamedArgumentRule's analysed call/override collectors and cross-file join, preserving named-argument acceptance and private/final controls | doing (independent worktree) |
+| analyse level 0 arrays: finish DuplicateKeysInLiteralArraysRule's float-key casts and builtin/inherited/final-or-late-static constant resolution; inferred keys, sealed unpacking and shared shape metadata are integrated | doing (independent worktree; whole rule remains unported) |
+| analyse level 0 variables: port DefinedVariableRule and CompactVariablesRule on shared variable-certainty observations, including assign/undefined-allowed contexts, dynamic names and the CLI/maybe-undefined switches | doing (independent worktree; 33/35 exported cases match and dead-code controls pass; include/annotation state and correlated absence still block two exported cases and the fresh flow regression) |
+| analyse level 0 attributes: complete the twelve existing attribute-rule contracts against AttributesCheck, including constructor types and version/named-argument controls, before activating their mappings | doing (ready in worktree; four public tests, 31 exported cases and 34/34 changed lines pass; integration and mapping pending) |
+| analyse instantiation: finish InstantiationRule's dynamic class/reflection cases, beginning with the existing `testInstantiation` and `testBug4471` gaps; verify constructor count and inherited visibility behavior against PHPStan | doing (ready in worktree; all 49 exported cases and 152/152 changed lines pass; integration pending) |
+| analyse level 0 class constants: resolve dynamic constant-name expressions through shared PHPStan types, including finite string unions, visibility, guards and narrowed branches (`ClassConstantRuleTest::testDynamicAccess`) | doing (independent worktree) |
+| analyse level 0 includes: extend integrated RequireFileExistsRule and IncludedFilePathResolver beyond local files to supported stream paths before whole-rule activation | todo |
 | analyse native types (needs Pushpak): exact `getNativeType()` needs full/native state on the same control-flow walk; Mago 1.57 exposes one lane and no PHPDoc-disable setting. Choose a maintained Mago source patch or a Pun-native scope engine. Default: preserve PHPStan's paired-state contract and leave native-dependent debug rules unported rather than substitute a comments-disabled second pass | needs Pushpak |
-| analyse 3: port DumpTypeRule and DumpPhpDocTypeRule through production expression inference, preserving non-ignorable diagnostics through CLI ignores and baselines | doing (independent worktree; lead integrates reporting) |
-| analyse 3 debug inference: preserve literal array insertion order and expression-template argument strategy in shared PHPStan conversion, with oracle-backed dumps | doing (independent worktree) |
-| analyse 3 debug inference: retain declaration-shape ordering and explicit-mixed provenance in shared conversion | doing (independent worktree) |
-| analyse 3 debug inference: preserve literal method_exists accessories on class strings, including method-name display case | doing (independent worktree) |
-| analyse dynamic returns: port array_slice's list/key-preservation behavior instead of Mago's generic array result | doing (independent worktree) |
-| analyse callback inference: gather generic callback return types against the raw callable parameter before applying sibling-inferred templates, while keeping contextual body types (Functions bug10612). Default: a maintained mago-analyzer 1.57.0 source patch; plugins cannot reanalyse with the live context. Declared-return substitution is disproved by oracle controls | doing (independent worktree) |
-| analyse generic unions: preserve invariant generic alternatives in assigned property arrays (Properties bug5298) rather than collapse an argument template into its bound | doing (integrated; Properties levels pass, broad verification pending) |
+| analyse native types: extend the integrated default-off passive lane from scalar parameters, assignments, annotations and named user-function returns to scalar expression operators. Keep unsupported transfers unavailable and native-dependent debug rules unported | doing (ready in worktree; 107 new oracle dumps and 232/232 changed engine lines pass; integration pending) |
+| analyse native types: propagate scalar cast expressions from existing native operands without another walk or full-type fallback; retain unavailable answers for unsupported transfers | doing (independent worktree) |
+| analyse arithmetic: prevent the maintained full analyzer from panicking on literal `PHP_INT_MIN / -1`, preserving PHP/PHPStan's float result and modulo/zero/neighbor controls | doing (ready in worktree; public regression and 9/9 changed engine lines pass; integration pending) |
+| analyse callback follow-up: foreach-defined coalesce return values lose their raw signature (`list<mixed>` rather than oracle `list<1|23>`); callback-refined constant conditions also lack the native/PHPDoc tip | todo |
 | analyse 3 follow-up: extend inline `@param-closure-this` bindings to dynamic callables, closure variables, constructor and unpacked callbacks, and template/conditional/union bindings | todo |
 | analyse 3 follow-up: method-call declaring-class displays outside the declaring class's own scope omit template arguments; use default bounds and resolved ancestor template maps, not just the in-scope templates | todo |
 | analyse 3 follow-up: receiver refinement beyond literal method_exists guards: inferred singleton-string method names, property_exists accessories and compound receiver types | todo |
