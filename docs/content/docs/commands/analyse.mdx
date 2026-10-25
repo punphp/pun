@@ -33,6 +33,8 @@ Human output uses Pun IDs such as `analyse/undefined/function`. Machine reports 
 
 Static calls check PHPDoc `@method` signatures, including inherited tags. Pun checks their required and named arguments and reports static calls to non-static methods.
 
+Dynamic `new $class` expressions report unknown class names even when another possible name exists.
+
 An [ignore comment](/docs/configuration/ignore-comments) suppresses a matching finding:
 
 ```php

@@ -79,3 +79,29 @@ function keys(): array
 {
     return [\Nope\Missing::KEY => 1];
 }
+
+class ConcreteChoice
+{
+}
+
+abstract class AbstractChoice
+{
+}
+
+function guardedClassChoice(): void
+{
+    $class = class_exists(MissingChoice::class) ? MissingChoice::class : ConcreteChoice::class;
+    new $class;
+}
+
+function knownClassChoice(bool $first): void
+{
+    $class = $first ? AbstractChoice::class : ConcreteChoice::class;
+    new $class;
+}
+
+function knownStringChoice(bool $first): void
+{
+    $class = $first ? 'CoverageScope\\AbstractChoice' : 'CoverageScope\\ConcreteChoice';
+    new $class;
+}

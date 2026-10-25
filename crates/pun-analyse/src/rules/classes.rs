@@ -100,7 +100,6 @@ fn class_names(c: &Checker, expr: &Expression) -> Vec<(String, bool)> {
                 strings.push(String::from_utf8_lossy(value.as_bytes()).into_owned());
             }
             TAtomic::Scalar(s) if s.get_known_literal_string_value().is_some() => {
-                class_strings = false;
                 strings.push(
                     String::from_utf8_lossy(s.get_known_literal_string_value().unwrap_or_default())
                         .into_owned(),
@@ -113,10 +112,13 @@ fn class_names(c: &Checker, expr: &Expression) -> Vec<(String, bool)> {
             _ => class_strings = false,
         }
     }
-    if class_strings && !strings.is_empty() {
-        let concretes: Vec<(String, bool)> = strings
-            .iter()
-            .filter_map(|n| c.class_like(n).found())
+    // UnionType::getObjectClassReflections() returns none if any alternative cannot be reflected.
+    if class_strings
+        && !strings.is_empty()
+        && let Some(classes) = strings.iter().map(|n| c.class_like(n).found()).collect::<Option<Vec<_>>>()
+    {
+        let concretes: Vec<(String, bool)> = classes
+            .into_iter()
             .filter(|k| !k.flags.is_abstract() && !k.kind.is_interface())
             .map(|k| (c.display(k), true))
             .collect();
