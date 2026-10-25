@@ -58,7 +58,9 @@ impl<'a, 'arena> Checker<'a, 'arena> {
             // MutatingScope::enterFunction/enterClassMethod converts PHPDoc parameter/return values to arguments.
             // An inline @var annotation does not: its source metadata can restore that distinct template strategy.
             let ty = inferred_argument(&ty);
-            source.map_or(ty.clone(), |source| restore(ty, &source))
+            source.map_or(ty.clone(), |source| {
+                restore_metadata(ty, &source, !self.source_is_mutated(e.span(), &self.origins))
+            })
         })
     }
 
@@ -99,7 +101,7 @@ impl<'a, 'arena> Checker<'a, 'arena> {
         let mut origin = self.origins.get(&at)?;
         let key = loop {
             match origin {
-                infer::Origin::Copy(from) => origin = self.origins.get(from)?,
+                infer::Origin::Copy(from) | infer::Origin::Unset(from, _) => origin = self.origins.get(from)?,
                 infer::Origin::AfterMethodCall(_, previous) => origin = previous,
                 infer::Origin::Parameter(key, _) | infer::Origin::Annotation(_, _, Some(key)) => {
                     break key;
@@ -127,6 +129,25 @@ impl<'a, 'arena> Checker<'a, 'arena> {
         origins: &std::collections::HashMap<Span, infer::Origin>,
     ) -> Option<Type> {
         self.origin_type(origins.get(&span)?, origins)
+    }
+
+    /// Mutable ordering scaffolds do not carry declarations' list-certainty metadata.
+    fn source_is_mutated(&self, span: Span, origins: &infer::Origins) -> bool {
+        let mut origin = origins.get(&span);
+        while let Some(infer::Origin::AfterMethodCall(_, previous)) = origin {
+            origin = Some(previous);
+        }
+        match origin {
+            Some(infer::Origin::Unset(..)) => true,
+            Some(infer::Origin::Copy(from) | infer::Origin::Offset(from, _)) => self.source_is_mutated(*from, origins),
+            Some(infer::Origin::Array(items)) => items.iter().any(|(_, value)| self.source_is_mutated(*value, origins)),
+            Some(infer::Origin::Call(call)) if call.receiver.is_none() && call.class.is_none()
+                && matches!(call.name.as_str(), "array_slice" | "array_unique") => {
+                call.args.iter().find(|(name, _)| name.as_deref().is_none_or(|name| name == "array"))
+                    .is_some_and(|(_, span)| self.source_is_mutated(*span, origins))
+            }
+            _ => false,
+        }
     }
 
     fn origin_type(
@@ -161,6 +182,13 @@ impl<'a, 'arena> Checker<'a, 'arena> {
                     .map(|(_, t)| t)
             }
             infer::Origin::Copy(from) => self.source_type(*from, origins),
+            infer::Origin::Unset(from, offsets) => {
+                let source = self.source_type(*from, origins)?;
+                let keys = offsets.iter().map(|span| {
+                    self.types.get(span).and_then(|t| array_key(self.to_phpstan(t)))
+                }).collect::<Vec<_>>();
+                Some(unset_order(source, &keys))
+            }
             infer::Origin::Array(items) => {
                 let mut builder = ShapeBuilder::new();
                 for (key, value) in items {
@@ -707,8 +735,47 @@ impl<'a, 'arena> Checker<'a, 'arena> {
     }
 }
 
+/// MutatingScope::unsetExpression writes each parent back with ConstantArrayTypeBuilder's slot order.
+/// This is a source-order scaffold only: removed values stay removed, and new values come from inference.
+fn unset_order(source: Type, keys: &[Option<Type>]) -> Type {
+    match source {
+        Type::ConstArray(mut shape) => {
+            let (key, path) = keys.split_first().expect("an offset unset has a key");
+            // No single order is known beyond a weak/unknown key. A known parent before it can still
+            // be appended, even when the terminal key is unknown.
+            let Some(key) = key else { return Type::ConstArray(shape); };
+            let position = shape.keys.iter().position(|k| k == key);
+            if path.is_empty() {
+                if let Some(i) = position {
+                    shape.keys.remove(i);
+                    shape.values.remove(i);
+                    shape.optional = shape.optional.into_iter().filter_map(|p| {
+                        (p != i).then(|| if p > i { p - 1 } else { p })
+                    }).collect();
+                }
+            } else {
+                let i = position.unwrap_or_else(|| {
+                    shape.keys.push(key.clone());
+                    shape.values.push(shape.unsealed.as_ref().map_or_else(
+                        || Type::ConstArray(Box::new(ConstArray::empty())), |(_, value)| value.clone(),
+                    ));
+                    shape.keys.len() - 1
+                });
+                shape.values[i] = unset_order(shape.values[i].clone(), path);
+            }
+            Type::ConstArray(shape)
+        }
+        Type::Union(parts) => Type::Union(parts.into_iter().map(|t| unset_order(t, keys)).collect()),
+        source => source,
+    }
+}
+
 /// Recover erased source metadata, never a declaration's broader value type over a concrete inferred type.
 fn restore(actual: Type, source: &Type) -> Type {
+    restore_metadata(actual, source, true)
+}
+
+fn restore_metadata(actual: Type, source: &Type, restore_list: bool) -> Type {
     let matching = |actual: &Type, source: &[Type]| {
         source.iter().position(|s| {
             pun_phpstan::types::is_super_type_of(s, actual).yes()
@@ -726,11 +793,11 @@ fn restore(actual: Type, source: &Type) -> Type {
             actual.bound = if matches!(actual.bound, Type::Mixed { .. }) {
                 source.bound.clone()
             } else {
-                restore(actual.bound, &source.bound)
+                restore_metadata(actual.bound, &source.bound, restore_list)
             };
             Type::Template(actual)
         }
-        (actual, Type::Template(source)) => restore(actual, &source.bound),
+        (actual, Type::Template(source)) => restore_metadata(actual, &source.bound, restore_list),
         (Type::Union(mut actual), Type::Union(source)) => {
             // Reflection's first method comes from the first written alternative, not Mago's canonical
             // atomic order. Reorder only surviving inferred alternatives; never reintroduce a removed one.
@@ -739,7 +806,7 @@ fn restore(actual: Type, source: &Type) -> Type {
                 actual
                     .into_iter()
                     .map(|a| {
-                        matching(&a, source).map_or_else(|| a.clone(), |i| restore(a.clone(), &source[i]))
+                        matching(&a, source).map_or_else(|| a.clone(), |i| restore_metadata(a.clone(), &source[i], restore_list))
                     })
                     .collect(),
             )
@@ -747,7 +814,7 @@ fn restore(actual: Type, source: &Type) -> Type {
         (actual, Type::Union(source)) => {
             // A narrowed single alternative still owns its metadata, not its eliminated siblings' types.
             matching(&actual, source)
-                .map_or_else(|| actual.clone(), |i| restore(actual.clone(), &source[i]))
+                .map_or_else(|| actual.clone(), |i| restore_metadata(actual.clone(), &source[i], restore_list))
         }
         (Type::Mixed { .. }, Type::Mixed { explicit }) => Type::Mixed {
             explicit: *explicit,
@@ -776,7 +843,7 @@ fn restore(actual: Type, source: &Type) -> Type {
             )
         }
         (Type::Union(parts), source @ Type::ConstArray(_)) => {
-            union(parts.into_iter().map(|t| restore(t, source)).collect())
+            union(parts.into_iter().map(|t| restore_metadata(t, source, restore_list)).collect())
         }
         (Type::ConstArray(mut actual), Type::ConstArray(source))
             if actual.keys.iter().all(|k| source.keys.contains(k)) =>
@@ -791,7 +858,7 @@ fn restore(actual: Type, source: &Type) -> Type {
                 .collect();
             actual.values = positions
                 .iter()
-                .map(|(i, p)| restore(actual.values[*p].clone(), &source.values[*i]))
+                .map(|(i, p)| restore_metadata(actual.values[*p].clone(), &source.values[*i], restore_list))
                 .collect();
             actual.optional = positions
                 .iter()
@@ -799,8 +866,12 @@ fn restore(actual: Type, source: &Type) -> Type {
                 .filter_map(|(i, (_, p))| actual.optional.contains(p).then_some(i))
                 .collect();
             actual.keys = positions.iter().map(|(i, _)| source.keys[*i].clone()).collect();
-            if actual.keys.len() == source.keys.len() && actual.optional == source.optional {
+            if restore_list && actual.keys.len() == source.keys.len() && actual.optional == source.optional {
                 actual.is_list = source.is_list;
+            } else if !restore_list {
+                // Reordering can disprove Mago's canonical map's listness, but never regain certainty
+                // lost by an actual unset. The mutable scaffold's original list flag is not evidence.
+                actual.is_list = actual.is_list.and(finish_shape((*actual).clone()).is_list());
             }
             actual.unsealed = match (&actual.unsealed, &source.unsealed) {
                 (Some((k, v)), Some((sk, sv))) => Some((restore(k.clone(), sk), restore(v.clone(), sv))),
@@ -820,7 +891,7 @@ fn restore(actual: Type, source: &Type) -> Type {
             Type::Iterable(Box::new(restore(*k, sk)), Box::new(restore(*v, sv)))
         }
         (Type::Intersection(parts), source) => {
-            intersect(parts.into_iter().map(|t| restore(t, source)).collect())
+            intersect(parts.into_iter().map(|t| restore_metadata(t, source, restore_list)).collect())
         }
         (actual @ Type::Array(..), source @ Type::Intersection(_))
             if source.is_array().yes() && source.is_callable().yes() =>
@@ -829,7 +900,7 @@ fn restore(actual: Type, source: &Type) -> Type {
             // intersection retains actual key/value narrowing instead of replacing it with the declaration.
             intersect(vec![actual, source.clone()])
         }
-        (actual, Type::Intersection(parts)) => parts.iter().fold(actual, restore),
+        (actual, Type::Intersection(parts)) => parts.iter().fold(actual, |actual, source| restore_metadata(actual, source, restore_list)),
         (actual, _) => actual,
     }
 }

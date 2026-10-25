@@ -41,3 +41,8 @@ fn declarations_copies_reassignments_and_asymmetric_refinements() {
 fn mutated_shapes_keep_surviving_key_and_union_display_order() {
     check("mutated-order.php", "mutated-order.json");
 }
+
+#[test]
+fn introduced_parent_keys_follow_write_back_order() {
+    check("introduced-order.php", "introduced-order.json");
+}

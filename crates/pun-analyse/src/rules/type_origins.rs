@@ -40,6 +40,8 @@ pub(in super::super) enum Origin {
     /// A literal's key/value expressions, in PHP insertion order. No unknown keys or unpacks are invented.
     Array(Vec<(Option<Span>, Span)>),
     Offset(Span, Span),
+    /// Ordered, explicit offset unsets: virtual write-back can append a previously absent parent key.
+    Unset(Span, Vec<Span>),
     Call(Arc<Call>),
     Callback(Arc<Call>, usize, usize),
     /// Conversion must resolve the actual receiver and prove its native signature cannot pass references.
@@ -105,6 +107,7 @@ pub(super) fn dependencies(found: &Origins, wanted: &[Span]) -> Vec<Span> {
                 .flat_map(|(key, value)| key.iter().copied().chain(std::iter::once(*value)))
                 .collect(),
             Some(Origin::Offset(array, key)) => vec![*array, *key],
+            Some(Origin::Unset(array, keys)) => std::iter::once(*array).chain(keys.iter().copied()).collect(),
             Some(Origin::Call(call) | Origin::Callback(call, ..)) => call
                 .args
                 .iter()
@@ -320,12 +323,23 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Sources<'_, 'arena> {
         if let Expression::ArrayAccess(a) = e {
             self.found.insert(e.span(), Origin::Offset(a.array.span(), a.index.span()));
         }
-        // Direct unsets discard the value. Offset unsets only mutate its inferred array: keep its
-        // source metadata, never a cached type. Conversion still uses the surviving inferred keys,
-        // values and optionality. PHPStan's CallableType::unsetOffset() also preserves callability.
+        // Keep the operation's source edge, not a cached inferred value. Parent offsets written back
+        // by nested unsets retain existing slots or append new ones in this operation's real order.
         if self.unset_targets.last() == Some(&e.span()) {
             self.unset_targets.pop();
-            match super::super::types::flow::unparen(e) {
+            let mut root = super::super::types::flow::unparen(e);
+            let mut keys = Vec::new();
+            while let Expression::ArrayAccess(a) = root {
+                keys.push(a.index.span());
+                root = super::super::types::flow::unparen(a.array);
+            }
+            match root {
+                Expression::Variable(Variable::Direct(v)) if !keys.is_empty() => {
+                    keys.reverse();
+                    if self.locals.contains_key(v.name) {
+                        self.locals.insert(v.name.to_vec(), Origin::Unset(root.span(), keys));
+                    }
+                }
                 Expression::Variable(Variable::Direct(v)) => {
                     self.locals.remove(v.name);
                 }

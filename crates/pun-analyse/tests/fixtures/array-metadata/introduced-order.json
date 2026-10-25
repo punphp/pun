@@ -1,0 +1,86 @@
+{
+  "totals": {
+    "errors": 0,
+    "file_errors": 12
+  },
+  "files": {
+    "introduced-order.php": {
+      "errors": 12,
+      "messages": [
+        {
+          "message": "Dumped type: array{z: 1, a: 2, m: array<string, int>, b: array<string, int>, ...<string, array<string, int>>}",
+          "line": 11,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: array{array{z: 1, a: 2, m: array<string, int>, b: array<string, int>, ...<string, array<string, int>>}}",
+          "line": 13,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: array{z: 1, a: 2, b: array<string, int>, m: array<string, int>, ...<string, array<string, int>>}",
+          "line": 16,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: array{z: 1, a: 2, m: array<string, int>, b: array<string, int>, ...<string, array<string, int>>}",
+          "line": 17,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: array{keep: 1, m: array<string, int>, b: array<string, int>, ...<string, array<string, int>>}",
+          "line": 24,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Cannot unset offset 'm' on array{z: 1, a: 2}.",
+          "line": 30,
+          "ignorable": true,
+          "identifier": "unset.offset"
+        },
+        {
+          "message": "Dumped type: array{z: 1, a: 2, m: null}",
+          "line": 32,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: array{1: array{a: 2}, 0: 3}",
+          "line": 39,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: array{z: 1}|null",
+          "line": 46,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: array{z: 1, a: 2, m: array<string, int>, b: array<string, int>, ...<string, array<string, int>>}",
+          "line": 56,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Cannot unset offset 'm' on array{z: 1, a: 2}.",
+          "line": 67,
+          "ignorable": true,
+          "identifier": "unset.offset"
+        },
+        {
+          "message": "Dumped type: array{z: 1, a: 2, m: null}",
+          "line": 70,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        }
+      ]
+    }
+  },
+  "errors": []
+}
