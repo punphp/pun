@@ -1,0 +1,320 @@
+{
+  "totals": {
+    "errors": 0,
+    "file_errors": 51
+  },
+  "files": {
+    "methods.php": {
+      "errors": 51,
+      "messages": [
+        {
+          "message": "Call to an undefined method RequiredReceivers\\RequiresMethodParent::missing().",
+          "line": 19,
+          "ignorable": true,
+          "identifier": "method.notFound"
+        },
+        {
+          "message": "Call to an undefined static method RequiredReceivers\\RequiresMethodParent::missing().",
+          "line": 22,
+          "ignorable": true,
+          "identifier": "staticMethod.notFound"
+        },
+        {
+          "message": "Call to an undefined method RequiredReceivers\\RequiresMethodParent::missing().",
+          "line": 23,
+          "ignorable": true,
+          "identifier": "method.notFound"
+        },
+        {
+          "message": "Call to an undefined static method RequiredReceivers\\RequiresMethodParent::missing().",
+          "line": 24,
+          "ignorable": true,
+          "identifier": "staticMethod.notFound"
+        },
+        {
+          "message": "Dumped type: RequiredReceivers\\RequiresMethodParent",
+          "line": 25,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Call to an undefined method RequiredReceivers\\RequiredMethodParent&RequiredReceivers\\RequiresMethodParent::missing().",
+          "line": 31,
+          "ignorable": true,
+          "identifier": "method.notFound"
+        },
+        {
+          "message": "Dumped type: RequiredReceivers\\RequiredMethodParent&RequiredReceivers\\RequiresMethodParent",
+          "line": 32,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Call to an undefined method RequiredReceivers\\RequiresMethodParent&RequiredReceivers\\UnrelatedInterface::missing().",
+          "line": 37,
+          "ignorable": true,
+          "identifier": "method.notFound"
+        },
+        {
+          "message": "Dumped type: RequiredReceivers\\RequiresMethodParent&RequiredReceivers\\UnrelatedInterface",
+          "line": 38,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Call to an undefined method RequiredReceivers\\UnrelatedClass&RequiredReceivers\\UnrelatedInterface::missing().",
+          "line": 43,
+          "ignorable": true,
+          "identifier": "method.notFound"
+        },
+        {
+          "message": "Dumped type: RequiredReceivers\\UnrelatedClass&RequiredReceivers\\UnrelatedInterface",
+          "line": 44,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Call to an undefined method RequiredReceivers\\InheritedRequirement::missing().",
+          "line": 50,
+          "ignorable": true,
+          "identifier": "method.notFound"
+        },
+        {
+          "message": "Dumped type: RequiredReceivers\\InheritedRequirement",
+          "line": 51,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Trait RequiredReceivers\\RequiresImplementation requires using class to implement RequiredReceivers\\RequiredImplementation, but RequiredReceivers\\ImplementationUser does not.",
+          "line": 57,
+          "ignorable": true,
+          "identifier": "class.missingImplements"
+        },
+        {
+          "message": "Call to an undefined method RequiredReceivers\\ImplementationUser::implemented().",
+          "line": 60,
+          "ignorable": true,
+          "identifier": "method.notFound"
+        },
+        {
+          "message": "Call to an undefined method RequiredReceivers\\ImplementationUser::missing().",
+          "line": 61,
+          "ignorable": true,
+          "identifier": "method.notFound"
+        },
+        {
+          "message": "Dumped type: RequiredReceivers\\ImplementationUser",
+          "line": 62,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Call to an undefined method RequiredReceivers\\GenericRequirement::missing().",
+          "line": 73,
+          "ignorable": true,
+          "identifier": "method.notFound"
+        },
+        {
+          "message": "Dumped type: RequiredReceivers\\GenericRequirement",
+          "line": 74,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Call to an undefined method RequiredReceivers\\GenericParent<string>&RequiredReceivers\\GenericRequirement::missing().",
+          "line": 81,
+          "ignorable": true,
+          "identifier": "method.notFound"
+        },
+        {
+          "message": "Dumped type: RequiredReceivers\\GenericParent<string>&RequiredReceivers\\GenericRequirement",
+          "line": 82,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Call to an undefined method RequiredReceivers\\lowerparent&RequiredReceivers\\lowerrequirement::missing().",
+          "line": 90,
+          "ignorable": true,
+          "identifier": "method.notFound"
+        },
+        {
+          "message": "Dumped type: RequiredReceivers\\lowerparent&RequiredReceivers\\lowerrequirement",
+          "line": 91,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Call to an undefined method RequiredReceivers\\RequiredMethodParent&RequiredReceivers\\RequiresMethodParent::missing().",
+          "line": 95,
+          "ignorable": true,
+          "identifier": "method.notFound"
+        },
+        {
+          "message": "Dumped type: RequiredReceivers\\RequiredMethodParent&RequiredReceivers\\RequiresMethodParent",
+          "line": 96,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Call to an undefined static method RequiredReceivers\\RequiresMethodParent::missing().",
+          "line": 102,
+          "ignorable": true,
+          "identifier": "staticMethod.notFound"
+        },
+        {
+          "message": "Call to an undefined static method RequiredReceivers\\RequiresMethodParent::missing().",
+          "line": 103,
+          "ignorable": true,
+          "identifier": "staticMethod.notFound"
+        },
+        {
+          "message": "Dumped type: class-string<RequiredReceivers\\RequiresMethodParent>",
+          "line": 104,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Call to an undefined method T of RequiredReceivers\\RequiresMethodParent::missing().",
+          "line": 113,
+          "ignorable": true,
+          "identifier": "method.notFound"
+        },
+        {
+          "message": "Dumped type: T of RequiredReceivers\\RequiresMethodParent (function RequiredReceivers\\templateRequirement(), argument)",
+          "line": 114,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Call to an undefined method RequiredReceivers\\RequiresMethodParent::missing().",
+          "line": 120,
+          "ignorable": true,
+          "identifier": "method.notFound"
+        },
+        {
+          "message": "Call to an undefined static method RequiredReceivers\\RequiresMethodParent::missing().",
+          "line": 121,
+          "ignorable": true,
+          "identifier": "staticMethod.notFound"
+        },
+        {
+          "message": "Dumped type: RequiredReceivers\\RequiresMethodParent",
+          "line": 122,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Call to an undefined method RequiredReceivers\\RequiresMethodParent::missing().",
+          "line": 127,
+          "ignorable": true,
+          "identifier": "method.notFound"
+        },
+        {
+          "message": "Call to an undefined method RequiredReceivers\\RequiresMethodParent::missing().",
+          "line": 128,
+          "ignorable": true,
+          "identifier": "method.notFound"
+        },
+        {
+          "message": "Call to an undefined method RequiredReceivers\\RequiredMethodParent&RequiredReceivers\\RequiresMethodParent::missing().",
+          "line": 130,
+          "ignorable": true,
+          "identifier": "method.notFound"
+        },
+        {
+          "message": "Dumped type: RequiredReceivers\\RequiredMethodParent&RequiredReceivers\\RequiresMethodParent",
+          "line": 131,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Call to an undefined method RequiredReceivers\\GrandContract&RequiredReceivers\\RequirementWithContract::missing().",
+          "line": 145,
+          "ignorable": true,
+          "identifier": "method.notFound"
+        },
+        {
+          "message": "Dumped type: RequiredReceivers\\GrandContract&RequiredReceivers\\RequirementWithContract",
+          "line": 146,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "PHPDoc tag @phpstan-require-implements is only valid on trait.",
+          "line": 150,
+          "ignorable": true,
+          "identifier": "requireImplements.onInterface"
+        },
+        {
+          "message": "Call to an undefined method RequiredReceivers\\InvalidImplementationRequirement::ancestor().",
+          "line": 153,
+          "ignorable": true,
+          "identifier": "method.notFound"
+        },
+        {
+          "message": "Call to an undefined method RequiredReceivers\\InvalidImplementationRequirement::missing().",
+          "line": 154,
+          "ignorable": true,
+          "identifier": "method.notFound"
+        },
+        {
+          "message": "Dumped type: RequiredReceivers\\InvalidImplementationRequirement",
+          "line": 155,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Call to an undefined method RequiredReceivers\\Diamond::missing().",
+          "line": 163,
+          "ignorable": true,
+          "identifier": "method.notFound"
+        },
+        {
+          "message": "Dumped type: RequiredReceivers\\Diamond",
+          "line": 164,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Call to an undefined method RequiredReceivers\\GenericChild::missing().",
+          "line": 172,
+          "ignorable": true,
+          "identifier": "method.notFound"
+        },
+        {
+          "message": "Dumped type: RequiredReceivers\\GenericChild",
+          "line": 173,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Method RequiredReceivers\\RequiredMethodParent::accepting() invoked with 0 parameters, 1 required.",
+          "line": 178,
+          "ignorable": true,
+          "identifier": "arguments.count"
+        },
+        {
+          "message": "Static method RequiredReceivers\\RequiredMethodParent::staticAccepting() invoked with 0 parameters, 1 required.",
+          "line": 180,
+          "ignorable": true,
+          "identifier": "arguments.count"
+        },
+        {
+          "message": "Call to an undefined method RequiredReceivers\\NarrowedChild&RequiredReceivers\\RequiresMethodParent::missing().",
+          "line": 188,
+          "ignorable": true,
+          "identifier": "method.notFound"
+        },
+        {
+          "message": "Dumped type: RequiredReceivers\\NarrowedChild&RequiredReceivers\\RequiresMethodParent",
+          "line": 189,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        }
+      ]
+    }
+  },
+  "errors": []
+}

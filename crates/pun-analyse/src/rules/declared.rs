@@ -1412,13 +1412,24 @@ impl<'c, 'a, 'arena> Classes<'c, 'a, 'arena> {
                 .get_class_like(w.as_bytes())
                 .map_or_else(|| text(w.as_bytes()), original_name)
         };
-        let mut ancestors: Vec<String> = k
-            .all_parent_classes
+        // BetterReflection's nominal hierarchy excludes require-extends/implements. Mago's populated
+        // all_parent_interfaces also contains ancestors of requirements, so follow only declared edges.
+        let mut pending: Vec<_> = k
+            .direct_parent_class
             .iter()
-            .chain(k.all_parent_interfaces.iter())
-            .filter(|w| !w.as_bytes().starts_with(b"__internal_do_not_use__"))
-            .map(canonical)
+            .chain(k.direct_parent_interfaces.iter())
             .collect();
+        let mut ancestors = Vec::new();
+        let mut seen = std::collections::HashSet::from([k.name]);
+        while let Some(name) = pending.pop() {
+            if name.as_bytes().starts_with(b"__internal_do_not_use__") || !seen.insert(*name) {
+                continue;
+            }
+            ancestors.push(canonical(name));
+            if let Some(parent) = c.codebase.get_class_like(name.as_bytes()) {
+                pending.extend(parent.direct_parent_class.iter().chain(parent.direct_parent_interfaces.iter()));
+            }
+        }
         // an enum's implicit interfaces (Mago names a backed one's by its backing type)
         if k.kind == SymbolKind::Enum {
             ancestors.retain(|a| a != "UnitEnum" && a != "BackedEnum");

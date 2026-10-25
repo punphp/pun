@@ -2,6 +2,10 @@
 //! RuleLevelHelper's `findTypeToCheck()` (unions from level 7, nullables from level 8, explicit `mixed` from 9).
 //! Calls on `$this` stay with calls.rs.
 
+use mago_codex::ttype::atomic::TAtomic;
+use mago_codex::ttype::atomic::object::{TObject, named::TNamedObject};
+use mago_codex::ttype::atomic::scalar::{TScalar, class_like_string::TClassLikeString};
+use mago_codex::ttype::union::TUnion;
 use mago_span::{HasSpan, Span};
 use mago_syntax::cst::*;
 use pun_phpstan::types::{Accessory, Level, Tri, Type, intersect, is_super_type_of};
@@ -26,6 +30,11 @@ impl<'a> Checker<'a, '_> {
     /// Restore the literal method accessory Mago does not carry. Called by `phpstan_type()` after conversion;
     /// the existing branch guards determine where it holds, rather than the debug rule's rendering.
     pub(in super::super) fn refine_method_guards(&self, e: &Expression, mut ty: Type) -> Type {
+        // ObjectType keeps require-extends in its method reflection extension, not its nominal ancestors.
+        // Undo Mago's appended requirements before combinators deduplicate them with explicit intersections.
+        if let Some(raw) = self.type_of(e).and_then(|raw| without_requirements(self, raw)) {
+            ty = self.to_phpstan(&raw);
+        }
         let Some(receiver) = super::super::scope::method_receiver(e, &|id| self.resolved(id)) else { return ty; };
         let prefix = format!("{receiver}::");
         let original = self.guards.iter().find_map(|g| match g {
@@ -109,12 +118,25 @@ impl<'a> Checker<'a, '_> {
     /// (`@mixin`, `@phpstan-require-extends`, a built-in Mago lacks).
     pub(in super::super) fn method_of(&self, n: &str, name: &[u8]) -> Result<Option<members::Method<'a>>, ()> {
         let Lookup::Found(k) = self.class_like(n) else { return Err(()) };
-        if let Some(m) = members::method(self, k, name).or_else(|| members::annotation_method(self, k, name)) {
+        // Mago's populated interfaces can include ancestors of requirements, which are not native ancestors.
+        let nominal = |class: &str| declared::with_classes(self, || {
+            is_super_type_of(&Type::Object(class.to_string(), vec![]), &Type::Object(n.to_string(), vec![])).yes()
+        });
+        let native = members::method(self, k, name).or_else(|| members::annotation_method(self, k, name));
+        if let Some(m) = native.filter(|m| nominal(&m.declaring_name())) {
             return Ok(Some(m));
         }
-        // RequireExtendsMethodsClassReflectionExtension
-        if let Some(m) = self.required(k).into_iter().find_map(|r| members::method(self, r, name)) {
-            return Ok(Some(m));
+        // RequireExtendsMethodsClassReflectionExtension applies only to interfaces, not trait require-implements.
+        if k.kind.is_interface() {
+            let interfaces = std::iter::once(k).chain(k.all_parent_interfaces.iter()
+                .filter_map(|n| self.codebase.get_class_like(n.as_bytes()))
+                .filter(|i| nominal(&declared::original_name(i))));
+            if let Some(m) = interfaces.flat_map(|i| &i.require_extends)
+                .filter_map(|n| self.codebase.get_class_like(n.as_bytes()))
+                .find_map(|r| members::method(self, r, name))
+            {
+                return Ok(Some(m));
+            }
         }
         // MixinMethodsClassReflectionExtension; ponytail: a mixin other than a class (`@mixin T`) is not resolved
         let mut found = Ok(None);
@@ -164,6 +186,53 @@ impl<'a> Checker<'a, '_> {
             Type::Template(tt) => self.get_method(&tt.bound, name),
             t => self.method_of(Self::class_of(t)?, name).ok().flatten(),
         }
+    }
+}
+
+/// Reverse expander::expand_object's complete appended set: one unparameterized member per requirement. If the
+/// inferred structure no longer matches that set, keep it. An explicit `I&Parent` keeps its own Parent even when
+/// its spelling is identical to the appended one. ObjectType::isSuperTypeOf/tryRemove stay nominal.
+fn without_requirements(c: &Checker, ty: &TUnion) -> Option<TUnion> {
+    let mut changed: Option<TUnion> = None;
+    for (i, atomic) in ty.types.iter().enumerate() {
+        if let Some(atomic) = without_atomic_requirements(c, atomic) {
+            changed.get_or_insert_with(|| ty.clone()).types.to_mut()[i] = atomic;
+        }
+    }
+    changed
+}
+
+fn without_atomic_requirements(c: &Checker, atomic: &TAtomic) -> Option<TAtomic> {
+    match atomic {
+        TAtomic::Object(TObject::Named(named)) => {
+            let more = named.intersection_types.as_ref()?;
+            let class = c.codebase.get_class_like(named.name.as_bytes())?;
+            let mut changed: Option<Vec<TAtomic>> = None;
+            for required in class.require_extends.iter().chain(&class.require_implements) {
+                let appended = TAtomic::Object(TObject::Named(TNamedObject::new(*required)));
+                let index = changed.as_ref().unwrap_or(more).iter().rposition(|t| t == &appended)?;
+                changed.get_or_insert_with(|| more.as_ref().clone()).remove(index);
+            }
+            changed.map(|more| {
+                let mut named = named.clone();
+                named.intersection_types = Some(Box::new(more));
+                TAtomic::Object(TObject::Named(named))
+            })
+        }
+        TAtomic::GenericParameter(t) => {
+            let constraint = without_requirements(c, &t.constraint)?;
+            let mut t = t.clone();
+            t.constraint = std::sync::Arc::new(constraint);
+            Some(TAtomic::GenericParameter(t))
+        }
+        TAtomic::Scalar(TScalar::ClassLikeString(TClassLikeString::OfType { kind, constraint })) => {
+            let constraint = without_atomic_requirements(c, constraint)?;
+            Some(TAtomic::Scalar(TScalar::ClassLikeString(TClassLikeString::OfType {
+                kind: *kind,
+                constraint: std::sync::Arc::new(constraint),
+            })))
+        }
+        _ => None,
     }
 }
 
@@ -236,9 +305,7 @@ pub(in super::super) fn check_method<'arena>(
     };
     // NullsafeOperatorHelper: a nullsafe call is checked on the receiver without `null`
     let ty = c
-        .types
-        .get(&object.span())
-        .map(|t| c.to_phpstan(t))
+        .phpstan_type(object)
         .map(|t| if nullsafe || super::super::assign::contains_nullsafe(object) { non_null(t) } else { t });
     let found = if arguments.is_none() {
         callable_receiver(c, object, name, false)
@@ -351,9 +418,7 @@ pub(in super::super) fn check_static<'arena>(
         return;
     };
     let ty = c
-        .types
-        .get(&class.span())
-        .map(|t| c.to_phpstan(t))
+        .phpstan_type(class)
         .map(|t| if super::super::assign::contains_nullsafe(class) { t.remove_null() } else { t });
     let found = if call.is_none() {
         callable_receiver(c, class, name, true)
