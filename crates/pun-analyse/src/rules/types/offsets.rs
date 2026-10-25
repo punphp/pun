@@ -99,7 +99,19 @@ pub(in super::super) fn accessible(t: &Type) -> Tri {
             }
         }
         Type::Intersection(ts) => ts.iter().map(accessible).fold(Tri::No, |a, b| if a.yes() || b.yes() { Tri::Yes } else { a.or(b) }),
+        // TemplateMixedType's parent is plain mixed, even when its bound carries exclusions.
+        Type::Template(tt) if matches!(&tt.bound, Type::SubtractedMixed { .. }) => Tri::Maybe,
         Type::Template(tt) => accessible(&tt.bound),
+        Type::SubtractedMixed { excluded, .. } => {
+            let domain = pun_phpstan::types::union(vec![
+                Type::String,
+                Type::array(mixed(), mixed()),
+                Type::Object("ArrayAccess".into(), vec![]),
+            ]);
+            is_super_type_of(excluded, &domain).negate().and(Tri::Maybe)
+        }
+        Type::Conditional(c) => accessible(&c.resolve()),
+        Type::OffsetAccess(on, index) => super::super::unset::late_offset(on, index).map_or(Tri::Maybe, |resolved| accessible(&resolved)),
         Type::Object(..) | Type::Static(..) | Type::This(_) | Type::EnumCase(..) => class_accessible(t),
         Type::Accessory(pun_phpstan::types::Accessory::HasOffsetValue(..)) => Tri::Yes,
         Type::Mixed { .. } | Type::Error | Type::Wildcard | Type::ObjectWithoutClass | Type::ObjectShape(_) | Type::Iterable(..) | Type::Callable(_) => Tri::Maybe,

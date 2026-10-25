@@ -254,6 +254,85 @@ fn identity(results: impl Iterator<Item = Tri>) -> Tri {
         .unwrap_or(Tri::No)
 }
 
+/// The result queried by LateResolvableTypeTrait. Resolve the receiver, not templates stored in its values.
+/// Resolving the whole offset to bounds would erase TemplateMixedType and TemplateTypeTrait::toArrayKey.
+pub(super) fn late_offset(on: &Type, index: &Type) -> Option<Type> {
+    let result = match on {
+        Type::Template(t) => {
+            let bound = match &t.bound {
+                Type::SubtractedMixed { .. } => pun_phpstan::types::mixed(),
+                Type::ConstArray(a) => {
+                    let mut parent = a.clone();
+                    parent.unsealed = None;
+                    Type::ConstArray(parent)
+                }
+                bound => bound.clone(),
+            };
+            return late_offset(&bound, index);
+        }
+        Type::Conditional(c) => return late_offset(&c.resolve(), index),
+        Type::Array(key, value) => {
+            let index = array_key(index);
+            if is_super_type_of(key, &index).no() && (index.is_string().no() || constant(&index)) {
+                Type::Error
+            } else {
+                if value.as_ref() == &Type::Error { pun_phpstan::types::mixed() } else { (**value).clone() }
+            }
+        }
+        Type::ConstArray(a) => {
+            fn scalar(t: &Type) -> Tri {
+                match t {
+                    Type::Template(t) => scalar(&t.bound),
+                    Type::Union(ts) | Type::Benevolent(ts) => identity(ts.iter().map(scalar)),
+                    Type::ConstInt(_) | Type::ConstString(_) | Type::ConstFloat(_) | Type::ConstBool(_) | Type::Never(_) => Tri::Yes,
+                    Type::Mixed { .. } | Type::SubtractedMixed { .. } | Type::Error => Tri::Maybe,
+                    _ => Tri::No,
+                }
+            }
+            if a.keys.is_empty() && a.unsealed.is_none() {
+                return Some(Type::Error);
+            }
+            let index = array_key(index);
+            let scalar_index = scalar(&index);
+            let mut values = Vec::new();
+            let mut maybe_all = true;
+            for (key, value) in a.keys.iter().zip(&a.values) {
+                if is_super_type_of(key, &index).no() {
+                    if matches!(key, Type::ConstInt(_)) && !index.is_string().no() && scalar_index.no() {
+                        continue;
+                    }
+                    maybe_all = false;
+                } else {
+                    values.push(value.clone());
+                }
+            }
+            if let Some((key, value)) = &a.unsealed
+                && !is_super_type_of(&union(a.keys.clone()), &index).yes()
+                && !is_super_type_of(key, &index).no()
+            {
+                values.push(value.clone());
+            }
+            if values.is_empty() {
+                if !maybe_all {
+                    return Some(Type::Error);
+                }
+                values.extend(a.values.iter().cloned());
+                values.extend(a.unsealed.iter().map(|(_, value)| value.clone()));
+            }
+            match union(values) {
+                Type::Error => pun_phpstan::types::mixed(),
+                value => value,
+            }
+        }
+        _ => {
+            let late = Type::OffsetAccess(Box::new(on.clone()), Box::new(index.clone()));
+            let resolved = pun_phpstan::resolve::resolve_late(&late);
+            return (resolved != late).then_some(resolved);
+        }
+    };
+    Some(result)
+}
+
 /// `hasOffsetValueType()`: no RuleLevelHelper filtering (in particular, no union member is discarded).
 fn has_offset(c: &Checker, ty: &Type, offset: &Type) -> Tri {
     match ty {
@@ -288,6 +367,7 @@ fn has_offset(c: &Checker, ty: &Type, offset: &Type) -> Tri {
             }
         }
         Type::Template(t) => match &t.bound {
+            Type::SubtractedMixed { .. } => Tri::Maybe,
             Type::ConstArray(array) => {
                 // TemplateConstantArrayType displays its bound, but its parent constructor is sealed.
                 let mut parent = array.clone();
@@ -296,6 +376,8 @@ fn has_offset(c: &Checker, ty: &Type, offset: &Type) -> Tri {
             }
             bound => has_offset(c, bound, offset),
         },
+        Type::Conditional(conditional) => has_offset(c, &conditional.resolve(), offset),
+        Type::OffsetAccess(on, index) => late_offset(on, index).map_or(Tri::Maybe, |resolved| has_offset(c, &resolved, offset)),
         Type::ConstArray(a) => shape_offset(a, &array_key(offset)),
         Type::Array(key, _) => {
             let offset = array_key(offset);
@@ -369,6 +451,11 @@ fn constant(t: &Type) -> bool {
 fn array_key(t: &Type) -> Type {
     match t {
         Type::Union(ts) | Type::Benevolent(ts) => union(ts.iter().map(array_key).collect()),
+        // MixedType::toArrayKey ignores exclusions: floats, booleans and null also cast to keys.
+        // TemplateTypeTrait deliberately retains the template itself instead.
+        Type::Mixed { .. } | Type::SubtractedMixed { .. } | Type::Error => Type::Benevolent(vec![Type::Int, Type::String]),
+        Type::Conditional(conditional) => array_key(&conditional.resolve()),
+        Type::OffsetAccess(on, index) => late_offset(on, index).map_or_else(|| array_key(&pun_phpstan::types::mixed()), |resolved| array_key(&resolved)),
         Type::ConstString(s) if s.parse::<i64>().is_ok_and(|i| i.to_string() == *s) => {
             Type::ConstInt(s.parse().expect("canonical integer"))
         }
@@ -388,5 +475,192 @@ fn array_key(t: &Type) -> Type {
         }
         Type::Null => Type::ConstString(String::new()),
         t => t.clone(),
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use std::borrow::Cow;
+
+    use mago_allocator::LocalArena;
+    use mago_codex::metadata::CodebaseMetadata;
+    use mago_database::file::{File, FileType};
+    use mago_names::resolver::NameResolver;
+    use mago_syntax::parser::parse_file;
+    use pun_phpstan::types::{Conditional, Level, Subject, Template, Type, mixed};
+    use serde_json::{Value, json};
+
+    use super::{Checker, array_key, declared, has_offset, types};
+    use crate::rules::{include_file, reflection};
+
+    /// These late and fully excluded values cannot all be expressed by the current PHPDoc/flow producer.
+    /// Query the exact PHPStan type objects, without broadening the public source-type restoration layer.
+    #[test]
+    fn offset_type_queries_match_pinned_phpstan() {
+        let arena = LocalArena::new();
+        let file = File::new(Cow::Borrowed(b"offset-queries.php"), FileType::Host, None, Cow::Borrowed(b"<?php"));
+        let program = parse_file(&arena, &file);
+        let names = NameResolver::new(&arena).resolve(program);
+        let codebase = CodebaseMetadata::new();
+        let project = crate::Project::new(Vec::new(), Vec::new());
+        let settings = include_file::Settings {
+            cwd: project.current_working_directory.clone(),
+            include_paths: Vec::new(),
+            magic_dir: false,
+            path_constants: false,
+        };
+        let (_, include_state) = include_file::prepare(&arena, &file, program, &names, &codebase, 80400, &settings);
+        let c = Checker {
+            file: &file,
+            anonymous: Default::default(),
+            property_access: Default::default(),
+            relative_path: &project.relative_path,
+            types: Default::default(),
+            defined: Default::default(),
+            variables: Default::default(),
+            origins: Default::default(),
+            names: &names,
+            codebase: &codebase,
+            classes: Vec::new(),
+            guards: Vec::new(),
+            marks: Vec::new(),
+            vars: Default::default(),
+            saved: Vec::new(),
+            functions: Vec::new(),
+            var_tag_functions: Vec::new(),
+            in_exists_call: 0,
+            top_level: Default::default(),
+            piped: Default::default(),
+            rebound: Default::default(),
+            label: String::new(),
+            trait_context: None,
+            in_target: false,
+            trait_uses: Vec::new(),
+            renamed: None,
+            php_version: 80400,
+            builtins: reflection::builtins(80400),
+            trait_lines: Vec::new(),
+            frames: Vec::new(),
+            namespaces: Vec::new(),
+            magic_defaults: Default::default(),
+            first_statement: true,
+            declares_not_first: Vec::new(),
+            decls: Vec::new(),
+            immutable: Default::default(),
+            files: &Default::default(),
+            sources: &Default::default(),
+            syntax: Default::default(),
+            assign: Default::default(),
+            signatures: Default::default(),
+            class_names: Default::default(),
+            arrays: Default::default(),
+            standalone_throws: Default::default(),
+            case_sensitivity: false,
+            check_function_name_case: false,
+            level: 0,
+            generic_iterable_classes: false,
+            new_static_in_abstract_class_static_method: false,
+            larastan: None,
+            larastan_state: Default::default(),
+            internal: None,
+            internal_tag: false,
+            precise_unused_parameter_line: false,
+            unreachable: Default::default(),
+            conditions: Default::default(),
+            internal_members: false,
+            deprecations: false,
+            bleeding_edge: false,
+            unused_label: false,
+            switch_condition: false,
+            sort_without_effect: false,
+            non_stringable_names: false,
+            cli_arguments_variables_registered: true,
+            check_maybe_undefined_variables: false,
+            method_purity_override: false,
+            uninitialized_properties: false,
+            missing_callable_signature: false,
+            strict: Default::default(),
+            include_settings: &settings,
+            include_state,
+            closure_bind: 0,
+            errors: Vec::new(),
+        };
+        let template = |bound| Type::Template(Box::new(Template {
+            name: "T".into(), scope: "function offsetQueries()".into(), bound, default: None, argument: false,
+        }));
+        let conditional = |subject, then, otherwise| Type::Conditional(Box::new(Conditional {
+            subject: Subject::Type(subject), target: Type::Int, then, otherwise, negated: false,
+        }));
+        let array = Type::array(mixed(), mixed());
+        let excluded = Type::mixed_subtracted(false, Type::Union(vec![
+            Type::String, array.clone(), Type::Object("ArrayAccess".into(), vec![]),
+        ]));
+        let shape = pun_phpstan::resolve::resolve_str("array{0: int}", None);
+        let open = Type::ConstArray(Box::new(pun_phpstan::types::ConstArray {
+            keys: vec![], values: vec![], next_auto_indexes: vec![0], optional: vec![],
+            is_list: pun_phpstan::types::Tri::No, unsealed: Some((Type::String, Type::Int)),
+        }));
+        let rows = [
+            ("mixed", mixed()),
+            ("not-zero", Type::mixed_subtracted(false, Type::ConstInt(0))),
+            ("not-array-keys", Type::mixed_subtracted(false, Type::Union(vec![Type::Int, Type::String]))),
+            ("not-string-array", Type::mixed_subtracted(false, Type::Union(vec![Type::String, array.clone()]))),
+            ("not-offsets", excluded.clone()),
+            ("template-not-offsets", template(excluded.clone())),
+            ("union-no", Type::Union(vec![excluded.clone(), Type::Int])),
+            ("union-maybe", Type::Union(vec![excluded.clone(), Type::String])),
+            ("benevolent-no", Type::Benevolent(vec![excluded.clone(), Type::Int])),
+            ("intersection-array", Type::Intersection(vec![excluded.clone(), array])),
+            ("conditional-array", conditional(Type::Int, shape.clone(), Type::Int)),
+            ("conditional-union", conditional(mixed(), shape.clone(), Type::String)),
+            ("conditional-key", conditional(Type::Int, Type::ConstInt(1), Type::ConstInt(0))),
+            ("late-array", Type::OffsetAccess(Box::new(template(Type::array(Type::String, shape.clone()))), Box::new(Type::ConstString("inner".into())))),
+            ("late-key", Type::OffsetAccess(Box::new(template(Type::array(Type::String, Type::ConstInt(1)))), Box::new(Type::ConstString("inner".into())))),
+            ("late-object-mixed", Type::OffsetAccess(Box::new(Type::Object("ArrayAccess".into(), vec![Type::Int, mixed()])), Box::new(Type::ConstInt(0)))),
+            ("late-array-error", Type::OffsetAccess(Box::new(Type::array(Type::String, Type::Error)), Box::new(Type::ConstString("inner".into())))),
+            ("late-array-invalid-key", Type::OffsetAccess(Box::new(Type::array(Type::Int, Type::ConstInt(1))), Box::new(Type::ConstString("inner".into())))),
+            ("late-shape-error", Type::OffsetAccess(Box::new(Type::ConstArray(Box::new(pun_phpstan::types::ConstArray {
+                keys: vec![Type::ConstInt(0)], values: vec![Type::Error], next_auto_indexes: vec![1], optional: vec![], is_list: pun_phpstan::types::Tri::Yes, unsealed: None,
+            }))), Box::new(Type::ConstInt(0)))),
+            ("late-shape-template-value", Type::OffsetAccess(Box::new(Type::ConstArray(Box::new(pun_phpstan::types::ConstArray {
+                keys: vec![Type::ConstInt(0)], values: vec![template(Type::Float)], next_auto_indexes: vec![1], optional: vec![], is_list: pun_phpstan::types::Tri::Yes, unsealed: None,
+            }))), Box::new(Type::ConstInt(0)))),
+            ("late-array-template-value", Type::OffsetAccess(Box::new(template(Type::array(Type::String, template(Type::Float)))), Box::new(Type::ConstString("inner".into())))),
+            ("late-array-template-mixed", Type::OffsetAccess(Box::new(Type::array(Type::String, template(excluded.clone()))), Box::new(Type::ConstString("inner".into())))),
+            ("late-template-mixed-container", Type::OffsetAccess(Box::new(template(excluded)), Box::new(Type::ConstInt(0)))),
+            ("late-conditional-container", Type::OffsetAccess(Box::new(conditional(Type::Int, Type::array(Type::String, Type::ConstInt(1)), Type::Int)), Box::new(Type::ConstString("inner".into())))),
+            ("late-open", Type::OffsetAccess(Box::new(open.clone()), Box::new(Type::ConstString("inner".into())))),
+            ("late-open-template", Type::OffsetAccess(Box::new(template(open.clone())), Box::new(Type::ConstString("inner".into())))),
+            ("late-unknown-shape", Type::OffsetAccess(Box::new(pun_phpstan::resolve::resolve_str("array{inner: mixed}", None)), Box::new(Type::String))),
+            ("late-shape-general", Type::OffsetAccess(Box::new(pun_phpstan::resolve::resolve_str("array{inner: int}", None)), Box::new(Type::String))),
+            ("late-shape-numeric", Type::OffsetAccess(Box::new(shape.clone()), Box::new(Type::String))),
+            ("late-shape-bad-union", Type::OffsetAccess(Box::new(shape.clone()), Box::new(Type::Union(vec![Type::ConstString("bad".into()), Type::ConstString("missing".into())])))),
+            ("late-shape-mixed-key", Type::OffsetAccess(Box::new(shape.clone()), Box::new(template(mixed())))),
+            ("late-shape-template-key", Type::OffsetAccess(Box::new(shape), Box::new(template(Type::ConstString("bad".into()))))),
+            ("late-shape-nonstring", Type::OffsetAccess(Box::new(pun_phpstan::resolve::resolve_str("array{inner: int}", None)), Box::new(Type::Int))),
+            ("late-open-incompatible", Type::OffsetAccess(Box::new(open), Box::new(Type::Int))),
+            ("late-shape-covered-extra", Type::OffsetAccess(Box::new(Type::ConstArray(Box::new(pun_phpstan::types::ConstArray {
+                keys: vec![Type::ConstInt(0)], values: vec![template(Type::Float)], next_auto_indexes: vec![1], optional: vec![], is_list: pun_phpstan::types::Tri::No, unsealed: Some((Type::String, Type::Int)),
+            }))), Box::new(Type::ConstInt(0)))),
+            ("template-key", template(Type::Int)),
+        ];
+        let expected: Value = serde_json::from_str(include_str!("../../tests/fixtures/unset/capability-types.json")).unwrap();
+        let tri = |result| match result {
+            pun_phpstan::types::Tri::Yes => "yes",
+            pun_phpstan::types::Tri::No => "no",
+            pun_phpstan::types::Tri::Maybe => "maybe",
+        };
+        declared::with_classes(&c, || {
+            for (name, ty) in rows {
+                let mut actual = json!({
+                    "accessible": tri(types::offset_accessible(&ty)),
+                    "hasOffset": tri(has_offset(&c, &ty, &Type::ConstInt(0))),
+                });
+                if expected[name].get("arrayKey").is_some() {
+                    actual["arrayKey"] = array_key(&ty).describe(Level::Precise).into();
+                }
+                assert_eq!(actual, expected[name], "{name}: {ty:?}");
+            }
+        });
     }
 }

@@ -167,3 +167,8 @@ fn possibly_hooked_properties_depend_on_php_version() {
     oracle("version.php", "version.json", 80400);
     oracle("version.php", "version-82.json", 80200);
 }
+
+#[test]
+fn excluded_domains_and_late_offset_capabilities() {
+    oracle("capabilities.php", "capabilities.json", 80400);
+}

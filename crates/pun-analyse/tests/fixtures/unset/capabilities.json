@@ -1,0 +1,32 @@
+{
+  "totals": {
+    "errors": 0,
+    "file_errors": 3
+  },
+  "files": {
+    "capabilities.php": {
+      "errors": 3,
+      "messages": [
+        {
+          "message": "Cannot unset offset 'missing' on array{}|array{b: int}.",
+          "line": 20,
+          "ignorable": true,
+          "identifier": "unset.offset"
+        },
+        {
+          "message": "Cannot unset offset 'missing' on array{}.",
+          "line": 29,
+          "ignorable": true,
+          "identifier": "unset.offset"
+        },
+        {
+          "message": "Cannot unset offset 'x' on bool|float|int|resource|null.",
+          "line": 64,
+          "ignorable": true,
+          "identifier": "unset.offset"
+        }
+      ]
+    }
+  },
+  "errors": []
+}

@@ -1,0 +1,174 @@
+{
+    "mixed": {
+        "accessible": "maybe",
+        "hasOffset": "maybe",
+        "arrayKey": "(int|string)"
+    },
+    "not-zero": {
+        "accessible": "maybe",
+        "hasOffset": "maybe",
+        "arrayKey": "(int|string)"
+    },
+    "not-array-keys": {
+        "accessible": "maybe",
+        "hasOffset": "maybe",
+        "arrayKey": "(int|string)"
+    },
+    "not-string-array": {
+        "accessible": "maybe",
+        "hasOffset": "maybe"
+    },
+    "not-offsets": {
+        "accessible": "no",
+        "hasOffset": "no",
+        "arrayKey": "(int|string)"
+    },
+    "template-not-offsets": {
+        "accessible": "maybe",
+        "hasOffset": "maybe",
+        "arrayKey": "T of mixed~(array|ArrayAccess|string) (function offsetQueries(), parameter)"
+    },
+    "union-no": {
+        "accessible": "no",
+        "hasOffset": "no"
+    },
+    "union-maybe": {
+        "accessible": "maybe",
+        "hasOffset": "maybe"
+    },
+    "benevolent-no": {
+        "accessible": "no",
+        "hasOffset": "no"
+    },
+    "intersection-array": {
+        "accessible": "yes",
+        "hasOffset": "no"
+    },
+    "conditional-array": {
+        "accessible": "yes",
+        "hasOffset": "yes"
+    },
+    "conditional-union": {
+        "accessible": "yes",
+        "hasOffset": "maybe"
+    },
+    "conditional-key": {
+        "accessible": "no",
+        "hasOffset": "no",
+        "arrayKey": "1"
+    },
+    "late-array": {
+        "accessible": "yes",
+        "hasOffset": "yes"
+    },
+    "late-key": {
+        "accessible": "no",
+        "hasOffset": "no",
+        "arrayKey": "1"
+    },
+    "late-object-mixed": {
+        "accessible": "maybe",
+        "hasOffset": "maybe",
+        "arrayKey": "(int|string)"
+    },
+    "late-array-error": {
+        "accessible": "maybe",
+        "hasOffset": "maybe",
+        "arrayKey": "(int|string)"
+    },
+    "late-array-invalid-key": {
+        "accessible": "maybe",
+        "hasOffset": "maybe",
+        "arrayKey": "(int|string)"
+    },
+    "late-shape-error": {
+        "accessible": "maybe",
+        "hasOffset": "maybe",
+        "arrayKey": "(int|string)"
+    },
+    "late-shape-template-value": {
+        "accessible": "no",
+        "hasOffset": "no",
+        "arrayKey": "T of float (function offsetQueries(), parameter)"
+    },
+    "late-array-template-value": {
+        "accessible": "no",
+        "hasOffset": "no",
+        "arrayKey": "T of float (function offsetQueries(), parameter)"
+    },
+    "late-array-template-mixed": {
+        "accessible": "maybe",
+        "hasOffset": "maybe",
+        "arrayKey": "T of mixed~(array|ArrayAccess|string) (function offsetQueries(), parameter)"
+    },
+    "late-template-mixed-container": {
+        "accessible": "maybe",
+        "hasOffset": "maybe",
+        "arrayKey": "(int|string)"
+    },
+    "late-conditional-container": {
+        "accessible": "no",
+        "hasOffset": "no",
+        "arrayKey": "1"
+    },
+    "late-open": {
+        "accessible": "no",
+        "hasOffset": "no",
+        "arrayKey": "int"
+    },
+    "late-open-template": {
+        "accessible": "maybe",
+        "hasOffset": "maybe",
+        "arrayKey": "(int|string)"
+    },
+    "late-unknown-shape": {
+        "accessible": "maybe",
+        "hasOffset": "maybe",
+        "arrayKey": "(int|string)"
+    },
+    "late-shape-general": {
+        "accessible": "no",
+        "hasOffset": "no",
+        "arrayKey": "int"
+    },
+    "late-shape-numeric": {
+        "accessible": "no",
+        "hasOffset": "no",
+        "arrayKey": "int"
+    },
+    "late-shape-bad-union": {
+        "accessible": "maybe",
+        "hasOffset": "maybe",
+        "arrayKey": "(int|string)"
+    },
+    "late-shape-mixed-key": {
+        "accessible": "no",
+        "hasOffset": "no",
+        "arrayKey": "int"
+    },
+    "late-shape-template-key": {
+        "accessible": "maybe",
+        "hasOffset": "maybe",
+        "arrayKey": "(int|string)"
+    },
+    "late-shape-nonstring": {
+        "accessible": "maybe",
+        "hasOffset": "maybe",
+        "arrayKey": "(int|string)"
+    },
+    "late-open-incompatible": {
+        "accessible": "no",
+        "hasOffset": "no",
+        "arrayKey": "int"
+    },
+    "late-shape-covered-extra": {
+        "accessible": "no",
+        "hasOffset": "no",
+        "arrayKey": "T of float (function offsetQueries(), parameter)"
+    },
+    "template-key": {
+        "accessible": "no",
+        "hasOffset": "no",
+        "arrayKey": "T of int (function offsetQueries(), parameter)"
+    }
+}
