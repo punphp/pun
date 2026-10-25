@@ -16,6 +16,8 @@ use mago_codex::populator::populate_codebase;
 use mago_codex::reference::SymbolReferences;
 use mago_codex::scanner::scan_program;
 use mago_codex::ttype::TType;
+use mago_codex::ttype::atomic::scalar::string::TStringCasing;
+use mago_codex::ttype::union::TUnion;
 use mago_database::file::{File, FileType};
 use mago_names::resolver::NameResolver;
 use mago_span::HasSpan;
@@ -51,15 +53,13 @@ impl ExpressionHook for Observer {
     ) -> HookResult<()> {
         let span = expr.span();
         let range = (span.start.offset, span.end.offset);
-        let native = context
-            .get_native_expression_type(expr)
-            .map(|ty| oracle_mago_id(&ty.get_id().to_string()));
+        let native = context.get_native_expression_type(expr).map(native_id);
         if let Expression::Variable(Variable::Direct(variable)) = expr {
             assert_eq!(
                 native,
                 context
                     .get_native_variable_type(variable.name)
-                    .map(|ty| oracle_mago_id(&ty.get_id().to_string()))
+                    .map(native_id)
             );
         }
         let mut observed = self.0.lock().unwrap();
@@ -128,6 +128,17 @@ fn span(range: (u32, u32)) -> mago_span::Span {
     )
 }
 
+fn native_id(ty: &TUnion) -> String {
+    let mut id = oracle_mago_id(&ty.get_id().to_string());
+    // TString stores casing on numeric strings, but its display omits that property.
+    if ty.get_single_string().is_some_and(|string| {
+        string.literal.is_none() && string.is_numeric && string.casing == TStringCasing::Uppercase
+    }) {
+        id.push_str("&uppercase-string");
+    }
+    id
+}
+
 // Only adapt the two tools' scalar display syntax, not their inferred types.
 fn oracle_mago_id(phpstan: &str) -> String {
     let phpstan = if phpstan.starts_with('(') && phpstan.ends_with(')') && phpstan.contains('|') {
@@ -170,6 +181,15 @@ fn operator_native_values_match_phpstan_and_do_not_change_the_full_walk() {
     check_native_fixture(
         include_bytes!("fixtures/native-lane/operators.php"),
         include_str!("fixtures/native-lane/expected-operators-phpstan.json"),
+    );
+}
+
+#[test]
+fn cast_native_values_match_phpstan_and_do_not_change_the_full_walk() {
+    assert!(!Settings::default().track_native_types);
+    check_native_fixture(
+        include_bytes!("fixtures/native-lane/casts.php"),
+        include_str!("fixtures/native-lane/expected-casts-phpstan.json"),
     );
 }
 
@@ -271,7 +291,7 @@ fn check_native_fixture(code: &[u8], oracle: &str) {
         assert_eq!(
             enabled
                 .get_native_expression_type(&span(range))
-                .map(|ty| oracle_mago_id(&ty.get_id().to_string()))
+                .map(native_id)
                 .as_deref(),
             Some(want.as_str()),
             "line {line}"
@@ -387,6 +407,27 @@ fn unsupported_operator_shapes_invalidate_without_changing_the_full_walk() {
         "$flag or $flag",
         "$nullable ?? 2",
         "($integer % 2) + 1",
+        // Decimal-integer-string has no exact Mago scalar representation. Other casts below
+        // deliberately exclude union operands, non-finite literals, and non-scalar syntax.
+        "(string) $integer",
+        "(string) ($integer % 2)",
+        "(int) $nullable",
+        "(float) $nullable",
+        "(bool) $nullable",
+        "(string) $nullable",
+        "(int) (int) $flag",
+        "(float) (string) 0.0",
+        "(bool) 1e999",
+        "(int) 1e999",
+        "(float) 1e999",
+        "(string) 1e999",
+        "(float) '1e999'",
+        "(array) $value",
+        "(object) $value",
+        "(int) [1]",
+        "(bool) new stdClass()",
+        "(int) $missing",
+        "(int) (-$text)",
     ] {
         let code = format!(
             "<?php function example(int $integer, float $decimal, string $text, bool $flag, ?int $nullable, mixed $unknown): void {{\n$value = 1;\n$value; // before\n{expression}; // unavailable\n$value = 99;\n$value; // unavailable\n}}\n"

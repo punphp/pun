@@ -1,0 +1,667 @@
+[
+  {
+    "line": 10,
+    "message": "Dumped type: int",
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "line": 11,
+    "message": "Dumped type: int",
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "line": 12,
+    "message": "Dumped type: int",
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "line": 13,
+    "message": "Dumped type: 0|1",
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "line": 14,
+    "message": "Dumped type: int",
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "line": 15,
+    "message": "Dumped type: float",
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "line": 16,
+    "message": "Dumped type: float",
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "line": 17,
+    "message": "Dumped type: float",
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "line": 18,
+    "message": "Dumped type: 0.0|1.0",
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "line": 19,
+    "message": "Dumped type: float",
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "line": 20,
+    "message": "Dumped type: bool",
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "line": 21,
+    "message": "Dumped type: bool",
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "line": 22,
+    "message": "Dumped type: bool",
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "line": 23,
+    "message": "Dumped type: bool",
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "line": 24,
+    "message": "Dumped type: bool",
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "line": 25,
+    "message": "Dumped type: string",
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "line": 26,
+    "message": "Dumped type: numeric-string&uppercase-string",
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "line": 27,
+    "message": "Dumped type: ''|'1'",
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "line": 28,
+    "message": "Dumped type: string",
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "line": 30,
+    "message": "Dumped type: 12",
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "line": 32,
+    "message": "Dumped type: ''",
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "line": 34,
+    "message": "Dumped type: numeric-string&uppercase-string",
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "line": 35,
+    "message": "Dumped type: numeric-string&uppercase-string",
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "line": 36,
+    "message": "Dumped type: bool",
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "line": 37,
+    "message": "Dumped type: int<-1, 1>",
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "line": 38,
+    "message": "Dumped type: float",
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "line": 39,
+    "message": "Dumped type: bool",
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "line": 40,
+    "message": "Dumped type: non-falsy-string",
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "line": 41,
+    "message": "Dumped type: true",
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "line": 46,
+    "message": "Dumped type: 0",
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "line": 47,
+    "message": "Dumped type: 0.0",
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "line": 48,
+    "message": "Dumped type: false",
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "line": 49,
+    "message": "Dumped type: ''",
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "line": 50,
+    "message": "Dumped type: 1",
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "line": 51,
+    "message": "Dumped type: 0",
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "line": 52,
+    "message": "Dumped type: 1.0",
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "line": 53,
+    "message": "Dumped type: 0.0",
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "line": 54,
+    "message": "Dumped type: true",
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "line": 55,
+    "message": "Dumped type: false",
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "line": 56,
+    "message": "Dumped type: '1'",
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "line": 57,
+    "message": "Dumped type: ''",
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "line": 58,
+    "message": "Dumped type: 42",
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "line": 59,
+    "message": "Dumped type: 42.0",
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "line": 60,
+    "message": "Dumped type: false",
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "line": 61,
+    "message": "Dumped type: true",
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "line": 62,
+    "message": "Dumped type: '0'",
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "line": 63,
+    "message": "Dumped type: '-42'",
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "line": 64,
+    "message": "Dumped type: '9223372036854775807'",
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "line": 65,
+    "message": "Dumped type: '-9223372036854775808'",
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "line": 66,
+    "message": "Dumped type: -9.223372036854776E+18",
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "line": 67,
+    "message": "Dumped type: 12",
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "line": 68,
+    "message": "Dumped type: -12",
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "line": 69,
+    "message": "Dumped type: 12.9",
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "line": 70,
+    "message": "Dumped type: false",
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "line": 71,
+    "message": "Dumped type: false",
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "line": 72,
+    "message": "Dumped type: true",
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "line": 73,
+    "message": "Dumped type: -9223372036854775808",
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "line": 74,
+    "message": "Dumped type: -9223372036854775808",
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "line": 75,
+    "message": "Dumped type: 0",
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "line": 76,
+    "message": "Dumped type: 0",
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "line": 77,
+    "message": "Dumped type: 7766279631452241920",
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "line": 78,
+    "message": "Dumped type: -7766279631452241920",
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "line": 79,
+    "message": "Dumped type: 0",
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "line": 80,
+    "message": "Dumped type: 0",
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "line": 81,
+    "message": "Dumped type: 9223372036854773760",
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "line": 82,
+    "message": "Dumped type: '-0'|'0'",
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "line": 83,
+    "message": "Dumped type: '-0'|'0'",
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "line": 84,
+    "message": "Dumped type: '1'",
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "line": 85,
+    "message": "Dumped type: '-12.5'",
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "line": 86,
+    "message": "Dumped type: '1.2345678901235'",
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "line": 87,
+    "message": "Dumped type: '1.2345678901235'",
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "line": 88,
+    "message": "Dumped type: '1.2345678901235'",
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "line": 89,
+    "message": "Dumped type: '-0.125'",
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "line": 90,
+    "message": "Dumped type: '0.0001'",
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "line": 91,
+    "message": "Dumped type: '1.0E-5'",
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "line": 92,
+    "message": "Dumped type: '10000000000000'",
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "line": 93,
+    "message": "Dumped type: '1.0E+14'",
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "line": 94,
+    "message": "Dumped type: '1.0E+14'",
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "line": 95,
+    "message": "Dumped type: '-1.0E+20'",
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "line": 96,
+    "message": "Dumped type: '9.2233720368548E+18'",
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "line": 97,
+    "message": "Dumped type: false",
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "line": 98,
+    "message": "Dumped type: false",
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "line": 99,
+    "message": "Dumped type: true",
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "line": 100,
+    "message": "Dumped type: true",
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "line": 101,
+    "message": "Dumped type: true",
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "line": 102,
+    "message": "Dumped type: true",
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "line": 103,
+    "message": "Dumped type: true",
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "line": 104,
+    "message": "Dumped type: '0012'",
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "line": 105,
+    "message": "Dumped type: 0",
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "line": 106,
+    "message": "Dumped type: 0",
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "line": 107,
+    "message": "Dumped type: 0",
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "line": 108,
+    "message": "Dumped type: 0",
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "line": 109,
+    "message": "Dumped type: 12",
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "line": 110,
+    "message": "Dumped type: 1290",
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "line": 111,
+    "message": "Dumped type: -12",
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "line": 112,
+    "message": "Dumped type: 0",
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "line": 113,
+    "message": "Dumped type: 12",
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "line": 114,
+    "message": "Dumped type: 0",
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "line": 115,
+    "message": "Dumped type: 0",
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "line": 116,
+    "message": "Dumped type: 0",
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "line": 117,
+    "message": "Dumped type: 0",
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "line": 118,
+    "message": "Dumped type: 1",
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "line": 119,
+    "message": "Dumped type: 0",
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "line": 120,
+    "message": "Dumped type: 9223372036854775807",
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "line": 121,
+    "message": "Dumped type: -9223372036854775808",
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "line": 122,
+    "message": "Dumped type: 9223372036854775807",
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "line": 123,
+    "message": "Dumped type: -9223372036854775808",
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "line": 124,
+    "message": "Dumped type: 0",
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "line": 125,
+    "message": "Dumped type: 0",
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "line": 126,
+    "message": "Dumped type: 0",
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "line": 127,
+    "message": "Dumped type: 0.0",
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "line": 128,
+    "message": "Dumped type: 0.0",
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "line": 129,
+    "message": "Dumped type: 0.0",
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "line": 130,
+    "message": "Dumped type: 0.0",
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "line": 131,
+    "message": "Dumped type: 0.0",
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "line": 132,
+    "message": "Dumped type: 0.0",
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "line": 133,
+    "message": "Dumped type: 1290.0",
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "line": 134,
+    "message": "Dumped type: -1.25",
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "line": 135,
+    "message": "Dumped type: 0.0",
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "line": 136,
+    "message": "Dumped type: 12.0",
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "line": 137,
+    "message": "Dumped type: 0.5",
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "line": 138,
+    "message": "Dumped type: -0.5",
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "line": 139,
+    "message": "Dumped type: 0.0",
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "line": 140,
+    "message": "Dumped type: 0.0",
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "line": 141,
+    "message": "Dumped type: 1.0",
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "line": 142,
+    "message": "Dumped type: 0.02",
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "line": 143,
+    "message": "Dumped type: 0.0",
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "line": 148,
+    "message": "Dumped type: 12",
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "line": 149,
+    "message": "Dumped type: '12'",
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "line": 150,
+    "message": "Dumped type: false",
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "line": 151,
+    "message": "Dumped type: 0.0",
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "line": 152,
+    "message": "Dumped type: 1",
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "line": 153,
+    "message": "Dumped type: 3",
+    "identifier": "phpstan.dumpNativeType"
+  }
+]

@@ -10,7 +10,7 @@ use mago_codex::ttype::atomic::scalar::{TScalar, float::TFloat, int::TInteger, s
 use mago_codex::ttype::union::TUnion;
 use mago_codex::ttype::{
     get_bool, get_false, get_float, get_int, get_int_or_float, get_int_range, get_literal_float,
-    get_literal_int, get_literal_string, get_mixed, get_string_with_props, get_true,
+    get_literal_int, get_literal_string, get_mixed, get_string, get_string_with_props, get_true,
 };
 use mago_syntax::cst::{
     AssignmentOperator, Binary, BinaryOperator, Call, Expression, Literal, Statement, UnaryPrefix,
@@ -21,6 +21,7 @@ use mago_word::word;
 
 use crate::artifacts::AnalysisArtifacts;
 use crate::context::block::BlockContext;
+use crate::utils::php_emulation::string_to_int;
 
 pub(crate) fn scalar_type(ty: &TUnion) -> bool {
     ty.types.iter().all(|atomic| {
@@ -110,12 +111,15 @@ pub(crate) fn before_expression(expression: &Expression<'_>, block: &mut BlockCo
         Expression::Literal(_)
         | Expression::Parenthesized(_)
         | Expression::Variable(Variable::Direct(_)) => true,
-        Expression::UnaryPrefix(unary) => matches!(
-            unary.operator,
-            UnaryPrefixOperator::Plus(_)
-                | UnaryPrefixOperator::Negation(_)
-                | UnaryPrefixOperator::Not(_)
-        ),
+        Expression::UnaryPrefix(unary) => {
+            scalar_cast(&unary.operator).is_some()
+                || matches!(
+                    unary.operator,
+                    UnaryPrefixOperator::Plus(_)
+                        | UnaryPrefixOperator::Negation(_)
+                        | UnaryPrefixOperator::Not(_)
+                )
+        }
         Expression::Binary(binary) => {
             binary.operator.is_additive()
                 || binary.operator.is_multiplicative()
@@ -233,6 +237,9 @@ fn boolean(value: Option<bool>) -> TUnion {
 
 fn unary_type(unary: &UnaryPrefix<'_>, artifacts: &AnalysisArtifacts) -> Option<TUnion> {
     let ty = artifacts.get_native_expression_type(unary.operand)?;
+    if let Some(cast) = scalar_cast(&unary.operator) {
+        return cast_type(cast, ty);
+    }
     if unary.operator.is_not() {
         return Some(boolean(truth(ty).map(|value| !value)));
     }
@@ -248,6 +255,218 @@ fn unary_type(unary: &UnaryPrefix<'_>, artifacts: &AnalysisArtifacts) -> Option<
         Number::Float(Some(value)) => float_literal(-value),
         Number::Int(None) => Some(get_int()),
         Number::Float(None) => Some(get_float()),
+    }
+}
+
+#[derive(Clone, Copy)]
+enum ScalarCast {
+    Integer,
+    Float,
+    Boolean,
+    String,
+}
+
+fn scalar_cast(operator: &UnaryPrefixOperator<'_>) -> Option<ScalarCast> {
+    Some(match operator {
+        UnaryPrefixOperator::IntCast(_, _) | UnaryPrefixOperator::IntegerCast(_, _) => {
+            ScalarCast::Integer
+        }
+        UnaryPrefixOperator::FloatCast(_, _) | UnaryPrefixOperator::DoubleCast(_, _) => {
+            ScalarCast::Float
+        }
+        UnaryPrefixOperator::BoolCast(_, _) | UnaryPrefixOperator::BooleanCast(_, _) => {
+            ScalarCast::Boolean
+        }
+        UnaryPrefixOperator::StringCast(_, _) | UnaryPrefixOperator::BinaryCast(_, _) => {
+            ScalarCast::String
+        }
+        _ => return None,
+    })
+}
+
+// InitializerExprTypeResolver::getCastType delegates to the operand type's scalar conversion.
+// Keep unsupported unions and non-finite operands unavailable, rather than consulting full types.
+fn cast_type(cast: ScalarCast, ty: &TUnion) -> Option<TUnion> {
+    use ScalarCast::{Boolean, Float, Integer, String};
+    use TAtomic::{Mixed, Null, Scalar};
+    use TScalar::{Bool, Float as Decimal, Integer as Int, String as Text};
+
+    if !ty.is_single() {
+        return None;
+    }
+    let atomic = ty.get_single();
+    if matches!(atomic, Scalar(Decimal(TFloat::Literal(value))) if !value.is_finite()) {
+        return None;
+    }
+    Some(match (cast, atomic) {
+        (_, Mixed(mixed)) if mixed.is_vanilla() => match cast {
+            Integer => get_int(),
+            Float => get_float(),
+            Boolean => get_bool(),
+            String => get_string(),
+        },
+        (
+            Boolean,
+            Scalar(Int(_) | Decimal(TFloat::Float | TFloat::Literal(_)) | Bool(_) | Text(_)) | Null,
+        ) => boolean(truth(ty)),
+        (Integer, Scalar(Int(_)))
+        | (Float, Scalar(Decimal(TFloat::Float | TFloat::Literal(_))))
+        | (String, Scalar(Text(_))) => ty.clone(),
+        (Integer, Null) => get_literal_int(0),
+        (Float, Null) => get_literal_float(0.0),
+        (String, Null) => get_literal_string(word("")),
+        (Integer, Scalar(Bool(value))) => {
+            boolean_cast_values(value.value, |value| TScalar::literal_int(i64::from(value)))
+        }
+        (Float, Scalar(Bool(value))) => boolean_cast_values(value.value, |value| {
+            TScalar::literal_float(f64::from(value))
+        }),
+        (String, Scalar(Bool(value))) => boolean_cast_values(value.value, |value| {
+            TScalar::literal_string(word(if value { "1" } else { "" }))
+        }),
+        (Float, Scalar(Int(integer))) => integer
+            .get_literal_value()
+            .map_or_else(get_float, |value| get_literal_float(value as f64)),
+        (Integer, Scalar(Decimal(TFloat::Literal(value)))) => {
+            get_literal_int(float_to_integer(**value))
+        }
+        (Integer, Scalar(Decimal(TFloat::Float))) => get_int(),
+        (Integer, Scalar(Text(text))) => {
+            if let Some(value) = text.get_known_literal_value() {
+                let prefix = numeric_prefix(value);
+                let number = prefix.parse::<f64>().unwrap_or(0.0);
+                // Unlike float casts, PHP saturates overflowing numeric strings, but infinity casts to zero.
+                get_literal_int(if number.is_finite() {
+                    string_to_int(prefix.as_bytes())
+                } else {
+                    0
+                })
+            } else {
+                get_int()
+            }
+        }
+        (Float, Scalar(Text(text))) => {
+            if let Some(value) = text.get_known_literal_value() {
+                return float_literal(numeric_prefix(value).parse::<f64>().unwrap_or(0.0));
+            }
+            get_float()
+        }
+        (String, Scalar(Int(TInteger::Literal(value)))) => {
+            get_literal_string(mago_word::i64_word(*value))
+        }
+        (String, Scalar(Decimal(TFloat::Literal(value)))) => {
+            if **value == 0.0 {
+                // ConstantFloatType::toString intentionally represents both zero signs.
+                TUnion::from_vec(vec![
+                    Scalar(TScalar::literal_string(word("-0"))),
+                    Scalar(TScalar::literal_string(word("0"))),
+                ])
+            } else {
+                get_literal_string(word(finite_float_string(**value)))
+            }
+        }
+        (String, Scalar(Decimal(TFloat::Float))) => {
+            // The shared union constructor drops casing when is_numeric is true.
+            TUnion::from_atomic(Scalar(Text(TString::general_with_props(
+                true,
+                false,
+                true,
+                false,
+                TStringCasing::Uppercase,
+            ))))
+        }
+        // General/ranged integer strings need PHPStan's decimal-integer-string accessory, not numeric-string.
+        _ => return None,
+    })
+}
+
+fn boolean_cast_values(value: Option<bool>, cast: impl Fn(bool) -> TScalar) -> TUnion {
+    match value {
+        Some(value) => TUnion::from_atomic(TAtomic::Scalar(cast(value))),
+        None => TUnion::from_vec(vec![
+            TAtomic::Scalar(cast(false)),
+            TAtomic::Scalar(cast(true)),
+        ]),
+    }
+}
+
+// PHP's finite float-to-int cast wraps modulo 2^64; Rust's `as i64` alone saturates.
+fn float_to_integer(value: f64) -> i64 {
+    let value = value.trunc() % 18446744073709551616.0;
+    if value >= 9223372036854775808.0 {
+        (value - 18446744073709551616.0) as i64
+    } else if value < -9223372036854775808.0 {
+        (value + 18446744073709551616.0) as i64
+    } else {
+        value as i64
+    }
+}
+
+// ConstantStringType::{toInteger,toFloat} use PHP's leading numeric prefix, not is_numeric().
+// PHP whitespace is six ASCII bytes, including vertical tab, and never Unicode whitespace.
+fn numeric_prefix(input: &[u8]) -> &str {
+    let start = input
+        .iter()
+        .position(|byte| !matches!(byte, b' ' | b'\t' | b'\n' | b'\r' | b'\x0b' | b'\x0c'))
+        .unwrap_or(input.len());
+    let input = &input[start..];
+    let mut offset = usize::from(matches!(input.first(), Some(b'+' | b'-')));
+    let mut digits = false;
+    while input.get(offset).is_some_and(u8::is_ascii_digit) {
+        digits = true;
+        offset += 1;
+    }
+    if input.get(offset) == Some(&b'.') {
+        offset += 1;
+        while input.get(offset).is_some_and(u8::is_ascii_digit) {
+            digits = true;
+            offset += 1;
+        }
+    }
+    if !digits {
+        return "";
+    }
+    if matches!(input.get(offset), Some(b'e' | b'E')) {
+        let exponent = offset;
+        offset += 1;
+        if matches!(input.get(offset), Some(b'+' | b'-')) {
+            offset += 1;
+        }
+        let start = offset;
+        while input.get(offset).is_some_and(u8::is_ascii_digit) {
+            offset += 1;
+        }
+        if offset == start {
+            offset = exponent;
+        }
+    }
+    // The scanned prefix contains ASCII digits and punctuation only, even for arbitrary PHP bytes.
+    std::str::from_utf8(&input[..offset]).unwrap()
+}
+
+// ConstantFloatType::toString uses PHP's default precision=14, unlike Mago's shortest Ryu spelling.
+// The caller handles zero (whose native type includes both signs) and excludes non-finite values.
+fn finite_float_string(value: f64) -> String {
+    let scientific = format!("{:.13e}", value.abs());
+    let (mantissa, exponent) = scientific.split_once('e').unwrap();
+    let exponent: i32 = exponent.parse().unwrap();
+    let digits: String = mantissa.chars().filter(char::is_ascii_digit).collect();
+    let digits = digits.trim_end_matches('0');
+    let sign = if value < 0.0 { "-" } else { "" };
+    if !(-4..14).contains(&exponent) {
+        let (head, tail) = digits.split_at(1);
+        let tail = if tail.is_empty() { "0" } else { tail };
+        let exponent_sign = if exponent < 0 { '-' } else { '+' };
+        return format!("{sign}{head}.{tail}E{exponent_sign}{}", exponent.abs());
+    }
+    if exponent < 0 {
+        return format!("{sign}0.{}{digits}", "0".repeat((-exponent - 1) as usize));
+    }
+    let length = exponent as usize + 1;
+    if digits.len() <= length {
+        format!("{sign}{digits}{}", "0".repeat(length - digits.len()))
+    } else {
+        format!("{sign}{}.{}", &digits[..length], &digits[length..])
     }
 }
 

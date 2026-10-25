@@ -246,11 +246,12 @@ types, constructors, and truthiness queries.
   trees without visiting intermediate binary nodes. The native transfer folds the same visited leaves
   iteratively and publishes no synthetic artifacts or observer events for those intermediate nodes.
 
-Numeric coercion from strings, booleans, or null is unsupported. So are arithmetic on ranges or unions,
-float modulo, modulo with an unknown divisor, comparisons of refined non-literal strings or unions,
-and non-numeric loose comparisons. Short-circuit operators, coalesce, exponentiation, bitwise operators,
-casts, increments, decrements, and compound assignments remain unsupported. These cases return no native
+Implicit arithmetic coercion from strings, booleans, or null is unsupported. So are arithmetic on ranges
+or unions, float modulo, modulo with an unknown divisor, comparisons of refined non-literal strings or
+unions, and non-numeric loose comparisons. Short-circuit operators, coalesce, exponentiation, bitwise operators,
+increments, decrements, and compound assignments remain unsupported. These cases return no native
 value and invalidate the live native scope. They never fall back to the full value or guessed `mixed`.
+Explicit scalar casts have the separate bounded contract below.
 
 ### Deliberate availability limits
 
@@ -372,6 +373,91 @@ intersected with added or replaced lines against `20d3e19c`, reports **232/232 c
 executable lines** in `src/native.rs` and **123/123 changed test executable lines** in `native_lane.rs`.
 There are no coverage exclusions or private-helper tests. These are line-coverage measurements, not
 branch coverage or a claim of complete native operator parity.
+
+### Scalar casts
+
+The third passive-native slice changes only `src/native.rs` in the analyzer. It permits `(int)`,
+`(float)`, `(bool)`, and `(string)`, including the `integer`, `double`, `boolean`, and `binary` aliases.
+The transfer consumes the operand's existing native artifact after the authoritative walk visits it.
+It performs no expression analysis, observer or provider dispatch, full-type lookup, or full-state mutation.
+Native queries remain opt-in and default-off.
+
+PHPStan 2.3.1's `InitializerExprTypeResolver::getCastType()` delegates to `toInteger()`, `toFloat()`,
+`toBoolean()`, or `toString()` on the operand type. The corresponding implementations are in
+`IntegerType`, `IntegerRangeType`, `FloatType`, `StringType`, `BooleanType`, `NullType`, `MixedType`,
+and the `Constant/Constant*Type` classes at the pinned source revision above.
+
+- Single native integers, finite floats, strings, booleans, null, and unconstrained mixed are supported.
+  Identity casts retain the native type. Integer ranges retain their bounds under integer casts and
+  become general float under float casts. Boolean casts reuse Mago's pure truthiness queries.
+- General boolean conversions retain PHPStan's `0|1`, `0.0|1.0`, or `''|'1'`, not a widened integer,
+  float, or string. Unconstrained native mixed casts to the requested general scalar type, as PHPStan
+  specifies. This does not substitute mixed for an unavailable input.
+- Constant strings use the leading numeric prefix, not whole-string `is_numeric()` or Unicode trim.
+  The prefix accepts PHP's six ASCII whitespace bytes, a sign, decimal digits, an optional fraction,
+  and a complete exponent. An incomplete exponent is ignored. Arbitrary bytes after the prefix are
+  ignored. Non-numeric strings become numeric zero. The existing pure `string_to_int()` handles the
+  valid prefix, with an explicit zero result for an infinite parsed string value.
+- Finite float-to-int casts truncate and wrap modulo 2^64. Overflowing numeric strings instead saturate
+  at the integer limits unless they parse as infinity, which casts to zero. Rust's saturating `as i64`
+  is not a substitute for the float case.
+- Constant integer strings reuse `mago_word::i64_word()`. Nonzero finite float strings use PHP's default
+  `precision=14`, including rounding and uppercase exponent spelling, rather than Mago's shortest Ryu
+  representation. Custom PHP INI precision is not modeled. `ConstantFloatType::toString()` deliberately
+  gives both `'-0'|'0'` for either zero sign, and the native transfer preserves that union.
+- A general float string retains `numeric-string&uppercase-string`. The shared `get_string_with_props()`
+  constructor discards casing for numeric strings, so this transfer uses `TString::general_with_props()`
+  directly. The test formatter reads the stored casing because Mago's string display also omits it.
+
+Union inputs, including nullable parameters and unions produced by prior casts, remain unsupported.
+So do non-finite literal operands or float results, constrained mixed, non-scalar operands, and other
+cast syntax. General or ranged integer-to-string casts are unavailable: PHPStan's decimal-integer-string
+accessory has no exact Mago scalar representation. These cases poison the current native scope through
+the existing invalidation path. Reassignment does not recover availability. No flow, reference, member,
+callback, call, parameter-entry, or native-dependent rule support is added.
+
+`fixtures/native-lane/casts.php` and `expected-casts-phpstan.json` contain **133 actual PHPStan native
+dumps**. Capture them with the existing native-oracle recipe, substituting `casts.php` and
+`expected-casts-phpstan.json`. The oracle is PHPStan **2.3.1** at
+`cb3b7e99489b2e3789ee2eec10501cb7a72580ea`. No expectation comes from Pun.
+
+Discriminating oracle results include:
+
+| Expression or input | PHPStan native result |
+| --- | --- |
+| `(int) 9223372036854775808.0` | `-9223372036854775808` |
+| `(int) '9223372036854775808'` | `9223372036854775807` |
+| `(int) 1e20` | `7766279631452241920` |
+| `(int) -9223372036854777856.0` | `9223372036854773760` |
+| `(int) '1e999'` | `0` |
+| `(float) "\v\f-12.5e-1rest"` | `-1.25` |
+| `(int) '1e+'` | `1` |
+| `(int) "\xc2\xa012"` versus `(int) "12\xff"` | `0` versus `12` |
+| `(bool) '0'` versus `(bool) '00'` | `false` versus `true` |
+| `(string) 0.0` and `(string) -0.0` | `'-0'\|'0'` |
+| `(string) 1.2345678901234567` | `'1.2345678901235'` |
+| `(string) 1e-4` versus `(string) 1e-5` | `'0.0001'` versus `'1.0E-5'` |
+
+The unchanged native source at `11a57541` fails the public cast test on line 10: `(int) $integer`
+returns `None` instead of PHPStan's `int`. The patched public Analyzer passes all 133 dumps through
+both artifact and live observer queries. The fixture also checks PHPDoc distinctions, scalar copies,
+reassignments, nested casts, range casts, and retained string properties. Nineteen additional unsupported
+cast contexts check absence at the cast and after reassignment. The original 29 scalar and 107 operator
+expectations are unchanged.
+
+A fresh-profile run passes **37 tests**: native lane 11/11, callback gathers 10/10, array slice 5/5,
+debug 10/10, and the focused integer-division-overflow regression 1/1. Native enabled and disabled
+retain identical full artifacts, issues, and observer visit counts. Every visited expression in the
+cast fixture is observed once. The default-off setting is also asserted through the public API.
+
+The instrumented commands above use private target `/tmp/pun-native-casts-target` for this slice.
+The first command runs `--test native_lane --test callback_gather --test array_slice --test debug`.
+A separate `--test coverage -- literal_integer_division_overflow_matches_php_and_phpstan` command
+runs the existing arithmetic regression. Both use one Cargo job and two Rayon threads.
+Fresh LCOV export from those five executables, intersected with added or replaced lines against
+`11a57541`, measures **152/152 changed analyzer executable lines** and **39/39 changed test executable
+lines**. There are no exclusions, gap entries, or private-helper tests. This is changed-line coverage,
+not branch coverage or whole-analyzer coverage.
 
 ## Literal integer division overflow
 
