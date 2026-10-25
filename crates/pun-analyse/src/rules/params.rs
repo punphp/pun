@@ -1,6 +1,7 @@
 //! FunctionCallParametersCheck: shared argument ordering, counts, binding and named-argument policy. Type,
 //! reference and @no-named-arguments checks run from level 5, after the level-0 binding checks.
 
+use mago_codex::metadata::class_like::ClassLikeMetadata;
 use mago_codex::metadata::function_like::FunctionLikeMetadata;
 use mago_codex::ttype::TType;
 use mago_span::{HasSpan, Span};
@@ -31,6 +32,8 @@ pub struct Acceptor {
     /// Per parameter: its declared type (see [`ParamType`]) and `passedByReference()`.
     pub param_types: Vec<ParamType>,
     pub by_ref: Vec<ByRef>,
+    /// Whether `getClosureThisType()` is non-null, retained through selection and combination.
+    pub closure_this: Vec<bool>,
     /// A built-in method's class, which `self`/`static` in its parameter types name.
     pub class: Option<String>,
     /// A user function-like's codex entry, to read its parameter types as PHPStan does: the declaring class-like of a
@@ -49,6 +52,17 @@ pub enum ParamType {
     Typed(pun_phpstan::types::Type),
 }
 
+/// The source reflection's policy, also for a first-class callable whose signature has lost its callee identity.
+pub(super) fn accepts_named(c: &Checker, f: &FunctionLikeMetadata, class: Option<&ClassLikeMetadata>) -> Tri {
+    let yes = match class {
+        Some(class) => super::named_argument::accepts(c, class, f),
+        None => !super::declared::doc_at(c, f.span).is_some_and(|(doc, _)| {
+            super::declarations::has_tag(&super::declarations::doc_tags(&doc), &["@no-named-arguments"])
+        }),
+    };
+    if yes { Tri::Yes } else { Tri::No }
+}
+
 impl Acceptor {
     /// Resolve a user reflection's PHPDoc before selection can discard its callee identity. Methods share the
     /// inheritance and declaring-class contract used by the named-argument collector.
@@ -57,15 +71,13 @@ impl Acceptor {
             if let Some(class) = class {
                 let class = c.codebase.get_class_like(class.as_bytes())?;
                 let f = c.codebase.get_method(class.name.as_bytes(), name.as_bytes())?;
-                Some(super::named_argument::accepts(c, class, f))
+                Some(accepts_named(c, f, Some(class)))
             } else {
                 let f = c.codebase.get_function(name.as_bytes())?;
-                Some(!super::declared::doc_at(c, f.span).is_some_and(|(doc, _)| {
-                    super::declarations::has_tag(&super::declarations::doc_tags(&doc), &["@no-named-arguments"])
-                }))
+                Some(accepts_named(c, f, None))
             }
         });
-        accepts.map_or(self.accepts_named_arguments, |yes| if yes { Tri::Yes } else { Tri::No })
+        accepts.unwrap_or(self.accepts_named_arguments)
     }
 
     fn min(&self) -> usize {
@@ -114,6 +126,7 @@ impl Acceptor {
                 .iter()
                 .map(|p| if p.flags.is_by_reference() { ByRef::CreatesNewVariable } else { ByRef::No })
                 .collect(),
+            closure_this: f.parameters.iter().map(|p| p.closure_this_type.is_some()).collect(),
             class: None,
             callee: Some((None, String::from_utf8_lossy(f.name.as_bytes()).into_owned())),
         }
@@ -132,6 +145,7 @@ impl Acceptor {
             accepts_named_arguments: Tri::Yes,
             param_types: v.params.iter().map(|p| ParamType::Builtin(p.ty.clone(), p.allowed_constants.clone())).collect(),
             by_ref: v.params.iter().map(|p| p.by_ref).collect(),
+            closure_this: vec![false; v.params.len()],
             class: None,
             callee: None,
         }
@@ -169,6 +183,16 @@ pub fn select(c: &Checker, variants: Variants, counts: &Counts) -> Acceptor {
     };
     let variants: Vec<_> = variants.into_iter().map(|mut v| {
         v.accepts_named_arguments = v.accepts_named(c);
+        if let Some((class, name)) = &v.callee
+            && let Some(f) = match class {
+                Some(class) => c.codebase.get_method(class.as_bytes(), name.as_bytes()),
+                None => c.codebase.get_function(name.as_bytes()),
+            }
+        {
+            let class = class.as_ref().and_then(|name| c.codebase.get_class_like(name.as_bytes()));
+            let bindings = super::declared::codex_closure_this(c, f, class);
+            v.closure_this = v.names.iter().map(|name| bindings.contains_key(name)).collect();
+        }
         v
     }).collect();
     if variants.len() == 1 {
@@ -235,6 +259,7 @@ pub(super) fn combine(variants: &[&Acceptor]) -> Acceptor {
         accepts_named_arguments: variants.iter().fold(Tri::No, |accepts, v| accepts.or(v.accepts_named_arguments)),
         param_types: Vec::new(),
         by_ref: Vec::new(),
+        closure_this: Vec::new(),
         class: variants.first().and_then(|v| v.class.clone()),
         callee: None,
     };
@@ -248,6 +273,7 @@ pub(super) fn combine(variants: &[&Acceptor]) -> Acceptor {
                 combined.optional.push(i + 1 > min);
                 combined.param_types.push(v.param_types[i].clone());
                 combined.by_ref.push(v.by_ref[i]);
+                combined.closure_this.push(v.closure_this[i]);
                 continue;
             }
             // ponytail: the union of the types prints both when they differ, without TypeCombinator's normalization
@@ -265,6 +291,8 @@ pub(super) fn combine(variants: &[&Acceptor]) -> Acceptor {
                 (ParamType::Builtin(a, _), _) => ParamType::Builtin(a.clone(), None),
                 (a, _) => a.clone(),
             };
+            // A combined parameter keeps a binding only if both parameters have one (the types are unioned).
+            combined.closure_this[i] &= v.closure_this[i];
             // `PassedByReference::combine()`: the stronger
             let rank = |b: ByRef| [ByRef::No, ByRef::ReadsArgument, ByRef::CreatesNewVariable].iter().position(|x| *x == b);
             combined.by_ref[i] = std::cmp::max_by_key(combined.by_ref[i], v.by_ref[i], |b| rank(*b));
@@ -279,6 +307,7 @@ pub(super) fn combine(variants: &[&Acceptor]) -> Acceptor {
                 combined.optional.truncate(i + 1);
                 combined.param_types.truncate(i + 1);
                 combined.by_ref.truncate(i + 1);
+                combined.closure_this.truncate(i + 1);
                 break;
             }
         }
@@ -352,6 +381,8 @@ pub enum ArgKind {
     OtherCall,
     /// A constant fetch, or a disjunction whose every leaf is a constant fetch.
     Constants(Vec<ConstantFetch>),
+    /// A syntactically static anonymous function or arrow, not a variable containing one.
+    StaticClosure,
     Other,
 }
 
@@ -405,6 +436,8 @@ fn kind(e: &Expression) -> ArgKind {
     }
     match e {
         Expression::Parenthesized(p) => kind(p.expression),
+        Expression::Closure(f) if f.r#static.is_some() => ArgKind::StaticClosure,
+        Expression::ArrowFunction(f) if f.r#static.is_some() => ArgKind::StaticClosure,
         Expression::Variable(_)
         | Expression::ArrayAccess(_)
         | Expression::ArrayAppend(_)

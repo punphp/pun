@@ -17,7 +17,8 @@ use super::returns::strict_types;
 
 pub const IDENTIFIERS: &[&str] =
     &["argument.type", "argument.byRef", "argument.unpackNonIterable", "argument.templateType", "argument.named",
-      "argument.invalidConstant", "argument.exclusiveConstants", "argument.bitmaskNotAllowed"];
+      "argument.invalidConstant", "argument.exclusiveConstants", "argument.bitmaskNotAllowed",
+      "argument.staticClosure", "argument.unresolvableType"];
 
 /// `describeParameter()`: `Parameter #1 $a`, `Parameter $a` (named), `Named argument b for variadic parameter ...$a`.
 fn describe(acceptor: &Acceptor, p: usize, position_or_name: Option<Result<usize, &str>>) -> String {
@@ -148,17 +149,47 @@ fn infer(c: &Checker, acceptor: &Acceptor, args: &[Entry], parameters: &[Option<
 }
 
 /// A template of the called function-like itself (its class's templates stay unresolved).
-fn is_callees(t: &Template) -> bool {
+pub(super) fn is_callees(t: &Template) -> bool {
     t.scope.starts_with("function ") || t.scope.starts_with("method ")
 }
 
 /// The parameters' types with the callee's templates resolved (an uninferred one by its default or bound).
-fn resolved_types(inference: &Inference) -> Vec<Option<Type>> {
-    let Inference { declared, templates, map, .. } = inference;
-    if templates.is_empty() {
-        return declared.clone();
-    }
-    declared.iter().map(|d| d.as_ref().map(|d| resolve_template_types(d, map))).collect()
+fn resolved_types(acceptor: &Acceptor, inference: &Inference) -> Vec<Option<Type>> {
+    let Inference { declared, passed, map, .. } = inference;
+    let argument = |name: &str| passed[acceptor.names.iter().position(|n| name[1..] == **n)?].clone();
+    declared.iter().map(|d| d.as_ref().map(|d| late_parameter_type(&resolve_template_types(d, map), &argument))).collect()
+}
+
+/// `TypeUtils::resolveLateResolvableTypes()` after template substitution. The resolver retains a template's
+/// key-of/value-of as an object-shaped placeholder; use its existing type operations once that template is bound.
+fn late_parameter_type(t: &Type, argument: &dyn Fn(&str) -> Option<Type>) -> Type {
+    let t = if let Type::Conditional(cond) = t
+        && let Subject::Parameter(name) = &cond.subject
+        && let Some(value) = argument(name)
+    {
+        Type::Conditional(Box::new(Conditional { subject: Subject::Type(value), ..(**cond).clone() }))
+    } else {
+        t.clone()
+    };
+    let t = t.traverse(&|t| late_parameter_type(t, argument));
+    let t = match &t {
+        Type::Object(name, args) if matches!(name.as_str(), "key-of" | "value-of")
+            && args.len() == 1 && !is_late(&args[0]) => {
+                pun_phpstan::resolve::key_or_value_of(&args[0], name == "value-of")
+            }
+        Type::Conditional(cond) if cond.is_resolvable() => return late_parameter_type(&cond.resolve(), argument),
+        _ => t,
+    };
+    pun_phpstan::resolve::resolve_late(&t)
+}
+
+/// `UnresolvableTypeHelper`: a declaration that was already erroneous must not gain another call-site error.
+fn unresolvable(t: &Type) -> bool {
+    let mut found = false;
+    super::super::type_aliases::each(t, &mut |t| {
+        found |= matches!(t, Type::Error | Type::Never(NeverKind::Implicit));
+    });
+    found
 }
 
 /// The `argument.templateType` errors of `checkMissingTypehints` (level 6): a template the call leaves unresolved
@@ -247,7 +278,7 @@ pub(in super::super) fn arguments(
     let strict = strict_types(c);
     let levels = c.levels();
     let inference = infer(c, acceptor, args, parameters);
-    let resolved = resolved_types(&inference);
+    let resolved = declared::with_classes(c, || resolved_types(acceptor, &inference));
     let allowed_type = super::super::params::allowed_constants_type(c, acceptor);
     for (i, (e, p)) in args.iter().zip(parameters).enumerate() {
         if e.unpack {
@@ -288,6 +319,19 @@ pub(in super::super) fn arguments(
                 c.report(e.span, "argument.type", message, tip.as_deref());
             }
         }
+        let parameter = || describe(acceptor, p, e.name.is_none().then_some(Ok(i)));
+        if resolved[p].as_ref().is_some_and(unresolvable)
+            && inference.declared[p].as_ref().is_some_and(|t| !unresolvable(t))
+        {
+            c.report(e.span, "argument.unresolvableType", format!(
+                "{} of {of} contains unresolvable type.", parameter()
+            ), None);
+        }
+        if acceptor.closure_this[p] && matches!(e.kind, ArgKind::StaticClosure) {
+            c.report(e.span, "argument.staticClosure", format!(
+                "{} of {of} expects bindable closure, static closure given.", parameter()
+            ), None);
+        }
         super::super::params::check_constants(
             c, acceptor, e, p, allowed_type.as_ref(), resolved[p].as_ref(),
             &describe(acceptor, p, Some(e.name.map_or(Ok(i), Err))), call,
@@ -296,7 +340,7 @@ pub(in super::super) fn arguments(
             continue;
         }
         let fine = match e.kind {
-            ArgKind::Nullsafe | ArgKind::Other | ArgKind::Constants(_) => false,
+            ArgKind::Nullsafe | ArgKind::Other | ArgKind::Constants(_) | ArgKind::StaticClosure => false,
             ArgKind::Writable | ArgKind::OtherCall => true,
             ArgKind::Function(id) => {
                 c.codebase.get_function(c.names.get(id)).is_some_and(|f| f.flags.is_by_reference())

@@ -1,0 +1,19 @@
+{
+ "general": [],
+ "errors": [
+  {
+   "file": "legacy.php",
+   "line": 15,
+   "identifier": "argument.staticClosure",
+   "message": "Parameter #1 $callback of function ArgumentLegacy\\bind expects bindable closure, static closure given.",
+   "tip": null
+  },
+  {
+   "file": "legacy.php",
+   "line": 16,
+   "identifier": "argument.unresolvableType",
+   "message": "Parameter #2 $value of function ArgumentLegacy\\value contains unresolvable type.",
+   "tip": null
+  }
+ ]
+}

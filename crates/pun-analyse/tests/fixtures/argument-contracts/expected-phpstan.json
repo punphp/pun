@@ -1,0 +1,607 @@
+{
+ "general": [],
+ "errors": [
+  {
+   "file": "no-named.php",
+   "line": 25,
+   "identifier": "argument.named",
+   "message": "Callable passed to call_user_func() invoked with named argument $i, but it's not allowed because of @no-named-arguments.",
+   "tip": null
+  },
+  {
+   "file": "no-named.php",
+   "line": 25,
+   "identifier": "argument.unknown",
+   "message": "Unknown parameter $i in call to function call_user_func.",
+   "tip": null
+  },
+  {
+   "file": "no-named.php",
+   "line": 26,
+   "identifier": "argument.named",
+   "message": "Callable passed to call_user_func() invoked with named argument $i, but it's not allowed because of @no-named-arguments.",
+   "tip": null
+  },
+  {
+   "file": "no-named.php",
+   "line": 26,
+   "identifier": "argument.unknown",
+   "message": "Unknown parameter $i in call to function call_user_func.",
+   "tip": null
+  },
+  {
+   "file": "no-named.php",
+   "line": 27,
+   "identifier": "argument.named",
+   "message": "Callable passed to call_user_func() invoked with named argument $i, but it's not allowed because of @no-named-arguments.",
+   "tip": null
+  },
+  {
+   "file": "no-named.php",
+   "line": 27,
+   "identifier": "argument.unknown",
+   "message": "Unknown parameter $i in call to function call_user_func.",
+   "tip": null
+  },
+  {
+   "file": "no-named.php",
+   "line": 28,
+   "identifier": "argument.named",
+   "message": "Callable passed to call_user_func() invoked with named argument $i, but it's not allowed because of @no-named-arguments.",
+   "tip": null
+  },
+  {
+   "file": "no-named.php",
+   "line": 28,
+   "identifier": "argument.unknown",
+   "message": "Unknown parameter $i in call to function call_user_func.",
+   "tip": null
+  },
+  {
+   "file": "no-named.php",
+   "line": 29,
+   "identifier": "argument.named",
+   "message": "Callable passed to call_user_func_array() invoked with named argument $i, but it's not allowed because of @no-named-arguments.",
+   "tip": null
+  },
+  {
+   "file": "no-named.php",
+   "line": 30,
+   "identifier": "argument.named",
+   "message": "Closure invoked with named argument $i, but it's not allowed because of @no-named-arguments.",
+   "tip": null
+  },
+  {
+   "file": "no-named.php",
+   "line": 34,
+   "identifier": "argument.unknown",
+   "message": "Unknown parameter $i in call to function call_user_func.",
+   "tip": null
+  },
+  {
+   "file": "no-named.php",
+   "line": 36,
+   "identifier": "argument.named",
+   "message": "Closure invoked with named argument $i, but it's not allowed because of @no-named-arguments.",
+   "tip": null
+  },
+  {
+   "file": "no-named.php",
+   "line": 37,
+   "identifier": "argument.named",
+   "message": "Callable passed to call_user_func() invoked with named argument $renamed, but it's not allowed because of @no-named-arguments.",
+   "tip": null
+  },
+  {
+   "file": "no-named.php",
+   "line": 37,
+   "identifier": "argument.unknown",
+   "message": "Unknown parameter $renamed in call to function call_user_func.",
+   "tip": null
+  },
+  {
+   "file": "static.php",
+   "line": 31,
+   "identifier": "argument.staticClosure",
+   "message": "Parameter #1 $callback of attribute class ArgumentContracts\\Bindable constructor expects bindable closure, static closure given.",
+   "tip": null
+  },
+  {
+   "file": "static.php",
+   "line": 32,
+   "identifier": "argument.staticClosure",
+   "message": "Parameter $callback of attribute class ArgumentContracts\\Bindable constructor expects bindable closure, static closure given.",
+   "tip": null
+  },
+  {
+   "file": "static.php",
+   "line": 38,
+   "identifier": "function.resultUnused",
+   "message": "Call to function ArgumentContracts\\bind() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "static.php",
+   "line": 38,
+   "identifier": "argument.staticClosure",
+   "message": "Parameter #1 $callback of function ArgumentContracts\\bind expects bindable closure, static closure given.",
+   "tip": null
+  },
+  {
+   "file": "static.php",
+   "line": 39,
+   "identifier": "function.resultUnused",
+   "message": "Call to function ArgumentContracts\\bind() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "static.php",
+   "line": 39,
+   "identifier": "argument.staticClosure",
+   "message": "Parameter #1 $callback of function ArgumentContracts\\bind expects bindable closure, static closure given.",
+   "tip": null
+  },
+  {
+   "file": "static.php",
+   "line": 40,
+   "identifier": "function.resultUnused",
+   "message": "Call to function ArgumentContracts\\bind() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "static.php",
+   "line": 40,
+   "identifier": "argument.staticClosure",
+   "message": "Parameter #1 $callback of function ArgumentContracts\\bind expects bindable closure, static closure given.",
+   "tip": null
+  },
+  {
+   "file": "static.php",
+   "line": 41,
+   "identifier": "function.resultUnused",
+   "message": "Call to function ArgumentContracts\\bind() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "static.php",
+   "line": 41,
+   "identifier": "argument.staticClosure",
+   "message": "Parameter $callback of function ArgumentContracts\\bind expects bindable closure, static closure given.",
+   "tip": null
+  },
+  {
+   "file": "static.php",
+   "line": 42,
+   "identifier": "function.resultUnused",
+   "message": "Call to function ArgumentContracts\\bind() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "static.php",
+   "line": 43,
+   "identifier": "function.resultUnused",
+   "message": "Call to function ArgumentContracts\\bind() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "static.php",
+   "line": 44,
+   "identifier": "function.resultUnused",
+   "message": "Call to function ArgumentContracts\\unbound() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "static.php",
+   "line": 46,
+   "identifier": "function.resultUnused",
+   "message": "Call to function ArgumentContracts\\bind() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "static.php",
+   "line": 47,
+   "identifier": "function.resultUnused",
+   "message": "Call to function ArgumentContracts\\bind() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "static.php",
+   "line": 48,
+   "identifier": "argument.staticClosure",
+   "message": "Parameter #1 $callback of method ArgumentContracts\\Binder::method() expects bindable closure, static closure given.",
+   "tip": null
+  },
+  {
+   "file": "static.php",
+   "line": 49,
+   "identifier": "argument.staticClosure",
+   "message": "Parameter $renamed of method ArgumentContracts\\ChildBinder::method() expects bindable closure, static closure given.",
+   "tip": null
+  },
+  {
+   "file": "static.php",
+   "line": 50,
+   "identifier": "argument.staticClosure",
+   "message": "Parameter #1 ...$callback of static method ArgumentContracts\\Binder::many() expects bindable closure, static closure given.",
+   "tip": null
+  },
+  {
+   "file": "static.php",
+   "line": 50,
+   "identifier": "argument.staticClosure",
+   "message": "Parameter #2 ...$callback of static method ArgumentContracts\\Binder::many() expects bindable closure, static closure given.",
+   "tip": null
+  },
+  {
+   "file": "static.php",
+   "line": 51,
+   "identifier": "argument.staticClosure",
+   "message": "Parameter ...$callback of static method ArgumentContracts\\Binder::many() expects bindable closure, static closure given.",
+   "tip": null
+  },
+  {
+   "file": "static.php",
+   "line": 52,
+   "identifier": "argument.staticClosure",
+   "message": "Parameter #1 $callback of class ArgumentContracts\\Bindable constructor expects bindable closure, static closure given.",
+   "tip": null
+  },
+  {
+   "file": "static.php",
+   "line": 53,
+   "identifier": "argument.staticClosure",
+   "message": "Parameter $callback of class ArgumentContracts\\Bindable constructor expects bindable closure, static closure given.",
+   "tip": null
+  },
+  {
+   "file": "static.php",
+   "line": 55,
+   "identifier": "argument.staticClosure",
+   "message": "Parameter #1 $callback of callable 'ArgumentContracts\u2026' expects bindable closure, static closure given.",
+   "tip": null
+  },
+  {
+   "file": "static.php",
+   "line": 56,
+   "identifier": "argument.staticClosure",
+   "message": "Parameter #1 $callback of callable passed to call_user_func() expects bindable closure, static closure given.",
+   "tip": null
+  },
+  {
+   "file": "static.php",
+   "line": 57,
+   "identifier": "argument.staticClosure",
+   "message": "Parameter #1 $callback of callable passed to call_user_func_array() expects bindable closure, static closure given.",
+   "tip": null
+  },
+  {
+   "file": "static.php",
+   "line": 59,
+   "identifier": "argument.staticClosure",
+   "message": "Parameter #1 $callback of closure expects bindable closure, static closure given.",
+   "tip": null
+  },
+  {
+   "file": "static.php",
+   "line": 66,
+   "identifier": "argument.staticClosure",
+   "message": "Parameter #1 $callback of callable 'ArgumentContracts\u2026' expects bindable closure, static closure given.",
+   "tip": null
+  },
+  {
+   "file": "static.php",
+   "line": 67,
+   "identifier": "function.resultUnused",
+   "message": "Call to function ArgumentContracts\\bind() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "static.php",
+   "line": 67,
+   "identifier": "argument.unknown",
+   "message": "Unknown parameter $unknown in call to function ArgumentContracts\\bind.",
+   "tip": null
+  },
+  {
+   "file": "static.php",
+   "line": 69,
+   "identifier": "argument.staticClosure",
+   "message": "Parameter #1 $renamed of closure expects bindable closure, static closure given.",
+   "tip": null
+  },
+  {
+   "file": "static.php",
+   "line": 73,
+   "identifier": "argument.staticClosure",
+   "message": "Parameter #1 $callback of closure expects bindable closure, static closure given.",
+   "tip": null
+  },
+  {
+   "file": "static.php",
+   "line": 74,
+   "identifier": "argument.staticClosure",
+   "message": "Parameter #1 $callback of callable passed to call_user_func() expects bindable closure, static closure given.",
+   "tip": null
+  },
+  {
+   "file": "static.php",
+   "line": 75,
+   "identifier": "argument.staticClosure",
+   "message": "Parameter #1 $callback of callable passed to call_user_func_array() expects bindable closure, static closure given.",
+   "tip": null
+  },
+  {
+   "file": "static.php",
+   "line": 76,
+   "identifier": "argument.staticClosure",
+   "message": "Parameter #1 $callback of function ArgumentContracts\\byReference expects bindable closure, static closure given.",
+   "tip": null
+  },
+  {
+   "file": "static.php",
+   "line": 76,
+   "identifier": "argument.byRef",
+   "message": "Parameter #1 $callback of function ArgumentContracts\\byReference is passed by reference, so it expects variables only.",
+   "tip": null
+  },
+  {
+   "file": "static.php",
+   "line": 85,
+   "identifier": "argument.staticClosure",
+   "message": "Parameter #1 ...$callback of callable 'ArgumentContracts\u2026' expects bindable closure, static closure given.",
+   "tip": null
+  },
+  {
+   "file": "unresolvable.php",
+   "line": 51,
+   "identifier": "argument.unresolvableType",
+   "message": "Parameter #2 $value of attribute class ArgumentContracts\\GenericValue constructor contains unresolvable type.",
+   "tip": null
+  },
+  {
+   "file": "unresolvable.php",
+   "line": 52,
+   "identifier": "argument.unresolvableType",
+   "message": "Parameter #2 $value of attribute class ArgumentContracts\\GenericValue constructor contains unresolvable type.",
+   "tip": null
+  },
+  {
+   "file": "unresolvable.php",
+   "line": 53,
+   "identifier": "argument.unresolvableType",
+   "message": "Parameter $value of attribute class ArgumentContracts\\GenericValue constructor contains unresolvable type.",
+   "tip": null
+  },
+  {
+   "file": "unresolvable.php",
+   "line": 54,
+   "identifier": "argument.type",
+   "message": "Parameter #2 $value of attribute class ArgumentContracts\\GenericValue constructor expects 1, 0 given.",
+   "tip": null
+  },
+  {
+   "file": "unresolvable.php",
+   "line": 60,
+   "identifier": "function.resultUnused",
+   "message": "Call to function ArgumentContracts\\value() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "unresolvable.php",
+   "line": 60,
+   "identifier": "argument.unresolvableType",
+   "message": "Parameter #2 $value of function ArgumentContracts\\value contains unresolvable type.",
+   "tip": null
+  },
+  {
+   "file": "unresolvable.php",
+   "line": 61,
+   "identifier": "function.resultUnused",
+   "message": "Call to function ArgumentContracts\\value() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "unresolvable.php",
+   "line": 61,
+   "identifier": "argument.unresolvableType",
+   "message": "Parameter #2 $value of function ArgumentContracts\\value contains unresolvable type.",
+   "tip": null
+  },
+  {
+   "file": "unresolvable.php",
+   "line": 62,
+   "identifier": "function.resultUnused",
+   "message": "Call to function ArgumentContracts\\value() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "unresolvable.php",
+   "line": 62,
+   "identifier": "argument.type",
+   "message": "Parameter #2 $value of function ArgumentContracts\\value expects 1, 0 given.",
+   "tip": null
+  },
+  {
+   "file": "unresolvable.php",
+   "line": 63,
+   "identifier": "function.resultUnused",
+   "message": "Call to function ArgumentContracts\\value() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "unresolvable.php",
+   "line": 64,
+   "identifier": "function.resultUnused",
+   "message": "Call to function ArgumentContracts\\value() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "unresolvable.php",
+   "line": 64,
+   "identifier": "argument.unresolvableType",
+   "message": "Parameter $value of function ArgumentContracts\\value contains unresolvable type.",
+   "tip": null
+  },
+  {
+   "file": "unresolvable.php",
+   "line": 65,
+   "identifier": "function.resultUnused",
+   "message": "Call to function ArgumentContracts\\value() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "unresolvable.php",
+   "line": 65,
+   "identifier": "argument.unresolvableType",
+   "message": "Parameter #2 $value of function ArgumentContracts\\value contains unresolvable type.",
+   "tip": null
+  },
+  {
+   "file": "unresolvable.php",
+   "line": 66,
+   "identifier": "argument.unresolvableType",
+   "message": "Parameter #2 $key of function ArgumentContracts\\key contains unresolvable type.",
+   "tip": null
+  },
+  {
+   "file": "unresolvable.php",
+   "line": 67,
+   "identifier": "argument.type",
+   "message": "Parameter #2 $key of function ArgumentContracts\\key expects 'x', 0 given.",
+   "tip": null
+  },
+  {
+   "file": "unresolvable.php",
+   "line": 69,
+   "identifier": "argument.unresolvableType",
+   "message": "Parameter #2 $value of function ArgumentContracts\\offset contains unresolvable type.",
+   "tip": null
+  },
+  {
+   "file": "unresolvable.php",
+   "line": 70,
+   "identifier": "argument.type",
+   "message": "Parameter #2 $value of function ArgumentContracts\\offset expects 1, 0 given.",
+   "tip": null
+  },
+  {
+   "file": "unresolvable.php",
+   "line": 72,
+   "identifier": "argument.unresolvableType",
+   "message": "Parameter #2 $value of method ArgumentContracts\\GenericValue::method() contains unresolvable type.",
+   "tip": null
+  },
+  {
+   "file": "unresolvable.php",
+   "line": 73,
+   "identifier": "argument.unresolvableType",
+   "message": "Parameter $value of method ArgumentContracts\\GenericValue::method() contains unresolvable type.",
+   "tip": null
+  },
+  {
+   "file": "unresolvable.php",
+   "line": 74,
+   "identifier": "argument.unresolvableType",
+   "message": "Parameter #2 $value of static method ArgumentContracts\\GenericValue::staticMethod() contains unresolvable type.",
+   "tip": null
+  },
+  {
+   "file": "unresolvable.php",
+   "line": 75,
+   "identifier": "argument.unresolvableType",
+   "message": "Parameter #2 $value of class ArgumentContracts\\GenericValue constructor contains unresolvable type.",
+   "tip": null
+  },
+  {
+   "file": "unresolvable.php",
+   "line": 76,
+   "identifier": "argument.unresolvableType",
+   "message": "Parameter $value of class ArgumentContracts\\GenericValue constructor contains unresolvable type.",
+   "tip": null
+  },
+  {
+   "file": "unresolvable.php",
+   "line": 78,
+   "identifier": "argument.unresolvableType",
+   "message": "Parameter #2 $value of callable 'ArgumentContracts\u2026' contains unresolvable type.",
+   "tip": null
+  },
+  {
+   "file": "unresolvable.php",
+   "line": 79,
+   "identifier": "argument.unresolvableType",
+   "message": "Parameter #2 $value of callable passed to call_user_func() contains unresolvable type.",
+   "tip": null
+  },
+  {
+   "file": "unresolvable.php",
+   "line": 80,
+   "identifier": "argument.unresolvableType",
+   "message": "Parameter #2 $value of callable passed to call_user_func_array() contains unresolvable type.",
+   "tip": null
+  },
+  {
+   "file": "unresolvable.php",
+   "line": 82,
+   "identifier": "argument.unresolvableType",
+   "message": "Parameter #2 $value of closure contains unresolvable type.",
+   "tip": null
+  },
+  {
+   "file": "unresolvable.php",
+   "line": 93,
+   "identifier": "parameter.unresolvableType",
+   "message": "PHPDoc tag @param for parameter $value contains unresolvable type.",
+   "tip": null
+  },
+  {
+   "file": "unresolvable.php",
+   "line": 100,
+   "identifier": "argument.unresolvableType",
+   "message": "Parameter #2 $values of function ArgumentContracts\\nested contains unresolvable type.",
+   "tip": null
+  },
+  {
+   "file": "unresolvable.php",
+   "line": 102,
+   "identifier": "argument.type",
+   "message": "Parameter #2 $values of function ArgumentContracts\\nested expects array<1>, array{'wrong'} given.",
+   "tip": null
+  },
+  {
+   "file": "unresolvable.php",
+   "line": 104,
+   "identifier": "argument.type",
+   "message": "Parameter #1 $value of function ArgumentContracts\\explicitNever expects never, int given.",
+   "tip": null
+  },
+  {
+   "file": "unresolvable.php",
+   "line": 116,
+   "identifier": "argument.unresolvableType",
+   "message": "Parameter #2 $value of function ArgumentContracts\\conditional contains unresolvable type.",
+   "tip": null
+  },
+  {
+   "file": "unresolvable.php",
+   "line": 118,
+   "identifier": "argument.type",
+   "message": "Parameter #2 $value of function ArgumentContracts\\conditional expects string, int given.",
+   "tip": null
+  },
+  {
+   "file": "unresolvable.php",
+   "line": 119,
+   "identifier": "argument.unresolvableType",
+   "message": "Parameter #2 $value of function ArgumentContracts\\parameterConditional contains unresolvable type.",
+   "tip": null
+  },
+  {
+   "file": "unresolvable.php",
+   "line": 121,
+   "identifier": "argument.unresolvableType",
+   "message": "Parameter $value of function ArgumentContracts\\parameterConditional contains unresolvable type.",
+   "tip": null
+  }
+ ]
+}

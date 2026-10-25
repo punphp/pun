@@ -1,0 +1,173 @@
+{
+ "general": [],
+ "errors": [
+  {
+   "file": "no-named.php",
+   "line": 25,
+   "identifier": "argument.unknown",
+   "message": "Unknown parameter $i in call to function call_user_func.",
+   "tip": null
+  },
+  {
+   "file": "no-named.php",
+   "line": 26,
+   "identifier": "argument.unknown",
+   "message": "Unknown parameter $i in call to function call_user_func.",
+   "tip": null
+  },
+  {
+   "file": "no-named.php",
+   "line": 27,
+   "identifier": "argument.unknown",
+   "message": "Unknown parameter $i in call to function call_user_func.",
+   "tip": null
+  },
+  {
+   "file": "no-named.php",
+   "line": 28,
+   "identifier": "argument.unknown",
+   "message": "Unknown parameter $i in call to function call_user_func.",
+   "tip": null
+  },
+  {
+   "file": "no-named.php",
+   "line": 34,
+   "identifier": "argument.unknown",
+   "message": "Unknown parameter $i in call to function call_user_func.",
+   "tip": null
+  },
+  {
+   "file": "no-named.php",
+   "line": 37,
+   "identifier": "argument.unknown",
+   "message": "Unknown parameter $renamed in call to function call_user_func.",
+   "tip": null
+  },
+  {
+   "file": "static.php",
+   "line": 38,
+   "identifier": "function.resultUnused",
+   "message": "Call to function ArgumentContracts\\bind() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "static.php",
+   "line": 39,
+   "identifier": "function.resultUnused",
+   "message": "Call to function ArgumentContracts\\bind() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "static.php",
+   "line": 40,
+   "identifier": "function.resultUnused",
+   "message": "Call to function ArgumentContracts\\bind() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "static.php",
+   "line": 41,
+   "identifier": "function.resultUnused",
+   "message": "Call to function ArgumentContracts\\bind() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "static.php",
+   "line": 42,
+   "identifier": "function.resultUnused",
+   "message": "Call to function ArgumentContracts\\bind() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "static.php",
+   "line": 43,
+   "identifier": "function.resultUnused",
+   "message": "Call to function ArgumentContracts\\bind() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "static.php",
+   "line": 44,
+   "identifier": "function.resultUnused",
+   "message": "Call to function ArgumentContracts\\unbound() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "static.php",
+   "line": 46,
+   "identifier": "function.resultUnused",
+   "message": "Call to function ArgumentContracts\\bind() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "static.php",
+   "line": 47,
+   "identifier": "function.resultUnused",
+   "message": "Call to function ArgumentContracts\\bind() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "static.php",
+   "line": 67,
+   "identifier": "function.resultUnused",
+   "message": "Call to function ArgumentContracts\\bind() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "static.php",
+   "line": 67,
+   "identifier": "argument.unknown",
+   "message": "Unknown parameter $unknown in call to function ArgumentContracts\\bind.",
+   "tip": null
+  },
+  {
+   "file": "unresolvable.php",
+   "line": 60,
+   "identifier": "function.resultUnused",
+   "message": "Call to function ArgumentContracts\\value() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "unresolvable.php",
+   "line": 61,
+   "identifier": "function.resultUnused",
+   "message": "Call to function ArgumentContracts\\value() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "unresolvable.php",
+   "line": 62,
+   "identifier": "function.resultUnused",
+   "message": "Call to function ArgumentContracts\\value() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "unresolvable.php",
+   "line": 63,
+   "identifier": "function.resultUnused",
+   "message": "Call to function ArgumentContracts\\value() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "unresolvable.php",
+   "line": 64,
+   "identifier": "function.resultUnused",
+   "message": "Call to function ArgumentContracts\\value() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "unresolvable.php",
+   "line": 65,
+   "identifier": "function.resultUnused",
+   "message": "Call to function ArgumentContracts\\value() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "unresolvable.php",
+   "line": 93,
+   "identifier": "parameter.unresolvableType",
+   "message": "PHPDoc tag @param for parameter $value contains unresolvable type.",
+   "tip": null
+  }
+ ]
+}

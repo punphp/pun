@@ -1,6 +1,9 @@
 //! CallCallablesRule (level 2): calling an expression (`$f()`) checks it is callable and its arguments against the
 //! callable's parameters; CallUserFuncRule (level 5): `call_user_func()` and `call_user_func_array()` check theirs.
 
+use mago_codex::identifier::function_like::FunctionLikeIdentifier;
+use mago_codex::ttype::atomic::{TAtomic, callable::TCallable};
+use mago_codex::ttype::union::TUnion;
 use mago_span::{HasSpan, Span};
 use mago_syntax::cst::*;
 use pun_phpstan::types::{Level, Signature, Type};
@@ -24,7 +27,57 @@ pub(super) fn typed_pipe(p: &Pipe, spans: &mut Vec<Span>) {
 }
 
 /// A callable's acceptor, retaining each signature's parameter names even in a callable union.
-fn of_signature(c: &Checker, s: &Signature) -> Acceptor {
+fn of_signature(c: &Checker, s: &Signature, source: Span) -> Acceptor {
+    // The PHPStan type model describes callable types without ExtendedParameterReflection's binding policy.
+    // Retain it from the original signature, combining identical callable types with the same AND as PHPStan.
+    let metadata = c.types.get(&source).into_iter().flat_map(|t| t.types.iter()).filter_map(|a| {
+        let signature = match a {
+            TAtomic::Callable(TCallable::Signature(s)) => s.clone(),
+            TAtomic::Callable(TCallable::Alias(id)) =>
+                mago_codex::ttype::expander::get_signature_of_function_like_identifier(id, c.codebase)?,
+            _ => return None,
+        };
+        let converted = c.to_phpstan(&TUnion::from_atomic(a.clone()));
+        if !matches!(converted, Type::Closure(ref t) | Type::Callable(Some(ref t)) if **t == *s) {
+            return None;
+        }
+        let source = match signature.get_source() {
+            Some(FunctionLikeIdentifier::Function(name)) => c.codebase.get_function(name.as_bytes()).map(|f| (f, None)),
+            Some(FunctionLikeIdentifier::Method(class, name)) => c.codebase.get_method(class.as_bytes(), name.as_bytes())
+                .map(|f| (f, c.codebase.get_class_like(class.as_bytes()))),
+            _ => None,
+        };
+        let bindings = match source {
+            Some((f, class)) => {
+                let bindings = declared::codex_closure_this(c, f, class);
+                s.params.iter().map(|p| bindings.contains_key(&p.name)).collect::<Vec<_>>()
+            }
+            None => signature.parameters.iter().map(|p| p.get_closure_this_type().is_some()).collect(),
+        };
+        // Preserve late generic PHPDoc operations erased by Mago's callable expansion. Already instantiated class
+        // templates must keep the inferred callable type, not be replaced by their original declaration.
+        let types = source.map(|(f, class)| declared::codex_params(c, f, class).into_iter().map(Some).collect::<Vec<_>>())
+            .unwrap_or_else(|| vec![None; s.params.len()])
+            .into_iter().map(|t| t.filter(|t| {
+                let (mut own, mut class) = (false, false);
+                super::super::type_aliases::each(t, &mut |t| {
+                    if let Type::Template(t) = t {
+                        if super::arguments::is_callees(t) { own = true; } else { class = true; }
+                    }
+                });
+                own && !class
+            })).collect::<Vec<_>>();
+        let named = source.map_or(pun_phpstan::types::Tri::Yes, |(f, class)| params::accepts_named(c, f, class));
+        Some((bindings, types, named))
+    }).reduce(|(mut a, mut types, named), (b, other, other_named)| {
+        for (a, b) in a.iter_mut().zip(b) { *a &= b; }
+        for (t, o) in types.iter_mut().zip(other) { if *t != o { *t = None; } }
+        // Identical closure signatures combine their reflections with OR; distinct callable alternatives are ANDed
+        // by check() before selecting a signature.
+        (a, types, named.or(other_named))
+    });
+    let (bindings, types, named) = metadata.unwrap_or_else(||
+        (vec![false; s.params.len()], vec![None; s.params.len()], pun_phpstan::types::Tri::Yes));
     Acceptor {
         optional: s.params.iter().map(|p| p.optional || p.variadic).collect(),
         variadic: s.params.iter().any(|p| p.variadic),
@@ -33,13 +86,14 @@ fn of_signature(c: &Checker, s: &Signature) -> Acceptor {
         types: s.params.iter().map(|p| declared::with_classes(c, || p.ty.describe(Level::TypeOnly))).collect(),
         variadics: s.params.iter().map(|p| p.variadic).collect(),
         builtin: false,
-        accepts_named_arguments: pun_phpstan::types::Tri::Yes,
-        param_types: s.params.iter().map(|p| ParamType::Typed(p.ty.clone())).collect(),
+        accepts_named_arguments: named,
+        param_types: s.params.iter().zip(types).map(|(p, t)| ParamType::Typed(t.unwrap_or_else(|| p.ty.clone()))).collect(),
         by_ref: s
             .params
             .iter()
             .map(|p| if p.by_ref { pun_phpstan::symbols::ByRef::CreatesNewVariable } else { pun_phpstan::symbols::ByRef::No })
             .collect(),
+        closure_this: bindings,
         class: None,
         callee: None,
     }
@@ -58,6 +112,7 @@ fn inaccessible() -> Acceptor {
         accepts_named_arguments: pun_phpstan::types::Tri::Yes,
         param_types: vec![],
         by_ref: vec![],
+        closure_this: vec![],
         class: None,
         callee: None,
     }
@@ -65,7 +120,7 @@ fn inaccessible() -> Acceptor {
 
 /// The acceptors of `getCallableParametersAcceptors()`; `None` when Pun does not know them. `inaccessible` gets
 /// the private or protected method a callable names out of its scope.
-fn acceptors(c: &Checker, t: &Type, inaccessible: &mut Option<String>) -> Option<Vec<Acceptor>> {
+fn acceptors(c: &Checker, t: &Type, source: Span, inaccessible: &mut Option<String>) -> Option<Vec<Acceptor>> {
     let method = |class: &str, name: &str, inaccessible: &mut Option<String>| -> Option<Vec<Acceptor>> {
         let k = c.class_like(class).found()?;
         let m = members::method(c, k, name.as_bytes())?;
@@ -77,7 +132,7 @@ fn acceptors(c: &Checker, t: &Type, inaccessible: &mut Option<String>) -> Option
         Some(m.variants().all)
     };
     match t {
-        Type::Closure(s) | Type::Callable(Some(s)) => Some(vec![of_signature(c, s)]),
+        Type::Closure(s) | Type::Callable(Some(s)) => Some(vec![of_signature(c, s, source)]),
         Type::ConstString(s) => match s.split_once("::") {
             Some((class, name)) => method(class, name, inaccessible),
             None => c.function(s.as_bytes()).map(|(_, v)| v.all),
@@ -92,7 +147,7 @@ fn acceptors(c: &Checker, t: &Type, inaccessible: &mut Option<String>) -> Option
             method(&class, name, inaccessible)
         }
         Type::Object(n, _) | Type::Static(n, _) | Type::This(n) => method(n, "__invoke", inaccessible),
-        Type::Union(ts) => ts.iter().map(|t| acceptors(c, t, inaccessible)).collect::<Option<Vec<Vec<_>>>>().map(|v| v.concat()),
+        Type::Union(ts) => ts.iter().map(|t| acceptors(c, t, source, inaccessible)).collect::<Option<Vec<Vec<_>>>>().map(|v| v.concat()),
         _ => None,
     }
 }
@@ -110,7 +165,7 @@ pub(in super::super) fn pipe_by_ref(c: &mut Checker, p: &Pipe) {
     if !declared::with_classes(c, || t.is_callable().yes()) {
         return;
     }
-    let Some(all) = acceptors(c, &t, &mut None) else {
+    let Some(all) = acceptors(c, &t, right.span(), &mut None) else {
         return;
     };
     for acceptor in all {
@@ -162,7 +217,7 @@ fn invoke(c: &mut Checker, callee: &Expression, counts: &params::Counts, at: Spa
         return;
     }
     let mut inaccessible = None;
-    let Some(all) = acceptors(c, &t, &mut inaccessible) else {
+    let Some(all) = acceptors(c, &t, callee.span(), &mut inaccessible) else {
         return;
     };
     if let Some(message) = inaccessible.filter(|_| all.len() == 1) {
@@ -246,7 +301,7 @@ pub(in super::super) fn call_user_func(c: &mut Checker, call: &FunctionCall) {
         return;
     };
     let mut inaccessible = None;
-    let Some(all) = acceptors(c, &t, &mut inaccessible) else {
+    let Some(all) = acceptors(c, &t, value.span(), &mut inaccessible) else {
         return;
     };
     let first_level = c.is_top_level(call.span());
