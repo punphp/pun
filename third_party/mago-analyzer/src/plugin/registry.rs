@@ -919,6 +919,9 @@ impl PluginRegistry {
         context: &mut HookContext<'_, '_>,
     ) -> PluginResult<ExpressionHookResult> {
         for hook in &self.expression_hooks {
+            if context.raw_callback_gather && hook.is_observer() {
+                continue;
+            }
             let result = hook.before_expression(expr, context)?;
             if result.should_skip() {
                 return Ok(result);
@@ -934,6 +937,9 @@ impl PluginRegistry {
     /// Returns [`PluginError`] if any registered hook propagates one.
     pub fn after_expression(&self, expr: &Expression<'_>, context: &mut HookContext<'_, '_>) -> PluginResult<()> {
         for hook in &self.expression_hooks {
+            if context.raw_callback_gather && hook.is_observer() {
+                continue;
+            }
             hook.after_expression(expr, context)?;
         }
         Ok(())

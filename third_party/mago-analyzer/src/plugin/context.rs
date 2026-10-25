@@ -215,6 +215,7 @@ pub struct HookContext<'ctx, 'block> {
     pub(crate) artifacts: &'block mut AnalysisArtifacts,
     pub(crate) reported_issues: RefCell<Vec<ReportedIssue>>,
     expression_type_checkpoints: Option<DetachedExpressionTypeCheckpoints>,
+    pub(crate) raw_callback_gather: bool,
 }
 
 impl<'ctx, 'block> HookContext<'ctx, 'block> {
@@ -231,6 +232,7 @@ impl<'ctx, 'block> HookContext<'ctx, 'block> {
             block_context,
             reported_issues: RefCell::new(Vec::new()),
             expression_type_checkpoints: None,
+            raw_callback_gather: false,
         }
     }
 

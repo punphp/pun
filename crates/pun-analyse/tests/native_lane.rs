@@ -40,6 +40,10 @@ impl Provider for Observer {
     }
 }
 impl ExpressionHook for Observer {
+    fn is_observer(&self) -> bool {
+        true
+    }
+
     fn after_expression(
         &self,
         expr: &Expression<'_>,

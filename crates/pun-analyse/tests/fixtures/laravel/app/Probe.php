@@ -116,3 +116,24 @@ function probe_table_names(Models\Category $category, Models\Box $box, Models\St
     \PHPStan\dumpType($box->label);
     \PHPStan\dumpType($stats->total);
 }
+
+/**
+ * @template R
+ * @param callable(): R $callback
+ * @return R
+ */
+function callbackValue(callable $callback)
+{
+    return $callback();
+}
+
+function probe_callback_column(LinkUntagged $model): void
+{
+    \PHPStan\dumpType(callbackValue(static fn () => $model->url));
+    \PHPStan\dumpType($model->url);
+    $result = callbackValue(static function () use ($model) {
+        \PHPStan\dumpType($model->url);
+        return $model->url;
+    });
+    \PHPStan\dumpType($result);
+}

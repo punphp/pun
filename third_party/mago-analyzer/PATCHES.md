@@ -65,8 +65,9 @@ External analysis sessions and provider-supplied effective signatures do not use
 
 Observer isolation covers Pun's current expression observer. A registry with stateful statement,
 declaration, or call hooks needs corresponding isolation before using speculative gathers. Expression
-hooks that supply semantic types must not be treated as observers. Pun's dynamic return providers
-use the separate provider APIs and are not suppressed.
+hooks that publish observations implement `ExpressionHook::is_observer()`. The registry skips those
+hooks during gathering, but runs semantic expression hooks in their existing order. Pun's model-attribute
+hook and dynamic return providers therefore retain their type refinements in the speculative signature.
 
 ## Verification
 
@@ -112,7 +113,7 @@ controls remain unchanged. The maintained analyzer patch remains the same three-
 
 The public Analyzer test injects a one-shot call-hook error during a gather and checks propagation.
 Its successful second analysis checks that an expression observer sees the callback body once.
-Removing the two observer guards makes that assertion fail with two visits instead of one.
+Removing observer filtering makes that assertion fail with two visits instead of one.
 The builtin list callback, captured constant, and return-provider controls also retain their
 unchanged-analyzer behavior. Earlier literal-array builtin precision mismatches are unrelated
 baseline behavior and are not repaired by this patch.
@@ -134,6 +135,41 @@ CARGO_BUILD_JOBS=1 RAYON_NUM_THREADS=2 CARGO_TARGET_DIR=target-callback-gather \
 The measurement intersects added or replaced source lines with LLVM's executable-line records.
 It uses `llvm-cov export --format=lcov` with the callback, array-slice, and debug test executables
 and the merged profile. This measures the maintained patch, not the entire vendored analyzer.
+
+### Semantic expression hooks during gathers
+
+The original blanket expression-hook guard also skipped Laravel's `ModelAttributes`. A callback returning
+an undocumented model column consequently contributed `mixed` even though the migration declares `string`.
+The ordinary contextual visit cannot repair the raw signature selected for template inference.
+
+`ExpressionHook::is_observer()` defaults to `false`: ordinary hooks retain upstream's semantic contract.
+Pun's definedness hook and the test observers return `true`. `HookContext::raw_callback_gather` carries the
+internal dispatch phase; both registry dispatches filter observers before invoking them. This preserves
+semantic type updates without publishing speculative observations. Existing native invalidation on
+semantic setters and hook skips remains in effect.
+
+The public Laravel regression extends `fixtures/laravel/app/Probe.php` with direct, arrow and ordinary
+closure reads of `LinkUntagged::$url`. The model has no property annotation, so the migration-backed hook
+must supply its type. `scripts/analyse-spike.py oracle <disposable-pinkary-copy>` captures four `string`
+dumps under both `parseModelCastsMethod` settings. Before selective dispatch, both Laravel tests fail:
+the direct read is `string`, but both gathered results and the closure body read are `mixed`.
+
+Property resolution caches a read before the after-expression hook runs. When that hook replaces the
+expression type, dispatch now synchronizes an existing property cache entry with the replacement. Otherwise
+a closure importing captured descendant locals, or a subsequent memoized read in its body, recovers the
+pre-hook `mixed`. Entries unchanged by the hook retain their narrowed or assigned types. With both fixes,
+all four dumps match the oracle under both cast settings; the combined callback/native/shape/receiver
+regressions pass (27 tests). Native values remain unavailable after semantic mutation.
+
+The `coverage/callback-observers` fixture checks the production definedness observer. A callback's raw
+array parameter may be empty, while its contextual array is nonempty. Only the contextual visit may
+publish variable certainty. PHPStan reports one `nullCoalesce.variable` error for the nonempty input
+and none for the unknown-array control. Publishing the speculative visit would lose that distinction.
+
+Fresh instrumentation of `callback_gather`, `laravel`, `native_lane`, and the filtered observer fixture
+passes all 22 public tests. Direct `llvm-cov export` over those four executables measures all **27/27**
+changed executable production lines: Pun's `infer.rs` 3/3, and the maintained analyzer's expression
+dispatch 14/14, hook context 1/1, hook trait 3/3, and registry 6/6. No exclusions are used for this patch.
 
 ## Passive native state: bounded first slice
 

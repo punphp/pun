@@ -235,6 +235,10 @@ impl Provider for Definedness {
 }
 
 impl ExpressionHook for Definedness {
+    fn is_observer(&self) -> bool {
+        true
+    }
+
     fn before_expression(&self, expr: &Expression<'_>, context: &mut HookContext<'_, '_>) -> HookResult<ExpressionHookResult> {
         let span = expr.span();
         if let Some(id) = self.ids.get(&span) {

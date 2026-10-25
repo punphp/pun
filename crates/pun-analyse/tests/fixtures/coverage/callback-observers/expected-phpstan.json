@@ -1,0 +1,12 @@
+{
+ "general": [],
+ "errors": [
+  {
+   "file": "observed.php",
+   "line": 24,
+   "identifier": "nullCoalesce.variable",
+   "message": "Variable $present on left side of ?? always exists and is not nullable.",
+   "tip": null
+  }
+ ]
+}

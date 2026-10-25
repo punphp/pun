@@ -13,6 +13,12 @@ use crate::plugin::provider::Provider;
 /// allowing hooks to inspect expressions, report issues, modify analysis state,
 /// and optionally skip analysis with a custom type.
 pub trait ExpressionHook: Provider {
+    /// Observers publish information outside the analysis state and must not see speculative callback walks.
+    /// Semantic hooks keep the default so raw return inference retains their type refinements.
+    fn is_observer(&self) -> bool {
+        false
+    }
+
     /// Called before an expression is analyzed.
     ///
     /// Return `ExpressionHookResult::Continue` to proceed with normal analysis,

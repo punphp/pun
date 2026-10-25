@@ -134,6 +134,10 @@ fn speculative_errors_propagate_and_expression_observers_run_once() {
         }
     }
     impl ExpressionHook for Observer {
+        fn is_observer(&self) -> bool {
+            true
+        }
+
         fn after_expression(
             &self,
             expression: &Expression<'_>,

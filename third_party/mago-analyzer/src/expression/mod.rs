@@ -1,3 +1,5 @@
+use std::rc::Rc;
+
 use mago_algebra::AssertionMap;
 
 use mago_algebra::clause::Clause;
@@ -10,6 +12,7 @@ use mago_reporting::Annotation;
 use mago_reporting::Issue;
 use mago_span::HasPosition;
 use mago_span::HasSpan;
+use mago_syntax::cst::Access;
 use mago_syntax::cst::Expression;
 use mago_syntax::cst::Node;
 use mago_syntax::cst::Parenthesized;
@@ -31,6 +34,7 @@ use crate::reconciler::reconcile_keyed_types;
 use crate::statement::attributes::analyze_class_like_attributes;
 use crate::statement::class_like::analyze_class_like;
 use crate::statement::class_like::override_attribute;
+use crate::utils::expression::get_block_expression_id;
 use crate::utils::misc::check_for_paradox;
 
 pub mod access;
@@ -73,8 +77,9 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Expression<'arena> {
         artifacts.remove_native_expression_type(&(span.start.offset, span.end.offset));
         artifacts.record_variable_definedness(Node::Expression(self), block_context);
 
-        if context.raw_callback_gather_depth == 0 && context.plugin_registry.has_expression_hooks() {
+        if context.plugin_registry.has_expression_hooks() {
             let mut hook_context = HookContext::new(context.codebase, context.source_file, block_context, artifacts);
+            hook_context.raw_callback_gather = context.raw_callback_gather_depth > 0;
             let expression_hook_result = context.plugin_registry.before_expression(self, &mut hook_context)?;
             if !matches!(expression_hook_result, ExpressionHookResult::Continue) {
                 hook_context.invalidate_native_types();
@@ -249,11 +254,26 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Expression<'arena> {
 
         crate::native::after_expression(self, block_context, artifacts);
 
-        if context.raw_callback_gather_depth == 0 && context.plugin_registry.has_expression_hooks() {
+        if context.plugin_registry.has_expression_hooks() {
+            let previous_type = artifacts.get_rc_expression_type(self).cloned();
             let mut hook_context = HookContext::new(context.codebase, context.source_file, block_context, artifacts);
+            hook_context.raw_callback_gather = context.raw_callback_gather_depth > 0;
             context.plugin_registry.after_expression(self, &mut hook_context)?;
             for reported in hook_context.take_issues() {
                 context.collector.report_with_code(reported.code, reported.issue);
+            }
+
+            // A semantic refinement must replace the value cached by property resolution too.
+            // Otherwise later reads (including captured descendants) recover the pre-hook type.
+            if matches!(
+                self,
+                Expression::Access(Access::Property(_) | Access::NullSafeProperty(_))
+            ) && let Some(ty) = artifacts.get_rc_expression_type(self)
+                && previous_type.as_ref().is_some_and(|previous| !Rc::ptr_eq(previous, ty))
+                && let Some(id) = get_block_expression_id(self, context, block_context)
+                && let Some(cached) = block_context.locals.get_mut(&id)
+            {
+                *cached = Rc::clone(ty);
             }
         }
 

@@ -299,6 +299,22 @@
   [
    117,
    "int"
+  ],
+  [
+   132,
+   "string"
+  ],
+  [
+   133,
+   "string"
+  ],
+  [
+   135,
+   "string"
+  ],
+  [
+   138,
+   "string"
   ]
  ],
  "parseModelCastsMethod=true": [
@@ -601,6 +617,22 @@
   [
    117,
    "int"
+  ],
+  [
+   132,
+   "string"
+  ],
+  [
+   133,
+   "string"
+  ],
+  [
+   135,
+   "string"
+  ],
+  [
+   138,
+   "string"
   ]
  ]
 }
