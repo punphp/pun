@@ -59,6 +59,12 @@ pub(crate) fn is_contained_by(
             return false;
         };
 
+        // TemplateTypeVariance::isValidVariance() accepts a never argument before
+        // checking variance. It remains never when the containing value is assigned.
+        if specialized_template_type.is_never() {
+            continue;
+        }
+
         // When the input has no explicit type parameters, the specialized type
         // is only the template's upper bound, not an explicit invariant argument.
         if input_type_parameters.is_none() {
@@ -152,8 +158,7 @@ pub(crate) fn is_contained_by(
         if all_parameters_match
             && !specialized_template_type.has_template()
             && !container_type_parameter.has_template()
-            && (specialized_template_type.is_never()
-                || specialized_template_type.is_literal_of(container_type_parameter))
+            && specialized_template_type.is_literal_of(container_type_parameter)
         {
             widen_input_param(atomic_comparison_result, input_type_part, parameter_offset, container_type_parameter);
         }

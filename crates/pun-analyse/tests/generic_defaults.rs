@@ -62,6 +62,41 @@ fn constructor_defaults() {
 }
 
 #[test]
+fn empty_array_arguments_infer_never_without_erasing_shape_templates() {
+    let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/generic-defaults");
+    let expected: Value =
+        serde_json::from_str(include_str!("fixtures/generic-defaults/empty-arrays.json")).unwrap();
+    let mut want: Vec<_> = expected["files"]
+        .as_object()
+        .unwrap()
+        .values()
+        .next()
+        .unwrap()["messages"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .map(|e| {
+            (
+                e["line"].as_i64().unwrap(),
+                e["identifier"].as_str().unwrap().to_string(),
+                e["message"].as_str().unwrap().to_string(),
+            )
+        })
+        .collect();
+    let mut got: Vec<_> = run(&Project::new(
+        vec![root.join("empty-arrays.php")],
+        Vec::new(),
+    ))
+    .unwrap()
+    .into_iter()
+    .map(|e| (e.line, e.identifier, e.message))
+    .collect();
+    got.sort();
+    want.sort();
+    assert_eq!(got, want);
+}
+
+#[test]
 fn bounds_spl_and_weakmap_without_defaults() {
     let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/generic-defaults");
     let result = run_mago(

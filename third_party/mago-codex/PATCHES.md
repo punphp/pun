@@ -103,3 +103,11 @@ This patch does not add error producers, Pun conversion, array-literal normaliza
 extraction transfers. The external worker complete-type wire format is unchanged. Serde persistence
 and in-process type handles retain the marker, but a future worker codec extension needs its own
 public transport regression before complete types can carry the marker across that boundary.
+
+## Never-valued generic arguments
+
+`comparator/generic_comparator.rs` accepts a specialized `never` argument before variance checks,
+matching PHPStan 2.3.1's `TemplateTypeVariance::isValidVariance()`. Assignment preserves that
+argument instead of widening it to the containing type's parameter. The public `generic_defaults`
+fixture compares empty and populated constructors, a readonly property assignment, and subsequent
+offset checks against the actual PHPStan oracle. This does not change unresolved placeholders.

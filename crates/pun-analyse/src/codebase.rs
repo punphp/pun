@@ -214,6 +214,30 @@ fn build_prelude(php_version: u32) -> (CodebaseMetadata, SymbolReferences) {
                 .functions
                 .contains_key(&String::from_utf8_lossy(name.as_bytes()).to_ascii_lowercase())
     });
+    // Runtime reflection supplies empty-array constructor defaults even when an API stub
+    // writes null (ArrayObject and ArrayIterator). Generic inference must see the real value.
+    for ((class, name), constructor) in &mut metadata.function_likes {
+        if !name.as_bytes().eq_ignore_ascii_case(b"__construct") {
+            continue;
+        }
+        let Some(variant) = builtins
+            .classes
+            .get(&String::from_utf8_lossy(class.as_bytes()).to_ascii_lowercase())
+            .and_then(|class| class.methods.get("__construct"))
+            .and_then(|constructor| constructor.variants.first())
+        else {
+            continue;
+        };
+        for (parameter, reflected) in constructor.parameters.iter_mut().zip(&variant.params) {
+            if reflected.default.as_deref() == Some("array{}") {
+                parameter.default_type = Some(TypeMetadata::new(
+                    mago_codex::ttype::get_empty_keyed_array(),
+                    parameter.span,
+                ));
+                parameter.flags.insert(MetadataFlags::HAS_DEFAULT);
+            }
+        }
+    }
     // ConstantResolver::resolvePredefinedConstant keeps both 32- and 64-bit values, not the host's
     // stub initializer. Namespace fallback in Mago reads this metadata instead of its platform helper.
     // Also retain numeric constants absent from the prelude (PHP 8.5's FILTER_THROW_ON_FAILURE)

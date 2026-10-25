@@ -36,6 +36,7 @@ use mago_codex::ttype::expander::get_signature_of_function_like_identifier;
 use mago_codex::ttype::get_array_parameters;
 use mago_codex::ttype::get_array_value_parameter;
 use mago_codex::ttype::get_iterable_parameters;
+use mago_codex::ttype::get_never;
 use mago_codex::ttype::get_specialized_template_type;
 use mago_codex::ttype::template::TemplateResult;
 use mago_codex::ttype::template::definition_type_replacer::DefinitionReplacementOptions;
@@ -177,28 +178,26 @@ fn infer_templates_from_input_and_container_types<A>(
         .iter()
         .any(|t| matches!(t, TAtomic::Scalar(TScalar::ClassLikeString(TClassLikeString::Generic { .. }))));
 
-    let has_bare_generic_parameter = generic_container_parts.iter().any(|t| matches!(t, TAtomic::GenericParameter(_)));
     let residual_input_types = input_type
         .types
         .iter()
         .filter(|argument_atomic| {
-            (!argument_atomic.is_empty_array() || has_bare_generic_parameter)
-                && !concrete_container_parts.iter().any(|container_atomic| {
-                    if has_generic_class_string
-                        && matches!(argument_atomic, TAtomic::Scalar(TScalar::ClassLikeString(_)))
-                        && matches!(container_atomic, TAtomic::Scalar(TScalar::String(_)))
-                    {
-                        return false;
-                    }
+            !concrete_container_parts.iter().any(|container_atomic| {
+                if has_generic_class_string
+                    && matches!(argument_atomic, TAtomic::Scalar(TScalar::ClassLikeString(_)))
+                    && matches!(container_atomic, TAtomic::Scalar(TScalar::String(_)))
+                {
+                    return false;
+                }
 
-                    atomic_comparator::is_contained_by(
-                        context.codebase,
-                        argument_atomic,
-                        container_atomic,
-                        false,
-                        &mut ComparisonResult::default(),
-                    )
-                })
+                atomic_comparator::is_contained_by(
+                    context.codebase,
+                    argument_atomic,
+                    container_atomic,
+                    false,
+                    &mut ComparisonResult::default(),
+                )
+            })
         })
         .cloned()
         .collect::<Vec<_>>();
@@ -217,6 +216,26 @@ fn infer_templates_from_input_and_container_types<A>(
             TAtomic::Array(container_array) => {
                 for input_atomic in residual_input_type.types.as_ref() {
                     if let TAtomic::Array(input_array) = input_atomic {
+                        // ArrayType::inferTemplateTypes() includes empty arrays: both iterable
+                        // parameters are never. ConstantArrayType instead matches known keys.
+                        let is_generic_array = match container_array {
+                            TArray::Keyed(keyed) => keyed.known_items.is_none(),
+                            TArray::List(list) => list.known_elements.is_none(),
+                        };
+                        if input_atomic.is_empty_array() && is_generic_array {
+                            let (key, value) = get_array_parameters(container_array, context.codebase);
+                            for parameter in [&key, &value] {
+                                infer_templates_from_input_and_container_types(
+                                    context,
+                                    parameter,
+                                    &get_never(),
+                                    template_result,
+                                    options,
+                                    violations,
+                                );
+                            }
+                            continue;
+                        }
                         match (container_array, input_array) {
                             (TArray::List(container_list), TArray::List(input_list)) => {
                                 let mut inferred_input_elements = vec![];

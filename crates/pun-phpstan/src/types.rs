@@ -3002,8 +3002,6 @@ pub fn union(types: Vec<Type>) -> Type {
         return types.pop().expect("one type");
     }
     let mut benevolent: Vec<String> = Vec::new();
-    // a TemplateBenevolentUnionType is flattened too, and comes back when only its members are left
-    let mut benevolent_template: Option<Box<Template>> = None;
     let mut flat = Vec::new();
     for t in types {
         match t {
@@ -3014,15 +3012,6 @@ pub fn union(types: Vec<Type>) -> Type {
                     benevolent.push(i.describe(Level::Value));
                 }
                 flat.extend(inner);
-            }
-            Type::Template(tpl) => {
-                if let Type::Benevolent(inner) = &tpl.bound {
-                    benevolent.extend(inner.iter().map(|i| i.describe(Level::Value)));
-                    flat.extend(inner.iter().cloned());
-                    benevolent_template.get_or_insert(tpl);
-                    continue;
-                }
-                flat.push(Type::Template(tpl));
             }
             Type::Union(inner) => flat.extend(inner),
             t => flat.push(t),
@@ -3145,13 +3134,7 @@ pub fn union(types: Vec<Type>) -> Type {
             .iter()
             .all(|t| benevolent.contains(&t.describe(Level::Value)))
     {
-        return match benevolent_template {
-            Some(tpl) => Type::Template(Box::new(Template {
-                bound: Type::Benevolent(types),
-                ..*tpl
-            })),
-            None => Type::Benevolent(types),
-        };
+        return Type::Benevolent(types);
     }
     Type::Union(types)
 }

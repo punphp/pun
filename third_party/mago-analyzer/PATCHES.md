@@ -1052,3 +1052,13 @@ Unsealed constant-array-valued generic parents remain outside the sealed-shape e
 The existing `generic-keys.php:98–99,108,116,137–138` failures retain their original oracle expectations.
 These boundaries and the retained generic-key failures still prevent whole-rule parity.
 This patch does not activate a rule mapping or change the shared readers, converter, or observation API.
+
+## Empty-array template inference
+
+`invocation/template_inference.rs` retains empty input arrays for generic container parameters.
+PHPStan 2.3.1's `ArrayType::inferTemplateTypes()` infers their iterable key and value as `never`.
+Constant shapes still infer only from matching keys, so an absent optional key does not supply a
+template value. Pun overlays exported empty-array constructor defaults before invoking this path;
+Mago's nullable API-stub default is not the runtime value for ArrayObject and ArrayIterator.
+`generic_defaults/empty-arrays.json` retains the actual oracle's 15 diagnostics, including populated
+controls, optional shapes, generic empty lists, readonly assignment, and invalid unset offsets.

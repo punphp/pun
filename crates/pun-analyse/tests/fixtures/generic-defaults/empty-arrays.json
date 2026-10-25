@@ -1,0 +1,104 @@
+{
+  "totals": {
+    "errors": 0,
+    "file_errors": 15
+  },
+  "files": {
+    "empty-arrays.php": {
+      "errors": 15,
+      "messages": [
+        {
+          "message": "Dumped type: array{}",
+          "line": 23,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: array{}",
+          "line": 24,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: array<'key', 37>",
+          "line": 25,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: list<*NEVER*>",
+          "line": 26,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: list<*NEVER*>",
+          "line": 27,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: list<37>",
+          "line": 28,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: mixed",
+          "line": 29,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: ArrayObject<*NEVER*, *NEVER*>",
+          "line": 30,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: ArrayObject<*NEVER*, *NEVER*>",
+          "line": 31,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: ArrayObject<string, int>",
+          "line": 32,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: ArrayIterator<*NEVER*, *NEVER*>",
+          "line": 33,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: ArrayIterator<*NEVER*, *NEVER*>",
+          "line": 34,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: ArrayObject<*NEVER*, *NEVER*>",
+          "line": 47,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Cannot unset offset 'a' on ArrayObject<*NEVER*, *NEVER*>.",
+          "line": 48,
+          "ignorable": true,
+          "identifier": "unset.offset"
+        },
+        {
+          "message": "Cannot unset offset 'a' on ArrayObject<*NEVER*, *NEVER*>.",
+          "line": 49,
+          "ignorable": true,
+          "identifier": "unset.offset"
+        }
+      ]
+    }
+  },
+  "errors": []
+}

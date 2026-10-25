@@ -613,7 +613,7 @@ impl<'a, 'arena> Checker<'a, 'arena> {
     fn array(&self, a: &TArray, declared_shape: bool) -> Type {
         match a {
             TArray::List(l) => {
-                if l.element_type.is_never() {
+                if l.element_type.is_never() && l.known_elements.is_some() {
                     let mut shape = ConstArray::empty();
                     for (i, (optional, v)) in l.known_elements.iter().flat_map(|k| k.iter()) {
                         if *optional {

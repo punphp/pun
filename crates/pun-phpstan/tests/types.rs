@@ -17,12 +17,9 @@ const UNNORMALIZED: &[&str] = &[
     "('apache' | 'apache2handler' | 'cgi' | 'cli' | 'cli-server' | 'embed' | 'fpm-fcgi' | 'litespeed' | 'phpdbg' | non-falsy-string)",
 ];
 
-/// PHPStan 2.3 signature types Pun does not model yet, as `Class::type`: a template parameter whose bound is a
-/// benevolent union stays the template (Pun resolves it to the bound), and `static` of an iterator whose
+/// PHPStan 2.3 signature types Pun does not model yet, as `Class::type`: `static` of an iterator whose
 /// `@extends` names its template arguments keeps them as arguments of the parent.
 const SIGNATURE_GAPS: &[&str] = &[
-    "ArrayIterator::(__template<TKey, 'class ArrayIterator', __benevolent<(int | string)>> | null)",
-    "ArrayObject::(__template<TKey, 'class ArrayObject', __benevolent<(int | string)>> | null)",
     "ParentIterator::static",
     "RecursiveCachingIterator::static",
     "RecursiveFilterIterator::static",
