@@ -39,16 +39,17 @@ impl<'a, 'arena> Checker<'a, 'arena> {
         {
             return Some(Type::Object(text(self.names.get(id)), vec![]));
         }
-        // Mago's keyed arrays are BTreeMaps: only the literal still knows PHP's insertion order. Unknown
-        // keys/unpacks keep the inferred fallback, rather than inventing an order for a nonliteral shape.
-        let ty = self.literal_array(e).unwrap_or_else(|| self.to_phpstan(t));
-        let ty = self.refine_method_guards(e, ty);
-        // MutatingScope::enterFunction/enterClassMethod converts PHPDoc parameter/return values to arguments.
-        // An inline @var annotation does not: its source metadata can restore that distinct template strategy.
-        let ty = inferred_argument(&ty);
-        let ty = self
-            .source_type(e.span(), &self.origins)
-            .map_or(ty.clone(), |source| restore(ty, &source));
+        let ty = declared::with_classes(self, || {
+            // Mago's keyed arrays are BTreeMaps: only the literal still knows PHP's insertion order. Unknown
+            // keys/unpacks keep the inferred fallback, rather than inventing an order for a nonliteral shape.
+            let ty = self.literal_array(e).unwrap_or_else(|| self.to_phpstan(t));
+            let ty = self.refine_method_guards(e, ty);
+            // MutatingScope::enterFunction/enterClassMethod converts PHPDoc parameter/return values to arguments.
+            // An inline @var annotation does not: its source metadata can restore that distinct template strategy.
+            let ty = inferred_argument(&ty);
+            self.source_type(e.span(), &self.origins)
+                .map_or(ty.clone(), |source| restore(ty, &source))
+        });
         Some(ty)
     }
 
@@ -180,11 +181,14 @@ impl<'a, 'arena> Checker<'a, 'arena> {
 
     /// A Mago type as PHPStan's.
     pub(in super::super) fn to_phpstan(&self, t: &TUnion) -> Type {
-        let types = union(t.types.iter().map(|a| self.atom(a)).collect());
-        if super::super::return_types::is_benevolent(t) {
-            return pun_phpstan::types::to_benevolent(types);
-        }
-        types
+        // Combinators need declared variance before they decide whether generic alternatives are redundant.
+        declared::with_classes(self, || {
+            let types = union(t.types.iter().map(|a| self.atom(a)).collect());
+            if super::super::return_types::is_benevolent(t) {
+                return pun_phpstan::types::to_benevolent(types);
+            }
+            types
+        })
     }
 
     fn signature(&self, s: &mago_codex::ttype::atomic::callable::TCallableSignature) -> Box<Signature> {

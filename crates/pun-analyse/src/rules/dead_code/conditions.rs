@@ -1122,7 +1122,7 @@ impl Checker<'_, '_> {
     fn special(&self, name: &str, args: &ArgumentList) -> Option<Option<bool>> {
         let arg = |i: usize| args.arguments.get(i).and_then(|a| self.phpstan_type(a.value()));
         Some(match name {
-            "in_array" => (|| self.in_array(arg(0)?, arg(1)?, arg(2)))(),
+            "in_array" => super::super::declared::with_classes(self, || self.in_array(arg(0)?, arg(1)?, arg(2))),
             "method_exists" => (|| self.method_exists(arg(0)?, arg(1)?))(),
             "property_exists" => (|| self.property_exists(arg(0)?, arg(1)?))(),
             // the always true result is suppressed: autoloading can fail

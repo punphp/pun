@@ -1048,7 +1048,7 @@ impl Type {
             Type::Intersection(types) => {
                 let mapped: Vec<Type> = types.iter().map(f).collect();
                 if mapped == *types {
-                    self.clone()
+                    Type::Intersection(mapped)
                 } else {
                     intersect(mapped)
                 }
