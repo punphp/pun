@@ -32,6 +32,7 @@ use mago_codex::ttype::expander::StaticClassType;
 use mago_codex::ttype::expander::TypeExpansionOptions;
 use mago_codex::ttype::expander::expand_union;
 use mago_codex::ttype::get_arraykey;
+use mago_codex::ttype::get_error;
 use mago_codex::ttype::get_int;
 use mago_codex::ttype::get_mixed;
 use mago_codex::ttype::get_mixed_maybe_from_loop;
@@ -70,7 +71,18 @@ fn accumulate_value_type(
     codebase: &CodebaseMetadata,
     preserve_array_shapes: bool,
 ) {
+    // UnionType::getOffsetValueType discards failed arms, not successful null values.
+    // Keep the possibility of absence for subsequent isset/coalesce checks.
     *value_type = Some(match value_type.take() {
+        Some(mut existing_type) if new_type.is_error() => {
+            existing_type.set_possibly_undefined(true, None);
+            existing_type
+        }
+        Some(existing_type) if existing_type.is_error() => {
+            let mut new_type = new_type;
+            new_type.set_possibly_undefined(true, None);
+            new_type
+        }
         Some(existing_type) => add_array_access_union_type(existing_type, &new_type, codebase, preserve_array_shapes),
         None => new_type,
     });
@@ -288,7 +300,8 @@ where
             }
             TAtomic::Null | TAtomic::Void => {
                 if !array_like_type.ignore_nullable_issues() && !in_assignment {
-                    value_type = Some(add_optional_union_type(get_null(), value_type.as_ref(), context.codebase));
+                    let read = if block_context.flags.inside_isset() { get_null() } else { get_error() };
+                    accumulate_value_type(&mut value_type, read, context.codebase, preserve_array_shapes);
                 }
 
                 if !in_assignment
@@ -332,7 +345,8 @@ where
             }
             TAtomic::Scalar(TScalar::Bool(bool_scalar)) if bool_scalar.is_false() => {
                 if !array_like_type.ignore_falsable_issues() && !in_assignment {
-                    value_type = Some(add_optional_union_type(get_null(), value_type.as_ref(), context.codebase));
+                    let read = if block_context.flags.inside_isset() { get_null() } else { get_error() };
+                    accumulate_value_type(&mut value_type, read, context.codebase, preserve_array_shapes);
                 }
 
                 if !block_context.flags.inside_isset()
@@ -595,6 +609,7 @@ where
 
             value_type
         }
+        None if !in_assignment && !block_context.flags.inside_isset() => get_error(),
         None => get_mixed(),
     }
 }
@@ -723,7 +738,7 @@ where
                         ),
                     );
 
-                    return get_null();
+                    return if block_context.flags.inside_isset() { get_null() } else { get_error() };
                 }
 
                 let mut resulting_type = type_param.into_owned();
@@ -1080,7 +1095,7 @@ where
                     }
                 }
 
-                if has_value_parameter { value_parameter.into_owned() } else { get_null() }
+                if has_value_parameter { value_parameter.into_owned() } else { get_error() }
             } else if has_value_parameter {
                 // Inside isset() check on array with generic parameters - the key might exist at runtime
                 // Don't report impossible isset - just return the value type as possibly undefined
@@ -1307,6 +1322,8 @@ where
             value_parameter.into_owned()
         } else if in_assignment {
             get_never()
+        } else if !block_context.flags.inside_isset() {
+            get_error()
         } else {
             get_null()
         }

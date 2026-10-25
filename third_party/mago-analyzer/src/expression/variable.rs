@@ -218,9 +218,7 @@ where
                 );
 
                 Rc::new(get_mixed())
-            } else if block_context.flags.inside_unset() {
-                Rc::new(get_null())
-            } else if block_context.flags.inside_isset() {
+            } else if block_context.flags.inside_isset() || block_context.flags.inside_unset() {
                 Rc::new(get_mixed())
             } else {
                 let mut issue = Issue::error(format!("Undefined variable: `{variable_name}`.")).with_annotation(
@@ -301,11 +299,8 @@ where
     }
 
     // VariableHandler reads ErrorType when the asking scope knows the variable does not exist.
-    // Preserve isset/unset probing and the reference-creation transfer above.
-    if !block_context.flags.inside_isset()
-        && !block_context.flags.inside_unset()
-        && block_context.variable_certainty(variable_atom).is_absent()
-    {
+    // Preserve isset probing and the reference-creation transfer above; unset consumes the failed read.
+    if !block_context.flags.inside_isset() && block_context.variable_certainty(variable_atom).is_absent() {
         Rc::new(get_error())
     } else {
         variable_type

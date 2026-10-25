@@ -1,0 +1,200 @@
+{
+  "totals": {
+    "errors": 0,
+    "file_errors": 31
+  },
+  "files": {
+    "values.php": {
+      "errors": 31,
+      "messages": [
+        {
+          "message": "Dumped type: *ERROR*",
+          "line": 8,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: *ERROR*",
+          "line": 10,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: 1",
+          "line": 11,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: *ERROR*",
+          "line": 13,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: *ERROR*",
+          "line": 15,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: int",
+          "line": 21,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: null",
+          "line": 22,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: *ERROR*",
+          "line": 23,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: int",
+          "line": 25,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Cannot unset offset 'bad' on int.",
+          "line": 26,
+          "ignorable": true,
+          "identifier": "unset.offset"
+        },
+        {
+          "message": "Dumped type: 1",
+          "line": 32,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: 2",
+          "line": 33,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: *ERROR*",
+          "line": 34,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: *ERROR*",
+          "line": 40,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: null",
+          "line": 41,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: *ERROR*",
+          "line": 43,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: false",
+          "line": 44,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: *ERROR*",
+          "line": 46,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: 1",
+          "line": 47,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Call to function unset() contains undefined variable $missing.",
+          "line": 52,
+          "ignorable": true,
+          "identifier": "unset.variable"
+        },
+        {
+          "message": "Dumped type: *ERROR*",
+          "line": 53,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Call to function unset() contains undefined variable $array.",
+          "line": 57,
+          "ignorable": true,
+          "identifier": "unset.variable"
+        },
+        {
+          "message": "Dumped type: *ERROR*",
+          "line": 58,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Cannot unset offset 'key' on null.",
+          "line": 65,
+          "ignorable": true,
+          "identifier": "unset.offset"
+        },
+        {
+          "message": "Dumped type: null",
+          "line": 66,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Cannot unset offset 'key' on null.",
+          "line": 68,
+          "ignorable": true,
+          "identifier": "unset.offset"
+        },
+        {
+          "message": "Dumped type: null",
+          "line": 69,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: int",
+          "line": 77,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: 1",
+          "line": 78,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: int|false",
+          "line": 84,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: 3",
+          "line": 85,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        }
+      ]
+    }
+  },
+  "errors": []
+}
