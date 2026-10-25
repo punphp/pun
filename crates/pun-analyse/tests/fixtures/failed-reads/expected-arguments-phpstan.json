@@ -1,0 +1,134 @@
+{
+  "totals": {
+    "errors": 0,
+    "file_errors": 20
+  },
+  "files": {
+    "arguments.php": {
+      "errors": 20,
+      "messages": [
+        {
+          "message": "Offset 'missing' does not exist on array{present: 1}.",
+          "line": 18,
+          "ignorable": true,
+          "identifier": "offsetAccess.notFound"
+        },
+        {
+          "message": "Undefined variable: $undefined",
+          "line": 19,
+          "ignorable": true,
+          "identifier": "variable.undefined"
+        },
+        {
+          "message": "Offset 'absent' does not exist on array{present: 1}.",
+          "line": 20,
+          "ignorable": true,
+          "identifier": "offsetAccess.notFound"
+        },
+        {
+          "message": "Parameter #2 $other of function FailedReadArguments\\takesPair expects int, string given.",
+          "line": 20,
+          "ignorable": true,
+          "identifier": "argument.type"
+        },
+        {
+          "message": "Function FailedReadArguments\\takesPair invoked with 1 parameter, 2 required.",
+          "line": 21,
+          "ignorable": true,
+          "identifier": "arguments.count"
+        },
+        {
+          "message": "Offset 'no-other' does not exist on array{present: 1}.",
+          "line": 21,
+          "ignorable": true,
+          "identifier": "offsetAccess.notFound"
+        },
+        {
+          "message": "Parameter #1 $value of function FailedReadArguments\\takesInt expects int, string given.",
+          "line": 22,
+          "ignorable": true,
+          "identifier": "argument.type"
+        },
+        {
+          "message": "Parameter #1 $value of function FailedReadArguments\\takesInt expects int, mixed given.",
+          "line": 23,
+          "ignorable": true,
+          "identifier": "argument.type"
+        },
+        {
+          "message": "Parameter #1 $value of function FailedReadArguments\\takesInt expects int, null given.",
+          "line": 24,
+          "ignorable": true,
+          "identifier": "argument.type"
+        },
+        {
+          "message": "Parameter #1 $value of function FailedReadArguments\\takesInt expects int, false given.",
+          "line": 25,
+          "ignorable": true,
+          "identifier": "argument.type"
+        },
+        {
+          "message": "Offset 'missing-named' does not exist on array{present: 1}.",
+          "line": 26,
+          "ignorable": true,
+          "identifier": "offsetAccess.notFound"
+        },
+        {
+          "message": "Parameter $value of function FailedReadArguments\\takesPair expects int, string given.",
+          "line": 26,
+          "ignorable": true,
+          "identifier": "argument.type"
+        },
+        {
+          "message": "Missing parameter $value (int) in call to function FailedReadArguments\\takesInt.",
+          "line": 27,
+          "ignorable": true,
+          "identifier": "argument.missing"
+        },
+        {
+          "message": "Offset 'unknown-parameter' does not exist on array{present: 1}.",
+          "line": 27,
+          "ignorable": true,
+          "identifier": "offsetAccess.notFound"
+        },
+        {
+          "message": "Unknown parameter $unknown in call to function FailedReadArguments\\takesInt.",
+          "line": 27,
+          "ignorable": true,
+          "identifier": "argument.unknown"
+        },
+        {
+          "message": "Offset 0 does not exist on array{present: 1}.",
+          "line": 29,
+          "ignorable": true,
+          "identifier": "offsetAccess.notFound"
+        },
+        {
+          "message": "Dumped type: 1",
+          "line": 30,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: 1",
+          "line": 32,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: int",
+          "line": 34,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Parameter #1 $value of function FailedReadArguments\\initialize is passed by reference, so it expects variables only.",
+          "line": 36,
+          "ignorable": true,
+          "identifier": "argument.byRef"
+        }
+      ]
+    }
+  },
+  "errors": []
+}

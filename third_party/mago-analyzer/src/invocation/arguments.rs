@@ -197,6 +197,11 @@ pub fn verify_argument_type<'arena, A>(
 ) where
     A: Arena,
 {
+    // ErrorType preserves the failed read; its primary diagnostic is not an argument type mismatch.
+    if input_type.is_error() {
+        return;
+    }
+
     let target_kind_str = invocation_target.guess_kind();
     let call_site_message = || match target_kind_str {
         "function" => Cow::Borrowed("Arguments to this function are incorrect"),
