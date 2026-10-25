@@ -13,6 +13,7 @@ use crate::ttype::atomic::array::TArray;
 use crate::ttype::atomic::array::keyed::TKeyedArray;
 use crate::ttype::atomic::array::list::TList;
 use crate::ttype::atomic::generic::TGenericParameter;
+use crate::ttype::atomic::mixed::TMixed;
 use crate::ttype::atomic::object::TObject;
 use crate::ttype::atomic::object::named::TNamedObject;
 use crate::ttype::atomic::scalar::TScalar;
@@ -590,6 +591,13 @@ pub fn get_mixed() -> TUnion {
     TUnion::from_single(Cow::Borrowed(MIXED_ATOMIC))
 }
 
+/// Returns PHPStan's `ErrorType`: unconstrained mixed with distinct error identity.
+#[inline]
+#[must_use]
+pub fn get_error() -> TUnion {
+    TUnion::from_atomic(TAtomic::Mixed(TMixed::error()))
+}
+
 #[inline]
 #[must_use]
 pub fn get_truthy_mixed() -> TUnion {
@@ -1003,7 +1011,7 @@ fn combine_unequal_union_types_cow(
         type_2.clone()
     } else if type_2.is_never() || type_2.is_never_template() {
         type_1.into_owned()
-    } else if type_1.is_vanilla_mixed() && type_2.is_vanilla_mixed() {
+    } else if type_1.is_vanilla_mixed() && type_2.is_vanilla_mixed() && !type_1.is_error() && !type_2.is_error() {
         get_mixed()
     } else {
         let mut all_atomic_types = match type_1 {
@@ -1091,7 +1099,11 @@ fn add_unequal_union_type_inner(
     preserve_array_shapes: bool,
 ) -> TUnion {
     let original_flags = base_type.flags;
-    let mut base_type = if base_type.is_vanilla_mixed() && other_type.is_vanilla_mixed() {
+    let mut base_type = if base_type.is_vanilla_mixed()
+        && other_type.is_vanilla_mixed()
+        && !base_type.is_error()
+        && !other_type.is_error()
+    {
         base_type
     } else {
         combine_unequal_union_types_cow(Cow::Owned(base_type), other_type, codebase, options, preserve_array_shapes)
@@ -1130,6 +1142,15 @@ pub fn intersect_union_types(type_1: &TUnion, type_2: &TUnion, codebase: &Codeba
 
     if type_1.is_never() || type_2.is_never() {
         return Some(get_never());
+    }
+
+    if type_1.is_error() {
+        return Some(match type_2.types.as_ref() {
+            [TAtomic::Mixed(mixed)] if mixed.is_vanilla() => type_1.clone(),
+            _ => type_2.clone(),
+        });
+    } else if type_2.is_error() {
+        return Some(type_1.clone());
     }
 
     let mut intersection_performed = false;

@@ -604,6 +604,12 @@ impl TUnion {
         self.types.iter().all(|t| matches!(t, TAtomic::Mixed(_))) && !self.types.is_empty()
     }
 
+    /// Checks for a single mixed value carrying PHPStan's `ErrorType` identity.
+    #[must_use]
+    pub fn is_error(&self) -> bool {
+        matches!(self.types.as_ref(), [TAtomic::Mixed(mixed)] if mixed.is_error())
+    }
+
     #[must_use]
     pub fn has_mixed(&self) -> bool {
         self.types.iter().any(|t| matches!(t, TAtomic::Mixed(_))) && !self.types.is_empty()

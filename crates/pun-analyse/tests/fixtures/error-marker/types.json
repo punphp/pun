@@ -1,0 +1,198 @@
+{
+    "error": {
+        "error": true,
+        "type": "*ERROR*",
+        "mixed": true,
+        "unconstrained": true,
+        "falsey": false
+    },
+    "mixed": {
+        "error": false,
+        "type": "mixed",
+        "mixed": true,
+        "unconstrained": true,
+        "falsey": false
+    },
+    "error|error": {
+        "error": true,
+        "type": "*ERROR*",
+        "mixed": true,
+        "unconstrained": true,
+        "falsey": false
+    },
+    "error|integer": {
+        "error": true,
+        "type": "*ERROR*",
+        "mixed": true,
+        "unconstrained": true,
+        "falsey": false
+    },
+    "integer|error": {
+        "error": true,
+        "type": "*ERROR*",
+        "mixed": true,
+        "unconstrained": true,
+        "falsey": false
+    },
+    "error|13": {
+        "error": true,
+        "type": "*ERROR*",
+        "mixed": true,
+        "unconstrained": true,
+        "falsey": false
+    },
+    "13|error": {
+        "error": true,
+        "type": "*ERROR*",
+        "mixed": true,
+        "unconstrained": true,
+        "falsey": false
+    },
+    "error|mixed": {
+        "error": true,
+        "type": "*ERROR*",
+        "mixed": true,
+        "unconstrained": true,
+        "falsey": false
+    },
+    "mixed|error": {
+        "error": false,
+        "type": "mixed",
+        "mixed": true,
+        "unconstrained": true,
+        "falsey": false
+    },
+    "integer|error|mixed": {
+        "error": true,
+        "type": "*ERROR*",
+        "mixed": true,
+        "unconstrained": true,
+        "falsey": false
+    },
+    "integer|mixed|error": {
+        "error": false,
+        "type": "mixed",
+        "mixed": true,
+        "unconstrained": true,
+        "falsey": false
+    },
+    "error|nonnull": {
+        "error": true,
+        "type": "*ERROR*",
+        "mixed": true,
+        "unconstrained": true,
+        "falsey": false
+    },
+    "nonnull|error": {
+        "error": true,
+        "type": "*ERROR*",
+        "mixed": true,
+        "unconstrained": true,
+        "falsey": false
+    },
+    "error&error": {
+        "error": true,
+        "type": "*ERROR*",
+        "mixed": true,
+        "unconstrained": true,
+        "falsey": false
+    },
+    "error&mixed": {
+        "error": true,
+        "type": "*ERROR*",
+        "mixed": true,
+        "unconstrained": true,
+        "falsey": false
+    },
+    "mixed&error": {
+        "error": false,
+        "type": "mixed",
+        "mixed": true,
+        "unconstrained": true,
+        "falsey": false
+    },
+    "error&integer": {
+        "error": false,
+        "type": "2",
+        "mixed": false,
+        "unconstrained": false,
+        "falsey": false
+    },
+    "integer&error": {
+        "error": false,
+        "type": "2",
+        "mixed": false,
+        "unconstrained": false,
+        "falsey": false
+    },
+    "integer&int": {
+        "error": false,
+        "type": "2",
+        "mixed": false,
+        "unconstrained": false,
+        "falsey": false
+    },
+    "int&integer": {
+        "error": false,
+        "type": "2",
+        "mixed": false,
+        "unconstrained": false,
+        "falsey": false
+    },
+    "error&nonnull": {
+        "error": false,
+        "type": "mixed~null",
+        "mixed": true,
+        "unconstrained": false,
+        "falsey": false
+    },
+    "nonnull&error": {
+        "error": false,
+        "type": "mixed~null",
+        "mixed": true,
+        "unconstrained": false,
+        "falsey": false
+    },
+    "error&truthy": {
+        "error": false,
+        "type": "mixed~(0|0.0|''|'0'|array{}|false|null)",
+        "mixed": true,
+        "unconstrained": false,
+        "falsey": false
+    },
+    "truthy&error": {
+        "error": false,
+        "type": "mixed~(0|0.0|''|'0'|array{}|false|null)",
+        "mixed": true,
+        "unconstrained": false,
+        "falsey": false
+    },
+    "error&falsey": {
+        "error": false,
+        "type": "0|0.0|''|'0'|array{}|false|null",
+        "mixed": false,
+        "unconstrained": false,
+        "falsey": true
+    },
+    "falsey&error": {
+        "error": false,
+        "type": "0|0.0|''|'0'|array{}|false|null",
+        "mixed": false,
+        "unconstrained": false,
+        "falsey": true
+    },
+    "error-null": {
+        "error": true,
+        "type": "*ERROR*",
+        "mixed": true,
+        "unconstrained": true,
+        "falsey": false
+    },
+    "error-falsey": {
+        "error": true,
+        "type": "*ERROR*",
+        "mixed": true,
+        "unconstrained": true,
+        "falsey": false
+    }
+}

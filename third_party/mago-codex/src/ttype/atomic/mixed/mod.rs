@@ -14,6 +14,8 @@ pub struct TMixed {
     is_non_null: bool,
     is_empty: bool,
     truthiness: TMixedTruthiness,
+    #[cfg_attr(feature = "serde", serde(default))]
+    is_error: bool,
 }
 
 impl TMixed {
@@ -28,7 +30,22 @@ impl TMixed {
             is_non_null: false,
             is_empty: false,
             truthiness: TMixedTruthiness::Undetermined,
+            is_error: false,
         }
+    }
+
+    /// Creates an unconstrained mixed value with PHPStan's `ErrorType` identity.
+    #[inline]
+    #[must_use]
+    pub const fn error() -> Self {
+        Self { is_error: true, ..Self::new() }
+    }
+
+    /// Checks for `ErrorType` identity, not ordinary unknown or constrained mixed.
+    #[inline]
+    #[must_use]
+    pub const fn is_error(&self) -> bool {
+        self.is_error
     }
 
     /// Creates a `Mixed` type marked as originating from `isset()` in a loop.
@@ -113,7 +130,10 @@ impl TMixed {
     #[inline]
     #[must_use]
     pub const fn with_is_non_null(mut self, is_non_null: bool) -> Self {
-        self.is_non_null = is_non_null;
+        // PHPStan's ErrorType::subtract() retains an unconstrained ErrorType.
+        if !self.is_error {
+            self.is_non_null = is_non_null;
+        }
         self
     }
 
@@ -121,6 +141,11 @@ impl TMixed {
     #[inline]
     #[must_use]
     pub const fn with_truthiness(mut self, truthiness: TMixedTruthiness) -> Self {
+        if self.is_error && !matches!(truthiness, TMixedTruthiness::Falsy) {
+            return self;
+        }
+
+        self.is_error = false;
         self.truthiness = truthiness;
         self.ensure_consistency();
         self
@@ -128,6 +153,7 @@ impl TMixed {
 
     #[must_use]
     pub const fn as_empty(mut self) -> Self {
+        self.is_error = false;
         self.is_empty = true;
         self.ensure_consistency();
 
@@ -150,7 +176,9 @@ impl TMixed {
 
 impl TType for TMixed {
     fn get_id(&self) -> Word {
-        if self.is_empty {
+        if self.is_error {
+            word("*ERROR*")
+        } else if self.is_empty {
             word(match self.truthiness {
                 TMixedTruthiness::Truthy => "empty-truthy-mixed",
                 TMixedTruthiness::Falsy => "empty-falsy-mixed",

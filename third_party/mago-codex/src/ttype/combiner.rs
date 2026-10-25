@@ -175,6 +175,16 @@ pub fn combine(types: Vec<TAtomic>, codebase: &CodebaseMetadata, options: Combin
         return types;
     }
 
+    // PHPStan keeps the first unconstrained mixed operand, including ErrorType.
+    // Do not make an error marker infectious when ordinary mixed comes first.
+    if types.iter().any(|atomic| matches!(atomic, TAtomic::Mixed(mixed) if mixed.is_error()))
+        && let Some(mixed) = types.iter().find(|atomic| {
+            matches!(atomic, TAtomic::Mixed(mixed) if mixed.is_vanilla() && (!mixed.is_isset_from_loop() || mixed.is_error()))
+        })
+    {
+        return vec![mixed.clone()];
+    }
+
     let mut combination = TypeCombination::new();
 
     for atomic in types {

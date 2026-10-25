@@ -1,0 +1,44 @@
+{
+  "messages": [
+    {
+      "line": 6,
+      "message": "Dumped type: *ERROR*"
+    },
+    {
+      "line": 8,
+      "message": "Dumped type: *ERROR*"
+    },
+    {
+      "line": 9,
+      "message": "Dumped type: mixed"
+    },
+    {
+      "line": 11,
+      "message": "Dumped type: *ERROR*"
+    },
+    {
+      "line": 13,
+      "message": "Dumped type: *ERROR*"
+    },
+    {
+      "line": 15,
+      "message": "Dumped type: *ERROR*"
+    },
+    {
+      "line": 18,
+      "message": "Dumped type: *ERROR*"
+    },
+    {
+      "line": 21,
+      "message": "Dumped type: 0|0.0|''|'0'|array{}|false|null"
+    },
+    {
+      "line": 24,
+      "message": "Dumped type: 3"
+    },
+    {
+      "line": 25,
+      "message": "Dumped type: mixed"
+    }
+  ]
+}

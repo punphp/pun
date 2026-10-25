@@ -37,3 +37,69 @@ without exclusions. All other imported codex source is byte-identical to the pub
 The 38-test run uses `cargo llvm-cov --dep-coverage mago-codex --no-report -p punphp-analyse`
 with `--test parent_defaults --test generic_defaults --test callback_gather --test debug`
 and `--test native_lane --test instantiation`, one Cargo job, and two Rayon threads.
+
+## PHPStan error-valued mixed
+
+`ttype::get_error()` constructs a `TUnion` containing `TMixed::error()`.
+`TMixed::is_error()` and `TUnion::is_error()` distinguish the marker from ordinary mixed.
+The marker retains mixed's acceptance and access behavior. Its internal ID is `*ERROR*`, and
+the existing equality, hash, ordering, and serde implementations include its identity.
+JSON objects saved before the marker field existed still deserialize as ordinary mixed.
+No `TAtomic` variant or dependency version changes.
+
+PHPStan 2.3.1's
+[`ErrorType`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Type/ErrorType.php#L9-L50)
+extends `MixedType` and overrides `subtract()` to return another unconstrained `ErrorType`.
+Non-null and truthy narrowing therefore retain the marker. Falsey and empty constraints produce
+ordinary constrained mixed. Explicit intersection with a concrete or constrained type keeps that
+type rather than the error marker. This differs from subtractive narrowing.
+
+[`TypeCombinator::doUnion()`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Type/TypeCombinator.php#L265-L278)
+keeps the first implicit, unconstrained mixed operand. An error joined with `13` stays an error
+in either order. An ordinary mixed operand before an error stays ordinary mixed.
+The shared combiner and the borrowed, owned, reference-counted, and shape-preserving union paths
+retain this order without changing combinations that contain no error marker.
+Explicit-mixed provenance is not represented by Mago's existing `TMixed`.
+
+The public `pun-analyse/tests/error_marker.rs` regression supplies the marker through an expression
+hook, independently of the unset and undefined-read producers. Its Analyzer type dumps compare with
+fresh PHPStan output with native tracking both off and on. Copies and concrete joins retain the
+marker. Unknown offset reads return ordinary mixed, matching
+[`MixedType::getOffsetValueType()`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Type/MixedType.php#L845-L848).
+An overwrite removes the marker. Public type tests also cover union order, intersections,
+subtractive narrowing, availability flags, identity in sets, and serde round trips.
+The tests adapt display syntax only, including Mago's constrained-mixed representation of falsey values.
+
+The oracle records 28 public type operations and 10 Analyzer dumps. An ordinary-mixed negative
+control fails at the six error-bearing dump sites; the error marker matches them all.
+The focused regression and the `variables`, `coalesce_scope`, `native_lane`, `generic_defaults`,
+and `array_assignment_certainty` controls pass all 26 tests. Fresh profiles from `error_marker`
+alone cover **42/42 changed production executable lines** and **235/235 new test executable lines**,
+with no exclusions. The run uses a private `CARGO_TARGET_DIR`, one Cargo job, and two Rayon threads:
+
+```sh
+CARGO_TARGET_DIR=target-error-marker CARGO_BUILD_JOBS=1 RAYON_NUM_THREADS=2 \
+	timeout 900 nice cargo llvm-cov --dep-coverage mago-codex --no-report \
+	-p punphp-analyse --test error_marker
+```
+
+Regenerate the public type oracle with:
+
+```sh
+php crates/pun-analyse/tests/fixtures/error-marker/oracle.php \
+	/absolute/path/to/phpstan/vendor/autoload.php
+```
+
+Capture the Analyzer fixture with PHPStan 2.3.1 at level 0:
+
+```sh
+php /absolute/path/to/phpstan.phar analyse --no-progress --error-format=json -l 0 \
+	crates/pun-analyse/tests/fixtures/error-marker/flow.php |
+	jq '{messages: [.files[].messages[] | select(.identifier == "phpstan.dumpType") | {line, message}]}' \
+	> crates/pun-analyse/tests/fixtures/error-marker/flow.json
+```
+
+This patch does not add error producers, Pun conversion, array-literal normalization, or iterable
+extraction transfers. The external worker complete-type wire format is unchanged. Serde persistence
+and in-process type handles retain the marker, but a future worker codec extension needs its own
+public transport regression before complete types can carry the marker across that boundary.
