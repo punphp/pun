@@ -105,3 +105,56 @@ function knownStringChoice(bool $first): void
     $class = $first ? 'CoverageScope\\AbstractChoice' : 'CoverageScope\\ConcreteChoice';
     new $class;
 }
+
+/** @method void annotated() */
+class MethodReceiver
+{
+    function declared(): void {}
+
+    function plain(): void
+    {
+        $this->missing();
+    }
+
+    function unknown(): void
+    {
+        if (!method_exists($this, 'run')) {
+            throw new \RuntimeException;
+        }
+        $this->run();
+        $this->missing();
+        $arrow = fn () => $this->missing();
+    }
+
+    function known(): void
+    {
+        if (method_exists($this, 'declared')) {
+            $this->missing();
+        }
+        if (method_exists($this, 'annotated')) {
+            $this->missing();
+        }
+    }
+
+    function branches(): void
+    {
+        if (method_exists($this, 'run')) {
+            $this->missing();
+        }
+        $this->missing();
+        if (method_exists(self::class, 'run')) {
+            $this->missing();
+        }
+    }
+}
+
+final class FinalReceiver
+{
+    function impossible(): void
+    {
+        if (!method_exists($this, 'run')) {
+            throw new \RuntimeException;
+        }
+        $this->missing();
+    }
+}

@@ -163,6 +163,20 @@ pub fn method_call<'arena>(c: &mut Checker<'_, 'arena>, call: &MethodCall<'arena
     if c.this_is_never(class) {
         return;
     }
+    // MethodExistsTypeSpecifyingExtension retains an accessory when neither lookup knows the method.
+    // A final class cannot acquire that method in a subclass, so its successful branch is `never` instead.
+    let refined = c.guards.iter().any(|guard| {
+        let super::scope::Guard::Method(key) = guard else {
+            return false;
+        };
+        key.strip_prefix("$this::").is_some_and(|method| {
+            members::method(c, class, method.as_bytes()).is_none()
+                && members::annotation_method(c, class, method.as_bytes()).is_none()
+        })
+    });
+    if refined && class.flags.is_final() {
+        return;
+    }
     let method_name = String::from_utf8_lossy(name.value).into_owned();
     let Some(method) = members::method(c, class, name.value) else {
         if let Some(method) = members::annotation_method(c, class, name.value) {
@@ -183,6 +197,12 @@ pub fn method_call<'arena>(c: &mut Checker<'_, 'arena>, call: &MethodCall<'arena
             return;
         }
         let display = c.display(class);
+        // MethodCallCheck unwraps a top-level ThisType, not the ThisType inside an accessory intersection.
+        let display = if refined {
+            format!("$this({display})")
+        } else {
+            display
+        };
         c.report(
             name,
             "method.notFound",

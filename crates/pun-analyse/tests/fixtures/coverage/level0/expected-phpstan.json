@@ -189,6 +189,62 @@
    "identifier": "class.notFound",
    "message": "Instantiated class CoverageScope\\MissingChoice not found.",
    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+  },
+  {
+   "file": "scope.php",
+   "line": 116,
+   "identifier": "method.notFound",
+   "message": "Call to an undefined method CoverageScope\\MethodReceiver::missing().",
+   "tip": null
+  },
+  {
+   "file": "scope.php",
+   "line": 125,
+   "identifier": "method.notFound",
+   "message": "Call to an undefined method $this(CoverageScope\\MethodReceiver)::missing().",
+   "tip": null
+  },
+  {
+   "file": "scope.php",
+   "line": 126,
+   "identifier": "method.notFound",
+   "message": "Call to an undefined method $this(CoverageScope\\MethodReceiver)::missing().",
+   "tip": null
+  },
+  {
+   "file": "scope.php",
+   "line": 132,
+   "identifier": "method.notFound",
+   "message": "Call to an undefined method CoverageScope\\MethodReceiver::missing().",
+   "tip": null
+  },
+  {
+   "file": "scope.php",
+   "line": 135,
+   "identifier": "method.notFound",
+   "message": "Call to an undefined method CoverageScope\\MethodReceiver::missing().",
+   "tip": null
+  },
+  {
+   "file": "scope.php",
+   "line": 142,
+   "identifier": "method.notFound",
+   "message": "Call to an undefined method $this(CoverageScope\\MethodReceiver)::missing().",
+   "tip": null
+  },
+  {
+   "file": "scope.php",
+   "line": 144,
+   "identifier": "method.notFound",
+   "message": "Call to an undefined method CoverageScope\\MethodReceiver::missing().",
+   "tip": null
+  },
+  {
+   "file": "scope.php",
+   "line": 146,
+   "identifier": "method.notFound",
+   "message": "Call to an undefined method CoverageScope\\MethodReceiver::missing().",
+   "tip": null
   }
  ]
 }
