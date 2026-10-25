@@ -1,0 +1,218 @@
+{
+  "callbacks.php": [
+    {
+      "message": "Parameter #1 of callable on the right side of pipe operator is passed by reference.",
+      "line": 19,
+      "ignorable": true,
+      "identifier": "pipe.byRef"
+    },
+    {
+      "message": "Parameter #1 $named of callable on the right side of pipe operator is passed by reference.",
+      "line": 20,
+      "ignorable": true,
+      "identifier": "pipe.byRef"
+    },
+    {
+      "message": "Parameter #1 of callable on the right side of pipe operator is passed by reference.",
+      "line": 21,
+      "ignorable": true,
+      "identifier": "pipe.byRef"
+    },
+    {
+      "message": "Parameter #1 $text of callable on the right side of pipe operator is passed by reference.",
+      "line": 26,
+      "ignorable": true,
+      "identifier": "pipe.byRef"
+    },
+    {
+      "message": "Parameter #1 $text of callable on the right side of pipe operator is passed by reference.",
+      "line": 27,
+      "ignorable": true,
+      "identifier": "pipe.byRef"
+    },
+    {
+      "message": "Parameter #1 $texts of callable on the right side of pipe operator is passed by reference.",
+      "line": 28,
+      "ignorable": true,
+      "identifier": "pipe.byRef"
+    },
+    {
+      "message": "Parameter #1 $arrow of callable on the right side of pipe operator is passed by reference.",
+      "line": 32,
+      "ignorable": true,
+      "identifier": "pipe.byRef"
+    },
+    {
+      "message": "Parameter #1 $closure of callable on the right side of pipe operator is passed by reference.",
+      "line": 33,
+      "ignorable": true,
+      "identifier": "pipe.byRef"
+    },
+    {
+      "message": "Parameter #1 $multiline of callable on the right side of pipe operator is passed by reference.",
+      "line": 38,
+      "ignorable": true,
+      "identifier": "pipe.byRef"
+    },
+    {
+      "message": "Parameter #1 $parenthesized of callable on the right side of pipe operator is passed by reference.",
+      "line": 40,
+      "ignorable": true,
+      "identifier": "pipe.byRef"
+    },
+    {
+      "message": "Parameter #1 $array of callable on the right side of pipe operator is passed by reference.",
+      "line": 42,
+      "ignorable": true,
+      "identifier": "pipe.byRef"
+    },
+    {
+      "message": "Parameter #1 $array of callable on the right side of pipe operator is passed by reference.",
+      "line": 45,
+      "ignorable": true,
+      "identifier": "pipe.byRef"
+    }
+  ],
+  "objects.php": [
+    {
+      "message": "Parameter #1 $invoked of callable on the right side of pipe operator is passed by reference.",
+      "line": 14,
+      "ignorable": true,
+      "identifier": "pipe.byRef"
+    },
+    {
+      "message": "Parameter #1 $invoked of callable on the right side of pipe operator is passed by reference.",
+      "line": 16,
+      "ignorable": true,
+      "identifier": "pipe.byRef"
+    },
+    {
+      "message": "Parameter #1 $static of callable on the right side of pipe operator is passed by reference.",
+      "line": 18,
+      "ignorable": true,
+      "identifier": "pipe.byRef"
+    },
+    {
+      "message": "Parameter #1 $instance of callable on the right side of pipe operator is passed by reference.",
+      "line": 19,
+      "ignorable": true,
+      "identifier": "pipe.byRef"
+    },
+    {
+      "message": "Parameter #1 $static of callable on the right side of pipe operator is passed by reference.",
+      "line": 20,
+      "ignorable": true,
+      "identifier": "pipe.byRef"
+    },
+    {
+      "message": "Parameter #1 $instance of callable on the right side of pipe operator is passed by reference.",
+      "line": 21,
+      "ignorable": true,
+      "identifier": "pipe.byRef"
+    },
+    {
+      "message": "Parameter #1 $private of callable on the right side of pipe operator is passed by reference.",
+      "line": 22,
+      "ignorable": true,
+      "identifier": "pipe.byRef"
+    },
+    {
+      "message": "Parameter #1 $invoked of callable on the right side of pipe operator is passed by reference.",
+      "line": 30,
+      "ignorable": true,
+      "identifier": "pipe.byRef"
+    },
+    {
+      "message": "Parameter #1 $static of callable on the right side of pipe operator is passed by reference.",
+      "line": 34,
+      "ignorable": true,
+      "identifier": "pipe.byRef"
+    },
+    {
+      "message": "Parameter #1 $static of callable on the right side of pipe operator is passed by reference.",
+      "line": 35,
+      "ignorable": true,
+      "identifier": "pipe.byRef"
+    }
+  ],
+  "unions.php": [
+    {
+      "message": "Parameter #1 $reference of callable on the right side of pipe operator is passed by reference.",
+      "line": 23,
+      "ignorable": true,
+      "identifier": "pipe.byRef"
+    },
+    {
+      "message": "Parameter #1 $reference of callable on the right side of pipe operator is passed by reference.",
+      "line": 24,
+      "ignorable": true,
+      "identifier": "pipe.byRef"
+    },
+    {
+      "message": "Parameter #1 of callable on the right side of pipe operator is passed by reference.",
+      "line": 25,
+      "ignorable": true,
+      "identifier": "pipe.byRef"
+    },
+    {
+      "message": "Parameter #1 of callable on the right side of pipe operator is passed by reference.",
+      "line": 27,
+      "ignorable": true,
+      "identifier": "pipe.byRef"
+    },
+    {
+      "message": "Parameter #1 $reference of callable on the right side of pipe operator is passed by reference.",
+      "line": 29,
+      "ignorable": true,
+      "identifier": "pipe.byRef"
+    }
+  ],
+  "named-unions.php": [
+    {
+      "message": "Parameter #1 $reference of callable on the right side of pipe operator is passed by reference.",
+      "line": 23,
+      "ignorable": true,
+      "identifier": "pipe.byRef"
+    },
+    {
+      "message": "Parameter #1 $reference of callable on the right side of pipe operator is passed by reference.",
+      "line": 24,
+      "ignorable": true,
+      "identifier": "pipe.byRef"
+    },
+    {
+      "message": "Parameter #1 $input of callable on the right side of pipe operator is passed by reference.",
+      "line": 25,
+      "ignorable": true,
+      "identifier": "pipe.byRef"
+    },
+    {
+      "message": "Parameter #1 $input of callable on the right side of pipe operator is passed by reference.",
+      "line": 27,
+      "ignorable": true,
+      "identifier": "pipe.byRef"
+    }
+  ],
+  "upstream.php": [
+    {
+      "message": "Parameter #1 of callable on the right side of pipe operator is passed by reference.",
+      "line": 14,
+      "ignorable": true,
+      "identifier": "pipe.byRef"
+    },
+    {
+      "message": "Parameter #1 $s of callable on the right side of pipe operator is passed by reference.",
+      "line": 16,
+      "ignorable": true,
+      "identifier": "pipe.byRef"
+    }
+  ],
+  "upstream-chain.php": [
+    {
+      "message": "Parameter #1 $s of callable on the right side of pipe operator is passed by reference.",
+      "line": 17,
+      "ignorable": true,
+      "identifier": "pipe.byRef"
+    }
+  ]
+}

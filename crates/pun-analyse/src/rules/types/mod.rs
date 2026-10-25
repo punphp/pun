@@ -50,7 +50,7 @@ pub(super) use access::{property_fetch, static_property_fetch};
 pub(super) use offsets::accessible as offset_accessible;
 pub(super) use receivers::{method_call, static_call};
 pub(super) use regex::function_call;
-pub(super) use callables::{call as callable_call, call_user_func, pipe as callable_pipe};
+pub(super) use callables::{call as callable_call, call_user_func, pipe as callable_pipe, pipe_by_ref};
 pub(super) use returns::{
     arrow_function as arrow_function_returns, closure as closure_returns, function as function_returns,
     hooks as hook_returns, method as method_returns,
@@ -157,9 +157,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Wanted<'_> {
         }
     }
     fn walk_in_pipe(&mut self, p: &'ast Pipe<'arena>, _: &mut ()) {
-        if self.level >= 2 {
-            callables::typed_pipe(p, &mut self.spans);
-        }
+        callables::typed_pipe(p, &mut self.spans);
     }
     fn walk_in_function_call(&mut self, call: &'ast FunctionCall<'arena>, _: &mut ()) {
         regex::typed(call, &mut self.spans);

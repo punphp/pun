@@ -1,0 +1,21 @@
+{
+  "callbacks.php": [],
+  "objects.php": [
+    {
+      "message": "Parameter #1 $invoked of callable on the right side of pipe operator is passed by reference.",
+      "line": 14,
+      "ignorable": true,
+      "identifier": "pipe.byRef"
+    },
+    {
+      "message": "Parameter #1 $invoked of callable on the right side of pipe operator is passed by reference.",
+      "line": 16,
+      "ignorable": true,
+      "identifier": "pipe.byRef"
+    }
+  ],
+  "unions.php": [],
+  "named-unions.php": [],
+  "upstream.php": [],
+  "upstream-chain.php": []
+}

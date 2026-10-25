@@ -1,8 +1,6 @@
 //! CallCallablesRule (level 2): calling an expression (`$f()`) checks it is callable and its arguments against the
 //! callable's parameters; CallUserFuncRule (level 5): `call_user_func()` and `call_user_func_array()` check theirs.
 
-use mago_codex::ttype::atomic::TAtomic;
-use mago_codex::ttype::atomic::callable::TCallable;
 use mago_span::{HasSpan, Span};
 use mago_syntax::cst::*;
 use pun_phpstan::types::{Level, Signature, Type};
@@ -25,23 +23,13 @@ pub(super) fn typed_pipe(p: &Pipe, spans: &mut Vec<Span>) {
     spans.extend([p.callable.span(), p.input.span()]);
 }
 
-/// A callable's acceptor from its signature; `span` is the callable expression's, whose Mago type names the
-/// parameters (PHPStan's closures keep their names, Pun's types do not).
-fn of_signature(c: &Checker, s: &Signature, span: Span) -> Acceptor {
-    let names: Vec<String> = match c.types.get(&span).map(|t| t.types.as_ref()) {
-        Some([TAtomic::Callable(TCallable::Signature(raw))]) => names(raw),
-        Some([TAtomic::Callable(TCallable::Alias(id))]) => {
-            mago_codex::ttype::expander::get_signature_of_function_like_identifier(id, c.codebase)
-                .map(|raw| names(&raw))
-                .unwrap_or_default()
-        }
-        _ => Vec::new(),
-    };
+/// A callable's acceptor, retaining each signature's parameter names even in a callable union.
+fn of_signature(c: &Checker, s: &Signature) -> Acceptor {
     Acceptor {
         optional: s.params.iter().map(|p| p.optional || p.variadic).collect(),
         variadic: s.params.iter().any(|p| p.variadic),
         void: s.ret == Type::Void,
-        names: (0..s.params.len()).map(|i| names.get(i).cloned().unwrap_or_default()).collect(),
+        names: s.params.iter().map(|p| p.name.clone()).collect(),
         types: s.params.iter().map(|p| declared::with_classes(c, || p.ty.describe(Level::TypeOnly))).collect(),
         variadics: s.params.iter().map(|p| p.variadic).collect(),
         builtin: false,
@@ -54,13 +42,6 @@ fn of_signature(c: &Checker, s: &Signature, span: Span) -> Acceptor {
         class: None,
         callee: None,
     }
-}
-
-fn names(s: &mago_codex::ttype::atomic::callable::TCallableSignature) -> Vec<String> {
-    s.get_parameters()
-        .iter()
-        .map(|p| p.get_name().map(|n| String::from_utf8_lossy(&n.0.as_bytes()[1..]).into_owned()).unwrap_or_default())
-        .collect()
 }
 
 /// `InaccessibleMethod`: no parameters, variadic.
@@ -82,7 +63,7 @@ fn inaccessible() -> Acceptor {
 
 /// The acceptors of `getCallableParametersAcceptors()`; `None` when Pun does not know them. `inaccessible` gets
 /// the private or protected method a callable names out of its scope.
-fn acceptors(c: &Checker, t: &Type, span: Span, inaccessible: &mut Option<String>) -> Option<Vec<Acceptor>> {
+fn acceptors(c: &Checker, t: &Type, inaccessible: &mut Option<String>) -> Option<Vec<Acceptor>> {
     let method = |class: &str, name: &str, inaccessible: &mut Option<String>| -> Option<Vec<Acceptor>> {
         let k = c.class_like(class).found()?;
         let m = members::method(c, k, name.as_bytes())?;
@@ -94,7 +75,7 @@ fn acceptors(c: &Checker, t: &Type, span: Span, inaccessible: &mut Option<String
         Some(m.variants().all)
     };
     match t {
-        Type::Closure(s) | Type::Callable(Some(s)) => Some(vec![of_signature(c, s, span)]),
+        Type::Closure(s) | Type::Callable(Some(s)) => Some(vec![of_signature(c, s)]),
         Type::ConstString(s) => match s.split_once("::") {
             Some((class, name)) => method(class, name, inaccessible),
             None => c.function(s.as_bytes()).map(|(_, v)| v.all),
@@ -109,8 +90,36 @@ fn acceptors(c: &Checker, t: &Type, span: Span, inaccessible: &mut Option<String
             method(&class, name, inaccessible)
         }
         Type::Object(n, _) | Type::Static(n, _) | Type::This(n) => method(n, "__invoke", inaccessible),
-        Type::Union(ts) => ts.iter().map(|t| acceptors(c, t, span, inaccessible)).collect::<Option<Vec<Vec<_>>>>().map(|v| v.concat()),
+        Type::Union(ts) => ts.iter().map(|t| acceptors(c, t, inaccessible)).collect::<Option<Vec<Vec<_>>>>().map(|v| v.concat()),
         _ => None,
+    }
+}
+
+/// PipeOperatorRule (level 0): only the first parameter of each callable acceptor matters.
+pub(in super::super) fn pipe_by_ref(c: &mut Checker, p: &Pipe) {
+    let right = unparen(p.callable);
+    // RuleLevelHelper's checkThisOnly is enabled at levels 0 and 1.
+    if c.level < 2 && !matches!(right, Expression::Variable(Variable::Direct(v)) if v.name == b"$this") {
+        return;
+    }
+    let Some(t) = c.find_type_to_check(p.callable, &|t| declared::with_classes(c, || t.is_callable().yes())).ty else {
+        return;
+    };
+    if !declared::with_classes(c, || t.is_callable().yes()) {
+        return;
+    }
+    let Some(all) = acceptors(c, &t, &mut None) else {
+        return;
+    };
+    for acceptor in all {
+        for (by_ref, name) in acceptor.by_ref.iter().zip(&acceptor.names) {
+            if *by_ref == pun_phpstan::symbols::ByRef::No {
+                break;
+            }
+            let name = if name.is_empty() { String::new() } else { format!(" ${name}") };
+            c.report(right.span(), "pipe.byRef", format!("Parameter #1{name} of callable on the right side of pipe operator is passed by reference."), None);
+            return;
+        }
     }
 }
 
@@ -151,7 +160,7 @@ fn invoke(c: &mut Checker, callee: &Expression, counts: &params::Counts, at: Spa
         return;
     }
     let mut inaccessible = None;
-    let Some(all) = acceptors(c, &t, callee.span(), &mut inaccessible) else {
+    let Some(all) = acceptors(c, &t, &mut inaccessible) else {
         return;
     };
     if let Some(message) = inaccessible.filter(|_| all.len() == 1) {
@@ -231,7 +240,7 @@ pub(in super::super) fn call_user_func(c: &mut Checker, call: &FunctionCall) {
         return;
     };
     let mut inaccessible = None;
-    let Some(all) = acceptors(c, &t, value.span(), &mut inaccessible) else {
+    let Some(all) = acceptors(c, &t, &mut inaccessible) else {
         return;
     };
     let first_level = c.is_top_level(call.span());

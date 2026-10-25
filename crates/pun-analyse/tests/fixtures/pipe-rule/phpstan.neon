@@ -1,0 +1,10 @@
+parameters:
+    level: 2
+    phpVersion: 80500
+    paths:
+        - callbacks.php
+        - objects.php
+        - unions.php
+        - named-unions.php
+        - upstream.php
+        - upstream-chain.php

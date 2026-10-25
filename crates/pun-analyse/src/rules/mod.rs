@@ -120,6 +120,7 @@ pub fn reports(identifier: &str) -> bool {
 pub const IDENTIFIERS: &[&str] = &[
     "phpstan.dumpType",
     "phpstan.dumpPhpDocType",
+    "pipe.byRef",
     "typeAlias.circular",
     "typeAlias.duplicate",
     "typeAlias.invalidName",
@@ -1992,6 +1993,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
     }
     fn walk_in_pipe(&mut self, p: &'ast Pipe<'arena>, _: &mut ()) {
         self.piped.insert(p.callable.span());
+        types::pipe_by_ref(self, p);
         calls::pipe(self, p);
         types::callable_pipe(self, p);
         function_checks::pipe(self, p);
