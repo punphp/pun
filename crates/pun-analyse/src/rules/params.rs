@@ -748,6 +748,12 @@ pub fn check(
                         ty: Some(ty.clone()),
                         ..entry(name.as_deref(), false, arg.value)
                     }));
+                    // An open shape expands no concrete positions, but a required key still guarantees an unpack.
+                    if arguments.is_empty()
+                        && c.to_phpstan(&c.types[&arg.value]).is_iterable_at_least_once().yes()
+                    {
+                        arguments.push(entry(None, true, arg.value));
+                    }
                 } else {
                     arguments.push(entry(None, true, arg.value));
                 }

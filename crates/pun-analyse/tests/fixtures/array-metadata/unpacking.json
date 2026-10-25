@@ -1,0 +1,34 @@
+{
+  "source": "PHPStan 2.3.1; phpstan.neon; level 0; unpacking.php",
+  "files": {
+    "unpacking.php": {
+      "errors": 4,
+      "messages": [
+        {
+          "message": "Function UnsealedUnpacking\\one invoked with 0 parameters, 1 required.",
+          "line": 20,
+          "ignorable": true,
+          "identifier": "arguments.count"
+        },
+        {
+          "message": "Function UnsealedUnpacking\\one invoked with 0 parameters, 1 required.",
+          "line": 22,
+          "ignorable": true,
+          "identifier": "arguments.count"
+        },
+        {
+          "message": "Function UnsealedUnpacking\\two invoked with 1 parameter, 2 required.",
+          "line": 25,
+          "ignorable": true,
+          "identifier": "arguments.count"
+        },
+        {
+          "message": "Function UnsealedUnpacking\\two invoked with 1 parameter, 2 required.",
+          "line": 27,
+          "ignorable": true,
+          "identifier": "arguments.count"
+        }
+      ]
+    }
+  }
+}

@@ -46,3 +46,8 @@ fn mutated_shapes_keep_surviving_key_and_union_display_order() {
 fn introduced_parent_keys_follow_write_back_order() {
     check("introduced-order.php", "introduced-order.json");
 }
+
+#[test]
+fn nonempty_open_shapes_keep_unknown_length_unpacking() {
+    check("unpacking.php", "unpacking.json");
+}
