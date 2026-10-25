@@ -1,0 +1,78 @@
+{
+  "default": [
+    {
+      "message": "Call to function compact() contains undefined variable $duplicate.",
+      "line": 11,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Call to function compact() contains undefined variable $duplicate.",
+      "line": 11,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Undefined variable: $duplicate",
+      "line": 12,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Call to function compact() contains undefined variable $duplicate.",
+      "line": 14,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Call to function compact() contains undefined variable $duplicate.",
+      "line": 14,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Undefined variable: $duplicate",
+      "line": 15,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    }
+  ],
+  "maybe": [
+    {
+      "message": "Call to function compact() contains undefined variable $duplicate.",
+      "line": 11,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Call to function compact() contains undefined variable $duplicate.",
+      "line": 11,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Undefined variable: $duplicate",
+      "line": 12,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Call to function compact() contains undefined variable $duplicate.",
+      "line": 14,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Call to function compact() contains undefined variable $duplicate.",
+      "line": 14,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Undefined variable: $duplicate",
+      "line": 15,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    }
+  ]
+}

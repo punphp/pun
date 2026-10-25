@@ -61,3 +61,10 @@ fn literal_bounded_templates_and_copies_keep_their_constant_names() {
 fn late_types_and_nonconstant_unions_do_not_invent_names() {
     check("late");
 }
+
+#[test]
+fn template_union_source_keeps_each_distinct_constant_type() {
+    // Keep the real oracle regression active: conversion currently combines the union before
+    // applying argument strategy, erasing its template member. The rule cannot recover that source.
+    check("template-union-source");
+}
