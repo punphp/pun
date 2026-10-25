@@ -6,6 +6,10 @@ use pun_analyse::{Project, run};
 use serde_json::Value;
 
 fn check(file: &str) {
+    check_expected(file, "expected-phpstan.json");
+}
+
+fn check_expected(file: &str, expected: &str) {
     let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/array-slice");
     let got: Vec<_> = run(&Project::new(vec![root.join(file)], Vec::new()))
         .unwrap()
@@ -13,8 +17,7 @@ fn check(file: &str) {
         .map(|e| (e.line, e.identifier, e.message))
         .collect();
     let expected: Value =
-        serde_json::from_slice(&std::fs::read(root.join("expected-phpstan.json")).unwrap())
-            .unwrap();
+        serde_json::from_slice(&std::fs::read(root.join(expected)).unwrap()).unwrap();
     let mut want: Vec<_> = expected["files"][file]["messages"]
         .as_array()
         .unwrap()
@@ -50,6 +53,11 @@ fn invalid_inputs_and_insufficient_arity() {
 #[test]
 fn unrefined_inner_calls_keep_their_array_return() {
     check("composition.php");
+}
+
+#[test]
+fn mutated_shape_order_and_empty_slice_controls() {
+    check_expected("mutated-order.php", "mutated-order.json");
 }
 
 #[test]

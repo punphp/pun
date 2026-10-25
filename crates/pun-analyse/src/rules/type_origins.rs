@@ -37,6 +37,9 @@ pub(in super::super) enum Origin {
     Parameter(Function, usize),
     Annotation(Span, String, Option<Function>),
     Copy(Span),
+    /// A literal's key/value expressions, in PHP insertion order. No unknown keys or unpacks are invented.
+    Array(Vec<(Option<Span>, Span)>),
+    Offset(Span, Span),
     Call(Arc<Call>),
     Callback(Arc<Call>, usize, usize),
     /// Conversion must resolve the actual receiver and prove its native signature cannot pass references.
@@ -97,6 +100,11 @@ pub(super) fn dependencies(found: &Origins, wanted: &[Span]) -> Vec<Span> {
         }
         more.extend(match origin {
             Some(Origin::Copy(s)) => vec![*s],
+            Some(Origin::Array(items)) => items
+                .iter()
+                .flat_map(|(key, value)| key.iter().copied().chain(std::iter::once(*value)))
+                .collect(),
+            Some(Origin::Offset(array, key)) => vec![*array, *key],
             Some(Origin::Call(call) | Origin::Callback(call, ..)) => call
                 .args
                 .iter()
@@ -293,6 +301,24 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Sources<'_, 'arena> {
         if let Expression::Parenthesized(p) = e {
             self.found
                 .insert(e.span(), Origin::Copy(p.expression.span()));
+        }
+        let elements = match e {
+            Expression::Array(a) => Some(&a.elements),
+            Expression::LegacyArray(a) => Some(&a.elements),
+            _ => None,
+        };
+        if let Some(elements) = elements
+            && elements.len() <= 256
+            && let Some(items) = elements.iter().map(|element| match element {
+                ArrayElement::KeyValue(kv) => Some((Some(kv.key.span()), kv.value.span())),
+                ArrayElement::Value(value) => Some((None, value.value.span())),
+                _ => None,
+            }).collect::<Option<Vec<_>>>()
+        {
+            self.found.insert(e.span(), Origin::Array(items));
+        }
+        if let Expression::ArrayAccess(a) = e {
+            self.found.insert(e.span(), Origin::Offset(a.array.span(), a.index.span()));
         }
         // Direct unsets discard the value. Offset unsets only mutate its inferred array: keep its
         // source metadata, never a cached type. Conversion still uses the surviving inferred keys,

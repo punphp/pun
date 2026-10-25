@@ -1,0 +1,104 @@
+{
+  "totals": {
+    "errors": 0,
+    "file_errors": 15
+  },
+  "files": {
+    "mutated-order.php": {
+      "errors": 15,
+      "messages": [
+        {
+          "message": "Dumped type: array{z: int, a?: string, m: int}",
+          "line": 12,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: array{a?: string, m: int}",
+          "line": 15,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: array{z: int, a?: string, m: int}",
+          "line": 16,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: array{replacement: false}",
+          "line": 18,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: array{z: 1, a: 2, m: 3}",
+          "line": 26,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: array{z: 1, gone: false, a: 2, m: 3}",
+          "line": 27,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: array{a: 2, m: 3}",
+          "line": 29,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: array{}",
+          "line": 31,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: array{a: array{keptB: 4}|array{leaf?: 1, keptA: 3}, b: array{keptA: 3}|array{leaf?: 2, keptB: 4}}",
+          "line": 39,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: array{keptB: 4}|array{leaf?: 1, keptA: 3}",
+          "line": 40,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: array{keptA: 3}|array{leaf?: 2, keptB: 4}",
+          "line": 41,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: array{1: string, 2?: bool}",
+          "line": 48,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: array{z: int, m?: bool, ...<string, bool|int|string>}",
+          "line": 55,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value 'z' ('z', 'z').",
+          "line": 60,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Dumped type: array{z: 3, m: 4}",
+          "line": 62,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        }
+      ]
+    }
+  },
+  "errors": []
+}

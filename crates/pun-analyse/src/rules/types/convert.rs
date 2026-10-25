@@ -161,6 +161,28 @@ impl<'a, 'arena> Checker<'a, 'arena> {
                     .map(|(_, t)| t)
             }
             infer::Origin::Copy(from) => self.source_type(*from, origins),
+            infer::Origin::Array(items) => {
+                let mut builder = ShapeBuilder::new();
+                for (key, value) in items {
+                    let key = match key {
+                        Some(key) => Some(array_key(self.to_phpstan(self.types.get(key)?))?),
+                        None => None,
+                    };
+                    if key == Some(Type::ConstInt(i64::MAX)) { return None; }
+                    let actual = self.to_phpstan(self.types.get(value)?);
+                    let value = self.source_type(*value, origins)
+                        .map_or(actual.clone(), |source| restore(actual, &source));
+                    builder.set(key, value, false);
+                }
+                Some(builder.get())
+            }
+            infer::Origin::Offset(array, key) => {
+                let Type::ConstArray(source) = self.source_type(*array, origins)? else {
+                    return None;
+                };
+                let key = array_key(self.to_phpstan(self.types.get(key)?))?;
+                source.keys.iter().position(|k| *k == key).map(|i| source.values[i].clone())
+            }
             infer::Origin::AfterMethodCall(call, previous) => {
                 let actual = self.to_phpstan(self.types.get(&call.receiver)?);
                 let classes = actual.object_class_names();
@@ -753,27 +775,33 @@ fn restore(actual: Type, source: &Type) -> Type {
                     .collect(),
             )
         }
+        (Type::Union(parts), source @ Type::ConstArray(_)) => {
+            union(parts.into_iter().map(|t| restore(t, source)).collect())
+        }
         (Type::ConstArray(mut actual), Type::ConstArray(source))
-            if actual.keys.len() == source.keys.len()
-                && source.keys.iter().all(|k| actual.keys.contains(k)) =>
+            if actual.keys.iter().all(|k| source.keys.contains(k)) =>
         {
+            // ConstantArrayType::unsetOffset() keeps the surviving keys in their original slots. Mago's
+            // BTreeMap cannot retain that order, including inside weak writes' union alternatives.
             let positions: Vec<_> = source
                 .keys
                 .iter()
-                .map(|k| actual.keys.iter().position(|a| a == k).unwrap())
+                .enumerate()
+                .filter_map(|(i, k)| actual.keys.iter().position(|a| a == k).map(|p| (i, p)))
                 .collect();
             actual.values = positions
                 .iter()
-                .enumerate()
-                .map(|(i, p)| restore(actual.values[*p].clone(), &source.values[i]))
+                .map(|(i, p)| restore(actual.values[*p].clone(), &source.values[*i]))
                 .collect();
             actual.optional = positions
                 .iter()
                 .enumerate()
-                .filter_map(|(i, p)| actual.optional.contains(p).then_some(i))
+                .filter_map(|(i, (_, p))| actual.optional.contains(p).then_some(i))
                 .collect();
-            actual.keys = source.keys.clone();
-            actual.is_list = source.is_list;
+            actual.keys = positions.iter().map(|(i, _)| source.keys[*i].clone()).collect();
+            if actual.keys.len() == source.keys.len() && actual.optional == source.optional {
+                actual.is_list = source.is_list;
+            }
             actual.unsealed = match (&actual.unsealed, &source.unsealed) {
                 (Some((k, v)), Some((sk, sv))) => Some((restore(k.clone(), sk), restore(v.clone(), sv))),
                 (None, Some((Type::Never(NeverKind::Explicit | NeverKind::NonAccepting), _))) => {
