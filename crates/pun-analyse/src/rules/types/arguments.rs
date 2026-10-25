@@ -16,7 +16,8 @@ use super::super::{Checker, declared};
 use super::returns::strict_types;
 
 pub const IDENTIFIERS: &[&str] =
-    &["argument.type", "argument.byRef", "argument.unpackNonIterable", "argument.templateType", "argument.named"];
+    &["argument.type", "argument.byRef", "argument.unpackNonIterable", "argument.templateType", "argument.named",
+      "argument.invalidConstant", "argument.exclusiveConstants", "argument.bitmaskNotAllowed"];
 
 /// `describeParameter()`: `Parameter #1 $a`, `Parameter $a` (named), `Named argument b for variadic parameter ...$a`.
 fn describe(acceptor: &Acceptor, p: usize, position_or_name: Option<Result<usize, &str>>) -> String {
@@ -38,7 +39,7 @@ fn describe(acceptor: &Acceptor, p: usize, position_or_name: Option<Result<usize
 /// does not join.
 pub(in super::super) fn declared_type(c: &Checker, acceptor: &Acceptor, p: usize) -> Option<Type> {
     match &acceptor.param_types[p] {
-        ParamType::Builtin(s) => Some(pun_phpstan::resolve::resolve_str(s, acceptor.class.as_deref())),
+        ParamType::Builtin(s, _) => Some(pun_phpstan::resolve::resolve_str(s, acceptor.class.as_deref())),
         ParamType::Typed(t) => Some(t.clone()),
         ParamType::User => {
             let (f, declaring) = callee(c, acceptor)?;
@@ -247,6 +248,7 @@ pub(in super::super) fn arguments(
     let levels = c.levels();
     let inference = infer(c, acceptor, args, parameters);
     let resolved = resolved_types(&inference);
+    let allowed_type = super::super::params::allowed_constants_type(c, acceptor);
     for (i, (e, p)) in args.iter().zip(parameters).enumerate() {
         if e.unpack {
             let ty = c.type_at(e.value);
@@ -286,11 +288,15 @@ pub(in super::super) fn arguments(
                 c.report(e.span, "argument.type", message, tip.as_deref());
             }
         }
+        super::super::params::check_constants(
+            c, acceptor, e, p, allowed_type.as_ref(), resolved[p].as_ref(),
+            &describe(acceptor, p, Some(e.name.map_or(Ok(i), Err))), call,
+        );
         if by_ref == ByRef::No {
             continue;
         }
         let fine = match e.kind {
-            ArgKind::Nullsafe | ArgKind::Other => false,
+            ArgKind::Nullsafe | ArgKind::Other | ArgKind::Constants(_) => false,
             ArgKind::Writable | ArgKind::OtherCall => true,
             ArgKind::Function(id) => {
                 c.codebase.get_function(c.names.get(id)).is_some_and(|f| f.flags.is_by_reference())

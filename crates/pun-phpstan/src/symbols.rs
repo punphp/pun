@@ -34,6 +34,47 @@ pub struct Param {
     pub variadic: bool,
     pub by_ref: ByRef,
     pub default: Option<String>,
+    pub allowed_constants: Option<ParameterAllowedConstants>,
+}
+
+/// PHPStan's `ParameterAllowedConstants`. Equality includes the order of names and exclusive groups.
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq)]
+pub struct ParameterAllowedConstants {
+    pub bitmask: bool,
+    pub constants: Vec<String>,
+    #[serde(rename = "exclusiveGroups")]
+    pub exclusive_groups: Vec<Vec<String>>,
+}
+
+/// A syntactically referenced constant, with its reflection's identity and built-in status.
+pub struct ConstantReflection {
+    pub name: String,
+    pub builtin: bool,
+}
+
+pub struct AllowedConstantsResult<'a> {
+    pub disallowed: Vec<&'a ConstantReflection>,
+    pub violated_groups: Vec<Vec<&'a str>>,
+    pub bitmask_not_allowed: bool,
+}
+
+impl ParameterAllowedConstants {
+    /// `ParameterAllowedConstants::check()`: user aliases are deliberately not compared by value.
+    pub fn check<'a>(&self, constants: &'a [ConstantReflection]) -> AllowedConstantsResult<'a> {
+        let names: Vec<_> = constants.iter().filter(|c| c.builtin).map(|c| c.name.as_str()).collect();
+        AllowedConstantsResult {
+            disallowed: constants.iter().filter(|c| c.builtin && !self.constants.contains(&c.name)).collect(),
+            violated_groups: if self.bitmask {
+                self.exclusive_groups.iter().filter_map(|group| {
+                    let matched: Vec<_> = names.iter().copied().filter(|name| group.iter().any(|c| c == name)).collect();
+                    (matched.len() >= 2).then_some(matched)
+                }).collect()
+            } else {
+                Vec::new()
+            },
+            bitmask_not_allowed: !self.bitmask && constants.len() > 1,
+        }
+    }
 }
 
 #[derive(Debug, PartialEq)]
@@ -144,6 +185,8 @@ struct RawParam {
     #[serde(rename = "byRef")]
     by_ref: String,
     default: Option<String>,
+    #[serde(rename = "allowedConstants")]
+    allowed_constants: Option<ParameterAllowedConstants>,
 }
 
 #[derive(Deserialize)]
@@ -225,6 +268,7 @@ fn variants(v: Vec<RawVariant>) -> Vec<Variant> {
                         _ => ByRef::ReadsArgument,
                     },
                     default: p.default,
+                    allowed_constants: p.allowed_constants,
                 })
                 .collect(),
             ret: v.ret,

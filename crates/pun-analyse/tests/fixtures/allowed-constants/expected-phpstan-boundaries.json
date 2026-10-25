@@ -1,0 +1,33 @@
+{
+ "general": [],
+ "errors": [
+  {
+   "file": "boundaries.php",
+   "line": 5,
+   "identifier": "argument.invalidConstant",
+   "message": "Constant JSON_BIGINT_AS_STRING is not allowed for parameter #2 $flags of function json_encode.",
+   "tip": null
+  },
+  {
+   "file": "boundaries.php",
+   "line": 6,
+   "identifier": "argument.exclusiveConstants",
+   "message": "Constants JSON_INVALID_UTF8_IGNORE, JSON_INVALID_UTF8_SUBSTITUTE cannot be combined for parameter #2 $flags of function json_encode.",
+   "tip": null
+  },
+  {
+   "file": "boundaries.php",
+   "line": 7,
+   "identifier": "function.resultUnused",
+   "message": "Call to function array_unique() on a separate line has no effect.",
+   "tip": null
+  },
+  {
+   "file": "boundaries.php",
+   "line": 7,
+   "identifier": "argument.bitmaskNotAllowed",
+   "message": "Combining constants with | is not allowed for parameter #2 $flags of function array_unique.",
+   "tip": null
+  }
+ ]
+}

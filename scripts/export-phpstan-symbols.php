@@ -130,6 +130,15 @@ function variant(ParametersAcceptor $v): array
         if ($p->getDefaultValue() !== null) {
             $param['default'] = t($p->getDefaultValue());
         }
+        if ($p instanceof PHPStan\Reflection\ExtendedParameterReflection && $p->getAllowedConstants() !== null) {
+            // Preserve the reflection's ordered identities, not evaluated constant values or a second map.
+            $allowed = $p->getAllowedConstants();
+            $param['allowedConstants'] = [
+                'bitmask' => $allowed->isBitmask(),
+                'constants' => (fn () => $this->constants)->call($allowed),
+                'exclusiveGroups' => $allowed->getExclusiveGroups(),
+            ];
+        }
         $params[] = $param;
     }
 
@@ -839,6 +848,42 @@ if (($argv[1] ?? '') === 'dump') {
     $GLOBALS['reflected'] = [];
     $functions = dump((int) $argv[2], $typeStrings);
     echo serialize([$functions, $typeStrings, $GLOBALS['reflected']]);
+    exit;
+}
+
+// Refresh just this reflection contract without changing host-dependent extension constant values or fixtures.
+if (($argv[1] ?? '') === 'allowed-constants') {
+    $path = $root.'/crates/pun-phpstan/data/symbols.json';
+    $symbols = json_decode(file_get_contents($path), false, 512, JSON_THROW_ON_ERROR);
+    foreach ([80400, 80500] as $version) {
+        $provider = container($version)->getByType(ReflectionProvider::class);
+        $data = $version === 80400 ? $symbols : $symbols->php85;
+        foreach (['functions', 'classes'] as $kind) {
+            foreach ($data->$kind as $name => $entry) {
+                if ($entry === null) {
+                    continue;
+                }
+                $callables = $kind === 'functions' ? [$name => $entry] : $entry->methods;
+                foreach ($callables as $method => $callable) {
+                    $reflection = $kind === 'functions'
+                        ? $provider->getFunction(new PhpParser\Node\Name($name), null)
+                        : $provider->getClass($name)->getNativeMethod($method);
+                    $fresh = callable_entry($reflection);
+                    foreach (['variants', 'named'] as $variants) {
+                        foreach ($callable->$variants ?? [] as $i => $variant) {
+                            foreach ($variant->params as $p => $param) {
+                                unset($param->allowedConstants);
+                                if (isset($fresh[$variants][$i]['params'][$p]['allowedConstants'])) {
+                                    $param->allowedConstants = $fresh[$variants][$i]['params'][$p]['allowedConstants'];
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    file_put_contents($path, json_encode($symbols, $flags)."\n");
     exit;
 }
 

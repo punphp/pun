@@ -1,0 +1,12 @@
+{
+ "general": [],
+ "errors": [
+  {
+   "file": "boundaries.php",
+   "line": 7,
+   "identifier": "function.resultUnused",
+   "message": "Call to function array_unique() on a separate line has no effect.",
+   "tip": null
+  }
+ ]
+}

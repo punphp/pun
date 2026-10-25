@@ -1,0 +1,6 @@
+parameters:
+    phpVersion: 80500
+    level: 5
+    paths: [calls.php]
+    parallel:
+        maximumNumberOfProcesses: 1

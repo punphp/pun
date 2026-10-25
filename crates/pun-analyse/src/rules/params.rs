@@ -6,7 +6,7 @@ use mago_codex::ttype::TType;
 use mago_span::{HasSpan, Span};
 use mago_syntax::cst::*;
 
-use pun_phpstan::symbols::ByRef;
+use pun_phpstan::symbols::{ByRef, ConstantReflection, ParameterAllowedConstants};
 use pun_phpstan::types::{Tri, Type, is_super_type_of};
 
 use super::Checker;
@@ -41,8 +41,8 @@ pub struct Acceptor {
 /// A parameter's type as its reflection declares it, converted when an argument type is checked against it.
 #[derive(Clone, Debug, PartialEq)]
 pub enum ParamType {
-    /// A built-in's PHPDoc type string (data/symbols.json).
-    Builtin(String),
+    /// A built-in's PHPDoc type string and allowed-constant policy (data/symbols.json).
+    Builtin(String, Option<ParameterAllowedConstants>),
     /// A user parameter, typed from its function's reflection (`declared::codex_params()`).
     User,
     /// A callable type's parameter.
@@ -130,7 +130,7 @@ impl Acceptor {
             variadics: v.params.iter().map(|p| p.variadic).collect(),
             builtin: true,
             accepts_named_arguments: Tri::Yes,
-            param_types: v.params.iter().map(|p| ParamType::Builtin(p.ty.clone())).collect(),
+            param_types: v.params.iter().map(|p| ParamType::Builtin(p.ty.clone(), p.allowed_constants.clone())).collect(),
             by_ref: v.params.iter().map(|p| p.by_ref).collect(),
             class: None,
             callee: None,
@@ -258,7 +258,11 @@ pub(super) fn combine(variants: &[&Acceptor]) -> Acceptor {
                 combined.types[i] = format!("{}|{}", combined.types[i], v.types[i]);
             }
             combined.param_types[i] = match (&combined.param_types[i], &v.param_types[i]) {
-                (ParamType::Builtin(a), ParamType::Builtin(b)) if a != b => ParamType::Builtin(format!("{a}|{b}")),
+                (ParamType::Builtin(a, allowed), ParamType::Builtin(b, other)) => ParamType::Builtin(
+                    if a == b { a.clone() } else { format!("{a}|{b}") },
+                    allowed.clone().filter(|_| allowed == other),
+                ),
+                (ParamType::Builtin(a, _), _) => ParamType::Builtin(a.clone(), None),
                 (a, _) => a.clone(),
             };
             // `PassedByReference::combine()`: the stronger
@@ -346,7 +350,43 @@ pub enum ArgKind {
     StaticCall(Option<Span>, Option<Vec<u8>>),
     /// Another static call (ponytail: taken to return by reference).
     OtherCall,
+    /// A constant fetch, or a disjunction whose every leaf is a constant fetch.
+    Constants(Vec<ConstantFetch>),
     Other,
+}
+
+#[derive(Clone, Debug)]
+pub enum ConstantFetch {
+    Global { name: Span, unqualified: bool },
+    Class { class: Span, named: bool, name: String },
+}
+
+/// `resolveConstantReflections()`'s syntax contract, before resolving the leaves in the call's scope.
+fn constant_fetches(e: &Expression) -> Option<Vec<ConstantFetch>> {
+    match e {
+        Expression::Parenthesized(p) => constant_fetches(p.expression),
+        Expression::ConstantAccess(a) => Some(vec![ConstantFetch::Global {
+            name: a.name.span(),
+            unqualified: matches!(a.name, Identifier::Local(_)),
+        }]),
+        Expression::Access(Access::ClassConstant(a)) => {
+            let ClassLikeConstantSelector::Identifier(id) = &a.constant else { return None };
+            if !matches!(a.class, Expression::Identifier(_) | Expression::Self_(_) | Expression::Static(_) | Expression::Parent(_)) {
+                return None;
+            }
+            Some(vec![ConstantFetch::Class {
+                class: a.class.span(),
+                named: matches!(a.class, Expression::Identifier(_)),
+                name: String::from_utf8_lossy(id.value).into_owned(),
+            }])
+        }
+        Expression::Binary(b) if matches!(b.operator, BinaryOperator::BitwiseOr(_)) => {
+            let mut left = constant_fetches(b.lhs)?;
+            left.extend(constant_fetches(b.rhs)?);
+            Some(left)
+        }
+        _ => None,
+    }
 }
 
 fn selector(s: &ClassLikeMemberSelector) -> Option<Vec<u8>> {
@@ -357,6 +397,9 @@ fn selector(s: &ClassLikeMemberSelector) -> Option<Vec<u8>> {
 }
 
 fn kind(e: &Expression) -> ArgKind {
+    if let Some(constants) = constant_fetches(e) {
+        return ArgKind::Constants(constants);
+    }
     if super::assign::contains_nullsafe(e) {
         return ArgKind::Nullsafe;
     }
@@ -599,6 +642,8 @@ fn unpacked_types(ty: &Type) -> Option<Vec<(Option<String>, Type)>> {
 #[derive(Clone, Copy, PartialEq, Eq)]
 pub enum CallKind {
     Function,
+    /// CallUserFuncRule uses function identifiers, but passes `isBuiltin: false` for the forwarded call.
+    CallUserFunc,
     Method,
     StaticMethod,
     New,
@@ -713,7 +758,7 @@ pub fn check(
         && acceptor.void
     {
         let identifier = match call.kind {
-            CallKind::Function => "function.void",
+            CallKind::Function | CallKind::CallUserFunc => "function.void",
             CallKind::Method => "method.void",
             CallKind::Callable => "callable.void",
             _ => "staticMethod.void",
@@ -755,6 +800,120 @@ pub(super) fn check_named(c: &mut Checker, acceptor: &Acceptor, e: &Entry, call:
     c.report(e.span, "argument.named", format!(
         "{} invoked with {argument}, but it's not allowed because of @no-named-arguments.", call.subject
     ), None);
+}
+
+/// The declared parameter types with a policy, for the built-in fallback check on other parameters.
+pub(super) fn allowed_constants_type(c: &Checker, acceptor: &Acceptor) -> Option<Type> {
+    let types: Vec<_> = acceptor.param_types.iter().enumerate().filter_map(|(i, p)| {
+        matches!(p, ParamType::Builtin(_, Some(_))).then(|| super::types::declared_type(c, acceptor, i)).flatten()
+    }).collect();
+    (!types.is_empty()).then(|| pun_phpstan::types::union(types))
+}
+
+/// FunctionCallParametersCheck's PHP 8+ constant checks, after this argument's ordinary type check.
+pub(super) fn check_constants(
+    c: &mut Checker,
+    acceptor: &Acceptor,
+    e: &Entry,
+    p: usize,
+    allowed_type: Option<&Type>,
+    parameter_type: Option<&Type>,
+    parameter: &str,
+    call: &Call,
+) {
+    if !c.surely_at_least(80000) {
+        return;
+    }
+    let ArgKind::Constants(fetches) = e.kind else { return };
+    let Some(constants) = fetches.iter().map(|f| resolve_constant(c, f)).collect::<Option<Vec<_>>>() else { return };
+    let policy = match &acceptor.param_types[p] {
+        ParamType::Builtin(_, policy) => policy.as_ref(),
+        _ => None,
+    };
+    let of = call.subject[..1].to_ascii_lowercase() + &call.subject[1..];
+    let parameter = parameter[..1].to_ascii_lowercase() + &parameter[1..];
+    let invalid = |c: &mut Checker, constant: &ConstantReflection| {
+        c.report(e.span, "argument.invalidConstant", format!(
+            "Constant {} is not allowed for {parameter} of {of}.", constant.name
+        ), None);
+    };
+    if let Some(policy) = policy {
+        let result = policy.check(&constants);
+        for constant in result.disallowed {
+            invalid(c, constant);
+        }
+        for group in result.violated_groups {
+            c.report(e.span, "argument.exclusiveConstants", format!(
+                "Constants {} cannot be combined for {parameter} of {of}.", group.join(", ")
+            ), None);
+        }
+        if result.bitmask_not_allowed {
+            c.report(e.span, "argument.bitmaskNotAllowed", format!(
+                "Combining constants with | is not allowed for {parameter} of {of}."
+            ), None);
+        }
+    } else if acceptor.builtin && !matches!(call.kind, CallKind::Callable | CallKind::CallUserFunc) && allowed_type.zip(parameter_type).is_some_and(|(a, p)| {
+        super::declared::with_classes(c, || is_super_type_of(a, p).yes())
+    }) {
+        for constant in constants.iter().filter(|k| k.builtin) {
+            invalid(c, constant);
+        }
+    }
+}
+
+/// Resolve syntax, not inferred numeric values. A single unresolved leaf cancels the whole disjunction.
+fn resolve_constant(c: &Checker, fetch: &ConstantFetch) -> Option<ConstantReflection> {
+    match fetch {
+        ConstantFetch::Global { name, unqualified } => {
+            let resolved = c.resolved_span(*name);
+            let written = c.written(*name).trim_start_matches('\\').to_string();
+            let fallback = *unqualified && !c.names.is_imported(name);
+            for name in std::iter::once(resolved).chain(fallback.then_some(written)) {
+                if ["null", "true", "false"].iter().any(|n| name.eq_ignore_ascii_case(n)) {
+                    return None;
+                }
+                if let Some(k) = c.codebase.get_constant(name.as_bytes()).filter(|k| !k.flags.is_built_in()) {
+                    // As in ReflectionProvider, a define() inside a class-like is not a global declaration.
+                    if !c.codebase.class_likes.values().any(|o| {
+                        o.span.file_id == k.span.file_id && o.span.start.offset <= k.span.start.offset && k.span.end.offset <= o.span.end.offset
+                    }) {
+                        return Some(ConstantReflection { name, builtin: false });
+                    }
+                }
+                if c.builtins.constants.contains_key(&name) {
+                    return Some(ConstantReflection { name, builtin: true });
+                }
+            }
+            None
+        }
+        ConstantFetch::Class { class, named, name } => {
+            let class = if *named {
+                c.resolved_span(*class)
+            } else {
+                let scope = c.class_scope()?;
+                if c.written(*class).eq_ignore_ascii_case("parent") {
+                    scope.direct_parent_class?.to_string()
+                } else {
+                    scope.name.to_string()
+                }
+            };
+            use super::reflection::{Known, known};
+            let builtin = match known(c, &class)? {
+                Known::User(k) => {
+                    let key = mago_word::word(name.as_bytes());
+                    if k.constants.get(&key).is_some_and(|k| !k.flags.is_built_in()) || k.enum_cases.contains_key(&key) {
+                        return Some(ConstantReflection { name: format!("{class}::{name}"), builtin: false });
+                    }
+                    k.all_parent_classes.iter().chain(k.all_parent_interfaces.iter())
+                        .filter_map(|n| c.builtins.classes.get(&n.to_string().to_ascii_lowercase()))
+                        .find(|k| k.constants.iter().any(|(n, _)| n == name))?
+                }
+                Known::Builtin(k) => std::iter::once(k).chain(k.ancestors.iter().filter_map(|n| c.builtins.classes.get(&n.to_ascii_lowercase())))
+                    .find(|k| k.constants.iter().any(|(n, _)| n == name) || k.cases.contains(name))?,
+            };
+            Some(ConstantReflection { name: format!("{}::{name}", builtin.name), builtin: true })
+        }
+    }
 }
 
 /// One argument after unpacking constant arrays.

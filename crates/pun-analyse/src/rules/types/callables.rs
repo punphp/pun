@@ -251,5 +251,5 @@ pub(in super::super) fn call_user_func(c: &mut Checker, call: &FunctionCall) {
     };
     let first_level = c.is_top_level(call.span());
     let described = format!("callable passed to {function}()");
-    check(c, all, &counts, call.span(), &described, params::CallKind::Function, first_level);
+    check(c, all, &counts, call.span(), &described, params::CallKind::CallUserFunc, first_level);
 }
