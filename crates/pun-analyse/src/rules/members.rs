@@ -140,8 +140,8 @@ pub fn method<'a>(
         .find_map(|i| declared(c, i, &lower))
 }
 
-/// AnnotationsMethodsClassReflectionExtension: a `@method` tag of the class, its traits (declared by the class), its
-/// parents or its interfaces, which `getMethod()` falls back to when the class has no such native method.
+/// AnnotationsMethodsClassReflectionExtension: a `@method` tag of the class, its traits, its parents or its
+/// interfaces, which `getMethod()` falls back to when the class has no such native method.
 pub fn annotation_method<'a>(
     c: &Checker<'a, '_>,
     class: &'a ClassLikeMetadata,
@@ -166,7 +166,11 @@ pub fn annotation_method<'a>(
         // findClassReflectionWithMethod(): traits first, then the parent, then interfaces, depth first.
         let start = pending.len();
         let get = |n: &mago_word::Word| codebase.get_class_like(n.as_bytes());
-        pending.extend(k.used_traits.iter().filter_map(get).map(|t| (t, declaring)));
+        pending.extend(
+            k.direct_trait_names()
+                .filter_map(|t| get(&t))
+                .map(|t| (t, k)),
+        );
         if let Some(p) = k.direct_parent_class.as_ref().and_then(get) {
             pending.push((p, p));
         }
@@ -215,17 +219,9 @@ fn declared<'a>(
         // `use T { foo as bar; }`
         if let Some(original) = k.trait_alias_map.get(lower)
             && let Some(f) = k
-                .used_traits
-                .iter()
+                .direct_trait_names()
                 .filter_map(|t| codebase.get_class_like(t.as_bytes()))
-                .find_map(|t| {
-                    codebase
-                        .get_method(t.name.as_bytes(), original.as_bytes())
-                        .filter(|_| {
-                            t.methods
-                                .contains(&word(original.as_bytes().to_ascii_lowercase()))
-                        })
-                })
+                .find_map(|t| codebase.get_declaring_method(t.name.as_bytes(), original.as_bytes()))
         {
             return Some(Method::User { declaring: k, f });
         }
@@ -234,10 +230,11 @@ fn declared<'a>(
     if let Some(method) = own(k) {
         return Some(method);
     }
+    // Populated `used_traits` also contains parents' traits; only a direct use changes the method's owner.
     // Keep sibling searches independent, as BetterReflection's per-trait AlreadyVisitedClasses copies do.
     let mut pending = vec![(
         k,
-        k.used_traits.iter(),
+        k.direct_trait_names(),
         codebase.get_declaring_method(k.name.as_bytes(), lower.as_bytes()),
     )];
     let mut active = HashSet::from([k.name]);
@@ -269,7 +266,7 @@ fn declared<'a>(
         } else {
             pending.push((
                 k,
-                k.used_traits.iter(),
+                k.direct_trait_names(),
                 codebase.get_declaring_method(k.name.as_bytes(), lower.as_bytes()),
             ));
         }

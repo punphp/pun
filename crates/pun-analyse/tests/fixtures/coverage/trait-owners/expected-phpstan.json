@@ -1,0 +1,82 @@
+{
+ "general": [],
+ "errors": [
+  {
+   "file": "owners.php",
+   "line": 21,
+   "identifier": "method.void",
+   "message": "Result of method TraitMethodOwners\\Command::line() (void) is used.",
+   "tip": null
+  },
+  {
+   "file": "owners.php",
+   "line": 22,
+   "identifier": "method.void",
+   "message": "Result of method TraitMethodOwners\\Command::documented() (void) is used.",
+   "tip": null
+  },
+  {
+   "file": "owners.php",
+   "line": 33,
+   "identifier": "method.void",
+   "message": "Result of method TraitMethodOwners\\Command::line() (void) is used.",
+   "tip": null
+  },
+  {
+   "file": "owners.php",
+   "line": 34,
+   "identifier": "method.void",
+   "message": "Result of method TraitMethodOwners\\Command::documented() (void) is used.",
+   "tip": null
+  },
+  {
+   "file": "owners.php",
+   "line": 36,
+   "identifier": "method.private",
+   "message": "Call to private method privateLine() of class TraitMethodOwners\\Command.",
+   "tip": null
+  },
+  {
+   "file": "owners.php",
+   "line": 47,
+   "identifier": "method.void",
+   "message": "Result of method TraitMethodOwners\\ReusingCommand::line() (void) is used.",
+   "tip": null
+  },
+  {
+   "file": "owners.php",
+   "line": 48,
+   "identifier": "method.void",
+   "message": "Result of method TraitMethodOwners\\ReusingCommand::documented() (void) is used.",
+   "tip": null
+  },
+  {
+   "file": "owners.php",
+   "line": 64,
+   "identifier": "method.void",
+   "message": "Result of method TraitMethodOwners\\NestedCommand::line() (void) is used.",
+   "tip": null
+  },
+  {
+   "file": "owners.php",
+   "line": 65,
+   "identifier": "method.void",
+   "message": "Result of method TraitMethodOwners\\WrappedOutput::documented() (void) is used.",
+   "tip": null
+  },
+  {
+   "file": "owners.php",
+   "line": 77,
+   "identifier": "method.void",
+   "message": "Result of method TraitMethodOwners\\NestedCommand::line() (void) is used.",
+   "tip": null
+  },
+  {
+   "file": "owners.php",
+   "line": 78,
+   "identifier": "method.void",
+   "message": "Result of method TraitMethodOwners\\WrappedOutput::documented() (void) is used.",
+   "tip": null
+  }
+ ]
+}
