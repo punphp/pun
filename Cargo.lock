@@ -833,8 +833,6 @@ checksum = "0fa0d502e67bfcb6898c8a277ad64ef17a07465f03860f57b76d8e5f0ab7ead2"
 [[package]]
 name = "mago-codex"
 version = "1.57.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4fad91caa6943ff61d655d1143b864ee265d2e675d0347a9d140ebee6541ba10"
 dependencies = [
  "foldhash",
  "indexmap",

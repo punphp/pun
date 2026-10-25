@@ -1,0 +1,142 @@
+use mago_word::Word;
+use mago_word::word;
+
+use crate::ttype::TType;
+use crate::ttype::TypeRef;
+use crate::ttype::union::TUnion;
+
+/// Represents `int-mask<1, 2, 4>` utility type.
+///
+/// This type expands to a union of all possible bitmask combinations.
+/// For example, `int-mask<1, 2, 4>` expands to `0|1|2|3|4|5|6|7`.
+#[derive(Debug, Clone, PartialEq, Eq, Hash, PartialOrd, Ord)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
+pub struct TIntMask {
+    values: Vec<TUnion>,
+}
+
+impl TIntMask {
+    #[must_use]
+    pub fn new(values: Vec<TUnion>) -> Self {
+        Self { values }
+    }
+
+    #[inline]
+    #[must_use]
+    pub fn get_values(&self) -> &[TUnion] {
+        &self.values
+    }
+
+    #[inline]
+    pub fn get_values_mut(&mut self) -> &mut [TUnion] {
+        &mut self.values
+    }
+
+    /// Calculate all bitmask combinations from integer values.
+    ///
+    /// Given values `[1, 2, 4]`, returns `[0, 1, 2, 3, 4, 5, 6, 7]`.
+    ///
+    /// For each value, append each existing combination OR-ed with that value.
+    #[must_use]
+    pub fn calculate_mask_combinations(values: &[i64]) -> Vec<i64> {
+        let n = values.len();
+        if n == 0 {
+            return vec![0];
+        }
+
+        // Limit to prevent combinatorial explosion (max 20 values = ~1M combinations)
+        let max_values = 20;
+        let n = n.min(max_values);
+        let values = &values[..n];
+
+        let mut result = Vec::with_capacity(1 << n);
+        result.push(0);
+        for &value in values {
+            let count = result.len();
+            for index in 0..count {
+                result.push(result[index] | value);
+            }
+        }
+
+        result.sort_unstable();
+        result.dedup();
+        result
+    }
+}
+
+impl TType for TIntMask {
+    fn append_child_nodes<'types>(&'types self, children: &mut Vec<TypeRef<'types>>) {
+        children.extend(self.values.iter().map(TypeRef::Union));
+    }
+
+    fn needs_population(&self) -> bool {
+        self.values.iter().any(crate::ttype::TType::needs_population)
+    }
+
+    fn is_expandable(&self) -> bool {
+        true
+    }
+
+    fn get_id(&self) -> Word {
+        let mut id: Vec<u8> = b"int-mask<".to_vec();
+        for (i, value) in self.values.iter().enumerate() {
+            if i > 0 {
+                id.extend_from_slice(b", ");
+            }
+            id.extend_from_slice(value.get_id().as_bytes());
+        }
+        id.push(b'>');
+        word(&id)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::TIntMask;
+
+    fn subset_combinations(values: &[i64]) -> Vec<i64> {
+        let values = &values[..values.len().min(20)];
+        let mut result = Vec::with_capacity(1 << values.len());
+        for mask in 0..(1u64 << values.len()) {
+            let mut combination = 0;
+            for (index, &value) in values.iter().enumerate() {
+                if mask & (1 << index) != 0 {
+                    combination |= value;
+                }
+            }
+
+            result.push(combination);
+        }
+
+        result.sort_unstable();
+        result.dedup();
+        result
+    }
+
+    #[test]
+    fn mask_combinations_match_subsets() {
+        let alphabet = [0, 1, 2, 3, -1, i64::MIN, i64::MAX];
+        for length in 0..=4 {
+            for mut value in 0..alphabet.len().pow(length) {
+                let mut values = vec![0; length as usize];
+                for entry in &mut values {
+                    *entry = alphabet[value % alphabet.len()];
+                    value /= alphabet.len();
+                }
+
+                assert_eq!(TIntMask::calculate_mask_combinations(&values), subset_combinations(&values), "{values:?}");
+            }
+        }
+    }
+
+    #[test]
+    fn mask_combinations_use_only_the_first_twenty_values() {
+        let mut values = vec![0, 1, 1, 2, 2, 3, i64::MIN, i64::MIN];
+        values.resize(20, 0);
+        let expected = subset_combinations(&values);
+        assert_eq!(TIntMask::calculate_mask_combinations(&values), expected);
+
+        values.push(4);
+        assert_eq!(TIntMask::calculate_mask_combinations(&values), expected);
+    }
+}

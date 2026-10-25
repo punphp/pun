@@ -203,62 +203,66 @@ fn analyze(code: &[u8], native: bool) -> (AnalysisArtifacts, Visits, String) {
 
 #[test]
 fn defaults_keep_one_observer_walk_and_native_off_full_artifacts() {
-    let code = include_bytes!("fixtures/generic-defaults/defaults.php");
-    let (enabled, visits, issues) = analyze(code, true);
-    let (disabled, off_visits, off_issues) = analyze(code, false);
-    assert_eq!(issues, off_issues);
-    assert_eq!(visits, off_visits);
-    assert!(!visits.is_empty());
-    assert!(visits.values().all(|count| *count == 1));
-    assert_eq!(enabled.expression_types, disabled.expression_types);
-    assert_eq!(enabled.if_true_assertions, disabled.if_true_assertions);
-    assert_eq!(enabled.if_false_assertions, disabled.if_false_assertions);
-    assert_eq!(
-        enabled.true_branch_only_assertions,
-        disabled.true_branch_only_assertions
-    );
-    assert_eq!(
-        enabled.inferred_return_types,
-        disabled.inferred_return_types
-    );
-    assert_eq!(
-        enabled.inferred_yield_key_types,
-        disabled.inferred_yield_key_types
-    );
-    assert_eq!(
-        enabled.inferred_yield_value_types,
-        disabled.inferred_yield_value_types
-    );
-    assert_eq!(enabled.symbol_references, disabled.symbol_references);
-    assert_eq!(
-        enabled.fully_matched_switch_offsets,
-        disabled.fully_matched_switch_offsets
-    );
-    assert_eq!(
-        enabled.inferred_parameter_types,
-        disabled.inferred_parameter_types
-    );
-    assert_eq!(
-        enabled.method_initialized_properties,
-        disabled.method_initialized_properties
-    );
-    assert_eq!(
-        enabled.method_calls_this_methods,
-        disabled.method_calls_this_methods
-    );
-    assert_eq!(
-        enabled.method_calls_parent_constructor,
-        disabled.method_calls_parent_constructor
-    );
-    assert_eq!(
-        enabled.method_calls_parent_initializer,
-        disabled.method_calls_parent_initializer
-    );
-    assert_eq!(
-        enabled.resolved_method_calls,
-        disabled.resolved_method_calls
-    );
-    assert!(enabled.loop_scope.is_none() && disabled.loop_scope.is_none());
-    assert!(enabled.case_scopes.is_empty() && disabled.case_scopes.is_empty());
-    assert!(enabled.closure_bind_scope.is_none() && disabled.closure_bind_scope.is_none());
+    for code in [
+        include_bytes!("fixtures/generic-defaults/defaults.php").as_slice(),
+        include_bytes!("fixtures/parent-defaults/constants.php").as_slice(),
+    ] {
+        let (enabled, visits, issues) = analyze(code, true);
+        let (disabled, off_visits, off_issues) = analyze(code, false);
+        assert_eq!(issues, off_issues);
+        assert_eq!(visits, off_visits);
+        assert!(!visits.is_empty());
+        assert!(visits.values().all(|count| *count == 1));
+        assert_eq!(enabled.expression_types, disabled.expression_types);
+        assert_eq!(enabled.if_true_assertions, disabled.if_true_assertions);
+        assert_eq!(enabled.if_false_assertions, disabled.if_false_assertions);
+        assert_eq!(
+            enabled.true_branch_only_assertions,
+            disabled.true_branch_only_assertions
+        );
+        assert_eq!(
+            enabled.inferred_return_types,
+            disabled.inferred_return_types
+        );
+        assert_eq!(
+            enabled.inferred_yield_key_types,
+            disabled.inferred_yield_key_types
+        );
+        assert_eq!(
+            enabled.inferred_yield_value_types,
+            disabled.inferred_yield_value_types
+        );
+        assert_eq!(enabled.symbol_references, disabled.symbol_references);
+        assert_eq!(
+            enabled.fully_matched_switch_offsets,
+            disabled.fully_matched_switch_offsets
+        );
+        assert_eq!(
+            enabled.inferred_parameter_types,
+            disabled.inferred_parameter_types
+        );
+        assert_eq!(
+            enabled.method_initialized_properties,
+            disabled.method_initialized_properties
+        );
+        assert_eq!(
+            enabled.method_calls_this_methods,
+            disabled.method_calls_this_methods
+        );
+        assert_eq!(
+            enabled.method_calls_parent_constructor,
+            disabled.method_calls_parent_constructor
+        );
+        assert_eq!(
+            enabled.method_calls_parent_initializer,
+            disabled.method_calls_parent_initializer
+        );
+        assert_eq!(
+            enabled.resolved_method_calls,
+            disabled.resolved_method_calls
+        );
+        assert!(enabled.loop_scope.is_none() && disabled.loop_scope.is_none());
+        assert!(enabled.case_scopes.is_empty() && disabled.case_scopes.is_empty());
+        assert!(enabled.closure_bind_scope.is_none() && disabled.closure_bind_scope.is_none());
+    }
 }

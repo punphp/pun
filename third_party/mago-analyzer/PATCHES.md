@@ -15,8 +15,8 @@ The crates.io package checksum is
 The copy excludes registry bookkeeping, the package lockfile, upstream test fixtures,
 and benchmarks. The manifest removes those test targets and their development dependencies,
 except `indoc`, which the inline loop-convergence tests need.
-Every sibling `mago-*` dependency remains a crates.io dependency pinned to `=1.57.0`.
-The root manifest patches only `mago-analyzer` and excludes this directory from Pun's workspace members.
+Every sibling `mago-*` dependency remains pinned to `=1.57.0`.
+The root manifest patches `mago-analyzer` and `mago-codex`, excluding both directories from Pun's workspace members.
 
 ## Semantic changes
 
@@ -743,11 +743,8 @@ controls preserve Mago's placeholders and SPL's `never`, not PHPStan's different
 The backport does not resolve the unspecified-template property gap. PHPStan can retain symbolic
 dependent templates in constructor-bearing object dumps while resolving their properties; Mago
 substitutes the arguments eagerly. Literal constructor inference also keeps Mago's existing widening.
-`parent::VALUE` defaults remain blocked by codex 1.57.0: the oracle gives `ParentDefault<42>` and `42`,
-but the backport gives `ParentDefault<mixed>` and `int`. The same upstream commit fixes
-`codex::ttype::expander::expand_member_reference()` by resolving a case-insensitive `parent` through
-`TypeExpansionOptions::self_class` to `ClassLikeMetadata::direct_parent_class` before lookup.
-That separate dependency change is not included here.
+The separate maintained [codex patch](../mago-codex/PATCHES.md) resolves `parent::VALUE` and
+`parent::class` defaults through the declaring class's direct parent, using the same upstream commit.
 
 Fresh coverage against `00a825d6` measures **30/30 changed analyzer executable lines** and
 **169/169 test executable lines**, without exclusions. The instrumented private-target run passes

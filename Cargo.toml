@@ -1,10 +1,11 @@
 [workspace]
 resolver = "3"
 members = ["crates/*"]
-exclude = ["third_party/mago-analyzer"]
+exclude = ["third_party/mago-analyzer", "third_party/mago-codex"]
 
 [patch.crates-io]
 mago-analyzer = { path = "third_party/mago-analyzer" }
+mago-codex = { path = "third_party/mago-codex" }
 
 [workspace.package]
 version = "0.0.1"

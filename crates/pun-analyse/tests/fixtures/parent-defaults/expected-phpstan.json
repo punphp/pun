@@ -1,0 +1,306 @@
+{
+  "0": [
+    {
+      "message": "Dumped type: ParentGenericDefaults\\ParentDefault<42>",
+      "line": 132,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: 42",
+      "line": 133,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: ParentGenericDefaults\\MixedCaseParentDefault<42>",
+      "line": 137,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: 42",
+      "line": 138,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: ParentGenericDefaults\\InheritedConstantDefault<47>",
+      "line": 140,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: 47",
+      "line": 141,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: ParentGenericDefaults\\EmptyConstructorDefault<42>",
+      "line": 145,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: 42",
+      "line": 146,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: ParentGenericDefaults\\DependentParentDefault<42, array{value: 42}>",
+      "line": 148,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: array{value: 42}",
+      "line": 149,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: ParentGenericDefaults\\ParentClassDefault<'ParentGenericDefaults\\\\ParentConstants'>",
+      "line": 151,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: 'ParentGenericDefaults\\\\ParentConstants'",
+      "line": 152,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: ParentGenericDefaults\\MixedCaseParentClassDefault<'ParentGenericDefaults\\\\ParentConstants'>",
+      "line": 154,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: 'ParentGenericDefaults\\\\ParentConstants'",
+      "line": 155,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: ParentGenericDefaults\\SelfDefault<50>",
+      "line": 157,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: 50",
+      "line": 158,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: ParentGenericDefaults\\SelfClassDefault<'ParentGenericDefaults\\\\SelfClassDefault'>",
+      "line": 160,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: 'ParentGenericDefaults\\\\SelfClassDefault'",
+      "line": 161,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: ParentGenericDefaults\\QualifiedDefault<49>",
+      "line": 163,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: 49",
+      "line": 164,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: ParentGenericDefaults\\InheritedConstructorDefault<52>",
+      "line": 166,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: 52",
+      "line": 167,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: ParentGenericDefaults\\ParentDefault<42>",
+      "line": 175,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: 42",
+      "line": 176,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    }
+  ],
+  "5": [
+    {
+      "message": "Dumped type: ParentGenericDefaults\\ParentDefault<42>",
+      "line": 132,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: 42",
+      "line": 133,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Parameter #1 $value of function ParentGenericDefaults\\needs43 expects 43, 42 given.",
+      "line": 135,
+      "ignorable": true,
+      "identifier": "argument.type"
+    },
+    {
+      "message": "Dumped type: ParentGenericDefaults\\MixedCaseParentDefault<42>",
+      "line": 137,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: 42",
+      "line": 138,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: ParentGenericDefaults\\InheritedConstantDefault<47>",
+      "line": 140,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: 47",
+      "line": 141,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Parameter #1 $value of function ParentGenericDefaults\\needs48 expects 48, 47 given.",
+      "line": 143,
+      "ignorable": true,
+      "identifier": "argument.type"
+    },
+    {
+      "message": "Dumped type: ParentGenericDefaults\\EmptyConstructorDefault<42>",
+      "line": 145,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: 42",
+      "line": 146,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: ParentGenericDefaults\\DependentParentDefault<42, array{value: 42}>",
+      "line": 148,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: array{value: 42}",
+      "line": 149,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: ParentGenericDefaults\\ParentClassDefault<'ParentGenericDefaults\\\\ParentConstants'>",
+      "line": 151,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: 'ParentGenericDefaults\\\\ParentConstants'",
+      "line": 152,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: ParentGenericDefaults\\MixedCaseParentClassDefault<'ParentGenericDefaults\\\\ParentConstants'>",
+      "line": 154,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: 'ParentGenericDefaults\\\\ParentConstants'",
+      "line": 155,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: ParentGenericDefaults\\SelfDefault<50>",
+      "line": 157,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: 50",
+      "line": 158,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: ParentGenericDefaults\\SelfClassDefault<'ParentGenericDefaults\\\\SelfClassDefault'>",
+      "line": 160,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: 'ParentGenericDefaults\\\\SelfClassDefault'",
+      "line": 161,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: ParentGenericDefaults\\QualifiedDefault<49>",
+      "line": 163,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: 49",
+      "line": 164,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: ParentGenericDefaults\\InheritedConstructorDefault<52>",
+      "line": 166,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: 52",
+      "line": 167,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: ParentGenericDefaults\\ParentDefault<42>",
+      "line": 175,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: 42",
+      "line": 176,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    }
+  ]
+}
