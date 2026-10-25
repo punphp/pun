@@ -20,8 +20,6 @@ Methods/CallStaticMethodsRuleTest::testRequireExtends
 Methods/CallStaticMethodsRuleTest::testClosureBind
 Methods/CallStaticMethodsRuleTest::testDynamicCall
 Methods/CallStaticMethodsRuleTest::testPipeOperator
-Methods/MethodCallableRuleTest::testRule
-Methods/StaticMethodCallableRuleTest::testRule
 Properties/AccessPropertiesRuleTest::testRequireExtends
 # PHPStan 2.3.1 at level 0 aborts this file with an internal error (MissingReturnRule, ShouldNotHappenException on a
 # declare inside a method body), so it reports none of the file's errors; Pun reports the two declares as the
