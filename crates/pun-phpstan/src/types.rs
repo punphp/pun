@@ -387,6 +387,16 @@ impl Type {
     }
 
     pub fn is_string(&self) -> Tri {
+        // UnionType::isString uses notBenevolentUnionResults, unlike canAccessConstants/isObject.
+        match self {
+            Type::Union(ts) | Type::Benevolent(ts) => {
+                return Tri::extreme_identity(ts.iter().map(Type::is_string));
+            }
+            Type::Intersection(ts) => return Tri::max_min(ts.iter().map(Type::is_string)),
+            Type::Template(t) => return t.bound.is_string(),
+            Type::Conditional(c) => return c.resolve().is_string(),
+            _ => {}
+        }
         self.query_c(&|t| {
             if matches!(t, Type::Accessory(Accessory::HasMethod(_))) {
                 return Tri::Maybe;
@@ -762,11 +772,18 @@ impl Type {
             | Type::This(class)
             | Type::EnumCase(class, _) => vec![class.clone()],
             Type::Closure(_) => vec!["Closure".to_string()],
-            Type::Union(types) | Type::Intersection(types) => {
+            // TemplateObjectType and TemplateUnionType inherit their bound's object identities.
+            Type::Template(t) => t.bound.object_class_names(),
+            Type::Union(types) | Type::Benevolent(types) | Type::Intersection(types) => {
                 let mut names = Vec::new();
-                for inner in types.iter().map(Type::object_class_names) {
-                    // `pickFromTypes()`: a union member without names leaves none
-                    if inner.is_empty() && matches!(self, Type::Union(_)) {
+                for t in types {
+                    let inner = t.object_class_names();
+                    // BenevolentUnionType's pickFromTypes ignores nonobjects, not unnamed objects.
+                    if inner.is_empty()
+                        && (matches!(self, Type::Union(_))
+                            || matches!(self, Type::Benevolent(_))
+                                && is_super_type_of(&Type::ObjectWithoutClass, t).yes())
+                    {
                         return Vec::new();
                     }
                     for name in inner {
@@ -777,8 +794,6 @@ impl Type {
                 }
                 names
             }
-            // ponytail: templates are compound, so isSuperTypeOf() never asks them; add their arm when something
-            // else does
             _ => vec![],
         }
     }

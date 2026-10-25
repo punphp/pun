@@ -4,13 +4,49 @@
 use mago_codex::ttype::TType;
 use mago_span::{HasSpan, Span};
 use mago_syntax::cst::*;
+use mago_syntax::walker::MutWalker;
 use mago_word::word;
-use pun_phpstan::types::Type;
+use pun_phpstan::types::{Level, Tri, Type, union};
 
 use super::class_names::{self, Function, Location, Pair};
 use super::reflection::{Known, known};
 use super::scope::Guard;
 use super::{Checker, DISCOVERING_SYMBOLS_TIP};
+
+/// ClassConstantRule must infer every expression receiver independently of the restricted-member rules.
+pub(super) fn typed_class_constants(program: &Program, level: u8) -> Vec<Span> {
+    struct Wanted {
+        spans: Vec<Span>,
+        level: u8,
+    }
+    impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Wanted {
+        fn walk_in_class_constant_access(
+            &mut self,
+            a: &'ast ClassConstantAccess<'arena>,
+            _: &mut (),
+        ) {
+            let class = super::types::flow::unparen(a.class);
+            if self.level >= 2
+                && !matches!(
+                    class,
+                    Expression::Identifier(_)
+                        | Expression::Self_(_)
+                        | Expression::Static(_)
+                        | Expression::Parent(_)
+                )
+                || matches!(class, Expression::Variable(Variable::Direct(v)) if v.name == b"$this")
+            {
+                self.spans.push(class.span());
+            }
+        }
+    }
+    let mut wanted = Wanted {
+        spans: Vec::new(),
+        level,
+    };
+    wanted.walk_program(program, &mut ());
+    wanted.spans
+}
 
 /// ClassConstantRule::processNode(): a written constant or every finite name of a dynamic selector. Inferred
 /// expression types already reflect branch narrowing; an arbitrary string or a non-string union selects none.
@@ -129,7 +165,10 @@ fn class_constant_named(c: &mut Checker, access: &ClassConstantAccess, constant_
                 }
             }
         }
-        _ => return, // ponytail: `$expr::NAME` needs the expression's type
+        _ => {
+            class_constant_expression(c, access, constant_name);
+            return;
+        }
     };
     if is_class {
         return;
@@ -214,6 +253,362 @@ fn class_constant_named(c: &mut Checker, access: &ClassConstantAccess, constant_
                     format!("Access to undefined constant {described}::{constant_name}."),
                     None,
                 );
+            }
+        }
+    }
+}
+
+/// The expression branch of `processSingleClassConstFetch()`. RuleLevelHelper checks only `$this` below level 2.
+fn class_constant_expression(c: &mut Checker, access: &ClassConstantAccess, name: &str) {
+    let class = super::types::flow::unparen(access.class);
+    if c.level < 2
+        && !matches!(class, Expression::Variable(Variable::Direct(v)) if v.name == b"$this")
+    {
+        return;
+    }
+    let criteria = |t: &Type| {
+        constant_capable(c, t, false).yes() && has_class_constant(c, t, name, false).yes()
+    };
+    let mut found = c.find_type_to_check(class, &criteria);
+    // NullsafeOperatorHelper runs before RuleLevelHelper's unknown-class and union checks. Remove only
+    // short-circuit null, not a nullable member's own result.
+    if super::assign::contains_nullsafe(class)
+        && c.type_of(class).is_some_and(|t| t.has_nullsafe_null())
+    {
+        let nonnull = c.phpstan_type(class).map(Type::remove_null);
+        found.unknown = nonnull
+            .as_ref()
+            .map(Type::object_class_names)
+            .unwrap_or_default()
+            .into_iter()
+            .filter(|n| known(c, n).is_none_or(|k| k.is_trait()) && !c.in_class_exists(n))
+            .collect();
+        found.ty = c.find_type_to_check_of(nonnull, &criteria);
+    }
+    // RuleLevelHelper unions selected ErrorTypes instead of dropping them: a selected non-strict mixed
+    // template absorbs the other union members. Do not check a representative class from that union.
+    let unchecked_union = c.level < 9
+        && c.phpstan_type(class).is_some_and(|raw| match &raw {
+            Type::Union(parts) | Type::Benevolent(parts) => parts.iter().any(|t| {
+                (c.level >= 7 && !matches!(raw, Type::Benevolent(_)) || criteria(t))
+                    && matches!(t, Type::Template(t) if matches!(t.bound, Type::Mixed { .. }))
+            }),
+            _ => false,
+        });
+    for class in found.unknown {
+        c.report(
+            access,
+            "class.notFound",
+            format!("Access to constant {name} on an unknown class {class}."),
+            Some(DISCOVERING_SYMBOLS_TIP),
+        );
+    }
+    // TemplateMixedType's constructor is explicitly mixed even when its bound was implicit mixed.
+    let ty = found.ty.or_else(|| {
+        c.phpstan_type(class).filter(|t| {
+            c.level >= 9 && matches!(t, Type::Template(t) if matches!(t.bound, Type::Mixed { .. }))
+        })
+    });
+    let Some(mut ty) = ty else { return };
+    if unchecked_union {
+        return;
+    }
+    let is_class = name.eq_ignore_ascii_case("class");
+    if is_class {
+        if !c.surely_at_least(80000) {
+            c.report_non_ignorable(access, "classConstant.notSupported", "Accessing ::class constant on an expression is supported only on PHP 8.0 and later.".into(), None);
+            return;
+        }
+        if !matches!(class, Expression::Literal(Literal::String(_))) && ty.is_string().yes() {
+            c.report_non_ignorable(
+                access,
+                "classConstant.dynamicString",
+                "Accessing ::class constant on a dynamic string is not supported in PHP.".into(),
+                None,
+            );
+            return;
+        }
+    }
+    if ty.is_string().yes() {
+        return;
+    }
+    let described = super::declared::with_classes(c, || match &ty {
+        Type::This(n) => c
+            .class_like(n)
+            .found()
+            .map(|k| c.describe_object(k))
+            .unwrap_or(Type::Object(n.clone(), vec![]).describe(Level::TypeOnly)),
+        t => constant_description(c, class, t, c.level >= 9),
+    });
+    // TypeCombinator::remove(StringType): string alternatives do not participate in the object checks.
+    if let Type::Union(parts) | Type::Benevolent(parts) = &ty {
+        let removed = union(
+            parts
+                .iter()
+                .filter(|t| !t.is_string().yes())
+                .cloned()
+                .collect(),
+        );
+        ty = if matches!(ty, Type::Benevolent(_)) {
+            pun_phpstan::types::to_benevolent(removed)
+        } else {
+            removed
+        };
+    }
+    if !constant_capable(c, &ty, true).yes() {
+        c.report(
+            access,
+            "classConstant.nonObject",
+            format!("Cannot access constant {name} on {described}."),
+            None,
+        );
+        return;
+    }
+    if is_class {
+        return;
+    }
+    if !has_class_constant(c, &ty, name, true).yes() {
+        c.report(
+            access,
+            "classConstant.notFound",
+            format!("Access to undefined constant {described}::{name}."),
+            None,
+        );
+        return;
+    }
+    // getInternal()/getConstant() select the first definite declaration only after the whole type passed
+    // hasConstant(). This is not a first-class approximation of a partially supported receiver union.
+    let constant = ty
+        .object_class_names()
+        .iter()
+        .find_map(|n| known(c, n)?.constant(c, name));
+    if let Some(constant) = constant
+        && let Some(visibility) = constant.visibility
+        && !super::calls::can_call(c, c.class_scope(), &constant.declaring, visibility)
+    {
+        let v = super::restricted(visibility);
+        c.report(
+            access,
+            if visibility.is_private() {
+                "classConstant.private"
+            } else {
+                "classConstant.protected"
+            },
+            format!(
+                "Access to {v} constant {name} of class {}.",
+                constant.display
+            ),
+            None,
+        );
+    }
+}
+
+/// TemplateStrictMixedType is not a MixedType: TemplateTypeTrait includes its bound, and UnionType wraps
+/// a nonfinal template member. Keep the ordinary type renderer for every other member.
+fn constant_description(
+    c: &Checker,
+    class: &Expression,
+    ty: &Type,
+    strict_templates: bool,
+) -> String {
+    match ty {
+        Type::Template(t) if strict_templates && matches!(t.bound, Type::Mixed { .. }) => {
+            let default = template_constant_default(c, class, t)
+                .map(|d| format!(" = {}", d.describe(Level::TypeOnly)))
+                .unwrap_or_default();
+            format!("{} of mixed{default}", t.name)
+        }
+        Type::Union(parts) => {
+            let generalized = union(
+                parts
+                    .iter()
+                    .map(|t| {
+                        if matches!(
+                            t,
+                            Type::ConstInt(_)
+                                | Type::ConstFloat(_)
+                                | Type::ConstString(_)
+                                | Type::Null
+                                | Type::ConstArray(_)
+                        ) {
+                            t.generalize()
+                        } else {
+                            t.clone()
+                        }
+                    })
+                    .collect(),
+            );
+            let parts = match generalized {
+                Type::Union(parts) => pun_phpstan::types::sort_types(&parts),
+                t => vec![t],
+            };
+            let mut names = Vec::new();
+            for (i, t) in parts.iter().enumerate() {
+                let d = constant_description(c, class, t, strict_templates);
+                let wrap = match t {
+                    Type::Template(t) => {
+                        matches!(t.bound, Type::Union(_))
+                            || i + 1 < parts.len()
+                                && (!matches!(t.bound, Type::Mixed { .. }) || strict_templates)
+                    }
+                    Type::Intersection(_) => d.contains('&'),
+                    Type::Closure(_) | Type::Callable(_) => true,
+                    _ => false,
+                };
+                let d = if wrap { format!("({d})") } else { d };
+                if !names.contains(&d) {
+                    names.push(d);
+                }
+            }
+            names.join("|")
+        }
+        // RuleLevelHelper always converts TemplateMixedType members of an intersection to strict mixed,
+        // even below level 9. TypeOnly descriptions omit accessories, as IntersectionType::describe() does.
+        Type::Intersection(parts) => {
+            let list = ty.is_list().yes();
+            let mut names = Vec::new();
+            let mut value_type = None;
+            for t in parts {
+                if list && matches!(t, Type::Array(..) | Type::ConstArray(_)) {
+                    value_type = Some(t.iterable_value_type());
+                    continue;
+                }
+                if !matches!(t, Type::Accessory(_)) {
+                    names.push(constant_description(c, class, &t.generalize(), true));
+                }
+            }
+            if list {
+                let inner = value_type
+                    .filter(|v| !matches!(v, Type::Mixed { explicit: false }))
+                    .map(|v| format!("<{}>", v.describe(Level::TypeOnly)))
+                    .unwrap_or_default();
+                names.push(format!("list{inner}"));
+            }
+            names.sort_by(|a, b| {
+                a.to_ascii_lowercase()
+                    .cmp(&b.to_ascii_lowercase())
+                    .then_with(|| a.cmp(b))
+            });
+            names.join("&")
+        }
+        _ => ty.describe(Level::TypeOnly),
+    }
+}
+
+/// The inferred generic retains its declaring entity, but Mago drops the default. Read that exact PHPDoc
+/// template, never a same-named template in the scope where an expression happens to be used.
+fn template_constant_default(
+    c: &Checker,
+    class: &Expression,
+    t: &pun_phpstan::types::Template,
+) -> Option<Type> {
+    use mago_codex::{misc::GenericParent, ttype::atomic::TAtomic};
+    let raw = c.type_of(class)?;
+    let g = raw.types.iter().find_map(|a| match a {
+        TAtomic::GenericParameter(g) if g.parameter_name.as_bytes() == t.name.as_bytes() => Some(g),
+        _ => None,
+    })?;
+    let templates = match &g.defining_entity {
+        GenericParent::FunctionLike(key) => {
+            let f = c.codebase.function_likes.get(key)?;
+            super::declared::value_scope(c, f, c.codebase.get_class_like(key.0.as_bytes()))
+                .templates
+        }
+        GenericParent::ClassLike(n) => {
+            let k = c.codebase.get_class_like(n.as_bytes())?;
+            super::declared::class_scope(c, k.span, k).templates
+        }
+    };
+    templates.into_values().find_map(|source| match source {
+        Type::Template(source) if source.name == t.name && source.scope == t.scope => {
+            source.default
+        }
+        _ => None,
+    })
+}
+
+/// UnionType's extreme identity, not selecting a representative class from the union.
+fn constant_all(results: impl Iterator<Item = Tri>) -> Tri {
+    results
+        .reduce(|a, b| if a == b { a } else { Tri::Maybe })
+        .unwrap_or(Tri::No)
+}
+
+/// IntersectionType's maxMin: a yes wins, otherwise a no beats maybe.
+fn constant_intersection(results: impl Iterator<Item = Tri>) -> Tri {
+    results
+        .reduce(|a, b| if a.yes() || b.yes() { Tri::Yes } else { a.and(b) })
+        .unwrap_or(Tri::No)
+}
+
+/// `canAccessConstants()`; mixed left by RuleLevelHelper, including intersection templates, is strict mixed.
+fn constant_capable(c: &Checker, ty: &Type, strict: bool) -> Tri {
+    match ty {
+        Type::Union(ts) => constant_all(ts.iter().map(|t| constant_capable(c, t, strict))),
+        Type::Benevolent(ts) => ts
+            .iter()
+            .map(|t| constant_capable(c, t, strict))
+            .fold(Tri::No, Tri::or),
+        Type::Intersection(ts) => constant_intersection(ts.iter().map(|t| constant_capable(c, t, strict))),
+        Type::Template(t) => constant_capable(c, &t.bound, strict),
+        Type::Object(..)
+        | Type::Static(..)
+        | Type::This(_)
+        | Type::EnumCase(..)
+        | Type::ObjectWithoutClass
+        | Type::ObjectShape(_)
+        | Type::Closure(_) => Tri::Yes,
+        Type::ConstString(n) => {
+            if known(c, n).is_some() {
+                Tri::Yes
+            } else {
+                Tri::No
+            }
+        }
+        Type::Mixed { .. } => {
+            if strict {
+                Tri::No
+            } else {
+                Tri::Yes
+            }
+        }
+        Type::Callable(_)
+        | Type::Iterable(..)
+        | Type::Accessory(pun_phpstan::types::Accessory::HasMethod(_)) => Tri::Maybe,
+        _ => Tri::No,
+    }
+}
+
+/// `hasConstant()`: unions require every member; intersections need one declaration.
+fn has_class_constant(c: &Checker, ty: &Type, name: &str, strict: bool) -> Tri {
+    match ty {
+        Type::Union(ts) | Type::Benevolent(ts) => {
+            constant_all(ts.iter().map(|t| has_class_constant(c, t, name, strict)))
+        }
+        Type::Intersection(ts) => {
+            constant_intersection(ts.iter().map(|t| has_class_constant(c, t, name, strict)))
+        }
+        Type::Template(t) => has_class_constant(c, &t.bound, name, strict),
+        Type::ObjectWithoutClass
+        | Type::ObjectShape(_)
+        | Type::Closure(_)
+        | Type::Callable(_)
+        | Type::Iterable(..)
+        | Type::Accessory(pun_phpstan::types::Accessory::HasMethod(_)) => Tri::Maybe,
+        Type::Object(n, _)
+        | Type::Static(n, _)
+        | Type::This(n)
+        | Type::EnumCase(n, _)
+        | Type::ConstString(n) => match known(c, n) {
+            Some(k) if k.constant(c, name).is_some() => Tri::Yes,
+            Some(k) if k.is_final() => Tri::No,
+            _ => Tri::Maybe,
+        },
+        _ => {
+            if matches!(ty, Type::Mixed { .. }) && !strict {
+                Tri::Yes
+            } else {
+                Tri::No
             }
         }
     }

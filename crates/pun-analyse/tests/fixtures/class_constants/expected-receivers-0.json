@@ -1,0 +1,56 @@
+{
+  "general": [],
+  "errors": [
+    {
+      "file": "receivers.php",
+      "message": "Access to undefined constant ConstantReceivers\\Base::MISSING.",
+      "line": 11,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "receivers.php",
+      "message": "Access to undefined constant ConstantReceivers\\Child::PRIVATE_NAME.",
+      "line": 19,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "receivers.php",
+      "message": "Access to constant MISSING on an unknown class ConstantReceivers\\null.",
+      "line": 67,
+      "ignorable": true,
+      "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+      "identifier": "class.notFound"
+    },
+    {
+      "file": "receivers.php",
+      "message": "Cannot instantiate enum ConstantReceivers\\Choice.",
+      "line": 71,
+      "ignorable": true,
+      "identifier": "new.enum"
+    },
+    {
+      "file": "receivers.php",
+      "message": "Template type T of function ConstantReceivers\\templateIntersection() is not referenced in a parameter.",
+      "line": 232,
+      "ignorable": true,
+      "identifier": "method.templateTypeNotInParameter"
+    },
+    {
+      "file": "receivers.php",
+      "message": "Property ConstantReceivers\\UnknownHolder::$base has unknown class ConstantReceivers\\Missing as its type.",
+      "line": 252,
+      "ignorable": true,
+      "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+      "identifier": "class.notFound"
+    },
+    {
+      "file": "receivers.php",
+      "message": "Access to undefined constant ConstantReceivers\\GenericThis<T>::MISSING.",
+      "line": 257,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    }
+  ]
+}

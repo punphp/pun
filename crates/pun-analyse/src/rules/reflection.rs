@@ -3,6 +3,8 @@
 
 use mago_codex::metadata::class_like::ClassLikeMetadata;
 use mago_codex::symbol::SymbolKind;
+use mago_codex::visibility::Visibility;
+use mago_word::word;
 use pun_phpstan::symbols::{self, PhpVersion, Symbols};
 use pun_phpstan::types::{Level, Type};
 
@@ -81,7 +83,65 @@ pub(super) enum Known<'a> {
     Builtin(&'static symbols::Class),
 }
 
+/// The reflection data ClassConstantRule reads; enum cases and built-in constants are public.
+pub(super) struct ClassConstant {
+    pub visibility: Option<Visibility>,
+    pub declaring: String,
+    pub display: String,
+}
+
 impl Known<'_> {
+    pub(super) fn constant(&self, c: &Checker, name: &str) -> Option<ClassConstant> {
+        match self {
+            Known::User(k) => {
+                let visibility = if let Some(m) = k.constants.get(&word(name.as_bytes())) {
+                    // Populated constants retain the original declaration's span.
+                    let declaring = std::iter::once(&k.name)
+                        .chain(k.all_parent_classes.iter())
+                        .filter_map(|n| c.codebase.get_class_like(n.as_bytes()))
+                        .filter(|a| {
+                            a.constants
+                                .get(&word(name.as_bytes()))
+                                .is_some_and(|v| v.span == m.span)
+                        })
+                        .last()
+                        .unwrap_or(k);
+                    return Some(ClassConstant {
+                        visibility: Some(m.visibility),
+                        declaring: declaring.original_name.to_string(),
+                        display: c.display(declaring),
+                    });
+                } else if k.enum_cases.contains_key(&word(name.as_bytes())) {
+                    None
+                } else {
+                    return None;
+                };
+                Some(ClassConstant {
+                    visibility,
+                    declaring: k.original_name.to_string(),
+                    display: c.display(k),
+                })
+            }
+            Known::Builtin(k) => {
+                let has = |k: &symbols::Class| {
+                    k.constants.iter().any(|(n, _)| n == name) || k.cases.iter().any(|n| n == name)
+                };
+                let declaring = std::iter::once(*k)
+                    .chain(
+                        k.ancestors
+                            .iter()
+                            .filter_map(|a| c.builtins.classes.get(&a.to_ascii_lowercase())),
+                    )
+                    .find(|k| has(k))?;
+                Some(ClassConstant {
+                    visibility: None,
+                    declaring: declaring.name.clone(),
+                    display: declaring.name.clone(),
+                })
+            }
+        }
+    }
+
     pub(super) fn is_trait(&self) -> bool {
         matches!(self, Known::User(k) if k.kind == SymbolKind::Trait)
     }

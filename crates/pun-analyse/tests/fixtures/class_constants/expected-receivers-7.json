@@ -1,0 +1,447 @@
+{
+  "general": [],
+  "errors": [
+    {
+      "file": "receivers.php",
+      "message": "Access to undefined constant ConstantReceivers\\Base::MISSING.",
+      "line": 11,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "receivers.php",
+      "message": "Access to undefined constant ConstantReceivers\\Child::PRIVATE_NAME.",
+      "line": 19,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "receivers.php",
+      "message": "Constant ConstantReceivers\\Other::PRESENT is unused.",
+      "line": 25,
+      "ignorable": true,
+      "tip": "See: https://phpstan.org/developing-extensions/always-used-class-constants",
+      "identifier": "classConstant.unused"
+    },
+    {
+      "file": "receivers.php",
+      "message": "Function ConstantReceivers\\receivers() has parameter $implicit with no type specified.",
+      "line": 42,
+      "ignorable": true,
+      "identifier": "missingType.parameter"
+    },
+    {
+      "file": "receivers.php",
+      "message": "Access to undefined constant ConstantReceivers\\Base::MISSING.",
+      "line": 43,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "receivers.php",
+      "message": "Access to private constant PRIVATE_NAME of class ConstantReceivers\\Base.",
+      "line": 45,
+      "ignorable": true,
+      "identifier": "classConstant.private"
+    },
+    {
+      "file": "receivers.php",
+      "message": "Access to protected constant PROTECTED_NAME of class ConstantReceivers\\Base.",
+      "line": 46,
+      "ignorable": true,
+      "identifier": "classConstant.protected"
+    },
+    {
+      "file": "receivers.php",
+      "message": "Access to protected constant PROTECTED_NAME of class ConstantReceivers\\Base.",
+      "line": 48,
+      "ignorable": true,
+      "identifier": "classConstant.protected"
+    },
+    {
+      "file": "receivers.php",
+      "message": "Access to undefined constant ConstantReceivers\\Base|stdClass::PRESENT.",
+      "line": 49,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "receivers.php",
+      "message": "Cannot access constant PRESENT on ConstantReceivers\\Base|int.",
+      "line": 50,
+      "ignorable": true,
+      "identifier": "classConstant.nonObject"
+    },
+    {
+      "file": "receivers.php",
+      "message": "Access to undefined constant ConstantReceivers\\Base&ConstantReceivers\\HasConstant::MISSING.",
+      "line": 53,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "receivers.php",
+      "message": "Accessing ::class constant on a dynamic string is not supported in PHP.",
+      "line": 56,
+      "ignorable": false,
+      "identifier": "classConstant.dynamicString"
+    },
+    {
+      "file": "receivers.php",
+      "message": "Access to undefined constant object::MISSING.",
+      "line": 61,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "receivers.php",
+      "message": "Accessing ::class constant on a dynamic string is not supported in PHP.",
+      "line": 64,
+      "ignorable": false,
+      "identifier": "classConstant.dynamicString"
+    },
+    {
+      "file": "receivers.php",
+      "message": "Cannot access constant MISSING on int.",
+      "line": 65,
+      "ignorable": true,
+      "identifier": "classConstant.nonObject"
+    },
+    {
+      "file": "receivers.php",
+      "message": "Cannot access constant class on int.",
+      "line": 66,
+      "ignorable": true,
+      "identifier": "classConstant.nonObject"
+    },
+    {
+      "file": "receivers.php",
+      "message": "Access to constant MISSING on an unknown class ConstantReceivers\\null.",
+      "line": 67,
+      "ignorable": true,
+      "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+      "identifier": "class.notFound"
+    },
+    {
+      "file": "receivers.php",
+      "message": "Access to undefined constant stdClass::MISSING.",
+      "line": 70,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "receivers.php",
+      "message": "Cannot instantiate enum ConstantReceivers\\Choice.",
+      "line": 71,
+      "ignorable": true,
+      "identifier": "new.enum"
+    },
+    {
+      "file": "receivers.php",
+      "message": "Parameter #1 (ConstantReceivers\\Choice::Present) of echo cannot be converted to string.",
+      "line": 71,
+      "ignorable": true,
+      "identifier": "echo.nonString"
+    },
+    {
+      "file": "receivers.php",
+      "message": "Access to undefined constant DateTime::MISSING.",
+      "line": 72,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "receivers.php",
+      "message": "Parameter $missing of function ConstantReceivers\\unknown() has invalid type ConstantReceivers\\Missing.",
+      "line": 77,
+      "ignorable": true,
+      "identifier": "class.notFound"
+    },
+    {
+      "file": "receivers.php",
+      "message": "Access to constant MISSING on an unknown class ConstantReceivers\\Missing.",
+      "line": 78,
+      "ignorable": true,
+      "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+      "identifier": "class.notFound"
+    },
+    {
+      "file": "receivers.php",
+      "message": "Access to constant class on an unknown class ConstantReceivers\\Missing.",
+      "line": 79,
+      "ignorable": true,
+      "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+      "identifier": "class.notFound"
+    },
+    {
+      "file": "receivers.php",
+      "message": "Access to constant PRESENT on an unknown class ConstantReceivers\\SharedTrait.",
+      "line": 86,
+      "ignorable": true,
+      "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+      "identifier": "class.notFound"
+    },
+    {
+      "file": "receivers.php",
+      "message": "Parameter $trait of function ConstantReceivers\\traitReceiver() has invalid type ConstantReceivers\\SharedTrait.",
+      "line": 86,
+      "ignorable": true,
+      "identifier": "parameter.trait"
+    },
+    {
+      "file": "receivers.php",
+      "message": "Access to private constant PRIVATE_NAME of class ConstantReceivers\\Base.",
+      "line": 92,
+      "ignorable": true,
+      "identifier": "classConstant.private"
+    },
+    {
+      "file": "receivers.php",
+      "message": "Access to undefined constant ConstantReceivers\\Base::MISSING.",
+      "line": 92,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "receivers.php",
+      "message": "Access to undefined constant T of ConstantReceivers\\Base::MISSING.",
+      "line": 98,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "receivers.php",
+      "message": "Accessing ::class constant on an expression is supported only on PHP 8.0 and later.",
+      "line": 102,
+      "ignorable": false,
+      "identifier": "classConstant.notSupported"
+    },
+    {
+      "file": "receivers.php",
+      "message": "Parameter #1 (ConstantReceivers\\Choice::Present) of echo cannot be converted to string.",
+      "line": 116,
+      "ignorable": true,
+      "identifier": "echo.nonString"
+    },
+    {
+      "file": "receivers.php",
+      "message": "Access to undefined constant ConstantReceivers\\Choice::Missing.",
+      "line": 117,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "receivers.php",
+      "message": "Access to protected constant PROTECTED_NAME of class ConstantReceivers\\Base.",
+      "line": 119,
+      "ignorable": true,
+      "identifier": "classConstant.protected"
+    },
+    {
+      "file": "receivers.php",
+      "message": "Access to undefined constant ConstantReceivers\\FinalReceiver::MISSING.",
+      "line": 120,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "receivers.php",
+      "message": "Cannot access constant MISSING on callable.",
+      "line": 121,
+      "ignorable": true,
+      "identifier": "classConstant.nonObject"
+    },
+    {
+      "file": "receivers.php",
+      "message": "Cannot access constant MISSING on iterable<int, ConstantReceivers\\Base>.",
+      "line": 122,
+      "ignorable": true,
+      "identifier": "classConstant.nonObject"
+    },
+    {
+      "file": "receivers.php",
+      "message": "Access to undefined constant object{value: int}::MISSING.",
+      "line": 123,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "receivers.php",
+      "message": "Access to undefined constant ConstantReceivers\\Base|ConstantReceivers\\FinalReceiver::MISSING.",
+      "line": 126,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "receivers.php",
+      "message": "Access to undefined constant Closure::MISSING.",
+      "line": 127,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "receivers.php",
+      "message": "Cannot access constant MISSING on null.",
+      "line": 129,
+      "ignorable": true,
+      "identifier": "classConstant.nonObject"
+    },
+    {
+      "file": "receivers.php",
+      "message": "Accessing ::class constant on a dynamic string is not supported in PHP.",
+      "line": 131,
+      "ignorable": false,
+      "identifier": "classConstant.dynamicString"
+    },
+    {
+      "file": "receivers.php",
+      "message": "Access to undefined constant ConstantReceivers\\Child::MISSING.",
+      "line": 134,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "receivers.php",
+      "message": "Access to undefined constant ConstantReceivers\\Base|ConstantReceivers\\Other::MISSING.",
+      "line": 156,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "receivers.php",
+      "message": "Cannot access constant MISSING on (int|string).",
+      "line": 173,
+      "ignorable": true,
+      "identifier": "classConstant.nonObject"
+    },
+    {
+      "file": "receivers.php",
+      "message": "Cannot access constant MISSING on (int|string).",
+      "line": 178,
+      "ignorable": true,
+      "identifier": "classConstant.nonObject"
+    },
+    {
+      "file": "receivers.php",
+      "message": "Cannot access constant MISSING on T of (int|string).",
+      "line": 191,
+      "ignorable": true,
+      "identifier": "classConstant.nonObject"
+    },
+    {
+      "file": "receivers.php",
+      "message": "Access to constant MISSING on an unknown class ConstantReceivers\\Missing.",
+      "line": 203,
+      "ignorable": true,
+      "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+      "identifier": "class.notFound"
+    },
+    {
+      "file": "receivers.php",
+      "message": "PHPDoc tag @template T for function ConstantReceivers\\templateUnknown() has invalid bound type ConstantReceivers\\Missing.",
+      "line": 203,
+      "ignorable": true,
+      "identifier": "class.notFound"
+    },
+    {
+      "file": "receivers.php",
+      "message": "Parameter $receiver of function ConstantReceivers\\templateUnknown() has invalid type ConstantReceivers\\Missing.",
+      "line": 203,
+      "ignorable": true,
+      "identifier": "class.notFound"
+    },
+    {
+      "file": "receivers.php",
+      "message": "Access to undefined constant ConstantReceivers\\Base::MISSING.",
+      "line": 208,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "receivers.php",
+      "message": "Access to undefined constant (ConstantReceivers\\Base&ConstantReceivers\\HasConstant)|ConstantReceivers\\Other::MISSING.",
+      "line": 217,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "receivers.php",
+      "message": "Access to undefined constant (Closure)|ConstantReceivers\\Base::MISSING.",
+      "line": 218,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "receivers.php",
+      "message": "PHPDoc tag @param for parameter $receiver contains unresolvable type.",
+      "line": 232,
+      "ignorable": true,
+      "identifier": "parameter.unresolvableType"
+    },
+    {
+      "file": "receivers.php",
+      "message": "Template type T of function ConstantReceivers\\templateIntersection() is not referenced in a parameter.",
+      "line": 232,
+      "ignorable": true,
+      "identifier": "method.templateTypeNotInParameter"
+    },
+    {
+      "file": "receivers.php",
+      "message": "Access to undefined constant ConstantReceivers\\Base&T of mixed::MISSING.",
+      "line": 238,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "receivers.php",
+      "message": "Cannot access constant MISSING on list<int>&T of mixed.",
+      "line": 250,
+      "ignorable": true,
+      "identifier": "classConstant.nonObject"
+    },
+    {
+      "file": "receivers.php",
+      "message": "Property ConstantReceivers\\UnknownHolder::$base has unknown class ConstantReceivers\\Missing as its type.",
+      "line": 252,
+      "ignorable": true,
+      "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+      "identifier": "class.notFound"
+    },
+    {
+      "file": "receivers.php",
+      "message": "Access to constant MISSING on an unknown class ConstantReceivers\\Missing.",
+      "line": 253,
+      "ignorable": true,
+      "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+      "identifier": "class.notFound"
+    },
+    {
+      "file": "receivers.php",
+      "message": "Access to undefined constant ConstantReceivers\\GenericThis<T>::MISSING.",
+      "line": 257,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "receivers.php",
+      "message": "Cannot access constant MISSING on int.",
+      "line": 261,
+      "ignorable": true,
+      "identifier": "classConstant.nonObject"
+    },
+    {
+      "file": "receivers.php",
+      "message": "Access to undefined constant static(ConstantReceivers\\LateReceiver)::MISSING.",
+      "line": 265,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "receivers.php",
+      "message": "Access to undefined constant ConstantReceivers\\Choice::Present::MISSING.",
+      "line": 269,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    }
+  ]
+}

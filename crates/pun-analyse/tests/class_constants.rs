@@ -79,6 +79,51 @@ fn constant_checks_are_not_replaced_by_the_php_version_error() {
 }
 
 #[test]
+fn expression_class_constant_php_versions() {
+    check("receivers-php74");
+}
+
+#[test]
+fn inferred_expression_receivers_at_each_rule_level() {
+    let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/class_constants");
+    for level in [0, 1, 2, 7, 8, 9, 10] {
+        let config = resolve(&Options {
+            config: Some(root.join("receivers.neon").to_string_lossy().into_owned()),
+            level: Some(level.to_string()),
+            ..Options::for_project(&root.to_string_lossy())
+        })
+        .unwrap();
+        let want: Value = serde_json::from_slice(
+            &std::fs::read(root.join(format!("expected-receivers-{level}.json"))).unwrap(),
+        )
+        .unwrap();
+        let relevant = |e: &Key| {
+            [
+                "classConstant.notFound",
+                "classConstant.private",
+                "classConstant.protected",
+                "classConstant.nonObject",
+                "classConstant.dynamicString",
+                "classConstant.notSupported",
+                "class.notFound",
+            ]
+            .contains(&e.2.as_str())
+        };
+        let mut project = Project::from_config(&root, &config.parameters);
+        project.level = level;
+        let got: Vec<_> = keys(run(&project).unwrap(), &root)
+            .into_iter()
+            .filter(relevant)
+            .collect();
+        let want: Vec<_> = expected(&want["errors"])
+            .into_iter()
+            .filter(relevant)
+            .collect();
+        assert_eq!(got, want, "level {level}");
+    }
+}
+
+#[test]
 fn upstream_dynamic_access() {
     let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/rules");
     let data = root.join("data");

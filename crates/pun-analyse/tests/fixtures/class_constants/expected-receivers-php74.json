@@ -1,0 +1,33 @@
+{
+  "general": [],
+  "errors": [
+    {
+      "message": "Accessing ::class constant on an expression is supported only on PHP 8.0 and later.",
+      "line": 7,
+      "ignorable": false,
+      "identifier": "classConstant.notSupported",
+      "file": "versions.php"
+    },
+    {
+      "message": "Accessing ::class constant on an expression is supported only on PHP 8.0 and later.",
+      "line": 8,
+      "ignorable": false,
+      "identifier": "classConstant.notSupported",
+      "file": "versions.php"
+    },
+    {
+      "message": "Accessing ::class constant on an expression is supported only on PHP 8.0 and later.",
+      "line": 9,
+      "ignorable": false,
+      "identifier": "classConstant.notSupported",
+      "file": "versions.php"
+    },
+    {
+      "message": "Accessing ::class constant on a dynamic string is not supported in PHP.",
+      "line": 12,
+      "ignorable": false,
+      "identifier": "classConstant.dynamicString",
+      "file": "versions.php"
+    }
+  ]
+}
