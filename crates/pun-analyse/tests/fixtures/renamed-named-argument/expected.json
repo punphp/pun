@@ -1050,5 +1050,63 @@
             "ignorable": true,
             "identifier": "argument.parameterRenamedInSubtype"
         }
+    ],
+    "source-contracts": [
+        {
+            "file": "$ROOT/source_contracts.php",
+            "message": "Call to RenamedNamedArgument\\Contract::run() uses named argument for parameter $value, but RenamedNamedArgument\\Renamed renames it to $renamed.",
+            "line": 10,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/source_contracts.php",
+            "message": "Call to RenamedNamedArgument\\OtherContract::run() uses named argument for parameter $value, but RenamedNamedArgument\\OtherRenamed renames it to $otherValue.",
+            "line": 11,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/source_contracts.php",
+            "message": "Call to RenamedNamedArgument\\Contract::run() uses named argument for parameter $value, but RenamedNamedArgument\\Renamed renames it to $renamed.",
+            "line": 12,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/source_contracts.php",
+            "message": "Call to RenamedNamedArgument\\Contract::run() uses named argument for parameter $value, but RenamedNamedArgument\\Renamed renames it to $renamed.",
+            "line": 17,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/source_contracts.php",
+            "message": "Dumped type: array{z: int, a: bool}",
+            "line": 32,
+            "ignorable": false,
+            "identifier": "phpstan.dumpType"
+        },
+        {
+            "file": "$ROOT/source_contracts.php",
+            "message": "Dumped type: array{a: bool, z: string}",
+            "line": 38,
+            "ignorable": false,
+            "identifier": "phpstan.dumpType"
+        },
+        {
+            "file": "$ROOT/source_contracts.php",
+            "message": "Dumped type: array{a: false, z: 'new'}",
+            "line": 45,
+            "ignorable": false,
+            "identifier": "phpstan.dumpType"
+        },
+        {
+            "file": "$ROOT/source_contracts.php",
+            "message": "Dumped type: array{z: int, a: bool}",
+            "line": 52,
+            "ignorable": false,
+            "identifier": "phpstan.dumpType"
+        }
     ]
 }

@@ -50,7 +50,8 @@ foreach (json_decode(file_get_contents("$root/cases.json"), true, flags: JSON_TH
         foreach ($result['files'] as $file => $data) {
             foreach ($data['messages'] as $message) {
                 $identifier = $message['identifier'] ?? '';
-                if ($identifier !== 'argument.parameterRenamedInSubtype' && !str_starts_with($identifier, 'ignore.')) {
+                if ($identifier !== 'argument.parameterRenamedInSubtype' && !str_starts_with($identifier, 'ignore.')
+                    && !(($case['dumpTypes'] ?? false) && $identifier === 'phpstan.dumpType')) {
                     continue;
                 }
                 $expected[$name][] = ['file' => str_replace($root, '$ROOT', $file)] + $message;

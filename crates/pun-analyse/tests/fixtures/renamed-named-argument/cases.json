@@ -13,5 +13,6 @@
   "ignores": {"analysed": ["api.php", "overrides.php", "ignores.php"], "scanned": [], "level": 5},
   "explained-ignores": {"analysed": ["api.php", "overrides.php", "ignores.php"], "scanned": [], "level": 5, "explainIgnores": true},
   "contracts": {"analysed": ["api.php", "overrides.php", "contracts.php"], "scanned": [], "level": 5},
-  "refinements": {"analysed": ["api.php", "overrides.php", "refinements.php"], "scanned": [], "level": 5}
+  "refinements": {"analysed": ["api.php", "overrides.php", "refinements.php"], "scanned": [], "level": 5},
+  "source-contracts": {"analysed": ["api.php", "overrides.php", "source_contracts.php"], "scanned": [], "level": 5, "dumpTypes": true}
 }

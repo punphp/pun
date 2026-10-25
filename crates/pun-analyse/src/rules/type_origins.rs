@@ -26,6 +26,11 @@ pub(in super::super) struct Call {
     pub args: Vec<(Option<String>, Span)>,
 }
 
+pub(in super::super) struct MethodCallGuard {
+    pub receiver: Span,
+    pub name: String,
+}
+
 #[derive(Clone)]
 pub(in super::super) enum Origin {
     Parameter(Function, usize),
@@ -33,6 +38,8 @@ pub(in super::super) enum Origin {
     Copy(Span),
     Call(Arc<Call>),
     Callback(Arc<Call>, usize, usize),
+    /// Conversion must resolve the actual receiver and prove its native signature cannot pass references.
+    AfterMethodCall(Arc<MethodCallGuard>, Arc<Origin>),
 }
 
 pub(in super::super) type Origins = HashMap<Span, Origin>;
@@ -80,7 +87,13 @@ pub(super) fn dependencies(found: &Origins, wanted: &[Span]) -> Vec<Span> {
     let mut pending = wanted.to_vec();
     let mut out = Vec::new();
     while let Some(span) = pending.pop() {
-        let more: Vec<Span> = match found.get(&span) {
+        let mut origin = found.get(&span);
+        let mut more = Vec::new();
+        while let Some(Origin::AfterMethodCall(call, previous)) = origin {
+            more.push(call.receiver);
+            origin = Some(previous);
+        }
+        more.extend(match origin {
             Some(Origin::Copy(s)) => vec![*s],
             Some(Origin::Call(call) | Origin::Callback(call, ..)) => call
                 .args
@@ -89,7 +102,7 @@ pub(super) fn dependencies(found: &Origins, wanted: &[Span]) -> Vec<Span> {
                 .chain(call.receiver)
                 .collect(),
             _ => Vec::new(),
-        };
+        });
         for span in more {
             if seen.insert(span) {
                 out.push(span);
@@ -307,9 +320,19 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Sources<'_, 'arena> {
         };
         self.call(call.span(), &call.argument_list, target);
     }
-    fn walk_out_method_call(&mut self, _: &'ast MethodCall<'arena>, _: &mut ()) {
+    fn walk_out_method_call(&mut self, call: &'ast MethodCall<'arena>, _: &mut ()) {
         self.calls.pop();
-        self.locals.clear();
+        if let ClassLikeMemberSelector::Identifier(name) = &call.method {
+            let call = Arc::new(MethodCallGuard {
+                receiver: call.object.span(),
+                name: String::from_utf8_lossy(name.value).into_owned(),
+            });
+            for origin in self.locals.values_mut() {
+                *origin = Origin::AfterMethodCall(Arc::clone(&call), Arc::new(origin.clone()));
+            }
+        } else {
+            self.locals.clear();
+        }
     }
     fn walk_in_static_method_call(&mut self, call: &'ast StaticMethodCall<'arena>, _: &mut ()) {
         let class = match call.class {

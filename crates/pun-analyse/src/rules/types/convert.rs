@@ -6,6 +6,7 @@ use mago_codex::ttype::atomic::TAtomic;
 use mago_codex::ttype::atomic::array::TArray;
 use mago_codex::ttype::atomic::array::key::ArrayKey;
 use mago_codex::ttype::atomic::callable::TCallable;
+use mago_codex::ttype::atomic::generic::TGenericParameter;
 use mago_codex::ttype::atomic::object::TObject;
 use mago_codex::ttype::atomic::reference::TReference;
 use mago_codex::ttype::atomic::scalar::TScalar;
@@ -66,7 +67,23 @@ impl<'a, 'arena> Checker<'a, 'arena> {
                 [TAtomic::Array(a)] => Some(self.array(a, true)),
                 _ => None,
             },
-            Type::Template(t) => self.source_array(actual, &t.bound),
+            Type::Template(t) => {
+                if let [TAtomic::GenericParameter(g)] = actual.types.as_ref() {
+                    return self
+                        .source_array(&g.constraint, &t.bound)
+                        .map(|bound| self.generic_parameter(g, bound));
+                }
+                self.source_array(actual, &t.bound)
+            }
+            Type::Union(parts) => actual
+                .types
+                .iter()
+                .map(|a| {
+                    let actual = TUnion::from_atomic(a.clone());
+                    parts.iter().find_map(|s| self.source_array(&actual, s))
+                })
+                .collect::<Option<Vec<_>>>()
+                .map(union),
             Type::Intersection(parts) => parts.iter().find_map(|s| self.source_array(actual, s)),
             _ => None,
         }
@@ -74,11 +91,16 @@ impl<'a, 'arena> Checker<'a, 'arena> {
 
     /// Mago rejects a parenthesized intersection template bound, then reads its uses as a class name. Recover
     /// only a parameter/annotation's own array template, resolved in that declaration's exact namespace scope.
-    fn source_template(&self, mut at: Span, actual: &Type, source: &Type) -> Option<Type> {
+    fn source_template(&self, at: Span, actual: &Type, source: &Type) -> Option<Type> {
+        // source_type() has already validated every deferred call on this edge.
+        let mut origin = self.origins.get(&at)?;
         let key = loop {
-            match self.origins.get(&at)? {
-                infer::Origin::Copy(from) => at = *from,
-                infer::Origin::Parameter(key, _) | infer::Origin::Annotation(_, _, Some(key)) => break key,
+            match origin {
+                infer::Origin::Copy(from) => origin = self.origins.get(from)?,
+                infer::Origin::AfterMethodCall(_, previous) => origin = previous,
+                infer::Origin::Parameter(key, _) | infer::Origin::Annotation(_, _, Some(key)) => {
+                    break key;
+                }
                 _ => return None,
             }
         };
@@ -101,13 +123,20 @@ impl<'a, 'arena> Checker<'a, 'arena> {
         span: Span,
         origins: &std::collections::HashMap<Span, infer::Origin>,
     ) -> Option<Type> {
+        self.origin_type(origins.get(&span)?, origins)
+    }
+
+    fn origin_type(
+        &self,
+        origin: &infer::Origin,
+        origins: &std::collections::HashMap<Span, infer::Origin>,
+    ) -> Option<Type> {
         let function = |key: &(mago_word::Word, mago_word::Word)| {
             Some((
                 self.codebase.function_likes.get(key)?.as_ref(),
                 self.codebase.get_class_like(key.0.as_bytes()),
             ))
         };
-        let origin = origins.get(&span)?;
         match origin {
             infer::Origin::Parameter(key, i) => {
                 let (f, k) = function(key)?;
@@ -129,6 +158,33 @@ impl<'a, 'arena> Checker<'a, 'arena> {
                     .map(|(_, t)| t)
             }
             infer::Origin::Copy(from) => self.source_type(*from, origins),
+            infer::Origin::AfterMethodCall(call, previous) => {
+                let actual = self.to_phpstan(self.types.get(&call.receiver)?);
+                let classes = actual.object_class_names();
+                // An annotation or magic fallback is not evidence for the invoked PHP signature. Every
+                // native alternative/variant must be known and reference-free, including unpacked calls.
+                let safe = !classes.is_empty()
+                    && classes.iter().all(|name| {
+                        self.codebase
+                            .get_class_like(name.as_bytes())
+                            .and_then(|class| {
+                                super::super::members::method(self, class, call.name.as_bytes())
+                            })
+                            .is_some_and(|method| {
+                                let variants = method.variants();
+                                variants
+                                    .all
+                                    .iter()
+                                    .chain(variants.named.iter().flatten())
+                                    .all(|v| {
+                                        v.by_ref
+                                            .iter()
+                                            .all(|b| *b == pun_phpstan::symbols::ByRef::No)
+                                    })
+                            })
+                    });
+                safe.then(|| self.origin_type(previous, origins)).flatten()
+            }
             infer::Origin::Call(call) | infer::Origin::Callback(call, ..) => {
                 let (name, args) = (&call.name, &call.args);
                 // These extensions preserve their input key/value types. The provider alone decides keys,
@@ -381,17 +437,21 @@ impl<'a, 'arena> Checker<'a, 'arena> {
                     .collect(),
             ),
             TAtomic::GenericParameter(g) => {
-                let t = Type::Template(Box::new(Template {
-                    name: text(g.parameter_name.as_bytes()),
-                    scope: self.template_scope(&g.defining_entity),
-                    bound: explicit_mixed(self.to_phpstan(&g.constraint)),
-                    default: None,
-                    argument: false,
-                }));
-                self.with_intersections(t, g.intersection_types.as_deref())
+                self.generic_parameter(g, explicit_mixed(self.to_phpstan(&g.constraint)))
             }
             _ => mixed(),
         }
+    }
+
+    fn generic_parameter(&self, g: &TGenericParameter, bound: Type) -> Type {
+        let t = Type::Template(Box::new(Template {
+            name: text(g.parameter_name.as_bytes()),
+            scope: self.template_scope(&g.defining_entity),
+            bound,
+            default: None,
+            argument: false,
+        }));
+        self.with_intersections(t, g.intersection_types.as_deref())
     }
 
     fn with_intersections(&self, t: Type, more: Option<&[TAtomic]>) -> Type {
@@ -623,6 +683,13 @@ impl<'a, 'arena> Checker<'a, 'arena> {
 
 /// Recover erased source metadata, never a declaration's broader value type over a concrete inferred type.
 fn restore(actual: Type, source: &Type) -> Type {
+    let matching = |actual: &Type, source: &[Type]| {
+        source.iter().position(|s| {
+            pun_phpstan::types::is_super_type_of(s, actual).yes()
+                || (matches!(actual, Type::Callable(Some(a)) if unspecified_callable(a))
+                    && declared_callable(s).is_some())
+        })
+    };
     match (actual, source) {
         (Type::Template(mut actual), Type::Template(source))
             if actual.name == source.name && actual.scope == source.scope =>
@@ -638,6 +705,24 @@ fn restore(actual: Type, source: &Type) -> Type {
             Type::Template(actual)
         }
         (actual, Type::Template(source)) => restore(actual, &source.bound),
+        (Type::Union(mut actual), Type::Union(source)) => {
+            // Reflection's first method comes from the first written alternative, not Mago's canonical
+            // atomic order. Reorder only surviving inferred alternatives; never reintroduce a removed one.
+            actual.sort_by_key(|a| matching(a, source).unwrap_or(usize::MAX));
+            Type::Union(
+                actual
+                    .into_iter()
+                    .map(|a| {
+                        matching(&a, source).map_or_else(|| a.clone(), |i| restore(a.clone(), &source[i]))
+                    })
+                    .collect(),
+            )
+        }
+        (actual, Type::Union(source)) => {
+            // A narrowed single alternative still owns its metadata, not its eliminated siblings' types.
+            matching(&actual, source)
+                .map_or_else(|| actual.clone(), |i| restore(actual.clone(), &source[i]))
+        }
         (Type::Mixed { .. }, Type::Mixed { explicit }) => Type::Mixed {
             explicit: *explicit,
         },

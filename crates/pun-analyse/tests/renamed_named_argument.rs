@@ -31,7 +31,12 @@ fn check(mode: &str) {
     let mut got: Vec<_> = run(&project)
         .unwrap()
         .into_iter()
-        .filter(|e| e.identifier == ID || e.identifier.starts_with("ignore."))
+        .filter(|e| {
+            e.identifier == ID
+                || e.identifier.starts_with("ignore.")
+                || (case["dumpTypes"].as_bool().unwrap_or(false)
+                    && e.identifier == "phpstan.dumpType")
+        })
         .map(|e| {
             (
                 e.file.replace(root.to_str().unwrap(), "$ROOT"),
@@ -122,4 +127,9 @@ fn reflection_and_unpacked_argument_contracts() {
 #[test]
 fn template_intersection_and_unsealed_array_contracts() {
     check("refinements");
+}
+
+#[test]
+fn written_union_order_safe_calls_reference_mutation_and_narrowing() {
+    check("source-contracts");
 }

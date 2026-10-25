@@ -7,14 +7,16 @@ use std::cell::RefCell;
 use std::collections::HashMap;
 use std::sync::Arc;
 
+use mago_allocator::LocalArena;
 use mago_codex::metadata::CodebaseMetadata;
 use mago_codex::metadata::class_like::ClassLikeMetadata;
 use mago_codex::metadata::flags::MetadataFlags;
 use mago_codex::metadata::function_like::FunctionLikeMetadata;
 use mago_codex::symbol::SymbolKind;
-use mago_database::file::FileId;
+use mago_database::file::{File, FileId};
 use mago_span::{HasSpan, Span};
 use mago_syntax::cst::*;
+use mago_syntax::parser::parse_file;
 use pun_phpstan::resolve::resolve_in;
 use pun_phpstan::symbols::{self, Class, Template};
 use pun_phpstan::types::{
@@ -217,17 +219,26 @@ fn trait_templates(
 
 /// `ParserNodeTypeToPHPStanType::resolve()` of a native type in the analysed file, in class `class`.
 pub fn native(c: &Checker, hint: &Hint, class: Option<&ClassLikeMetadata>) -> Type {
+    native_with(c, hint, class, &|id| text(c.names.get(&id.span())))
+}
+
+fn native_with(
+    c: &Checker,
+    hint: &Hint,
+    class: Option<&ClassLikeMetadata>,
+    name: &dyn Fn(&Identifier) -> String,
+) -> Type {
     match hint {
-        Hint::Identifier(id) => Type::Object(text(c.names.get(&id.span())), vec![]),
-        Hint::Parenthesized(p) => native(c, p.hint, class),
-        Hint::Nullable(n) => native(c, n.hint, class).add_null(),
+        Hint::Identifier(id) => Type::Object(name(id), vec![]),
+        Hint::Parenthesized(p) => native_with(c, p.hint, class, name),
+        Hint::Nullable(n) => native_with(c, n.hint, class, name).add_null(),
         Hint::Union(u) => {
             let mut members = Vec::new();
             let mut stack = vec![u.right, u.left];
             while let Some(h) = stack.pop() {
                 match h {
                     Hint::Union(inner) => stack.extend([inner.right, inner.left]),
-                    h => members.push(native(c, h, class)),
+                    h => members.push(native_with(c, h, class, name)),
                 }
             }
             union(members)
@@ -238,7 +249,7 @@ pub fn native(c: &Checker, hint: &Hint, class: Option<&ClassLikeMetadata>) -> Ty
             while let Some(h) = stack.pop() {
                 match h {
                     Hint::Intersection(inner) => stack.extend([inner.right, inner.left]),
-                    h => members.push(native(c, h, class)),
+                    h => members.push(native_with(c, h, class, name)),
                 }
             }
             // ParserNodeTypeToPHPStanType: a member that is not an object makes the intersection `never`
@@ -276,6 +287,43 @@ pub fn native(c: &Checker, hint: &Hint, class: Option<&ClassLikeMetadata>) -> Ty
     }
 }
 
+/// A reflected native hint in any source file. Codex canonicalizes its union: parse the written hint through
+/// the same native resolver instead, retaining PHPStan's alternative order and the declaration's imports.
+fn native_declaration(
+    c: &Checker,
+    t: &mago_codex::metadata::ttype::TypeMetadata,
+    class: Option<&ClassLikeMetadata>,
+) -> Type {
+    if t.type_union.types.len() < 2 {
+        return from_tunion_in(c, &t.type_union, class);
+    }
+    let written = (|| {
+        let contents = file_contents(c, t.span.file_id)?;
+        let hint = contents.get(t.span.start.offset as usize..t.span.end.offset as usize)?;
+        let arena = LocalArena::new();
+        let file = File::ephemeral(
+            std::borrow::Cow::Borrowed(b"native.php".as_slice()),
+            std::borrow::Cow::Owned(
+                [b"<?php function native(".as_slice(), hint, b" $value) {}"].concat(),
+            ),
+        );
+        let program = parse_file(&arena, &file);
+        let hint = program.statements.iter().find_map(|s| match s {
+            Statement::Function(f) => f.parameter_list.parameters.first()?.hint.as_ref(),
+            _ => None,
+        })?;
+        let scope = scopes_of(t.span.file_id, &contents).at(t.span.start.offset);
+        Some(native_with(c, hint, class, &|id| {
+            text(
+                &scope
+                    .resolve(mago_names::kind::NameKind::Default, id.value())
+                    .0,
+            )
+        }))
+    })();
+    written.unwrap_or_else(|| from_tunion_in(c, &t.type_union, class))
+}
+
 /// `getType()` of each parameter of a function-like from the codex (a callee in any file): its native type decided
 /// with its PHPDoc type (a method's inherited one too), `declaring` being the class-like declaring a method.
 pub fn codex_params(c: &Checker, f: &FunctionLikeMetadata, declaring: Option<&ClassLikeMetadata>) -> Vec<Type> {
@@ -288,7 +336,7 @@ pub fn codex_params(c: &Checker, f: &FunctionLikeMetadata, declaring: Option<&Cl
             let null_default = !p.flags.is_promoted_property()
                 && p.default_type.as_ref().is_some_and(|d| d.type_union.is_null());
             let native = p.type_declaration_metadata.as_ref().map(|t| {
-                let t = from_tunion_in(c, &t.type_union, declaring);
+                let t = native_declaration(c, t, declaring);
                 if null_default { t.add_null() } else { t }
             });
             let mut phpdoc = doc.params.get(&name).cloned();
