@@ -1,0 +1,37 @@
+{
+  "general": [],
+  "errors": [
+    {
+      "file": "pre80.php",
+      "line": 12,
+      "identifier": "argument.missing",
+      "message": "Missing parameter $text (string) in call to AttributePre80\\Arguments constructor.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "pre80.php",
+      "line": 14,
+      "identifier": "argument.missing",
+      "message": "Missing parameter $number (int) in call to AttributePre80\\Arguments constructor.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "pre80.php",
+      "line": 14,
+      "identifier": "argument.missing",
+      "message": "Missing parameter $text (string) in call to AttributePre80\\Arguments constructor.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "pre80.php",
+      "line": 14,
+      "identifier": "argument.unknown",
+      "message": "Unknown parameter $unknown in call to AttributePre80\\Arguments constructor.",
+      "tip": null,
+      "ignorable": true
+    }
+  ]
+}

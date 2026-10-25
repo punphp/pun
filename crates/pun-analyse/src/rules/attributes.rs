@@ -3,6 +3,7 @@
 //! ParamAttributesRule, MethodAttributesRule, PropertyAttributesRule, PropertyHookAttributesRule,
 //! ConstantAttributesRule, TraitAttributesRule), with NonClassAttributeClassRule and TraitAttributeClassRule.
 
+use mago_codex::metadata::attribute::AttributeArgumentMetadata;
 use mago_codex::metadata::class_like::ClassLikeMetadata;
 use mago_codex::symbol::SymbolKind;
 use mago_codex::ttype::expander::{TypeExpansionOptions, expand_union};
@@ -183,18 +184,37 @@ fn attribute_flags(c: &Checker, class: &ClassLikeMetadata) -> Option<i64> {
     if attribute.arguments.is_empty() {
         return Some(TARGET_ALL);
     }
-    let argument = attribute
-        .arguments
-        .iter()
-        .find(|a| a.name.is_none())
-        .or_else(|| {
-            attribute
-                .arguments
-                .iter()
-                .find(|a| a.name.is_some_and(|n| n.as_bytes() == b"flags"))
-        })
-        // ArgumentsNormalizer appends unknown named arguments
-        .or_else(|| attribute.arguments.first())?;
+    // BetterReflection::getArgumentsExpressions() is keyed by name: the last value keeps the first position.
+    let mut arguments: Vec<&AttributeArgumentMetadata> = Vec::new();
+    for argument in &attribute.arguments {
+        if let Some(name) = argument.name
+            && let Some(i) = arguments.iter().position(|a| a.name == Some(name))
+        {
+            arguments[i] = argument;
+        } else {
+            arguments.push(argument);
+        }
+    }
+    // ArgumentsNormalizer::reorderArgs() for Attribute's one optional, non-variadic $flags parameter.
+    let mut reordered = std::collections::BTreeMap::new();
+    let mut appended = Vec::new();
+    for (i, argument) in arguments.into_iter().enumerate() {
+        match argument.name {
+            None => { reordered.insert(i, argument); }
+            Some(name) if name.as_bytes() == b"flags" => { reordered.entry(0).or_insert(argument); }
+            _ => appended.push(argument),
+        }
+    }
+    let argument = if reordered.is_empty() {
+        appended[0]
+    } else {
+        let last = *reordered.last_key_value()?.0;
+        if (1..last).any(|i| !reordered.contains_key(&i)) {
+            return None;
+        }
+        let Some(argument) = reordered.get(&0) else { return Some(TARGET_ALL) };
+        *argument
+    };
     // the flags must be a ConstantIntegerType: Mago's scan type, with class and global constants resolved
     let mut t = argument.value_type.clone()?;
     expand_union(c.codebase, &mut t, &TypeExpansionOptions::default());
@@ -368,18 +388,16 @@ pub fn parameter<'arena>(c: &mut Checker<'_, 'arena>, p: &FunctionLikeParameter<
 pub fn property_hook<'arena>(c: &mut Checker<'_, 'arena>, h: &PropertyHook<'arena>) {
     let lists = h.attribute_lists.as_slice();
     check(c, lists, TARGET_METHOD, "method");
-    if let Some(attribute) = lists
-        .iter()
-        .flat_map(|l| l.attributes.iter())
-        .find(|a| name(c, a).eq_ignore_ascii_case("nodiscard"))
-    {
-        let name = name(c, attribute);
-        c.report_non_ignorable(
-            attribute,
-            "attribute.target",
-            format!("Attribute class {name} cannot be used on property hooks."),
-            None,
-        );
+    for list in lists {
+        if let Some(attribute) = list.attributes.iter().find(|a| name(c, a).eq_ignore_ascii_case("nodiscard")) {
+            let name = name(c, attribute);
+            c.report_non_ignorable(
+                attribute,
+                "attribute.target",
+                format!("Attribute class {name} cannot be used on property hooks."),
+                None,
+            );
+        }
     }
 }
 

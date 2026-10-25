@@ -1,0 +1,341 @@
+{
+  "general": [],
+  "errors": [
+    {
+      "file": "contracts.php",
+      "line": 17,
+      "identifier": "argument.missing",
+      "message": "Missing parameter $text (string) in call to AttributeContracts\\Arguments constructor.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "contracts.php",
+      "line": 20,
+      "identifier": "argument.missing",
+      "message": "Missing parameter $text (string) in call to AttributeContracts\\Arguments constructor.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "contracts.php",
+      "line": 23,
+      "identifier": "argument.missing",
+      "message": "Missing parameter $text (string) in call to AttributeContracts\\Arguments constructor.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "contracts.php",
+      "line": 24,
+      "identifier": "argument.missing",
+      "message": "Missing parameter $text (string) in call to AttributeContracts\\Arguments constructor.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "contracts.php",
+      "line": 26,
+      "identifier": "argument.missing",
+      "message": "Missing parameter $text (string) in call to AttributeContracts\\Arguments constructor.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "contracts.php",
+      "line": 30,
+      "identifier": "argument.missing",
+      "message": "Missing parameter $text (string) in call to AttributeContracts\\Arguments constructor.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "contracts.php",
+      "line": 32,
+      "identifier": "argument.missing",
+      "message": "Missing parameter $text (string) in call to AttributeContracts\\Arguments constructor.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "contracts.php",
+      "line": 34,
+      "identifier": "argument.missing",
+      "message": "Missing parameter $text (string) in call to AttributeContracts\\Arguments constructor.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "contracts.php",
+      "line": 37,
+      "identifier": "argument.missing",
+      "message": "Missing parameter $text (string) in call to AttributeContracts\\Arguments constructor.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "contracts.php",
+      "line": 40,
+      "identifier": "argument.missing",
+      "message": "Missing parameter $text (string) in call to AttributeContracts\\Arguments constructor.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "contracts.php",
+      "line": 45,
+      "identifier": "argument.missing",
+      "message": "Missing parameter $text (string) in call to AttributeContracts\\Arguments constructor.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "contracts.php",
+      "line": 49,
+      "identifier": "argument.missing",
+      "message": "Missing parameter $text (string) in call to AttributeContracts\\Arguments constructor.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "contracts.php",
+      "line": 56,
+      "identifier": "arguments.count",
+      "message": "Attribute class AttributeContracts\\Arguments constructor invoked with 0 parameters, 2 required.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "contracts.php",
+      "line": 57,
+      "identifier": "arguments.count",
+      "message": "Attribute class AttributeContracts\\Arguments constructor invoked with 1 parameter, 2 required.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "contracts.php",
+      "line": 58,
+      "identifier": "argument.missing",
+      "message": "Missing parameter $number (int) in call to AttributeContracts\\Arguments constructor.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "contracts.php",
+      "line": 58,
+      "identifier": "argument.missing",
+      "message": "Missing parameter $text (string) in call to AttributeContracts\\Arguments constructor.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "contracts.php",
+      "line": 58,
+      "identifier": "argument.unknown",
+      "message": "Unknown parameter $unknown in call to AttributeContracts\\Arguments constructor.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "contracts.php",
+      "line": 59,
+      "identifier": "argument.duplicate",
+      "message": "Argument for parameter $number has already been passed.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "contracts.php",
+      "line": 63,
+      "identifier": "argument.duplicate",
+      "message": "Argument for parameter $flags has already been passed.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "contracts.php",
+      "line": 71,
+      "identifier": "attribute.target",
+      "message": "Attribute class AttributeContracts\\NamedFirst does not have the class target.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "contracts.php",
+      "line": 74,
+      "identifier": "argument.duplicate",
+      "message": "Argument for parameter $flags has already been passed.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "contracts.php",
+      "line": 76,
+      "identifier": "attribute.target",
+      "message": "Attribute class AttributeContracts\\PositionalFirst does not have the class target.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "contracts.php",
+      "line": 79,
+      "identifier": "argument.unknown",
+      "message": "Unknown parameter $foo in call to Attribute constructor.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "contracts.php",
+      "line": 84,
+      "identifier": "argument.unknown",
+      "message": "Unknown parameter $bar in call to Attribute constructor.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "contracts.php",
+      "line": 84,
+      "identifier": "argument.unknown",
+      "message": "Unknown parameter $foo in call to Attribute constructor.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "contracts.php",
+      "line": 86,
+      "identifier": "attribute.notAttribute",
+      "message": "Class AttributeContracts\\MissingHole is not an Attribute class.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "contracts.php",
+      "line": 89,
+      "identifier": "argument.unknown",
+      "message": "Unknown parameter $foo in call to Attribute constructor.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "contracts.php",
+      "line": 89,
+      "identifier": "argument.unknown",
+      "message": "Unknown parameter $foo in call to Attribute constructor.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "contracts.php",
+      "line": 102,
+      "identifier": "attribute.target",
+      "message": "Attribute class NoDiscard cannot be used on property hooks.",
+      "tip": null,
+      "ignorable": false
+    },
+    {
+      "file": "contracts.php",
+      "line": 103,
+      "identifier": "attribute.target",
+      "message": "Attribute class NoDiscard cannot be used on property hooks.",
+      "tip": null,
+      "ignorable": false
+    },
+    {
+      "file": "contracts.php",
+      "line": 103,
+      "identifier": "attribute.nonRepeatable",
+      "message": "Attribute class NoDiscard is not repeatable but is already present above the method.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "contracts.php",
+      "line": 107,
+      "identifier": "attribute.target",
+      "message": "Attribute class NoDiscard cannot be used on property hooks.",
+      "tip": null,
+      "ignorable": false
+    },
+    {
+      "file": "contracts.php",
+      "line": 107,
+      "identifier": "attribute.nonRepeatable",
+      "message": "Attribute class NoDiscard is not repeatable but is already present above the method.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "contracts.php",
+      "line": 111,
+      "identifier": "attribute.target",
+      "message": "Attribute class NoDiscard cannot be used on property hooks.",
+      "tip": null,
+      "ignorable": false
+    },
+    {
+      "file": "contracts.php",
+      "line": 111,
+      "identifier": "attribute.nonRepeatable",
+      "message": "Attribute class NoDiscard is not repeatable but is already present above the method.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "contracts.php",
+      "line": 112,
+      "identifier": "attribute.target",
+      "message": "Attribute class NoDiscard cannot be used on property hooks.",
+      "tip": null,
+      "ignorable": false
+    },
+    {
+      "file": "contracts.php",
+      "line": 112,
+      "identifier": "attribute.nonRepeatable",
+      "message": "Attribute class NoDiscard is not repeatable but is already present above the method.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "contracts.php",
+      "line": 120,
+      "identifier": "attribute.target",
+      "message": "Attribute class AttributeContracts\\ExtraPositional does not have the function target.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "contracts.php",
+      "line": 123,
+      "identifier": "argument.unknown",
+      "message": "Unknown parameter $bar in call to Attribute constructor.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "contracts.php",
+      "line": 123,
+      "identifier": "argument.unknown",
+      "message": "Unknown parameter $foo in call to Attribute constructor.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "contracts.php",
+      "line": 123,
+      "identifier": "argument.unknown",
+      "message": "Unknown parameter $foo in call to Attribute constructor.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "contracts.php (in context of class AttributeContracts\\UsesTrait)",
+      "line": 52,
+      "identifier": "argument.missing",
+      "message": "Missing parameter $text (string) in call to AttributeContracts\\Arguments constructor.",
+      "tip": null,
+      "ignorable": true
+    }
+  ]
+}
