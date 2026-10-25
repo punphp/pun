@@ -172,7 +172,7 @@ pub struct Conditional {
     pub negated: bool,
 }
 
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone, Debug)]
 pub struct Template {
     pub name: String,
     /// `TemplateTypeScope::describe()`, e.g. `function preg_match()`, `class ArrayIterator`
@@ -181,6 +181,16 @@ pub struct Template {
     pub default: Option<Type>,
     /// a class's own template as the argument of its `static` / `$this` type
     pub argument: bool,
+}
+
+impl PartialEq for Template {
+    /// TemplateTypeTrait::equals(): the parameter/argument strategy is not part of a template's identity.
+    fn eq(&self, other: &Self) -> bool {
+        self.scope == other.scope
+            && self.name == other.name
+            && self.bound == other.bound
+            && self.default == other.default
+    }
 }
 
 #[derive(Clone, Debug, PartialEq)]

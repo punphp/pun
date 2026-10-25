@@ -1,0 +1,60 @@
+[
+  {
+    "scope": "class Box",
+    "name": "T",
+    "bound": "int",
+    "default": "1",
+    "argument": false,
+    "equals": true,
+    "genericSuper": "Yes"
+  },
+  {
+    "scope": "class Box",
+    "name": "T",
+    "bound": "int",
+    "default": "1",
+    "argument": true,
+    "equals": true,
+    "genericSuper": "Yes"
+  },
+  {
+    "scope": "class Other",
+    "name": "T",
+    "bound": "int",
+    "default": "1",
+    "argument": true,
+    "equals": false
+  },
+  {
+    "scope": "class Box",
+    "name": "U",
+    "bound": "int",
+    "default": "1",
+    "argument": true,
+    "equals": false
+  },
+  {
+    "scope": "class Box",
+    "name": "T",
+    "bound": "int<0, max>",
+    "default": "1",
+    "argument": true,
+    "equals": false
+  },
+  {
+    "scope": "class Box",
+    "name": "T",
+    "bound": "int",
+    "default": "2",
+    "argument": true,
+    "equals": false
+  },
+  {
+    "scope": "class Box",
+    "name": "T",
+    "bound": "int",
+    "default": null,
+    "argument": true,
+    "equals": false
+  }
+]
