@@ -13,7 +13,9 @@ use mago_codex::metadata::flags::MetadataFlags;
 use mago_codex::populator::populate_codebase_parallel;
 use mago_codex::reference::SymbolReferences;
 use mago_codex::scanner::scan_program;
-use mago_codex::ttype::get_literal_int;
+use mago_codex::ttype::atomic::TAtomic;
+use mago_codex::ttype::atomic::scalar::TScalar;
+use mago_codex::ttype::union::TUnion;
 use mago_database::file::{File, FileType};
 use mago_names::ResolvedNames;
 use mago_names::resolver::NameResolver;
@@ -206,17 +208,35 @@ fn build_prelude(php_version: u32) -> (CodebaseMetadata, SymbolReferences) {
                 .functions
                 .contains_key(&String::from_utf8_lossy(name.as_bytes()).to_ascii_lowercase())
     });
-    // the integer constants PHPStan's reflection knows and Mago's prelude lacks (PHP 8.5's FILTER_THROW_ON_FAILURE)
+    // ConstantResolver::resolvePredefinedConstant keeps both 32- and 64-bit values, not the host's
+    // stub initializer. Namespace fallback in Mago reads this metadata instead of its platform helper.
+    // Also retain integer constants absent from the prelude (PHP 8.5's FILTER_THROW_ON_FAILURE).
     for (name, value) in &builtins.constants {
+        use pun_phpstan::types::Type;
+        let values = match pun_phpstan::resolve::resolve_str(value, None) {
+            Type::ConstInt(i) => vec![Type::ConstInt(i)],
+            Type::Union(parts) => parts,
+            _ => continue,
+        };
+        let Some(values) = values
+            .into_iter()
+            .map(|t| match t {
+                Type::ConstInt(i) => Some(TAtomic::Scalar(TScalar::literal_int(i))),
+                _ => None,
+            })
+            .collect::<Option<Vec<_>>>()
+        else {
+            continue;
+        };
         let key = mago_word::ascii_lowercase_constant_name_word(name.as_bytes());
-        if let Ok(value) = value.parse::<i64>()
-            && !metadata.constants.contains_key(&key)
-        {
-            let mut constant =
-                ConstantMetadata::new(mago_word::word(name), Span::zero(), MetadataFlags::BUILTIN);
-            constant.inferred_type = Some(get_literal_int(value));
-            metadata.constants.insert(key, constant);
+        let constant = metadata.constants.entry(key).or_insert_with(|| {
+            ConstantMetadata::new(mago_word::word(name), Span::zero(), MetadataFlags::BUILTIN)
+        });
+        let value = TUnion::new(Cow::Owned(values));
+        if let Some(declared) = &mut constant.type_metadata {
+            declared.type_union = value.clone();
         }
+        constant.inferred_type = Some(value);
     }
     (metadata, symbol_references)
 }

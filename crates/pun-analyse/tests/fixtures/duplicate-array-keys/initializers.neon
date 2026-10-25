@@ -1,0 +1,5 @@
+parameters:
+    level: 0
+    paths: [initializers.php]
+    scanFiles: [initializers-source.php]
+    phpVersion: 80400

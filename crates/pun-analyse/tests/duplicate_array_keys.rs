@@ -72,6 +72,31 @@ fn float_casts_constants_and_overridable_receivers() {
     check(project, &expected["files"]["scalars.php"]["messages"]);
 }
 
+#[test]
+fn compound_constant_initializers_use_the_declaring_scope() {
+    let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/duplicate-array-keys");
+    let expected: Value =
+        serde_json::from_slice(&std::fs::read(root.join("expected-initializers.json")).unwrap())
+            .unwrap();
+    let mut project = Project::new(
+        vec![root.join("initializers.php")],
+        vec![root.join("initializers-source.php")],
+    );
+    project.php_version = 80400;
+    check(project, &expected["files"]["initializers.php"]["messages"]);
+}
+
+#[test]
+fn platform_integer_copies_preserve_bitness_and_actual_narrowing() {
+    let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/duplicate-array-keys");
+    let expected: Value =
+        serde_json::from_slice(&std::fs::read(root.join("expected-platform.json")).unwrap())
+            .unwrap();
+    let mut project = Project::new(vec![root.join("platform.php")], Vec::new());
+    project.php_version = 80400;
+    check(project, &expected["files"]["platform.php"]["messages"]);
+}
+
 fn unpacking(config: &str, php_version: u32, bleeding_edge: bool) {
     let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/duplicate-array-keys");
     let expected: Value = serde_json::from_slice(

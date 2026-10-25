@@ -1,0 +1,170 @@
+{
+  "totals": {
+    "errors": 0,
+    "file_errors": 26
+  },
+  "files": {
+    "platform.php": {
+      "errors": 26,
+      "messages": [
+        {
+          "message": "Dumped type: 2147483647|9223372036854775807",
+          "line": 10,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value 2147483647 (2147483647, $max).",
+          "line": 11,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value 9223372036854775807 (9223372036854775807, $max).",
+          "line": 11,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value 2147483647 (2147483647, $copy).",
+          "line": 12,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value 9223372036854775807 (9223372036854775807, $copy).",
+          "line": 12,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Dumped type: -9223372036854775808|-2147483648",
+          "line": 14,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value -2147483648 (-2147483648, $min).",
+          "line": 15,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value -9223372036854775807-1 (-9.223372036854776E+18, $min).",
+          "line": 15,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Dumped type: 4|8",
+          "line": 17,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value 4 (4, $size).",
+          "line": 18,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value 8 (8, $size).",
+          "line": 18,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value 2147483647 (2147483647, $alias).",
+          "line": 20,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value 9223372036854775807 (9223372036854775807, $alias).",
+          "line": 20,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value 2147483647 (2147483647, $qualified).",
+          "line": 22,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value 9223372036854775807 (9223372036854775807, $qualified).",
+          "line": 22,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Dumped type: 9223372036854775807",
+          "line": 24,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value 9223372036854775807 (9223372036854775807, $max).",
+          "line": 25,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value -2147483648 (-2147483648, $min).",
+          "line": 27,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value 4 (4, $size).",
+          "line": 29,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value 7 (7, $max).",
+          "line": 32,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value 2147483647 (2147483647, $other).",
+          "line": 34,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value 2147483647 (2147483647, $key).",
+          "line": 41,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value 9 (9, $local).",
+          "line": 51,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Dumped type: 2147483647|9223372036854775807",
+          "line": 59,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value 2147483647 (2147483647, $max).",
+          "line": 60,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value 9223372036854775807 (9223372036854775807, $max).",
+          "line": 60,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        }
+      ]
+    }
+  },
+  "errors": []
+}

@@ -1,0 +1,152 @@
+{
+  "totals": {
+    "errors": 0,
+    "file_errors": 23
+  },
+  "files": {
+    "initializers.php": {
+      "errors": 23,
+      "messages": [
+        {
+          "message": "Array has 2 duplicate keys with value 2 (SUM, 2).",
+          "line": 44,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value 2 (DIFFERENCE, 2).",
+          "line": 45,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value 2 (PRODUCT, 2).",
+          "line": 46,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value 2 (QUOTIENT, 2).",
+          "line": 47,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value 2 (POWER, 2).",
+          "line": 48,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value -2 (NEGATED, -2).",
+          "line": 49,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value 3 (CHAIN, 3).",
+          "line": 50,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value 2 (CONDITIONAL, 2).",
+          "line": 51,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value 2 (COALESCED, 2).",
+          "line": 52,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value 12 (STRING_KEY, 12).",
+          "line": 53,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value 2 (\\CompoundDuplicateKeys\\ParentKeys::SUM, 2).",
+          "line": 54,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value 3 (\\CompoundDuplicateKeys\\ChildKeys::CHAIN, 3).",
+          "line": 55,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value 'parent-key' (\\CompoundDuplicateKeys\\ChildKeys::LEXICAL, 'parent-key').",
+          "line": 56,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value 4 (\\CompoundDuplicateKeys\\ChildKeys::PARENT_SUM, 4).",
+          "line": 57,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value 2 (\\ForeignDuplicateKeys\\SUM, 2).",
+          "line": 58,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value 5 (5, SIZE).",
+          "line": 59,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value 9 (9, SIZE).",
+          "line": 59,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value 1 (BOOLEAN_KEY, 1).",
+          "line": 61,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value '' (NULL_KEY, '').",
+          "line": 62,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value 6 (AFTER_CONTROLS, 6).",
+          "line": 64,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value 2 (OFFSET, 2).",
+          "line": 65,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value 3 (\\CompoundDuplicateKeys\\ChildKeys::OFFSET, 3).",
+          "line": 66,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value 2 ($class::FINAL_SUM, 2).",
+          "line": 74,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        }
+      ]
+    }
+  },
+  "errors": []
+}
