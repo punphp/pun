@@ -1294,3 +1294,11 @@ remain the actual PHPStan output. All 15 public unset tests now pass, including 
 metadata and nested write-back. The eight-target reader, metadata, slice and mixed-subtraction
 matrix passes all 30 tests. Fresh dependency coverage covers all **6/6 changed executable lines**
 without exclusions; the error-normalization assignment executes three times.
+
+The legacy `run_mago()` spike test retains its original unmodified Mago CLI capture. The
+maintained engine intentionally differs for ErrorType cascades, as the argument and construct
+regressions already require. A fresh PHPStan 2.3.1 capture of the same spike input reports five
+primary errors, including the undefined echo input, and no `echo.nonString` error. The spike
+comparison now applies that oracle-backed exception only to Mago's secondary mixed-argument
+echo warning; all primary Mago codes, lines and messages remain exact. No runtime compatibility
+setting or supported CLI behavior changes.

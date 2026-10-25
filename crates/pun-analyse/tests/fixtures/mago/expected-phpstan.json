@@ -1,0 +1,34 @@
+[
+  {
+    "message": "Function MagoIssues\\size() should return string but returns int.",
+    "line": 16,
+    "ignorable": true,
+    "identifier": "return.type"
+  },
+  {
+    "message": "Function undefined_function not found.",
+    "line": 21,
+    "ignorable": true,
+    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+    "identifier": "function.notFound"
+  },
+  {
+    "message": "Instantiated class MagoIssues\\Missing not found.",
+    "line": 22,
+    "ignorable": true,
+    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+    "identifier": "class.notFound"
+  },
+  {
+    "message": "Undefined variable: $undefined",
+    "line": 23,
+    "ignorable": true,
+    "identifier": "variable.undefined"
+  },
+  {
+    "message": "Call to an undefined method MagoIssues\\Box::nope().",
+    "line": 24,
+    "ignorable": true,
+    "identifier": "method.notFound"
+  }
+]
