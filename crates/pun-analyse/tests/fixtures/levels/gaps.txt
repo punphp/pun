@@ -34,7 +34,6 @@
 # and lists, SimpleXMLElement and DateTime::format() return types, intersections and narrowing, a trait method
 # analysed in its class, or the file's types dropped when Mago's analyzer panics (TUnion::from_vec)
 2 Operators/InvalidComparisonOperationRuleTest::testRule
-4 DeadCode/UnreachableStatementRuleTest::testBug14582
 2 Operators/InvalidComparisonOperationRuleTest::testBug11119
 3 Functions/ClosureReturnTypeRuleTest::testClosureReturnTypeRule
 3 Functions/ClosureReturnTypeRuleTest::testBug3891
@@ -71,7 +70,6 @@
 4 DeadCode/CallToConstructorStatementWithoutImpurePointsRuleTest::testThrows
 4 DeadCode/CallToFunctionStatementWithoutImpurePointsRuleTest::testThrows
 4 DeadCode/CallToMethodStatementWithoutImpurePointsRuleTest::testRule
-4 DeadCode/CallToMethodStatementWithoutImpurePointsRuleTest::testBug11011
 4 DeadCode/CallToMethodStatementWithoutImpurePointsRuleTest::testThrows
 4 DeadCode/CallToStaticMethodStatementWithoutImpurePointsRuleTest::testThrows
 4 DeadCode/UnusedPrivateMethodRuleTest::testRule
@@ -113,7 +111,6 @@
 5 Properties/AccessStaticPropertiesRuleTest::testAccessStaticProperties
 9 Functions/CallToFunctionParametersRuleTest::testBug10559
 9 Functions/CallToFunctionParametersRuleTest::testBug11386
-9 Functions/CallToFunctionParametersRuleTest::testBug3631
 9 Functions/CallToFunctionParametersRuleTest::testBug9580
 9 Functions/CallToFunctionParametersRuleTest::testBug9697
 9 Functions/CallToFunctionParametersRuleTest::testCallUserFuncArray
@@ -271,7 +268,6 @@
 5 Methods/CallMethodsRuleTest::testCallMethodWithPhpDocsImplicitInheritance
 5 Methods/CallMethodsRuleTest::testCallMethods
 5 Methods/CallMethodsRuleTest::testCallMethodsOnThisOnly
-5 Methods/CallMethodsRuleTest::testCallVariadicMethods
 5 Methods/CallMethodsRuleTest::testCannotCallOnGenericClassString
 5 Methods/CallMethodsRuleTest::testClosureCallInvocations
 5 Methods/CallMethodsRuleTest::testDynamicCall
@@ -348,7 +344,6 @@
 9 Methods/CallMethodsRuleTest::testBug14719
 9 Methods/CallMethodsRuleTest::testBug14732
 9 Methods/CallMethodsRuleTest::testBug1661
-9 Methods/CallMethodsRuleTest::testBug3481
 9 Methods/CallMethodsRuleTest::testBug3555
 9 Methods/CallMethodsRuleTest::testBug3589
 9 Methods/CallMethodsRuleTest::testBug4188
@@ -365,7 +360,6 @@
 9 Methods/CallMethodsRuleTest::testBugTemplateMixedUnionIntersect
 9 Methods/CallMethodsRuleTest::testCallMethodWithPhpDocsImplicitInheritance
 9 Methods/CallMethodsRuleTest::testCallMethodsNullIssue
-9 Methods/CallMethodsRuleTest::testCallVariadicMethods
 9 Methods/CallMethodsRuleTest::testCannotCallOnGenericClassString
 9 Methods/CallMethodsRuleTest::testClosureCallInvocations
 9 Methods/CallMethodsRuleTest::testDynamicCall
@@ -471,7 +465,6 @@
 4 Comparison/MatchExpressionRuleTest::testBug13303
 4 Comparison/MatchExpressionRuleTest::testBug9534
 # an-dead: constant conditions where Mago's types differ (closures writing $this properties, casts not narrowing, static:: constants, loops, method_exists() on @method, ImpossibleCheckType ownership)
-4 Comparison/BooleanAndConstantConditionRuleTest::testBug5743
 4 Comparison/BooleanNotConstantConditionRuleTest::testBug12267
 4 Comparison/BooleanOrConstantConditionRuleTest::testBug6551
 4 Comparison/ElseIfConstantConditionRuleTest::testBug11674
@@ -550,7 +543,6 @@
 4 Comparison/NumberComparisonOperatorsConstantConditionRuleTest::testTreatPhpDocTypesAsCertain#1
 4 Comparison/NumberComparisonOperatorsConstantConditionRuleTest::testBug7075
 4 Comparison/NumberComparisonOperatorsConstantConditionRuleTest::testInTrait
-4 Comparison/NumberComparisonOperatorsConstantConditionRuleTest::testBug11146
 4 Comparison/StrictComparisonOfDifferentTypesRuleTest::testBug5362
 4 Comparison/StrictComparisonOfDifferentTypesRuleTest::testBug7555
 4 Comparison/StrictComparisonOfDifferentTypesRuleTest::testBug5474
@@ -575,7 +567,6 @@
 4 Comparison/StrictComparisonOfDifferentTypesRuleTest::testBug11054
 4 Comparison/StrictComparisonOfDifferentTypesRuleTest::testBug14847
 4 DeadCode/UnreachableStatementRuleTest::testMultipleUnreachable
-4 DeadCode/UnusedPrivateConstantRuleTest::testRule
 # PHPStan 2.3: UnusedClosureUsesRule and UnusedConstructorParametersRule follow VariableWritesNode dataflow (a use or
 # parameter overwritten before any read is unused, compact() of a resolved name reads it); Pun keeps the 2.2 name check
 1 Classes/UnusedConstructorParametersRuleTest::testResolvedDynamicUsages
@@ -693,7 +684,6 @@
 2 Operators/InvalidBinaryOperationRuleTest::testBenevolentUnion
 2 Operators/InvalidBinaryOperationRuleTest::testBug1452
 2 PhpDoc/WrongVariableNameInVarTagRuleTest::testAssignOperator
-3 Arrays/OffsetAccessAssignOpRuleTest::testRuleWithNullsafeVariant
 # an-types: a property's type is not checked against a write through its offset (`$this->items[$k] = ...`)
 3 Arrays/OffsetAccessAssignmentRuleTest::testBug14054
 3 Arrays/OffsetAccessAssignmentRuleTest::testBug14054Hook
@@ -810,7 +800,6 @@
 1 Variables/NullCoalesceRuleTest::testCoalesceRule
 4 Variables/NullCoalesceRuleTest::testBug13488
 4 Variables/NullCoalesceRuleTest::testBug13488Loose
-4 Variables/NullCoalesceRuleTest::testBug15046
 4 Variables/NullCoalesceRuleTest::testBug7190
 4 Variables/NullCoalesceRuleTest::testCoalesceAssignRule
 4 Variables/NullCoalesceRuleTest::testCoalesceRule
@@ -822,7 +811,6 @@
 4 Exceptions/CatchWithUnthrownExceptionRuleTest::testRuleWithoutReportingUncheckedException
 4 Exceptions/CatchWithUnthrownExceptionRuleTest::testFilterVarThrowOnFailure
 4 Exceptions/CatchWithUnthrownExceptionRuleTest::testBug6256
-4 Exceptions/CatchWithUnthrownExceptionRuleTest::testUnionTypeError
 4 Exceptions/CatchWithUnthrownExceptionRuleTest::testBug6349
 4 Exceptions/CatchWithUnthrownExceptionRuleTest::testBug9406
 4 Exceptions/CatchWithUnthrownExceptionRuleTest::testBug6574

@@ -11,6 +11,14 @@ use serde_json::Value;
 
 type Key = (String, i64, String, String, Option<String>);
 
+/// These newly ported contracts must also match inside fixtures with older, unrelated inference gaps.
+const EXACT: &[&str] = &[
+    "variable.undefined",
+    "variable.nameNotString",
+    "argument.named",
+    "argument.parameterRenamedInSubtype",
+];
+
 /// The identifiers of the rules ported above level 0, and of level-0 rules whose errors the level fixtures hold.
 const PORTED: &[&str] = &[
     "phpstan.dumpType",
@@ -457,6 +465,7 @@ fn phpstan_level_fixtures() {
         .collect();
     let prefix = format!("{}/", data.display());
     let mut failing = BTreeSet::new();
+    let mut exact_failures = BTreeSet::new();
     let mut details = Vec::new();
     let mut levels: Vec<_> = std::fs::read_dir(&root)
         .unwrap()
@@ -470,7 +479,10 @@ fn phpstan_level_fixtures() {
         let mut files = Vec::new();
         fixtures(&dir, &mut files);
         files.sort();
-        for f in files.into_iter().filter(|f| f.to_string_lossy().contains(&filter)) {
+        for f in files
+            .into_iter()
+            .filter(|f| f.to_string_lossy().contains(&filter))
+        {
             let test: Value = serde_json::from_str(&std::fs::read_to_string(&f).unwrap()).unwrap();
             for case in test["cases"].as_array().unwrap() {
                 let paths = |k: &str| -> Vec<PathBuf> {
@@ -483,6 +495,7 @@ fn phpstan_level_fixtures() {
                 };
                 let ported = |id: &str, message: &str| {
                     PORTED.contains(&id)
+                        || EXACT.contains(&id)
                         || (id == "class.notFound"
                             && GENERICS_NOT_FOUND.iter().any(|p| message.starts_with(p)))
                         || (id == "parameter.notFound"
@@ -504,6 +517,9 @@ fn phpstan_level_fixtures() {
                 let mut project = Project::new(paths("files"), paths("scan"));
                 project.level = level;
                 project.check_class_case_sensitivity = level >= 2;
+                // The pinned exports used PHP's register_argc_argv=0, independently of this host's INI.
+                project.cli_arguments_variables_registered = false;
+                project.check_maybe_undefined_variables = level >= 1;
                 let got: BTreeSet<Key> = run(&project)
                     .unwrap()
                     .into_iter()
@@ -519,6 +535,12 @@ fn phpstan_level_fixtures() {
                     case["method"].as_str().unwrap()
                 );
                 if want != got {
+                    if want
+                        .symmetric_difference(&got)
+                        .any(|e| EXACT.contains(&e.2.as_str()))
+                    {
+                        exact_failures.insert(name.clone());
+                    }
                     details.push(format!(
                         "{name}\n  missing {:#?}\n  extra   {:#?}",
                         want.difference(&got).collect::<Vec<_>>(),
@@ -532,7 +554,10 @@ fn phpstan_level_fixtures() {
     let fixed: Vec<_> = gaps.difference(&failing).collect();
     let new: Vec<_> = details
         .iter()
-        .filter(|d| !gaps.contains(d.lines().next().unwrap()))
+        .filter(|d| {
+            let name = d.lines().next().unwrap();
+            !gaps.contains(name) || exact_failures.contains(name)
+        })
         .collect();
     assert!(
         fixed.is_empty() && new.is_empty(),

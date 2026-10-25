@@ -40,5 +40,4 @@ Api/ApiClassImplementsRuleTest::testRuleOutOfPhpStan
 # is no shape, a template key prints as `T|TKey of (int|string)`, and an inherited template argument resolves to its
 # bound (`RecursiveIterator<mixed, mixed>`)
 Methods/CallMethodsRuleTest::testArrayShapeTemplateKey
-Methods/CallMethodsRuleTest::testGenericsEmptyArray
 Methods/OverridingMethodRuleTest::testBug9615
