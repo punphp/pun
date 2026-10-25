@@ -13,7 +13,8 @@ The crates.io package checksum is
 `LICENSE-MIT` and `LICENSE-APACHE` come from the same upstream revision.
 
 The copy excludes registry bookkeeping, the package lockfile, upstream test fixtures,
-and benchmarks. The manifest removes those test targets and their development dependencies.
+and benchmarks. The manifest removes those test targets and their development dependencies,
+except `indoc`, which the inline loop-convergence tests need.
 Every sibling `mago-*` dependency remains a crates.io dependency pinned to `=1.57.0`.
 The root manifest patches only `mago-analyzer` and excludes this directory from Pun's workspace members.
 
@@ -645,3 +646,31 @@ The shared renderer also prints static closures as `Closure(...)` rather than PH
 
 The existing raw callback, observer, native-state, and integer-overflow patches remain necessary.
 Native method results remain unavailable. This backport does not implement NoDiscard or ordered shapes.
+
+## PHPStan variable scope transfers
+
+`context/variable_scope.rs` ports variable-holder certainty and conditional holders alongside the
+running expression types. Its references are PHPStan 2.3.1's `ScopeOps::mergeVariableHolders()`,
+`createConditionalExpressions()` and `matchConditionalExpressions()` at the revision above.
+The state clones with `BlockContext`; it does not share mutable branch state or perform another
+syntax walk to reconstruct control flow.
+
+Continuing `if`, switch and loop edges join actual incoming scopes. Disjoint guard values can retain
+both a variable's presence and its explicit absence in the opposite branch. Assignments invalidate
+dependent holders. Include/extract and standalone annotations update certainty at their transfer
+points. Builtin input-reference parameters do not create variables, while output references still do.
+Try/catch snapshots follow throw points even when exception diagnostics are disabled. Impossible
+branches still publish diagnostic observations, but their break, continue and throw edges do not
+contribute to the enclosing flow.
+
+The changes span `artifacts.rs`, block/if/loop contexts, assignment and variable analysis, function
+calls and invocation post-processing, include/throw, reconciliation, statement control flow and
+annotation handling. Pun's `rules/variables.rs` consumes the live observations for DefinedVariableRule
+and CompactVariablesRule. Missing observations remain unknown, never definitely absent.
+Overlapping guard-type subtraction remains conservative.
+
+Public `variables` tests compare the four-configuration matrix, flow fixture and transfer controls
+with fresh PHPStan diagnostics. The exported Variables fixture group covers both rules. The inline
+`convergence` tests also check the incoming-edge joins. Integration retains native locals and paired
+artifacts, and keeps the definedness hook observational so speculative callback gathers cannot publish
+its events. No dependency pins or native-dependent rule activation change.
