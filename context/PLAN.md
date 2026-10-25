@@ -14,12 +14,16 @@ Pushpak resumed all commands on 2026-10-25. CI stays disabled.
 - **Rule docs:** steps 1–5 built locally: all 1,256 rule pages, 67 command/group pages, 8 presets, 8 sets, six
   migration mappings and the URL-filtered directory. CLI links need the public docs origin; none is configured.
   The docs build passes on Linux (1,446 pages); public deployment has not been verified.
-- **Verification:** all 165 analyser tests pass on Rust 1.99/Linux: 163 public tests, the full rule harness
+- **Last full batch:** all 165 analyser tests pass on Rust 1.99/Linux: 163 public tests, the full rule harness
   (563 seconds), and all 2,787 level-fixture cases run in 19 filtered groups. The fixture checks compare ported
   identifiers against PHPStan with the remaining explicit gaps; they are not full level parity. Fresh profiles
   cover 36,205/36,205 production lines. Coverage cleanup now removes stale example executables as well as tests
   and binaries, so old source mappings cannot contribute phantom lines. Harness coverage remains 235/235 lines,
   with all five tests passing in its last full measurement.
+- **Native scalar casts:** the subsequent default-off slice passes 37 combined native, callback, slice, debug
+  and arithmetic tests, including 133 actual PHPStan native dumps. Its changed engine lines are 152/152 covered.
+  It models 64-bit PHP with default `precision=14`; unsupported transfers stay unavailable and native-dependent
+  rules remain unported. This slice changes no Pun production lines.
 - **CLI coverage:** fresh full-registry measurement is 5,397/5,397 lines, with 147 tests passing. Non-ignorable
   errors retain their rule's flag in reports and cannot be hidden by ignore comments or baselines.
 - **Lint coverage:** Linux full-registry measurement is 21,786/21,786 lines, with 243 tests passing on main.
@@ -340,7 +344,6 @@ Gate passed ea7a84bc2d4c4f4b90ad177d911e6ade3accf253
 | analyse class constants: extend ClassConstantRule's receiver checks beyond named classes and self/static/parent to inferred expression receivers at higher levels | todo |
 | analyse level 0 includes: extend integrated RequireFileExistsRule and IncludedFilePathResolver beyond local files to supported stream paths before whole-rule activation | todo |
 | analyse native types (needs Pushpak): exact `getNativeType()` needs full/native state on the same control-flow walk; Mago 1.57 exposes one lane and no PHPDoc-disable setting. Choose a maintained Mago source patch or a Pun-native scope engine. Default: preserve PHPStan's paired-state contract and leave native-dependent debug rules unported rather than substitute a comments-disabled second pass | needs Pushpak |
-| analyse native types: propagate scalar cast expressions from existing native operands without another walk or full-type fallback; retain unavailable answers for unsupported transfers | doing (ready in worktree; 133 new oracle dumps and 152/152 changed engine lines pass; integration pending) |
 | analyse callable inference: backport Mago 1.59.0's `Closure::fromCallable()` provider through Pun's production registry, preserving PHPStan signatures through assignment and invocation | doing (independent worktree; no dependency changes) |
 | analyse generic inference: backport Mago 1.59.0's omitted-template defaults for new objects only where fresh PHPStan captures confirm parity, preserving constructor inference and inherited defaults | doing (independent worktree; no dependency changes) |
 | analyse callback follow-up: foreach-defined coalesce return values lose their raw signature (`list<mixed>` rather than oracle `list<1|23>`); callback-refined constant conditions also lack the native/PHPDoc tip | todo |
