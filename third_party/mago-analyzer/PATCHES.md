@@ -1278,3 +1278,19 @@ regressions. The unrelated unset failures recorded above are not changed or recl
 Fresh profiles cover **3/3 changed LLVM-mapped executable lines**: the condition, early return, and
 fall-through closing brace. LCOV counts are 36, 11, and 25, respectively, using only this run's
 current executables. No coverage exclusion is used.
+
+## Constant-array error-valued offset reads
+
+PHPStan 2.3.1's `ConstantArrayType::getOffsetValueType()` normalizes an error-valued verified
+offset to mixed when another explicit key survives or the shape is unsealed. Its sealed
+singleton instead returns the unchanged iterable value, retaining ErrorType. Apply that
+distinction in the known-key read path of `utils/expression/array.rs`, only for constant
+shapes. Generic-array reads retain their existing behavior.
+
+The distinction affects inference, not just display: repeated invalid nested unsets read the
+error-valued child before writing the virtual parent back. The existing public `entry-reads.php`
+fixture checks multi-key normalization, singleton preservation and index evaluation; expectations
+remain the actual PHPStan output. All 15 public unset tests now pass, including generic-key
+metadata and nested write-back. The eight-target reader, metadata, slice and mixed-subtraction
+matrix passes all 30 tests. Fresh dependency coverage covers all **6/6 changed executable lines**
+without exclusions; the error-normalization assignment executes three times.

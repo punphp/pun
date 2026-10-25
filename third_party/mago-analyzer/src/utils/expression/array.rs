@@ -893,6 +893,14 @@ where
         *has_matching_array_key = true;
 
         let mut expression_type = actual_value;
+        // ConstantArrayType's verified-key path normalizes ErrorType; its sealed singleton
+        // instead returns the unchanged all-keys iterable value.
+        if expression_type.is_error()
+            && keyed_array.is_constant_shape()
+            && (known_items.len() > 1 || has_value_parameter)
+        {
+            expression_type = get_mixed();
+        }
         if actual_possibly_undefined {
             *has_possibly_undefined = true;
             expression_type.set_possibly_undefined(true, None);
