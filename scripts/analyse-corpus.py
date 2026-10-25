@@ -33,7 +33,7 @@ PROJECTS = {
 
 
 def copy_dir(p):
-    return os.path.join(WORK, 'corpus', p)
+    return os.path.realpath(os.path.join(WORK, 'corpus', p))
 
 
 # PHPStan 2.2 switches to its agent output format when it sees one of these (src/Internal/AgentDetector.php).
