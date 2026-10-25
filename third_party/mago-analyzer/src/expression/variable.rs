@@ -5,6 +5,7 @@ use std::rc::Rc;
 use mago_word::word;
 
 use mago_bytes::BytesDisplay;
+use mago_codex::ttype::get_error;
 use mago_codex::ttype::get_mixed;
 use mago_codex::ttype::get_null;
 use mago_codex::ttype::union::TUnion;
@@ -299,7 +300,16 @@ where
         );
     }
 
-    variable_type
+    // VariableHandler reads ErrorType when the asking scope knows the variable does not exist.
+    // Preserve isset/unset probing and the reference-creation transfer above.
+    if !block_context.flags.inside_isset()
+        && !block_context.flags.inside_unset()
+        && block_context.variable_certainty(variable_atom).is_absent()
+    {
+        Rc::new(get_error())
+    } else {
+        variable_type
+    }
 }
 
 fn find_similar_variable_names(context: &BlockContext<'_>, target: &[u8]) -> Vec<String> {

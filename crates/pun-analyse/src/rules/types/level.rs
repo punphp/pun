@@ -123,6 +123,10 @@ impl<'a, 'arena> Checker<'a, 'arena> {
         if !l.check_nullables && !t.is_null().yes() && !criteria(&Type::Null) {
             t = t.remove_null();
         }
+        // ErrorType extends implicit MixedType: strict mixed transformation precedes the error fallback.
+        if matches!(t, Type::Error) {
+            return l.check_implicit_mixed.then(pun_phpstan::types::mixed);
+        }
         let mixed = match &t {
             Type::Mixed { explicit } => Some(*explicit),
             Type::Template(tt) => match tt.bound {
@@ -136,7 +140,7 @@ impl<'a, 'arena> Checker<'a, 'arena> {
             // a template of `mixed` stays the template (`T of mixed` in messages)
             return strict.then_some(t);
         }
-        if matches!(t, Type::Never(_) | Type::Error) {
+        if matches!(t, Type::Never(_)) {
             return None;
         }
         if let Some(unknown) = top {

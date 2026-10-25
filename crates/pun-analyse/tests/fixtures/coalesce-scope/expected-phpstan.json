@@ -105,6 +105,97 @@
    "identifier": "variable.undefined",
    "message": "Variable $source might not be defined.",
    "tip": null
+  },
+  {
+   "file": "scope.php",
+   "line": 77,
+   "identifier": "variable.undefined",
+   "message": "Undefined variable: $defined",
+   "tip": null
+  },
+  {
+   "file": "scope.php",
+   "line": 77,
+   "identifier": "nullCoalesce.variable",
+   "message": "Variable $defined on left side of ??= always exists and is not nullable.",
+   "tip": null
+  },
+  {
+   "file": "scope.php",
+   "line": 78,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: 10",
+   "tip": null
+  },
+  {
+   "file": "scope.php",
+   "line": 81,
+   "identifier": "nullCoalesce.variable",
+   "message": "Variable $plain on left side of ?? always exists and is not nullable.",
+   "tip": null
+  },
+  {
+   "file": "scope.php",
+   "line": 83,
+   "identifier": "nullCoalesce.variable",
+   "message": "Variable $plain on left side of ?? always exists and is not nullable.",
+   "tip": null
+  },
+  {
+   "file": "scope.php",
+   "line": 84,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: 11",
+   "tip": null
+  },
+  {
+   "file": "scope.php",
+   "line": 89,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: null",
+   "tip": null
+  },
+  {
+   "file": "scope.php",
+   "line": 91,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: int|null",
+   "tip": null
+  },
+  {
+   "file": "scope.php",
+   "line": 99,
+   "identifier": "variable.undefined",
+   "message": "Undefined variable: $optional",
+   "tip": null
+  },
+  {
+   "file": "scope.php",
+   "line": 100,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: *ERROR*",
+   "tip": null
+  },
+  {
+   "file": "scope.php",
+   "line": 102,
+   "identifier": "variable.undefined",
+   "message": "Undefined variable: $absent",
+   "tip": null
+  },
+  {
+   "file": "scope.php",
+   "line": 102,
+   "identifier": "nullCoalesce.variable",
+   "message": "Variable $absent on left side of ??= is never defined.",
+   "tip": null
+  },
+  {
+   "file": "scope.php",
+   "line": 103,
+   "identifier": "phpstan.dumpType",
+   "message": "Dumped type: *ERROR*",
+   "tip": null
   }
  ]
 }

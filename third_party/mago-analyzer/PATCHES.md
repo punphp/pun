@@ -850,3 +850,24 @@ The dispatcher applies the existing observer exclusion during raw callback gathe
 expression hooks twice, perform a second expression walk, or introduce a native-type transfer.
 `pun-analyse/tests/variables.rs` checks computed reference receivers against four fresh PHPStan 2.3.1
 configuration captures, including ordinary input-reference controls.
+
+## Coalesce RHS narrowing and failed variable reads
+
+`expression/binary/null_coalesce.rs` reconciles the already-evaluated LHS into the inverse-isset scope
+before evaluating the RHS. PHPStan's `CoalesceHandler` skips this certainty reduction for a surely-set
+plain `??` operand. Its `AssignOpHandler` still applies the counterfactual reduction for `??=`.
+Mago's synthetic binary preserves the assignment operator's three-byte span, distinguishing it from
+the two-byte plain operator without a second expression walk or a context-wide assignment flag.
+
+`expression/variable.rs` returns the shared codex error value for an ordinary read when the live scope
+knows the variable is absent. PHPStan's `VariableHandler::createTypeCallback` returns `ErrorType` in
+that case. Isset and unset probes retain their existing handling, and reference creation still runs
+before the read result is selected. Pun converts the marked mixed value to its existing `Type::Error`.
+This preserves the error through self-coalescing assignment instead of replacing it with `mixed` or
+the LHS's earlier concrete type. The passive native lane gains no new transfer.
+Pun's level helper still treats this error as implicit mixed when level 10 checks it, matching
+`RuleLevelHelper::findTypeToCheckImplementation()` before its mixed/error fallback.
+
+The existing `coalesce_scope` oracle fixture includes nullable RHS reads, known-set plain operators,
+counterfactual assignment operators, optional self-assignment, and absent self-assignment. Its saved
+diagnostics come from PHPStan 2.3.1 through `scripts/export-analyse-expected.py`.

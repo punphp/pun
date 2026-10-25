@@ -28,6 +28,7 @@ use crate::context::Context;
 use crate::context::block::BlockContext;
 use crate::error::AnalysisError;
 use crate::reconciler::reconcile_keyed_types;
+use crate::utils::expression::get_block_expression_id;
 use crate::utils::expression::get_root_expression_id;
 use crate::utils::misc::unwrap_expression;
 
@@ -94,6 +95,31 @@ where
     let mut result_type: TUnion;
 
     let is_static_var = is_rooted_in_static_local(binary.lhs, &block_context.static_locals);
+    let left_is_set = !lhs_type.has_nullish()
+        && !lhs_type.possibly_undefined()
+        && !lhs_type.possibly_undefined_from_try()
+        && !is_static_var;
+    // Assignment::analyze preserves the three-byte `??=` operator span on its synthetic Binary.
+    // AssignOpHandler narrows its RHS even counterfactually; CoalesceHandler skips that when surely set.
+    let is_coalesce_assignment = binary.operator.span().length() == 3;
+    let mut rhs_context = block_context.clone();
+    if (!left_is_set || is_coalesce_assignment)
+        && let Some(id) = get_block_expression_id(binary.lhs, context, block_context)
+    {
+        let mut assertions = AssertionMap::default();
+        assertions.insert(id, vec![vec![Assertion::IsNotIsset]]);
+        reconcile_keyed_types(
+            context,
+            &assertions,
+            AssertionMap::default(),
+            &mut rhs_context,
+            &mut WordSet::default(),
+            &WordSet::default(),
+            &binary.lhs.span(),
+            false,
+            false,
+        );
+    }
 
     if lhs_type.is_null() && !is_static_var {
         context.collector.propose_with_code(
@@ -114,14 +140,11 @@ where
             },
         );
 
+        *block_context = rhs_context;
         binary.rhs.analyze(context, block_context, artifacts)?;
         result_type = artifacts.get_expression_type(&binary.rhs).cloned().unwrap_or_else(get_mixed); // Fallback if RHS analysis fails
         rhs_scope = block_context.variable_scope();
-    } else if !lhs_type.has_nullish()
-        && !lhs_type.possibly_undefined()
-        && !lhs_type.possibly_undefined_from_try()
-        && !is_static_var
-    {
+    } else if left_is_set {
         context.collector.propose_with_code(
             IssueCode::RedundantNullCoalesce,
             Issue::help(
@@ -149,12 +172,13 @@ where
 
         // Analyze the unreachable right-hand side in a separate disposable context
         // Prevents its terminating control flow and recorded thrown exceptions from affecting the remainder of the block
-        let mut dead_rhs_context = block_context.clone();
+        let mut dead_rhs_context = rhs_context;
         dead_rhs_context.flags.set_has_returned(true);
         binary.rhs.analyze(context, &mut dead_rhs_context, artifacts)?;
         rhs_scope = dead_rhs_context.variable_scope();
     } else {
         let non_null_lhs_type = lhs_type.to_non_nullable();
+        *block_context = rhs_context;
         let has_returned = block_context.flags.has_returned();
         block_context.flags.set_has_returned(false);
         binary.rhs.analyze(context, block_context, artifacts)?;

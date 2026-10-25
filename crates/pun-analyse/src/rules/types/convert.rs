@@ -402,6 +402,7 @@ impl<'a, 'arena> Checker<'a, 'arena> {
             TAtomic::Null => Type::Null,
             TAtomic::Void => Type::Void,
             TAtomic::Scalar(s) => self.scalar(s),
+            TAtomic::Mixed(m) if m.is_error() => Type::Error,
             TAtomic::Mixed(_) => mixed(),
             TAtomic::Resource(_) => Type::Resource,
             TAtomic::Object(o) => self.object(o),
