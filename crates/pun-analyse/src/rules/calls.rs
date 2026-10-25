@@ -216,20 +216,7 @@ fn arguments<'arena>(
     name: &LocalIdentifier<'arena>,
     method: &members::Method,
 ) {
-    // `ClassReflection::getDisplayName()` of `$this`'s own generic class shows its template types
-    let mut declaring = method.declaring_display(c);
-    if let Some(k) = c.class_scope()
-        && !k.template_types.is_empty()
-        && k.name.as_bytes().eq_ignore_ascii_case(method.declaring_name().as_bytes())
-    {
-        let args: Vec<String> = super::declared::with_classes(c, || {
-            super::declared::class_templates(c, k)
-                .into_iter()
-                .map(|t| pun_phpstan::types::Type::Template(Box::new(t)).describe(pun_phpstan::types::Level::TypeOnly))
-                .collect()
-        });
-        declaring = format!("{declaring}<{}>", args.join(","));
-    }
+    let declaring = declaring_display(c, method);
     let subject = format!("{declaring}::{}()", method.name());
     let first_level = c.is_top_level(call.span());
     let counts = params::count(&call.argument_list);
@@ -245,6 +232,28 @@ fn arguments<'arena>(
         },
         first_level,
     );
+}
+
+/// `ClassReflection::getDisplayName()` retains the declaring class's templates within its own scope.
+fn declaring_display(c: &Checker, method: &members::Method) -> String {
+    if let Some(k) = c.class_scope()
+        && !k.template_types.is_empty()
+        && k.name
+            .as_bytes()
+            .eq_ignore_ascii_case(method.declaring_name().as_bytes())
+    {
+        let args: Vec<String> = super::declared::with_classes(c, || {
+            super::declared::class_templates(c, k)
+                .into_iter()
+                .map(|t| {
+                    pun_phpstan::types::Type::Template(Box::new(t))
+                        .describe(pun_phpstan::types::Level::TypeOnly)
+                })
+                .collect()
+        });
+        return format!("{}<{}>", method.declaring_display(c), args.join(","));
+    }
+    method.declaring_display(c)
 }
 
 fn written<'arena>(c: &Checker<'_, 'arena>, e: &Expression<'arena>) -> String {
@@ -400,7 +409,7 @@ pub fn static_method_call<'arena>(c: &mut Checker<'_, 'arena>, call: &StaticMeth
         );
         return;
     }
-    let subject = format!("{declaring}::{declared}()");
+    let subject = format!("{}::{declared}()", declaring_display(c, &method));
     let display_kind = if is_static { "Static method" } else { "Method" };
     let first_level = c.is_top_level(call.span());
     let counts = params::count(&call.argument_list);

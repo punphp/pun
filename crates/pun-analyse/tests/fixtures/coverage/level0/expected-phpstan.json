@@ -100,6 +100,34 @@
    "tip": null
   },
   {
+   "file": "calls.php",
+   "line": 118,
+   "identifier": "staticMethod.void",
+   "message": "Result of static method CoverageCalls\\GenericCalls<T of Exception,U>::finish() (void) is used.",
+   "tip": null
+  },
+  {
+   "file": "calls.php",
+   "line": 119,
+   "identifier": "staticMethod.void",
+   "message": "Result of static method CoverageCalls\\GenericCalls<T of Exception,U>::finish() (void) is used.",
+   "tip": null
+  },
+  {
+   "file": "calls.php",
+   "line": 120,
+   "identifier": "staticMethod.void",
+   "message": "Result of static method CoverageCalls\\GenericCalls<T of Exception,U>::finish() (void) is used.",
+   "tip": null
+  },
+  {
+   "file": "calls.php",
+   "line": 121,
+   "identifier": "arguments.count",
+   "message": "Static method CoverageCalls\\GenericCalls<T of Exception,U>::finish() invoked with 0 parameters, 1 required.",
+   "tip": null
+  },
+  {
    "file": "properties.php",
    "line": 16,
    "identifier": "property.private",

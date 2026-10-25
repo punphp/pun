@@ -102,3 +102,22 @@ function taggedStaticCalls(): void
     InheritedTagged::make();
     StaticTagged::real(1);
 }
+
+/**
+ * @template T of \Exception
+ * @template U
+ */
+class GenericCalls
+{
+    static function finish(int $count): void
+    {
+    }
+
+    function run(): void
+    {
+        echo self::finish(1);
+        echo static::finish(1);
+        echo GenericCalls::finish(1);
+        self::finish();
+    }
+}
