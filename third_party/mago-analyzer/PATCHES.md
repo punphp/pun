@@ -1122,3 +1122,62 @@ The original `generic-keys.php:137–138` diagnostics now match. Four dump misma
 Indirect template bounds and unsealed constant-array-valued generic parents remain outside this
 direct keyed-bound correction. Whole-rule parity remains incomplete. The gap list and rule mapping
 are unchanged.
+
+## Failed-read arguments and string offsets
+
+These corrections build on `1cc0e2fe`, which retains ErrorType for failed variable and offset reads
+and discards failed union arms when another offset-read arm succeeds. Real null values remain null.
+The reference is PHPStan 2.3.1 at `cb3b7e99489b2e3789ee2eec10501cb7a72580ea`:
+`Type/ErrorType.php`, `Rules/FunctionCallParametersCheck.php`, `Type/StringType.php:70–84`, and
+`Type/Constant/ConstantStringType.php::getOffsetValueType()`.
+
+`src/invocation/arguments.rs::verify_argument_type()` returns before type verification for an ErrorType
+input. It does not skip argument evaluation, binding, reference checks, or reference output writes,
+which run separately. Genuine string, mixed, null, and false argument errors remain active.
+This is commit `6aee6d16`.
+
+`src/utils/expression/array.rs::handle_array_access_on_string()` returns ErrorType when the evaluated
+index type cannot contain an integer. The predicate visits union members and template constraints.
+It does not use argument compatibility: PHP accepts integers for float parameters, but a float index
+has PHPStan `isInteger()` certainty No. Numeric strings are also definitely noninteger index types.
+Integer-capable unions, mixed, scalar, numeric, and array-key types retain the existing read value.
+During isset analysis, the helper uses the same absent-value placeholder as keyed-array reads so
+coalesce takes the fallback branch. Index diagnostics still use the original evaluated index type.
+No index is evaluated again. This is commit `80b661cd`.
+
+### Failed-read verification and remaining boundaries
+
+Public tests are `crates/pun-analyse/tests/failed_arguments.rs` and `failed_string_offsets.rs`.
+Their fixtures and fresh PHPStan JSON outputs live in `tests/fixtures/failed-reads/` under that crate.
+The argument fixture uses level 9; the string-offset fixture uses level 0. Both use PHP version 80400.
+
+Before the argument correction, the maintained analyzer reports 12 argument-type errors where the
+oracle reports six. The corrected verifier retains exactly those six genuine errors, plus independent
+binding and reference diagnostics. The test also checks index evaluation and reference output types.
+The initial string fixture reproduces 11 wrong results among 20 dumps. The expanded regression matches
+all 29 oracle dumps, including invalid literal and general indexes, template bounds, copies, float
+postincrement, valid and uncertain indexes, and coalesce. The copied string-offset compound-assignment
+control has no secondary `assignOp.invalid` diagnostic.
+
+Validation on `1cc0e2fe` plus these two corrections passes all 53 non-unset public checks in the focused
+matrix, including callbacks, native state, variables, coalesce inputs and scopes, incoming isset,
+array metadata, array slicing, assignment certainty, dead code, and the scoped exported
+`Arrays/OffsetAccessAssignOpRuleTest` fixtures. This uses the harness on that base, not later main's
+stricter combined level sweep. Loop-convergence tests pass 9/9.
+
+The unchanged raw array-access tests pass 2/3. `negated_isset_narrows_parent_array_type` retains two
+extra `MixedArgument` diagnostics from echo's separate
+`common/construct.rs::verify_construct_input_type()`. That verifier is outside these corrections.
+A fresh PHPStan level-9 control reports only the two primary offset diagnostics; PHPStan's
+`Rules/Cast/EchoRule.php` skips ErrorType inputs.
+
+The same base retains three public unset failures: `readonly_array_access_offset_keeps_constructor_arguments`,
+`generic_key_subtraction_matches_phpstan`, and `virtual_unset_write_back_matches_phpstan`.
+They concern constructor defaults, generic key metadata, shape order, and statement-entry observations.
+The failed-read values at `write-back.php:127,165,185,194` are corrected by the shared-reader dependency.
+No saved diagnostic, raw test expectation, or gap list changes in these follow-ups.
+
+Fresh LLVM profiles cover **15/15 changed executable lines** across the two corrections:
+`invocation/arguments.rs` 2/2 and `utils/expression/array.rs` 13/13. The measurement intersects the
+added source lines with LCOV records from the focused matrix's current executables. It uses no
+coverage exclusions. These corrections do not change the passive native-state implementation.
