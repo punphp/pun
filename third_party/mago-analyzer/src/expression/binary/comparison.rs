@@ -1,0 +1,759 @@
+use std::rc::Rc;
+
+use mago_allocator::Arena;
+use mago_bytes::BytesDisplay;
+use mago_codex::operator_overloading::OperandAcceptance;
+use mago_codex::operator_overloading::OperandSide;
+use mago_codex::operator_overloading::get_comparison_handler;
+use mago_codex::ttype::TType;
+use mago_codex::ttype::get_bool;
+use mago_codex::ttype::get_false;
+use mago_codex::ttype::get_mixed;
+use mago_codex::ttype::get_true;
+use mago_codex::ttype::union::TUnion;
+use mago_reporting::Annotation;
+use mago_reporting::Issue;
+use mago_span::HasSpan;
+use mago_syntax::cst::ArrayElement;
+use mago_syntax::cst::Binary;
+use mago_syntax::cst::BinaryOperator;
+use mago_syntax::cst::Expression;
+use mago_syntax::cst::Literal;
+use mago_syntax::cst::Parenthesized;
+use mago_syntax::cst::Variable;
+use mago_text_edit::TextEdit;
+use mago_word::word;
+
+use crate::analyzable::Analyzable;
+use crate::artifacts::AnalysisArtifacts;
+use crate::code::IssueCode;
+use crate::context::Context;
+use crate::context::block::BlockContext;
+use crate::error::AnalysisError;
+use crate::expression::binary::utils::are_definitely_loosely_equal;
+use crate::expression::binary::utils::are_definitely_not_identical;
+use crate::expression::binary::utils::are_definitely_not_loosely_equal;
+use crate::expression::binary::utils::is_always_greater_than;
+use crate::expression::binary::utils::is_always_greater_than_or_equal;
+use crate::expression::binary::utils::is_always_identical_to;
+use crate::expression::binary::utils::is_always_less_than;
+use crate::expression::binary::utils::is_always_less_than_or_equal;
+use crate::utils::expression::get_literal_array_key;
+use crate::utils::misc::unwrap_expression;
+
+/// Analyzes standard comparison operations (e.g., `==`, `===`, `<`, `<=`, `>`, `>=`).
+///
+/// All these operations result in a boolean. This function:
+/// 1. Analyzes both left and right operands.
+/// 2. Calls `check_comparison_operand` to validate each operand's type for comparison.
+/// 3. Sets the result type of the binary expression to `bool`.
+/// 4. Reports warnings for potentially problematic comparisons (e.g., array with int).
+/// 5. Reports errors for invalid comparisons (e.g., involving `mixed`).
+/// 6. Reports hints for redundant comparisons where the outcome is statically known.
+/// 7. Establishes data flow from operands to the expression node.
+pub fn analyze_comparison_operation<'ctx, 'arena, A>(
+    binary: &Binary<'arena>,
+    context: &mut Context<'ctx, 'arena, A>,
+    block_context: &mut BlockContext<'ctx>,
+    artifacts: &mut AnalysisArtifacts,
+) -> Result<(), AnalysisError>
+where
+    A: Arena,
+{
+    let was_inside_general_use = block_context.flags.inside_general_use();
+    block_context.flags.set_inside_general_use(true);
+    binary.lhs.analyze(context, block_context, artifacts)?;
+    binary.rhs.analyze(context, block_context, artifacts)?;
+    block_context.flags.set_inside_general_use(was_inside_general_use);
+
+    let fallback_type = Rc::new(get_mixed());
+    let lhs_type = artifacts.get_rc_expression_type(&binary.lhs).unwrap_or(&fallback_type);
+    let rhs_type = artifacts.get_rc_expression_type(&binary.rhs).unwrap_or(&fallback_type);
+
+    check_comparison_operand(context, binary.lhs, lhs_type, "Left", &binary.operator);
+    check_comparison_operand(context, binary.rhs, rhs_type, "Right", &binary.operator);
+
+    if context.settings.no_boolean_literal_comparison
+        // Only consider equality/inequality operators.
+        && binary.operator.is_equality()
+        // Skip synthetic comparisons (e.g., those fabricated for match-arm analysis),
+        // whose operator carries `Span::zero()` and cannot be safely rewritten.
+        && !binary.operator.span().file_id.is_zero()
+        // Identify if one side is a boolean literal and the other side's type is `bool`.
+        && let Some((variable_expr, literal_expr, literal_value)) =
+            if let Some(literal_value) = get_boolean_literal(binary.rhs) {
+                if lhs_type.is_bool() { Some((binary.lhs, binary.rhs, literal_value)) } else { None }
+            } else if let Some(literal_value) = get_boolean_literal(binary.lhs) {
+                if rhs_type.is_bool() { Some((binary.rhs, binary.lhs, literal_value)) } else { None }
+            } else {
+                None
+            }
+    {
+        // Determine if the simplified expression should be negated.
+        let should_negate = if binary.operator.is_negated_equality() && literal_value {
+            // `!= true`, `!== true`, or `<> true` becomes `!`
+            true
+        } else if !binary.operator.is_negated_equality() && !literal_value {
+            // `== false` or `=== false` becomes `!`
+            true
+        } else {
+            // `== true`, `=== true`, `!= false`, `!== false`, `<> false` are non-negated
+            false
+        };
+
+        let issue = Issue::warning("Avoid direct comparison with boolean literals.")
+            .with_annotation(Annotation::primary(binary.span()).with_message(format!(
+                "This comparison with `{}` is redundant",
+                if literal_value { "true" } else { "false" }
+            )))
+            .with_note("Comparing a value directly to `true` or `false` is verbose and can be simplified.")
+            .with_help(if should_negate {
+                "This can be simplified to `!<expression>`."
+            } else {
+                "This can be simplified to just `<expression>`."
+            });
+
+        context.collector.propose_with_code(IssueCode::RedundantComparison, issue, |edits| {
+            // Determine which part of the expression to remove (the operator and the literal).
+            let redundant_range = if variable_expr.start_position() < literal_expr.start_position() {
+                // Case: `$variable op $literal`
+                binary.operator.span().join(literal_expr.span())
+            } else {
+                // Case: `$literal op $variable`
+                literal_expr.span().join(binary.operator.span())
+            };
+
+            edits.push(TextEdit::delete(redundant_range));
+
+            if should_negate {
+                edits.push(TextEdit::insert(variable_expr.start_offset(), "!"));
+            }
+        });
+    }
+
+    let mut reported_general_invalid_operand =
+        report_operands_rejected_by_comparison_handler(context, binary, lhs_type, rhs_type);
+
+    if !reported_general_invalid_operand && !lhs_type.is_mixed() && !rhs_type.is_mixed() {
+        let op_str = BytesDisplay(binary.operator.as_bytes());
+        let is_relational = binary.operator.is_comparison() && !binary.operator.is_equality();
+        let lhs_has_array = lhs_type.has_array() || lhs_type.has_iterable();
+        let rhs_has_array = rhs_type.has_array() || rhs_type.has_iterable();
+        let lhs_is_only_array = lhs_type.is_array();
+        let rhs_is_only_array = rhs_type.is_array();
+
+        if is_relational && lhs_is_only_array && !rhs_has_array && !rhs_type.is_null() {
+            context.collector.report_with_code(
+                IssueCode::InvalidOperand,
+                Issue::warning(format!(
+                    "Comparing an `array` with a non-array type `{}` using `{op_str}`.",
+                    rhs_type.get_id(),
+                ))
+                .with_annotation(Annotation::primary(binary.lhs.span()).with_message("This is an array"))
+                .with_annotation(Annotation::secondary(binary.rhs.span()).with_message(format!("This has type `{}`", rhs_type.get_id())))
+                .with_note("PHP's comparison rules for arrays against other types can be non-obvious (e.g., an array is usually considered 'greater' than non-null scalars).")
+                .with_help("Ensure both operands are of comparable types or explicitly cast/convert them before comparison if this behavior is not intended."),
+            );
+
+            reported_general_invalid_operand = true;
+        } else if is_relational && !lhs_has_array && rhs_is_only_array && !lhs_type.is_null() {
+            context.collector.report_with_code(
+                IssueCode::InvalidOperand,
+                Issue::warning(format!(
+                    "Comparing a non-array type `{}` with an `array` using `{op_str}`.",
+                    lhs_type.get_id(),
+                ))
+                .with_annotation(Annotation::primary(binary.lhs.span()).with_message(format!("This has type `{}`", lhs_type.get_id())))
+                .with_annotation(Annotation::secondary(binary.rhs.span()).with_message("This is an array"))
+                .with_note("PHP's comparison rules for arrays against other types can be non-obvious.")
+                .with_help("Ensure both operands are of comparable types or explicitly cast/convert them before comparison if this behavior is not intended."),
+            );
+
+            reported_general_invalid_operand = true;
+        } else if is_relational && lhs_has_array && !rhs_has_array && !rhs_type.is_null() {
+            context.collector.report_with_code(
+                IssueCode::PossiblyInvalidOperand,
+                Issue::warning(format!(
+                    "Left operand may be an `array` when compared with non-array type `{}` using `{op_str}`.",
+                    rhs_type.get_id(),
+                ))
+                .with_annotation(Annotation::primary(binary.lhs.span()).with_message(format!("This may be an array (type `{}`)", lhs_type.get_id())))
+                .with_annotation(Annotation::secondary(binary.rhs.span()).with_message(format!("This has type `{}`", rhs_type.get_id())))
+                .with_note("PHP's comparison rules for arrays against other types can be non-obvious (an array is usually considered 'greater' than non-null scalars), so this comparison's result depends on which variant of the union the array side resolves to at runtime.")
+                .with_help("Narrow the array side to a non-array type before comparing, or handle the array case separately."),
+            );
+
+            reported_general_invalid_operand = true;
+        } else if is_relational && !lhs_has_array && rhs_has_array && !lhs_type.is_null() {
+            context.collector.report_with_code(
+                IssueCode::PossiblyInvalidOperand,
+                Issue::warning(format!(
+                    "Right operand may be an `array` when compared with non-array type `{}` using `{op_str}`.",
+                    lhs_type.get_id(),
+                ))
+                .with_annotation(Annotation::primary(binary.lhs.span()).with_message(format!("This has type `{}`", lhs_type.get_id())))
+                .with_annotation(Annotation::secondary(binary.rhs.span()).with_message(format!("This may be an array (type `{}`)", rhs_type.get_id())))
+                .with_note("PHP's comparison rules for arrays against other types can be non-obvious, so this comparison's result depends on which variant of the union the array side resolves to at runtime.")
+                .with_help("Narrow the array side to a non-array type before comparing, or handle the array case separately."),
+            );
+
+            reported_general_invalid_operand = true;
+        }
+    }
+
+    let result_type = if reported_general_invalid_operand {
+        get_bool()
+    } else {
+        match binary.operator {
+            BinaryOperator::LessThan(_) => {
+                if is_always_less_than(lhs_type, rhs_type) {
+                    if !block_context.flags.inside_loop_expressions() {
+                        report_redundant_comparison(context, artifacts, binary, "always less than", "`true`");
+                    }
+
+                    get_true()
+                } else if is_always_greater_than_or_equal(lhs_type, rhs_type) {
+                    if !block_context.flags.inside_loop_expressions() {
+                        report_redundant_comparison(context, artifacts, binary, "never less than", "`false`");
+                    }
+
+                    get_false()
+                } else {
+                    get_bool()
+                }
+            }
+            BinaryOperator::LessThanOrEqual(_) => {
+                if is_always_less_than_or_equal(lhs_type, rhs_type) {
+                    if !block_context.flags.inside_loop_expressions() {
+                        report_redundant_comparison(
+                            context,
+                            artifacts,
+                            binary,
+                            "always less than or equal to",
+                            "`true`",
+                        );
+                    }
+
+                    get_true()
+                } else if is_always_greater_than(lhs_type, rhs_type) {
+                    if !block_context.flags.inside_loop_expressions() {
+                        report_redundant_comparison(
+                            context,
+                            artifacts,
+                            binary,
+                            "never less than or equal to",
+                            "`false`",
+                        );
+                    }
+
+                    get_false()
+                } else {
+                    get_bool()
+                }
+            }
+            BinaryOperator::GreaterThan(_) => {
+                if is_always_greater_than(lhs_type, rhs_type) {
+                    if !block_context.flags.inside_loop_expressions() {
+                        report_redundant_comparison(context, artifacts, binary, "always greater than", "`true`");
+                    }
+
+                    get_true()
+                } else if is_always_less_than_or_equal(lhs_type, rhs_type) {
+                    if !block_context.flags.inside_loop_expressions() {
+                        report_redundant_comparison(context, artifacts, binary, "never greater than", "`false`");
+                    }
+
+                    get_false()
+                } else {
+                    get_bool()
+                }
+            }
+            BinaryOperator::GreaterThanOrEqual(_) => {
+                if is_always_greater_than_or_equal(lhs_type, rhs_type) {
+                    if !block_context.flags.inside_loop_expressions() {
+                        report_redundant_comparison(
+                            context,
+                            artifacts,
+                            binary,
+                            "always greater than or equal to",
+                            "`true`",
+                        );
+                    }
+
+                    get_true()
+                } else if is_always_less_than(lhs_type, rhs_type) {
+                    if !block_context.flags.inside_loop_expressions() {
+                        report_redundant_comparison(
+                            context,
+                            artifacts,
+                            binary,
+                            "never greater than or equal to",
+                            "`false`",
+                        );
+                    }
+
+                    get_false()
+                } else {
+                    get_bool()
+                }
+            }
+            BinaryOperator::Equal(_) => {
+                let should_be_specific =
+                    should_use_specific_equality_inference(block_context, binary.lhs, binary.rhs, false);
+
+                if !should_be_specific {
+                    get_bool()
+                } else if are_expressions_always_identical(binary.lhs, binary.rhs, lhs_type, rhs_type, artifacts)
+                    || are_definitely_loosely_equal(context.settings.version, lhs_type, rhs_type)
+                {
+                    if !block_context.flags.inside_loop_expressions() {
+                        report_redundant_comparison(context, artifacts, binary, "always equal to", "`true`");
+                    }
+
+                    get_true()
+                } else if are_definitely_not_loosely_equal(
+                    context.codebase,
+                    context.settings.version,
+                    lhs_type,
+                    rhs_type,
+                ) {
+                    if !block_context.flags.inside_loop_expressions() {
+                        report_redundant_comparison(context, artifacts, binary, "never equal to", "`false`");
+                    }
+
+                    get_false()
+                } else {
+                    get_bool()
+                }
+            }
+            BinaryOperator::NotEqual(_) | BinaryOperator::AngledNotEqual(_) => {
+                let should_be_specific =
+                    should_use_specific_equality_inference(block_context, binary.lhs, binary.rhs, false);
+
+                if !should_be_specific {
+                    get_bool()
+                } else if are_expressions_always_identical(binary.lhs, binary.rhs, lhs_type, rhs_type, artifacts)
+                    || are_definitely_loosely_equal(context.settings.version, lhs_type, rhs_type)
+                {
+                    if !block_context.flags.inside_loop_expressions() {
+                        report_redundant_comparison(
+                            context,
+                            artifacts,
+                            binary,
+                            "never equal to (always false for !=)",
+                            "`false`",
+                        );
+                    }
+
+                    get_false()
+                } else if are_definitely_not_loosely_equal(
+                    context.codebase,
+                    context.settings.version,
+                    lhs_type,
+                    rhs_type,
+                ) {
+                    if !block_context.flags.inside_loop_expressions() {
+                        report_redundant_comparison(
+                            context,
+                            artifacts,
+                            binary,
+                            "always not equal to (always true for !=)",
+                            "`true`",
+                        );
+                    }
+
+                    get_true()
+                } else {
+                    get_bool()
+                }
+            }
+            BinaryOperator::Identical(_) => {
+                let should_be_specific =
+                    should_use_specific_equality_inference(block_context, binary.lhs, binary.rhs, true);
+
+                if !should_be_specific {
+                    get_bool()
+                } else if are_expressions_always_identical(binary.lhs, binary.rhs, lhs_type, rhs_type, artifacts) {
+                    if !block_context.flags.inside_loop_expressions() {
+                        report_redundant_comparison(context, artifacts, binary, "always identical to", "`true`");
+                    }
+
+                    get_true()
+                } else if are_definitely_not_identical(context.codebase, lhs_type, rhs_type, false) {
+                    if !block_context.flags.inside_loop_expressions() {
+                        report_redundant_comparison(context, artifacts, binary, "never identical to", "`false`");
+                    }
+
+                    get_false()
+                } else {
+                    get_bool()
+                }
+            }
+            BinaryOperator::NotIdentical(_) => {
+                let should_be_specific =
+                    should_use_specific_equality_inference(block_context, binary.lhs, binary.rhs, true);
+
+                if !should_be_specific {
+                    get_bool()
+                } else if are_expressions_always_identical(binary.lhs, binary.rhs, lhs_type, rhs_type, artifacts) {
+                    if !block_context.flags.inside_loop_expressions() {
+                        report_redundant_comparison(
+                            context,
+                            artifacts,
+                            binary,
+                            "never identical to (always false for !==)",
+                            "`false`",
+                        );
+                    }
+
+                    get_false()
+                } else if are_definitely_not_identical(context.codebase, lhs_type, rhs_type, false) {
+                    if !block_context.flags.inside_loop_expressions() {
+                        report_redundant_comparison(context, artifacts, binary, "always not identical to", "`true`");
+                    }
+
+                    get_true()
+                } else {
+                    get_bool()
+                }
+            }
+            _ => get_bool(),
+        }
+    };
+
+    artifacts.set_rc_expression_type(binary, Rc::new(result_type));
+
+    Ok(())
+}
+
+/// Attempts to extract a boolean literal from an expression, looking through parentheses.
+fn get_boolean_literal(expr: &Expression<'_>) -> Option<bool> {
+    match expr {
+        Expression::Literal(Literal::True(_)) => Some(true),
+        Expression::Literal(Literal::False(_)) => Some(false),
+        Expression::Parenthesized(Parenthesized { expression, .. }) => get_boolean_literal(expression),
+        _ => None,
+    }
+}
+
+fn are_expressions_always_identical(
+    lhs: &Expression<'_>,
+    rhs: &Expression<'_>,
+    lhs_type: &TUnion,
+    rhs_type: &TUnion,
+    artifacts: &AnalysisArtifacts,
+) -> bool {
+    let lhs = unwrap_expression(lhs);
+    let rhs = unwrap_expression(rhs);
+
+    let lhs_elements = match lhs {
+        Expression::Array(array) => Some(array.elements.as_slice()),
+        Expression::LegacyArray(array) => Some(array.elements.as_slice()),
+        _ => None,
+    };
+
+    let rhs_elements = match rhs {
+        Expression::Array(array) => Some(array.elements.as_slice()),
+        Expression::LegacyArray(array) => Some(array.elements.as_slice()),
+        _ => None,
+    };
+
+    let (Some(lhs_elements), Some(rhs_elements)) = (lhs_elements, rhs_elements) else {
+        return is_always_identical_to(lhs_type, rhs_type);
+    };
+
+    if lhs_elements.len() != rhs_elements.len() {
+        return false;
+    }
+
+    lhs_elements.iter().zip(rhs_elements).all(|(lhs, rhs)| match (lhs, rhs) {
+        (ArrayElement::Value(lhs), ArrayElement::Value(rhs)) => {
+            let Some(lhs_type) = artifacts.get_expression_type(lhs.value) else {
+                return false;
+            };
+
+            let Some(rhs_type) = artifacts.get_expression_type(rhs.value) else {
+                return false;
+            };
+
+            are_expressions_always_identical(lhs.value, rhs.value, lhs_type, rhs_type, artifacts)
+        }
+        (ArrayElement::KeyValue(lhs), ArrayElement::KeyValue(rhs)) => {
+            let Some(lhs_key) = get_literal_array_key(lhs.key, artifacts) else {
+                return false;
+            };
+
+            let Some(rhs_key) = get_literal_array_key(rhs.key, artifacts) else {
+                return false;
+            };
+
+            let Some(lhs_type) = artifacts.get_expression_type(lhs.value) else {
+                return false;
+            };
+
+            let Some(rhs_type) = artifacts.get_expression_type(rhs.value) else {
+                return false;
+            };
+
+            lhs_key == rhs_key && are_expressions_always_identical(lhs.value, rhs.value, lhs_type, rhs_type, artifacts)
+        }
+        _ => false,
+    })
+}
+
+fn should_use_specific_equality_inference(
+    block_context: &BlockContext<'_>,
+    lhs: &Expression<'_>,
+    rhs: &Expression<'_>,
+    identity: bool,
+) -> bool {
+    if identity {
+        !involves_external_reference(lhs, block_context)
+            && !involves_external_reference(rhs, block_context)
+            && !involves_static_variable(lhs, block_context)
+            && !involves_static_variable(rhs, block_context)
+    } else {
+        !block_context.flags.inside_loop()
+            && !involves_external_reference(lhs, block_context)
+            && !involves_external_reference(rhs, block_context)
+            && !involves_static_variable(lhs, block_context)
+            && !involves_static_variable(rhs, block_context)
+    }
+}
+
+/// Checks if an expression involves a static variable.
+fn involves_static_variable(expr: &Expression<'_>, block_context: &BlockContext<'_>) -> bool {
+    matches!(unwrap_expression(expr), Expression::Variable(Variable::Direct(var)) if block_context.static_locals.contains(&word(var.name)))
+}
+
+/// Checks if an expression involves a variable captured by reference from an outer scope.
+fn involves_external_reference(expr: &Expression<'_>, block_context: &BlockContext<'_>) -> bool {
+    matches!(unwrap_expression(expr), Expression::Variable(Variable::Direct(var)) if block_context.references_to_external_scope.contains(&word(var.name)))
+}
+
+pub(super) fn report_operands_rejected_by_comparison_handler<'arena, A>(
+    context: &mut Context<'_, 'arena, A>,
+    binary: &Binary<'arena>,
+    lhs_type: &TUnion,
+    rhs_type: &TUnion,
+) -> bool
+where
+    A: Arena,
+{
+    let mut invalid_left_messages: Vec<String> = Vec::new();
+    let mut invalid_right_messages: Vec<String> = Vec::new();
+    let mut has_valid_left_operand = false;
+    let mut has_valid_right_operand = false;
+    let mut has_float_left_operand = false;
+    let mut has_float_right_operand = false;
+
+    for left_operand in lhs_type.types.iter() {
+        for right_operand in rhs_type.types.iter() {
+            let rejected_side = get_comparison_handler(&binary.operator, left_operand, right_operand).and_then(
+                |(class, instance_side)| {
+                    let (other_operand, other_side, invalid_messages, has_float_operand) = match instance_side {
+                        OperandSide::Left => (
+                            right_operand,
+                            OperandSide::Right,
+                            &mut invalid_right_messages,
+                            &mut has_float_right_operand,
+                        ),
+                        OperandSide::Right => {
+                            (left_operand, OperandSide::Left, &mut invalid_left_messages, &mut has_float_left_operand)
+                        }
+                    };
+
+                    if other_operand.is_mixed() {
+                        return None;
+                    }
+
+                    let acceptance = class.accepts_comparison_operand(other_operand);
+                    if acceptance == OperandAcceptance::Accepted {
+                        return None;
+                    }
+
+                    *has_float_operand |= other_operand.is_float();
+                    invalid_messages.push(format!(
+                        "Cannot compare {} with {}",
+                        class.get_name(),
+                        other_operand.get_id()
+                    ));
+
+                    (acceptance == OperandAcceptance::Rejected).then_some(other_side)
+                },
+            );
+
+            has_valid_left_operand |= rejected_side != Some(OperandSide::Left);
+            has_valid_right_operand |= rejected_side != Some(OperandSide::Right);
+        }
+    }
+
+    let operator = BytesDisplay(binary.operator.as_bytes());
+    let mut reported = false;
+
+    for (side, operand, messages, has_valid_operand, has_float_operand) in [
+        ("left", binary.lhs, invalid_left_messages, has_valid_left_operand, has_float_left_operand),
+        ("right", binary.rhs, invalid_right_messages, has_valid_right_operand, has_float_right_operand),
+    ] {
+        if messages.is_empty() {
+            continue;
+        }
+
+        let (issue_code, issue) = if has_valid_operand {
+            (
+                IssueCode::PossiblyInvalidOperand,
+                Issue::warning(format!("Possibly invalid type for {side} operand in `{operator}` comparison.")),
+            )
+        } else {
+            (
+                IssueCode::InvalidOperand,
+                Issue::error(format!("Invalid type for {side} operand in `{operator}` comparison.")),
+            )
+        };
+
+        let annotations = messages.into_iter().enumerate().map(|(index, message)| {
+            let annotation =
+                if index == 0 { Annotation::primary(operand.span()) } else { Annotation::secondary(operand.span()) };
+
+            annotation.with_message(message)
+        });
+
+        let mut issue = issue
+            .with_annotations(annotations)
+            .with_note("PHP throws when the class comparing the operands cannot read the other one.");
+
+        if has_float_operand {
+            issue = issue.with_note(
+                "`GMP` truncates a `float` to an `int`, which is deprecated since PHP 8.1, and throws a `TypeError` when called from a `strict_types` file.",
+            );
+        }
+
+        context.collector.report_with_code(
+            issue_code,
+            issue.with_help(
+                "Compare with a value the class accepts, such as an `int` or another instance of the same class.",
+            ),
+        );
+
+        reported = true;
+    }
+
+    reported
+}
+
+/// Checks a single operand of a comparison operation for problematic types.
+fn check_comparison_operand<'ast, 'arena, A>(
+    context: &mut Context<'_, 'arena, A>,
+    operand: &'ast Expression<'arena>,
+    operand_type: &TUnion,
+    side: &'static str,
+    operator: &'ast BinaryOperator<'arena>,
+) where
+    A: Arena,
+{
+    if operator.is_identity() {
+        return;
+    }
+
+    let op_str = BytesDisplay(operator.as_bytes());
+
+    if operand_type.is_null() {
+        context.collector.report_with_code(
+            IssueCode::NullOperand,
+            Issue::error(format!(
+                "{side} operand in `{op_str}` comparison is `null`."
+            ))
+            .with_annotation(Annotation::primary(operand.span()).with_message("This is `null`"))
+            .with_note(format!("Comparing `null` with `{op_str}` can lead to unexpected results due to PHP's type coercion rules (e.g., `null == 0` is true)."))
+            .with_help("Ensure this operand is non-null and has a comparable type. Explicitly check for `null` if it's an expected state."),
+        );
+    } else if operand_type.can_be_null() && !operand_type.is_mixed() {
+        context.collector.report_with_code(
+            IssueCode::PossiblyNullOperand,
+            Issue::warning(format!(
+                "{} operand in `{}` comparison might be `null` (type `{}`).",
+                side, op_str, operand_type.get_id()
+            ))
+            .with_annotation(Annotation::primary(operand.span()).with_message("This might be `null`"))
+            .with_note(format!("If this operand is `null` at runtime, PHP's specific comparison rules for `null` with `{op_str}` will apply."))
+            .with_help("Ensure this operand is non-null or that comparison with `null` is intended and handled safely."),
+        );
+    } else if operand_type.is_mixed() {
+        context.collector.report_with_code(
+            IssueCode::MixedOperand,
+            Issue::error(format!("{side} operand in `{op_str}` comparison has `mixed` type."))
+                .with_annotation(Annotation::primary(operand.span()).with_message("This has type `mixed`"))
+                .with_note(format!(
+                    "The result of comparing `mixed` types with `{op_str}` is unpredictable and can hide bugs."
+                ))
+                .with_help("Ensure this operand has a known, comparable type before using this comparison operator."),
+        );
+    } else if operand_type.is_false() {
+        context.collector.report_with_code(
+            IssueCode::FalseOperand,
+            Issue::error(format!(
+               "{side} operand in `{op_str}` comparison is `false`."
+            ))
+            .with_annotation(Annotation::primary(operand.span()).with_message("This is `false`"))
+            .with_note(format!("PHP compares `false` with other types according to specific rules (e.g., `false == 0` is true using `{op_str}`). This can hide bugs."))
+            .with_help("Ensure this operand is not `false` or explicitly handle the `false` case if it represents a distinct state (e.g., an error from a function)."),
+        );
+    } else if operand_type.is_falsable() && !operand_type.ignore_falsable_issues() {
+        context.collector.report_with_code(
+            IssueCode::PossiblyFalseOperand,
+            Issue::warning(format!(
+                "{} operand in `{}` comparison might be `false` (type `{}`).",
+                side, op_str, operand_type.get_id()
+            ))
+            .with_annotation(Annotation::primary(operand.span()).with_message("This might be `false`"))
+            .with_note(format!("If this operand is `false` at runtime, PHP's specific comparison rules for `false` with `{op_str}` will apply."))
+            .with_help("Ensure this operand is non-false or that comparison with `false` is intended and handled safely."),
+        );
+    }
+}
+
+/// Helper to report redundant comparison issues.
+fn report_redundant_comparison<'arena, A>(
+    context: &mut Context<'_, 'arena, A>,
+    artifacts: &AnalysisArtifacts,
+    binary: &Binary<'arena>,
+    comparison_description: &str,
+    result_value_str: &str,
+) where
+    A: Arena,
+{
+    let operator_span = binary.operator.span();
+    if operator_span.is_zero() {
+        // this is a synthetic node, do not report it.
+        return;
+    }
+
+    context.collector.report_with_code(
+        IssueCode::RedundantComparison,
+        Issue::help(format!(
+            "Redundant `{}` comparison: left-hand side is {} right-hand side.",
+            BytesDisplay(binary.operator.as_bytes()),
+            comparison_description
+        ))
+        .with_annotation(Annotation::primary(binary.lhs.span()).with_message(
+            match artifacts.get_expression_type(&binary.lhs) {
+                Some(t) => format!("Left operand is `{}`", t.get_id()),
+                None => "Left operand type is unknown".to_string(),
+            },
+        ))
+        .with_annotation(Annotation::secondary(binary.rhs.span()).with_message(
+            match artifacts.get_expression_type(&binary.rhs) {
+                Some(t) => format!("Right operand is `{}`", t.get_id()),
+                None => "Right operand type is unknown".to_string(),
+            },
+        ))
+        .with_note(format!(
+            "The `{}` operator will always return {} in this case.",
+            BytesDisplay(binary.operator.as_bytes()),
+            result_value_str
+        ))
+        .with_help(format!(
+            "Consider simplifying or removing this comparison as it always evaluates to {result_value_str}."
+        )),
+    );
+}

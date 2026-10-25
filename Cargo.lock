@@ -797,8 +797,6 @@ dependencies = [
 [[package]]
 name = "mago-analyzer"
 version = "1.57.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "73ccd424bc8dd35ae85d15c2222418281493e58f0b5e88ddb647c00cdb64144d"
 dependencies = [
  "diffy",
  "foldhash",

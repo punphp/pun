@@ -1,0 +1,348 @@
+use mago_allocator::Arena;
+use mago_word::Word;
+use mago_word::concat_word;
+use mago_word::word;
+
+use mago_codex::ttype::expander;
+use mago_codex::ttype::expander::StaticClassType;
+use mago_codex::ttype::expander::TypeExpansionOptions;
+use mago_codex::ttype::get_mixed;
+use mago_reporting::Annotation;
+use mago_reporting::Issue;
+use mago_span::HasSpan;
+use mago_span::Span;
+use mago_syntax::cst::Expression;
+use mago_syntax::cst::Variable;
+
+use crate::analyzable::Analyzable;
+use crate::artifacts::AnalysisArtifacts;
+use crate::artifacts::editor::MemberReference;
+use crate::code::IssueCode;
+use crate::context::Context;
+use crate::context::block::BlockContext;
+use crate::error::AnalysisError;
+use crate::expression::unary::cast_type_to_string;
+use crate::resolver::class_name::resolve_classnames_from_expression;
+use crate::resolver::property::PropertyResolutionResult;
+use crate::resolver::property::ResolvedProperty;
+use crate::resolver::property::report_deprecated_property;
+use crate::utils::expression::get_block_expression_id;
+use crate::utils::expression::get_variable_id;
+use crate::visibility::check_static_property_read_visibility;
+
+/// Resolves all possible static properties from a class expression and a member selector.
+pub fn resolve_static_properties<'ctx, 'ast, 'arena, A>(
+    context: &mut Context<'ctx, 'arena, A>,
+    block_context: &mut BlockContext<'ctx>,
+    artifacts: &mut AnalysisArtifacts,
+    class_expression: &'ast Expression<'arena>,
+    property_variable: &'ast Variable<'arena>,
+    for_assignment: bool,
+) -> Result<PropertyResolutionResult, AnalysisError>
+where
+    A: Arena,
+{
+    let mut result = PropertyResolutionResult::default();
+
+    let classnames = resolve_classnames_from_expression(context, block_context, artifacts, class_expression, false)?;
+    if let Some(class_type) = artifacts.get_expression_type(class_expression)
+        && class_type.is_nullable()
+    {
+        result.encountered_null = true;
+    }
+
+    let mut property_names = vec![];
+
+    'resolve_names: {
+        let (variable_type, variable_id) = match property_variable {
+            Variable::Direct(direct_variable) => {
+                property_names.push(word(direct_variable.name));
+
+                break 'resolve_names;
+            }
+            Variable::Indirect(indirect_variable) => {
+                let was_inside_general_use = block_context.flags.inside_general_use();
+                block_context.flags.set_inside_general_use(true);
+                indirect_variable.expression.analyze(context, block_context, artifacts)?;
+                block_context.flags.set_inside_general_use(was_inside_general_use);
+
+                (
+                    artifacts.get_rc_expression_type(indirect_variable.expression).cloned(),
+                    get_block_expression_id(indirect_variable.expression, context, block_context),
+                )
+            }
+            Variable::Nested(nested_variable) => {
+                let was_inside_general_use = block_context.flags.inside_general_use();
+                block_context.flags.set_inside_general_use(true);
+                nested_variable.variable.analyze(context, block_context, artifacts)?;
+                block_context.flags.set_inside_general_use(was_inside_general_use);
+
+                (
+                    artifacts.get_rc_expression_type(nested_variable.variable).cloned(),
+                    get_variable_id(nested_variable.variable).map(word),
+                )
+            }
+        };
+
+        let Some(variable_type) = variable_type else {
+            result.has_invalid_path = true;
+            break 'resolve_names;
+        };
+
+        let variable_type = cast_type_to_string(
+            &variable_type,
+            variable_id.as_ref().map(|id| id.as_bytes()),
+            context,
+            block_context,
+            artifacts,
+            property_variable.span(),
+        )?;
+
+        for variable_atomic_type in variable_type.types.as_ref() {
+            let Some(property_name) = variable_atomic_type.get_literal_string_value() else {
+                if variable_atomic_type.is_any_string() {
+                    result.has_ambiguous_path = true;
+                } else {
+                    result.has_invalid_path = true;
+                }
+
+                continue;
+            };
+
+            property_names.push(concat_word!("$", property_name));
+        }
+    };
+
+    let check_deprecation = !for_assignment
+        || artifacts.get_expression_type(&class_expression.span().join(property_variable.span())).is_none();
+
+    for resolved_classname in classnames {
+        if resolved_classname.is_from_mixed() {
+            result.encountered_mixed = true;
+            continue;
+        }
+
+        if resolved_classname.is_possibly_invalid() {
+            result.has_invalid_path = true;
+            continue;
+        }
+
+        let Some(fqcn) = resolved_classname.fqcn else {
+            result.has_ambiguous_path = true;
+            continue;
+        };
+
+        for property_name in &property_names {
+            if let Some(resolved_property) = find_static_property_in_class(
+                context,
+                block_context,
+                fqcn,
+                *property_name,
+                property_variable,
+                class_expression,
+                &mut result,
+                check_deprecation,
+            ) {
+                result.properties.push(resolved_property);
+            }
+        }
+    }
+
+    if let Some(editor) = &mut artifacts.editor {
+        let mut reference = MemberReference::property(
+            block_context.scope.get_reference_origin(),
+            class_expression.span(),
+            property_variable.span(),
+            word(""),
+        );
+        reference.static_access = true;
+        reference.dynamic = !matches!(property_variable, Variable::Direct(_));
+        reference.write = for_assignment;
+        reference.uncertain = result.encountered_null;
+        editor.record_properties(reference, &result);
+    }
+
+    Ok(result)
+}
+
+/// Finds a static property in a class, gets its type, and handles template localization.
+fn find_static_property_in_class<'ctx, 'ast, 'arena, A>(
+    context: &mut Context<'ctx, 'arena, A>,
+    block_context: &BlockContext<'ctx>,
+    class_id: Word,
+    property_name: Word,
+    variable: &'ast Variable<'arena>,
+    class_expr: &'ast Expression<'arena>,
+    result: &mut PropertyResolutionResult,
+    check_deprecation: bool,
+) -> Option<ResolvedProperty>
+where
+    A: Arena,
+{
+    let Some(class_metadata) = context.codebase.get_class_like(class_id.as_bytes()) else {
+        if matches!(class_expr, Expression::Parent(_))
+            && block_context.scope.get_class_like().is_some_and(|metadata| metadata.has_incomplete_hierarchy())
+        {
+            result.has_ambiguous_path = true;
+            return None;
+        }
+
+        // Error reporting for non-existent class is handled by `resolve_classnames_from_expression`.
+        result.has_invalid_path = true;
+        return None;
+    };
+
+    let declaring_class_id = context
+        .codebase
+        .get_declaring_property_class(class_id.as_bytes(), property_name.as_bytes())
+        .unwrap_or(class_metadata.original_name);
+
+    let Some(declaring_class_metadata) = context.codebase.get_class_like(declaring_class_id.as_bytes()) else {
+        // Should not happen if declaring_class_id is valid.
+        result.has_error_path = true;
+        return None;
+    };
+
+    let Some(property_metadata) = declaring_class_metadata.properties.get(&property_name) else {
+        for required_class in
+            declaring_class_metadata.require_extends.iter().chain(declaring_class_metadata.require_implements.iter())
+        {
+            let Some(required_metadata) = context.codebase.get_class_like(required_class.as_bytes()) else {
+                continue;
+            };
+            let required_declaring_id = context
+                .codebase
+                .get_declaring_property_class(required_class.as_bytes(), property_name.as_bytes())
+                .unwrap_or(*required_class);
+            let required_declaring_metadata =
+                context.codebase.get_class_like(required_declaring_id.as_bytes()).unwrap_or(required_metadata);
+
+            if let Some(prop_meta) = required_declaring_metadata.properties.get(&property_name) {
+                if !prop_meta.flags.is_static() {
+                    continue;
+                }
+
+                if check_deprecation && !block_context.is_enclosing_scope_deprecated() {
+                    report_deprecated_property(context, required_declaring_metadata, prop_meta, variable.span());
+                }
+
+                let mut property_type =
+                    prop_meta.type_metadata.as_ref().map_or_else(get_mixed, |metadata| metadata.type_union.clone());
+
+                expander::expand_union(
+                    context.codebase,
+                    &mut property_type,
+                    &TypeExpansionOptions {
+                        self_class: Some(required_declaring_id),
+                        static_class_type: StaticClassType::Name(class_id),
+                        ..Default::default()
+                    },
+                );
+
+                return Some(ResolvedProperty {
+                    lookup_class: Some(class_id),
+                    property_span: prop_meta.name_span.or(prop_meta.span),
+                    property_name,
+                    declaring_class_id: Some(required_declaring_id),
+                    property_type,
+                    is_magic: false,
+                    read_type: None,
+                });
+            }
+        }
+
+        if class_metadata.has_incomplete_hierarchy() {
+            result.has_ambiguous_path = true;
+            return None;
+        }
+
+        result.has_invalid_path = true;
+        report_non_existent_property(
+            context,
+            declaring_class_metadata.original_name,
+            property_name,
+            variable.span(),
+            class_expr.span(),
+        );
+
+        return None;
+    };
+
+    if !property_metadata.flags.is_static() {
+        let classname = declaring_class_metadata.original_name;
+
+        context.collector.report_with_code(
+            IssueCode::InvalidStaticPropertyAccess,
+            Issue::error(format!("Cannot access instance property `{classname}::{property_name}` statically."))
+                .with_annotation(Annotation::primary(variable.span()).with_message("This is an instance property"))
+                .with_note("Static properties are declared with the `static` keyword and accessed with `::` on a class name, not an instance.")
+                .with_help(format!("To access this property, you need an instance of the class (e.g., `$instance->{property_name}`), or declare the property as `static`.")),
+        );
+
+        result.has_error_path = true;
+        return None;
+    }
+
+    if !check_static_property_read_visibility(
+        context,
+        block_context,
+        declaring_class_id.as_bytes(),
+        property_name.as_bytes(),
+        class_expr.span(),
+        Some(variable.span()),
+    ) {
+        result.has_error_path = true;
+        return None;
+    }
+
+    if check_deprecation && !block_context.is_enclosing_scope_deprecated() {
+        report_deprecated_property(context, declaring_class_metadata, property_metadata, variable.span());
+    }
+
+    let mut property_type =
+        property_metadata.type_metadata.as_ref().map_or_else(get_mixed, |metadata| metadata.type_union.clone());
+
+    expander::expand_union(
+        context.codebase,
+        &mut property_type,
+        &TypeExpansionOptions {
+            self_class: Some(declaring_class_id),
+            static_class_type: StaticClassType::Name(class_id),
+            ..Default::default()
+        },
+    );
+
+    Some(ResolvedProperty {
+        lookup_class: Some(class_id),
+        property_span: property_metadata.name_span.or(property_metadata.span),
+        property_name,
+        declaring_class_id: Some(declaring_class_id),
+        property_type,
+        is_magic: false,
+        read_type: None,
+    })
+}
+
+fn report_non_existent_property<A>(
+    context: &mut Context<'_, '_, A>,
+    classname: Word,
+    property_name: Word,
+    selector_span: Span,
+    class_like_name_span: Span,
+) where
+    A: Arena,
+{
+    let class_kind_str = context.codebase.get_class_like(classname.as_bytes()).map_or("class", |m| m.kind.as_str());
+
+    context.collector.report_with_code(
+        IssueCode::NonExistentProperty,
+        Issue::error(format!("Static property `{property_name}` does not exist on {class_kind_str} `{classname}`."))
+            .with_annotation(
+                Annotation::primary(selector_span)
+                    .with_message("This selector refers to a non-existent static property"),
+            )
+            .with_annotation(Annotation::secondary(class_like_name_span).with_message(format!(
+                "The {class_kind_str} `{classname}` does not have a static property named `{property_name}`",
+            ))),
+    );
+}

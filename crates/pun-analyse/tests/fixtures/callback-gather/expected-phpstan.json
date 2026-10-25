@@ -1,0 +1,186 @@
+{
+  "bounded.php": [
+    {
+      "message": "Dumped type: array{11}",
+      "line": 20,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: int",
+      "line": 23,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: int",
+      "line": 24,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: 23",
+      "line": 25,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    }
+  ],
+  "controls.php": [
+    {
+      "message": "Dumped type: list<int>",
+      "line": 20,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: 1|2|3",
+      "line": 22,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: true",
+      "line": 23,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: list<1|2|3>",
+      "line": 26,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: list<19>",
+      "line": 28,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: true",
+      "line": 33,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: list<array{mixed, mixed}>",
+      "line": 36,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: list<array{1}>",
+      "line": 37,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    }
+  ],
+  "functions.php": [
+    {
+      "message": "Dumped type: array{1}|array{2}|array{3}",
+      "line": 27,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: 1|2|3",
+      "line": 29,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: array<mixed>",
+      "line": 32,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: array<mixed>",
+      "line": 34,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: array<mixed>",
+      "line": 35,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: array<mixed>",
+      "line": 36,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: array<mixed>",
+      "line": 37,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: array<11, 'x'>",
+      "line": 38,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: array<11, 11>",
+      "line": 40,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: array<11, 11>",
+      "line": 41,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: array<mixed>",
+      "line": 42,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: array<11, 'x'>",
+      "line": 43,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    }
+  ],
+  "methods.php": [
+    {
+      "message": "Dumped type: array{1}|array{2}",
+      "line": 35,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: array<mixed>",
+      "line": 38,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: array<17, string>",
+      "line": 39,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    }
+  ],
+  "nested.php": [
+    {
+      "message": "Dumped type: array",
+      "line": 17,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: mixed",
+      "line": 20,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    }
+  ]
+}

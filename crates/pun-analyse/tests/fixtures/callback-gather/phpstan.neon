@@ -1,0 +1,3 @@
+parameters:
+    level: 0
+    paths: [functions.php, methods.php, controls.php, nested.php, bounded.php]
