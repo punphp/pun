@@ -17,6 +17,8 @@ use mago_codex::ttype::atomic::array::keyed::TKeyedArray;
 use mago_codex::ttype::atomic::array::list::TList;
 use mago_codex::ttype::atomic::callable::TCallable;
 use mago_codex::ttype::atomic::scalar::TScalar;
+use mago_codex::ttype::cast::cast_atomic_to_callable;
+use mago_codex::ttype::expander::get_parameter_dependent_signature_of_function_like_identifier;
 use mago_codex::ttype::union::TUnion;
 use mago_codex::ttype::{
     get_array_parameters, get_false, get_keyed_array, get_mixed, get_never, get_non_negative_int,
@@ -29,7 +31,7 @@ pub(super) fn registry(contents: &[u8]) -> PluginRegistry {
     let mut registry = PluginRegistry::new();
     registry.register_function_provider(Benevolent);
     registry.register_function_provider(ArraySlice);
-    registry.register_method_provider(Bind(contents.to_vec()));
+    registry.register_method_provider(ClosureMethods(contents.to_vec()));
     registry
 }
 
@@ -308,20 +310,21 @@ impl FunctionReturnTypeProvider for Benevolent {
     }
 }
 
-/// `ClosureBindDynamicReturnTypeExtension`, `ClosureBindToDynamicReturnTypeExtension`
-struct Bind(Vec<u8>);
+/// Closure method return types: `bind()`, `bindTo()`, and `fromCallable()`.
+struct ClosureMethods(Vec<u8>);
 
-impl Provider for Bind {
+impl Provider for ClosureMethods {
     fn meta() -> &'static ProviderMeta {
         &META
     }
 }
 
-impl MethodReturnTypeProvider for Bind {
+impl MethodReturnTypeProvider for ClosureMethods {
     fn targets() -> &'static [MethodTarget] {
-        static TARGETS: [MethodTarget; 2] = [
+        static TARGETS: [MethodTarget; 3] = [
             MethodTarget::exact(b"closure", b"bind"),
             MethodTarget::exact(b"closure", b"bindto"),
+            MethodTarget::exact(b"closure", b"fromcallable"),
         ];
         &TARGETS
     }
@@ -333,6 +336,9 @@ impl MethodReturnTypeProvider for Bind {
         method: &[u8],
         invocation: &InvocationInfo<'_, '_, '_>,
     ) -> Option<TUnion> {
+        if method.eq_ignore_ascii_case(b"fromcallable") {
+            return Self::from_callable(context, invocation);
+        }
         let (closure, new_this) = if method.eq_ignore_ascii_case(b"bind") {
             let closure =
                 context.get_expression_type(invocation.get_argument(0, &[b"closure"])?)?;
@@ -367,7 +373,34 @@ impl MethodReturnTypeProvider for Bind {
     }
 }
 
-impl Bind {
+impl ClosureMethods {
+    /// Mago 1.59.0's ClosureFromCallableProvider (3ea59634580e5986c267d99e7fb3ccbf6ee26587), using 1.57's
+    /// existing callable cast and parameter-dependent signature APIs. Keep the signature, changing only its kind.
+    fn from_callable(
+        context: &ProviderContext<'_, '_, '_>,
+        invocation: &InvocationInfo<'_, '_, '_>,
+    ) -> Option<TUnion> {
+        let callback = invocation.get_argument(0, &[b"callback"])?;
+        let callback_type = context.get_expression_type(callback)?;
+        let codebase = context.codebase();
+        let mut closures = Vec::with_capacity(callback_type.types.len());
+        for atomic in callback_type.types.as_ref() {
+            // As upstream, one unresolved alternative keeps the declared Closure fallback for the whole call.
+            let callable = cast_atomic_to_callable(atomic, codebase, None)?;
+            let mut signature = match callable.as_ref() {
+                TCallable::Signature(signature) => signature.clone(),
+                TCallable::Alias(identifier) => {
+                    get_parameter_dependent_signature_of_function_like_identifier(
+                        identifier, codebase,
+                    )?
+                }
+            };
+            signature.is_closure = true;
+            closures.push(TAtomic::Callable(TCallable::Signature(signature)));
+        }
+        Some(TUnion::from_vec(closures))
+    }
+
     /// `$closure` of `$closure->bindTo(…)`: from the call's start to the `->` before the method name.
     fn receiver(&self, invocation: &InvocationInfo<'_, '_, '_>) -> Option<Span> {
         let call = invocation.span();

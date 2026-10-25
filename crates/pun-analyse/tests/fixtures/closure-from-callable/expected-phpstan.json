@@ -1,0 +1,388 @@
+{
+  "forms.php": [
+    {
+      "message": "Dumped type: Closure(string): string",
+      "line": 14,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: Closure(string): string",
+      "line": 15,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: Closure(string): string",
+      "line": 16,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: Closure(string): string",
+      "line": 17,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: Closure(string): string",
+      "line": 18,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: Closure(string): string",
+      "line": 19,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: Closure(string): string",
+      "line": 20,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: Closure(string): string",
+      "line": 21,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: Closure(string): string",
+      "line": 22,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: Closure(string): int<0, max>",
+      "line": 23,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: Closure(string): string",
+      "line": 25,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: string",
+      "line": 26,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: string",
+      "line": 27,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: Closure(string): string",
+      "line": 32,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: string",
+      "line": 34,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: Closure(string): string",
+      "line": 39,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: string",
+      "line": 41,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    }
+  ],
+  "controls.php": [
+    {
+      "message": "Dumped type: Closure(string): string",
+      "line": 11,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: Closure(string): string",
+      "line": 12,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: Closure(string): string",
+      "line": 18,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: Closure(string): string",
+      "line": 23,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: Closure(string): string",
+      "line": 24,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: Closure(string): string",
+      "line": 25,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: Closure(string): string",
+      "line": 26,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Static method Closure::fromCallable() invoked with 0 parameters, 1 required.",
+      "line": 30,
+      "ignorable": true,
+      "identifier": "arguments.count"
+    },
+    {
+      "message": "Static method Closure::fromCallable() invoked with 2 parameters, 1 required.",
+      "line": 31,
+      "ignorable": true,
+      "identifier": "arguments.count"
+    },
+    {
+      "message": "Parameter $callback of static method Closure::fromCallable() expects callable(): mixed, 123 given.",
+      "line": 32,
+      "ignorable": true,
+      "identifier": "argument.type"
+    },
+    {
+      "message": "Parameter #1 $callback of static method Closure::fromCallable() expects callable(): mixed, 'ClosureFromCallable…' given.",
+      "line": 33,
+      "ignorable": true,
+      "identifier": "argument.type"
+    },
+    {
+      "message": "Parameter #1 $callback of static method Closure::fromCallable() expects callable(): mixed, array{'ClosureFromCallableControls\\\\ParentTransformer', 'instance'} given.",
+      "line": 37,
+      "ignorable": true,
+      "identifier": "argument.type"
+    },
+    {
+      "message": "Dumped type: null",
+      "line": 42,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: null",
+      "line": 43,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: ((Closure(string): string)|null)",
+      "line": 45,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: ((Closure(string): string)|null)",
+      "line": 46,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    }
+  ],
+  "signatures.php": [
+    {
+      "message": "Dumped type: Closure(string=): string",
+      "line": 29,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: string",
+      "line": 31,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: string",
+      "line": 32,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Parameter #1 $value of closure expects string, int given.",
+      "line": 33,
+      "ignorable": true,
+      "identifier": "argument.type"
+    },
+    {
+      "message": "Closure invoked with 2 parameters, 0-1 required.",
+      "line": 34,
+      "ignorable": true,
+      "identifier": "arguments.count"
+    },
+    {
+      "message": "Dumped type: Closure(string ...): string",
+      "line": 35,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: string",
+      "line": 37,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: string",
+      "line": 38,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Parameter #2 ...$values of closure expects string, int given.",
+      "line": 39,
+      "ignorable": true,
+      "identifier": "argument.type"
+    },
+    {
+      "message": "Dumped type: Closure(string): void",
+      "line": 40,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: void",
+      "line": 43,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Result of closure (void) is used.",
+      "line": 43,
+      "ignorable": true,
+      "identifier": "callable.void"
+    },
+    {
+      "message": "Parameter #1 $value of closure is passed by reference, so it expects variables only.",
+      "line": 44,
+      "ignorable": true,
+      "identifier": "argument.byRef"
+    },
+    {
+      "message": "Dumped type: 'value'",
+      "line": 46,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: 123",
+      "line": 47,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: 'value'",
+      "line": 49,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: 123",
+      "line": 50,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: string",
+      "line": 52,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: int",
+      "line": 53,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    }
+  ],
+  "unions.php": [
+    {
+      "message": "Dumped type: (Closure(string): int<0, max>)|(Closure(string): string)",
+      "line": 13,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: int<0, max>|string",
+      "line": 14,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: mixed",
+      "line": 20,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: mixed",
+      "line": 21,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: mixed",
+      "line": 23,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: mixed",
+      "line": 28,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: mixed",
+      "line": 29,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: mixed",
+      "line": 31,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: mixed",
+      "line": 36,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: mixed",
+      "line": 37,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: mixed",
+      "line": 39,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    }
+  ]
+}

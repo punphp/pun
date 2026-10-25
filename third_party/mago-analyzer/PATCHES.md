@@ -618,3 +618,30 @@ the consuming function, or in a scanned-only file, still dumps a copied variable
 instead of PHPStan's `1`. Both duplicate-key diagnostics nevertheless match PHPStan through the
 existing source initializer evaluation. The probe did not alter expectations or gap lists.
 This patch does not claim complete global-constant inference parity or activate a rule mapping.
+
+## Closure::fromCallable provider backport
+
+Pun's `rules/return_types.rs` registers the return provider from Mago 1.59.0 commit
+[`3ea59634580e5986c267d99e7fb3ccbf6ee26587`](https://github.com/carthage-software/mago/commit/3ea59634580e5986c267d99e7fb3ccbf6ee26587).
+The provider uses the callable cast and parameter-dependent signature APIs already present in 1.57.0.
+It resolves positional or named `callback`, clones each resolved signature, and changes only
+`is_closure`. An unresolved alternative leaves the whole call on its declared Closure fallback.
+No vendored analyzer source or dependency version changes for this backport.
+
+`crates/pun-analyse/tests/closure_from_callable.rs` checks public analyser output against PHPStan 2.3.1. Its fixtures
+cover immediate and assigned closures, invocation, strings, arrays, invokable objects, typed callbacks,
+named arguments, optional and variadic parameters, references, generic and conditional targets,
+inheritance, visibility, staticness, and unresolved alternatives. The two `phpstan*.neon` files
+under `crates/pun-analyse/tests/fixtures/closure-from-callable/` describe the oracle runs at levels zero and five.
+
+A wider dump probe also exposes an existing representation boundary: Mago's unknown signature prints
+`Closure(mixed ...): mixed`, whereas PHPStan prints `Closure(): mixed`. For a union with a completely
+unresolved ordinary string, the upstream provider also drops known signature alternatives by falling
+back for the whole call. PHPStan retains those alternatives. The unknown-callback contract tests check
+mixed invocation results and the absence of spurious argument errors, not exact dumps of these
+unresolved signature shapes. No expected message is rewritten to Mago's notation.
+The shared renderer also prints static closures as `Closure(...)` rather than PHPStan's
+`static-Closure(...)`. Binding controls check nullability without claiming to fix that spelling.
+
+The existing raw callback, observer, native-state, and integer-overflow patches remain necessary.
+Native method results remain unavailable. This backport does not implement NoDiscard or ordered shapes.
