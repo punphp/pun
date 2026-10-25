@@ -674,3 +674,33 @@ with fresh PHPStan diagnostics. The exported Variables fixture group covers both
 `convergence` tests also check the incoming-edge joins. Integration retains native locals and paired
 artifacts, and keeps the definedness hook observational so speculative callback gathers cannot publish
 its events. No dependency pins or native-dependent rule activation change.
+
+## New-object template defaults
+
+`expression/instantiation.rs` and `utils/template.rs` backport the analyzer changes from Mago
+[`2066b186`](https://github.com/carthage-software/mago/commit/2066b186d2a7cea821e0d4923934032e5f4e32c5),
+included in 1.59.0. Dependencies stay at 1.57.0. Declared defaults replace unresolved placeholders after
+constructor inference and scalar widening, so a literal default remains literal. Resolution follows
+declaration order and substitutes earlier parameters into later defaults. Inherited-constructor lookup
+now distinguishes absent inference from inferred `mixed`. Its class-member caller keeps its existing
+mixed fallback. Neither expression dispatch nor native tracking changes.
+
+`tests/generic_defaults.rs` in `pun-analyse` checks PHPStan 2.3.1's exact dumps and argument diagnostics,
+including empty constructors, narrower defaults, dependent properties, inherited constructors, self
+constants, and raw callback returns. The inferred-mixed case reads the public raw type because Pun's
+existing display drops implicit mixed from `list<mixed>`. Public Analyzer checks retain one observer
+visit per expression and equal full artifacts with native tracking enabled and disabled. The no-default
+controls preserve Mago's placeholders and SPL's `never`, not PHPStan's different bound defaults.
+
+The backport does not resolve the unspecified-template property gap. PHPStan can retain symbolic
+dependent templates in constructor-bearing object dumps while resolving their properties; Mago
+substitutes the arguments eagerly. Literal constructor inference also keeps Mago's existing widening.
+`parent::VALUE` defaults remain blocked by codex 1.57.0: the oracle gives `ParentDefault<42>` and `42`,
+but the backport gives `ParentDefault<mixed>` and `int`. The same upstream commit fixes
+`codex::ttype::expander::expand_member_reference()` by resolving a case-insensitive `parent` through
+`TypeExpansionOptions::self_class` to `ClassLikeMetadata::direct_parent_class` before lookup.
+That separate dependency change is not included here.
+
+Fresh coverage against `00a825d6` measures **30/30 changed analyzer executable lines** and
+**169/169 test executable lines**, without exclusions. The instrumented private-target run passes
+all 36 tests in `generic_defaults`, `callback_gather`, `debug`, `native_lane`, and `instantiation`.

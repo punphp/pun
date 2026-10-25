@@ -1,0 +1,324 @@
+{
+  "defaults.php": {
+    "0": [
+      {
+        "message": "Dumped type: GenericDefaults\\NoConstructor<int>",
+        "line": 146,
+        "ignorable": false,
+        "identifier": "phpstan.dumpType"
+      },
+      {
+        "message": "Dumped type: int",
+        "line": 147,
+        "ignorable": false,
+        "identifier": "phpstan.dumpType"
+      },
+      {
+        "message": "Dumped type: GenericDefaults\\EmptyConstructor<42>",
+        "line": 151,
+        "ignorable": false,
+        "identifier": "phpstan.dumpType"
+      },
+      {
+        "message": "Dumped type: 42",
+        "line": 152,
+        "ignorable": false,
+        "identifier": "phpstan.dumpType"
+      },
+      {
+        "message": "Dumped type: GenericDefaults\\LiteralDefault<42>",
+        "line": 156,
+        "ignorable": false,
+        "identifier": "phpstan.dumpType"
+      },
+      {
+        "message": "Dumped type: GenericDefaults\\OrderedDefaults<string, list<string>, array<string, list<string>>>",
+        "line": 159,
+        "ignorable": false,
+        "identifier": "phpstan.dumpType"
+      },
+      {
+        "message": "Dumped type: array<string, list<string>>",
+        "line": 161,
+        "ignorable": false,
+        "identifier": "phpstan.dumpType"
+      },
+      {
+        "message": "Dumped type: list<string>",
+        "line": 163,
+        "ignorable": false,
+        "identifier": "phpstan.dumpType"
+      },
+      {
+        "message": "Dumped type: GenericDefaults\\InferredDefault<string>",
+        "line": 164,
+        "ignorable": false,
+        "identifier": "phpstan.dumpType"
+      },
+      {
+        "message": "Dumped type: GenericDefaults\\InferredDefault<int>",
+        "line": 165,
+        "ignorable": false,
+        "identifier": "phpstan.dumpType"
+      },
+      {
+        "message": "Dumped type: list<string>",
+        "line": 167,
+        "ignorable": false,
+        "identifier": "phpstan.dumpType"
+      },
+      {
+        "message": "Dumped type: string",
+        "line": 168,
+        "ignorable": false,
+        "identifier": "phpstan.dumpType"
+      },
+      {
+        "message": "Dumped type: list<int>",
+        "line": 170,
+        "ignorable": false,
+        "identifier": "phpstan.dumpType"
+      },
+      {
+        "message": "Dumped type: GenericDefaults\\InheritedRequired<string, mixed>",
+        "line": 171,
+        "ignorable": false,
+        "identifier": "phpstan.dumpType"
+      },
+      {
+        "message": "Dumped type: int",
+        "line": 173,
+        "ignorable": false,
+        "identifier": "phpstan.dumpType"
+      },
+      {
+        "message": "Dumped type: GenericDefaults\\NullableDefault<int|null>",
+        "line": 175,
+        "ignorable": false,
+        "identifier": "phpstan.dumpType"
+      },
+      {
+        "message": "Dumped type: int|null",
+        "line": 176,
+        "ignorable": false,
+        "identifier": "phpstan.dumpType"
+      },
+      {
+        "message": "Dumped type: GenericDefaults\\InheritedScalarDefault<int|null>",
+        "line": 179,
+        "ignorable": false,
+        "identifier": "phpstan.dumpType"
+      },
+      {
+        "message": "Dumped type: int|null",
+        "line": 180,
+        "ignorable": false,
+        "identifier": "phpstan.dumpType"
+      },
+      {
+        "message": "Dumped type: GenericDefaults\\SelfConstant<42>",
+        "line": 183,
+        "ignorable": false,
+        "identifier": "phpstan.dumpType"
+      },
+      {
+        "message": "Dumped type: 42",
+        "line": 184,
+        "ignorable": false,
+        "identifier": "phpstan.dumpType"
+      },
+      {
+        "message": "Dumped type: GenericDefaults\\ObjectDefault<stdClass>",
+        "line": 187,
+        "ignorable": false,
+        "identifier": "phpstan.dumpType"
+      },
+      {
+        "message": "Dumped type: GenericDefaults\\NoConstructor<int>",
+        "line": 188,
+        "ignorable": false,
+        "identifier": "phpstan.dumpType"
+      }
+    ],
+    "5": [
+      {
+        "message": "Dumped type: GenericDefaults\\NoConstructor<int>",
+        "line": 146,
+        "ignorable": false,
+        "identifier": "phpstan.dumpType"
+      },
+      {
+        "message": "Dumped type: int",
+        "line": 147,
+        "ignorable": false,
+        "identifier": "phpstan.dumpType"
+      },
+      {
+        "message": "Parameter #1 $value of function GenericDefaults\\needsString expects string, int given.",
+        "line": 149,
+        "ignorable": true,
+        "identifier": "argument.type"
+      },
+      {
+        "message": "Dumped type: GenericDefaults\\EmptyConstructor<42>",
+        "line": 151,
+        "ignorable": false,
+        "identifier": "phpstan.dumpType"
+      },
+      {
+        "message": "Dumped type: 42",
+        "line": 152,
+        "ignorable": false,
+        "identifier": "phpstan.dumpType"
+      },
+      {
+        "message": "Parameter #1 $value of function GenericDefaults\\needs43 expects 43, 42 given.",
+        "line": 154,
+        "ignorable": true,
+        "identifier": "argument.type"
+      },
+      {
+        "message": "Dumped type: GenericDefaults\\LiteralDefault<42>",
+        "line": 156,
+        "ignorable": false,
+        "identifier": "phpstan.dumpType"
+      },
+      {
+        "message": "Parameter #1 $value of function GenericDefaults\\needs43 expects 43, 42 given.",
+        "line": 158,
+        "ignorable": true,
+        "identifier": "argument.type"
+      },
+      {
+        "message": "Dumped type: GenericDefaults\\OrderedDefaults<string, list<string>, array<string, list<string>>>",
+        "line": 159,
+        "ignorable": false,
+        "identifier": "phpstan.dumpType"
+      },
+      {
+        "message": "Dumped type: array<string, list<string>>",
+        "line": 161,
+        "ignorable": false,
+        "identifier": "phpstan.dumpType"
+      },
+      {
+        "message": "Dumped type: list<string>",
+        "line": 163,
+        "ignorable": false,
+        "identifier": "phpstan.dumpType"
+      },
+      {
+        "message": "Dumped type: GenericDefaults\\InferredDefault<string>",
+        "line": 164,
+        "ignorable": false,
+        "identifier": "phpstan.dumpType"
+      },
+      {
+        "message": "Dumped type: GenericDefaults\\InferredDefault<int>",
+        "line": 165,
+        "ignorable": false,
+        "identifier": "phpstan.dumpType"
+      },
+      {
+        "message": "Dumped type: list<string>",
+        "line": 167,
+        "ignorable": false,
+        "identifier": "phpstan.dumpType"
+      },
+      {
+        "message": "Dumped type: string",
+        "line": 168,
+        "ignorable": false,
+        "identifier": "phpstan.dumpType"
+      },
+      {
+        "message": "Dumped type: list<int>",
+        "line": 170,
+        "ignorable": false,
+        "identifier": "phpstan.dumpType"
+      },
+      {
+        "message": "Dumped type: GenericDefaults\\InheritedRequired<string, mixed>",
+        "line": 171,
+        "ignorable": false,
+        "identifier": "phpstan.dumpType"
+      },
+      {
+        "message": "Dumped type: int",
+        "line": 173,
+        "ignorable": false,
+        "identifier": "phpstan.dumpType"
+      },
+      {
+        "message": "Dumped type: GenericDefaults\\NullableDefault<int|null>",
+        "line": 175,
+        "ignorable": false,
+        "identifier": "phpstan.dumpType"
+      },
+      {
+        "message": "Dumped type: int|null",
+        "line": 176,
+        "ignorable": false,
+        "identifier": "phpstan.dumpType"
+      },
+      {
+        "message": "Dumped type: GenericDefaults\\InheritedScalarDefault<int|null>",
+        "line": 179,
+        "ignorable": false,
+        "identifier": "phpstan.dumpType"
+      },
+      {
+        "message": "Dumped type: int|null",
+        "line": 180,
+        "ignorable": false,
+        "identifier": "phpstan.dumpType"
+      },
+      {
+        "message": "Dumped type: GenericDefaults\\SelfConstant<42>",
+        "line": 183,
+        "ignorable": false,
+        "identifier": "phpstan.dumpType"
+      },
+      {
+        "message": "Dumped type: 42",
+        "line": 184,
+        "ignorable": false,
+        "identifier": "phpstan.dumpType"
+      },
+      {
+        "message": "Parameter #1 $value of function GenericDefaults\\needs43 expects 43, 42 given.",
+        "line": 186,
+        "ignorable": true,
+        "identifier": "argument.type"
+      },
+      {
+        "message": "Dumped type: GenericDefaults\\ObjectDefault<stdClass>",
+        "line": 187,
+        "ignorable": false,
+        "identifier": "phpstan.dumpType"
+      },
+      {
+        "message": "Dumped type: GenericDefaults\\NoConstructor<int>",
+        "line": 188,
+        "ignorable": false,
+        "identifier": "phpstan.dumpType"
+      }
+    ]
+  },
+  "inferred-mixed.php": {
+    "0": [
+      {
+        "message": "Dumped type: list<mixed>",
+        "line": 25,
+        "ignorable": false,
+        "identifier": "phpstan.dumpType"
+      },
+      {
+        "message": "Dumped type: mixed",
+        "line": 26,
+        "ignorable": false,
+        "identifier": "phpstan.dumpType"
+      }
+    ]
+  }
+}
