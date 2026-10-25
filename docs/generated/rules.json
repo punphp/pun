@@ -21324,7 +21324,7 @@
       "id": "analyse/functions/invalid-first-class-callable",
       "command": "analyse",
       "group": "functions",
-      "summary": "",
+      "summary": "Reports unknown named functions and non-callable expressions used in first-class callable syntax.",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -21342,7 +21342,7 @@
         "PHPStan\\Rules\\Functions\\FunctionCallableRule",
         "callable.nonCallable"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/functions/invalid-parameter-name",

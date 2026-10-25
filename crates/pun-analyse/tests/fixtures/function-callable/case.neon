@@ -1,0 +1,5 @@
+parameters:
+    level: 7
+    checkFunctionNameCase: true
+    phpVersion: 80100
+    paths: [callables.php]

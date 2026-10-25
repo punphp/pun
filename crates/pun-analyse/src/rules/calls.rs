@@ -46,48 +46,6 @@ pub fn pipe<'arena>(c: &mut Checker<'_, 'arena>, pipe: &Pipe<'arena>) {
     }
 }
 
-/// FunctionCallableRule: `f(...)`.
-pub fn function_callable<'arena>(
-    c: &mut Checker<'_, 'arena>,
-    f: &FunctionPartialApplication<'arena>,
-) {
-    let Expression::Identifier(id) = f.function else {
-        return;
-    };
-    let whole = f.function.span().join(f.argument_list.span());
-    if c.piped.contains(&whole)
-        || !matches!(
-            f.argument_list
-                .arguments
-                .iter()
-                .collect::<Vec<_>>()
-                .as_slice(),
-            [PartialArgument::VariadicPlaceholder(_)]
-        )
-    {
-        return;
-    }
-    let fallback = match id {
-        Identifier::Local(l) if !c.names.is_imported(&l.span) => Some(l.value),
-        _ => None,
-    };
-    if std::iter::once(c.names.get(&id.span()))
-        .chain(fallback)
-        .any(|n| c.function(n).is_some())
-    {
-        return;
-    }
-    let name = c.written_or_resolved(id);
-    if !c.in_function_exists(&name) {
-        c.report(
-            id,
-            "function.notFound",
-            format!("Function {name} not found."),
-            None,
-        );
-    }
-}
-
 fn named_call<'arena>(
     c: &mut Checker<'_, 'arena>,
     id: &Identifier<'arena>,

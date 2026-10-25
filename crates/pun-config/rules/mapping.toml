@@ -1123,7 +1123,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "functions/internal-function-callable" = { preset = "basic", ported = true, status = "decided" }
 "functions/invalid-callable-call" = { preset = "essential", ported = true, status = "decided" }
 "functions/invalid-closure-use" = { preset = "basic", ported = true, status = "decided" }
-"functions/invalid-first-class-callable" = { preset = "basic", status = "decided" }
+"functions/invalid-first-class-callable" = { preset = "basic", ported = true, status = "decided", summary = "Reports unknown named functions and non-callable expressions used in first-class callable syntax." }
 "functions/invalid-parameter-name" = { preset = "basic", ported = true, status = "decided" }
 "functions/invalid-pure" = { preset = "essential", status = "decided" }
 "functions/invalid-pure-method" = { preset = "essential", status = "decided" }

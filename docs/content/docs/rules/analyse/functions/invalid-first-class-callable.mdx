@@ -7,7 +7,7 @@ pagination: false
 
 <RuleId id="analyse/functions/invalid-first-class-callable" />
 
-Enabled by the [`analyse-basic`](/docs/rules/presets/analyse-basic), [`analyse-essential`](/docs/rules/presets/analyse-essential), [`analyse-recommended`](/docs/rules/presets/analyse-recommended), [`analyse-strict`](/docs/rules/presets/analyse-strict), [`analyse-max`](/docs/rules/presets/analyse-max) presets. Fix: none (report only). **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`analyse-basic`](/docs/rules/presets/analyse-basic), [`analyse-essential`](/docs/rules/presets/analyse-essential), [`analyse-recommended`](/docs/rules/presets/analyse-recommended), [`analyse-strict`](/docs/rules/presets/analyse-strict), [`analyse-max`](/docs/rules/presets/analyse-max) presets. Fix: none (report only).
 
 ## Replaces
 
@@ -25,6 +25,9 @@ Enabled by the [`analyse-basic`](/docs/rules/presets/analyse-basic), [`analyse-e
 // @pun-ignore analyse/functions/invalid-first-class-callable -- explain the exception
 ```
 
+## What it does
+
+Reports unknown named functions and non-callable expressions used in first-class callable syntax.
 
 ## Options
 

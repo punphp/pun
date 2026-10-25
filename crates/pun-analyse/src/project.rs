@@ -32,6 +32,8 @@ pub struct Project {
     pub ignore_errors: IgnoredErrors,
     /// PHPStan's `checkClassCaseSensitivity` (see `rules::Checks`): false, as at level 0, until the presets set it.
     pub check_class_case_sensitivity: bool,
+    /// `checkFunctionNameCase`: off by default at every level, independently of class-name case checks.
+    pub check_function_name_case: bool,
     /// The rule level: `level` (`max` is 10), 0 when unset.
     pub level: u8,
     /// `featureToggles.checkGenericIterableClasses` (on with bleedingEdge).
@@ -214,6 +216,7 @@ impl Project {
             ignore_errors: IgnoredErrors::new(ignore_errors, report_unmatched_ignores),
             // config.neon's false, which config.level2.neon turns on
             check_class_case_sensitivity: flag("checkClassCaseSensitivity"),
+            check_function_name_case: flag("checkFunctionNameCase"),
             level,
             check_generic_iterable_classes: toggle("checkGenericIterableClasses"),
             internal_tag: toggle("internalTag"),
@@ -262,6 +265,7 @@ impl Project {
             report_ignores_without_comments: false,
             ignore_errors: IgnoredErrors::new(&Array::new(), true),
             check_class_case_sensitivity: false,
+            check_function_name_case: false,
             level: 0,
             check_generic_iterable_classes: false,
             internal_tag: false,

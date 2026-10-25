@@ -18,6 +18,7 @@ mod dynamic_fetch;
 mod doc;
 mod driver;
 mod enums;
+mod function_callable;
 mod function_checks;
 mod functions;
 mod generics;
@@ -141,6 +142,7 @@ pub const IDENTIFIERS: &[&str] = &[
     "staticMethod.inVoidCast",
     "staticMethod.resultDiscarded",
     "function.notFound",
+    "function.nameCase",
     "argument.printf",
     "argument.sprintf",
     "argument.sscanf",
@@ -823,6 +825,8 @@ pub struct Checker<'a, 'arena> {
     standalone_throws: HashSet<Span>,
     /// [`Checks`]'s `check_class_case_sensitivity`.
     case_sensitivity: bool,
+    /// [`Checks`]'s independent `checkFunctionNameCase` switch.
+    check_function_name_case: bool,
     /// [`driver::Checks`]'s level and `checkGenericIterableClasses`.
     level: u8,
     generic_iterable_classes: bool,
@@ -2001,7 +2005,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
     ) {
         let whole = f.function.span().join(f.argument_list.span());
         if !statements::first_class_callable(self, whole, &f.argument_list) {
-            calls::function_callable(self, f);
+            function_callable::check(self, f);
             restricted_functions::callable(self, f);
         }
     }

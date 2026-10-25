@@ -1,0 +1,5 @@
+parameters:
+    level: 8
+    checkFunctionNameCase: true
+    phpVersion: 80100
+    paths: [../rules/data/Functions/data/function-callable.php]

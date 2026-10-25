@@ -34,6 +34,8 @@ pub(crate) struct Checks {
     /// ExistingClassInInstanceOfRule, CaughtExceptionExistenceRule, ExistingClassesInPropertiesRule) report
     /// `*.nameCase` only with it on. Set from [`Project::check_class_case_sensitivity`], which the presets will set.
     check_class_case_sensitivity: bool,
+    /// [`Project::check_function_name_case`].
+    check_function_name_case: bool,
     /// [`Project::level`] and [`Project::check_generic_iterable_classes`].
     pub(super) level: u8,
     generic_iterable_classes: bool,
@@ -94,6 +96,7 @@ impl Checks {
         }
         Checks {
             check_class_case_sensitivity: project.check_class_case_sensitivity,
+            check_function_name_case: project.check_function_name_case,
             level: project.level,
             generic_iterable_classes: project.check_generic_iterable_classes,
             new_static_in_abstract_class_static_method: project.new_static_in_abstract_class_static_method,
@@ -155,6 +158,7 @@ fn checker<'a, 'arena>(
     ));
     typed.extend(super::debug::typed_expressions(names, codebase, program));
     typed.extend(super::scope::typed_method_receivers(program));
+    typed.extend(super::function_callable::typed_expressions(program, project.level));
     typed.extend(super::types::typed_expressions(program, &file.contents, project.level));
     typed.extend(super::strict::typed_expressions(project, codebase, program));
     typed.extend(super::operators::typed_expressions(project.strict, program));
@@ -211,6 +215,7 @@ fn checker<'a, 'arena>(
         arrays: arrays::State::default(),
         standalone_throws: HashSet::new(),
         case_sensitivity: project.check_class_case_sensitivity,
+        check_function_name_case: project.check_function_name_case,
         level: project.level,
         generic_iterable_classes: project.generic_iterable_classes,
         new_static_in_abstract_class_static_method: project.new_static_in_abstract_class_static_method,
