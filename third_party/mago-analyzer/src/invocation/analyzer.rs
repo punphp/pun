@@ -182,7 +182,7 @@ fn gather_raw_callback<'ctx, 'arena, A: Arena>(
     // These are shared RefCells in BlockContext::clone(), not captured callback state.
     block.if_body_context = None;
     block.finally_scope = None;
-    let mut scratch = AnalysisArtifacts::new();
+    let mut scratch = AnalysisArtifacts::new().with_native_types(context.settings.track_native_types);
     context.gather_callback(|context| {
         analyze_and_store_argument_type(
             context,

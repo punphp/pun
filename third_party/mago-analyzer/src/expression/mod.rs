@@ -68,11 +68,17 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Expression<'arena> {
     where
         A: Arena,
     {
+        crate::native::before_expression(self, block_context);
+        let span = self.span();
+        artifacts.remove_native_expression_type(&(span.start.offset, span.end.offset));
         artifacts.record_variable_definedness(Node::Expression(self), block_context);
 
         if context.raw_callback_gather_depth == 0 && context.plugin_registry.has_expression_hooks() {
             let mut hook_context = HookContext::new(context.codebase, context.source_file, block_context, artifacts);
             let expression_hook_result = context.plugin_registry.before_expression(self, &mut hook_context)?;
+            if !matches!(expression_hook_result, ExpressionHookResult::Continue) {
+                hook_context.invalidate_native_types();
+            }
             for reported in hook_context.take_issues() {
                 context.collector.report_with_code(reported.code, reported.issue);
             }
@@ -240,6 +246,8 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Expression<'arena> {
         };
 
         result?;
+
+        crate::native::after_expression(self, block_context, artifacts);
 
         if context.raw_callback_gather_depth == 0 && context.plugin_registry.has_expression_hooks() {
             let mut hook_context = HookContext::new(context.codebase, context.source_file, block_context, artifacts);

@@ -51,6 +51,7 @@ mod context;
 mod expression;
 mod formula;
 mod invocation;
+mod native;
 mod readonly;
 mod reconciler;
 mod resolver;
@@ -223,7 +224,11 @@ where
             ScopeContext::new(ReferenceOrigin::File(word(context.source_file.name.as_ref()))),
             context.settings.register_super_globals,
         );
+        if self.settings.track_native_types && self.external_analysis_session.is_none() {
+            block_context.native_locals = Some(Default::default());
+        }
         let mut artifacts = AnalysisArtifacts::new()
+            .with_native_types(self.settings.track_native_types)
             .with_retained_expression_types(retain_completed_expression_types)
             .with_variable_definedness_targets(self.variable_definedness_targets.clone())
             .with_editor_artifacts(self.editor_artifacts);

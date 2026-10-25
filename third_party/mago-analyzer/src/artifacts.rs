@@ -27,6 +27,14 @@ use crate::readonly::PendingReadonlyPropertyWrite;
 pub(crate) use self::expression_types::CheckpointAction;
 pub(crate) use self::expression_types::ExpressionTypeCheckpoints;
 
+pub(crate) type DetachedExpressionTypeCheckpoints = (ExpressionTypeCheckpoints, Option<ExpressionTypeCheckpoints>);
+
+#[derive(Debug, Clone, Default)]
+struct NativeExpressionTypes {
+    types: HashMap<(u32, u32), Rc<TUnion>>,
+    checkpoints: ExpressionTypeCheckpoints,
+}
+
 pub mod editor;
 mod expression_types;
 
@@ -58,6 +66,7 @@ pub struct ResolvedMethodCall {
 #[derive(Debug, Clone)]
 pub struct AnalysisArtifacts {
     pub expression_types: HashMap<(u32, u32), Rc<TUnion>>,
+    native_expression_types: Option<NativeExpressionTypes>,
     pub if_true_assertions: HashMap<(u32, u32), WordMap<AssertionSet>>,
     pub if_false_assertions: HashMap<(u32, u32), WordMap<AssertionSet>>,
     pub true_branch_only_assertions: HashMap<(u32, u32), WordMap<AssertionSet>>,
@@ -95,6 +104,7 @@ impl AnalysisArtifacts {
     pub fn new() -> Self {
         Self {
             expression_types: HashMap::default(),
+            native_expression_types: None,
             inferred_return_types: Vec::new(),
             inferred_yield_key_types: Vec::new(),
             inferred_yield_value_types: Vec::new(),
@@ -124,6 +134,11 @@ impl AnalysisArtifacts {
 
     pub(crate) fn with_retained_expression_types(mut self, retain: bool) -> Self {
         self.retain_completed_expression_types = retain;
+        self
+    }
+
+    pub(crate) fn with_native_types(mut self, enabled: bool) -> Self {
+        self.native_expression_types = enabled.then(NativeExpressionTypes::default);
         self
     }
 
@@ -271,6 +286,44 @@ impl AnalysisArtifacts {
         Some(&**t)
     }
 
+    /// Native type from this same evaluation. None means disabled, unsupported, or not evaluated;
+    /// it is never substituted with the full type or mixed. This is an explicitly partial API.
+    pub fn get_native_expression_type<T: HasSpan>(&self, expression: &T) -> Option<&TUnion> {
+        self.get_rc_native_expression_type(expression).map(Rc::as_ref)
+    }
+
+    pub(crate) fn get_rc_native_expression_type<T: HasSpan>(&self, expression: &T) -> Option<&Rc<TUnion>> {
+        self.native_expression_types.as_ref()?.types.get(&get_expression_range(expression))
+    }
+
+    pub(crate) fn set_rc_native_expression_type<T: HasSpan>(&mut self, expression: &T, ty: Rc<TUnion>) {
+        if let Some(native) = &mut self.native_expression_types {
+            native.checkpoints.insert(&mut native.types, get_expression_range(expression), ty);
+        }
+    }
+
+    pub(crate) fn remove_native_expression_type(&mut self, range: &(u32, u32)) {
+        if let Some(native) = &mut self.native_expression_types {
+            native.checkpoints.remove(&mut native.types, range);
+        }
+    }
+
+    pub(crate) fn clear_native_expression_types(&mut self) {
+        if let Some(native) = &mut self.native_expression_types {
+            for range in native.types.keys().copied().collect::<Vec<_>>() {
+                native.checkpoints.remove(&mut native.types, &range);
+            }
+        }
+    }
+
+    pub(crate) fn transfer_native_expression_types(&mut self, child: &mut Self) {
+        if let (Some(parent), Some(child)) = (&mut self.native_expression_types, &mut child.native_expression_types) {
+            for (range, ty) in child.types.drain() {
+                parent.checkpoints.insert(&mut parent.types, range, ty);
+            }
+        }
+    }
+
     /// Set the type of expression `expression` to `t`.
     #[inline]
     pub fn set_rc_expression_type<T>(&mut self, expression: &T, t: Rc<TUnion>)
@@ -278,6 +331,7 @@ impl AnalysisArtifacts {
         T: HasSpan,
     {
         self.expression_type_checkpoints.insert(&mut self.expression_types, get_expression_range(expression), t);
+        self.remove_native_expression_type(&get_expression_range(expression));
     }
 
     /// Get the type of expression `expression`.
@@ -291,17 +345,24 @@ impl AnalysisArtifacts {
 
     pub(crate) fn begin_expression_type_checkpoint(&mut self) {
         self.expression_type_checkpoints.begin_checkpoint();
+        if let Some(native) = &mut self.native_expression_types {
+            native.checkpoints.begin_checkpoint();
+        }
         if let Some(editor) = &mut self.editor {
             editor.begin_checkpoint();
         }
     }
 
     pub(crate) fn expression_type_checkpoint_matches(&self, same: impl Fn(&TUnion, &TUnion) -> bool) -> bool {
+        // Native state is passive: it must not change the full lane's loop iteration decisions.
         self.expression_type_checkpoints.checkpoint_matches(&self.expression_types, same)
     }
 
     pub(crate) fn finish_expression_type_checkpoint(&mut self, action: CheckpointAction) {
         self.expression_type_checkpoints.finish_checkpoint(&mut self.expression_types, action);
+        if let Some(native) = &mut self.native_expression_types {
+            native.checkpoints.finish_checkpoint(&mut native.types, action);
+        }
         if let Some(editor) = &mut self.editor {
             editor.finish_checkpoint(action);
         }
@@ -309,28 +370,38 @@ impl AnalysisArtifacts {
 
     pub(crate) fn remove_expression_type(&mut self, range: &(u32, u32)) {
         self.expression_type_checkpoints.remove(&mut self.expression_types, range);
+        self.remove_native_expression_type(range);
     }
 
     pub(crate) fn extend_expression_types(&mut self, types: impl IntoIterator<Item = ((u32, u32), Rc<TUnion>)>) {
-        if self.expression_type_checkpoints.is_empty() {
+        if self.expression_type_checkpoints.is_empty() && self.native_expression_types.is_none() {
             self.expression_types.extend(types);
         } else {
             for (range, ty) in types {
                 self.expression_type_checkpoints.insert(&mut self.expression_types, range, ty);
+                if let Some(native) = &mut self.native_expression_types {
+                    native.checkpoints.remove(&mut native.types, &range);
+                }
             }
         }
     }
 
-    pub(crate) fn detach_expression_type_checkpoints(&mut self) -> Option<ExpressionTypeCheckpoints> {
-        if self.expression_type_checkpoints.is_empty() {
+    pub(crate) fn detach_expression_type_checkpoints(&mut self) -> Option<DetachedExpressionTypeCheckpoints> {
+        if self.expression_type_checkpoints.is_empty() && self.native_expression_types.is_none() {
             return None;
         }
 
-        Some(self.expression_type_checkpoints.detach(&self.expression_types))
+        Some((
+            self.expression_type_checkpoints.detach(&self.expression_types),
+            self.native_expression_types.as_mut().map(|native| native.checkpoints.detach(&native.types)),
+        ))
     }
 
-    pub(crate) fn restore_expression_type_checkpoints(&mut self, checkpoints: ExpressionTypeCheckpoints) {
-        self.expression_type_checkpoints = checkpoints;
+    pub(crate) fn restore_expression_type_checkpoints(&mut self, checkpoints: DetachedExpressionTypeCheckpoints) {
+        self.expression_type_checkpoints = checkpoints.0;
+        if let Some(checkpoints) = checkpoints.1 {
+            self.native_expression_types.get_or_insert_with(NativeExpressionTypes::default).checkpoints = checkpoints;
+        }
     }
 }
 

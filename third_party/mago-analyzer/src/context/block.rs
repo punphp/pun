@@ -56,6 +56,8 @@ pub struct ReferenceConstraint {
 pub struct BlockContext<'ctx> {
     pub scope: ScopeContext<'ctx>,
     pub locals: WordMap<Rc<TUnion>>,
+    /// None means disabled or invalidated, never PHP's mixed type. Clones own their native state.
+    pub(crate) native_locals: Option<WordMap<Rc<TUnion>>>,
     pub static_locals: WordSet,
     pub variables_possibly_in_scope: WordSet,
     pub conditionally_referenced_variable_ids: WordSet,
@@ -205,6 +207,7 @@ impl<'ctx> BlockContext<'ctx> {
         Self {
             scope,
             locals: if register_super_globals { get_super_globals() } else { WordMap::default() },
+            native_locals: None,
             static_locals: WordSet::default(),
             variables_possibly_in_scope: WordSet::default(),
             conditionally_referenced_variable_ids: WordSet::default(),

@@ -52,7 +52,7 @@ pub fn populate_docblock_variables<'ctx, A>(
 ) where
     A: Arena,
 {
-    populate_docblock_variables_excluding(context, block_context, artifacts, override_existing, None);
+    populate_docblock_variables_excluding(context, block_context, artifacts, override_existing, None, false);
 }
 
 /// Same as `populate_docblock_variables`, but allows excluding a specific variable.
@@ -65,6 +65,7 @@ pub fn populate_docblock_variables_excluding<'ctx, A>(
     artifacts: &mut AnalysisArtifacts,
     override_existing: bool,
     exclude_variable: Option<Word>,
+    native_assignment: bool,
 ) where
     A: Arena,
 {
@@ -93,6 +94,10 @@ pub fn populate_docblock_variables_excluding<'ctx, A>(
         }
 
         let Some(variable_name) = name else {
+            if !native_assignment {
+                // A variable-less expression @var has its own native semantics; not supported yet.
+                block_context.native_locals = None;
+            }
             continue;
         };
 

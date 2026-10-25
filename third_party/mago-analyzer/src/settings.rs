@@ -31,6 +31,10 @@ pub struct Settings {
     /// The target PHP version for the analysis.
     pub version: PHPVersion,
 
+    /// Retain partial PHPStan-native types on the normal walk. Unsupported flows return no native type.
+    /// This does not disable PHPDoc, change full types, or enable native-dependent rules.
+    pub track_native_types: bool,
+
     /// Find and report expressions whose results are not used (e.g., `$a + $b;`). Defaults to `false`.
     pub find_unused_expressions: bool,
 
@@ -412,6 +416,7 @@ impl Settings {
 
         Self {
             version,
+            track_native_types: false,
             find_unused_expressions: true,
             find_unused_definitions: true,
             find_overly_wide_return_types: false,

@@ -25,7 +25,7 @@ use mago_word::Word;
 use mago_word::word;
 
 use crate::artifacts::AnalysisArtifacts;
-use crate::artifacts::ExpressionTypeCheckpoints;
+use crate::artifacts::DetachedExpressionTypeCheckpoints;
 use crate::code::IssueCode;
 use crate::context::block::BlockContext;
 use crate::invocation::Invocation;
@@ -214,7 +214,7 @@ pub struct HookContext<'ctx, 'block> {
     pub(crate) block_context: &'block mut BlockContext<'ctx>,
     pub(crate) artifacts: &'block mut AnalysisArtifacts,
     pub(crate) reported_issues: RefCell<Vec<ReportedIssue>>,
-    expression_type_checkpoints: Option<ExpressionTypeCheckpoints>,
+    expression_type_checkpoints: Option<DetachedExpressionTypeCheckpoints>,
 }
 
 impl<'ctx, 'block> HookContext<'ctx, 'block> {
@@ -273,6 +273,15 @@ impl<'ctx, 'block> HookContext<'ctx, 'block> {
         self.block_context.locals.get(&word(name))
     }
 
+    /// Partial native value on this walk. None is unavailable, not mixed.
+    pub fn get_native_expression_type<T: HasSpan>(&self, expr: &T) -> Option<&TUnion> {
+        self.artifacts.get_native_expression_type(expr)
+    }
+
+    pub fn get_native_variable_type(&self, name: &[u8]) -> Option<&TUnion> {
+        self.block_context.native_locals.as_ref()?.get(&word(name)).map(Rc::as_ref)
+    }
+
     /// Get the current scope context.
     #[inline]
     pub fn scope(&self) -> &ScopeContext<'ctx> {
@@ -313,12 +322,14 @@ impl<'ctx, 'block> HookContext<'ctx, 'block> {
     where
         T: HasSpan,
     {
+        self.invalidate_native_types();
         self.artifacts.set_expression_type(expr, ty);
     }
 
     /// Set the type of a variable.
     #[inline]
     pub fn set_variable_type(&mut self, name: &[u8], ty: TUnion) {
+        self.invalidate_native_types();
         self.block_context.locals.insert(word(name), Rc::new(ty));
     }
 
@@ -328,6 +339,7 @@ impl<'ctx, 'block> HookContext<'ctx, 'block> {
         if self.expression_type_checkpoints.is_none() {
             self.expression_type_checkpoints = self.artifacts.detach_expression_type_checkpoints();
         }
+        self.invalidate_native_types();
         self.artifacts
     }
 
@@ -340,6 +352,7 @@ impl<'ctx, 'block> HookContext<'ctx, 'block> {
     /// Get mutable access to the block context.
     #[inline]
     pub fn block_context_mut(&mut self) -> &mut BlockContext<'ctx> {
+        self.invalidate_native_types();
         self.block_context
     }
 
@@ -347,6 +360,12 @@ impl<'ctx, 'block> HookContext<'ctx, 'block> {
     #[inline]
     pub fn block_context(&self) -> &BlockContext<'ctx> {
         self.block_context
+    }
+
+    // Existing semantic hooks have no native contract. Read-only observers do not enter here.
+    pub(crate) fn invalidate_native_types(&mut self) {
+        self.block_context.native_locals = None;
+        self.artifacts.clear_native_expression_types();
     }
 }
 

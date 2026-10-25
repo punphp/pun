@@ -734,6 +734,19 @@ pub fn analyze_assignment_to_variable<'ctx, 'arena, A>(
         artifacts.set_rc_expression_type(&variable_span, Rc::clone(&assigned_type));
     }
 
+    if block_context.native_locals.is_some() {
+        let native = if from_docblock {
+            // VarAnnotationProcessor::processVarAnnotation() intentionally forgets the RHS's native type.
+            Some(Rc::new(get_mixed()))
+        } else {
+            source_expression.and_then(|source| artifacts.get_rc_native_expression_type(source).cloned())
+        };
+        block_context.native_locals = block_context.native_locals.take().zip(native).map(|(mut locals, native)| {
+            locals.insert(variable_id, native);
+            locals
+        });
+    }
+
     block_context.locals.insert(variable_id, assigned_type);
     block_context.variables_possibly_in_scope.insert(variable_id);
 }

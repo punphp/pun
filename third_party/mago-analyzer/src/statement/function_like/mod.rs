@@ -190,6 +190,7 @@ where
     );
 
     let mut artifacts = AnalysisArtifacts::new()
+        .with_native_types(context.settings.track_native_types)
         .with_retained_expression_types(parent_artifacts.should_retain_completed_expression_types())
         .with_variable_definedness_targets(parent_artifacts.variable_definedness_targets())
         .with_editor_artifacts(parent_artifacts.editor.is_some());
@@ -248,6 +249,10 @@ where
 
             context.collector.report_with_code(IssueCode::DocblockTypeMismatch, issue);
         }
+    }
+
+    if context.settings.track_native_types && context.external_analysis_session.is_none() {
+        block_context.native_locals = crate::native::parameter_types(function_like_metadata);
     }
 
     add_parameter_types_to_context(
@@ -369,6 +374,7 @@ where
     let expression_types = std::mem::take(&mut artifacts.expression_types);
     if parent_artifacts.should_retain_completed_expression_types() {
         parent_artifacts.extend_expression_types(expression_types);
+        parent_artifacts.transfer_native_expression_types(&mut artifacts);
     }
     parent_artifacts.variable_definedness.extend(std::mem::take(&mut artifacts.variable_definedness));
     parent_artifacts.resolved_method_calls.append(&mut artifacts.resolved_method_calls);

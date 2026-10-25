@@ -40,6 +40,9 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for FunctionCall<'arena> {
         if context.plugin_registry.has_function_call_hooks() {
             let mut hook_context = HookContext::new(context.codebase, context.source_file, block_context, artifacts);
             let result = context.plugin_registry.before_function_call(self, &mut hook_context)?;
+            if !matches!(result, ExpressionHookResult::Continue) {
+                hook_context.invalidate_native_types();
+            }
             for reported in hook_context.take_issues() {
                 context.collector.report_with_code(reported.code, reported.issue);
             }
@@ -60,6 +63,19 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for FunctionCall<'arena> {
         let (invocation_targets, _) =
             resolve_targets(context, block_context, artifacts, self.function, &mut template_result)?;
 
+        let native_return = if block_context.native_locals.is_some()
+            && !context.plugin_registry.has_function_assertion_providers()
+            && invocation_targets.len() == 1
+            && matches!(self.function, Expression::Identifier(_))
+        {
+            invocation_targets[0].get_function_like_metadata().and_then(crate::native::function_return_type)
+        } else {
+            None
+        };
+        if native_return.is_none() {
+            block_context.native_locals = None;
+        }
+
         analyze_invocation_targets(
             context,
             block_context,
@@ -73,6 +89,12 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for FunctionCall<'arena> {
             false,
             false, // object_has_nullsafe_null - not applicable for function calls
         )?;
+
+        if block_context.native_locals.is_some()
+            && let Some(native_return) = native_return
+        {
+            artifacts.set_rc_native_expression_type(self, std::rc::Rc::new(native_return));
+        }
 
         if context.plugin_registry.has_function_call_hooks() {
             let mut hook_context = HookContext::new(context.codebase, context.source_file, block_context, artifacts);

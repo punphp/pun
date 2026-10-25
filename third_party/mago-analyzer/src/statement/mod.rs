@@ -56,6 +56,7 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Statement<'arena> {
     where
         A: Arena,
     {
+        crate::native::before_statement(self, block_context);
         let last_statement_span = context.statement_span;
         context.statement_span = self.span();
         artifacts.record_variable_definedness(Node::Statement(self), block_context);
@@ -64,6 +65,7 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Statement<'arena> {
         if context.plugin_registry.has_statement_hooks() {
             let mut hook_context = HookContext::new(context.codebase, context.source_file, block_context, artifacts);
             if context.plugin_registry.before_statement(self, &mut hook_context)? == HookAction::Skip {
+                hook_context.invalidate_native_types();
                 for reported in hook_context.take_issues() {
                     context.collector.report_with_code(reported.code, reported.issue);
                 }
@@ -90,6 +92,7 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Statement<'arena> {
                     artifacts,
                     true, // override existing for non-target variables
                     Some(target_var),
+                    matches!(unwrap_expression(expression), Expression::Assignment(_)),
                 );
             } else {
                 let override_existing = !matches!(self, Statement::Foreach(_));

@@ -1,4 +1,4 @@
-# Mago analyzer 1.57.0: raw callback gathers
+# Mago analyzer 1.57.0: maintained patches
 
 ## Source
 
@@ -19,7 +19,8 @@ The root manifest patches only `mago-analyzer` and excludes this directory from 
 
 ## Semantic changes
 
-Only three source files differ from the published package. Line ranges below refer to this copy.
+The raw callback gather patch originally changed three source files. The ranges below describe that
+patch before the native-state additions documented at the end of this file.
 
 | File | Patched lines | Change |
 | --- | --- | --- |
@@ -133,3 +134,135 @@ CARGO_BUILD_JOBS=1 RAYON_NUM_THREADS=2 CARGO_TARGET_DIR=target-callback-gather \
 The measurement intersects added or replaced source lines with LLVM's executable-line records.
 It uses `llvm-cov export --format=lcov` with the callback, array-slice, and debug test executables
 and the merged profile. This measures the maintained patch, not the entire vendored analyzer.
+
+## Passive native state: bounded first slice
+
+`Settings::track_native_types` defaults to `false`. When enabled, the existing analysis walk retains
+a second local map and a second expression map. The full lane still owns body traversal, path selection,
+diagnostics, and observer events. Native transfers consume the results of that walk. They do not analyze
+an expression again, strip comments, choose another path, or widen an unsupported value to `mixed`.
+No native-dependent Pun rule is enabled by this patch.
+
+The public queries are `AnalysisArtifacts::get_native_expression_type()`,
+`HookContext::get_native_expression_type()`, and `HookContext::get_native_variable_type()`.
+Each returns `None` when native tracking is disabled, the expression is unevaluated, or its transfer
+is unsupported. `Some(mixed)` is a real PHPStan-native value, not an availability marker.
+Expression queries describe the evaluation at that span. A later unsupported operation does not
+invalidate earlier, completed evaluations. Local queries describe the current live scope.
+
+### Supported transfers and ownership
+
+- `src/native.rs` defines the supported subset and passive transfers. Root scope starts with an empty
+  native map. A named user function starts its own map before default-value evaluation, using
+  `type_declaration_metadata`, not PHPDoc-adjusted `type_metadata`. Missing hints mean native `mixed`.
+  Scalar, null, and mixed declarations, including nullable scalar declarations, are supported.
+  Unsupported default expressions or semantic hooks invalidate that scope before its body starts.
+- Resolved scalar literals share the literal value already computed on the authoritative walk.
+  These literal values have no PHPDoc input. Direct local reads, parenthesized values, direct scalar
+  copies, plain assignments, and reassignment propagate native operands. Reassignment replaces the
+  current native value. It does not restore the variable's original declaration.
+  Assignment targets named `$this`, `$GLOBALS`, or starting with `$_` remain outside this subset.
+- `expression/assignment/mod.rs` distinguishes the assigned local from the assignment expression.
+  PHPStan's assignment-position `@var` makes the native local `mixed`, while the assignment expression
+  still yields the RHS's native value. A standalone named annotation preserves the previous native local.
+  Variable-less non-assignment annotations remain unsupported.
+- `expression/call/function_call.rs` reuses the normal resolved target. A statically named user function
+  with a supported contract returns its `return_type_declaration_metadata`, or native `mixed` without
+  a return hint. Full return providers remain active and run once. Their PHPDoc-aware replacement does
+  not replace the native declaration. Builtins, methods, and dynamic targets remain unsupported.
+- `context/block.rs` owns native locals. Cloning a block clones its map, not a mutable shared native scope.
+  `artifacts.rs` owns native expression values and uses the existing checkpoint operations for insert,
+  removal, keep, rollback, merge, and opaque-hook detach/restore. Completed child-body values transfer
+  to their parent alongside full values. There are no independent native convergence decisions.
+- `invocation/analyzer.rs` creates paired scratch artifacts for raw callback gathers. The existing
+  cloned block, detached shared scopes, context restoration, and suppressed expression observers still
+  isolate speculative work. Scratch native values are not published. Callback bodies themselves remain
+  outside this native subset.
+
+### Deliberate availability limits
+
+The first unsupported producer or transfer invalidates native availability for the current scope before
+its children run. Subsequent assignments do not recover that scope. This scope-wide rule is conservative:
+it avoids claiming that an unsupported operation left aliases or locals unchanged. Each separately
+analyzed named function can still initialize its own supported native scope.
+
+Branches, loops, joins, exceptional control flow, references, arrays, members, class scopes, methods,
+closures, arrows, captures, globals, statics, unset, operators, dynamic calls, and undefined local reads
+are unsupported. Functions with by-reference returns or parameters, variadics, output parameters,
+assertions, generators, accessed globals, or non-scalar parameter declarations do not initialize native
+state and are not supported native call targets. Non-scalar native returns are also unavailable.
+External analysis sessions do not initialize native state.
+
+Read-only expression observers retain their normal visits and can inspect both values. Semantic hook
+setters, opaque mutable artifact or block access, and skipped statements, expressions, or calls invalidate
+native availability and cached native values. Their effects have no native transfer contract yet.
+Opaque mutation preserves the paired checkpoint history even when a hook replaces all artifacts.
+The existing limitation on speculative stateful statement, declaration, and call hooks still applies.
+
+These choices leave condition filtering and joining, reference effects, member state, callback scope
+entry, native invocation specialization, and explicit native-aware semantic hook contracts for later
+slices. They do not settle the separate architecture choice between a maintained Mago patch and a
+separate scope engine.
+
+### Native oracle and regression checks
+
+`crates/pun-analyse/tests/native_lane.rs` uses the public `Analyzer` and public native queries, not
+Pun's inference or conversion. `fixtures/native-lane/expected-phpstan.json` contains PHPStan 2.3.1's
+unmodified native dump messages. The tests adapt scalar display syntax and union ordering only.
+
+From the repository root, capture the oracle with a disposable directory:
+
+```sh
+mkdir -p /tmp/pun-native-oracle
+sed -E 's/^([[:space:]]*)(.*); \/\/ native$/\1\\PHPStan\\dumpNativeType(\2);/' \
+	crates/pun-analyse/tests/fixtures/native-lane/scalars.php > /tmp/pun-native-oracle/scalars.php
+php .oracle/phpstan/vendor/bin/phpstan analyse --level=0 --error-format=json --no-progress \
+	/tmp/pun-native-oracle/scalars.php > /tmp/pun-native-oracle/result.json
+jq '[.files[].messages[] | select(.identifier == "phpstan.dumpNativeType") | {line,message,identifier}]' \
+	/tmp/pun-native-oracle/result.json > crates/pun-analyse/tests/fixtures/native-lane/expected-phpstan.json
+```
+
+The oracle exits nonzero because native dumps are diagnostics. An unrelated implicitly-nullable
+parameter deprecation is excluded by identifier. The native expectations are never generated by Pun.
+
+The instrumented native and regression checks use a private target directory:
+
+```sh
+CARGO_BUILD_JOBS=1 RAYON_NUM_THREADS=2 CARGO_TARGET_DIR=/tmp/pun-native-lane-target \
+	CARGO_LLVM_COV_TARGET_DIR=/tmp/pun-native-lane-target/coverage \
+	timeout 900 nice cargo llvm-cov --dep-coverage mago-analyzer --no-report \
+	-p punphp-analyse --test native_lane --test callback_gather --test array_slice --test debug
+```
+
+Changed-line measurement compares this slice with local main `030a143d`, including the new `native.rs`.
+Export LCOV directly from the four instrumented test executables and the merged profile, then intersect
+added or replaced source lines with executable `DA` records. The `cargo llvm-cov --dep-coverage` report
+filter excludes this vendored path, so its empty report is not a coverage result.
+
+The final clean-profile run passes all 33 tests: native lane 8/8, callback gathers 10/10,
+array slice 5/5, and debug 10/10. The native suite compares 29 actual PHPStan native dumps, including
+nullable defaults, reassignment, copies, typed and untyped returns, assignment expressions, standalone
+annotations, and nested annotated assignments. It checks 27 unsupported body transitions, unsupported
+parameter and call contracts, semantic mutations during bodies and default initialization, hook skips,
+paired checkpoint restoration, raw-gather observer isolation, and single-call full return providers.
+Native-on and native-off runs retain identical full expression values, issues, and observer counts.
+
+Changed analyzer executable-line coverage is **229/229 (100%)**, measured against `030a143d` with no
+coverage exclusions or private-helper tests. This is line coverage of this maintained-source slice,
+not branch coverage or whole-analyzer coverage.
+
+| Source file | Covered changed executable lines |
+| --- | ---: |
+| `src/artifacts.rs` | 56/56 |
+| `src/context/block.rs` | 1/1 |
+| `src/expression/assignment/mod.rs` | 9/9 |
+| `src/expression/call/function_call.rs` | 17/17 |
+| `src/expression/mod.rs` | 7/7 |
+| `src/invocation/analyzer.rs` | 1/1 |
+| `src/lib.rs` | 4/4 |
+| `src/native.rs` | 105/105 |
+| `src/plugin/context.rs` | 14/14 |
+| `src/settings.rs` | 1/1 |
+| `src/statement/function_like/mod.rs` | 5/5 |
+| `src/statement/mod.rs` | 3/3 |
+| `src/utils/docblock.rs` | 6/6 |
