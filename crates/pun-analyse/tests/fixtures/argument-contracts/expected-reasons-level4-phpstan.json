@@ -1,0 +1,24 @@
+{
+  "version": "2.3.1",
+  "errors": [
+    {
+      "message": "PHPDoc tag @param for parameter $value contains unresolvable type.",
+      "line": 109,
+      "ignorable": true,
+      "identifier": "parameter.unresolvableType"
+    },
+    {
+      "message": "Property ArgumentReasonOracle\\PrivateProperty::$target is never read, only written.",
+      "line": 127,
+      "ignorable": true,
+      "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties",
+      "identifier": "property.onlyWritten"
+    },
+    {
+      "message": "PHPDoc tag @param for parameter $value contains unresolvable type.",
+      "line": 222,
+      "ignorable": true,
+      "identifier": "parameter.unresolvableType"
+    }
+  ]
+}

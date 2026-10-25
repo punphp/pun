@@ -7,7 +7,7 @@ use crate::phpdoc::{self, ConstExpr, Node, ShapeKey};
 use crate::symbols;
 use crate::types::{
     Accessory, Conditional, NeverKind, Param, ShapeBuilder, Signature, Subject, Template, Type,
-    intersect, is_super_type_of, mixed, to_benevolent, union,
+    contains_template, intersect, is_super_type_of, mixed, to_benevolent, union,
 };
 
 thread_local! {
@@ -290,6 +290,25 @@ pub fn resolve_in(node: &Node, scope: &dyn Scope) -> Type {
             sealed,
             unsealed,
         } => {
+            let template_key = items.iter().any(|i| matches!(&i.key, Some(ShapeKey::Ident(n)) if matches!(scope.template(n), Some(Type::Template(_)))));
+            let late_extras = unsealed.as_ref().and_then(|(k, _)| k.as_ref()).is_some_and(|k| contains_template(&r(k)));
+            if template_key || late_extras {
+                return crate::types::LateArrayShape {
+                    items: items.iter().map(|i| {
+                        let key = i.key.as_ref().map(|k| match k {
+                            ShapeKey::Ident(n) => scope.template(n).filter(|t| matches!(t, Type::Template(_))).unwrap_or_else(|| Type::ConstString(n.clone())),
+                            ShapeKey::Str(n) => Type::ConstString(n.clone()),
+                            ShapeKey::Int(n) => Type::ConstInt(int_value(n)),
+                            ShapeKey::Fetch(c, n) => constant(&ConstExpr::Fetch(c.clone(), n.clone()), scope),
+                        });
+                        (key, r(&i.value), i.optional)
+                    }).collect(),
+                    unsealed: (!sealed).then(|| unsealed.as_ref().map_or_else(
+                        || (None, mixed()), |(k, v)| (k.as_ref().map(|k| array_key(r(k))), r(v))
+                    )),
+                    kind: kind.clone(),
+                }.create();
+            }
             let mut builder = ShapeBuilder::new();
             let mut explicit = Vec::new();
             for item in items {
@@ -386,7 +405,7 @@ fn array_key(key: Type) -> Type {
 }
 
 /// `Type::toArrayKey()`
-fn to_array_key(t: &Type) -> Type {
+pub(crate) fn to_array_key(t: &Type) -> Type {
     match t {
         Type::Template(_) => t.clone(),
         Type::Mixed { .. } => Type::Benevolent(vec![Type::Int, Type::String]),
@@ -731,13 +750,15 @@ fn offset_access(t: Type, o: Type) -> Type {
     Type::OffsetAccess(Box::new(t), Box::new(o))
 }
 
-/// `TypeUtils::resolveLateResolvableTypes()` of the OffsetAccessTypes without templates Pun models.
+/// `TypeUtils::resolveLateResolvableTypes()` of the late array shapes and OffsetAccessTypes Pun models.
 // ponytail: an object's offset (ArrayAccess) and a non-constant offset of a constant array stay unresolved
 pub fn resolve_late(t: &Type) -> Type {
+    if let Type::LateArrayShape(shape) = t {
+        return resolve_late(&shape.resolve());
+    }
     let t = t.traverse(&resolve_late);
     if let Type::OffsetAccess(on, o) = &t
-        && !crate::types::contains_template(&t)
-        && let Some(value) = offset_value(on, o)
+        && let Some(value) = offset_value(&on.resolve_to_bounds(), &o.resolve_to_bounds())
     {
         return value;
     }

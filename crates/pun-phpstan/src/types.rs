@@ -11,14 +11,18 @@ use crate::symbols;
 
 mod accepts;
 mod casts;
+mod late_shape;
 mod mixed;
 mod reasons;
 mod templates;
+mod unresolvable;
 mod verbosity;
 pub use accepts::{StrictMixed, accepts, accepts_with};
 pub use casts::{Cast, cast_is_error, is_numeric};
+pub use late_shape::LateArrayShape;
 pub use reasons::accepts_reasons;
 pub use templates::{TemplateMap, infer_template_types, resolve_template_types};
+pub use unresolvable::{PropertyReflection, with_property_reflections};
 pub use verbosity::recommended_level;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
@@ -211,7 +215,7 @@ impl PartialEq for Template {
     }
 }
 
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone, Debug)]
 pub enum Type {
     Mixed {
         explicit: bool,
@@ -220,6 +224,10 @@ pub enum Type {
     SubtractedMixed { explicit: bool, excluded: Box<Type> },
     Never(NeverKind),
     Error,
+    /// ErrorType/NeverType's explanation, deliberately excluded from type identity.
+    Reasoned(Box<Type>, String),
+    /// `LateResolvableArrayShapeType`: shape keys that still contain templates.
+    LateArrayShape(Box<LateArrayShape>),
     Void,
     Null,
     Bool,
@@ -332,11 +340,11 @@ impl Type {
     }
 
     fn is_implicit_never(&self) -> bool {
-        matches!(self, Type::Never(NeverKind::Implicit))
+        matches!(self.unreasoned(), Type::Never(NeverKind::Implicit))
     }
 
     fn is_never(&self) -> bool {
-        matches!(self, Type::Never(_))
+        matches!(self.unreasoned(), Type::Never(_))
     }
 
     /// `$t instanceof MixedType && $t->describe(precise) === 'mixed' && !$t->isExplicitMixed()`
@@ -351,6 +359,8 @@ impl Type {
                 | Type::SubtractedMixed { .. }
                 | Type::Error
                 | Type::Never(_)
+                | Type::Reasoned(..)
+                | Type::LateArrayShape(_)
                 | Type::IntRange(..)
                 | Type::Iterable(..)
                 | Type::Callable(_)
@@ -365,6 +375,8 @@ impl Type {
 
     fn query(&self, f: &dyn Fn(&Type) -> Tri) -> Tri {
         match self {
+            Type::Reasoned(t, _) => t.query(f),
+            Type::LateArrayShape(s) => s.resolve().query(f),
             Type::Union(types) => Tri::extreme_identity(types.iter().map(|t| t.query(f))),
             Type::Benevolent(types) => types.iter().map(|t| t.query(f)).fold(Tri::No, Tri::or),
             Type::Intersection(types) => Tri::max_min(types.iter().map(|t| t.query(f))),
@@ -398,6 +410,8 @@ impl Type {
         f: &dyn Fn(&Type) -> Tri,
     ) -> Tri {
         match self {
+            Type::Reasoned(t, _) => query(t),
+            Type::LateArrayShape(s) => query(&s.resolve()),
             Type::Union(types) => Tri::extreme_identity(types.iter().map(query)),
             Type::Benevolent(types) if benevolent => types.iter().map(query).fold(Tri::No, Tri::or),
             Type::Benevolent(types) => Tri::extreme_identity(types.iter().map(query)),
@@ -594,6 +608,8 @@ impl Type {
     /// `isCloneable()`: an object, `mixed` and `never`; a common callable or iterable maybe.
     pub fn is_cloneable(&self) -> Tri {
         match self {
+            Type::Reasoned(t, _) => t.is_cloneable(),
+            Type::LateArrayShape(s) => s.resolve().is_cloneable(),
             Type::Mixed { .. } | Type::SubtractedMixed { .. } | Type::Error | Type::Never(_) => Tri::Yes,
             Type::Template(t) => t.bound.is_cloneable(),
             _ => self.query(&|t| match t {
@@ -854,6 +870,8 @@ impl Type {
 
     pub fn iterable_key_type(&self) -> Type {
         match self {
+            Type::Reasoned(t, _) => t.iterable_key_type(),
+            Type::LateArrayShape(s) => s.resolve().iterable_key_type(),
             _ if self.is_callable_array() => {
                 Type::Union(vec![Type::ConstInt(0), Type::ConstInt(1)])
             }
@@ -882,6 +900,8 @@ impl Type {
 
     pub fn iterable_value_type(&self) -> Type {
         match self {
+            Type::Reasoned(t, _) => t.iterable_value_type(),
+            Type::LateArrayShape(s) => s.resolve().iterable_value_type(),
             Type::Intersection(types) if self.is_callable_array() => intersect(vec![
                 intersect(types.iter().map(Type::iterable_value_type).collect()),
                 Type::Union(vec![
@@ -921,6 +941,8 @@ impl Type {
 
     pub fn describe(&self, level: Level) -> String {
         match self {
+            Type::Reasoned(t, _) => t.describe(level),
+            Type::LateArrayShape(s) => s.describe(),
             Type::Mixed { .. } => "mixed".to_string(),
             Type::SubtractedMixed { excluded, .. } => level.handle3(|| "mixed".into(), || "mixed".into(), || {
                 let description = excluded.describe(Level::Precise);
@@ -1118,6 +1140,8 @@ impl Type {
             templates: s.templates.clone(),
         };
         match self {
+            Type::Reasoned(t, reason) => f(t).with_unresolvable_reason(reason.clone()),
+            Type::LateArrayShape(s) => s.traverse(f),
             Type::Array(k, v) => Type::array(f(k), f(v)),
             Type::Accessory(Accessory::HasOffsetValue(k, v)) => {
                 Type::Accessory(Accessory::HasOffsetValue(k.clone(), bx(f(v))))
@@ -1745,6 +1769,8 @@ fn print_templates(sig: &Signature) -> String {
 /// `Printer::print($type->toPhpDocNode())`
 pub fn to_phpdoc(t: &Type) -> String {
     match t {
+        Type::Reasoned(t, _) => to_phpdoc(t),
+        Type::LateArrayShape(s) => s.phpdoc(),
         Type::Accessory(Accessory::HasMethod(_) | Accessory::HasOffsetValue(..)) => String::new(),
         Type::Intersection(types)
             if types.iter().any(|t| matches!(t, Type::Accessory(Accessory::HasOffsetValue(..)))) =>
@@ -2356,7 +2382,15 @@ impl ShapeBuilder {
 /// `$a->isSuperTypeOf($b)`
 pub fn is_super_type_of(a: &Type, b: &Type) -> Tri {
     use Type as T;
+    if let T::Reasoned(t, _) = b {
+        return is_super_type_of(a, t);
+    }
+    if let T::LateArrayShape(s) = b {
+        return is_super_type_of(a, &s.resolve());
+    }
     match a {
+        T::Reasoned(t, _) => is_super_type_of(t, b),
+        T::LateArrayShape(s) => if b.is_never() { Tri::Yes } else { is_super_type_of(&s.resolve(), b).and(Tri::Maybe) },
         // `*` is a bivariant `mixed`
         // (a call-site variance is a generic argument's only, compared in `valid_variance()`)
         T::Mixed { .. } | T::Error | T::Wildcard | T::OffsetAccess(..) | T::Projection(..) => Tri::Yes,
@@ -3128,7 +3162,7 @@ pub fn union(types: Vec<Type>) -> Type {
     for t in types {
         match t {
             Type::Mixed { explicit: false } => return t,
-            Type::Never(NeverKind::Implicit) => {}
+            _ if t.is_implicit_never() => {}
             Type::Benevolent(inner) => {
                 for i in &inner {
                     benevolent.push(i.describe(Level::Value));
@@ -3698,6 +3732,10 @@ pub fn intersect(types: Vec<Type>) -> Type {
     if let Some(never) = types.iter().find(|t| t.is_implicit_never()) {
         return never.clone();
     }
+    // LateResolvableTypeTrait keeps comparisons uncertain until template keys/offsets resolve.
+    if types.iter().any(|t| matches!(t, Type::LateArrayShape(_) | Type::OffsetAccess(..)) && contains_template(t)) {
+        return Type::Intersection(types);
+    }
     // A & (B | C) → (A & B) | (A & C); with several unions a template union goes first, then a benevolent one
     let members = |t: &Type| -> Option<Vec<Type>> {
         match t {
@@ -3801,10 +3839,10 @@ pub fn intersect(types: Vec<Type>) -> Type {
                 types.remove(i);
                 continue 'outer;
             }
-            let a_super = if let Type::Iterable(key, value) = types[j].array_class() {
-                iterable_super_of_mixed(key, value, &types[i])
+            let (a_super, a_reasons) = if let Type::Iterable(key, value) = types[j].array_class() {
+                (iterable_super_of_mixed(key, value, &types[i]), Vec::new())
             } else {
-                is_super_type_of(&types[j], &types[i])
+                unresolvable::compare(&types[j], &types[i])
             };
             if a_super.yes() {
                 types.remove(j);
@@ -3813,7 +3851,7 @@ pub fn intersect(types: Vec<Type>) -> Type {
             let b_super = if let Type::Iterable(key, value) = types[i].array_class() {
                 iterable_super_of_mixed(key, value, &types[j])
             } else {
-                is_super_type_of(&types[i], &types[j])
+                unresolvable::compare(&types[i], &types[j]).0
             };
             if b_super.maybe() {
                 if let (Type::ClassString(Some(x)), Type::ClassString(Some(y))) =
@@ -3909,7 +3947,8 @@ pub fn intersect(types: Vec<Type>) -> Type {
                 continue 'outer;
             }
             if a_super.no() {
-                return Type::Never(NeverKind::Implicit);
+                let never = Type::Never(NeverKind::Implicit);
+                return a_reasons.into_iter().next().map_or(never.clone(), |reason| never.with_unresolvable_reason(reason));
             }
             j += 1;
         }

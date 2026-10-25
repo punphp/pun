@@ -183,13 +183,64 @@ fn late_parameter_type(t: &Type, argument: &dyn Fn(&str) -> Option<Type>) -> Typ
     pun_phpstan::resolve::resolve_late(&t)
 }
 
-/// `UnresolvableTypeHelper`: a declaration that was already erroneous must not gain another call-site error.
-fn unresolvable(t: &Type) -> bool {
-    let mut found = false;
-    super::super::type_aliases::each(t, &mut |t| {
-        found |= matches!(t, Type::Error | Type::Never(NeverKind::Implicit));
-    });
-    found
+/// `UnresolvableTypeHelper`: direct siblings still contribute reasons after the first error, but later containers
+/// are not descended into. Keep the distinction between no error and an error without an explanation.
+fn unresolvable(t: &Type) -> Option<Vec<String>> {
+    fn visit(t: &Type, found: &std::cell::Cell<bool>, reasons: &std::cell::RefCell<Vec<String>>) {
+        if t == &Type::Error || t == &Type::Never(NeverKind::Implicit) {
+            found.set(true);
+            if let Some(reason) = t.unresolvable_reason()
+                && !reasons.borrow().iter().any(|r| r == reason)
+            {
+                reasons.borrow_mut().push(reason.to_string());
+            }
+        }
+        if !found.get() {
+            t.traverse(&|t| {
+                visit(t, found, reasons);
+                t.clone()
+            });
+        }
+    }
+    let found = std::cell::Cell::new(false);
+    let reasons = std::cell::RefCell::new(Vec::new());
+    visit(t, &found, &reasons);
+    found.get().then(|| reasons.into_inner())
+}
+
+/// PropertyReflectionFinder's public/readable instance-property facts for the actual argument object types.
+fn property_reflections(c: &Checker, inference: &Inference) -> Vec<(String, pun_phpstan::types::Tri, Vec<pun_phpstan::types::PropertyReflection>)> {
+    let mut names = Vec::new();
+    for t in inference.passed.iter().flatten() {
+        super::super::type_aliases::each(t, &mut |t| {
+            for n in t.object_class_names() {
+                if !names.contains(&n) { names.push(n); }
+            }
+        });
+    }
+    names.into_iter().filter_map(|name| {
+        let k = c.codebase.get_class_like(name.as_bytes())?;
+        // UniversalObjectCratesClassReflectionExtension answers maybe even for a declared property.
+        if c.codebase.is_instance_of(k.name.as_bytes(), b"stdClass") { return None; }
+        let missing = if k.flags.is_final() && !k.flags.allows_dynamic_properties() {
+            pun_phpstan::types::Tri::No
+        } else {
+            pun_phpstan::types::Tri::Maybe
+        };
+        let properties = k.declaring_property_ids.iter().filter_map(|(name, declaring)| {
+            let p = c.codebase.get_property(declaring.as_bytes(), name.as_bytes())?;
+            if p.flags.is_static() { return None; }
+            let declaring = c.codebase.get_class_like(declaring.as_bytes())?;
+            Some(pun_phpstan::types::PropertyReflection {
+                name: String::from_utf8_lossy(name.as_bytes()).trim_start_matches('$').to_string(),
+                declaring_class: declared::original_name(declaring),
+                public: p.read_visibility.is_public(),
+                readable: !p.flags.is_virtual_property() || p.hooks.contains_key(&mago_word::word("get")),
+                ty: p.type_metadata.as_ref().map_or_else(mixed, |t| c.to_phpstan(&t.type_union)),
+            })
+        }).collect();
+        Some((name, missing, properties))
+    }).collect()
 }
 
 /// The `argument.templateType` errors of `checkMissingTypehints` (level 6): a template the call leaves unresolved
@@ -278,7 +329,9 @@ pub(in super::super) fn arguments(
     let strict = strict_types(c);
     let levels = c.levels();
     let inference = infer(c, acceptor, args, parameters);
-    let resolved = declared::with_classes(c, || resolved_types(acceptor, &inference));
+    let resolved = declared::with_classes(c, || pun_phpstan::types::with_property_reflections(
+        property_reflections(c, &inference), || resolved_types(acceptor, &inference)
+    ));
     let allowed_type = super::super::params::allowed_constants_type(c, acceptor);
     for (i, (e, p)) in args.iter().zip(parameters).enumerate() {
         if e.unpack {
@@ -320,12 +373,19 @@ pub(in super::super) fn arguments(
             }
         }
         let parameter = || describe(acceptor, p, e.name.is_none().then_some(Ok(i)));
-        if resolved[p].as_ref().is_some_and(unresolvable)
-            && inference.declared[p].as_ref().is_some_and(|t| !unresolvable(t))
+        if let Some(reasons) = resolved[p].as_ref().and_then(unresolvable)
+            && inference.declared[p].as_ref().is_some_and(|t| unresolvable(t).is_none())
         {
+            // RuleErrorBuilder::addTip()/build(), as rendered by PHPStan's plain JSON formatter.
+            let reasons: Vec<_> = reasons.into_iter().map(|r| r.replace("<fg=cyan>", "").replace("</>", "")).collect();
+            let tip = match reasons.as_slice() {
+                [] => None,
+                [one] => Some(one.clone()),
+                all => Some(all.iter().map(|r| format!("• {r}")).collect::<Vec<_>>().join("\n")),
+            };
             c.report(e.span, "argument.unresolvableType", format!(
                 "{} of {of} contains unresolvable type.", parameter()
-            ), None);
+            ), tip.as_deref());
         }
         if acceptor.closure_this[p] && matches!(e.kind, ArgKind::StaticClosure) {
             c.report(e.span, "argument.staticClosure", format!(

@@ -22,9 +22,11 @@ pub fn cast_is_error(t: &Type, cast: Cast, sm: StrictMixed) -> bool {
     }
     let rec = |t: &Type| cast_is_error(t, cast, sm);
     match t {
+        T::Reasoned(t, _) => rec(t),
+        T::LateArrayShape(s) => rec(&s.resolve()),
         T::Mixed { .. } | T::SubtractedMixed { .. } | T::Wildcard if sm.applies(t) => true,
-        T::Mixed { .. } | T::SubtractedMixed { .. } | T::Wildcard => cast == C::BitwiseNot,
-        T::Never(_) | T::Error | T::OffsetAccess(..) | T::Projection(..) => false,
+        T::Mixed { .. } | T::SubtractedMixed { .. } | T::Wildcard | T::Error => cast == C::BitwiseNot,
+        T::Never(_) | T::OffsetAccess(..) | T::Projection(..) => false,
         T::Void => true,
         T::Null | T::Bool | T::ConstBool(_) => cast == C::BitwiseNot,
         T::Int | T::ConstInt(_) | T::IntRange(..) | T::Float | T::ConstFloat(_) => false,

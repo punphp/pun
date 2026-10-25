@@ -1,0 +1,707 @@
+{
+    "error": {
+        "queries": {
+            "isString": "Maybe",
+            "isArray": "Maybe",
+            "isIterable": "Maybe",
+            "isCloneable": "Yes",
+            "isCallable": "Maybe",
+            "isFloat": "Maybe",
+            "isBoolean": "Maybe",
+            "isNull": "Maybe",
+            "isVoid": "Maybe",
+            "isList": "Maybe",
+            "isIterableAtLeastOnce": "Maybe"
+        },
+        "describe": {
+            "typeOnly": "mixed",
+            "value": "mixed",
+            "precise": "*ERROR*"
+        },
+        "super": {
+            "error": "Yes",
+            "never": "Yes",
+            "explicit-never": "Yes",
+            "string": "Yes"
+        },
+        "accepts": {
+            "error": "Yes",
+            "never": "Yes",
+            "explicit-never": "Yes",
+            "string": "Yes"
+        },
+        "acceptsReasons": {
+            "error": [],
+            "never": [],
+            "explicit-never": [],
+            "string": []
+        },
+        "casts": {
+            "toString": false,
+            "toNumber": false,
+            "toInteger": false,
+            "toFloat": false,
+            "toBitwiseNotType": true
+        },
+        "operations": {
+            "union-string": [
+                "*ERROR*",
+                "Type stdClass cannot be used as an array shape key."
+            ],
+            "union-self": [
+                "*ERROR*",
+                "Type stdClass cannot be used as an array shape key."
+            ],
+            "intersection-string": [
+                "string",
+                null
+            ]
+        },
+        "phpdoc": "mixed",
+        "reason": "Type stdClass cannot be used as an array shape key."
+    },
+    "never": {
+        "queries": {
+            "isString": "No",
+            "isArray": "No",
+            "isIterable": "Yes",
+            "isCloneable": "Yes",
+            "isCallable": "No",
+            "isFloat": "No",
+            "isBoolean": "No",
+            "isNull": "No",
+            "isVoid": "No",
+            "isList": "No",
+            "isIterableAtLeastOnce": "Maybe"
+        },
+        "describe": {
+            "typeOnly": "*NEVER*",
+            "value": "*NEVER*",
+            "precise": "*NEVER*"
+        },
+        "super": {
+            "error": "No",
+            "never": "Yes",
+            "explicit-never": "Yes",
+            "string": "No"
+        },
+        "accepts": {
+            "error": "Yes",
+            "never": "Yes",
+            "explicit-never": "Yes",
+            "string": "Yes"
+        },
+        "acceptsReasons": {
+            "error": [],
+            "never": [],
+            "explicit-never": [],
+            "string": []
+        },
+        "casts": {
+            "toString": false,
+            "toNumber": false,
+            "toInteger": false,
+            "toFloat": false,
+            "toBitwiseNotType": false
+        },
+        "operations": {
+            "union-string": [
+                "string",
+                null
+            ],
+            "union-self": [
+                "*NEVER*",
+                "A missing property."
+            ],
+            "intersection-string": [
+                "*NEVER*",
+                "A missing property."
+            ],
+            "iterable-key": [
+                "*NEVER*",
+                null
+            ],
+            "iterable-value": [
+                "*NEVER*",
+                null
+            ]
+        },
+        "phpdoc": "never",
+        "reason": "A missing property."
+    },
+    "explicit-never": {
+        "queries": {
+            "isString": "No",
+            "isArray": "No",
+            "isIterable": "Yes",
+            "isCloneable": "Yes",
+            "isCallable": "No",
+            "isFloat": "No",
+            "isBoolean": "No",
+            "isNull": "No",
+            "isVoid": "No",
+            "isList": "No",
+            "isIterableAtLeastOnce": "Maybe"
+        },
+        "describe": {
+            "typeOnly": "*NEVER*",
+            "value": "*NEVER*",
+            "precise": "*NEVER*"
+        },
+        "super": {
+            "error": "No",
+            "never": "Yes",
+            "explicit-never": "Yes",
+            "string": "No"
+        },
+        "accepts": {
+            "error": "Yes",
+            "never": "Yes",
+            "explicit-never": "Yes",
+            "string": "Yes"
+        },
+        "acceptsReasons": {
+            "error": [],
+            "never": [],
+            "explicit-never": [],
+            "string": []
+        },
+        "casts": {
+            "toString": false,
+            "toNumber": false,
+            "toInteger": false,
+            "toFloat": false,
+            "toBitwiseNotType": false
+        },
+        "operations": {
+            "union-string": [
+                "string",
+                null
+            ],
+            "union-self": [
+                "*NEVER*",
+                "An explicit declaration."
+            ],
+            "intersection-string": [
+                "*NEVER*",
+                "An explicit declaration."
+            ],
+            "iterable-key": [
+                "*NEVER*",
+                null
+            ],
+            "iterable-value": [
+                "*NEVER*",
+                null
+            ]
+        },
+        "phpdoc": "never",
+        "reason": "An explicit declaration."
+    },
+    "string": {
+        "queries": {
+            "isString": "Yes",
+            "isArray": "No",
+            "isIterable": "No",
+            "isCloneable": "No",
+            "isCallable": "Maybe",
+            "isFloat": "No",
+            "isBoolean": "No",
+            "isNull": "No",
+            "isVoid": "No",
+            "isList": "No",
+            "isIterableAtLeastOnce": "No"
+        },
+        "describe": {
+            "typeOnly": "string",
+            "value": "string",
+            "precise": "string"
+        },
+        "super": {
+            "error": "Maybe",
+            "never": "Yes",
+            "explicit-never": "Yes",
+            "string": "Yes"
+        },
+        "accepts": {
+            "error": "Yes",
+            "never": "Yes",
+            "explicit-never": "Yes",
+            "string": "Yes"
+        },
+        "acceptsReasons": {
+            "error": [],
+            "never": [],
+            "explicit-never": [],
+            "string": []
+        },
+        "casts": {
+            "toString": false,
+            "toNumber": true,
+            "toInteger": false,
+            "toFloat": false,
+            "toBitwiseNotType": false
+        },
+        "operations": {
+            "union-string": [
+                "string",
+                null
+            ],
+            "union-self": [
+                "string",
+                null
+            ],
+            "intersection-string": [
+                "string",
+                null
+            ]
+        },
+        "phpdoc": "string",
+        "reason": null
+    },
+    "equality": {
+        "error-reasonless": true,
+        "error-other-reason": true,
+        "never-reasonless": true,
+        "never-other-reason": true
+    },
+    "late": [
+        {
+            "input": "array{K: int}",
+            "substitutions": {
+                "K": "'key'"
+            },
+            "queries": {
+                "isArray": "Yes",
+                "isString": "No",
+                "isCloneable": "No",
+                "isIterable": "Yes"
+            },
+            "superString": "No",
+            "stringSuper": "No",
+            "acceptsString": "No",
+            "stringAccepts": "No",
+            "acceptsStringReasons": [
+                "string is empty."
+            ],
+            "castStringError": true,
+            "iterableKey": "(int|string)",
+            "original": "array{K: int}",
+            "resolved": "array{key: int}",
+            "originalPhpdoc": "array{K: int}",
+            "phpdoc": "array{key: int}",
+            "reason": null
+        },
+        {
+            "input": "array{K?: int}",
+            "substitutions": {
+                "K": "'key'"
+            },
+            "queries": {
+                "isArray": "Yes",
+                "isString": "No",
+                "isCloneable": "No",
+                "isIterable": "Yes"
+            },
+            "superString": "No",
+            "stringSuper": "No",
+            "acceptsString": "No",
+            "stringAccepts": "No",
+            "acceptsStringReasons": [],
+            "castStringError": true,
+            "iterableKey": "(int|string)",
+            "original": "array{K?: int}",
+            "resolved": "array{key?: int}",
+            "originalPhpdoc": "array{K?: int}",
+            "phpdoc": "array{key?: int}",
+            "reason": null
+        },
+        {
+            "input": "array{K: int}",
+            "substitutions": {
+                "K": "stdClass"
+            },
+            "queries": {
+                "isArray": "Yes",
+                "isString": "No",
+                "isCloneable": "No",
+                "isIterable": "Yes"
+            },
+            "superString": "No",
+            "stringSuper": "No",
+            "acceptsString": "No",
+            "stringAccepts": "No",
+            "acceptsStringReasons": [
+                "string is empty."
+            ],
+            "castStringError": true,
+            "iterableKey": "(int|string)",
+            "original": "array{K: int}",
+            "resolved": "*ERROR*",
+            "originalPhpdoc": "array{K: int}",
+            "phpdoc": "mixed",
+            "reason": "Type stdClass cannot be used as an array shape key."
+        },
+        {
+            "input": "array{K: int, MissingClass::CONSTANT: int}",
+            "substitutions": {
+                "K": "'key'"
+            },
+            "queries": {
+                "isArray": "Maybe",
+                "isString": "Maybe",
+                "isCloneable": "Yes",
+                "isIterable": "Maybe"
+            },
+            "superString": "Maybe",
+            "stringSuper": "Maybe",
+            "acceptsString": "Yes",
+            "stringAccepts": "Yes",
+            "acceptsStringReasons": [],
+            "castStringError": false,
+            "iterableKey": "*ERROR*",
+            "original": "array{K: int, mixed: int}",
+            "resolved": "*ERROR*",
+            "originalPhpdoc": "array{K: int, mixed: int}",
+            "phpdoc": "mixed",
+            "reason": null
+        },
+        {
+            "input": "array{K: int, int, literal?: bool, 3: string, DateTime::RFC3339: int, 'space key'?: bool}",
+            "substitutions": {
+                "K": "1"
+            },
+            "queries": {
+                "isArray": "Yes",
+                "isString": "No",
+                "isCloneable": "No",
+                "isIterable": "Yes"
+            },
+            "superString": "No",
+            "stringSuper": "No",
+            "acceptsString": "No",
+            "stringAccepts": "No",
+            "acceptsStringReasons": [
+                "string is empty."
+            ],
+            "castStringError": true,
+            "iterableKey": "(int|string)",
+            "original": "array{K: int, int, literal?: bool, 3: string, 'Y-m-d\\\\TH:i:sP': int, 'space key'?: bool}",
+            "resolved": "array{1: int, 2: int, literal?: bool, 3: string, 'Y-m-d\\TH:i:sP': int, 'space key'?: bool}",
+            "originalPhpdoc": "array{K: int, int, literal?: bool, 3: string, 'Y-m-d\\\\TH:i:sP': int, 'space key'?: bool}",
+            "phpdoc": "array{1: int, 2: int, literal?: bool, 3: string, 'Y-m-d\\\\TH:i:sP': int, 'space key'?: bool}",
+            "reason": null
+        },
+        {
+            "input": "array{K: int, ...}",
+            "substitutions": {
+                "K": "'key'"
+            },
+            "queries": {
+                "isArray": "Yes",
+                "isString": "No",
+                "isCloneable": "No",
+                "isIterable": "Yes"
+            },
+            "superString": "No",
+            "stringSuper": "No",
+            "acceptsString": "No",
+            "stringAccepts": "No",
+            "acceptsStringReasons": [
+                "string is empty."
+            ],
+            "castStringError": true,
+            "iterableKey": "(int|string)",
+            "original": "array{K: int, ...}",
+            "resolved": "array{key: int, ...}",
+            "originalPhpdoc": "array{K: int, ...}",
+            "phpdoc": "array{key: int, ...}",
+            "reason": null
+        },
+        {
+            "input": "array{K: int, ...<string>}",
+            "substitutions": {
+                "K": "'key'"
+            },
+            "queries": {
+                "isArray": "Yes",
+                "isString": "No",
+                "isCloneable": "No",
+                "isIterable": "Yes"
+            },
+            "superString": "No",
+            "stringSuper": "No",
+            "acceptsString": "No",
+            "stringAccepts": "No",
+            "acceptsStringReasons": [
+                "string is empty."
+            ],
+            "castStringError": true,
+            "iterableKey": "(int|string)",
+            "original": "array{K: int, ...<string>}",
+            "resolved": "array{key: int, ...<string>}",
+            "originalPhpdoc": "array{K: int, ...<string>}",
+            "phpdoc": "array{key: int, ...<string>}",
+            "reason": null
+        },
+        {
+            "input": "array{K: int, ...<L, string>}",
+            "substitutions": {
+                "K": "'key'",
+                "L": "'key'|'extra'"
+            },
+            "queries": {
+                "isArray": "Yes",
+                "isString": "No",
+                "isCloneable": "No",
+                "isIterable": "Yes"
+            },
+            "superString": "No",
+            "stringSuper": "No",
+            "acceptsString": "No",
+            "stringAccepts": "No",
+            "acceptsStringReasons": [
+                "string is empty."
+            ],
+            "castStringError": true,
+            "iterableKey": "(int|string)",
+            "original": "array{K: int, ...<(int&L)|(L&string), string>}",
+            "resolved": "array{key: int, extra?: string}",
+            "originalPhpdoc": "array{K: int, ...<((int & L) | (L & string)), string>}",
+            "phpdoc": "array{key: int, extra?: string}",
+            "reason": null
+        },
+        {
+            "input": "array{K: int, ...<L, string>}",
+            "substitutions": {
+                "K": "'key'",
+                "L": "'extra'"
+            },
+            "queries": {
+                "isArray": "Yes",
+                "isString": "No",
+                "isCloneable": "No",
+                "isIterable": "Yes"
+            },
+            "superString": "No",
+            "stringSuper": "No",
+            "acceptsString": "No",
+            "stringAccepts": "No",
+            "acceptsStringReasons": [
+                "string is empty."
+            ],
+            "castStringError": true,
+            "iterableKey": "(int|string)",
+            "original": "array{K: int, ...<(int&L)|(L&string), string>}",
+            "resolved": "array{key: int, extra?: string}",
+            "originalPhpdoc": "array{K: int, ...<((int & L) | (L & string)), string>}",
+            "phpdoc": "array{key: int, extra?: string}",
+            "reason": null
+        },
+        {
+            "input": "array{fixed: int, ...<K, string>}",
+            "substitutions": {
+                "K": "string"
+            },
+            "queries": {
+                "isArray": "Yes",
+                "isString": "No",
+                "isCloneable": "No",
+                "isIterable": "Yes"
+            },
+            "superString": "No",
+            "stringSuper": "No",
+            "acceptsString": "No",
+            "stringAccepts": "No",
+            "acceptsStringReasons": [],
+            "castStringError": true,
+            "iterableKey": "int|string",
+            "original": "array{fixed: int, ...<(int&K)|(K&string), string>}",
+            "resolved": "array{fixed: int, ...<string, string>}",
+            "originalPhpdoc": "array{fixed: int, ...<((int & K) | (K & string)), string>}",
+            "phpdoc": "array{fixed: int, ...<string, string>}",
+            "reason": null
+        },
+        {
+            "input": "non-empty-array{K: int}",
+            "substitutions": {
+                "K": "'key'"
+            },
+            "queries": {
+                "isArray": "Yes",
+                "isString": "No",
+                "isCloneable": "No",
+                "isIterable": "Yes"
+            },
+            "superString": "No",
+            "stringSuper": "No",
+            "acceptsString": "No",
+            "stringAccepts": "No",
+            "acceptsStringReasons": [
+                "string is empty."
+            ],
+            "castStringError": true,
+            "iterableKey": "(int|string)",
+            "original": "non-empty-array{K: int}",
+            "resolved": "array{key: int}",
+            "originalPhpdoc": "non-empty-array{K: int}",
+            "phpdoc": "array{key: int}",
+            "reason": null
+        },
+        {
+            "input": "list{K: int, ...}",
+            "substitutions": {
+                "K": "0"
+            },
+            "queries": {
+                "isArray": "Yes",
+                "isString": "No",
+                "isCloneable": "No",
+                "isIterable": "Yes"
+            },
+            "superString": "No",
+            "stringSuper": "No",
+            "acceptsString": "No",
+            "stringAccepts": "No",
+            "acceptsStringReasons": [
+                "string is not a list.",
+                "string is empty."
+            ],
+            "castStringError": true,
+            "iterableKey": "int<0, max>",
+            "original": "list{K: int, ...}",
+            "resolved": "array{int, ...}",
+            "originalPhpdoc": "list{K: int, ...}",
+            "phpdoc": "array{int, ...}",
+            "reason": null
+        },
+        {
+            "input": "non-empty-list{K: int}",
+            "substitutions": {
+                "K": "0"
+            },
+            "queries": {
+                "isArray": "Yes",
+                "isString": "No",
+                "isCloneable": "No",
+                "isIterable": "Yes"
+            },
+            "superString": "No",
+            "stringSuper": "No",
+            "acceptsString": "No",
+            "stringAccepts": "No",
+            "acceptsStringReasons": [
+                "string is not a list.",
+                "string is empty."
+            ],
+            "castStringError": true,
+            "iterableKey": "int<0, max>",
+            "original": "non-empty-list{K: int}",
+            "resolved": "array{int}",
+            "originalPhpdoc": "non-empty-list{K: int}",
+            "phpdoc": "array{int}",
+            "reason": null
+        },
+        {
+            "input": "array{K: int, ...<L, string>}",
+            "substitutions": {
+                "K": "'key'",
+                "L": "stdClass"
+            },
+            "queries": {
+                "isArray": "Yes",
+                "isString": "No",
+                "isCloneable": "No",
+                "isIterable": "Yes"
+            },
+            "superString": "No",
+            "stringSuper": "No",
+            "acceptsString": "No",
+            "stringAccepts": "No",
+            "acceptsStringReasons": [
+                "string is empty."
+            ],
+            "castStringError": true,
+            "iterableKey": "(int|string)",
+            "original": "array{K: int, ...<(int&L)|(L&string), string>}",
+            "resolved": "array{key: int, ...<*NEVER*, string>}",
+            "originalPhpdoc": "array{K: int, ...<((int & L) | (L & string)), string>}",
+            "phpdoc": "array{key: int, ...<never, string>}",
+            "reason": null
+        }
+    ],
+    "mixed-intersections": {
+        "direct-first": [
+            "*NEVER*",
+            null
+        ],
+        "direct-last": [
+            "*NEVER*",
+            null
+        ],
+        "offset-first": [
+            "*NEVER*",
+            null
+        ],
+        "offset-last": [
+            "*NEVER*",
+            "Type int has already been eliminated from mixed."
+        ],
+        "object-offset-first": [
+            "int",
+            null
+        ],
+        "object-offset-last": [
+            "int",
+            null
+        ]
+    },
+    "parsed-equality": [
+        [
+            "class-string<stdClass>",
+            "class-string<stdClass>",
+            true
+        ],
+        [
+            "class-string<stdClass>",
+            "class-string<DateTime>",
+            false
+        ],
+        [
+            "(int is int ? string : bool)",
+            "(int is int ? string : bool)",
+            true
+        ],
+        [
+            "(int is int ? string : bool)",
+            "(int is int ? bool : string)",
+            false
+        ],
+        [
+            "Box<covariant int>",
+            "Box<covariant int>",
+            true
+        ],
+        [
+            "Box<covariant int>",
+            "Box<contravariant int>",
+            false
+        ]
+    ],
+    "mixed-equality": [
+        [
+            false,
+            false,
+            "int",
+            "int",
+            true
+        ],
+        [
+            false,
+            false,
+            "int",
+            "string",
+            false
+        ]
+    ]
+}

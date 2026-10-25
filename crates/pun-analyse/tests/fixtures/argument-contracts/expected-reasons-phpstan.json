@@ -1,0 +1,218 @@
+{
+  "version": "2.3.1",
+  "errors": [
+    {
+      "message": "Parameter #2 $value of function ArgumentReasonOracle\\keyed contains unresolvable type.",
+      "line": 58,
+      "ignorable": true,
+      "tip": "Type stdClass cannot be used as an array shape key.",
+      "identifier": "argument.unresolvableType"
+    },
+    {
+      "message": "Parameter #2 $value of function ArgumentReasonOracle\\keyed contains unresolvable type.",
+      "line": 59,
+      "ignorable": true,
+      "tip": "Type array<int, string> cannot be used as an array shape key.",
+      "identifier": "argument.unresolvableType"
+    },
+    {
+      "message": "Parameter #2 $value of function ArgumentReasonOracle\\intersected expects array{target: int}, array{} given.",
+      "line": 61,
+      "ignorable": true,
+      "tip": "Array does not have offset 'target'.",
+      "identifier": "argument.type"
+    },
+    {
+      "message": "Parameter #2 $value of function ArgumentReasonOracle\\intersected expects array{target: int}, array{} given.",
+      "line": 62,
+      "ignorable": true,
+      "tip": "Array does not have offset 'target'.",
+      "identifier": "argument.type"
+    },
+    {
+      "message": "Parameter #2 $value of method ArgumentReasonOracle\\Methods::keyed() contains unresolvable type.",
+      "line": 65,
+      "ignorable": true,
+      "tip": "Type stdClass cannot be used as an array shape key.",
+      "identifier": "argument.unresolvableType"
+    },
+    {
+      "message": "Parameter #2 $value of method ArgumentReasonOracle\\Methods::intersected() expects array{target: int}, array{} given.",
+      "line": 66,
+      "ignorable": true,
+      "tip": "Array does not have offset 'target'.",
+      "identifier": "argument.type"
+    },
+    {
+      "message": "Parameter #2 $value of attribute class ArgumentReasonOracle\\KeyedAttribute constructor contains unresolvable type.",
+      "line": 68,
+      "ignorable": true,
+      "tip": "Type stdClass cannot be used as an array shape key.",
+      "identifier": "argument.unresolvableType"
+    },
+    {
+      "message": "Parameter #2 $value of attribute class ArgumentReasonOracle\\KeyedAttribute constructor contains unresolvable type.",
+      "line": 70,
+      "ignorable": true,
+      "tip": "Type array<int, string> cannot be used as an array shape key.",
+      "identifier": "argument.unresolvableType"
+    },
+    {
+      "message": "Parameter #2 $value of attribute class ArgumentReasonOracle\\IntersectedAttribute constructor expects array{target: int}, array{} given.",
+      "line": 72,
+      "ignorable": true,
+      "tip": "Array does not have offset 'target'.",
+      "identifier": "argument.type"
+    },
+    {
+      "message": "Parameter #2 $value of attribute class ArgumentReasonOracle\\IntersectedAttribute constructor expects array{target: int}, array{} given.",
+      "line": 74,
+      "ignorable": true,
+      "tip": "Array does not have offset 'target'.",
+      "identifier": "argument.type"
+    },
+    {
+      "message": "PHPDoc tag @param for parameter $value contains unresolvable type.",
+      "line": 109,
+      "ignorable": true,
+      "identifier": "parameter.unresolvableType"
+    },
+    {
+      "message": "Parameter #3 $value of function ArgumentReasonOracle\\ordered contains unresolvable type.",
+      "line": 111,
+      "ignorable": true,
+      "tip": "• Type stdClass cannot be used as an array shape key.\n• Type array<int, string> cannot be used as an array shape key.",
+      "identifier": "argument.unresolvableType"
+    },
+    {
+      "message": "Parameter #3 $value of function ArgumentReasonOracle\\reversed contains unresolvable type.",
+      "line": 112,
+      "ignorable": true,
+      "tip": "• Type array<int, string> cannot be used as an array shape key.\n• Type stdClass cannot be used as an array shape key.",
+      "identifier": "argument.unresolvableType"
+    },
+    {
+      "message": "Parameter #3 $value of function ArgumentReasonOracle\\nested contains unresolvable type.",
+      "line": 113,
+      "ignorable": true,
+      "tip": "Type stdClass cannot be used as an array shape key.",
+      "identifier": "argument.unresolvableType"
+    },
+    {
+      "message": "Parameter #2 $value of function ArgumentReasonOracle\\lateIntersection contains unresolvable type.",
+      "line": 123,
+      "ignorable": true,
+      "identifier": "argument.unresolvableType"
+    },
+    {
+      "message": "Parameter #2 $value of function ArgumentReasonOracle\\lateIntersection expects array{target: int}, array{} given.",
+      "line": 124,
+      "ignorable": true,
+      "tip": "Array does not have offset 'target'.",
+      "identifier": "argument.type"
+    },
+    {
+      "message": "Property ArgumentReasonOracle\\PrivateProperty::$target is never read, only written.",
+      "line": 127,
+      "ignorable": true,
+      "tip": "See: https://phpstan.org/developing-extensions/always-read-written-properties",
+      "identifier": "property.onlyWritten"
+    },
+    {
+      "message": "Parameter #2 $value of function ArgumentReasonOracle\\objectIntersection contains unresolvable type.",
+      "line": 137,
+      "ignorable": true,
+      "tip": "ArgumentReasonOracle\\NoProperty does not have property $target.",
+      "identifier": "argument.unresolvableType"
+    },
+    {
+      "message": "Parameter #2 $value of function ArgumentReasonOracle\\objectIntersection contains unresolvable type.",
+      "line": 138,
+      "ignorable": true,
+      "tip": "Property ArgumentReasonOracle\\PrivateProperty::$target is not public.",
+      "identifier": "argument.unresolvableType"
+    },
+    {
+      "message": "Parameter #2 $value of function ArgumentReasonOracle\\objectIntersection contains unresolvable type.",
+      "line": 139,
+      "ignorable": true,
+      "tip": "ArgumentReasonOracle\\StaticProperty does not have property $target.",
+      "identifier": "argument.unresolvableType"
+    },
+    {
+      "message": "Parameter #2 $value of function ArgumentReasonOracle\\genericIntersection contains unresolvable type.",
+      "line": 163,
+      "ignorable": true,
+      "tip": "Template type T on class ArgumentReasonOracle\\Box is not covariant. Learn more: https://phpstan.org/blog/whats-up-with-template-covariant",
+      "identifier": "argument.unresolvableType"
+    },
+    {
+      "message": "Parameter #2 $value of function ArgumentReasonOracle\\closureIntersection expects static-Closure(int|null=): void, static-Closure(int): void given.",
+      "line": 174,
+      "ignorable": true,
+      "tip": "• Parameter #1 $value of passed callable is required but the parameter of accepting callable is optional. It might be called without it.\n• Type int of parameter #1 $value of passed callable needs to be same or wider than parameter type int|null of accepting callable.",
+      "identifier": "argument.type"
+    },
+    {
+      "message": "Parameter #2 $value of function ArgumentReasonOracle\\objectIntersection contains unresolvable type.",
+      "line": 177,
+      "ignorable": true,
+      "tip": "Property ArgumentReasonOracle\\WriteOnlyProperty::$target is not readable.",
+      "identifier": "argument.unresolvableType"
+    },
+    {
+      "message": "Parameter #2 $value of attribute class ArgumentReasonOracle\\ObjectIntersectionAttribute constructor contains unresolvable type.",
+      "line": 197,
+      "ignorable": true,
+      "tip": "ArgumentReasonOracle\\NoProperty does not have property $target.",
+      "identifier": "argument.unresolvableType"
+    },
+    {
+      "message": "Parameter #2 $value of attribute class ArgumentReasonOracle\\ObjectIntersectionAttribute constructor contains unresolvable type.",
+      "line": 199,
+      "ignorable": true,
+      "tip": "Property ArgumentReasonOracle\\PrivateProperty::$target is not public.",
+      "identifier": "argument.unresolvableType"
+    },
+    {
+      "message": "Parameter #2 $value of class ArgumentReasonOracle\\ObjectIntersectionAttribute constructor contains unresolvable type.",
+      "line": 202,
+      "ignorable": true,
+      "tip": "ArgumentReasonOracle\\NoProperty does not have property $target.",
+      "identifier": "argument.unresolvableType"
+    },
+    {
+      "message": "Parameter #2 $value of method ArgumentReasonOracle\\ObjectIntersectionAttribute::method() contains unresolvable type.",
+      "line": 203,
+      "ignorable": true,
+      "tip": "ArgumentReasonOracle\\NoProperty does not have property $target.",
+      "identifier": "argument.unresolvableType"
+    },
+    {
+      "message": "Parameter #2 $value of function ArgumentReasonOracle\\neverOrdered contains unresolvable type.",
+      "line": 214,
+      "ignorable": true,
+      "tip": "• ArgumentReasonOracle\\NoProperty does not have property $target.\n• Property ArgumentReasonOracle\\PrivateProperty::$target is not public.",
+      "identifier": "argument.unresolvableType"
+    },
+    {
+      "message": "PHPDoc tag @param for parameter $value contains unresolvable type.",
+      "line": 222,
+      "ignorable": true,
+      "identifier": "parameter.unresolvableType"
+    },
+    {
+      "message": "Parameter #2 $value of function ArgumentReasonOracle\\objectIntersection contains unresolvable type.",
+      "line": 229,
+      "ignorable": true,
+      "identifier": "argument.unresolvableType"
+    },
+    {
+      "message": "Parameter #2 $value of function ArgumentReasonOracle\\objectIntersection expects ArgumentReasonOracle\\ExtensibleNoProperty&object{target: int}, ArgumentReasonOracle\\ExtensibleNoProperty given.",
+      "line": 243,
+      "ignorable": true,
+      "tip": "ArgumentReasonOracle\\ExtensibleNoProperty does not have property $target.",
+      "identifier": "argument.type"
+    }
+  ]
+}

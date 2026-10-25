@@ -12,6 +12,8 @@ pub fn accepts_reasons(a: &Type, b: &Type, strict: bool, sm: StrictMixed) -> Vec
     let rec = |x: &Type, y: &Type| accepts_reasons(x, y, strict, StrictMixed::default());
     let compound = b.is_compound() || sm.applies(b);
     match a {
+        T::Reasoned(t, _) => rec(t, b),
+        T::LateArrayShape(s) => rec(&s.resolve(), b),
         T::Union(types) | T::Benevolent(types) => union(a, types, b, strict, sm),
         T::Intersection(types) => {
             let mut reasons = merged(types.iter().map(|t| accepts_reasons(t, b, strict, sm)));
@@ -205,7 +207,7 @@ fn our_keys(c: &ConstArray, b: &Type, strict: bool) -> Vec<String> {
 
 /// GenericObjectType::isSuperTypeOfInternal() in an accepts context: an invariant template given a subtype is not
 /// covariant (TemplateTypeVariance::isValidVariance()).
-fn generic(class: &str, args: &[Type], b: &Type) -> Vec<String> {
+pub(super) fn generic(class: &str, args: &[Type], b: &Type) -> Vec<String> {
     let (Type::Object(name, other) | Type::Static(name, other)) = b else {
         return vec![];
     };

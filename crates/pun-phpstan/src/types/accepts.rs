@@ -34,6 +34,8 @@ pub fn accepts(a: &Type, b: &Type, strict_types: bool) -> Tri {
 
 pub fn accepts_with(a: &Type, b: &Type, strict: bool, sm: StrictMixed) -> Tri {
     use Type as T;
+    if let T::Reasoned(t, _) = b { return accepts_with(a, t, strict, sm); }
+    if let T::LateArrayShape(s) = b { return accepts_with(a, &s.resolve(), strict, sm); }
     let rec = |x: &Type, y: &Type| accepts_with(x, y, strict, sm);
     // a CompoundType `$b` answers through its `isAcceptedBy()`, a StrictMixedType too
     let compound = b.is_compound() || sm.applies(b);
@@ -44,6 +46,8 @@ pub fn accepts_with(a: &Type, b: &Type, strict: bool, sm: StrictMixed) -> Tri {
     // `$this->isXxx()->yes()` first, then the compound, then the answer itself (the accessory types)
     let accessory = |r: Tri| if r.yes() { Tri::Yes } else if compound { by() } else { r };
     match a {
+        T::Reasoned(t, _) => rec(t, b),
+        T::LateArrayShape(s) => rec(&s.resolve(), b),
         // MixedType (ErrorType extends it) accepts anything
         T::Mixed { .. } | T::SubtractedMixed { .. } | T::Error | T::Wildcard | T::OffsetAccess(..) => Tri::Yes,
         T::Never(NeverKind::NonAccepting) => Tri::from(matches!(b, T::Never(_))),
