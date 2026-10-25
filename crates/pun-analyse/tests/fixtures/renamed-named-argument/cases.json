@@ -16,5 +16,6 @@
   "refinements": {"analysed": ["api.php", "overrides.php", "refinements.php"], "scanned": [], "level": 5},
   "source-contracts": {"analysed": ["api.php", "overrides.php", "source_contracts.php"], "scanned": [], "level": 5, "dumpTypes": true},
   "template-offset": {"analysed": ["api.php", "overrides.php", "template_offset.php"], "scanned": [], "level": 5, "dumpTypes": true},
-  "template-offset-controls": {"analysed": ["api.php", "overrides.php", "template_offset_controls.php"], "scanned": [], "level": 5, "dumpTypes": true}
+  "template-offset-controls": {"analysed": ["api.php", "overrides.php", "template_offset_controls.php"], "scanned": [], "level": 5, "dumpTypes": true},
+  "template-offset-certainty": {"analysed": ["api.php", "overrides.php", "template_offset_certainty.php"], "scanned": [], "level": 5, "dumpTypes": true}
 }

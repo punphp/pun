@@ -143,3 +143,8 @@ fn template_offset_assertions_narrow_the_array_constraint() {
 fn template_offset_constraints_preserve_identity_alternatives_and_branches() {
     check("template-offset-controls");
 }
+
+#[test]
+fn redundant_offset_guards_preserve_absence_optionality_and_union_alternatives() {
+    check("template-offset-certainty");
+}

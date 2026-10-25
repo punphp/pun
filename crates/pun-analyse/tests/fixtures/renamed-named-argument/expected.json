@@ -1392,5 +1392,105 @@
             "ignorable": false,
             "identifier": "phpstan.dumpType"
         }
+    ],
+    "template-offset-certainty": [
+        {
+            "file": "$ROOT/template_offset_certainty.php",
+            "message": "Dumped type: array{present: bool, value: string}",
+            "line": 10,
+            "ignorable": false,
+            "identifier": "phpstan.dumpType"
+        },
+        {
+            "file": "$ROOT/template_offset_certainty.php",
+            "message": "Call to RenamedNamedArgument\\Contract::run() uses named argument for parameter $value, but RenamedNamedArgument\\Renamed renames it to $renamed.",
+            "line": 11,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/template_offset_certainty.php",
+            "message": "Dumped type: array{value: string}",
+            "line": 18,
+            "ignorable": false,
+            "identifier": "phpstan.dumpType"
+        },
+        {
+            "file": "$ROOT/template_offset_certainty.php",
+            "message": "Call to RenamedNamedArgument\\Contract::run() uses named argument for parameter $value, but RenamedNamedArgument\\Renamed renames it to $renamed.",
+            "line": 19,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/template_offset_certainty.php",
+            "message": "Dumped type: array{string}",
+            "line": 26,
+            "ignorable": false,
+            "identifier": "phpstan.dumpType"
+        },
+        {
+            "file": "$ROOT/template_offset_certainty.php",
+            "message": "Dumped type: *NEVER*",
+            "line": 33,
+            "ignorable": false,
+            "identifier": "phpstan.dumpType"
+        },
+        {
+            "file": "$ROOT/template_offset_certainty.php",
+            "message": "Dumped type: array{present: bool, value: string}",
+            "line": 35,
+            "ignorable": false,
+            "identifier": "phpstan.dumpType"
+        },
+        {
+            "file": "$ROOT/template_offset_certainty.php",
+            "message": "Call to RenamedNamedArgument\\Contract::run() uses named argument for parameter $value, but RenamedNamedArgument\\Renamed renames it to $renamed.",
+            "line": 36,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/template_offset_certainty.php",
+            "message": "Dumped type: T of array{kind: 'left', probe: bool, value: string}|array{kind: 'right', probe: bool, value: int} (function RenamedNamedArgument\\offsetUnionAlternatives(), argument)",
+            "line": 45,
+            "ignorable": false,
+            "identifier": "phpstan.dumpType"
+        },
+        {
+            "file": "$ROOT/template_offset_certainty.php",
+            "message": "Call to RenamedNamedArgument\\Contract::run() uses named argument for parameter $value, but RenamedNamedArgument\\Renamed renames it to $renamed.",
+            "line": 46,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/template_offset_certainty.php",
+            "message": "Dumped type: array{probe?: bool, value: string}",
+            "line": 52,
+            "ignorable": false,
+            "identifier": "phpstan.dumpType"
+        },
+        {
+            "file": "$ROOT/template_offset_certainty.php",
+            "message": "Call to RenamedNamedArgument\\Contract::run() uses named argument for parameter $value, but RenamedNamedArgument\\Renamed renames it to $renamed.",
+            "line": 53,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/template_offset_certainty.php",
+            "message": "Dumped type: array{bool, string}",
+            "line": 59,
+            "ignorable": false,
+            "identifier": "phpstan.dumpType"
+        },
+        {
+            "file": "$ROOT/template_offset_certainty.php",
+            "message": "Dumped type: string",
+            "line": 64,
+            "ignorable": false,
+            "identifier": "phpstan.dumpType"
+        }
     ]
 }

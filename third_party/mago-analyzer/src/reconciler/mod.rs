@@ -438,6 +438,33 @@ pub fn reconcile_keyed_types<'ctx, A>(
             changed_var_ids.insert(*key);
         }
 
+        // PHPStan specifies the containing array even when the offset's value type is unchanged.
+        // Only an already-required offset can use this path: a cached/fallback value is not existence proof.
+        if !type_changed
+            && !result_type.is_never()
+            && !result_type.possibly_undefined()
+            && !result_type.possibly_undefined_from_try()
+            && key_str.ends_with(b"]")
+            && !has_inverted_isset
+            && !has_inverted_key_exists
+            && !has_empty
+        {
+            let key_parts = borrow_path_parts(key_str);
+            let offset = key_parts[key_parts.len() - 2];
+            let array_key = if offset.starts_with(b"'") || offset.starts_with(b"\"") {
+                Some(ArrayKey::String(word(&offset[1..offset.len() - 1])))
+            } else {
+                std::str::from_utf8(offset).ok().and_then(|s| s.parse::<i64>().ok()).map(ArrayKey::Integer)
+            };
+            let parent: Vec<u8> =
+                key_parts[..key_parts.len() - 3].iter().flat_map(|part| part.iter()).copied().collect();
+            if array_key.is_some_and(|key| {
+                block_context.locals.get(&word(&parent)).is_some_and(|parent| has_required_offset(parent, &key))
+            }) {
+                adjust_array_type(key_parts, block_context, changed_var_ids, &result_type, context.codebase, false);
+            }
+        }
+
         if !has_object_array_access {
             block_context.locals.insert(*key, Rc::new(result_type));
         }
@@ -520,6 +547,23 @@ where
     }
 
     result.filter(|entry_type| !entry_type.is_never() && !entry_type.is_mixed())
+}
+
+fn has_required_offset(value: &TUnion, key: &ArrayKey) -> bool {
+    !value.possibly_undefined()
+        && !value.possibly_undefined_from_try()
+        && value.types.iter().all(|atomic| match atomic {
+            TAtomic::GenericParameter(generic) => has_required_offset(&generic.constraint, key),
+            TAtomic::Array(TArray::Keyed(array)) => {
+                array.known_items.as_ref().and_then(|items| items.get(key)).is_some_and(|(optional, _)| !optional)
+            }
+            TAtomic::Array(TArray::List(array)) => key
+                .get_integer()
+                .and_then(|index| usize::try_from(index).ok())
+                .and_then(|index| array.known_elements.as_ref()?.get(&index))
+                .is_some_and(|(optional, _)| !optional),
+            _ => false,
+        })
 }
 
 fn adjust_array_type(

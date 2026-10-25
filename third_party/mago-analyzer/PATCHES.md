@@ -832,7 +832,10 @@ unrelated offsets, nested templates, tuple and list constraints, class templates
 Run its `oracle.php` generator with the pinned PHPStan 2.3.1 PHAR, then run
 `cargo llvm-cov --dep-coverage mago-analyzer --no-report -p punphp-analyse --test renamed_named_argument`.
 
-An unchanged offset type remains a separate caller boundary: `reconcile_keyed_types` currently invokes
-the parent transfer only inside `if type_changed`. PHPStan specifies the containing array even for
-a redundant offset guard. The public nonmatching-offset expectation remains active; this patch does
-not change that caller, variable certainty, native state, invocation, or plugin dispatch.
+`reconcile_keyed_types` also invokes the parent transfer for an unchanged, defined offset when every
+live parent alternative proves that the offset is required. Cached or fallback value types alone do
+not prove existence. Unreachable values, undefined values, negative existence assertions, and empty
+checks cannot take this path. The existing changed-variable, certainty, and descendant-invalidation
+gates remain unchanged, as do native state, invocation, and plugin dispatch.
+`template_offset_certainty.php` checks absent and optional offsets, optional siblings, unreachable
+conditions, closed union alternatives, required list offsets, and string offsets against PHPStan.
