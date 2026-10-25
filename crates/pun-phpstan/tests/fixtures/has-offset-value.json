@@ -1,0 +1,690 @@
+{
+    "types": [
+        {
+            "input": {
+                "offset": 5,
+                "value": "string"
+            },
+            "describe": [
+                "hasOffsetValue(5, string)",
+                "hasOffsetValue(5, string)",
+                "hasOffsetValue(int, string)"
+            ],
+            "queries": [
+                "Maybe",
+                "Maybe",
+                "Maybe",
+                "Maybe",
+                "Yes",
+                "Maybe"
+            ]
+        },
+        {
+            "input": {
+                "offset": 5,
+                "value": "int"
+            },
+            "describe": [
+                "hasOffsetValue(5, int)",
+                "hasOffsetValue(5, int)",
+                "hasOffsetValue(int, int)"
+            ],
+            "queries": [
+                "Maybe",
+                "Maybe",
+                "Maybe",
+                "Maybe",
+                "Yes",
+                "Maybe"
+            ]
+        },
+        {
+            "input": {
+                "offset": 7,
+                "value": "string"
+            },
+            "describe": [
+                "hasOffsetValue(7, string)",
+                "hasOffsetValue(7, string)",
+                "hasOffsetValue(int, string)"
+            ],
+            "queries": [
+                "Maybe",
+                "Maybe",
+                "Maybe",
+                "Maybe",
+                "Yes",
+                "Maybe"
+            ]
+        },
+        {
+            "input": {
+                "offset": "a",
+                "value": "int"
+            },
+            "describe": [
+                "hasOffsetValue('a', int)",
+                "hasOffsetValue('a', int)",
+                "hasOffsetValue(string, int)"
+            ],
+            "queries": [
+                "Maybe",
+                "Maybe",
+                "No",
+                "Maybe",
+                "Yes",
+                "Maybe"
+            ]
+        },
+        {
+            "input": {
+                "type": "array<int, string>"
+            },
+            "describe": [
+                "array<int, string>",
+                "array<int, string>",
+                "array<int, string>"
+            ],
+            "queries": [
+                "Yes",
+                "No",
+                "Maybe",
+                "Yes",
+                "Maybe",
+                "No"
+            ]
+        },
+        {
+            "input": {
+                "type": "array<int, int>"
+            },
+            "describe": [
+                "array<int, int>",
+                "array<int, int>",
+                "array<int, int>"
+            ],
+            "queries": [
+                "Yes",
+                "No",
+                "Maybe",
+                "Yes",
+                "Maybe",
+                "No"
+            ]
+        },
+        {
+            "input": {
+                "type": "array{5: string}"
+            },
+            "describe": [
+                "array{5: string}",
+                "array{5: string}",
+                "array<int, string>"
+            ],
+            "queries": [
+                "Yes",
+                "No",
+                "No",
+                "Yes",
+                "Yes",
+                "No"
+            ]
+        },
+        {
+            "input": {
+                "type": "array{5?: string}"
+            },
+            "describe": [
+                "array{5?: string}",
+                "array{5?: string}",
+                "array<int, string>"
+            ],
+            "queries": [
+                "Yes",
+                "No",
+                "No",
+                "Yes",
+                "Maybe",
+                "No"
+            ]
+        },
+        {
+            "input": {
+                "type": "array{a: int}"
+            },
+            "describe": [
+                "array{a: int}",
+                "array{a: int}",
+                "array<string, int>"
+            ],
+            "queries": [
+                "Yes",
+                "No",
+                "No",
+                "Yes",
+                "Yes",
+                "No"
+            ]
+        },
+        {
+            "input": {
+                "type": "array{}"
+            },
+            "describe": [
+                "array{}",
+                "array{}",
+                "array"
+            ],
+            "queries": [
+                "Yes",
+                "No",
+                "Yes",
+                "Yes",
+                "No",
+                "No"
+            ]
+        },
+        {
+            "input": {
+                "type": "array{...<int, string>}"
+            },
+            "describe": [
+                "array{...<int, string>}",
+                "array{...<int, string>}",
+                "array<int, string>"
+            ],
+            "queries": [
+                "Yes",
+                "No",
+                "Maybe",
+                "Yes",
+                "Maybe",
+                "No"
+            ]
+        },
+        {
+            "input": {
+                "type": "int"
+            },
+            "describe": [
+                "int",
+                "int",
+                "int"
+            ],
+            "queries": [
+                "No",
+                "No",
+                "No",
+                "No",
+                "No",
+                "No"
+            ]
+        },
+        {
+            "input": {
+                "type": "array<int, *ERROR*>"
+            },
+            "describe": [
+                "array<int, *ERROR*>",
+                "array<int, mixed>",
+                "array<int, mixed>"
+            ],
+            "queries": [
+                "Yes",
+                "No",
+                "Maybe",
+                "Yes",
+                "Maybe",
+                "No"
+            ]
+        }
+    ],
+    "comparisons": [
+        [
+            0,
+            0,
+            "Yes"
+        ],
+        [
+            0,
+            1,
+            "No"
+        ],
+        [
+            0,
+            2,
+            "Maybe"
+        ],
+        [
+            0,
+            3,
+            "Maybe"
+        ],
+        [
+            0,
+            4,
+            "Maybe"
+        ],
+        [
+            0,
+            5,
+            "No"
+        ],
+        [
+            0,
+            6,
+            "Yes"
+        ],
+        [
+            0,
+            7,
+            "Maybe"
+        ],
+        [
+            0,
+            8,
+            "No"
+        ],
+        [
+            0,
+            9,
+            "No"
+        ],
+        [
+            0,
+            10,
+            "Maybe"
+        ],
+        [
+            0,
+            11,
+            "No"
+        ],
+        [
+            0,
+            12,
+            "Maybe"
+        ],
+        [
+            1,
+            0,
+            "No"
+        ],
+        [
+            1,
+            1,
+            "Yes"
+        ],
+        [
+            1,
+            2,
+            "Maybe"
+        ],
+        [
+            1,
+            3,
+            "Maybe"
+        ],
+        [
+            1,
+            4,
+            "No"
+        ],
+        [
+            1,
+            5,
+            "Maybe"
+        ],
+        [
+            1,
+            6,
+            "No"
+        ],
+        [
+            1,
+            7,
+            "No"
+        ],
+        [
+            1,
+            8,
+            "No"
+        ],
+        [
+            1,
+            9,
+            "No"
+        ],
+        [
+            1,
+            10,
+            "No"
+        ],
+        [
+            1,
+            11,
+            "No"
+        ],
+        [
+            1,
+            12,
+            "Maybe"
+        ],
+        [
+            2,
+            0,
+            "Maybe"
+        ],
+        [
+            2,
+            1,
+            "Maybe"
+        ],
+        [
+            2,
+            2,
+            "Yes"
+        ],
+        [
+            2,
+            3,
+            "Maybe"
+        ],
+        [
+            2,
+            4,
+            "Maybe"
+        ],
+        [
+            2,
+            5,
+            "No"
+        ],
+        [
+            2,
+            6,
+            "No"
+        ],
+        [
+            2,
+            7,
+            "No"
+        ],
+        [
+            2,
+            8,
+            "No"
+        ],
+        [
+            2,
+            9,
+            "No"
+        ],
+        [
+            2,
+            10,
+            "Maybe"
+        ],
+        [
+            2,
+            11,
+            "No"
+        ],
+        [
+            2,
+            12,
+            "Maybe"
+        ],
+        [
+            3,
+            0,
+            "Maybe"
+        ],
+        [
+            3,
+            1,
+            "Maybe"
+        ],
+        [
+            3,
+            2,
+            "Maybe"
+        ],
+        [
+            3,
+            3,
+            "Yes"
+        ],
+        [
+            3,
+            4,
+            "No"
+        ],
+        [
+            3,
+            5,
+            "No"
+        ],
+        [
+            3,
+            6,
+            "No"
+        ],
+        [
+            3,
+            7,
+            "No"
+        ],
+        [
+            3,
+            8,
+            "Yes"
+        ],
+        [
+            3,
+            9,
+            "No"
+        ],
+        [
+            3,
+            10,
+            "No"
+        ],
+        [
+            3,
+            11,
+            "No"
+        ],
+        [
+            3,
+            12,
+            "No"
+        ],
+        [
+            4,
+            0,
+            "Maybe"
+        ],
+        [
+            4,
+            1,
+            "No"
+        ],
+        [
+            4,
+            2,
+            "Maybe"
+        ],
+        [
+            4,
+            3,
+            "No"
+        ],
+        [
+            5,
+            0,
+            "No"
+        ],
+        [
+            5,
+            1,
+            "Maybe"
+        ],
+        [
+            5,
+            2,
+            "No"
+        ],
+        [
+            5,
+            3,
+            "No"
+        ],
+        [
+            6,
+            0,
+            "Maybe"
+        ],
+        [
+            6,
+            1,
+            "No"
+        ],
+        [
+            6,
+            2,
+            "No"
+        ],
+        [
+            6,
+            3,
+            "No"
+        ],
+        [
+            7,
+            0,
+            "Maybe"
+        ],
+        [
+            7,
+            1,
+            "No"
+        ],
+        [
+            7,
+            2,
+            "No"
+        ],
+        [
+            7,
+            3,
+            "No"
+        ],
+        [
+            8,
+            0,
+            "No"
+        ],
+        [
+            8,
+            1,
+            "No"
+        ],
+        [
+            8,
+            2,
+            "No"
+        ],
+        [
+            8,
+            3,
+            "Maybe"
+        ],
+        [
+            9,
+            0,
+            "No"
+        ],
+        [
+            9,
+            1,
+            "No"
+        ],
+        [
+            9,
+            2,
+            "No"
+        ],
+        [
+            9,
+            3,
+            "No"
+        ],
+        [
+            10,
+            0,
+            "Maybe"
+        ],
+        [
+            10,
+            1,
+            "No"
+        ],
+        [
+            10,
+            2,
+            "Maybe"
+        ],
+        [
+            10,
+            3,
+            "No"
+        ],
+        [
+            11,
+            0,
+            "No"
+        ],
+        [
+            11,
+            1,
+            "No"
+        ],
+        [
+            11,
+            2,
+            "No"
+        ],
+        [
+            11,
+            3,
+            "No"
+        ],
+        [
+            12,
+            0,
+            "Maybe"
+        ],
+        [
+            12,
+            1,
+            "Maybe"
+        ],
+        [
+            12,
+            2,
+            "Maybe"
+        ],
+        [
+            12,
+            3,
+            "No"
+        ]
+    ],
+    "traverse": "hasOffsetValue(5, int)",
+    "wrapped": "non-empty-array<int, string>&hasOffsetValue(5, string)",
+    "phpdoc": [
+        "",
+        "non-empty-array<int, string>"
+    ]
+}

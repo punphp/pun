@@ -129,12 +129,15 @@ pub enum Accessory {
     NonEmptyArray,
     /// `HasMethodType`: comparison is case-insensitive, description retains the literal spelling.
     HasMethod(String),
+    /// `HasOffsetValueType`: a required literal offset and its independently narrowed value.
+    HasOffsetValue(Box<Type>, Box<Type>),
 }
 
 impl PartialEq for Accessory {
     fn eq(&self, other: &Self) -> bool {
         match (self, other) {
             (Self::HasMethod(a), Self::HasMethod(b)) => a.eq_ignore_ascii_case(b),
+            (Self::HasOffsetValue(ak, av), Self::HasOffsetValue(bk, bv)) => ak == bk && av == bv,
             (Self::DecimalIntString { inverse: a }, Self::DecimalIntString { inverse: b }) => {
                 a == b
             }
@@ -441,7 +444,7 @@ impl Type {
             _ => {}
         }
         self.query_c_with_mixed_domain(Self::is_string, || Type::String, false, &|t| {
-            if matches!(t, Type::Accessory(Accessory::HasMethod(_))) {
+            if matches!(t, Type::Accessory(Accessory::HasMethod(_) | Accessory::HasOffsetValue(..))) {
                 return Tri::Maybe;
             }
             Tri::from(matches!(
@@ -464,7 +467,7 @@ impl Type {
         })
     }
 
-    fn is_integer(&self) -> Tri {
+    pub fn is_integer(&self) -> Tri {
         self.query(&|t| {
             Tri::from(matches!(
                 t,
@@ -499,6 +502,9 @@ impl Type {
     pub fn is_array(&self) -> Tri {
         self.query_c_with_mixed_domain(Self::is_array, || Type::array(mixed(), mixed()), false, &|t| {
             if matches!(t, Type::Iterable(..)) { return Tri::Maybe; }
+            if matches!(t, Type::Accessory(Accessory::HasOffsetValue(..))) {
+                return Tri::Maybe;
+            }
             Tri::from(matches!(
                 t,
                 Type::Array(..)
@@ -514,7 +520,7 @@ impl Type {
         }
         self.query_c(&|t| match t {
             Type::ConstArray(_) => Tri::Yes,
-            Type::Array(..) | Type::Accessory(Accessory::List | Accessory::NonEmptyArray) => {
+            Type::Array(..) | Type::Accessory(Accessory::List | Accessory::NonEmptyArray | Accessory::HasOffsetValue(..)) => {
                 Tri::Maybe
             }
             _ => Tri::No,
@@ -552,6 +558,9 @@ impl Type {
         }
         self.query_c_with_mixed_domain(Self::is_list, || Type::list(mixed()), false, &|t| match t {
             Type::Accessory(Accessory::List) => Tri::Yes,
+            Type::Accessory(Accessory::HasOffsetValue(key, _)) => {
+                if key.is_string().yes() { Tri::No } else { Tri::Maybe }
+            }
             Type::ConstArray(a) => a.is_list,
             // `ArrayType::isList()`: no when no key can be a non-negative int
             Type::Array(key, _) if is_super_type_of(&Type::int_range(Some(0), None), key).no() => {
@@ -577,7 +586,7 @@ impl Type {
             }
             Type::ObjectWithoutClass
             | Type::ObjectShape(_)
-            | Type::Accessory(Accessory::HasMethod(_)) => Tri::Maybe,
+            | Type::Accessory(Accessory::HasMethod(_) | Accessory::HasOffsetValue(..)) => Tri::Maybe,
             _ => Tri::No,
         })
     }
@@ -597,7 +606,7 @@ impl Type {
                 | Type::Closure(_) => Tri::Yes,
                 Type::Callable(_)
                 | Type::Iterable(..)
-                | Type::Accessory(Accessory::HasMethod(_)) => Tri::Maybe,
+                | Type::Accessory(Accessory::HasMethod(_) | Accessory::HasOffsetValue(..)) => Tri::Maybe,
                 _ => Tri::No,
             }),
         }
@@ -616,7 +625,7 @@ impl Type {
             _ => self.query_with_mixed_domain(Self::is_iterable_at_least_once, || Type::Iterable(bx(mixed()), bx(mixed())), true, &|t| match t {
                 Type::Never(_) => Tri::Maybe,
                 Type::ConstArray(a) => a.is_iterable_at_least_once(),
-                Type::Accessory(Accessory::NonEmptyArray) => Tri::Yes,
+                Type::Accessory(Accessory::NonEmptyArray | Accessory::HasOffsetValue(..)) => Tri::Yes,
                 Type::Array(..) | Type::Iterable(..) | Type::Accessory(Accessory::List) => {
                     Tri::Maybe
                 }
@@ -1024,7 +1033,7 @@ impl Type {
                 Level::TypeOnly => describe_intersection_type(self, types, level),
                 _ => describe_intersection_itself(self, types, level),
             },
-            Type::Accessory(a) => a.describe().to_string(),
+            Type::Accessory(a) => a.describe(level),
             Type::Conditional(c) => {
                 let subject = match &c.subject {
                     Subject::Parameter(p) => p.clone(),
@@ -1110,6 +1119,9 @@ impl Type {
         };
         match self {
             Type::Array(k, v) => Type::array(f(k), f(v)),
+            Type::Accessory(Accessory::HasOffsetValue(k, v)) => {
+                Type::Accessory(Accessory::HasOffsetValue(k.clone(), bx(f(v))))
+            }
             Type::Iterable(k, v) => Type::Iterable(bx(f(k)), bx(f(v))),
             Type::Union(types) => union(types.iter().map(f).collect()),
             Type::Benevolent(types) => to_benevolent(union(types.iter().map(f).collect())),
@@ -1165,7 +1177,7 @@ impl Type {
 }
 
 impl Accessory {
-    fn describe(&self) -> String {
+    fn describe(&self, level: Level) -> String {
         match self {
             Accessory::NonEmptyString => "non-empty-string",
             Accessory::NonFalsyString => "non-falsy-string",
@@ -1178,6 +1190,9 @@ impl Accessory {
             Accessory::List => "list",
             Accessory::NonEmptyArray => "non-empty-array",
             Accessory::HasMethod(name) => return format!("hasMethod({name})"),
+            Accessory::HasOffsetValue(key, value) => {
+                return format!("hasOffsetValue({}, {})", key.describe(level), value.describe(level));
+            }
         }
         .to_string()
     }
@@ -1185,7 +1200,7 @@ impl Accessory {
     fn is_string_accessory(&self) -> bool {
         !matches!(
             self,
-            Accessory::List | Accessory::NonEmptyArray | Accessory::HasMethod(_)
+            Accessory::List | Accessory::NonEmptyArray | Accessory::HasMethod(_) | Accessory::HasOffsetValue(..)
         )
     }
 }
@@ -1730,7 +1745,12 @@ fn print_templates(sig: &Signature) -> String {
 /// `Printer::print($type->toPhpDocNode())`
 pub fn to_phpdoc(t: &Type) -> String {
     match t {
-        Type::Accessory(Accessory::HasMethod(_)) => String::new(),
+        Type::Accessory(Accessory::HasMethod(_) | Accessory::HasOffsetValue(..)) => String::new(),
+        Type::Intersection(types)
+            if types.iter().any(|t| matches!(t, Type::Accessory(Accessory::HasOffsetValue(..)))) =>
+        {
+            to_phpdoc(&intersect(types.iter().filter(|t| !matches!(t, Type::Accessory(Accessory::HasOffsetValue(..)))).cloned().collect()))
+        }
         Type::Mixed { .. } | Type::SubtractedMixed { .. } | Type::Error => "mixed".to_string(),
         Type::Never(_) => "never".to_string(),
         Type::ConstInt(i) => i.to_string(),
@@ -1886,9 +1906,8 @@ impl ConstArray {
     }
 
     fn is_iterable_at_least_once(&self) -> Tri {
-        // (an unsealed shape without keys is an `ArrayType`)
         if self.keys.is_empty() {
-            return Tri::No;
+            return if self.is_unsealed().yes() { Tri::Maybe } else { Tri::No };
         }
         if self.optional.len() < self.keys.len() {
             Tri::Yes
@@ -2780,6 +2799,36 @@ fn accessory_super(acc: &Accessory, b: &Type) -> Tri {
         Accessory::List => b.is_list(),
         Accessory::NonEmptyArray => b.is_array().and(b.is_iterable_at_least_once()),
         Accessory::HasMethod(name) => b.has_method(name),
+        Accessory::HasOffsetValue(key, value) => offset_value_relation(key, value, b, false),
+    }
+}
+
+/// HasOffsetValueType's offset/value comparison for the array representations used by inference.
+/// Other offset-accessible kinds retain uncertainty rather than being mistaken for arrays.
+fn offset_value_relation(key: &Type, value: &Type, other: &Type, reverse: bool) -> Tri {
+    let (has, item) = match other {
+        Type::Accessory(Accessory::HasOffsetValue(k, v)) if k.as_ref() == key => (Tri::Yes, v.as_ref().clone()),
+        Type::Accessory(Accessory::HasOffsetValue(..)) => (Tri::Maybe, mixed()),
+        Type::Array(k, v) => (is_super_type_of(k, key).and(Tri::Maybe), v.as_ref().clone()),
+        Type::ConstArray(a) => {
+            if let Some(i) = a.keys.iter().position(|k| k == key) {
+                (if a.is_optional_key(i) { Tri::Maybe } else { Tri::Yes }, a.values[i].clone())
+            } else if let Some((k, v)) = &a.unsealed {
+                (is_super_type_of(k, key).and(Tri::Maybe), v.clone())
+            } else {
+                return Tri::No;
+            }
+        }
+        _ => {
+            let object = matches!(other, Type::Object(..) | Type::ObjectWithoutClass | Type::Static(..) | Type::This(_));
+            return other.is_array().or(other.is_string()).or(Tri::from(object)).and(Tri::Maybe);
+        }
+    };
+    if reverse {
+        has.and(if matches!(other, Type::Accessory(Accessory::HasOffsetValue(..))) { Tri::Yes } else { Tri::Maybe })
+            .and(is_super_type_of(&item, value))
+    } else {
+        has.and(is_super_type_of(value, &item))
     }
 }
 
@@ -3035,6 +3084,7 @@ fn is_sub_type_of(a: &Type, b: &Type) -> Tri {
                         Accessory::NonEmptyArray => b.is_array().and(b.is_iterable_at_least_once()),
                         Accessory::List => b.is_list(),
                         Accessory::HasMethod(name) => b.has_method(name),
+                        Accessory::HasOffsetValue(key, value) => return offset_value_relation(key, value, b, true),
                     };
                     q.and(if same { Tri::Yes } else { Tri::Maybe })
                 }

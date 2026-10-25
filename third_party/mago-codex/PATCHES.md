@@ -193,3 +193,30 @@ The owning-crate regression checks 1,140 fresh PHPStan query results without dup
 Analyzer tests. All 53 `punphp-phpstan` tests and 22 focused Analyzer tests pass. A fresh target
 running only `punphp-phpstan` covers 45/45 executable lines added by this query slice, and 155/155
 changed Pun type lines including the preceding mixed-subtraction implementation.
+
+## Constant-array source kind
+
+PHPStan 2.3.1 distinguishes `ConstantArrayType` from an `ArrayType` intersected with
+`HasOffsetValueType`. Mago represents both as a keyed array with known entries and extra parameters.
+The source kind now survives in `UnionFlags::CONSTANT_ARRAY_KEY` on the extra-key union.
+`TKeyedArray::is_constant_shape()` also recognizes sealed arrays, which have no extra parameters.
+
+The PHPDoc builder marks open shapes with explicit fields. A shape declared without any fields
+remains generic, matching PHPStan's `TypeNodeResolver`. Removing the final field of an existing
+constant array retains the marker, matching `ConstantArrayType::recreate()`.
+
+The changes are in `ttype/flags.rs`, `ttype/atomic/array/keyed.rs:139–145`, and
+`ttype/builder.rs:797–803`. Union equality includes the flag. The borrowed and owned union paths
+in `ttype/mod.rs` retain it only when both live key unions carry it. The combiner's known-entry
+branch at `ttype/combiner.rs:941–948` keeps fields optional when joining two declared open shapes
+instead of merging those fields into the unrelated extra-key domain.
+
+The reference remains PHPStan source revision `cb3b7e99489b2e3789ee2eec10501cb7a72580ea`, especially
+`PhpDoc/TypeNodeResolver.php`, `Type/Constant/ConstantArrayType.php::unsetOffset()`, and
+`Type/Accessory/HasOffsetValueType.php::unsetOffset()`. No scalar subtraction, array intersection,
+dependency version, or registry-cache changes are included.
+
+Public Analyzer controls are in `pun-analyse/tests/fixtures/unset/offset-metadata.php`. They cover
+empty declared arrays, shapes emptied by mutation, copies, overwrites, narrowed values, generic
+integer and string offsets, finite union offsets, template arrays, both join orders, and inline
+annotations. The mixed-key controls also distinguish the alias from an explicit `int|string` union.

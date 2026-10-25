@@ -136,6 +136,14 @@ impl TKeyedArray {
         self.known_items.as_deref().is_some_and(|elements| !elements.is_empty())
     }
 
+    /// PHPStan's constant-array source kind, independent of the surviving explicit fields.
+    #[must_use]
+    pub fn is_constant_shape(&self) -> bool {
+        self.parameters.as_ref().is_none_or(|(keys, _)| {
+            keys.flags.contains(crate::ttype::flags::UnionFlags::CONSTANT_ARRAY_KEY)
+        })
+    }
+
     /// Returns a new `TKeyedArray` with the specified non-empty flag.
     #[inline]
     #[must_use]

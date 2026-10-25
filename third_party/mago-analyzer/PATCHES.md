@@ -1181,3 +1181,68 @@ Fresh LLVM profiles cover **15/15 changed executable lines** across the two corr
 `invocation/arguments.rs` 2/2 and `utils/expression/array.rs` 13/13. The measurement intersects the
 added source lines with LCOV records from the focused matrix's current executables. It uses no
 coverage exclusions. These corrections do not change the passive native-state implementation.
+
+### Generic offsets retain their own array kind
+
+The next correction closes `generic-keys.php:108` and `:116`. It uses the codex constant-array
+marker instead of inferring source kind from the presence of known keys or restoring a declaration.
+The template branch in `statement/unset.rs:134–162` now uses that marker too. A template generic
+array refined by `isset()` becomes an ordinary array after compatible literal-key subtraction.
+A template constant array still retains its identity when its bound is recreated.
+
+`unset_keyed()` at `statement/unset.rs:516–546` separates the two transfers:
+
+- `ArrayType::unsetOffset()` subtracts a compatible literal from the generic key domain.
+- `HasOffsetValueType::unsetOffset()` removes an assertion only for its exact literal key.
+  General and finite-union offsets retain that assertion.
+- `NonEmptyArrayType::unsetOffset()` drops standalone non-emptiness. A surviving required offset
+  establishes non-emptiness again.
+- `ConstantArrayType::unsetOffset()` retains the existing shape transfer, including empty open shapes.
+
+Pun converts required offsets of a generic array to `HasOffsetValue` accessories without replacing
+the generic value type. This preserves a narrowed offset such as `string` inside an `int|string`
+array. The accessory has value-only traversal and no PHPDoc node. Public type operations and the
+Analyzer fixture use fresh PHPStan 2.3.1 expectations. Non-array offset-value comparisons remain
+outside this array-origin accessory port. Invalid-offset readers, unset entry observations,
+and default generic constructors are unchanged.
+
+`subtract_key()` delegates a mixed key domain to `TMixed::subtract()`. This supplies the
+`mixed~0` values required by `generic-keys.php:98–99` without changing the shared mixed operations.
+PHPStan's `ArrayType` constructor normalizes the benevolent `array-key` alias to mixed. Mago's
+`TScalar::ArrayKey` retains that source distinction, so the transfer applies the same normalization.
+An explicit `int|string` union retains its two members and uses scalar subtraction instead.
+Unsetting an offset on a mixed receiver delegates to `TMixed::unset_offset()`, which can remove an
+excluded empty array. Copies retain their own exclusions, repeated literal unsets combine them,
+and a runtime key does not subtract its entire type. The public runner exercises the converter's
+excluded-set branch as well as the statement producer.
+
+The repeated-scalar control in `unset/entry-reads.php:9` depends on the shared raw offset reader,
+not the entry observer. `ConstantArrayType::getOffsetValueType()` converts a matching `ErrorType`
+to ordinary mixed when another explicit key survives. A singleton array takes the all-keys path
+and retains `ErrorType`. The virtual unset assignment consumes that stored receiver type.
+Mago's raw known-offset reader currently returns the error value unchanged in both cases.
+Normalizing only the displayed type cannot repair the value written back into its parent.
+
+### Verification of generic offset metadata
+
+Before this correction, the first 17 public controls matched only 4 oracle diagnostics. The final
+fixture matches all 27 fresh PHPStan diagnostics. The original `generic-keys.php` matches all 36
+unchanged diagnostics, including lines 98, 99, 108, and 116. The array-origin accessory oracle also
+covers 13 types and 88 asymmetric supertype comparisons.
+
+All 50 `punphp-phpstan` tests and 36 neighboring Analyzer tests pass. The exported UnsetRule cases
+match 10 of 10. The neighboring Arrays harness matches all five duplicate-key cases and its
+offset-access case. On this older validation base, the complete `unset` binary passes 12 tests
+and retains two failures: the already-fixed constructor-default fixture and older write-back
+entry, failed-read, and shape-order behavior. Those tests and expectations remain unchanged.
+
+Fresh LLVM profiles from 22 exact current executables cover **106/106 changed production lines**:
+64 in Pun, 21 in this analyzer transfer, and 21 in codex. No exclusions or private-helper tests
+are used. An isolated public `generic_key_subtraction_matches_phpstan` run also hits the mixed
+dependency's `convert.rs:407` excluded-set expression twice. That run uses no injection hook.
+
+The instrumented runs use one Cargo job, two Rayon threads, a private target directory, and
+`cargo llvm-cov test --dep-coverage mago-analyzer,mago-codex --no-report`. The Analyzer run includes
+`unset`, `mixed_subtraction`, `array_metadata`, `array_slice`, `duplicate_array_keys`, `debug`,
+`callable_origins`, `error_marker`, and `rules`, with `PUN_RULES_FILTER=Variables/UnsetRuleTest`.
+The separate `punphp-phpstan` run includes every package test.

@@ -12,6 +12,8 @@ use mago_codex::ttype::atomic::array::TArray;
 use mago_codex::ttype::atomic::array::key::ArrayKey;
 use mago_codex::ttype::atomic::array::keyed::TKeyedArray;
 use mago_codex::ttype::atomic::array::list::TList;
+use mago_codex::ttype::atomic::mixed::TMixed;
+use mago_codex::ttype::atomic::scalar::TScalar;
 use mago_codex::ttype::combine_union_types;
 use mago_codex::ttype::combine_union_types_preserving_array_shapes;
 use mago_codex::ttype::combiner;
@@ -95,6 +97,9 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Unset<'arena> {
 
                 let array_key = key_type.get_single_array_key();
                 for mut atomic in array_variable.types.iter().cloned() {
+                    if let TAtomic::Mixed(mixed) = &mut atomic {
+                        *mixed = mixed.unset_offset(context.codebase);
+                    }
                     if let TAtomic::Scalar(scalar) = &atomic {
                         let scalar_str = scalar.get_id();
 
@@ -131,19 +136,7 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Unset<'arena> {
                         // ArrayType::unsetOffset returns an ordinary array for a compatible literal
                         // key, including when subtraction cannot express a more precise key type.
                         if let [TAtomic::Array(TArray::Keyed(array))] = parameter.constraint.types.as_ref() {
-                            let constant_bound = array.parameters.is_none()
-                                || context
-                                    .type_resolution_context
-                                    .get_template_definition(parameter.parameter_name)
-                                    .into_iter()
-                                    .flatten()
-                                    .any(|definition| {
-                                        definition.defining_entity == parameter.defining_entity
-                                            && matches!(definition.constraint.types.as_ref(),
-                                                [TAtomic::Array(TArray::Keyed(bound))]
-                                                    if bound.known_items.is_some())
-                                    });
-                            if constant_bound {
+                            if array.is_constant_shape() {
                                 let (mut updated, recreated) = unset_keyed(context, array.clone(), key_type);
                                 // TemplateConstantArrayType's parent omits unsealed extras. Its
                                 // displayed bound changes only when ConstantArrayType recreates it.
@@ -152,8 +145,7 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Unset<'arena> {
                                 }
                                 parameter.constraint =
                                     Arc::new(TUnion::from_atomic(TAtomic::Array(TArray::Keyed(updated))));
-                            } else if array.known_items.is_none()
-                                && parameter.intersection_types.is_none()
+                            } else if parameter.intersection_types.is_none()
                                 && let Some((keys, _)) = &array.parameters
                                 && let Some(key) = array_key
                                 && can_expression_types_be_identical(
@@ -526,8 +518,14 @@ fn unset_keyed<A: Arena>(
     mut array: TKeyedArray,
     offset: &TUnion,
 ) -> (TKeyedArray, bool) {
-    let Some(items) = array.known_items.as_mut() else {
-        array.non_empty = false;
+    if !array.is_constant_shape() {
+        // A generic array's known entries model HasOffsetValue, not ConstantArrayType. Its
+        // ArrayType subtracts literal keys even when an unrelated asserted offset survives.
+        if let Some(key) = offset.get_single_array_key()
+            && let Some(items) = &mut array.known_items
+        {
+            Arc::make_mut(items).remove(&key);
+        }
         if let Some((keys, _)) = &mut array.parameters
             && let Some(key) = offset.get_single_array_key()
         {
@@ -538,6 +536,12 @@ fn unset_keyed<A: Arena>(
                 *keys = Arc::new(remaining);
             }
         }
+        // NonEmptyArrayType::unsetOffset is ErrorType; surviving HasOffsetValue accessories
+        // re-establish non-emptiness. A union/general offset does not remove those accessories.
+        array.non_empty = array.known_items.as_ref().is_some_and(|items| items.values().any(|(o, _)| !o));
+        return (array, false);
+    }
+    let Some(items) = array.known_items.as_mut() else {
         return (array, false);
     };
     let literal_keys: Vec<_> = offset.types.iter().filter_map(TAtomic::to_array_key).collect();
@@ -581,6 +585,12 @@ fn subtract_key<A: Arena>(context: &mut Context<'_, '_, A>, keys: &TUnion, key: 
             if !constraint.is_never() {
                 remaining.push(TAtomic::GenericParameter(parameter.with_constraint(constraint)));
             }
+        } else if let TAtomic::Mixed(mixed) = atomic {
+            remaining.extend(mixed.subtract(&key.to_union(), context.codebase).types.into_owned());
+        } else if matches!(atomic, TAtomic::Scalar(TScalar::ArrayKey)) {
+            // ArrayType::__construct normalizes the benevolent array-key alias to mixed,
+            // unlike an explicit int|string union. Mago preserves that source distinction.
+            remaining.extend(TMixed::new().subtract(&key.to_union(), context.codebase).types.into_owned());
         } else {
             let narrowed = negated_assertion_reconciler::reconcile(
                 context,

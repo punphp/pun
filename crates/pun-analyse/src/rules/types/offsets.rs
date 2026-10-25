@@ -101,6 +101,7 @@ pub(in super::super) fn accessible(t: &Type) -> Tri {
         Type::Intersection(ts) => ts.iter().map(accessible).fold(Tri::No, |a, b| if a.yes() || b.yes() { Tri::Yes } else { a.or(b) }),
         Type::Template(tt) => accessible(&tt.bound),
         Type::Object(..) | Type::Static(..) | Type::This(_) | Type::EnumCase(..) => class_accessible(t),
+        Type::Accessory(pun_phpstan::types::Accessory::HasOffsetValue(..)) => Tri::Yes,
         Type::Mixed { .. } | Type::Error | Type::Wildcard | Type::ObjectWithoutClass | Type::ObjectShape(_) | Type::Iterable(..) | Type::Callable(_) => Tri::Maybe,
         _ if matches!(t, Type::Never(_)) || t.is_string().yes() || t.is_array().yes() || t.is_null().yes() => Tri::Yes,
         _ => Tri::No,

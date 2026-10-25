@@ -1,0 +1,176 @@
+{
+  "totals": {
+    "errors": 0,
+    "file_errors": 27
+  },
+  "files": {
+    "/home/user/workspace/pun-unset-rule/crates/pun-analyse/tests/fixtures/unset/offset-metadata.php": {
+      "errors": 27,
+      "messages": [
+        {
+          "message": "Dumped type: array<int, string>",
+          "line": 8,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: array<int<min, -1>|int<1, max>, string>",
+          "line": 10,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: array{...<int, string>}",
+          "line": 18,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: array{a: int, ...<int, string>}",
+          "line": 19,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: array{...<int, string>}",
+          "line": 21,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: array{new: 7}",
+          "line": 23,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: non-empty-array<int, string>&hasOffsetValue(5, string)",
+          "line": 32,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: non-empty-array<int<min, -1>|int<1, max>, string>&hasOffsetValue(5, string)",
+          "line": 34,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: non-empty-array<int<min, -1>|int<1, max>, string>&hasOffsetValue(5, string)",
+          "line": 37,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: non-empty-array<int<min, -1>|int<1, max>, string>&hasOffsetValue(5, string)",
+          "line": 39,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: array<int<min, -1>|int<1, 4>|int<6, max>, string>",
+          "line": 41,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: non-empty-array<non-empty-string, int|null>&hasOffsetValue('a', int)",
+          "line": 52,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: non-empty-array<non-empty-string, int|null>&hasOffsetValue('a', int)",
+          "line": 54,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: array<non-empty-string, int|null>",
+          "line": 56,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: non-empty-array<int<min, -1>|int<1, max>, int|string>&hasOffsetValue(5, string)",
+          "line": 65,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: string",
+          "line": 66,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: array{a?: int, ...<int, string>}",
+          "line": 76,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: array{a?: int, ...<int, string>}",
+          "line": 78,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: non-empty-array<int<min, -1>|int<1, max>, string>&hasOffsetValue(5, string)",
+          "line": 88,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: array{...<string, string>}",
+          "line": 96,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: array{...<int, string>}",
+          "line": 104,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: array<int<min, -1>|int<1, max>, string>",
+          "line": 109,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: array<mixed~0, string>",
+          "line": 116,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: array<mixed~(0|7), string>",
+          "line": 119,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: array<mixed~0, string>",
+          "line": 120,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: array<mixed~0, string>",
+          "line": 122,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: array<mixed~(0|7|''), string>",
+          "line": 124,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        }
+      ]
+    }
+  },
+  "errors": []
+}

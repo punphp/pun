@@ -939,8 +939,13 @@ fn scrape_type_properties(
                                 }
                             } else {
                                 let new_item_value_type =
-                                    if let Some((ref mut existing_key_param, ref mut existing_value_param)) =
-                                        combination.keyed_array_parameters
+                                    if let Some((existing_key_param, existing_value_param)) =
+                                        combination.keyed_array_parameters.as_mut().filter(|(keys, _)| {
+                                            !keys.flags.contains(crate::ttype::flags::UnionFlags::CONSTANT_ARRAY_KEY)
+                                                || parameters.as_ref().is_none_or(|(keys, _)| {
+                                                    !keys.flags.contains(crate::ttype::flags::UnionFlags::CONSTANT_ARRAY_KEY)
+                                                })
+                                        })
                                     {
                                         adjust_keyed_array_parameters(
                                             existing_value_param,

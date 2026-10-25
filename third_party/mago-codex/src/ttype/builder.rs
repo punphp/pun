@@ -794,6 +794,13 @@ fn get_shape_from_type(
         });
 
         keyed_array.non_empty = shape.has_non_optional_fields() || shape.kind.is_non_empty();
+        // TypeNodeResolver normalizes a shape declared without any fields to ArrayType. In
+        // contrast, removing the final field of an existing ConstantArrayType keeps its kind.
+        if !shape.fields.is_empty()
+            && let Some((keys, _)) = &mut keyed_array.parameters
+        {
+            Arc::make_mut(keys).flags.insert(crate::ttype::flags::UnionFlags::CONSTANT_ARRAY_KEY);
+        }
 
         Ok(TAtomic::Array(TArray::Keyed(keyed_array)))
     }

@@ -143,6 +143,11 @@ fn template_open_shape_mutation_uses_its_declared_parent() {
 }
 
 #[test]
+fn open_shapes_and_refined_generic_arrays_keep_their_own_metadata() {
+    oracle("offset-metadata.php", "offset-metadata.json", 80400);
+}
+
+#[test]
 fn virtual_unset_write_back_matches_phpstan() {
     oracle("write-back.php", "write-back.json", 80400);
 }

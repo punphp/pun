@@ -29,6 +29,9 @@ impl UnionFlags {
     pub const NULLSAFE_NULL: UnionFlags = UnionFlags(1 << 9);
     /// Indicates this union fills an omitted template argument that has no declared default.
     pub const FROM_UNSPECIFIED_TEMPLATE: UnionFlags = UnionFlags(1 << 10);
+    /// On a keyed array's extra-key union, retain ConstantArrayType source kind after its last
+    /// explicit field is removed. A generic array's asserted offsets are not constant-shape fields.
+    pub const CONSTANT_ARRAY_KEY: UnionFlags = UnionFlags(1 << 11);
 }
 
 impl UnionFlags {

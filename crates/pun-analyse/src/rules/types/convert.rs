@@ -64,12 +64,12 @@ impl<'a, 'arena> Checker<'a, 'arena> {
         })
     }
 
-    /// A PHPDoc open shape and a general array narrowed by an offset share Mago's representation. Preserve its
-    /// per-key inferred values only when this expression's own source edge establishes a declared shape.
+    /// Resolve an array-bearing source edge's template metadata. The actual keyed array now carries its
+    /// own constant/generic source kind; a declaration must not turn a refined generic array into a shape.
     fn source_array(&self, actual: &TUnion, source: &Type) -> Option<Type> {
         match source {
             Type::ConstArray(_) => match actual.types.as_ref() {
-                [TAtomic::Array(a)] => Some(self.array(a, true)),
+                [TAtomic::Array(a)] => Some(self.array(a)),
                 _ => None,
             },
             Type::Template(t) => {
@@ -462,7 +462,7 @@ impl<'a, 'arena> Checker<'a, 'arena> {
             TAtomic::Mixed(_) => mixed(),
             TAtomic::Resource(_) => Type::Resource,
             TAtomic::Object(o) => self.object(o),
-            TAtomic::Array(a) => self.array(a, false),
+            TAtomic::Array(a) => self.array(a),
             TAtomic::Iterable(i) => {
                 let it = Type::Iterable(
                     Box::new(self.to_phpstan(&i.key_type)),
@@ -666,7 +666,7 @@ impl<'a, 'arena> Checker<'a, 'arena> {
         }
     }
 
-    fn array(&self, a: &TArray, declared_shape: bool) -> Type {
+    fn array(&self, a: &TArray) -> Type {
         match a {
             TArray::List(l) => {
                 if l.element_type.is_never() && l.known_elements.is_some() {
@@ -698,8 +698,7 @@ impl<'a, 'arena> Checker<'a, 'arena> {
             }
             TArray::Keyed(k) => {
                 match &k.parameters {
-                    Some((key, value)) if !key.is_never()
-                        && !(declared_shape && k.known_items.as_ref().is_some_and(|i| !i.is_empty())) =>
+                    Some((key, value)) if !key.is_never() && !k.is_constant_shape() =>
                     {
                         let mut keys = vec![self.to_phpstan(key)];
                         let mut values = vec![self.to_phpstan(value)];
@@ -707,14 +706,16 @@ impl<'a, 'arena> Checker<'a, 'arena> {
                             keys.push(self.key(k));
                             values.push(self.to_phpstan(v));
                         }
-                        let array = Type::array(union(keys), union(values));
+                        let mut parts = vec![Type::array(union(keys), union(values))];
                         if k.non_empty
                             || k.known_items.as_ref().is_some_and(|i| i.values().any(|(o, _)| !o))
                         {
-                            intersect(vec![array, Type::Accessory(Accessory::NonEmptyArray)])
-                        } else {
-                            array
+                            parts.push(Type::Accessory(Accessory::NonEmptyArray));
                         }
+                        parts.extend(k.known_items.iter().flat_map(|k| k.iter()).filter_map(|(key, (optional, value))| {
+                            (!optional).then(|| Type::Accessory(Accessory::HasOffsetValue(Box::new(self.key(key)), Box::new(self.to_phpstan(value)))))
+                        }));
+                        intersect(parts)
                     }
                     parameters => {
                         let mut shape = ConstArray::empty();
@@ -728,9 +729,19 @@ impl<'a, 'arena> Checker<'a, 'arena> {
                         if let Some((key, value)) = parameters
                             && !key.is_never()
                         {
-                            shape.unsealed = Some((self.to_phpstan(key), self.to_phpstan(value)));
+                            let key = self.to_phpstan(key);
+                            if shape.keys.is_empty() {
+                                shape.is_list = if key.is_integer().yes() { Tri::Maybe } else { Tri::No };
+                            }
+                            shape.unsealed = Some((key, self.to_phpstan(value)));
                         }
-                        finish_shape(shape)
+                        if shape.keys.is_empty() && shape.unsealed.is_some() {
+                            // Recreate an existing ConstantArrayType, not a new PHPDoc shape. The
+                            // builder intentionally normalizes newly declared empty shapes to ArrayType.
+                            Type::ConstArray(Box::new(shape))
+                        } else {
+                            finish_shape(shape)
+                        }
                     }
                 }
             }

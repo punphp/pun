@@ -307,6 +307,9 @@ fn has_offset(c: &Checker, ty: &Type, offset: &Type) -> Tri {
         Type::Accessory(Accessory::List) => {
             is_super_type_of(&Type::IntRange(Some(0), None), offset).and(Tri::Maybe)
         }
+        Type::Accessory(Accessory::HasOffsetValue(key, _)) => {
+            if key.as_ref() == &array_key(offset) { Tri::Yes } else { Tri::Maybe }
+        }
         Type::ConstString(s) if is_super_type_of(&Type::Int, offset).yes() => {
             let len = s.len() as i64;
             is_super_type_of(&Type::IntRange(Some(-len), Some(len - 1)), offset)

@@ -1037,6 +1037,11 @@ fn combine_unequal_union_types_cow(
             result.set_reference_free(true);
         }
 
+        result.flags.set(
+            UnionFlags::CONSTANT_ARRAY_KEY,
+            flags_1.contains(UnionFlags::CONSTANT_ARRAY_KEY) && type_2.flags.contains(UnionFlags::CONSTANT_ARRAY_KEY),
+        );
+
         result
     };
 
@@ -1108,7 +1113,9 @@ fn add_unequal_union_type_inner(
     } else {
         combine_unequal_union_types_cow(Cow::Owned(base_type), other_type, codebase, options, preserve_array_shapes)
     };
+    let constant_array_key = base_type.flags.contains(UnionFlags::CONSTANT_ARRAY_KEY);
     base_type.flags = original_flags;
+    base_type.flags.set(UnionFlags::CONSTANT_ARRAY_KEY, constant_array_key);
 
     if !other_type.had_template() {
         base_type.set_had_template(false);
