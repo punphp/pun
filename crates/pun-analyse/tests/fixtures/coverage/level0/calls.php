@@ -71,3 +71,34 @@ function newCallable(): void
 {
     $make = new \stdClass(...);
 }
+
+/**
+ * @method static void make(int $count)
+ * @method void instance(int $count)
+ */
+class StaticTagged
+{
+    static function real(int $first, int $second): void
+    {
+    }
+
+    function inScope(): void
+    {
+        self::make();
+        self::instance(1);
+    }
+}
+
+class InheritedTagged extends StaticTagged
+{
+}
+
+function taggedStaticCalls(): void
+{
+    StaticTagged::make();
+    StaticTagged::make(count: 1);
+    StaticTagged::make(unexpected: 1);
+    StaticTagged::instance(1);
+    InheritedTagged::make();
+    StaticTagged::real(1);
+}

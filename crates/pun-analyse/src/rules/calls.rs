@@ -315,19 +315,19 @@ pub fn static_method_call<'arena>(c: &mut Checker<'_, 'arena>, call: &StaticMeth
         _ => return,
     };
     let display = c.display(class);
-    let Some(method) = members::method(c, class, name.value) else {
+    let Some(method) = members::method(c, class, name.value)
+        .or_else(|| members::annotation_method(c, class, name.value))
+    else {
         let guarded = match call.class {
             Expression::Static(_) => "static".to_string(),
             Expression::Self_(_) => "self".to_string(),
             _ => String::from_utf8_lossy(class.name.as_bytes()).into_owned(),
         };
         let key = format!("{guarded}::{method_name}").to_ascii_lowercase();
-        let known = c.guards.contains(&super::scope::Guard::Method(key))
-            || members::annotation_method(c, class, name.value).is_some();
+        let known = c.guards.contains(&super::scope::Guard::Method(key));
         if !known && members::method(c, class, b"__callStatic").is_some() {
             return;
         }
-        // ponytail: an `@method` tag's AnnotationMethodReflection is not the location's method
         class_names::check_at(c, pair.as_slice(), Some(&class_names::Location::StaticMethodCall(None)), true);
         if known {
             return;

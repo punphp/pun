@@ -13,15 +13,16 @@ Pushpak resumed all commands on 2026-10-25. CI stays disabled.
 - **Rule docs:** steps 1–5 built locally: all 1,249 rule pages, 64 command/group pages, 8 presets, 8 sets, six
   migration mappings and the URL-filtered directory. CLI links need the public docs origin; none is configured.
   The docs build passes on Linux (1,372 pages); public deployment has not been verified.
-- **Verification:** re-run `cargo test -p punphp-analyse --test levels` first in the new Linux orb. The previous
-  session recorded `cargo test -p punphp-analyse` green, including the salvage/handoff generics wiring.
+- **Verification:** `cargo test -p punphp-analyse --test levels` passed on Rust 1.99/Linux (2,787 fixture cases,
+  1,293 seconds). This checks ported identifiers against PHPStan with the existing explicit gaps; it is not full
+  level parity. The instrumented full-crate run is still in progress.
 - **Lint coverage:** Linux full-registry measurement is 21,786/21,786 lines, with 243 tests passing on main.
 - **Fixer coverage:** Linux full-registry measurement is 34,841/34,841 lines, with 105 tests passing on main.
 - **Salvage ref on origin:** `salvage/stash-0b0ef5b` (Blade Prettier probe; §3 "perf format" row). Delete it once that row lands.
 - **Earlier parked work:** `wt-lint-rules2`, `wt-lint-types` and `wt-check` are absent from this checkout and origin's
   current refs. Inspect history before recreating any of their work.
 - **PHPStan parity metric:** context/reference/phpstan-identifiers.txt: the 947 identifiers phpstan.org/error-identifiers lists for phpstan/phpstan-src 2.3.x (latest release 2.3.1); Pun emits 659 (2026-10-20). Extensions are tracked apart, not targets yet: phpstan-strict-rules-identifiers.txt (29 of 53) and phpstan-deprecation-rules-identifiers.txt (72 of 120). The oracle is PHPStan 2.3.1 (wt-oracle-23).
-- **Priorities, in order:** (1) verify the levels test; (2) done (lint vs Rector: `scripts/lint-vs-rector.py`, residuals in §3); (3) done (pun-lint at 100% on Linux); (4) analyse level 0, then the
+- **Priorities, in order:** (1) done (levels test green, with documented gaps); (2) done (lint vs Rector: `scripts/lint-vs-rector.py`, residuals in §3); (3) done (pun-lint at 100% on Linux); (4) analyse level 0, then the
   Larastan groundwork and levels 1-10; (5) lint rules by usage; (6) `pun check` in one pass; (7) perf rounds with
   `scripts/bench.py`.
 - **Waiting on Pushpak:** audit 26 (agent-mode `OnceLock`), `style/prefer-class-constant`, CI re-enable.
@@ -303,7 +304,6 @@ Gate passed ea7a84bc2d4c4f4b90ad177d911e6ade3accf253
 
 | Work | Status |
 | --- | --- |
-| resume gate: run `cargo test -p punphp-analyse --test levels` on Rust 1.99 in the new Linux orb and fix any regression against the upstream expectations | doing |
 | analyse 3: finish level 0 and the level-2 class rules. 149 of 378 analyse rules ported. Not yet: the debug rules (DebugScopeRule, DumpTypeRule, DumpNativeTypeRule, DumpPhpDocTypeRule, FileAssertRule: they print PHPStan's description of any expression's type), facade aliases (analyse 6) | todo |
 | analyse 6 groundwork: discover Laravel's default, application and package class aliases natively, resolve their targets through lazy autoload, and register alias identity in Mago's shared codebase; verify the Pinkary Blade residual and oracle-backed alias controls | doing (independent worktree) |
 | analyse 3 follow-up: the internal/deprecated class-name extensions (RestrictedInternalClassNameUsageExtension, RestrictedDeprecatedClassNameUsageExtension) at their PHPDoc-tag locations (@var/@param/@return/@throws/@mixin/@method/@property/@extends/@implements/@use/@template bounds/type aliases), property-hook parameter and return types, and `@method static` calls (calls.rs: a static call to a missing method gets no member) | todo |
@@ -347,7 +347,6 @@ Gate passed ea7a84bc2d4c4f4b90ad177d911e6ade3accf253
 | analyse 3 follow-up (from 3b): skip statements after a terminating one in the rule walk, as PHPStan does (unreachable statements; later never-returning calls from inference) | todo |
 | analyse 3 follow-up (from 3b): examples/analyse in a debug build overflows the default thread stack on laravel-framework (ran with RUST_MIN_STACK=268435456); find the deep recursion or raise the stack in the corpus script | todo |
 | analyse 3 follow-up (from 3b): re-export the Cast/VoidCastRule fixtures with a PHP 8.5 oracle to confirm cast.void against a live run (the 8.4 oracle cannot parse `(void)`) | todo |
-| analyse 3 follow-up: use the `@method` annotation fallback in CallStaticMethodsRule (static pseudo methods) and class lookups, then check the corpus | doing |
 | analyse 3 follow-up: port upstream's active-trait recursion guard in check_file instead of the (class, trait) dedup (PHPStan 2.3.1: TraitUseHandler::currentlyProcessedTraits); separate aliased uses must each be checked | doing (independent worktree) |
 | analyse 3 follow-up: apply a trait alias's visibility (`foo as protected`) to the walked trait method | todo |
 | analyse 4-5: type inference; levels 1-10 as the five presets; strict-rules, deprecation rules. Level 6 missingType.* and level 2 Generics rules are ported (missing_types.rs, declared.rs, doc.rs, generics.rs). Not yet: call-site variance (`generics.callSiteVariance*`, needs variance in phpdoc::Node::Generic), VarianceCheck (`generics.variance`), `generics.unresolvable`, CrossCheckInterfacesHelper (`generics.interfaceConflict`), the gap `2 Generics/ClassAncestorsRuleTest::testRuleExtends`. Corpus: pinkary, pest, larastan exact for generics.* and missingType; laravel-framework differs only in anonymous-class names | todo |

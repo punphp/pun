@@ -31,6 +31,8 @@ With every analyse rule off, `pun analyse` stops with "No rules detected", as PH
 
 Human output uses Pun IDs such as `analyse/undefined/function`. Machine reports retain PHPStan identifiers such as `function.notFound`.
 
+Static calls check PHPDoc `@method` signatures, including inherited tags. Pun checks their required and named arguments and reports static calls to non-static methods.
+
 An [ignore comment](/docs/configuration/ignore-comments) suppresses a matching finding:
 
 ```php

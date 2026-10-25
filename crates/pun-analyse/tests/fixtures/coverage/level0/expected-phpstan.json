@@ -51,6 +51,55 @@
    "tip": null
   },
   {
+   "file": "calls.php",
+   "line": 87,
+   "identifier": "arguments.count",
+   "message": "Static method CoverageCalls\\StaticTagged::make() invoked with 0 parameters, 1 required.",
+   "tip": null
+  },
+  {
+   "file": "calls.php",
+   "line": 98,
+   "identifier": "arguments.count",
+   "message": "Static method CoverageCalls\\StaticTagged::make() invoked with 0 parameters, 1 required.",
+   "tip": null
+  },
+  {
+   "file": "calls.php",
+   "line": 100,
+   "identifier": "argument.missing",
+   "message": "Missing parameter $count (int) in call to static method CoverageCalls\\StaticTagged::make().",
+   "tip": null
+  },
+  {
+   "file": "calls.php",
+   "line": 100,
+   "identifier": "argument.unknown",
+   "message": "Unknown parameter $unexpected in call to static method CoverageCalls\\StaticTagged::make().",
+   "tip": null
+  },
+  {
+   "file": "calls.php",
+   "line": 101,
+   "identifier": "method.staticCall",
+   "message": "Static call to instance method CoverageCalls\\StaticTagged::instance().",
+   "tip": null
+  },
+  {
+   "file": "calls.php",
+   "line": 102,
+   "identifier": "arguments.count",
+   "message": "Static method CoverageCalls\\StaticTagged::make() invoked with 0 parameters, 1 required.",
+   "tip": null
+  },
+  {
+   "file": "calls.php",
+   "line": 103,
+   "identifier": "arguments.count",
+   "message": "Static method CoverageCalls\\StaticTagged::real() invoked with 1 parameter, 2 required.",
+   "tip": null
+  },
+  {
    "file": "properties.php",
    "line": 16,
    "identifier": "property.private",
