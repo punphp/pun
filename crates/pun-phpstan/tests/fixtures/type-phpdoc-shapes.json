@@ -1,0 +1,70 @@
+[
+    [
+        "array{}",
+        "array{}"
+    ],
+    [
+        "array{int, string}",
+        "array{int, string}"
+    ],
+    [
+        "array{1: int, 0: string}",
+        "array{1: int, 0: string}"
+    ],
+    [
+        "array{0?: int, 1?: string}",
+        "array{0?: int, 1?: string}"
+    ],
+    [
+        "array{0: int, 1?: string}",
+        "array{0: int, 1?: string}"
+    ],
+    [
+        "array{a: array{b?: $this}, c?: static}",
+        "array{a: array{b?: $this}, c?: static}"
+    ],
+    [
+        "array{__template<T, 'function generic()', mixed>}",
+        "array{T}"
+    ],
+    [
+        "array{nested: array{__template<T, 'function generic()', mixed>}, optional?: __template<T, 'function generic()', mixed>}",
+        "array{nested: array{T}, optional?: T}"
+    ],
+    [
+        "array{'Let\\'s go': 'Let\\'s go', Foo\\Bar: 'Foo\\\\Bar'}",
+        "array{'Let\\'s go': 'Let\\'s go', Foo\\Bar: 'Foo\\\\Bar'}"
+    ],
+    [
+        "array{\"\\t\": \"\\0\", \"\": \"\", \"foo?\": true}",
+        "array{'\t': '\u0000', '': '', 'foo?': true}"
+    ],
+    [
+        "array{a: int, ...}",
+        "array{a: int, ...}"
+    ],
+    [
+        "array{a: int, ...<__template<T, 'function generic()', mixed>>}",
+        "array{a: int, ...<T>}"
+    ],
+    [
+        "array{a: int, ...<string, __template<T, 'function generic()', mixed>>}",
+        "array{a: int, ...<string, T>}"
+    ],
+    [
+        "array{a: int, ...<mixed, __template<T, 'function generic()', mixed>>}",
+        "array{a: int, ...<T>}"
+    ],
+    [
+        "list{0: int, 1?: string, ...}",
+        "array{0: int, 1?: string, ...}"
+    ],
+    [
+        "list{0: int, 1?: string, ...<__template<T, 'function generic()', mixed>>}",
+        "array{0: int, 1?: string, ...<T>}"
+    ],
+    [
+        "list{0?: int, 1?: string, ...<__template<T, 'function generic()', mixed>>}",
+        "list{0?: int, 1?: string, ...<T>}"
+    ]
+]

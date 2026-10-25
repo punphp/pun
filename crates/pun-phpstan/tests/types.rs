@@ -289,6 +289,23 @@ fn long_constant_string_truncates_before_punctuation() {
     assert_eq!(ty.describe(Level::Value), "'aaaa…'");
 }
 
+/// PHPStan 2.3.1's `Printer::print(TypeStringResolver::resolve(...)->toPhpDocNode())`, with Exception as the class
+/// scope and T as an invariant function template. Array keys and nested values use PHPDoc, not precise descriptions.
+#[test]
+fn constant_array_phpdoc_serialization() {
+    let rows = fixture("type-phpdoc-shapes.json");
+    let mut failures = Vec::new();
+    for row in rows.as_array().unwrap() {
+        let input = row[0].as_str().unwrap();
+        let got = pun_phpstan::types::to_phpdoc(&resolve_str(input, Some("Exception")));
+        let want = row[1].as_str().unwrap();
+        if got != want {
+            failures.push(format!("{input}\n  want {want:?}\n  got  {got:?}"));
+        }
+    }
+    assert!(failures.is_empty(), "{}", failures.join("\n"));
+}
+
 const VERBOSITY_GAPS: &[&str] = &["Traversable<int>"];
 
 /// ponytail: a callable array's offsets (IntersectionType::hasOffsetValueType()) are not ported; checkOurKeys() sees a

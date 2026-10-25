@@ -1574,6 +1574,7 @@ pub fn to_phpdoc(t: &Type) -> String {
             }
             format!("array<{}, {}>", to_phpdoc(key), to_phpdoc(item))
         }
+        Type::ConstArray(array) => array.to_phpdoc(),
         Type::Iterable(key, item) => {
             if matches!(**key, Type::Mixed { .. }) {
                 if matches!(**item, Type::Mixed { .. }) {
@@ -1941,6 +1942,46 @@ impl ConstArray {
                 items.join(", ")
             }
         )
+    }
+
+    /// `ConstantArrayType::toPhpDocNode()`: unlike `describe()`, nested values and quoted keys use PHPDoc syntax.
+    fn to_phpdoc(&self) -> String {
+        let mut name = if self.should_be_described_as_a_list() { "list" } else { "array" };
+        let mut items = Vec::new();
+        let mut values = Vec::new();
+        let mut values_only = true;
+        for (i, key) in self.keys.iter().enumerate() {
+            let optional = self.is_optional_key(i);
+            if *key != Type::ConstInt(i as i64) || optional {
+                values_only = false;
+            }
+            let key = match key {
+                Type::ConstString(s) if is_valid_identifier(s) => s.clone(),
+                key => to_phpdoc(key),
+            };
+            let value = to_phpdoc(&self.values[i]);
+            items.push(format!("{key}{}: {value}", if optional { "?" } else { "" }));
+            values.push(value);
+        }
+        let mut items = if values_only { values } else { items };
+        if self.is_unsealed().yes()
+            && let Some((key, value)) = &self.unsealed
+        {
+            let tail = if key.is_plain_implicit_mixed()
+                || (self.is_list.yes() && key.describe(Level::Precise) == "int<0, max>")
+            {
+                if value.is_plain_implicit_mixed() {
+                    "...".to_string()
+                } else {
+                    format!("...<{}>", to_phpdoc(value))
+                }
+            } else {
+                name = "array";
+                format!("...<{}, {}>", to_phpdoc(key), to_phpdoc(value))
+            };
+            items.push(tail);
+        }
+        format!("{name}{{{}}}", items.join(", "))
     }
 
     fn generalize(&self) -> Type {

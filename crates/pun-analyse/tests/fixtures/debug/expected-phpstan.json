@@ -1,0 +1,482 @@
+[
+  {
+    "file": "calls.php",
+    "line": 4,
+    "identifier": "phpstan.dumpType",
+    "message": "Dumped type: 1",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "calls.php",
+    "line": 5,
+    "identifier": "phpstan.dumpPhpDocType",
+    "message": "Dumped type: true",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "calls.php",
+    "line": 13,
+    "identifier": "phpstan.dumpType",
+    "message": "Dumped type: 2",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "calls.php",
+    "line": 14,
+    "identifier": "phpstan.dumpType",
+    "message": "Dumped type: 'case'",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "calls.php",
+    "line": 15,
+    "identifier": "phpstan.dumpPhpDocType",
+    "message": "Dumped type: null",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "calls.php",
+    "line": 16,
+    "identifier": "phpstan.dumpPhpDocType",
+    "message": "Dumped type: false",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "calls.php",
+    "line": 17,
+    "identifier": "phpstan.dumpType",
+    "message": "Dumped type: 5",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "calls.php",
+    "line": 18,
+    "identifier": "phpstan.dumpPhpDocType",
+    "message": "Dumped type: 6",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "calls.php",
+    "line": 19,
+    "identifier": "phpstan.dumpType",
+    "message": "Dumped type #1: 1",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "calls.php",
+    "line": 19,
+    "identifier": "phpstan.dumpType",
+    "message": "Dumped type #2: true",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "calls.php",
+    "line": 20,
+    "identifier": "phpstan.dumpPhpDocType",
+    "message": "Dumped type #1: array{1}",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "calls.php",
+    "line": 20,
+    "identifier": "phpstan.dumpPhpDocType",
+    "message": "Dumped type #2: array{2}",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "calls.php",
+    "line": 21,
+    "identifier": "phpstan.dumpType",
+    "message": "Dumped type: array{1, 2}",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "calls.php",
+    "line": 22,
+    "identifier": "phpstan.dumpPhpDocType",
+    "message": "Dumped type: array{'value'}",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "calls.php",
+    "line": 23,
+    "identifier": "phpstan.dumpType",
+    "message": "Dumped type #1: array{1, 2}",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "calls.php",
+    "line": 23,
+    "identifier": "phpstan.dumpType",
+    "message": "Dumped type #2: array{3, 4}",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "calls.php",
+    "line": 24,
+    "identifier": "phpstan.dumpType",
+    "message": "Dumped type #1: 'named'",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "calls.php",
+    "line": 24,
+    "identifier": "phpstan.dumpType",
+    "message": "Dumped type #2: false",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "calls.php",
+    "line": 25,
+    "identifier": "phpstan.dumpPhpDocType",
+    "message": "Dumped type #1: true",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "calls.php",
+    "line": 25,
+    "identifier": "phpstan.dumpPhpDocType",
+    "message": "Dumped type #2: 7",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "calls.php",
+    "line": 26,
+    "identifier": "phpstan.dumpType",
+    "message": "Dumped type #1: 'one'",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "calls.php",
+    "line": 26,
+    "identifier": "phpstan.dumpType",
+    "message": "Dumped type #2: 'two'",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "calls.php",
+    "line": 30,
+    "identifier": "phpstan.dumpPhpDocType",
+    "message": "Dumped type #1: 3",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "calls.php",
+    "line": 30,
+    "identifier": "phpstan.dumpPhpDocType",
+    "message": "Dumped type #2: 4",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "calls.php",
+    "line": 34,
+    "identifier": "arguments.count",
+    "message": "Function PHPStan\\dumpType invoked with 0 parameters, at least 1 required.",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "calls.php",
+    "line": 35,
+    "identifier": "arguments.count",
+    "message": "Function PHPStan\\dumpPhpDocType invoked with 0 parameters, at least 1 required.",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "ignored.php",
+    "line": 6,
+    "identifier": "phpstan.dumpType",
+    "message": "Dumped type: 'kept'",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "ignored.php",
+    "line": 6,
+    "identifier": "ignore.unmatchedIdentifier",
+    "message": "No error with identifier phpstan.dumpType is reported on line 6.",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "ignored.php",
+    "line": 7,
+    "identifier": "phpstan.dumpPhpDocType",
+    "message": "Dumped type: 'kept'",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "ignored.php",
+    "line": 7,
+    "identifier": "ignore.unmatchedIdentifier",
+    "message": "No error with identifier phpstan.dumpPhpDocType is reported on line 7.",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "negative.php",
+    "line": 17,
+    "identifier": "function.notFound",
+    "message": "Function NotLoaded\\dumpType not found.",
+    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+    "ignorable": true
+  },
+  {
+    "file": "negative.php",
+    "line": 40,
+    "identifier": "phpstan.type",
+    "message": "Expected type int, actual: 1",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "negative.php",
+    "line": 41,
+    "identifier": "phpstan.dumpNativeType",
+    "message": "Dumped type: 12",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "negative.php",
+    "line": 42,
+    "identifier": "phpstan.debugScope",
+    "message": "$fn (Yes): 'PHPStan\\\\dumpPhpDocType'\n$callable (Yes): Closure(mixed, mixed ...): mixed\nnative $fn (Yes): 'PHPStan\\\\dumpPhpDocType'\nnative $callable (Yes): Closure(mixed, mixed ...): mixed",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "types.php",
+    "line": 11,
+    "identifier": "phpstan.dumpType",
+    "message": "Dumped type: int<0, 100>",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "types.php",
+    "line": 12,
+    "identifier": "phpstan.dumpPhpDocType",
+    "message": "Dumped type: int<0, 100>",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "types.php",
+    "line": 21,
+    "identifier": "phpstan.dumpType",
+    "message": "Dumped type: T (function DebugTypes\\generic(), argument)",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "types.php",
+    "line": 22,
+    "identifier": "phpstan.dumpPhpDocType",
+    "message": "Dumped type: T",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "types.php",
+    "line": 23,
+    "identifier": "phpstan.dumpType",
+    "message": "Dumped type: array{T (function DebugTypes\\generic(), argument)}",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "types.php",
+    "line": 24,
+    "identifier": "phpstan.dumpPhpDocType",
+    "message": "Dumped type: array{T}",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "types.php",
+    "line": 31,
+    "identifier": "phpstan.dumpType",
+    "message": "Dumped type: $this(DebugTypes\\C)",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "types.php",
+    "line": 32,
+    "identifier": "phpstan.dumpPhpDocType",
+    "message": "Dumped type: $this",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "types.php",
+    "line": 33,
+    "identifier": "phpstan.dumpType",
+    "message": "Dumped type: array{$this(DebugTypes\\C)}",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "types.php",
+    "line": 34,
+    "identifier": "phpstan.dumpPhpDocType",
+    "message": "Dumped type: array{$this}",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "types.php",
+    "line": 38,
+    "identifier": "phpstan.dumpType",
+    "message": "Dumped type: ''",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "types.php",
+    "line": 39,
+    "identifier": "phpstan.dumpPhpDocType",
+    "message": "Dumped type: ''",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "types.php",
+    "line": 40,
+    "identifier": "phpstan.dumpType",
+    "message": "Dumped type: \"\\t\"",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "types.php",
+    "line": 41,
+    "identifier": "phpstan.dumpPhpDocType",
+    "message": "Dumped type: '\t'",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "types.php",
+    "line": 42,
+    "identifier": "phpstan.dumpType",
+    "message": "Dumped type: array{Foo\\Bar: 'Foo\\\\Bar'}",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "types.php",
+    "line": 43,
+    "identifier": "phpstan.dumpPhpDocType",
+    "message": "Dumped type: array{Foo\\Bar: 'Foo\\\\Bar'}",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "types.php",
+    "line": 44,
+    "identifier": "phpstan.dumpPhpDocType",
+    "message": "Dumped type: array{'Let\\'s go': 'Let\\'s go'}",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "types.php",
+    "line": 45,
+    "identifier": "phpstan.dumpPhpDocType",
+    "message": "Dumped type: array{'\u0000': 'NUL', NUL: '\u0000'}",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "types.php",
+    "line": 46,
+    "identifier": "phpstan.dumpPhpDocType",
+    "message": "Dumped type: array{'\t': 'HT', HT: '\t'}",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "types.php",
+    "line": 47,
+    "identifier": "phpstan.dumpPhpDocType",
+    "message": "Dumped type: array{'': '', 'foo?': true, shall-we-dance: false, '3.14': 3.14}",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "types.php",
+    "line": 48,
+    "identifier": "phpstan.dumpPhpDocType",
+    "message": "Dumped type: array{1: true, 0: false}",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "types.php",
+    "line": 49,
+    "identifier": "phpstan.dumpPhpDocType",
+    "message": "Dumped type: array{nested: array{'a', 2}}",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "types.php",
+    "line": 50,
+    "identifier": "phpstan.dumpType",
+    "message": "Dumped type: '123456789012345678901234567890'",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "types.php",
+    "line": 51,
+    "identifier": "phpstan.dumpType",
+    "message": "Dumped type: array{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "types.php",
+    "line": 55,
+    "identifier": "phpstan.dumpType",
+    "message": "Dumped type: 1|'a'",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "types.php",
+    "line": 56,
+    "identifier": "phpstan.dumpPhpDocType",
+    "message": "Dumped type: 1|'a'",
+    "tip": null,
+    "ignorable": false
+  }
+]
