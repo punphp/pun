@@ -126,7 +126,6 @@
 9 Methods/CallMethodsRuleTest::testBug7369
 9 Methods/CallMethodsRuleTest::testBug8048
 9 Methods/CallMethodsRuleTest::testBug8888
-9 Methods/CallMethodsRuleTest::testCallTraitOverridenMethods
 9 Methods/CallMethodsRuleTest::testSiblingMethodPrototype
 9 Methods/CallMethodsRuleTest::testTypedClassConstants
 9 Methods/CallStaticMethodsRuleTest::testBug14150
@@ -340,7 +339,6 @@
 9 Methods/CallMethodsRuleTest::testAcceptThrowable
 9 Methods/CallMethodsRuleTest::testBug10719
 9 Methods/CallMethodsRuleTest::testBug11463
-9 Methods/CallMethodsRuleTest::testBug12880
 9 Methods/CallMethodsRuleTest::testBug13171
 9 Methods/CallMethodsRuleTest::testBug13272
 9 Methods/CallMethodsRuleTest::testBug13511
