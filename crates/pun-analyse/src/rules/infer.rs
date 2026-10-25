@@ -178,10 +178,12 @@ fn analyse_observed<'arena>(
                 (s, text.iter().filter(|b| !b.is_ascii_whitespace()).copied().collect())
             })
             .collect();
+        let (_, unset_scopes, unset_roots) = super::unset::expressions(program);
         registry.register_expression_hook(Definedness {
             ids,
             builtins: super::reflection::builtins(php_version),
-            unset_scopes: super::unset::expressions(program).1,
+            unset_scopes,
+            unset_roots,
             found: Arc::clone(&found),
         });
     }
@@ -248,6 +250,7 @@ struct Definedness {
     ids: HashMap<Span, Vec<u8>>,
     builtins: &'static pun_phpstan::symbols::Symbols,
     unset_scopes: HashSet<Span>,
+    unset_roots: HashMap<Span, Vec<(Span, Vec<u8>)>>,
     found: Arc<Mutex<Found>>,
 }
 
@@ -291,8 +294,20 @@ impl ExpressionHook for Definedness {
         let span = expr.span();
         {
             let mut found = self.found.lock().expect("no hook panics while holding the lock");
+            if let Some(roots) = self.unset_roots.get(&span) {
+                // UnsetRule sees one entry scope for all targets. Actual virtual writes
+                // still run sequentially; retain only the roots the rule will read.
+                for (at, name) in roots {
+                    let ty = context.get_variable_type(name).map_or_else(
+                        mago_codex::ttype::get_error,
+                        |ty| (**ty).clone(),
+                    );
+                    found.variables.unset_entries.insert(*at, ty);
+                    found.variables.scopes.insert(*at, variables::Certainty::of(context));
+                }
+            }
             if self.unset_scopes.contains(&span) {
-                found.variables.scopes.insert(span, variables::Certainty::of(context));
+                found.variables.scopes.entry(span).or_insert_with(|| variables::Certainty::of(context));
                 super::unset::observe(expr, context, &mut found.read);
             }
             match expr {

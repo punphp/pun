@@ -30,17 +30,21 @@ fn text(b: &[u8]) -> String {
 impl<'a, 'arena> Checker<'a, 'arena> {
     /// `$scope->getType($expr)`: Mago's type of an expression the rules asked about, as PHPStan's.
     pub(in super::super) fn phpstan_type(&self, e: &mago_syntax::cst::Expression) -> Option<Type> {
+        Some(self.phpstan_type_from(e, self.type_of(e)?))
+    }
+
+    /// Convert an observed scope value using the expression's own source metadata.
+    pub(in super::super) fn phpstan_type_from(&self, e: &mago_syntax::cst::Expression, t: &TUnion) -> Type {
         use mago_syntax::cst::Expression as E;
-        let t = self.type_of(e)?;
         // Mago types `new` of an unknown class `never` (NonExistentClass), PHPStan as an object of that class
         if let E::Instantiation(new) = e
             && let E::Identifier(id) = new.class
             && t.is_never()
             && self.codebase.get_class_like(self.names.get(id)).is_none()
         {
-            return Some(Type::Object(text(self.names.get(id)), vec![]));
+            return Type::Object(text(self.names.get(id)), vec![]);
         }
-        let ty = declared::with_classes(self, || {
+        declared::with_classes(self, || {
             let source = self.source_type(e.span(), &self.origins);
             // Mago's keyed arrays are BTreeMaps: only the literal still knows PHP's insertion order. Unknown
             // keys/unpacks keep the inferred fallback, rather than inventing an order for a nonliteral shape.
@@ -55,8 +59,7 @@ impl<'a, 'arena> Checker<'a, 'arena> {
             // An inline @var annotation does not: its source metadata can restore that distinct template strategy.
             let ty = inferred_argument(&ty);
             source.map_or(ty.clone(), |source| restore(ty, &source))
-        });
-        Some(ty)
+        })
     }
 
     /// A PHPDoc open shape and a general array narrowed by an offset share Mago's representation. Preserve its

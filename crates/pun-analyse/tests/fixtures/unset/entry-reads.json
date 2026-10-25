@@ -1,0 +1,104 @@
+{
+  "totals": {
+    "errors": 0,
+    "file_errors": 15
+  },
+  "files": {
+    "entry-reads.php": {
+      "errors": 15,
+      "messages": [
+        {
+          "message": "Cannot unset offset 'again' on 7.",
+          "line": 8,
+          "ignorable": true,
+          "identifier": "unset.offset"
+        },
+        {
+          "message": "Cannot unset offset 'bad' on 7.",
+          "line": 8,
+          "ignorable": true,
+          "identifier": "unset.offset"
+        },
+        {
+          "message": "Dumped type: array{z: array{leaf: mixed, keep: 3}, a: 2}",
+          "line": 9,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Cannot unset offset array{a: 1, z: 2} on array{a: 1, z: 2}.",
+          "line": 15,
+          "ignorable": true,
+          "identifier": "unset.offset"
+        },
+        {
+          "message": "Dumped type: array{a?: 1, z?: 2}",
+          "line": 16,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Cannot unset offset array{new: 4} on 7.",
+          "line": 22,
+          "ignorable": true,
+          "identifier": "unset.offset"
+        },
+        {
+          "message": "Dumped type: array{new?: 4}",
+          "line": 23,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Cannot unset offset array{new: 4} on array{new: 4}.",
+          "line": 28,
+          "ignorable": true,
+          "identifier": "unset.offset"
+        },
+        {
+          "message": "Dumped type: array{new?: 4}",
+          "line": 29,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Cannot unset offset array{new: 4} on null.",
+          "line": 35,
+          "ignorable": true,
+          "identifier": "unset.offset"
+        },
+        {
+          "message": "Dumped type: array{new?: 4}",
+          "line": 36,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Cannot unset offset 'again' on 7.",
+          "line": 43,
+          "ignorable": true,
+          "identifier": "unset.offset"
+        },
+        {
+          "message": "Cannot unset offset 'bad' on 7.",
+          "line": 43,
+          "ignorable": true,
+          "identifier": "unset.offset"
+        },
+        {
+          "message": "Dumped type: 2",
+          "line": 44,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: array{0: array{leaf: *ERROR*}, 1: array{leaf: *ERROR*}, safe: 3}",
+          "line": 45,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        }
+      ]
+    }
+  },
+  "errors": []
+}

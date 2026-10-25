@@ -20,6 +20,7 @@ use super::{Checker, declared};
 pub(super) struct Observations {
     pub reads: HashMap<Span, (String, Tri, bool)>,
     pub scopes: HashMap<Span, Certainty>,
+    pub unset_entries: HashMap<Span, TUnion>,
     pub property_selectors: HashSet<Span>,
 }
 

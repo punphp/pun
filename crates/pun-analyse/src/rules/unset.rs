@@ -16,23 +16,26 @@ use super::types::flow::unparen;
 use super::{Checker, declared, types};
 
 /// Types of unset chains/indexes and target/root observations. The first target supplies statement-entry scope.
-pub(super) fn expressions(program: &Program) -> (Vec<Span>, HashSet<Span>) {
+pub(super) fn expressions(program: &Program) -> (Vec<Span>, HashSet<Span>, HashMap<Span, Vec<(Span, Vec<u8>)>>) {
     struct Wanted {
         typed: Vec<Span>,
         scopes: HashSet<Span>,
+        roots: HashMap<Span, Vec<(Span, Vec<u8>)>>,
     }
     impl Wanted {
-        fn chain(&mut self, e: &Expression) {
+        fn chain(&mut self, e: &Expression, entry: Span) {
             self.typed.push(e.span());
             match unparen(e) {
-                Expression::Variable(Variable::Direct(_)) => {
+                Expression::Variable(Variable::Direct(v)) => {
                     self.scopes.insert(e.span());
+                    self.roots.entry(entry).or_default().push((e.span(), v.name.to_vec()));
                 }
                 Expression::ArrayAccess(a) => {
-                    self.typed.push(a.index.span());
-                    self.chain(a.array);
+                    self.chain(a.index, entry);
+                    self.chain(a.array, entry);
                 }
-                Expression::Access(Access::Property(p)) => self.chain(p.object),
+                Expression::Access(Access::Property(p)) => self.chain(p.object, entry),
+                Expression::UnaryPostfix(u) => self.chain(u.operand, entry),
                 _ => {}
             }
         }
@@ -40,21 +43,22 @@ pub(super) fn expressions(program: &Program) -> (Vec<Span>, HashSet<Span>) {
     impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Wanted {
         fn walk_in_unset(&mut self, u: &'ast Unset<'arena>, _: &mut ()) {
             self.scopes.extend(u.values.iter().map(HasSpan::span));
+            let Some(entry) = u.values.first().map(HasSpan::span) else { return };
             for e in &u.values {
-                self.chain(e);
+                self.chain(e, entry);
             }
         }
     }
     let mut wanted = Wanted {
         typed: Vec::new(),
         scopes: HashSet::new(),
+        roots: HashMap::new(),
     };
     wanted.walk_program(program, &mut ());
-    (wanted.typed, wanted.scopes)
+    (wanted.typed, wanted.scopes, wanted.roots)
 }
 
-/// A memoized property fetch need not visit its receiver. Observe the root's actual live type before the
-/// target, as if Mago had visited it; do not recover a declaration over a reassigned or narrowed receiver.
+/// A memoized property fetch need not visit its receiver. Retain its actual live root value too.
 pub(super) fn observe(
     e: &Expression,
     context: &HookContext<'_, '_>,
@@ -62,7 +66,9 @@ pub(super) fn observe(
 ) {
     match unparen(e) {
         Expression::Variable(Variable::Direct(v)) => {
-            if let Some(ty) = context.get_variable_type(v.name) {
+            if context.block_context().variable_certainty(mago_word::word(v.name)).is_absent() {
+                read.insert(e.span(), mago_codex::ttype::get_error());
+            } else if let Some(ty) = context.get_variable_type(v.name) {
                 read.insert(e.span(), (**ty).clone());
             }
         }
@@ -186,9 +192,14 @@ fn can_be_unset(c: &mut Checker, node: &Expression, entry: Option<Span>) {
     }
 }
 
-/// Scope::getType() of a definitely absent variable is ErrorType, not Mago's synthetic null. The observation
-/// is the expression's live scope; canBeUnset() separately asks for variable certainty at statement entry.
+/// Scope::getType() uses the unset statement's entry scope, while its index expressions have already run.
+/// Definitely absent variables are ErrorType, not Mago's synthetic null.
 fn scope_type(c: &Checker, e: &Expression) -> Option<Type> {
+    if let Expression::UnaryPostfix(u) = unparen(e) {
+        // A postfix result is its input value, even on a counterfactual entry scope.
+        // Its real increment was already applied by the authoritative walk.
+        return scope_type(c, u.operand);
+    }
     if let Expression::Variable(Variable::Direct(v)) = unparen(e) {
         let name = String::from_utf8_lossy(&v.name[1..]);
         let certainty = c
@@ -203,18 +214,35 @@ fn scope_type(c: &Checker, e: &Expression) -> Option<Type> {
                     .map(|(_, certainty, _)| *certainty)
             });
         if certainty == Some(Tri::No) {
-            return Some(Type::Error);
+            return c.phpstan_type(e);
+        }
+        if let Some(entry) = c.variables.unset_entries.get(&e.span()) {
+            let entry = c.phpstan_type_from(e, entry);
+            let actual = c.phpstan_type(e)?;
+            // NodeCallbackScope keeps stored reads that are narrower than the asking
+            // entry scope. An incompatible virtual mutation must be priced on entry.
+            return Some(if declared::with_classes(c, || is_super_type_of(&entry, &actual).yes()) {
+                actual
+            } else {
+                entry
+            });
         }
     }
     if let Expression::ArrayAccess(a) = unparen(e)
         && let (Some(base), Some(index)) = (scope_type(c, a.array), scope_type(c, a.index))
-        && declared::with_classes(c, || {
+    {
+        if declared::with_classes(c, || {
             matches!(base, Type::Error)
                 || types::offset_accessible(&base).no()
                 || has_offset(c, &base, &index).no()
-        })
-    {
-        return Some(Type::Error);
+        }) {
+            return Some(Type::Error);
+        }
+        let offset = Type::OffsetAccess(Box::new(base), Box::new(index));
+        let value = declared::with_classes(c, || pun_phpstan::resolve::resolve_late(&offset));
+        if value != offset {
+            return Some(value);
+        }
     }
     c.phpstan_type(e)
 }

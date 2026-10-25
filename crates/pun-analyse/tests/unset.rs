@@ -144,6 +144,11 @@ fn generic_parent_write_back_matches_phpstan() {
 }
 
 #[test]
+fn entry_reads_preserve_compatible_evaluation_and_single_index_effects() {
+    oracle("entry-reads.php", "entry-reads.json", 80400);
+}
+
+#[test]
 fn possibly_hooked_properties_depend_on_php_version() {
     oracle("version.php", "version.json", 80400);
     oracle("version.php", "version-82.json", 80200);
