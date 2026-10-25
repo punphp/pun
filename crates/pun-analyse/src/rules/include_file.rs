@@ -2,12 +2,14 @@
 //! file, not the using class's file, so both compile-time path constants and the script-directory fallback use it.
 //!
 //! Runtime boundary: Pun does not start PHP or execute bootstrap code. `Project::include_paths` supplies PHP's
-//! runtime include_path (the portable default is `.`). Local files and file:// URLs can be stat'd; non-file PHP
-//! stream wrappers, including user-registered wrappers and archive members, are not implemented. They have no
-//! candidates, like an unavailable wrapper in IncludedFilePathResolver. Missing-file dependencies are not cached
-//! here: the analyser currently checks the filesystem again on every run.
+//! runtime include_path (the portable default is `.`). Local files, file:// and local phar:// members are stat'd.
+//! PHP's zip:// has no URL-stat handler, even for readable members. Runtime-registered wrappers, PHAR aliases and
+//! mounts need bootstrap execution and remain unsupported. PHAR stat models the pinned runtime's default
+//! require_hash=1, zlib present and bz2 absent; OpenSSL signatures/sidecars are not supported. Missing-file
+//! dependencies are not cached here: the analyser checks the filesystem again on every run.
 
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
+use std::io::{Cursor, Read};
 use std::path::{Path, PathBuf};
 
 use mago_allocator::LocalArena;
@@ -19,6 +21,7 @@ use mago_span::{HasSpan, Span};
 use mago_syntax::cst::*;
 use mago_syntax::walker::MutWalker;
 use pun_phpstan::types::Type;
+use sha2::Digest;
 
 use super::types::flow::unparen;
 use super::{Checker, infer, scope};
@@ -125,7 +128,7 @@ pub(super) fn construct(c: &mut Checker, construct: &Construct) {
     }
     let mut fallback = false;
     for path in resolve_file_paths(c, expr, &mut fallback) {
-        if candidates(c, &path).iter().any(|p| p.is_file()) {
+        if does_file_exist(c, &path) {
             continue;
         }
         let path_expr = if fallback {
@@ -243,6 +246,270 @@ fn constant_strings(t: &Type) -> Vec<String> {
         Type::Template(t) => constant_strings(&t.bound),
         _ => Vec::new(),
     }
+}
+
+fn does_file_exist(c: &Checker, path: &str) -> bool {
+    if let Some((scheme, rest)) = path.split_once("://")
+        && scheme.eq_ignore_ascii_case("phar")
+    {
+        return phar_file(&c.include_settings.cwd, rest).unwrap_or(false);
+    }
+    candidates(c, path).iter().any(|p| p.is_file())
+}
+
+/// PHP 8.5.12 ext/phar/phar.c: phar_detect_phar_fname_ext(), phar_check_str(), phar_fix_filepath().
+/// The first existing archive filename with a non-leading extension wins, even if its contents are invalid.
+/// Relative wrapper paths use cwd alone: FileHelper::absolutizePath() preserves stream URLs unchanged.
+fn phar_file(cwd: &Path, path: &str) -> Option<bool> {
+    if path.contains('\0') {
+        return None;
+    }
+    for (end, _) in path.match_indices('/') {
+        let archive = &path[..end];
+        let name = archive.rsplit('/').next()?;
+        if !name.match_indices('.').any(|(dot, _)| {
+            dot > 0
+                && name.len() - dot < 50
+                && name.as_bytes().get(dot + 1).is_some_and(|b| *b != b'.')
+        }) {
+            continue;
+        }
+        let archive = cwd.join(archive);
+        if !archive.is_file() {
+            continue;
+        }
+        let mut parts = Vec::new();
+        for part in path[end + 1..].split('/').filter(|s| !s.is_empty()) {
+            if part.len() >= 2 && part.bytes().all(|b| b == b'.') {
+                parts.pop();
+            } else if part != "." {
+                parts.push(part);
+            }
+        }
+        let member = parts.join("/");
+        let bytes = std::fs::read(archive).ok()?;
+        return archive_file(&bytes, member.as_bytes(), 3);
+    }
+    None
+}
+
+/// PHP dispatches by contents, not by the archive extension. Stat only needs the manifest/index: member PHP,
+/// serialized metadata and stubs are never evaluated, extracted or deserialized.
+fn archive_file(bytes: &[u8], member: &[u8], recursion: u8) -> Option<bool> {
+    if bytes.starts_with(b"\x1f\x8b\x08") && recursion > 0 {
+        let mut unpacked = Vec::new();
+        flate2::read::GzDecoder::new(bytes)
+            .read_to_end(&mut unpacked)
+            .ok()?;
+        return archive_file(&unpacked, member, recursion - 1);
+    }
+    if bytes.starts_with(b"PK\x03\x04") {
+        return zip_file(bytes, member);
+    }
+    if let Some(found) = tar_file(bytes, member) {
+        return Some(found);
+    }
+    const HALT: &[u8] = b"__HALT_COMPILER();";
+    if let Some(halt) = bytes
+        .windows(HALT.len())
+        .position(|s| s.eq_ignore_ascii_case(HALT))
+    {
+        return native_phar_file(bytes, halt + HALT.len(), member);
+    }
+    None
+}
+
+/// Native PHAR manifest, ext/phar/phar.c: phar_parse_pharfile(). The phar 0.0.3 crate was evaluated but only
+/// accepts the exact `__HALT_COMPILER(); ?>\r\n` stub and does not expose directory flags for stat. Keep this
+/// bounded byte parser instead; ZIP/TAR indexing and gzip decoding use their existing libraries below.
+fn native_phar_file(bytes: &[u8], mut halt: usize, member: &[u8]) -> Option<bool> {
+    if matches!(bytes.get(halt..halt + 3), Some(b" ?>" | b"\n?>")) {
+        halt += 3;
+        if bytes.get(halt) == Some(&b'\r') {
+            halt += 1;
+            if bytes.get(halt) != Some(&b'\n') {
+                return None;
+            }
+        }
+        if bytes.get(halt) == Some(&b'\n') {
+            halt += 1;
+        }
+    }
+    let mut data = bytes.get(halt..)?;
+    let size = word(&mut data)? as usize;
+    if size > 100 * 1024 * 1024 {
+        return None;
+    }
+    let mut manifest = take(&mut data, size)?;
+    let count = word(&mut manifest)?;
+    let version = u16::from_be_bytes(take(&mut manifest, 2)?.try_into().ok()?);
+    let flags = word(&mut manifest)?;
+    if count == 0 || version & 0xfff0 < 0x1000 || flags & 0x10000 == 0 {
+        return None;
+    }
+    let mut trailer = bytes.get(bytes.len().checked_sub(8)?..)?;
+    let kind = word(&mut trailer)?;
+    if trailer != b"GBMB" {
+        return None;
+    }
+    let signature_size = match kind {
+        1 => 16,
+        2 => 20,
+        3 => 32,
+        4 => 64,
+        _ => return None,
+    };
+    let signed_end = bytes.len().checked_sub(8 + signature_size)?;
+    if !signature(
+        kind,
+        &[&bytes[..signed_end]],
+        &bytes[signed_end..bytes.len() - 8],
+    ) {
+        return None;
+    }
+    for _ in 0..2 {
+        // alias and serialized metadata: length-prefixed opaque bytes
+        let size = word(&mut manifest)? as usize;
+        take(&mut manifest, size)?;
+    }
+    let mut found = false;
+    for _ in 0..count {
+        let size = word(&mut manifest)? as usize;
+        let name = take(&mut manifest, size)?;
+        if name.is_empty() {
+            return None;
+        }
+        let size = word(&mut manifest)?;
+        word(&mut manifest)?; // timestamp
+        let compressed_size = word(&mut manifest)?;
+        word(&mut manifest)?; // crc32 (not checked by stat)
+        let flags = word(&mut manifest)?;
+        let metadata_size = word(&mut manifest)? as usize;
+        take(&mut manifest, metadata_size)?;
+        if flags & 0xf000 == 0x2000 || (flags & 0xf000 != 0x1000 && size != compressed_size) {
+            return None;
+        }
+        found |= name == member && !name.ends_with(b"/");
+    }
+    Some(found)
+}
+
+fn word(data: &mut &[u8]) -> Option<u32> {
+    Some(u32::from_le_bytes(take(data, 4)?.try_into().ok()?))
+}
+
+fn take<'a>(data: &mut &'a [u8], size: usize) -> Option<&'a [u8]> {
+    let (head, tail) = data.split_at_checked(size)?;
+    *data = tail;
+    Some(head)
+}
+
+/// PHAR's four digest signatures. OpenSSL signatures additionally need runtime key/sidecar configuration.
+fn signature(kind: u32, parts: &[&[u8]], expected: &[u8]) -> bool {
+    fn digest<D: Digest>(parts: &[&[u8]], expected: &[u8]) -> bool {
+        let mut digest = D::new();
+        for part in parts {
+            digest.update(part);
+        }
+        digest.finalize().as_slice() == expected
+    }
+    match kind {
+        1 => digest::<md5::Md5>(parts, expected),
+        2 => digest::<sha1::Sha1>(parts, expected),
+        3 => digest::<sha2::Sha256>(parts, expected),
+        4 => digest::<sha2::Sha512>(parts, expected),
+        _ => false,
+    }
+}
+
+/// ext/phar/zip.c: phar_parse_zipfile(). PHP's phar:// wrapper accepts ordinary ZIP data archives as well as
+/// executable ZIP PHARs. Only the latter require a signature; a present signature is always verified.
+fn zip_file(bytes: &[u8], member: &[u8]) -> Option<bool> {
+    let mut zip = zip::ZipArchive::new(Cursor::new(bytes)).ok()?;
+    let central = zip.central_directory_start() as usize;
+    let comment = zip.comment().to_vec();
+    let mut executable = false;
+    let mut signed = false;
+    let mut found = false;
+    let count = zip.len();
+    for index in 0..count {
+        let file = zip.by_index_raw(index).ok()?;
+        if file.encrypted()
+            || !matches!(
+                file.compression(),
+                zip::CompressionMethod::STORE | zip::CompressionMethod::DEFLATE
+            )
+        {
+            return None;
+        }
+        let name = file.name_raw();
+        if name == b".phar/signature.bin" {
+            let start = file.data_start()?;
+            let end = start.checked_add(file.size())?;
+            let mut contents = bytes.get(start as usize..end as usize)?;
+            let kind = word(&mut contents)?;
+            word(&mut contents)?; // signature length (PHP verifies the actual remaining bytes)
+            signed = signature(
+                kind,
+                &[
+                    bytes.get(..file.header_start() as usize)?,
+                    bytes.get(central..file.central_header_start() as usize)?,
+                    &comment,
+                ],
+                contents,
+            );
+            if !signed || index + 1 != count {
+                return None;
+            }
+        } else {
+            executable |= name == b".phar/stub.php";
+            // PHP only treats '/' as a separator here, unlike zip::ZipFile::is_dir()'s Windows spelling.
+            found |= name == member && !name.ends_with(b"/");
+        }
+    }
+    Some(found && (!executable || signed))
+}
+
+/// ext/phar/tar.c: phar_parse_tarfile(). PHAR's signature member is hidden from its manifest. Link entries are
+/// files for stat; hard links require a preceding target in the manifest, while dangling symlinks are accepted.
+fn tar_file(bytes: &[u8], member: &[u8]) -> Option<bool> {
+    let mut tar = tar::Archive::new(Cursor::new(bytes));
+    let mut executable = false;
+    let mut signed = false;
+    let mut found = false;
+    let mut names = HashSet::<Vec<u8>>::new();
+    for entry in tar.entries().ok()? {
+        let entry = entry.ok()?;
+        if signed {
+            return None;
+        }
+        let name = entry.path_bytes();
+        if name.as_ref() == b".phar/signature.bin" {
+            let start = entry.raw_file_position() as usize;
+            let end = start.checked_add(entry.size() as usize)?;
+            let mut contents = bytes.get(start..end)?;
+            let kind = word(&mut contents)?;
+            word(&mut contents)?;
+            signed = signature(
+                kind,
+                &[bytes.get(..entry.raw_header_position() as usize)?],
+                contents,
+            );
+            if !signed {
+                return None;
+            }
+        } else {
+            if entry.header().entry_type().is_hard_link()
+                && !names.contains(entry.link_name_bytes()?.as_ref())
+            {
+                return None;
+            }
+            names.insert(name.to_vec());
+            executable |= name.as_ref() == b".phar/stub.php";
+            found |= name == member && !entry.header().entry_type().is_dir();
+        }
+    }
+    Some(found && (!executable || signed))
 }
 
 /// IncludedFilePathResolver::resolve(). Absolute paths bypass directory prefixes, but are not canonicalized:

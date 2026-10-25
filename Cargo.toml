@@ -69,6 +69,11 @@ pprof = { version = "0.15", default-features = false }
 sha2 = "0.11"
 # `pun format --format=gitlab`: PHP-CS-Fixer's md5 fingerprints.
 md-5 = "0.11"
+# Local phar:// member stat: archive indexes, gzip containers and PHAR signatures only.
+zip = { version = "9.1.1", default-features = false }
+tar = { version = "0.4.46", default-features = false }
+flate2 = "1"
+sha1 = "0.11"
 
 # The shared lint policy (context/AUDIT.md item 28). A crate opts in with `[lints] workspace = true`. Lints with
 # hundreds of hits that follow a convention are allowed; lints with few, real hits warn.

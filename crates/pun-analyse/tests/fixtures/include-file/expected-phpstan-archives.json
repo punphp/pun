@@ -1,0 +1,386 @@
+[
+    {
+        "file": "$ROOT/archives.php",
+        "line": 7,
+        "identifier": "include.fileNotFound",
+        "message": "Path in include() \"phar://archives/native.phar/missing.php\" is not a file or it does not exist.",
+        "tip": null,
+        "ignorable": true
+    },
+    {
+        "file": "$ROOT/archives.php",
+        "line": 8,
+        "identifier": "include.fileNotFound",
+        "message": "Path in include() \"phar://archives/native.phar/dir\" is not a file or it does not exist.",
+        "tip": null,
+        "ignorable": true
+    },
+    {
+        "file": "$ROOT/archives.php",
+        "line": 9,
+        "identifier": "include.fileNotFound",
+        "message": "Path in include() \"phar://archives/native.phar/dir/\" is not a file or it does not exist.",
+        "tip": null,
+        "ignorable": true
+    },
+    {
+        "file": "$ROOT/archives.php",
+        "line": 10,
+        "identifier": "include.fileNotFound",
+        "message": "Path in include() \"phar://archives/native.phar/empty-dir\" is not a file or it does not exist.",
+        "tip": null,
+        "ignorable": true
+    },
+    {
+        "file": "$ROOT/archives.php",
+        "line": 11,
+        "identifier": "include.fileNotFound",
+        "message": "Path in include() \"phar://archives/native.phar/\" is not a file or it does not exist.",
+        "tip": null,
+        "ignorable": true
+    },
+    {
+        "file": "$ROOT/archives.php",
+        "line": 12,
+        "identifier": "include.fileNotFound",
+        "message": "Path in include() \"phar://archives/native.phar\" is not a file or it does not exist.",
+        "tip": null,
+        "ignorable": true
+    },
+    {
+        "file": "$ROOT/archives.php",
+        "line": 18,
+        "identifier": "include.fileNotFound",
+        "message": "Path in include() \"phar://archives/native.phar/percent name.php\" is not a file or it does not exist.",
+        "tip": null,
+        "ignorable": true
+    },
+    {
+        "file": "$ROOT/archives.php",
+        "line": 19,
+        "identifier": "include.fileNotFound",
+        "message": "Path in include() \"phar://archives/native.phar/ok.php\u0000\" is not a file or it does not exist.",
+        "tip": null,
+        "ignorable": true
+    },
+    {
+        "file": "$ROOT/archives.php",
+        "line": 20,
+        "identifier": "include.fileNotFound",
+        "message": "Path in include() \"phar://archives/native.phar/dir\\child.php\" is not a file or it does not exist.",
+        "tip": null,
+        "ignorable": true
+    },
+    {
+        "file": "$ROOT/archives.php",
+        "line": 21,
+        "identifier": "include.fileNotFound",
+        "message": "Path in include() \"phar://archives/missing.phar/ok.php\" is not a file or it does not exist.",
+        "tip": null,
+        "ignorable": true
+    },
+    {
+        "file": "$ROOT/archives.php",
+        "line": 22,
+        "identifier": "include.fileNotFound",
+        "message": "Path in include() \"phar://archives/noextension/ok.php\" is not a file or it does not exist.",
+        "tip": null,
+        "ignorable": true
+    },
+    {
+        "file": "$ROOT/archives.php",
+        "line": 34,
+        "identifier": "include.fileNotFound",
+        "message": "Path in include() \"phar://archives/data.zip/dir\" is not a file or it does not exist.",
+        "tip": null,
+        "ignorable": true
+    },
+    {
+        "file": "$ROOT/archives.php",
+        "line": 35,
+        "identifier": "include.fileNotFound",
+        "message": "Path in include() \"phar://archives/data.zip/empty-dir/\" is not a file or it does not exist.",
+        "tip": null,
+        "ignorable": true
+    },
+    {
+        "file": "$ROOT/archives.php",
+        "line": 36,
+        "identifier": "include.fileNotFound",
+        "message": "Path in include() \"phar://archives/data.tar/dir\" is not a file or it does not exist.",
+        "tip": null,
+        "ignorable": true
+    },
+    {
+        "file": "$ROOT/archives.php",
+        "line": 37,
+        "identifier": "include.fileNotFound",
+        "message": "Path in include() \"phar://archives/data.tar/empty-dir/\" is not a file or it does not exist.",
+        "tip": null,
+        "ignorable": true
+    },
+    {
+        "file": "$ROOT/archives.php",
+        "line": 38,
+        "identifier": "include.fileNotFound",
+        "message": "Path in include() \"phar://archives/data.zip/missing.php\" is not a file or it does not exist.",
+        "tip": null,
+        "ignorable": true
+    },
+    {
+        "file": "$ROOT/archives.php",
+        "line": 39,
+        "identifier": "include.fileNotFound",
+        "message": "Path in include() \"phar://archives/data.tar/missing.php\" is not a file or it does not exist.",
+        "tip": null,
+        "ignorable": true
+    },
+    {
+        "file": "$ROOT/archives.php",
+        "line": 40,
+        "identifier": "include.fileNotFound",
+        "message": "Path in include() \"phar://archives/native.phar.zip/.phar/signature.bin\" is not a file or it does not exist.",
+        "tip": null,
+        "ignorable": true
+    },
+    {
+        "file": "$ROOT/archives.php",
+        "line": 41,
+        "identifier": "include.fileNotFound",
+        "message": "Path in include() \"phar://archives/native.phar.tar/.phar/signature.bin\" is not a file or it does not exist.",
+        "tip": null,
+        "ignorable": true
+    },
+    {
+        "file": "$ROOT/archives.php",
+        "line": 42,
+        "identifier": "include.fileNotFound",
+        "message": "Path in include() \"zip://archives/data.zip#ok.php\" is not a file or it does not exist.",
+        "tip": null,
+        "ignorable": true
+    },
+    {
+        "file": "$ROOT/archives.php",
+        "line": 43,
+        "identifier": "include.fileNotFound",
+        "message": "Path in include() \"zip://archives/data.zip#missing.php\" is not a file or it does not exist.",
+        "tip": null,
+        "ignorable": true
+    },
+    {
+        "file": "$ROOT/archives.php",
+        "line": 44,
+        "identifier": "include.fileNotFound",
+        "message": "Path in include() \"zip://archives/data.zip#dir/\" is not a file or it does not exist.",
+        "tip": null,
+        "ignorable": true
+    },
+    {
+        "file": "$ROOT/archives.php",
+        "line": 45,
+        "identifier": "include.fileNotFound",
+        "message": "Path in include() \"zip://archives/data.zip\" is not a file or it does not exist.",
+        "tip": null,
+        "ignorable": true
+    },
+    {
+        "file": "$ROOT/archives.php",
+        "line": 47,
+        "identifier": "include.fileNotFound",
+        "message": "Path in include() \"phar://native.phar/ok.php\" is not a file or it does not exist.",
+        "tip": null,
+        "ignorable": true
+    },
+    {
+        "file": "$ROOT/archives.php",
+        "line": 48,
+        "identifier": "include.fileNotFound",
+        "message": "Path in include() \"phar://archives/stub-bad-cr.phar/ok.php\" is not a file or it does not exist.",
+        "tip": null,
+        "ignorable": true
+    },
+    {
+        "file": "$ROOT/archives.php",
+        "line": 49,
+        "identifier": "include.fileNotFound",
+        "message": "Path in include() \"phar://archives/bad-signature.phar/ok.php\" is not a file or it does not exist.",
+        "tip": null,
+        "ignorable": true
+    },
+    {
+        "file": "$ROOT/archives.php",
+        "line": 50,
+        "identifier": "include.fileNotFound",
+        "message": "Path in include() \"phar://archives/bad-trailer.phar/ok.php\" is not a file or it does not exist.",
+        "tip": null,
+        "ignorable": true
+    },
+    {
+        "file": "$ROOT/archives.php",
+        "line": 51,
+        "identifier": "include.fileNotFound",
+        "message": "Path in include() \"phar://archives/bad-algorithm.phar/ok.php\" is not a file or it does not exist.",
+        "tip": null,
+        "ignorable": true
+    },
+    {
+        "file": "$ROOT/archives.php",
+        "line": 52,
+        "identifier": "include.fileNotFound",
+        "message": "Path in include() \"phar://archives/oversized.phar/ok.php\" is not a file or it does not exist.",
+        "tip": null,
+        "ignorable": true
+    },
+    {
+        "file": "$ROOT/archives.php",
+        "line": 53,
+        "identifier": "include.fileNotFound",
+        "message": "Path in include() \"phar://archives/truncated.phar/ok.php\" is not a file or it does not exist.",
+        "tip": null,
+        "ignorable": true
+    },
+    {
+        "file": "$ROOT/archives.php",
+        "line": 54,
+        "identifier": "include.fileNotFound",
+        "message": "Path in include() \"phar://archives/zero-count.phar/ok.php\" is not a file or it does not exist.",
+        "tip": null,
+        "ignorable": true
+    },
+    {
+        "file": "$ROOT/archives.php",
+        "line": 55,
+        "identifier": "include.fileNotFound",
+        "message": "Path in include() \"phar://archives/old-version.phar/ok.php\" is not a file or it does not exist.",
+        "tip": null,
+        "ignorable": true
+    },
+    {
+        "file": "$ROOT/archives.php",
+        "line": 56,
+        "identifier": "include.fileNotFound",
+        "message": "Path in include() \"phar://archives/unsigned.phar/ok.php\" is not a file or it does not exist.",
+        "tip": null,
+        "ignorable": true
+    },
+    {
+        "file": "$ROOT/archives.php",
+        "line": 57,
+        "identifier": "include.fileNotFound",
+        "message": "Path in include() \"phar://archives/empty-name.phar/ok.php\" is not a file or it does not exist.",
+        "tip": null,
+        "ignorable": true
+    },
+    {
+        "file": "$ROOT/archives.php",
+        "line": 58,
+        "identifier": "include.fileNotFound",
+        "message": "Path in include() \"phar://archives/bad-size.phar/ok.php\" is not a file or it does not exist.",
+        "tip": null,
+        "ignorable": true
+    },
+    {
+        "file": "$ROOT/archives.php",
+        "line": 59,
+        "identifier": "include.fileNotFound",
+        "message": "Path in include() \"phar://archives/bzip-entry.phar/ok.php\" is not a file or it does not exist.",
+        "tip": null,
+        "ignorable": true
+    },
+    {
+        "file": "$ROOT/archives.php",
+        "line": 60,
+        "identifier": "include.fileNotFound",
+        "message": "Path in include() \"phar://archives/bad.zip/ok.php\" is not a file or it does not exist.",
+        "tip": null,
+        "ignorable": true
+    },
+    {
+        "file": "$ROOT/archives.php",
+        "line": 61,
+        "identifier": "include.fileNotFound",
+        "message": "Path in include() \"phar://archives/bad.tar/ok.php\" is not a file or it does not exist.",
+        "tip": null,
+        "ignorable": true
+    },
+    {
+        "file": "$ROOT/archives.php",
+        "line": 62,
+        "identifier": "include.fileNotFound",
+        "message": "Path in include() \"phar://archives/bad.gz/ok.php\" is not a file or it does not exist.",
+        "tip": null,
+        "ignorable": true
+    },
+    {
+        "file": "$ROOT/archives.php",
+        "line": 63,
+        "identifier": "include.fileNotFound",
+        "message": "Path in include() \"phar://archives/bad-signature.zip/ok.php\" is not a file or it does not exist.",
+        "tip": null,
+        "ignorable": true
+    },
+    {
+        "file": "$ROOT/archives.php",
+        "line": 64,
+        "identifier": "include.fileNotFound",
+        "message": "Path in include() \"phar://archives/bad-signature.tar/ok.php\" is not a file or it does not exist.",
+        "tip": null,
+        "ignorable": true
+    },
+    {
+        "file": "$ROOT/archives.php",
+        "line": 65,
+        "identifier": "include.fileNotFound",
+        "message": "Path in include() \"phar://archives/no-signature.zip/ok.php\" is not a file or it does not exist.",
+        "tip": null,
+        "ignorable": true
+    },
+    {
+        "file": "$ROOT/archives.php",
+        "line": 66,
+        "identifier": "include.fileNotFound",
+        "message": "Path in include() \"phar://archives/no-signature.tar/ok.php\" is not a file or it does not exist.",
+        "tip": null,
+        "ignorable": true
+    },
+    {
+        "file": "$ROOT/archives.php",
+        "line": 67,
+        "identifier": "include.fileNotFound",
+        "message": "Path in include() \"phar://archives/after-signature.tar/ok.php\" is not a file or it does not exist.",
+        "tip": null,
+        "ignorable": true
+    },
+    {
+        "file": "$ROOT/archives.php",
+        "line": 68,
+        "identifier": "include.fileNotFound",
+        "message": "Path in include() \"phar://archives/unknown-signature.zip/ok.php\" is not a file or it does not exist.",
+        "tip": null,
+        "ignorable": true
+    },
+    {
+        "file": "$ROOT/archives.php",
+        "line": 69,
+        "identifier": "include.fileNotFound",
+        "message": "Path in include() \"phar://archives/bad-compression.zip/ok.php\" is not a file or it does not exist.",
+        "tip": null,
+        "ignorable": true
+    },
+    {
+        "file": "$ROOT/archives.php",
+        "line": 74,
+        "identifier": "include.fileNotFound",
+        "message": "Path in include() \"phar://archives/bad-links.tar/ok.php\" is not a file or it does not exist.",
+        "tip": null,
+        "ignorable": true
+    },
+    {
+        "file": "$ROOT/archives.php",
+        "line": 75,
+        "identifier": "include.fileNotFound",
+        "message": "Path in include() \"phar://archives/truncated.tar/ok.php\" is not a file or it does not exist.",
+        "tip": null,
+        "ignorable": true
+    }
+]

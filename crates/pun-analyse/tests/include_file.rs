@@ -102,6 +102,20 @@ fn magic_dir_with_path_constants() {
     check("phpstan-both");
 }
 
+/// PHP 8.5.12's phar:// URL-stat versus zip://'s read-only/no-URL-stat wrapper. Generate archive bytes with
+/// `php -d phar.readonly=0 create-archives.php`, then `php capture-archives.php <phpstan.phar>` (the CLI's
+/// dependency-cache postprocessing crashes on traversal members). Native ok.php throws if executed; neither
+/// analyser executes it. An archive present only in include_path must not make a relative wrapper URL succeed.
+#[test]
+fn local_archive_members() {
+    let root = root();
+    let mut project = Project::new(vec![root.join("archives.php")], Vec::new());
+    project.current_working_directory = root.clone();
+    project.include_paths.push(root.join("archives"));
+    project.use_path_constants_as_constant_string = true;
+    assert_errors(project, "phpstan-archives");
+}
+
 /// These dedicated environments were run through the CLI with explicit cwd/include_path settings, separately
 /// from the generic exported cases. There are intentionally empty, duplicate, relative and normalized entries.
 #[test]
