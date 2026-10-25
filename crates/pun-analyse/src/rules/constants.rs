@@ -1,6 +1,6 @@
 //! Class-constant declaration rules: ClassAsClassConstantRule, ConstantsInTraitsRule, FinalConstantRule,
-//! NativeTypedClassConstantRule, ConflictingTraitConstantsRule and OverridingConstantRule (level 0: its native type
-//! and PHPDoc type checks need checkPhpDocMethodSignatures, on from level 3), plus ReadOnlyClassRule, which PHPStan
+//! NativeTypedClassConstantRule, ConflictingTraitConstantsRule and OverridingConstantRule (its native type and
+//! PHPDoc type checks need checkPhpDocMethodSignatures, on from level 3), plus ReadOnlyClassRule, which PHPStan
 //! reports under `classConstant.nativeTypeNotSupported`.
 
 use mago_codex::metadata::class_like::ClassLikeMetadata;
@@ -9,9 +9,9 @@ use mago_codex::visibility::Visibility;
 use mago_span::{HasSpan, Span};
 use mago_syntax::cst::*;
 use pun_phpstan::resolve::resolve_str;
-use pun_phpstan::types::{Level, Type};
+use pun_phpstan::types::{Level, Type, decide_type, is_super_type_of};
 
-use super::Checker;
+use super::{Checker, declared};
 
 fn text(b: &[u8]) -> String {
     String::from_utf8_lossy(b).into_owned()
@@ -305,7 +305,7 @@ fn single_trait_constant<'arena>(
     }
 }
 
-/// OverridingConstantRule at level 0 (checkPhpDocMethodSignatures off: no native or PHPDoc type checks).
+/// OverridingConstantRule. checkPhpDocMethodSignatures enables the type checks from level 3.
 fn overriding_constant<'arena>(
     c: &mut Checker<'_, 'arena>,
     class: &ClassLikeMetadata,
@@ -314,13 +314,13 @@ fn overriding_constant<'arena>(
     let display = c.display(class);
     let ours = visibility(k.modifiers.as_slice());
     for item in k.items.iter() {
-        let Some((prototype, declaring)) = find_prototype(c, class, item.name.value) else {
+        let Some((prototype, ancestor)) = find_prototype(c, class, item.name.value) else {
             continue;
         };
         let name = text(item.name.value);
         // an interface's constants are final before PHP 8.1 (BetterReflection's isFinal())
-        let interface_final = declaring.kind.is_interface() && c.php_version < 80100;
-        let declaring = c.display(declaring);
+        let interface_final = ancestor.kind.is_interface() && c.php_version < 80100;
+        let declaring = c.display(ancestor);
         if prototype.flags.is_final() || interface_final {
             c.report_non_ignorable(
                 k,
@@ -355,7 +355,123 @@ fn overriding_constant<'arena>(
                 None,
             );
         }
+        if c.level < 3 {
+            continue;
+        }
+        let errors = declared::with_classes(c, || {
+            let theirs = constant_native(c, prototype, ancestor);
+            let key = mago_word::word(item.name.value);
+            let (current, context) =
+                reflected_constant(c, class, key).expect("a class constant walked in its class");
+            let display = c.display(context);
+            let ours = constant_native(c, current, context);
+            let mut errors = Vec::new();
+            if let Some(theirs) = &theirs {
+                let theirs_display = theirs.describe(Level::TypeOnly);
+                match &ours {
+                    Some(ours) if !is_super_type_of(theirs, ours).yes() => errors.push((
+                        "classConstant.nativeType",
+                        format!(
+                            "Native type {} of constant {display}::{name} is not covariant with native type {theirs_display} of constant {declaring}::{name}.",
+                            ours.describe(Level::TypeOnly)
+                        ),
+                        false,
+                    )),
+                    None => errors.push((
+                        "classConstant.missingNativeType",
+                        format!(
+                            "Constant {display}::{name} overriding constant {declaring}::{name} ({theirs_display}) should also have native type {theirs_display}."
+                        ),
+                        false,
+                    )),
+                    _ => {}
+                }
+            }
+            // RealClassClassConstantReflection::getValueType(): only compare when both constants have a
+            // PHPDoc type, but decide that PHPDoc against the native type before comparing their values.
+            let theirs_doc = declared::constant(c, prototype.span, item.name.value, ancestor);
+            let ours_doc = declared::constant(c, current.span, item.name.value, context);
+            if let (Some(theirs_doc), Some(ours_doc)) = (theirs_doc, ours_doc) {
+                let effective = |native, doc| match native {
+                    Some(native) => decide_type(native, Some(doc)),
+                    None => doc,
+                };
+                let theirs = effective(theirs, theirs_doc);
+                let ours = effective(ours, ours_doc);
+                if !is_super_type_of(&theirs, &ours).yes() {
+                    errors.push((
+                        "classConstant.type",
+                        format!(
+                            "Type {} of constant {display}::{name} is not covariant with type {} of constant {declaring}::{name}.",
+                            ours.describe(Level::Value),
+                            theirs.describe(Level::Value)
+                        ),
+                        true,
+                    ));
+                }
+            }
+            errors
+        });
+        for (identifier, message, ignorable) in errors {
+            if ignorable {
+                c.report(k, identifier, message, None);
+            } else {
+                c.report_non_ignorable(k, identifier, message, None);
+            }
+        }
     }
+}
+
+/// BetterReflection::getConstantsConsideringAlreadyVisitedClasses(): own declarations, inherited non-private
+/// constants, then traits and interfaces. Mago's populated map puts traits before inherited constants.
+fn reflected_constant<'a>(
+    c: &Checker<'a, '_>,
+    class: &'a ClassLikeMetadata,
+    name: mago_word::Word,
+) -> Option<(&'a ClassLikeConstantMetadata, &'a ClassLikeMetadata)> {
+    let ancestors: Vec<_> = std::iter::successors(Some(class), |k| {
+        k.direct_parent_class.and_then(|p| c.class_named(&p))
+    })
+    .take(64)
+    .collect();
+    ancestors.into_iter().rev().fold(
+        None,
+        |inherited: Option<(&ClassLikeConstantMetadata, &ClassLikeMetadata)>, class| {
+            let current = class.constants.get(&name);
+            let own = current.is_some_and(|m| {
+                m.span.file_id == class.span.file_id
+                    && class.span.start.offset <= m.span.start.offset
+                    && m.span.end.offset <= class.span.end.offset
+            });
+            if !own
+                && let Some(inherited) =
+                    inherited.filter(|(m, _)| m.visibility != Visibility::Private)
+            {
+                return Some(inherited);
+            }
+            current.map(|m| (m, declaring(c, class, m)))
+        },
+    )
+}
+
+/// `ClassConstantReflection::getNativeType()`: the declaration or PHPStan's php-8-stubs metadata, never the
+/// inferred initializer type.
+fn constant_native(
+    c: &Checker,
+    constant: &ClassLikeConstantMetadata,
+    class: &ClassLikeMetadata,
+) -> Option<Type> {
+    if let Some(native) = &constant.type_declaration {
+        return Some(declared::from_tunion(c, &native.type_union, class));
+    }
+    if !class.flags.is_built_in() {
+        return None;
+    }
+    super::overriding::natives(c.php_version)
+        .get(&c.display(class).to_ascii_lowercase())?
+        .constant_types
+        .get(&text(constant.name.as_bytes()))
+        .cloned()
 }
 
 /// OverridingConstantRule::findPrototype(): the constant of the first immediate interface that has it, else the
@@ -392,11 +508,7 @@ fn find_prototype<'a>(
         }
     }
     let parent = *ancestors.first()?;
-    let constant = parent
-        .constants
-        .get(&name)
-        .filter(|k| k.visibility != Visibility::Private)?;
-    Some((constant, declaring(c, parent, constant)))
+    reflected_constant(c, parent, name).filter(|(k, _)| k.visibility != Visibility::Private)
 }
 
 /// `getDeclaringClass()` of a constant `k` has: the class-like whose declaration holds it, or the class using the

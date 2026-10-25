@@ -3,15 +3,15 @@
 declare(strict_types=1);
 
 /*
- * Built-in classes' methods and properties as PHPStan 2.3.1's reflection gives them to OverridingMethodRule and
- * ConsistentConstructorRule (NativeMethodReflection over php-8-stubs, BetterReflection's prototypes and tentative
- * return types), from the phar's own container at phpVersion 8.5, with the 8.4 differences.
+ * Built-in classes' methods, properties and constant native types as PHPStan 2.3.1's reflection gives them to the
+ * overriding rules (NativeMethodReflection over php-8-stubs, BetterReflection's prototypes and tentative return
+ * types), from the phar's own container at phpVersion 8.5, with the 8.4 differences.
  *
  *   php scripts/export-native-methods.php   writes crates/pun-analyse/data/native-methods.json
  *
  * {"classes": {"<lowercase class>": C}, "php84": {"<lowercase class>": C|null}} where C is
  *   {"name", "parent": name|null, "interfaces": [immediate interface names], "methods": {"<lowercase name>": M},
- *    "properties"?: {"<name>": P}}
+ *    "properties"?: {"<name>": P}, "constantTypes"?: {"<name>": native type}}
  * and M, for each method the class declares:
  *   {"name", "visibility": public|protected|private, "static", "abstract", "final" (isFinalByKeyword), "finalDoc"
  *    (isFinal), "builtin", "variants" (count), "params": [[name, native type, optional, variadic, byRef]],
@@ -125,6 +125,15 @@ function dump(int $phpVersion): array
             ];
             $defaults = ['visibility' => 'public', 'static' => false, 'readonly' => false, 'abstract' => false, 'final' => false, 'finalDoc' => false, 'virtual' => false, 'hooks' => [], 'readable' => true, 'writable' => true, 'type' => null];
             $entry['properties'][$property->getName()] = (object) array_filter($e, fn ($v, $k) => $defaults[$k] !== $v, ARRAY_FILTER_USE_BOTH);
+        }
+        foreach ($native->getReflectionConstants() as $constant) {
+            if ($constant->getDeclaringClass()->getName() !== $class->getName()) {
+                continue;
+            }
+            $type = $class->getConstant($constant->getName())->getNativeType();
+            if ($type !== null) {
+                $entry['constantTypes'][$constant->getName()] = t($type);
+            }
         }
         $classes[strtolower($class->getName())] = $entry;
     }

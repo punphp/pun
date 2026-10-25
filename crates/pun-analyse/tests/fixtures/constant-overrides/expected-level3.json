@@ -1,0 +1,338 @@
+[
+  {
+    "file": "controls.php",
+    "line": 7,
+    "identifier": "classConstant.nativeType",
+    "message": "Native type int|string of constant ConstantOverrides\\ChildConstants::WIDEN is not covariant with native type int of constant ConstantOverrides\\ParentConstants::WIDEN.",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "controls.php",
+    "line": 8,
+    "identifier": "classConstant.missingNativeType",
+    "message": "Constant ConstantOverrides\\ChildConstants::MISSING overriding constant ConstantOverrides\\ParentConstants::MISSING (int) should also have native type int.",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "controls.php",
+    "line": 12,
+    "identifier": "classConstant.type",
+    "message": "Type string of constant ConstantOverrides\\ChildConstants::DOC is not covariant with type int of constant ConstantOverrides\\ParentConstants::DOC.",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "controls.php",
+    "line": 19,
+    "identifier": "classConstant.type",
+    "message": "Type int of constant ConstantOverrides\\ChildConstants::EFFECTIVE is not covariant with type int<1, max> of constant ConstantOverrides\\ParentConstants::EFFECTIVE.",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "controls.php",
+    "line": 24,
+    "identifier": "classConstant.type",
+    "message": "Type array{a: int|string, b?: string} of constant ConstantOverrides\\ChildConstants::SHAPE is not covariant with type array{a: int, b?: string} of constant ConstantOverrides\\ParentConstants::SHAPE.",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "controls.php",
+    "line": 27,
+    "identifier": "classConstant.nativeType",
+    "message": "Native type int|string of constant ConstantOverrides\\ChildConstants::PROTECTED_NATIVE is not covariant with native type int of constant ConstantOverrides\\ParentConstants::PROTECTED_NATIVE.",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "controls.php",
+    "line": 27,
+    "identifier": "classConstant.visibility",
+    "message": "Private constant ConstantOverrides\\ChildConstants::PROTECTED_NATIVE overriding protected constant ConstantOverrides\\ParentConstants::PROTECTED_NATIVE should be protected or public.",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "controls.php",
+    "line": 28,
+    "identifier": "classConstant.final",
+    "message": "Constant ConstantOverrides\\ChildConstants::FINAL_NATIVE overrides final constant ConstantOverrides\\ParentConstants::FINAL_NATIVE.",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "controls.php",
+    "line": 28,
+    "identifier": "classConstant.missingNativeType",
+    "message": "Constant ConstantOverrides\\ChildConstants::FINAL_NATIVE overriding constant ConstantOverrides\\ParentConstants::FINAL_NATIVE (int) should also have native type int.",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "controls.php",
+    "line": 28,
+    "identifier": "classConstant.visibility",
+    "message": "Protected constant ConstantOverrides\\ChildConstants::FINAL_NATIVE overriding public constant ConstantOverrides\\ParentConstants::FINAL_NATIVE should also be public.",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "controls.php",
+    "line": 34,
+    "identifier": "classConstant.nativeType",
+    "message": "Native type string of constant ConstantOverrides\\InterfaceChild::FROM_INTERFACE is not covariant with native type int of constant ConstantOverrides\\RootContract::FROM_INTERFACE.",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "controls.php",
+    "line": 34,
+    "identifier": "classConstant.type",
+    "message": "Type string of constant ConstantOverrides\\InterfaceChild::FROM_INTERFACE is not covariant with type int of constant ConstantOverrides\\RootContract::FROM_INTERFACE.",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "controls.php",
+    "line": 40,
+    "identifier": "classConstant.nativeType",
+    "message": "Constant ConstantOverrides\\TraitChild::FROM_TRAIT (int|string) overriding constant ConstantOverrides\\ConstantTrait::FROM_TRAIT (int) should have the same native type int.",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "controls.php",
+    "line": 40,
+    "identifier": "classConstant.nativeType",
+    "message": "Native type int|string of constant ConstantOverrides\\TraitChild::FROM_TRAIT is not covariant with native type int of constant ConstantOverrides\\TraitParent::FROM_TRAIT.",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "controls.php",
+    "line": 40,
+    "identifier": "classConstant.type",
+    "message": "Type int|string of constant ConstantOverrides\\TraitChild::FROM_TRAIT is not covariant with type int<1, max> of constant ConstantOverrides\\TraitParent::FROM_TRAIT.",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "controls.php",
+    "line": 46,
+    "identifier": "classConstant.type",
+    "message": "Type string of constant ConstantOverrides\\ChainChild::DOC_CHAIN is not covariant with type int of constant ConstantOverrides\\ParentWithoutTag::DOC_CHAIN.",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "controls.php",
+    "line": 75,
+    "identifier": "classConstant.nativeType",
+    "message": "Native type string of constant ConstantOverrides\\MultiChild::A is not covariant with native type int of constant ConstantOverrides\\MultiParent::A.",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "controls.php",
+    "line": 75,
+    "identifier": "classConstant.nativeType",
+    "message": "Native type string of constant ConstantOverrides\\MultiChild::B is not covariant with native type int of constant ConstantOverrides\\MultiParent::B.",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "controls.php",
+    "line": 75,
+    "identifier": "classConstant.type",
+    "message": "Type string of constant ConstantOverrides\\MultiChild::A is not covariant with type int of constant ConstantOverrides\\MultiParent::A.",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "controls.php",
+    "line": 75,
+    "identifier": "classConstant.type",
+    "message": "Type string of constant ConstantOverrides\\MultiChild::B is not covariant with type int of constant ConstantOverrides\\MultiParent::B.",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "controls.php",
+    "line": 80,
+    "identifier": "classConstant.nativeType",
+    "message": "Native type int|null of constant ConstantOverrides\\NullableWiden::VALUE is not covariant with native type int of constant ConstantOverrides\\NullableChild::VALUE.",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "controls.php",
+    "line": 93,
+    "identifier": "classConstant.missingNativeType",
+    "message": "Constant ConstantOverrides\\OwnTraitOverride::DOC_CHAIN overriding constant ConstantOverrides\\OverrideTrait::DOC_CHAIN (string) should also have native type string.",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "controls.php",
+    "line": 108,
+    "identifier": "classConstant.missingNativeType",
+    "message": "Constant ConstantOverrides\\GrandchildAfterTrait::DOC_CHAIN overriding constant ConstantOverrides\\OverrideTrait::DOC_CHAIN (string) should also have native type string.",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "controls.php (in context of class ConstantOverrides\\TraitInterfaceOverride)",
+    "line": 85,
+    "identifier": "classConstant.missingNativeType",
+    "message": "Constant ConstantOverrides\\Grandparent::DOC_CHAIN overriding constant ConstantOverrides\\DifferentContract::DOC_CHAIN (string) should also have native type string.",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "controls.php (in context of class ConstantOverrides\\TraitInterfaceOverride)",
+    "line": 85,
+    "identifier": "classConstant.type",
+    "message": "Type int of constant ConstantOverrides\\Grandparent::DOC_CHAIN is not covariant with type string of constant ConstantOverrides\\DifferentContract::DOC_CHAIN.",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "ignored.php",
+    "line": 14,
+    "identifier": "classConstant.nativeType",
+    "message": "Native type string of constant ConstantOverrides\\Ignored\\ChildConstants::NATIVE is not covariant with native type int of constant ConstantOverrides\\Ignored\\ParentConstants::NATIVE.",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "ignored.php",
+    "line": 15,
+    "identifier": "classConstant.missingNativeType",
+    "message": "Constant ConstantOverrides\\Ignored\\ChildConstants::MISSING overriding constant ConstantOverrides\\Ignored\\ParentConstants::MISSING (int) should also have native type int.",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "overriding-constant-native-types.php",
+    "line": 21,
+    "identifier": "classConstant.nativeType",
+    "message": "Native type int|string of constant OverridingConstantNativeTypes\\Bar::D is not covariant with native type int of constant OverridingConstantNativeTypes\\Foo::D.",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "overriding-constant-native-types.php",
+    "line": 37,
+    "identifier": "classConstant.missingNativeType",
+    "message": "Constant OverridingConstantNativeTypes\\Ipsum::B overriding constant OverridingConstantNativeTypes\\Lorem::B (int) should also have native type int.",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "overriding-constant-native-types.php",
+    "line": 44,
+    "identifier": "classConstant.missingNativeType",
+    "message": "Constant OverridingConstantNativeTypes\\PharChild::BZ2 overriding constant Phar::BZ2 (int) should also have native type int.",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "overriding-constant-native-types.php",
+    "line": 48,
+    "identifier": "classConstant.nativeType",
+    "message": "Native type int|string of constant OverridingConstantNativeTypes\\PharChild::NONE is not covariant with native type int of constant Phar::NONE.",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "overriding-constant.php",
+    "line": 30,
+    "identifier": "classConstant.type",
+    "message": "Type string of constant OverridingConstant\\Bar::BAR is not covariant with type int of constant OverridingConstant\\Foo::BAR.",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "overriding-constant.php",
+    "line": 39,
+    "identifier": "classConstant.type",
+    "message": "Type int|string of constant OverridingConstant\\Bar::IPSUM is not covariant with type int of constant OverridingConstant\\Foo::IPSUM.",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "overriding-final-constant.php",
+    "line": 18,
+    "identifier": "classConstant.final",
+    "message": "Constant OverridingFinalConstant\\Bar::FOO overrides final constant OverridingFinalConstant\\Foo::FOO.",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "overriding-final-constant.php",
+    "line": 19,
+    "identifier": "classConstant.final",
+    "message": "Constant OverridingFinalConstant\\Bar::BAR overrides final constant OverridingFinalConstant\\Foo::BAR.",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "overriding-final-constant.php",
+    "line": 35,
+    "identifier": "classConstant.final",
+    "message": "Constant OverridingFinalConstant\\Baz::BAR overrides final constant OverridingFinalConstant\\FooInterface::BAR.",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "overriding-final-constant.php",
+    "line": 51,
+    "identifier": "classConstant.type",
+    "message": "Type string of constant OverridingFinalConstant\\Lorem::FOO is not covariant with type int of constant OverridingFinalConstant\\BarInterface::FOO.",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "overriding-final-constant.php",
+    "line": 69,
+    "identifier": "classConstant.visibility",
+    "message": "Private constant OverridingFinalConstant\\PrivateDolor::PROTECTED_CONST overriding protected constant OverridingFinalConstant\\Dolor::PROTECTED_CONST should be protected or public.",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "overriding-final-constant.php",
+    "line": 70,
+    "identifier": "classConstant.visibility",
+    "message": "Private constant OverridingFinalConstant\\PrivateDolor::PUBLIC_CONST overriding public constant OverridingFinalConstant\\Dolor::PUBLIC_CONST should also be public.",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "overriding-final-constant.php",
+    "line": 71,
+    "identifier": "classConstant.visibility",
+    "message": "Private constant OverridingFinalConstant\\PrivateDolor::ANOTHER_PUBLIC_CONST overriding public constant OverridingFinalConstant\\Dolor::ANOTHER_PUBLIC_CONST should also be public.",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "overriding-final-constant.php",
+    "line": 80,
+    "identifier": "classConstant.visibility",
+    "message": "Protected constant OverridingFinalConstant\\ProtectedDolor::PUBLIC_CONST overriding public constant OverridingFinalConstant\\Dolor::PUBLIC_CONST should also be public.",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "overriding-final-constant.php",
+    "line": 81,
+    "identifier": "classConstant.visibility",
+    "message": "Protected constant OverridingFinalConstant\\ProtectedDolor::ANOTHER_PUBLIC_CONST overriding public constant OverridingFinalConstant\\Dolor::ANOTHER_PUBLIC_CONST should also be public.",
+    "tip": null,
+    "ignorable": false
+  }
+]

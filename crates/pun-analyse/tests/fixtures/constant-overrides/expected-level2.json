@@ -1,0 +1,114 @@
+[
+  {
+    "file": "controls.php",
+    "line": 27,
+    "identifier": "classConstant.visibility",
+    "message": "Private constant ConstantOverrides\\ChildConstants::PROTECTED_NATIVE overriding protected constant ConstantOverrides\\ParentConstants::PROTECTED_NATIVE should be protected or public.",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "controls.php",
+    "line": 28,
+    "identifier": "classConstant.final",
+    "message": "Constant ConstantOverrides\\ChildConstants::FINAL_NATIVE overrides final constant ConstantOverrides\\ParentConstants::FINAL_NATIVE.",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "controls.php",
+    "line": 28,
+    "identifier": "classConstant.visibility",
+    "message": "Protected constant ConstantOverrides\\ChildConstants::FINAL_NATIVE overriding public constant ConstantOverrides\\ParentConstants::FINAL_NATIVE should also be public.",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "controls.php",
+    "line": 40,
+    "identifier": "classConstant.nativeType",
+    "message": "Constant ConstantOverrides\\TraitChild::FROM_TRAIT (int|string) overriding constant ConstantOverrides\\ConstantTrait::FROM_TRAIT (int) should have the same native type int.",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "controls.php",
+    "line": 93,
+    "identifier": "classConstant.missingNativeType",
+    "message": "Constant ConstantOverrides\\OwnTraitOverride::DOC_CHAIN overriding constant ConstantOverrides\\OverrideTrait::DOC_CHAIN (string) should also have native type string.",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "controls.php",
+    "line": 108,
+    "identifier": "classConstant.missingNativeType",
+    "message": "Constant ConstantOverrides\\GrandchildAfterTrait::DOC_CHAIN overriding constant ConstantOverrides\\OverrideTrait::DOC_CHAIN (string) should also have native type string.",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "overriding-final-constant.php",
+    "line": 18,
+    "identifier": "classConstant.final",
+    "message": "Constant OverridingFinalConstant\\Bar::FOO overrides final constant OverridingFinalConstant\\Foo::FOO.",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "overriding-final-constant.php",
+    "line": 19,
+    "identifier": "classConstant.final",
+    "message": "Constant OverridingFinalConstant\\Bar::BAR overrides final constant OverridingFinalConstant\\Foo::BAR.",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "overriding-final-constant.php",
+    "line": 35,
+    "identifier": "classConstant.final",
+    "message": "Constant OverridingFinalConstant\\Baz::BAR overrides final constant OverridingFinalConstant\\FooInterface::BAR.",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "overriding-final-constant.php",
+    "line": 69,
+    "identifier": "classConstant.visibility",
+    "message": "Private constant OverridingFinalConstant\\PrivateDolor::PROTECTED_CONST overriding protected constant OverridingFinalConstant\\Dolor::PROTECTED_CONST should be protected or public.",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "overriding-final-constant.php",
+    "line": 70,
+    "identifier": "classConstant.visibility",
+    "message": "Private constant OverridingFinalConstant\\PrivateDolor::PUBLIC_CONST overriding public constant OverridingFinalConstant\\Dolor::PUBLIC_CONST should also be public.",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "overriding-final-constant.php",
+    "line": 71,
+    "identifier": "classConstant.visibility",
+    "message": "Private constant OverridingFinalConstant\\PrivateDolor::ANOTHER_PUBLIC_CONST overriding public constant OverridingFinalConstant\\Dolor::ANOTHER_PUBLIC_CONST should also be public.",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "overriding-final-constant.php",
+    "line": 80,
+    "identifier": "classConstant.visibility",
+    "message": "Protected constant OverridingFinalConstant\\ProtectedDolor::PUBLIC_CONST overriding public constant OverridingFinalConstant\\Dolor::PUBLIC_CONST should also be public.",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "overriding-final-constant.php",
+    "line": 81,
+    "identifier": "classConstant.visibility",
+    "message": "Protected constant OverridingFinalConstant\\ProtectedDolor::ANOTHER_PUBLIC_CONST overriding public constant OverridingFinalConstant\\Dolor::ANOTHER_PUBLIC_CONST should also be public.",
+    "tip": null,
+    "ignorable": false
+  }
+]

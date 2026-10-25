@@ -1313,9 +1313,13 @@ fn constant_var(
     })
 }
 
-/// A class constant's `getPhpDocType()`: its own `@var`, else the parent class's or an interface's.
+/// A class constant's `getPhpDocType()`: its own `@var`, else the parent class's or an interface's. `at` is the
+/// declaration's span or a codex item's span, in any file.
 pub fn constant(c: &Checker, at: Span, name: &[u8], context: &ClassLikeMetadata) -> Option<Type> {
-    match doc_before(&c.file.contents, at.start.offset as usize) {
+    let contents = file_contents(c, at.file_id)?;
+    let starts = super::overriding_property::declaration_starts(at.file_id, &contents);
+    let start = starts.get(&at.start.offset).copied().unwrap_or(at.start.offset);
+    match doc_before(&contents, start as usize) {
         Some(doc) => constant_var(c, doc, at, context)?,
         None => inherited_constant_doc(c, context, name, 0)?,
     }

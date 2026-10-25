@@ -1,0 +1,11 @@
+parameters:
+    level: 3
+    phpVersion: 80400
+    paths:
+        - overriding-constant.php
+        - overriding-constant-native-types.php
+        - overriding-final-constant.php
+        - controls.php
+        - ignored.php
+    scanFiles:
+        - parents.php

@@ -410,6 +410,7 @@ pub const IDENTIFIERS: &[&str] = &[
     "classConstant.visibility",
     "classConstant.nativeType",
     "classConstant.missingNativeType",
+    "classConstant.type",
     "classConstant.value",
     "catch.nonCapturingNotSupported",
     "throw.notSupported",

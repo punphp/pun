@@ -64,6 +64,8 @@ pub(super) struct NativeClass {
     methods: HashMap<String, NativeMethod>,
     /// The non-private properties it declares, by name.
     pub(super) properties: HashMap<String, NativeProperty>,
+    /// `ClassConstantReflection::getNativeType()`, not the constant's inferred value type.
+    pub(super) constant_types: HashMap<String, Type>,
 }
 
 /// A built-in property as PhpPropertyReflection gives it.
@@ -157,6 +159,12 @@ fn native_class(v: &Value) -> NativeClass {
             .filter_map(|i| i.as_str().map(str::to_string))
             .collect(),
         methods,
+        constant_types: v["constantTypes"]
+            .as_object()
+            .into_iter()
+            .flatten()
+            .filter_map(|(n, t)| Some((n.clone(), resolve_str(t.as_str()?, Some(&name)))))
+            .collect(),
         name,
     }
 }
