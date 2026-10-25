@@ -61,6 +61,17 @@ fn inferred_keys_and_pending_union_promotion() {
     );
 }
 
+#[test]
+fn float_casts_constants_and_overridable_receivers() {
+    let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/duplicate-array-keys");
+    let expected: Value =
+        serde_json::from_slice(&std::fs::read(root.join("expected-scalars.json")).unwrap())
+            .unwrap();
+    let mut project = Project::new(vec![root.join("scalars.php")], Vec::new());
+    project.php_version = 80400;
+    check(project, &expected["files"]["scalars.php"]["messages"]);
+}
+
 fn unpacking(config: &str, php_version: u32, bleeding_edge: bool) {
     let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/duplicate-array-keys");
     let expected: Value = serde_json::from_slice(

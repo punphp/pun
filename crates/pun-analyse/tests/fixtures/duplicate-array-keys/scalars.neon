@@ -1,0 +1,4 @@
+parameters:
+    level: 0
+    paths: [scalars.php]
+    phpVersion: 80400

@@ -1,0 +1,506 @@
+{
+  "totals": {
+    "errors": 0,
+    "file_errors": 82
+  },
+  "files": {
+    "scalars.php": {
+      "errors": 82,
+      "messages": [
+        {
+          "message": "Array has 2 duplicate keys with value -1 (-1.9, -1).",
+          "line": 17,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value 1 (+1.9, 1).",
+          "line": 17,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 3 duplicate keys with value 0 (-0.0, +0.0, 0).",
+          "line": 18,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value -9223372036854775807-1 (9.223372036854776E+18, -9.223372036854776E+18).",
+          "line": 19,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value 9223372036854773760 (-9.223372036854778E+18, 9223372036854773760).",
+          "line": 20,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value 7766279631452241920 (1.0E+20, 7766279631452241920).",
+          "line": 21,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value -7766279631452241920 (-1.0E+20, -7766279631452241920).",
+          "line": 22,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 3 duplicate keys with value 0 (1.0E+300, 0, -1.0E+300).",
+          "line": 23,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 4 duplicate keys with value 0 (INF, -INF, NAN, 0).",
+          "line": 24,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value -9223372036854775807-1 ($large, -9.223372036854776E+18).",
+          "line": 27,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value -7766279631452241920 ($finite, -7766279631452241920).",
+          "line": 29,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value 0 ($negative, 0).",
+          "line": 31,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value 0 ($nan, 0).",
+          "line": 33,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 3 duplicate keys with value -1 (FRACTION, FRACTION_ALIAS, -1).",
+          "line": 34,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value -2048 (1.844674407370955E+19, -2048).",
+          "line": 35,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value 0 (1.8446744073709552E+19, 0).",
+          "line": 36,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value -2147483647 (-2147483647, -PHP_INT_MAX).",
+          "line": 37,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value -9223372036854775807 (-9223372036854775807, -PHP_INT_MAX).",
+          "line": 37,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value -9223372036854775807-1 (-9.223372036854776E+18, -PHP_INT_MIN).",
+          "line": 38,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value 2147483648 (2147483648, -PHP_INT_MIN).",
+          "line": 38,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value 0 (+INF, 0).",
+          "line": 39,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value 0 (!true, 0).",
+          "line": 41,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value '' (null, '').",
+          "line": 42,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value 0 (false, 0).",
+          "line": 42,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value 1 (true, 1).",
+          "line": 42,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value 2 (1 + 1, 2).",
+          "line": 43,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value 2 (+'2.9', 2).",
+          "line": 44,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value -2 (-' 2 ', -2).",
+          "line": 45,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value 1 (+true, 1).",
+          "line": 45,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 3 duplicate keys with value 0 (-false, +null, 0).",
+          "line": 45,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value 0 (\\SEEK_SET, 0).",
+          "line": 51,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value 1 (\\SEEK_CUR, 1).",
+          "line": 52,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value 9 (SEEK_SET, 9).",
+          "line": 53,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value 'local' (LOCAL, \\ScalarDuplicateKeys\\LOCAL).",
+          "line": 54,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value 2147483647 (2147483647, PHP_INT_MAX).",
+          "line": 55,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value 9223372036854775807 (9223372036854775807, PHP_INT_MAX).",
+          "line": 55,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value 0 (0, PHP_DEBUG).",
+          "line": 57,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value 1 (1, PHP_DEBUG).",
+          "line": 57,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value 8 (\\SplFileObject::READ_CSV, 8).",
+          "line": 63,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value 1 (\\Attribute::TARGET_CLASS, 1).",
+          "line": 64,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value 'Y-m-d\\\\TH:i:sP' (\\DateTime::ATOM, 'Y-m-d\\TH:i:sP').",
+          "line": 65,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value 1 (BUILTIN_ALIAS, 1).",
+          "line": 66,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value 2147483647 (2147483647, UNION_ALIAS).",
+          "line": 67,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value 9223372036854775807 (9223372036854775807, UNION_ALIAS).",
+          "line": 67,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value 'fixed' (static::FIXED, 'fixed').",
+          "line": 91,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value 'doc' ('doc', static::DOC).",
+          "line": 93,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value 'other' ('other', static::DOC).",
+          "line": 93,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value 7 (self::NATIVE, 7).",
+          "line": 94,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value 'doc' (self::DOC, 'doc').",
+          "line": 95,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value 'doc-final' (static::DOC_FINAL, 'doc-final').",
+          "line": 96,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value 'inherited' (self::INHERITED, 'inherited').",
+          "line": 110,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value -1 (parent::FLOAT_KEY, -1).",
+          "line": 111,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value 'child' (self::OPEN, 'child').",
+          "line": 112,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value 'open' (parent::OPEN, 'open').",
+          "line": 113,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value 'fixed' (static::FIXED, 'fixed').",
+          "line": 114,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value 'open' (self::ALIAS_SELF, 'open').",
+          "line": 115,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value -1 (self::REFERENCED_FLOAT, -1).",
+          "line": 116,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value -1 (static::FINAL_FLOAT, -1).",
+          "line": 117,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value 'open' (static::OPEN, 'open').",
+          "line": 125,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value 7 (static::NATIVE, 7).",
+          "line": 126,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value 'doc' (static::DOC, 'doc').",
+          "line": 127,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value 'ScalarDuplicateKeys\\\\FinalKeys' (static::class, \\ScalarDuplicateKeys\\FinalKeys::class).",
+          "line": 128,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value 'open' (static::OPEN, 'open').",
+          "line": 137,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value 23 (self::KEY, 23).",
+          "line": 150,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value 8 (self::READ_CSV, 8).",
+          "line": 159,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value 8 (parent::READ_CSV, 8).",
+          "line": 160,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value 'fixed' ($object::FIXED, 'fixed').",
+          "line": 169,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value 'fixed' ($class::FIXED, 'fixed').",
+          "line": 170,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value 'open' ($exact::OPEN, 'open').",
+          "line": 172,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value 'open' ('ScalarDuplicateKeys\\ParentKeys'::OPEN, 'open').",
+          "line": 174,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value 'open' ($qualified::OPEN, 'open').",
+          "line": 176,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value 'alternate' ('alternate', $union::FIXED).",
+          "line": 196,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value 'fixed' ('fixed', $union::FIXED).",
+          "line": 196,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value 'fixed' ($template::FIXED, 'fixed').",
+          "line": 197,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value 'fixed' ($intersection::FIXED, 'fixed').",
+          "line": 198,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value 0 ($second, 0).",
+          "line": 213,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value 0 ($second, 0).",
+          "line": 214,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value 1 ($first, 1).",
+          "line": 216,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value 0 (0, $debug).",
+          "line": 233,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value 1 (1, $debug).",
+          "line": 233,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value 0 ($debug, 0).",
+          "line": 235,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value 1 ($debug, 1).",
+          "line": 238,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        }
+      ]
+    }
+  },
+  "errors": []
+}
