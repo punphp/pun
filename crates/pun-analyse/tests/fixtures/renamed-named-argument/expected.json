@@ -1108,5 +1108,289 @@
             "ignorable": false,
             "identifier": "phpstan.dumpType"
         }
+    ],
+    "template-offset": [
+        {
+            "file": "$ROOT/template_offset.php",
+            "message": "Call to RenamedNamedArgument\\Contract::run() uses named argument for parameter $value, but RenamedNamedArgument\\Renamed renames it to $renamed.",
+            "line": 12,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/template_offset.php",
+            "message": "Dumped type: string",
+            "line": 13,
+            "ignorable": false,
+            "identifier": "phpstan.dumpType"
+        },
+        {
+            "file": "$ROOT/template_offset.php",
+            "message": "Call to RenamedNamedArgument\\Contract::run() uses named argument for parameter $value, but RenamedNamedArgument\\Renamed renames it to $renamed.",
+            "line": 14,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        }
+    ],
+    "template-offset-controls": [
+        {
+            "file": "$ROOT/template_offset_controls.php",
+            "message": "Dumped type: array{value: string, tag: 'identity'}",
+            "line": 12,
+            "ignorable": false,
+            "identifier": "phpstan.dumpType"
+        },
+        {
+            "file": "$ROOT/template_offset_controls.php",
+            "message": "Dumped type: 'integer'|'left'|'right'",
+            "line": 21,
+            "ignorable": false,
+            "identifier": "phpstan.dumpType"
+        },
+        {
+            "file": "$ROOT/template_offset_controls.php",
+            "message": "Dumped type: string",
+            "line": 22,
+            "ignorable": false,
+            "identifier": "phpstan.dumpType"
+        },
+        {
+            "file": "$ROOT/template_offset_controls.php",
+            "message": "Call to RenamedNamedArgument\\Contract::run() uses named argument for parameter $value, but RenamedNamedArgument\\Renamed renames it to $renamed.",
+            "line": 23,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/template_offset_controls.php",
+            "message": "Dumped type: 'integer'|'left'|'right'",
+            "line": 25,
+            "ignorable": false,
+            "identifier": "phpstan.dumpType"
+        },
+        {
+            "file": "$ROOT/template_offset_controls.php",
+            "message": "Dumped type: int",
+            "line": 26,
+            "ignorable": false,
+            "identifier": "phpstan.dumpType"
+        },
+        {
+            "file": "$ROOT/template_offset_controls.php",
+            "message": "Call to RenamedNamedArgument\\Contract::run() uses named argument for parameter $value, but RenamedNamedArgument\\Renamed renames it to $renamed.",
+            "line": 27,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/template_offset_controls.php",
+            "message": "Dumped type: 'integer'|'left'|'right'",
+            "line": 29,
+            "ignorable": false,
+            "identifier": "phpstan.dumpType"
+        },
+        {
+            "file": "$ROOT/template_offset_controls.php",
+            "message": "Dumped type: int|string",
+            "line": 30,
+            "ignorable": false,
+            "identifier": "phpstan.dumpType"
+        },
+        {
+            "file": "$ROOT/template_offset_controls.php",
+            "message": "Dumped type: 42",
+            "line": 40,
+            "ignorable": false,
+            "identifier": "phpstan.dumpType"
+        },
+        {
+            "file": "$ROOT/template_offset_controls.php",
+            "message": "Call to RenamedNamedArgument\\Contract::run() uses named argument for parameter $value, but RenamedNamedArgument\\Renamed renames it to $renamed.",
+            "line": 41,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/template_offset_controls.php",
+            "message": "Dumped type: 'integer'|'string'",
+            "line": 50,
+            "ignorable": false,
+            "identifier": "phpstan.dumpType"
+        },
+        {
+            "file": "$ROOT/template_offset_controls.php",
+            "message": "Dumped type: int|string",
+            "line": 51,
+            "ignorable": false,
+            "identifier": "phpstan.dumpType"
+        },
+        {
+            "file": "$ROOT/template_offset_controls.php",
+            "message": "Call to RenamedNamedArgument\\Contract::run() uses named argument for parameter $value, but RenamedNamedArgument\\Renamed renames it to $renamed.",
+            "line": 52,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/template_offset_controls.php",
+            "message": "Dumped type: 'string'",
+            "line": 61,
+            "ignorable": false,
+            "identifier": "phpstan.dumpType"
+        },
+        {
+            "file": "$ROOT/template_offset_controls.php",
+            "message": "Dumped type: string",
+            "line": 62,
+            "ignorable": false,
+            "identifier": "phpstan.dumpType"
+        },
+        {
+            "file": "$ROOT/template_offset_controls.php",
+            "message": "Call to RenamedNamedArgument\\Contract::run() uses named argument for parameter $value, but RenamedNamedArgument\\Renamed renames it to $renamed.",
+            "line": 63,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/template_offset_controls.php",
+            "message": "Dumped type: 'string'",
+            "line": 73,
+            "ignorable": false,
+            "identifier": "phpstan.dumpType"
+        },
+        {
+            "file": "$ROOT/template_offset_controls.php",
+            "message": "Dumped type: string",
+            "line": 74,
+            "ignorable": false,
+            "identifier": "phpstan.dumpType"
+        },
+        {
+            "file": "$ROOT/template_offset_controls.php",
+            "message": "Dumped type: Inner of array{kind: 'string', value: string} (function RenamedNamedArgument\\nestedTemplates(), argument)",
+            "line": 75,
+            "ignorable": false,
+            "identifier": "phpstan.dumpType"
+        },
+        {
+            "file": "$ROOT/template_offset_controls.php",
+            "message": "Call to RenamedNamedArgument\\Contract::run() uses named argument for parameter $value, but RenamedNamedArgument\\Renamed renames it to $renamed.",
+            "line": 76,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/template_offset_controls.php",
+            "message": "Dumped type: 'string'",
+            "line": 86,
+            "ignorable": false,
+            "identifier": "phpstan.dumpType"
+        },
+        {
+            "file": "$ROOT/template_offset_controls.php",
+            "message": "Dumped type: string",
+            "line": 87,
+            "ignorable": false,
+            "identifier": "phpstan.dumpType"
+        },
+        {
+            "file": "$ROOT/template_offset_controls.php",
+            "message": "Call to RenamedNamedArgument\\Contract::run() uses named argument for parameter $value, but RenamedNamedArgument\\Renamed renames it to $renamed.",
+            "line": 88,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/template_offset_controls.php",
+            "message": "Dumped type: string",
+            "line": 98,
+            "ignorable": false,
+            "identifier": "phpstan.dumpType"
+        },
+        {
+            "file": "$ROOT/template_offset_controls.php",
+            "message": "Call to RenamedNamedArgument\\OwnDiamond::change() uses named argument for parameter $original, but RenamedNamedArgument\\OwnDiamondSubtype renames it to $renamed.",
+            "line": 106,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/template_offset_controls.php",
+            "message": "Dumped type: string",
+            "line": 123,
+            "ignorable": false,
+            "identifier": "phpstan.dumpType"
+        },
+        {
+            "file": "$ROOT/template_offset_controls.php",
+            "message": "Dumped type: int",
+            "line": 124,
+            "ignorable": false,
+            "identifier": "phpstan.dumpType"
+        },
+        {
+            "file": "$ROOT/template_offset_controls.php",
+            "message": "Dumped type: string",
+            "line": 133,
+            "ignorable": false,
+            "identifier": "phpstan.dumpType"
+        },
+        {
+            "file": "$ROOT/template_offset_controls.php",
+            "message": "Dumped type: string",
+            "line": 143,
+            "ignorable": false,
+            "identifier": "phpstan.dumpType"
+        },
+        {
+            "file": "$ROOT/template_offset_controls.php",
+            "message": "Dumped type: 'left'|'right'",
+            "line": 152,
+            "ignorable": false,
+            "identifier": "phpstan.dumpType"
+        },
+        {
+            "file": "$ROOT/template_offset_controls.php",
+            "message": "Dumped type: string",
+            "line": 153,
+            "ignorable": false,
+            "identifier": "phpstan.dumpType"
+        },
+        {
+            "file": "$ROOT/template_offset_controls.php",
+            "message": "Call to RenamedNamedArgument\\Contract::run() uses named argument for parameter $value, but RenamedNamedArgument\\Renamed renames it to $renamed.",
+            "line": 154,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/template_offset_controls.php",
+            "message": "Dumped type: Strings of array{string} (function RenamedNamedArgument\\listShapeTemplates(), argument)",
+            "line": 164,
+            "ignorable": false,
+            "identifier": "phpstan.dumpType"
+        },
+        {
+            "file": "$ROOT/template_offset_controls.php",
+            "message": "Dumped type: string",
+            "line": 165,
+            "ignorable": false,
+            "identifier": "phpstan.dumpType"
+        },
+        {
+            "file": "$ROOT/template_offset_controls.php",
+            "message": "Dumped type: array{string}",
+            "line": 174,
+            "ignorable": false,
+            "identifier": "phpstan.dumpType"
+        },
+        {
+            "file": "$ROOT/template_offset_controls.php",
+            "message": "Dumped type: string",
+            "line": 175,
+            "ignorable": false,
+            "identifier": "phpstan.dumpType"
+        }
     ]
 }

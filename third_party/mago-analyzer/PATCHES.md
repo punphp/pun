@@ -806,3 +806,33 @@ an absent LHS, self-assignment, and a terminating RHS. Regenerate its oracle wit
 `scripts/export-analyse-expected.py crates/pun-analyse/tests/fixtures/coalesce-scope`.
 The unchanged level-1 and level-4 Variables fixtures also cover bug-10577, pr-4372, bug-14459, and
 unnecessary-null-coalesce-side-effects. No existing fixture expectation or gap is changed by this patch.
+
+## Template array-offset refinement
+
+`src/reconciler/mod.rs::adjust_array_type` refines the live constraints of template parameters through
+the same offset transfer as ordinary arrays. It preserves surviving union members and propagates the
+whole refined inner union into its parent once. Same-identity template offsets intersect their live
+constraints explicitly because the general template comparator identifies parameters by name and scope.
+
+The PHPStan 2.3.1 references are `MutatingScope::specifyExpressionTypeInPlace`,
+`TypeCombinator::intersect`, `TemplateUnionType::filterTypes`, and
+`ConstantArrayType::setOffsetValueType`. PHPStan combines compatible open shapes before refinement.
+The patch reuses Mago's shared combiner on the current constraint. A declared shape template's
+constant-array constructor omits open extras, and its offset builder produces a plain shape;
+other template forms retain their name, defining entity, and intersections. Declaration metadata
+establishes only the shape classification. Its original values never replace the refined constraint.
+This distinction prevents a general array with newly known offsets from becoming a sealed shape.
+An alternative that already satisfies the offset constraint retains its template identity, matching
+`TypeCombinator::intersect`'s supertype check before the constant-array builder.
+
+Public oracle fixtures live in `tests/fixtures/renamed-named-argument/` under `pun-analyse`.
+`template_offset.php` reproduces the missing named-argument warning after an offset assertion.
+`template_offset_controls.php` checks open and closed alternatives, branch joins, reassignment,
+unrelated offsets, nested templates, tuple and list constraints, class templates, and general arrays.
+Run its `oracle.php` generator with the pinned PHPStan 2.3.1 PHAR, then run
+`cargo llvm-cov --dep-coverage mago-analyzer --no-report -p punphp-analyse --test renamed_named_argument`.
+
+An unchanged offset type remains a separate caller boundary: `reconcile_keyed_types` currently invokes
+the parent transfer only inside `if type_changed`. PHPStan specifies the containing array even for
+a redundant offset guard. The public nonmatching-offset expectation remains active; this patch does
+not change that caller, variable certainty, native state, invocation, or plugin dispatch.

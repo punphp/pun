@@ -564,14 +564,40 @@ fn adjust_array_type(
         array_key
     };
 
-    let mut existing_type = if let Some(existing_type) = context.locals.get(&base_key_atom) {
+    let existing_type = if let Some(existing_type) = context.locals.get(&base_key_atom) {
         (**existing_type).clone()
     } else {
         return;
     };
 
+    let (existing_type, changed) =
+        adjust_array_offset(existing_type, arraykey_offset, has_string_offset, result_type, codebase, optional);
+    if !changed || existing_type.is_never() {
+        return;
+    }
+
+    changed_var_ids.insert(concat_word!(base_key.as_slice(), b"[", array_key, b"]"));
+    if let Some(last_part) = key_parts.last()
+        && *last_part == b"]"
+    {
+        // Propagate all surviving alternatives together, rather than overwriting the parent per atomic.
+        adjust_array_type(key_parts, context, changed_var_ids, &existing_type, codebase, false);
+    }
+    context.locals.insert(base_key_atom, Rc::new(existing_type));
+}
+
+/// Refine the current value, including template constraints, without recovering a declaration's wider bound.
+fn adjust_array_offset(
+    mut existing_type: TUnion,
+    arraykey_offset: &[u8],
+    has_string_offset: bool,
+    result_type: &TUnion,
+    codebase: &CodebaseMetadata,
+    optional: bool,
+) -> (TUnion, bool) {
     let atomic_types = std::mem::take(existing_type.types.to_mut());
     let mut compatible_types = Vec::with_capacity(atomic_types.len());
+    let mut changed = false;
 
     for mut base_atomic_type in atomic_types {
         match &mut base_atomic_type {
@@ -590,11 +616,12 @@ fn adjust_array_type(
                 if let Some(known_items) = known_items {
                     let known_items = Arc::make_mut(known_items);
                     if let Some((existing_optional, existing_item_type)) = known_items.get(&dictkey) {
-                        match intersect_union_types(result_type, existing_item_type, codebase) {
+                        match intersect_array_offset(result_type, existing_item_type, codebase) {
                             Some(intersected) if !intersected.is_never() => {
                                 known_items.insert(dictkey, (*existing_optional, intersected));
                             }
                             _ => {
+                                changed = true;
                                 continue;
                             }
                         }
@@ -611,11 +638,12 @@ fn adjust_array_type(
                 {
                     if let Some(known_elements) = known_elements.as_mut().map(Arc::make_mut) {
                         if let Some((_, existing_item_type)) = known_elements.get(&arraykey_offset) {
-                            match intersect_union_types(result_type, existing_item_type, codebase) {
+                            match intersect_array_offset(result_type, existing_item_type, codebase) {
                                 Some(intersected) if !intersected.is_never() => {
                                     known_elements.insert(arraykey_offset, (false, intersected));
                                 }
                                 _ => {
+                                    changed = true;
                                     continue;
                                 }
                             }
@@ -647,10 +675,60 @@ fn adjust_array_type(
                     known_non_list: false,
                 }));
             }
+            TAtomic::GenericParameter(generic) => {
+                let mut constraint = (*generic.constraint).clone();
+                // Closed alternatives retain their discriminators. Only open bounds use the shared
+                // combiner; merging sealed alternatives here would erase the branch being selected.
+                let (mut sealed, open): (Vec<_>, Vec<_>) = constraint
+                    .types
+                    .to_vec()
+                    .into_iter()
+                    .partition(|atomic| matches!(atomic, TAtomic::Array(array) if array.is_sealed()));
+                if !open.is_empty() {
+                    sealed.extend(mago_codex::ttype::combiner::combine(open, codebase, CombinerOptions::default()));
+                }
+                *constraint.types.to_mut() = sealed;
+                // PHPStan's TemplateConstantArrayType constructor omits unsealed extras. Its offset
+                // builder returns a plain shape; TemplateUnionType instead recreates its identity.
+                let constant = declared_array_template(generic, codebase)
+                    && match constraint.types.to_mut().as_mut_slice() {
+                        [TAtomic::Array(TArray::Keyed(array))] if array.known_items.is_some() => {
+                            array.parameters = None;
+                            true
+                        }
+                        [TAtomic::Array(TArray::List(array))] if array.known_elements.is_some() => {
+                            array.element_type = Arc::new(get_never());
+                            true
+                        }
+                        _ => false,
+                    };
+                let previous_constraint = constraint.clone();
+                let (constraint, narrowed) = adjust_array_offset(
+                    constraint,
+                    arraykey_offset,
+                    has_string_offset,
+                    result_type,
+                    codebase,
+                    optional,
+                );
+                if constraint.is_never() {
+                    changed = true;
+                    continue;
+                }
+                changed |= narrowed;
+                // HasOffsetValueType already accepts an unchanged alternative. Only a genuine offset
+                // change invokes PHPStan's constant-array builder and erases the template's identity.
+                if constant && constraint != previous_constraint {
+                    compatible_types.extend(constraint.types.into_owned());
+                } else {
+                    *generic = generic.with_constraint(constraint);
+                    compatible_types.push(base_atomic_type);
+                }
+                continue;
+            }
             _ => {
                 if base_atomic_type.is_object_type()
                     || base_atomic_type.is_string()
-                    || base_atomic_type.is_generic_parameter()
                     || matches!(base_atomic_type, TAtomic::Variable(_))
                 {
                     compatible_types.push(base_atomic_type);
@@ -660,30 +738,51 @@ fn adjust_array_type(
             }
         }
 
-        changed_var_ids.insert(concat_word!(base_key.as_slice(), b"[", array_key, b"]"));
-
-        if let Some(last_part) = key_parts.last()
-            && *last_part == b"]"
-        {
-            adjust_array_type(
-                key_parts.clone(),
-                context,
-                changed_var_ids,
-                &wrap_atomic(base_atomic_type.clone()),
-                codebase,
-                false,
-            );
-        }
-
+        changed = true;
         compatible_types.push(base_atomic_type);
     }
 
     if compatible_types.is_empty() {
-        return;
+        return (get_never(), changed);
     }
 
     *existing_type.types.to_mut() = compatible_types;
-    context.locals.insert(base_key_atom, Rc::new(existing_type));
+    (existing_type, changed)
+}
+
+/// A refined general array also has known offsets. Only the declaring template can establish that these
+/// are shape metadata; its values never replace the live constraint being refined.
+fn declared_array_template(generic: &TGenericParameter, codebase: &CodebaseMetadata) -> bool {
+    let templates = match generic.defining_entity {
+        mago_codex::misc::GenericParent::ClassLike(name) => {
+            codebase.get_class_like(name.as_bytes()).map(|class| &class.template_types)
+        }
+        mago_codex::misc::GenericParent::FunctionLike(key) => {
+            codebase.function_likes.get(&key).map(|function| &function.template_types)
+        }
+    };
+    templates.and_then(|types| types.get(&generic.parameter_name)).is_some_and(|template| {
+        template.constraint.types.iter().all(|atomic| match atomic {
+            TAtomic::Array(TArray::Keyed(array)) => array.known_items.is_some(),
+            TAtomic::Array(TArray::List(array)) => array.known_elements.is_some(),
+            _ => false,
+        })
+    })
+}
+
+/// The generic comparator identifies a template by name/scope, not its narrowed constraint. Intersect those
+/// constraints explicitly when propagating an inner array update into the enclosing shape.
+fn intersect_array_offset(result: &TUnion, previous: &TUnion, codebase: &CodebaseMetadata) -> Option<TUnion> {
+    if let ([TAtomic::GenericParameter(result)], [TAtomic::GenericParameter(previous)]) =
+        (result.types.as_ref(), previous.types.as_ref())
+        && result.parameter_name == previous.parameter_name
+        && result.defining_entity == previous.defining_entity
+        && result.intersection_types == previous.intersection_types
+    {
+        let constraint = intersect_union_types(&result.constraint, &previous.constraint, codebase)?;
+        return Some(wrap_atomic(TAtomic::GenericParameter(result.with_constraint(constraint))));
+    }
+    intersect_union_types(result, previous, codebase)
 }
 
 fn adjust_array_type_remove_key(

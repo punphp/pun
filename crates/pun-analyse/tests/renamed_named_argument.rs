@@ -133,3 +133,13 @@ fn template_intersection_and_unsealed_array_contracts() {
 fn written_union_order_safe_calls_reference_mutation_and_narrowing() {
     check("source-contracts");
 }
+
+#[test]
+fn template_offset_assertions_narrow_the_array_constraint() {
+    check("template-offset");
+}
+
+#[test]
+fn template_offset_constraints_preserve_identity_alternatives_and_branches() {
+    check("template-offset-controls");
+}
