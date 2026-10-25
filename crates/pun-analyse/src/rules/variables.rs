@@ -151,6 +151,9 @@ impl Certainty {
     }
 
     pub fn get(&self, name: &str) -> Tri {
+        if super::functions::SUPERGLOBALS.contains(&name.as_bytes()) {
+            return Tri::Yes;
+        }
         self.variables
             .get(&format!("${name}"))
             .copied()
@@ -180,6 +183,10 @@ pub(super) fn is_main(context: &HookContext<'_, '_>) -> bool {
 
 /// Scope::hasVariableType(). Mago registers argc/argv as superglobals even inside functions; PHPStan doesn't.
 pub(super) fn defined(context: &HookContext<'_, '_>, name: &str) -> Tri {
+    // ScopeOps checks the unconditional superglobal names before looking at expression holders, even after unset.
+    if super::functions::SUPERGLOBALS.contains(&&name.as_bytes()[1..]) {
+        return Tri::Yes;
+    }
     let block = context.block_context();
     let id = mago_word::word(name);
     if matches!(name, "$argc" | "$argv")

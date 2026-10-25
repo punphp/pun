@@ -140,3 +140,18 @@ function nameEffects(): void
 }
 
 $arrowAtMain = fn () => $globalCaptureMissing;
+
+function superglobals(): void
+{
+    echo $GLOBALS, $_SERVER, $_GET, $_POST, $_FILES, $_COOKIE, $_SESSION, $_REQUEST, $_ENV;
+    compact('GLOBALS', '_SERVER', '_GET', '_POST', '_FILES', '_COOKIE', '_SESSION', '_REQUEST', '_ENV');
+    $name = '_SESSION';
+    echo $$name;
+    unset($_SESSION);
+    echo $_SESSION;
+    compact('_SESSION');
+    $arrow = fn () => $_SESSION;
+    $closure = function (): void {
+        echo $_SESSION;
+    };
+}
