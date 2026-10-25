@@ -1,0 +1,74 @@
+{
+  "totals": {
+    "errors": 0,
+    "file_errors": 10
+  },
+  "files": {
+    "unpacking.php": {
+      "errors": 10,
+      "messages": [
+        {
+          "message": "Array has 2 duplicate keys with value 0 (0, 0).",
+          "line": 12,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value 4 (4, 4).",
+          "line": 13,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value 0 (0, 0).",
+          "line": 14,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value 0 (0, 0).",
+          "line": 26,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value 4 (4, 4).",
+          "line": 29,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value 's' ('s', 's').",
+          "line": 43,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value 0 (0, 0).",
+          "line": 60,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value 9223372036854775807 (9223372036854775807, 9223372036854775807).",
+          "line": 82,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value 0 (0, 0).",
+          "line": 105,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value 's' ('s', 's').",
+          "line": 112,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        }
+      ]
+    }
+  },
+  "errors": []
+}

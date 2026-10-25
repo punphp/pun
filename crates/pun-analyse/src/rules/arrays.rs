@@ -1,15 +1,15 @@
-//! DuplicateKeysInLiteralArraysRule: constant scalar keys, including inferred expressions and finite unions.
+//! DuplicateKeysInLiteralArraysRule: inferred scalar keys, finite unions and sealed array unpacking.
 
 use std::collections::{HashMap, HashSet};
 
 use mago_span::{HasSpan, Span};
 use mago_syntax::cst::*;
 use mago_syntax::walker::MutWalker;
-use pun_phpstan::types::Type;
+use pun_phpstan::types::{ConstArray, NeverKind, Type};
 
-use super::Checker;
+use super::{Checker, declared};
 
-/// Level 0 also needs the scope's type of explicit array keys, not just syntax-known constants.
+/// Level 0 also needs the scope's type of explicit keys and unpacked values.
 pub(super) fn typed_expressions(program: &Program) -> Vec<Span> {
     struct Keys(Vec<Span>);
     impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Keys {
@@ -19,6 +19,13 @@ pub(super) fn typed_expressions(program: &Program) -> Vec<Span> {
             _: &mut (),
         ) {
             self.0.push(item.key.span());
+        }
+        fn walk_in_variadic_array_element(
+            &mut self,
+            item: &'ast VariadicArrayElement<'arena>,
+            _: &mut (),
+        ) {
+            self.0.push(item.value.span());
         }
     }
     let mut keys = Keys(Vec::new());
@@ -118,41 +125,17 @@ pub fn literal_array<'arena>(
     let mut seen: Vec<Key> = Vec::new();
     let mut seen_unions: Vec<Vec<Key>> = Vec::new();
     for element in elements.iter() {
-        // assistant's call: a missing element (`[1, , 2]`, a php-parser error outside a list) counts as one without a key
-        let (key, at) = match element {
-            ArrayElement::KeyValue(kv) => (Some(kv.key), kv.span()),
-            // ArrayUnpackingHelper::getKeyTypes() gives no keys for a constant array that is not sealed, which a
-            // literal is not without bleeding edge, so (as the oracle shows) an unpacked item's keys are unknown
-            ArrayElement::Variadic(_) => {
-                auto = Auto::Unknown;
-                continue;
-            }
-            e => (None, e.span()),
-        };
-        let (values, print) = match key {
-            None => {
-                let next = match auto {
-                    Auto::Unknown => continue,
-                    Auto::NotYet => 0,
-                    // PHP throws "Cannot add element to the array as the next element is already occupied"
-                    Auto::Known(i64::MAX) => {
-                        auto = Auto::Unknown;
-                        continue;
-                    }
-                    Auto::Known(b) => b + 1,
-                };
-                auto = Auto::Known(next);
-                (vec![Key::Int(next)], next.to_string())
-            }
-            Some(key) => {
-                let values = key_value(c, key)
+        let at = element.span();
+        let (key, key_types) = match element {
+            ArrayElement::KeyValue(kv) => {
+                let values = key_value(c, kv.key)
                     .map(|value| vec![value])
-                    .or_else(|| match unparenthesized(key) {
+                    .or_else(|| match unparenthesized(kv.key) {
                         // Keep the existing constant resolver's boundary: Mago's built-in stubs can
                         // contain placeholder values, and late-static constants may be overridden.
                         Expression::ConstantAccess(_)
                         | Expression::Access(Access::ClassConstant(_)) => None,
-                        _ => inferred_keys(&c.phpstan_type(key)?),
+                        _ => inferred_keys(&c.phpstan_type(kv.key)?),
                     })
                     .unwrap_or_default();
                 // once the implicit index is unknown an explicit key can't bring it back
@@ -163,44 +146,91 @@ pub fn literal_array<'arena>(
                         Auto::Unknown => Auto::Unknown,
                     };
                 }
-                (values, written(c, key))
+                (Some(kv.key), vec![values])
             }
-        };
-        if values.is_empty() {
-            auto = Auto::Unknown;
-            continue;
-        }
-        // PHPStan's seenKeys/seenUnions: an overlap alone is not a definite duplicate. A singleton
-        // eliminates that possibility from earlier unions, promoting their last remaining possibility.
-        let new_values: Vec<_> = values
-            .iter()
-            .filter(|value| !seen.contains(value))
-            .cloned()
-            .collect();
-        let duplicate = new_values.is_empty();
-        if let [new_value] = new_values.as_slice() {
-            seen_unions.retain_mut(|union| {
-                if let Some(offset) = union.iter().position(|value| value == new_value) {
-                    union.remove(offset);
-                    if union.len() == 1 {
-                        seen.push(union[0].clone());
-                        return false;
+            ArrayElement::Variadic(v) => {
+                let next = match auto {
+                    Auto::Unknown => continue,
+                    Auto::NotYet => Some(0),
+                    Auto::Known(i) => i.checked_add(1),
+                };
+                let keys = c.phpstan_type(v.value).and_then(|t| {
+                    declared::with_classes(c, || {
+                        unpacked_keys(&t, next, c.php_version >= 80100, c.bleeding_edge)
+                    })
+                });
+                let Some(mut keys) = keys else {
+                    auto = Auto::Unknown;
+                    continue;
+                };
+                for key in &keys {
+                    if let Key::Int(i) = key {
+                        auto = match auto {
+                            Auto::Known(before) => Auto::Known(before.max(*i)),
+                            _ => Auto::Known(*i),
+                        };
                     }
                 }
-                true
-            });
-            seen.push(new_value.clone());
-        } else if !duplicate {
-            seen_unions.push(new_values);
-        }
-        for value in values {
-            printed
-                .entry(value.clone())
-                .or_default()
-                .push(print.clone());
-            lines.entry(value.clone()).or_insert(at);
-            if duplicate && !duplicate_keys.contains(&value) {
-                duplicate_keys.push(value.clone());
+                // Only a literal spread reports string-key collisions: other expressions have
+                // array_merge-style string overrides. Integer keys still consume implicit indices.
+                if !matches!(
+                    unparenthesized(v.value),
+                    Expression::Array(_) | Expression::LegacyArray(_)
+                ) {
+                    keys.retain(|key| !matches!(key, Key::Str(_)));
+                }
+                (None, keys.into_iter().map(|key| vec![key]).collect())
+            }
+            _ => {
+                let next = match auto {
+                    Auto::Unknown => continue,
+                    Auto::NotYet => 0,
+                    // PHP throws "Cannot add element to the array as the next element is already occupied"
+                    Auto::Known(i64::MAX) => {
+                        auto = Auto::Unknown;
+                        continue;
+                    }
+                    Auto::Known(i) => i + 1,
+                };
+                auto = Auto::Known(next);
+                (None, vec![vec![Key::Int(next)]])
+            }
+        };
+        for values in key_types {
+            if values.is_empty() {
+                auto = Auto::Unknown;
+                continue;
+            }
+            // PHPStan's seenKeys/seenUnions: an overlap alone is not a definite duplicate. A singleton
+            // eliminates that possibility from earlier unions, promoting their last remaining possibility.
+            let new_values: Vec<_> = values
+                .iter()
+                .filter(|value| !seen.contains(value))
+                .cloned()
+                .collect();
+            let duplicate = new_values.is_empty();
+            if let [new_value] = new_values.as_slice() {
+                seen_unions.retain_mut(|union| {
+                    if let Some(offset) = union.iter().position(|value| value == new_value) {
+                        union.remove(offset);
+                        if union.len() == 1 {
+                            seen.push(union[0].clone());
+                            return false;
+                        }
+                    }
+                    true
+                });
+                seen.push(new_value.clone());
+            } else if !duplicate {
+                seen_unions.push(new_values);
+            }
+            for value in values {
+                let print = key.map_or_else(|| value.export(), |key| written(c, key));
+                printed.entry(value.clone()).or_default().push(print);
+                lines.entry(value.clone()).or_insert(at);
+                if duplicate && !duplicate_keys.contains(&value) {
+                    duplicate_keys.push(value.clone());
+                }
             }
         }
     }
@@ -218,6 +248,90 @@ pub fn literal_array<'arena>(
             None,
         );
     }
+}
+
+/// Only the metadata `ArrayUnpackingHelper::getKeyTypes()` reads. Callable arrays have exactly keys 0 and 1.
+enum UnpackingArray<'a> {
+    Shape(&'a ConstArray),
+    Callable,
+}
+
+/// `getConstantArrays()`: unions require every member to contribute; intersections collect their shapes.
+fn constant_arrays(t: &Type) -> Vec<UnpackingArray<'_>> {
+    match t {
+        Type::ConstArray(a) => vec![UnpackingArray::Shape(a)],
+        Type::Intersection(_) if t.is_callable().yes() && t.is_array().yes() => {
+            vec![UnpackingArray::Callable]
+        }
+        Type::Union(types) | Type::Benevolent(types) => {
+            let mut arrays = Vec::new();
+            for part in types {
+                let inner = constant_arrays(part);
+                // BenevolentUnionType::pickFromTypes ignores non-array members, but not arrays
+                // whose keys are unknown. Ordinary unions require a shape from every member.
+                if inner.is_empty() && (!matches!(t, Type::Benevolent(_)) || part.is_array().yes())
+                {
+                    return Vec::new();
+                }
+                arrays.extend(inner);
+            }
+            arrays
+        }
+        Type::Intersection(types) => types.iter().flat_map(constant_arrays).collect(),
+        Type::Template(t) => constant_arrays(&t.bound),
+        _ => Vec::new(),
+    }
+}
+
+/// PHPStan 2.3.1 `ArrayUnpackingHelper::getKeyTypes()`. Resolve the whole spread before advancing the caller's
+/// implicit index: an optional key or an overflow invalidates even keys visited before that failure.
+fn unpacked_keys(
+    t: &Type,
+    mut next: Option<i64>,
+    keep_strings: bool,
+    bleeding_edge: bool,
+) -> Option<Vec<Key>> {
+    let arrays = constant_arrays(t);
+    if arrays.len() != 1 {
+        return (arrays.is_empty()
+            && keep_strings
+            && t.is_iterable().yes()
+            && t.iterable_key_type().is_string().yes())
+        .then(Vec::new);
+    }
+    const CALLABLE_KEYS: [Type; 2] = [Type::ConstInt(0), Type::ConstInt(1)];
+    let (keys, optional, sealed) = match &arrays[0] {
+        UnpackingArray::Shape(a) => (
+            a.keys.as_slice(),
+            !a.optional.is_empty(),
+            // The model's default builder does not carry BleedingEdgeToggle. Explicit open/closed
+            // metadata takes precedence; an ordinary closed shape is sealed only with that toggle.
+            (a.unsealed.is_none() && bleeding_edge)
+                || matches!(
+                    &a.unsealed,
+                    Some((
+                        Type::Never(NeverKind::Explicit | NeverKind::NonAccepting),
+                        _
+                    ))
+                ),
+        ),
+        UnpackingArray::Callable => (CALLABLE_KEYS.as_slice(), false, bleeding_edge),
+    };
+    if !sealed || optional {
+        return None;
+    }
+    let mut keys_out = Vec::new();
+    for key in keys {
+        // ConstArray's key contract already guarantees a singleton constant string or integer.
+        if keep_strings && let Type::ConstString(s) = key {
+            keys_out.push(Key::Str(s.as_bytes().to_vec()));
+        } else {
+            let index = next?;
+            keys_out.push(Key::Int(index));
+            next = index.checked_add(1);
+        }
+    }
+    Some(keys_out)
 }
 
 /// `toArrayKey()->getConstantScalarValues()`. Reuse the syntax path's PHP scalar-key casts; a union
