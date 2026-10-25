@@ -195,7 +195,7 @@ fn winning<'v>(c: &Checker, acceptable: &[&'v Acceptor], counts: &Counts) -> Opt
 }
 
 /// `combineAcceptors()`.
-fn combine(variants: &[&Acceptor]) -> Acceptor {
+pub(super) fn combine(variants: &[&Acceptor]) -> Acceptor {
     let min = variants.iter().map(|v| v.min()).min().unwrap_or(0);
     let mut combined = Acceptor {
         optional: Vec::new(),

@@ -1,0 +1,1054 @@
+{
+    "all": [
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Call to RenamedNamedArgument\\Contract::run() uses named argument for parameter $value, but RenamedNamedArgument\\Renamed renames it to $renamed.",
+            "line": 5,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Call to RenamedNamedArgument\\Contract::run() uses named argument for parameter $second, but RenamedNamedArgument\\Renamed renames it to $other.",
+            "line": 7,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Call to RenamedNamedArgument\\Contract::run() uses named argument for parameter $value, but RenamedNamedArgument\\Renamed renames it to $renamed.",
+            "line": 8,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Call to RenamedNamedArgument\\Contract::run() uses named argument for parameter $value, but RenamedNamedArgument\\Renamed renames it to $renamed.",
+            "line": 12,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Call to RenamedNamedArgument\\Contract::run() uses named argument for parameter $second, but RenamedNamedArgument\\Renamed renames it to $other.",
+            "line": 13,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Call to RenamedNamedArgument\\Contract::run() uses named argument for parameter $value, but RenamedNamedArgument\\Renamed renames it to $renamed.",
+            "line": 13,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Call to RenamedNamedArgument\\Contract::run() uses named argument for parameter $value, but RenamedNamedArgument\\Renamed renames it to $renamed.",
+            "line": 18,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Call to RenamedNamedArgument\\Contract::run() uses named argument for parameter $value, but RenamedNamedArgument\\Renamed renames it to $renamed.",
+            "line": 19,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Call to RenamedNamedArgument\\Contract::run() uses named argument for parameter $value, but RenamedNamedArgument\\Renamed renames it to $renamed.",
+            "line": 20,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Call to RenamedNamedArgument\\Contract::run() uses named argument for parameter $value, but RenamedNamedArgument\\Renamed renames it to $renamed.",
+            "line": 21,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        }
+    ],
+    "calls-only": [
+        {
+            "file": "$ROOT/calls.php",
+            "message": "No error with identifier argument.parameterRenamedInSubtype is reported on line 23.",
+            "line": 23,
+            "ignorable": false,
+            "identifier": "ignore.unmatchedIdentifier"
+        }
+    ],
+    "overrides-only": [],
+    "level-zero": [
+        {
+            "file": "$ROOT/calls.php",
+            "message": "No error with identifier argument.parameterRenamedInSubtype is reported on line 23.",
+            "line": 23,
+            "ignorable": false,
+            "identifier": "ignore.unmatchedIdentifier"
+        }
+    ],
+    "level-four": [
+        {
+            "file": "$ROOT/calls.php",
+            "message": "No error with identifier argument.parameterRenamedInSubtype is reported on line 23.",
+            "line": 23,
+            "ignorable": false,
+            "identifier": "ignore.unmatchedIdentifier"
+        }
+    ],
+    "controls": [
+        {
+            "file": "$ROOT/controls.php",
+            "message": "Call to RenamedNamedArgument\\Base::method() uses named argument for parameter $original, but RenamedNamedArgument\\Child renames it to $renamed.",
+            "line": 15,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/controls.php",
+            "message": "Call to RenamedNamedArgument\\Base::method() uses named argument for parameter $original, but RenamedNamedArgument\\ForbiddenChild renames it to $renamed.",
+            "line": 15,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/controls.php",
+            "message": "Call to RenamedNamedArgument\\Base::protectedMethod() uses named argument for parameter $original, but RenamedNamedArgument\\Child renames it to $renamed.",
+            "line": 16,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/controls.php",
+            "message": "Call to RenamedNamedArgument\\Base::staticMethod() uses named argument for parameter $original, but RenamedNamedArgument\\Child renames it to $renamed.",
+            "line": 18,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/controls.php",
+            "message": "Call to RenamedNamedArgument\\Base::finalMethod() uses named argument for parameter $original, but RenamedNamedArgument\\FinalMethodChild renames it to $renamed.",
+            "line": 19,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/controls.php",
+            "message": "Call to RenamedNamedArgument\\Base::method() uses named argument for parameter $original, but RenamedNamedArgument\\Child renames it to $renamed.",
+            "line": 66,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/controls.php",
+            "message": "Call to RenamedNamedArgument\\Base::method() uses named argument for parameter $original, but RenamedNamedArgument\\ForbiddenChild renames it to $renamed.",
+            "line": 66,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/controls.php",
+            "message": "Call to RenamedNamedArgument\\Base::variadic() uses named argument for parameter $original, but RenamedNamedArgument\\Child renames it to $renamed.",
+            "line": 67,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/controls.php",
+            "message": "Call to RenamedNamedArgument\\Base::variadic() uses named argument for parameter $original, but RenamedNamedArgument\\Child renames it to $renamed.",
+            "line": 67,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/controls.php",
+            "message": "Call to RenamedNamedArgument\\Base::variadic() uses named argument for parameter $original, but RenamedNamedArgument\\Child renames it to $renamed.",
+            "line": 68,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/controls.php",
+            "message": "Call to RenamedNamedArgument\\Base::method() uses named argument for parameter $original, but RenamedNamedArgument\\Child renames it to $renamed.",
+            "line": 69,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/controls.php",
+            "message": "Call to RenamedNamedArgument\\Base::method() uses named argument for parameter $original, but RenamedNamedArgument\\Child renames it to $renamed.",
+            "line": 69,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/controls.php",
+            "message": "Call to RenamedNamedArgument\\Base::method() uses named argument for parameter $original, but RenamedNamedArgument\\ForbiddenChild renames it to $renamed.",
+            "line": 69,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/controls.php",
+            "message": "Call to RenamedNamedArgument\\Base::method() uses named argument for parameter $original, but RenamedNamedArgument\\ForbiddenChild renames it to $renamed.",
+            "line": 69,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/controls.php",
+            "message": "Call to RenamedNamedArgument\\Base::method() uses named argument for parameter $original, but RenamedNamedArgument\\Child renames it to $renamed.",
+            "line": 70,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/controls.php",
+            "message": "Call to RenamedNamedArgument\\Base::method() uses named argument for parameter $original, but RenamedNamedArgument\\ForbiddenChild renames it to $renamed.",
+            "line": 70,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/controls.php",
+            "message": "Call to RenamedNamedArgument\\Base::inherited() uses named argument for parameter $original, but RenamedNamedArgument\\Child renames it to $renamed.",
+            "line": 73,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/controls.php",
+            "message": "Call to RenamedNamedArgument\\Base::staticMethod() uses named argument for parameter $original, but RenamedNamedArgument\\Child renames it to $renamed.",
+            "line": 80,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/controls.php",
+            "message": "Call to RenamedNamedArgument\\Base::finalMethod() uses named argument for parameter $original, but RenamedNamedArgument\\FinalMethodChild renames it to $renamed.",
+            "line": 81,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/controls.php",
+            "message": "Call to RenamedNamedArgument\\Child::method() uses named argument for parameter $renamed, but RenamedNamedArgument\\Grandchild renames it to $again.",
+            "line": 87,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/controls.php",
+            "message": "Call to RenamedNamedArgument\\Consistent::__construct() uses named argument for parameter $original, but RenamedNamedArgument\\ConsistentChild renames it to $renamed.",
+            "line": 98,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/controls.php",
+            "message": "Call to RenamedNamedArgument\\Consistent::__construct() uses named argument for parameter $original, but RenamedNamedArgument\\ConsistentChild renames it to $renamed.",
+            "line": 98,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/controls.php",
+            "message": "Call to RenamedNamedArgument\\Base::method() uses named argument for parameter $original, but RenamedNamedArgument\\Child renames it to $renamed.",
+            "line": 104,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/controls.php",
+            "message": "Call to RenamedNamedArgument\\Base::method() uses named argument for parameter $original, but RenamedNamedArgument\\ForbiddenChild renames it to $renamed.",
+            "line": 104,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/controls.php",
+            "message": "Call to RenamedNamedArgument\\Base::method() uses named argument for parameter $original, but RenamedNamedArgument\\Child renames it to $renamed.",
+            "line": 105,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/controls.php",
+            "message": "Call to RenamedNamedArgument\\Base::method() uses named argument for parameter $original, but RenamedNamedArgument\\ForbiddenChild renames it to $renamed.",
+            "line": 105,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        }
+    ],
+    "receivers-five": [
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Call to RenamedNamedArgument\\Contract::run() uses named argument for parameter $value, but RenamedNamedArgument\\Renamed renames it to $renamed.",
+            "line": 15,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Call to RenamedNamedArgument\\Contract::run() uses named argument for parameter $value, but RenamedNamedArgument\\Renamed renames it to $renamed.",
+            "line": 18,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Call to RenamedNamedArgument\\Contract::run() uses named argument for parameter $value, but RenamedNamedArgument\\Renamed renames it to $renamed.",
+            "line": 19,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Call to RenamedNamedArgument\\Contract::run() uses named argument for parameter $value, but RenamedNamedArgument\\Renamed renames it to $renamed.",
+            "line": 20,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Call to RenamedNamedArgument\\Contract::run() uses named argument for parameter $value, but RenamedNamedArgument\\Renamed renames it to $renamed.",
+            "line": 21,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Call to RenamedNamedArgument\\Contract::run() uses named argument for parameter $value, but RenamedNamedArgument\\Renamed renames it to $renamed.",
+            "line": 25,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Call to RenamedNamedArgument\\Contract::run() uses named argument for parameter $value, but RenamedNamedArgument\\Renamed renames it to $renamed.",
+            "line": 26,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Call to RenamedNamedArgument\\Contract::run() uses named argument for parameter $value, but RenamedNamedArgument\\Renamed renames it to $renamed.",
+            "line": 26,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Call to RenamedNamedArgument\\OtherContract::run() uses named argument for parameter $value, but RenamedNamedArgument\\OtherRenamed renames it to $otherValue.",
+            "line": 27,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        }
+    ],
+    "receivers-eight": [
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Call to RenamedNamedArgument\\Contract::run() uses named argument for parameter $value, but RenamedNamedArgument\\Renamed renames it to $renamed.",
+            "line": 15,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Call to RenamedNamedArgument\\Contract::run() uses named argument for parameter $value, but RenamedNamedArgument\\Renamed renames it to $renamed.",
+            "line": 18,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Call to RenamedNamedArgument\\Contract::run() uses named argument for parameter $value, but RenamedNamedArgument\\Renamed renames it to $renamed.",
+            "line": 21,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Call to RenamedNamedArgument\\Contract::run() uses named argument for parameter $value, but RenamedNamedArgument\\Renamed renames it to $renamed.",
+            "line": 25,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Call to RenamedNamedArgument\\Contract::run() uses named argument for parameter $value, but RenamedNamedArgument\\Renamed renames it to $renamed.",
+            "line": 26,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Call to RenamedNamedArgument\\Contract::run() uses named argument for parameter $value, but RenamedNamedArgument\\Renamed renames it to $renamed.",
+            "line": 26,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Call to RenamedNamedArgument\\OtherContract::run() uses named argument for parameter $value, but RenamedNamedArgument\\OtherRenamed renames it to $otherValue.",
+            "line": 27,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        }
+    ],
+    "traits": [
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Call to RenamedNamedArgument\\Contract::run() uses named argument for parameter $value, but RenamedNamedArgument\\Renamed renames it to $renamed.",
+            "line": 5,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Call to RenamedNamedArgument\\Contract::run() uses named argument for parameter $value, but RenamedNamedArgument\\TraitImplementation renames it to $fromTrait.",
+            "line": 5,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Call to RenamedNamedArgument\\Contract::run() uses named argument for parameter $second, but RenamedNamedArgument\\Renamed renames it to $other.",
+            "line": 7,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Call to RenamedNamedArgument\\Contract::run() uses named argument for parameter $value, but RenamedNamedArgument\\Renamed renames it to $renamed.",
+            "line": 8,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Call to RenamedNamedArgument\\Contract::run() uses named argument for parameter $value, but RenamedNamedArgument\\TraitImplementation renames it to $fromTrait.",
+            "line": 8,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Call to RenamedNamedArgument\\Contract::run() uses named argument for parameter $value, but RenamedNamedArgument\\Renamed renames it to $renamed.",
+            "line": 12,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Call to RenamedNamedArgument\\Contract::run() uses named argument for parameter $value, but RenamedNamedArgument\\TraitImplementation renames it to $fromTrait.",
+            "line": 12,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Call to RenamedNamedArgument\\Contract::run() uses named argument for parameter $second, but RenamedNamedArgument\\Renamed renames it to $other.",
+            "line": 13,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Call to RenamedNamedArgument\\Contract::run() uses named argument for parameter $value, but RenamedNamedArgument\\Renamed renames it to $renamed.",
+            "line": 13,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Call to RenamedNamedArgument\\Contract::run() uses named argument for parameter $value, but RenamedNamedArgument\\TraitImplementation renames it to $fromTrait.",
+            "line": 13,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Call to RenamedNamedArgument\\Contract::run() uses named argument for parameter $value, but RenamedNamedArgument\\Renamed renames it to $renamed.",
+            "line": 18,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Call to RenamedNamedArgument\\Contract::run() uses named argument for parameter $value, but RenamedNamedArgument\\TraitImplementation renames it to $fromTrait.",
+            "line": 18,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Call to RenamedNamedArgument\\Contract::run() uses named argument for parameter $value, but RenamedNamedArgument\\Renamed renames it to $renamed.",
+            "line": 19,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Call to RenamedNamedArgument\\Contract::run() uses named argument for parameter $value, but RenamedNamedArgument\\TraitImplementation renames it to $fromTrait.",
+            "line": 19,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Call to RenamedNamedArgument\\Contract::run() uses named argument for parameter $value, but RenamedNamedArgument\\Renamed renames it to $renamed.",
+            "line": 20,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Call to RenamedNamedArgument\\Contract::run() uses named argument for parameter $value, but RenamedNamedArgument\\TraitImplementation renames it to $fromTrait.",
+            "line": 20,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Call to RenamedNamedArgument\\Contract::run() uses named argument for parameter $value, but RenamedNamedArgument\\Renamed renames it to $renamed.",
+            "line": 21,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Call to RenamedNamedArgument\\Contract::run() uses named argument for parameter $value, but RenamedNamedArgument\\TraitImplementation renames it to $fromTrait.",
+            "line": 21,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Call to RenamedNamedArgument\\Contract::run() uses named argument for parameter $value, but RenamedNamedArgument\\TraitImplementation renames it to $fromTrait.",
+            "line": 23,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/trait_users.php",
+            "message": "Call to RenamedNamedArgument\\Contract::run() uses named argument for parameter $value, but RenamedNamedArgument\\Renamed renames it to $renamed.",
+            "line": 6,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/trait_users.php",
+            "message": "Call to RenamedNamedArgument\\Contract::run() uses named argument for parameter $value, but RenamedNamedArgument\\Renamed renames it to $renamed.",
+            "line": 6,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/trait_users.php",
+            "message": "Call to RenamedNamedArgument\\Contract::run() uses named argument for parameter $value, but RenamedNamedArgument\\TraitImplementation renames it to $fromTrait.",
+            "line": 6,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/trait_users.php",
+            "message": "Call to RenamedNamedArgument\\Contract::run() uses named argument for parameter $value, but RenamedNamedArgument\\TraitImplementation renames it to $fromTrait.",
+            "line": 6,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/trait_users.php",
+            "message": "Call to RenamedNamedArgument\\Contract::run() uses named argument for parameter $value, but RenamedNamedArgument\\Renamed renames it to $renamed.",
+            "line": 8,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/trait_users.php",
+            "message": "Call to RenamedNamedArgument\\Contract::run() uses named argument for parameter $value, but RenamedNamedArgument\\Renamed renames it to $renamed.",
+            "line": 8,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/trait_users.php",
+            "message": "Call to RenamedNamedArgument\\Contract::run() uses named argument for parameter $value, but RenamedNamedArgument\\TraitImplementation renames it to $fromTrait.",
+            "line": 8,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/trait_users.php",
+            "message": "Call to RenamedNamedArgument\\Contract::run() uses named argument for parameter $value, but RenamedNamedArgument\\TraitImplementation renames it to $fromTrait.",
+            "line": 8,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/trait_users.php",
+            "message": "Call to RenamedNamedArgument\\TraitBase::method() uses named argument for parameter $original, but RenamedNamedArgument\\TraitChild renames it to $renamed.",
+            "line": 17,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        }
+    ],
+    "traits-scanned": [
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Call to RenamedNamedArgument\\Contract::run() uses named argument for parameter $value, but RenamedNamedArgument\\Renamed renames it to $renamed.",
+            "line": 5,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Call to RenamedNamedArgument\\Contract::run() uses named argument for parameter $second, but RenamedNamedArgument\\Renamed renames it to $other.",
+            "line": 7,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Call to RenamedNamedArgument\\Contract::run() uses named argument for parameter $value, but RenamedNamedArgument\\Renamed renames it to $renamed.",
+            "line": 8,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Call to RenamedNamedArgument\\Contract::run() uses named argument for parameter $value, but RenamedNamedArgument\\Renamed renames it to $renamed.",
+            "line": 12,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Call to RenamedNamedArgument\\Contract::run() uses named argument for parameter $second, but RenamedNamedArgument\\Renamed renames it to $other.",
+            "line": 13,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Call to RenamedNamedArgument\\Contract::run() uses named argument for parameter $value, but RenamedNamedArgument\\Renamed renames it to $renamed.",
+            "line": 13,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Call to RenamedNamedArgument\\Contract::run() uses named argument for parameter $value, but RenamedNamedArgument\\Renamed renames it to $renamed.",
+            "line": 18,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Call to RenamedNamedArgument\\Contract::run() uses named argument for parameter $value, but RenamedNamedArgument\\Renamed renames it to $renamed.",
+            "line": 19,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Call to RenamedNamedArgument\\Contract::run() uses named argument for parameter $value, but RenamedNamedArgument\\Renamed renames it to $renamed.",
+            "line": 20,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Call to RenamedNamedArgument\\Contract::run() uses named argument for parameter $value, but RenamedNamedArgument\\Renamed renames it to $renamed.",
+            "line": 21,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/trait_users.php",
+            "message": "Call to RenamedNamedArgument\\TraitBase::method() uses named argument for parameter $original, but RenamedNamedArgument\\TraitChild renames it to $renamed.",
+            "line": 17,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        }
+    ],
+    "trait-users-scanned": [
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Call to RenamedNamedArgument\\Contract::run() uses named argument for parameter $value, but RenamedNamedArgument\\Renamed renames it to $renamed.",
+            "line": 5,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Call to RenamedNamedArgument\\Contract::run() uses named argument for parameter $second, but RenamedNamedArgument\\Renamed renames it to $other.",
+            "line": 7,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Call to RenamedNamedArgument\\Contract::run() uses named argument for parameter $value, but RenamedNamedArgument\\Renamed renames it to $renamed.",
+            "line": 8,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Call to RenamedNamedArgument\\Contract::run() uses named argument for parameter $value, but RenamedNamedArgument\\Renamed renames it to $renamed.",
+            "line": 12,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Call to RenamedNamedArgument\\Contract::run() uses named argument for parameter $second, but RenamedNamedArgument\\Renamed renames it to $other.",
+            "line": 13,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Call to RenamedNamedArgument\\Contract::run() uses named argument for parameter $value, but RenamedNamedArgument\\Renamed renames it to $renamed.",
+            "line": 13,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Call to RenamedNamedArgument\\Contract::run() uses named argument for parameter $value, but RenamedNamedArgument\\Renamed renames it to $renamed.",
+            "line": 18,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Call to RenamedNamedArgument\\Contract::run() uses named argument for parameter $value, but RenamedNamedArgument\\Renamed renames it to $renamed.",
+            "line": 19,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Call to RenamedNamedArgument\\Contract::run() uses named argument for parameter $value, but RenamedNamedArgument\\Renamed renames it to $renamed.",
+            "line": 20,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/calls.php",
+            "message": "Call to RenamedNamedArgument\\Contract::run() uses named argument for parameter $value, but RenamedNamedArgument\\Renamed renames it to $renamed.",
+            "line": 21,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        }
+    ],
+    "ignores": [
+        {
+            "file": "$ROOT/ignores.php",
+            "message": "No error with identifier argument.parameterRenamedInSubtype is reported on line 6.",
+            "line": 6,
+            "ignorable": false,
+            "identifier": "ignore.unmatchedIdentifier"
+        },
+        {
+            "file": "$ROOT/ignores.php",
+            "message": "Call to RenamedNamedArgument\\Contract::run() uses named argument for parameter $value, but RenamedNamedArgument\\Renamed renames it to $renamed.",
+            "line": 10,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/ignores.php",
+            "message": "No error with identifier argument.parameterRenamedInSubtype is reported on line 16.",
+            "line": 16,
+            "ignorable": false,
+            "identifier": "ignore.unmatchedIdentifier"
+        },
+        {
+            "file": "$ROOT/ignores.php",
+            "message": "No error with identifier argument.parameterRenamedInSubtype is reported on line 18.",
+            "line": 18,
+            "ignorable": false,
+            "identifier": "ignore.unmatchedIdentifier"
+        },
+        {
+            "file": "$ROOT/ignores.php",
+            "message": "No error with identifier argument.parameterRenamedInSubtype is reported on line 18.",
+            "line": 18,
+            "ignorable": false,
+            "identifier": "ignore.unmatchedIdentifier"
+        }
+    ],
+    "explained-ignores": [
+        {
+            "file": "$ROOT/ignores.php",
+            "message": "Ignore with identifier argument.parameterRenamedInSubtype has no comment.",
+            "line": 6,
+            "ignorable": false,
+            "tip": "Explain why this ignore is necessary in parentheses after the identifier.",
+            "identifier": "ignore.noComment"
+        },
+        {
+            "file": "$ROOT/ignores.php",
+            "message": "Call to RenamedNamedArgument\\Contract::run() uses named argument for parameter $value, but RenamedNamedArgument\\IgnoreChild renames it to $fromIgnore.",
+            "line": 10,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/ignores.php",
+            "message": "Call to RenamedNamedArgument\\Contract::run() uses named argument for parameter $value, but RenamedNamedArgument\\Renamed renames it to $renamed.",
+            "line": 10,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/ignores.php",
+            "message": "Ignore with identifier argument.parameterRenamedInSubtype has no comment.",
+            "line": 10,
+            "ignorable": false,
+            "tip": "Explain why this ignore is necessary in parentheses after the identifier.",
+            "identifier": "ignore.noComment"
+        },
+        {
+            "file": "$ROOT/ignores.php",
+            "message": "Call to RenamedNamedArgument\\Contract::run() uses named argument for parameter $value, but RenamedNamedArgument\\IgnoreChild renames it to $fromIgnore.",
+            "line": 12,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/ignores.php",
+            "message": "Call to RenamedNamedArgument\\Contract::run() uses named argument for parameter $value, but RenamedNamedArgument\\Renamed renames it to $renamed.",
+            "line": 12,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/ignores.php",
+            "message": "Ignore with identifier argument.parameterRenamedInSubtype has no comment.",
+            "line": 12,
+            "ignorable": false,
+            "tip": "Explain why this ignore is necessary in parentheses after the identifier.",
+            "identifier": "ignore.noComment"
+        },
+        {
+            "file": "$ROOT/ignores.php",
+            "message": "Ignore with identifier argument.parameterRenamedInSubtype has no comment.",
+            "line": 12,
+            "ignorable": false,
+            "tip": "Explain why this ignore is necessary in parentheses after the identifier.",
+            "identifier": "ignore.noComment"
+        },
+        {
+            "file": "$ROOT/ignores.php",
+            "message": "Call to RenamedNamedArgument\\Contract::run() uses named argument for parameter $value, but RenamedNamedArgument\\IgnoreChild renames it to $fromIgnore.",
+            "line": 14,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/ignores.php",
+            "message": "Call to RenamedNamedArgument\\Contract::run() uses named argument for parameter $value, but RenamedNamedArgument\\Renamed renames it to $renamed.",
+            "line": 14,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/ignores.php",
+            "message": "Ignoring all errors on a line is not allowed.",
+            "line": 14,
+            "ignorable": false,
+            "tip": "Use @phpstan-ignore with an identifier and a comment (in parentheses).",
+            "identifier": "ignore.allLineErrors"
+        },
+        {
+            "file": "$ROOT/ignores.php",
+            "message": "Ignore with identifier argument.parameterRenamedInSubtype has no comment.",
+            "line": 16,
+            "ignorable": false,
+            "tip": "Explain why this ignore is necessary in parentheses after the identifier.",
+            "identifier": "ignore.noComment"
+        },
+        {
+            "file": "$ROOT/ignores.php",
+            "message": "Ignore with identifier argument.parameterRenamedInSubtype has no comment.",
+            "line": 18,
+            "ignorable": false,
+            "tip": "Explain why this ignore is necessary in parentheses after the identifier.",
+            "identifier": "ignore.noComment"
+        },
+        {
+            "file": "$ROOT/ignores.php",
+            "message": "Ignore with identifier argument.parameterRenamedInSubtype has no comment.",
+            "line": 18,
+            "ignorable": false,
+            "tip": "Explain why this ignore is necessary in parentheses after the identifier.",
+            "identifier": "ignore.noComment"
+        }
+    ],
+    "contracts": [
+        {
+            "file": "$ROOT/contracts.php",
+            "message": "Call to RenamedNamedArgument\\ShortContract::method() uses named argument for parameter $original, but RenamedNamedArgument\\ShortChild renames it to $renamed.",
+            "line": 33,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/contracts.php",
+            "message": "Call to RenamedNamedArgument\\ShortContract::method() uses named argument for parameter $original, but RenamedNamedArgument\\ShortChild renames it to $renamed.",
+            "line": 40,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/contracts.php",
+            "message": "Call to RenamedNamedArgument\\LongContract::method() uses named argument for parameter $original, but RenamedNamedArgument\\LongChild renames it to $renamed.",
+            "line": 52,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/contracts.php",
+            "message": "Call to RenamedNamedArgument\\VariadicContract::method() uses named argument for parameter $original, but RenamedNamedArgument\\VariadicChild renames it to $renamed.",
+            "line": 53,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/contracts.php",
+            "message": "Call to RenamedNamedArgument\\ShortContract::method() uses named argument for parameter $original, but RenamedNamedArgument\\ShortChild renames it to $renamed.",
+            "line": 54,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/contracts.php",
+            "message": "Call to RenamedNamedArgument\\Root::method() uses named argument for parameter $original, but RenamedNamedArgument\\DiamondChild renames it to $renamed.",
+            "line": 58,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/contracts.php",
+            "message": "Call to ArrayIterator::seek() uses named argument for parameter $offset, but RenamedNamedArgument\\IteratorChild renames it to $renamed.",
+            "line": 59,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/contracts.php",
+            "message": "Call to RenamedNamedArgument\\Contract::run() uses named argument for parameter $value, but RenamedNamedArgument\\Renamed renames it to $renamed.",
+            "line": 69,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/contracts.php",
+            "message": "Call to RenamedNamedArgument\\Contract::run() uses named argument for parameter $value, but RenamedNamedArgument\\Renamed renames it to $renamed.",
+            "line": 70,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/contracts.php",
+            "message": "Call to RenamedNamedArgument\\Contract::run() uses named argument for parameter $value, but RenamedNamedArgument\\Renamed renames it to $renamed.",
+            "line": 74,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/contracts.php",
+            "message": "Call to RenamedNamedArgument\\Contract::run() uses named argument for parameter $value, but RenamedNamedArgument\\Renamed renames it to $renamed.",
+            "line": 76,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        }
+    ],
+    "refinements": [
+        {
+            "file": "$ROOT/refinements.php",
+            "message": "Call to RenamedNamedArgument\\Contract::run() uses named argument for parameter $value, but RenamedNamedArgument\\Renamed renames it to $renamed.",
+            "line": 9,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/refinements.php",
+            "message": "Call to RenamedNamedArgument\\Contract::run() uses named argument for parameter $value, but RenamedNamedArgument\\Renamed renames it to $renamed.",
+            "line": 24,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/refinements.php",
+            "message": "Call to RenamedNamedArgument\\Contract::run() uses named argument for parameter $second, but RenamedNamedArgument\\Renamed renames it to $other.",
+            "line": 34,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/refinements.php",
+            "message": "Call to RenamedNamedArgument\\Contract::run() uses named argument for parameter $value, but RenamedNamedArgument\\Renamed renames it to $renamed.",
+            "line": 37,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/refinements.php",
+            "message": "Call to RenamedNamedArgument\\Contract::run() uses named argument for parameter $value, but RenamedNamedArgument\\Renamed renames it to $renamed.",
+            "line": 47,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/refinements.php",
+            "message": "Call to RenamedNamedArgument\\Contract::run() uses named argument for parameter $value, but RenamedNamedArgument\\Renamed renames it to $renamed.",
+            "line": 48,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/refinements.php",
+            "message": "Call to RenamedNamedArgument\\Contract::run() uses named argument for parameter $value, but RenamedNamedArgument\\Renamed renames it to $renamed.",
+            "line": 49,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/refinements.php",
+            "message": "Call to RenamedNamedArgument\\Contract::run() uses named argument for parameter $value, but RenamedNamedArgument\\Renamed renames it to $renamed.",
+            "line": 60,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/refinements.php",
+            "message": "Call to RenamedNamedArgument\\Contract::run() uses named argument for parameter $second, but RenamedNamedArgument\\Renamed renames it to $other.",
+            "line": 61,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/refinements.php",
+            "message": "Call to RenamedNamedArgument\\Contract::run() uses named argument for parameter $second, but RenamedNamedArgument\\Renamed renames it to $other.",
+            "line": 67,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        },
+        {
+            "file": "$ROOT/refinements.php",
+            "message": "Call to RenamedNamedArgument\\Contract::run() uses named argument for parameter $value, but RenamedNamedArgument\\Renamed renames it to $renamed.",
+            "line": 75,
+            "ignorable": true,
+            "identifier": "argument.parameterRenamedInSubtype"
+        }
+    ]
+}

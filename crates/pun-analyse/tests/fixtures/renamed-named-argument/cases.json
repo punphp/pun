@@ -1,0 +1,17 @@
+{
+  "all": {"analysed": ["api.php", "overrides.php", "calls.php"], "scanned": [], "level": 5},
+  "calls-only": {"analysed": ["calls.php"], "scanned": ["api.php", "overrides.php"], "level": 5},
+  "overrides-only": {"analysed": ["overrides.php"], "scanned": ["api.php", "calls.php"], "level": 5},
+  "level-zero": {"analysed": ["api.php", "overrides.php", "calls.php"], "scanned": [], "level": 0},
+  "level-four": {"analysed": ["api.php", "overrides.php", "calls.php"], "scanned": [], "level": 4},
+  "controls": {"analysed": ["controls.php"], "scanned": [], "level": 5},
+  "receivers-five": {"analysed": ["api.php", "overrides.php", "receivers.php"], "scanned": [], "level": 5},
+  "receivers-eight": {"analysed": ["api.php", "overrides.php", "receivers.php"], "scanned": [], "level": 8},
+  "traits": {"analysed": ["api.php", "overrides.php", "calls.php", "traits.php", "trait_users.php"], "scanned": [], "level": 5},
+  "traits-scanned": {"analysed": ["api.php", "overrides.php", "calls.php", "trait_users.php"], "scanned": ["traits.php"], "level": 5},
+  "trait-users-scanned": {"analysed": ["api.php", "overrides.php", "calls.php", "traits.php"], "scanned": ["trait_users.php"], "level": 5},
+  "ignores": {"analysed": ["api.php", "overrides.php", "ignores.php"], "scanned": [], "level": 5},
+  "explained-ignores": {"analysed": ["api.php", "overrides.php", "ignores.php"], "scanned": [], "level": 5, "explainIgnores": true},
+  "contracts": {"analysed": ["api.php", "overrides.php", "contracts.php"], "scanned": [], "level": 5},
+  "refinements": {"analysed": ["api.php", "overrides.php", "refinements.php"], "scanned": [], "level": 5}
+}

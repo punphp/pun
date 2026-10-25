@@ -214,6 +214,8 @@ enum Found<'a> {
 
 /// What the comparisons read of a method (ExtendedMethodReflection).
 struct Facts {
+    declaring: String,
+    accepts_named_arguments: bool,
     name: String,
     visibility: Visibility,
     is_static: bool,
@@ -433,7 +435,9 @@ impl<'a> Checker<'a, '_> {
 
     fn facts(&self, found: Found<'a>, k: &ClassLikeMetadata) -> Facts {
         match found {
-            Found::Builtin { m, .. } => Facts {
+            Found::Builtin { declaring, m } => Facts {
+                declaring: declaring.name.clone(),
+                accepts_named_arguments: true,
                 name: m.name.clone(),
                 visibility: m.visibility,
                 is_static: m.is_static,
@@ -456,7 +460,7 @@ impl<'a> Checker<'a, '_> {
                 ret: self.with_ancestor_args(&m.ret, k),
                 will_change: m.will_change,
             },
-            Found::User { declaring, f, .. } => {
+            Found::User { declaring, implementing, f } => {
                 let ty = |t: &Type| self.localize(t, declaring, k);
                 let meta = f.method_metadata.as_ref();
                 let final_by_keyword = meta.is_some_and(|m| m.is_final)
@@ -470,7 +474,12 @@ impl<'a> Checker<'a, '_> {
                         .iter()
                         .map(|p| p.flags.has_default() || self.native_variadic(p)),
                 );
+                let owner = if declaring.kind.is_trait() {
+                    match implementing { Class::User(k) => k, Class::Builtin(_) => declaring }
+                } else { declaring };
                 Facts {
+                    declaring: declared::original_name(owner),
+                    accepts_named_arguments: super::named_argument::accepts(self, owner, f),
                     name: String::from_utf8_lossy(f.original_name.as_bytes()).into_owned(),
                     visibility: meta.map_or(Visibility::Public, |m| m.visibility),
                     is_static: meta.is_some_and(|m| m.is_static),
@@ -678,6 +687,7 @@ fn compare_parameters(
     method: &Facts,
     method_class: &str,
     ignorable: bool,
+    collected: &mut Vec<String>,
 ) -> Vec<Message> {
     let mut out = Vec::new();
     let mut push = |id: &'static str, message: String| out.push((id, message, None, ignorable));
@@ -696,6 +706,9 @@ fn compare_parameters(
             );
             continue;
         };
+        if prototype.accepts_named_arguments && pp.name != mp.name {
+            collected.push(super::named_argument::rename(&prototype.declaring, pname, &method.declaring, &pp.name, &mp.name));
+        }
         let these = format!("Parameter #{n} ${} of method {method_class}::{mname}()", mp.name);
         let that = format!("parameter #{n} ${} of method {prototype_class}::{pname}()", pp.name);
         if !pp.by_ref {
@@ -827,6 +840,8 @@ fn analysed(c: &Checker, m: &Method, name: &str, k: &ClassLikeMetadata) -> Facts
         }
     }
     Facts {
+        declaring: declared::original_name(k),
+        accepts_named_arguments: true,
         name: name.to_string(),
         visibility,
         is_static: has(|x| matches!(x, Modifier::Static(_))),
@@ -869,16 +884,20 @@ fn attribute(c: &Checker, m: &Method, name: &str) -> bool {
 /// OverridingMethodRule and ConsistentConstructorRule on method `m` (named `name` in the class).
 pub fn method<'arena>(c: &mut Checker<'_, 'arena>, m: &Method<'arena>, name: &str) {
     let k = c.class_scope().expect("a method is walked inside its class-like");
+    let mut collected = Vec::new();
     let messages = declared::with_classes(c, || {
-        let mut out = overriding_method(c, m, name, k);
+        let mut out = overriding_method(c, m, name, k, &mut collected);
         // OverridingMethodRule::addErrors(): MethodSignatureRule (checkPhpDocMethodSignatures, level 3) when the
         // rule itself found nothing
         if out.is_empty() && c.level >= 3 && c.method_purity_override {
             out = purity_override(c, m, name, k);
         }
-        out.extend(consistent_constructor(c, m, name, k));
+        out.extend(consistent_constructor(c, m, name, k, &mut collected));
         out
     });
+    for record in collected {
+        c.report(m, super::named_argument::ID, record, None);
+    }
     for (id, message, tip, ignorable) in messages {
         if ignorable {
             c.report(m, id, message, tip);
@@ -891,7 +910,7 @@ pub fn method<'arena>(c: &mut Checker<'_, 'arena>, m: &Method<'arena>, name: &st
     }
 }
 
-fn overriding_method<'a>(c: &Checker<'a, '_>, m: &Method, name: &str, k: &'a ClassLikeMetadata) -> Vec<Message> {
+fn overriding_method<'a>(c: &Checker<'a, '_>, m: &Method, name: &str, k: &'a ClassLikeMetadata, collected: &mut Vec<String>) -> Vec<Message> {
     let lower = name.to_ascii_lowercase();
     let method = analysed(c, m, name, k);
     let class = c.display(k);
@@ -1025,7 +1044,7 @@ fn overriding_method<'a>(c: &Checker<'a, '_>, m: &Method, name: &str, k: &'a Cla
             false,
         ));
     }
-    out.extend(compare_parameters(&facts, &prototype_class, &method, &class, false));
+    out.extend(compare_parameters(&facts, &prototype_class, &method, &class, false, collected));
     let report_return = real.is_none() || tentative.is_none() || !facts.builtin;
     if report_return && !compatible(&facts.ret, &method.ret, true) {
         out.push((
@@ -1101,7 +1120,7 @@ fn purity_override<'a>(c: &Checker<'a, '_>, m: &Method, name: &str, k: &'a Class
 }
 
 /// ConsistentConstructorRule.
-fn consistent_constructor<'a>(c: &Checker<'a, '_>, m: &Method, name: &str, k: &'a ClassLikeMetadata) -> Vec<Message> {
+fn consistent_constructor<'a>(c: &Checker<'a, '_>, m: &Method, name: &str, k: &'a ClassLikeMetadata, collected: &mut Vec<String>) -> Vec<Message> {
     if !name.eq_ignore_ascii_case("__construct") {
         return Vec::new();
     }
@@ -1131,7 +1150,7 @@ fn consistent_constructor<'a>(c: &Checker<'a, '_>, m: &Method, name: &str, k: &'
     let (facts, declaring) = constructor;
     let method = analysed(c, m, name, k);
     let class = c.display(k);
-    let mut out = compare_parameters(&facts, &declaring, &method, &class, true);
+    let mut out = compare_parameters(&facts, &declaring, &method, &class, true, collected);
     out.extend(compare_visibility(&facts, &declaring, &method, &class));
     out
 }

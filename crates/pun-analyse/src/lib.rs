@@ -86,6 +86,7 @@ pub fn analyse_project(project: &Project) -> Result<Analysis, CouldNotReadFile> 
         .flat_map_iter(|f| rules::check_file(f, &codebase, &settings, &files, &sources))
         .chain(rules::unused_traits(project, &codebase, &sources))
         .collect();
+    let errors = rules::renamed_named_arguments(errors, &sources, project.report_ignores_without_comments);
     // the codebase is large: freed off the critical path
     std::thread::spawn(move || drop((codebase, sources)));
     let analysed: Vec<String> = project.analysed.iter().map(|p| display(p)).collect();

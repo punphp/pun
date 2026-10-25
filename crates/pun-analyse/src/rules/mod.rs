@@ -32,6 +32,7 @@ mod larastan;
 mod members;
 mod method_callable;
 mod missing_types;
+mod named_argument;
 mod names;
 mod new_static_abstract;
 mod overriding;
@@ -96,6 +97,7 @@ pub(crate) use driver::{Checks, check_file};
 pub use larastan::Larastan;
 pub(crate) use dead_code::conditions_in_traits;
 pub(crate) use dead_code::impure_points;
+pub(crate) use named_argument::resolve as renamed_named_arguments;
 pub(crate) use larastan::finish as larastan_finish;
 pub(crate) use reflection::builtins;
 pub(crate) use unused_trait::unused_traits;
@@ -121,6 +123,7 @@ pub fn reports(identifier: &str) -> bool {
 }
 
 pub const IDENTIFIERS: &[&str] = &[
+    "argument.parameterRenamedInSubtype",
     "include.fileNotFound",
     "includeOnce.fileNotFound",
     "require.fileNotFound",
@@ -1990,6 +1993,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         _: &mut (),
     ) {
         self.bind_method_arguments(call.object, &call.method, &call.argument_list, false);
+        named_argument::call(self, call.object, &call.method, &call.argument_list, true);
         internal::method_call(self, call.span(), call.object, &call.method);
         strict::dynamic_call(self, call.span(), call.object, &call.method);
         types::method_call(self, call.span(), call.object, &call.method, &call.argument_list, true);
@@ -2000,6 +2004,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
     }
     fn walk_in_method_call(&mut self, call: &'ast MethodCall<'arena>, _: &mut ()) {
         self.bind_method_arguments(call.object, &call.method, &call.argument_list, false);
+        named_argument::call(self, call.object, &call.method, &call.argument_list, false);
         dead_code::method_check(self, call);
         internal::method_call(self, call.span(), call.object, &call.method);
         strict::dynamic_call(self, call.span(), call.object, &call.method);

@@ -13,8 +13,9 @@ use mago_syntax::cst::Program;
 use mago_syntax::walker::MutWalker;
 use pun_phpstan::comments::lines_to_ignore;
 use pun_phpstan::ignore::{
-    Error, ignores_without_comments, local_ignores, parse_errors, unmatched_line_errors,
+    Error, ignores_without_comments, parse_errors, unmatched_line_errors,
 };
+use super::named_argument::deferred_local_ignores as local_ignores;
 
 use super::{
     Checker, anonymous, arrays, assign, class_names, infer::infer, property_access, reflection,
