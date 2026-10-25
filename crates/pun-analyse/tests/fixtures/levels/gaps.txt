@@ -91,8 +91,6 @@
 5 Functions/CallToFunctionParametersRuleTest::testBug9697
 5 Functions/CallToFunctionParametersRuleTest::testCallUserFuncArray
 5 Functions/CallToFunctionParametersRuleTest::testConstantParameterCheck
-5 Functions/CallUserFuncRuleTest::testConstantParameterCheckCallUserFunc
-5 Functions/CallUserFuncRuleTest::testNoNamedArguments
 5 Functions/ParameterCastableToStringRuleTest::testNamedArguments
 5 Functions/SortParameterCastableToStringRuleTest::testRule
 5 Methods/CallMethodsRuleTest::testBug12544
@@ -247,8 +245,6 @@
 5 Functions/CallToFunctionParametersRuleTest::testBug9559
 5 Functions/CallToFunctionParametersRuleTest::testIsSubclassAllowString
 5 Functions/CallToFunctionParametersRuleTest::testProcOpen
-5 Functions/CallUserFuncRuleTest::testRule
-5 Functions/CallUserFuncRuleTest::testRuleCallUserFuncArray
 5 Functions/ParameterCastableToStringRuleTest::testBug3946
 5 Functions/ParameterCastableToStringRuleTest::testEnum
 5 Functions/ParameterCastableToStringRuleTest::testRule
@@ -284,7 +280,6 @@
 5 Methods/CallMethodsRuleTest::testRecursiveIteratorIterator
 5 Methods/CallMethodsRuleTest::testRequireExtends
 5 Methods/CallMethodsRuleTest::testStringableStrictTypes
-5 Methods/CallMethodsRuleTest::testUnresolvableParameter
 5 Methods/CallStaticMethodsRuleTest::testBug3641
 5 Methods/CallStaticMethodsRuleTest::testBug4550
 5 Methods/CallStaticMethodsRuleTest::testBug5259
@@ -381,7 +376,6 @@
 9 Methods/CallMethodsRuleTest::testRecursiveIteratorIterator
 9 Methods/CallMethodsRuleTest::testRequireExtends
 9 Methods/CallMethodsRuleTest::testStringableStrictTypes
-9 Methods/CallMethodsRuleTest::testUnresolvableParameter
 9 Methods/CallMethodsRuleTest::testUppercaseString
 9 Methods/CallStaticMethodsRuleTest::testBug12558
 9 Methods/CallStaticMethodsRuleTest::testBug13267
@@ -721,7 +715,6 @@
 5 Functions/CallToFunctionParametersRuleTest::testBug1946
 5 Functions/CallToFunctionParametersRuleTest::testClosureSignatureFromUsages
 5 Functions/CallToFunctionParametersRuleTest::testClosureSignatureFromUsagesOfGenericObject
-5 Functions/CallUserFuncRuleTest::testBug15251
 5 Methods/CallMethodsRuleTest::testBug15251
 5 Methods/CallMethodsRuleTest::testBug8441
 5 Methods/CallMethodsRuleTest::testClassConstantWildcardArguments

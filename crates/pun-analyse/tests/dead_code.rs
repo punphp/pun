@@ -5,7 +5,7 @@
 
 use std::path::Path;
 
-use pun_analyse::{analyse, reports};
+use pun_analyse::{Project, analyse, reports, run};
 use pun_phpstan::config::{Options, resolve};
 use serde_json::Value;
 
@@ -56,7 +56,13 @@ fn check(neon: &str) {
         })
         .map(|e| {
             (
-                e["file"].as_str().unwrap().split(" (in context of ").next().unwrap().to_string(),
+                e["file"]
+                    .as_str()
+                    .unwrap()
+                    .split(" (in context of ")
+                    .next()
+                    .unwrap()
+                    .to_string(),
                 e["line"].as_i64().unwrap(),
                 e["identifier"].as_str().unwrap().to_string(),
                 e["message"].as_str().unwrap().to_string(),
@@ -81,4 +87,61 @@ fn bleeding_edge_toggles() {
 #[test]
 fn bleeding_edge() {
     check("phpstan-edge");
+}
+
+/// Metadata for a nonexistent parameter is not an omitted optional callback. Keep all caller diagnostics,
+/// including the absence of unused-result errors, from PHPStan's original no-named-arguments fixture.
+#[test]
+fn callback_purity_requires_a_flagged_parameter() {
+    let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures");
+    let expected: Value = serde_json::from_slice(
+        &std::fs::read(root.join("levels/5/Functions/CallUserFuncRuleTest.json")).unwrap(),
+    )
+    .unwrap();
+    let case = expected["cases"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|case| case["method"] == "testNoNamedArguments")
+        .unwrap();
+    let data = root.join("rules/data");
+    let paths = case["files"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .map(|path| data.join(path.as_str().unwrap()))
+        .collect();
+    let mut project = Project::new(paths, Vec::new());
+    project.level = 5;
+    let prefix = format!("{}/", data.display());
+    let mut got: Vec<Key> = run(&project)
+        .unwrap()
+        .into_iter()
+        .map(|e| {
+            (
+                e.file.strip_prefix(&prefix).unwrap_or(&e.file).to_string(),
+                e.line,
+                e.identifier,
+                e.message,
+                e.tip,
+            )
+        })
+        .collect();
+    let mut want: Vec<Key> = case["errors"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .map(|e| {
+            (
+                e["file"].as_str().unwrap().to_string(),
+                e["line"].as_i64().unwrap(),
+                e["identifier"].as_str().unwrap().to_string(),
+                e["message"].as_str().unwrap().to_string(),
+                e["tip"].as_str().map(str::to_string),
+            )
+        })
+        .collect();
+    got.sort();
+    want.sort();
+    assert_eq!(got, want);
 }

@@ -605,11 +605,14 @@ impl Checker<'_, '_> {
                         .iter()
                         .find(|(n, _)| *n == lower)
                     && params.iter().all(|param| {
-                        let position = f
+                        let Some(position) = f
                             .variants
                             .first()
-                            .and_then(|v| v.params.iter().position(|p| p.name == *param));
-                        argument(args, param, position).is_none_or(|arg| {
+                            .and_then(|v| v.params.iter().position(|p| p.name == *param))
+                        else {
+                            return false;
+                        };
+                        argument(args, param, Some(position)).is_none_or(|arg| {
                             matches!(unparen(arg), Expression::Literal(Literal::Null(_)))
                                 || self.callable_pure(arg)
                         })
