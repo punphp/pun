@@ -143,7 +143,7 @@ fn filter_var(c: &mut Checker, call: &FunctionCall, position: usize, per_key: bo
     }
 }
 
-/// The constant integer values of `getFlagsValue()` of a flags argument: inferred integers, a built-in constant,
+/// The constant integer values of `getFlagsValue()` of a flags argument: inferred integers,
 /// or an array's `flags` item (0 without one). The codebase supplies missing integer constants before inference,
 /// so bitwise expressions use the inferred result rather than a separate syntax evaluator.
 fn flag_values(c: &Checker, e: &Expression) -> Option<Vec<i64>> {
@@ -160,10 +160,6 @@ fn flag_values(c: &Checker, e: &Expression) -> Option<Vec<i64>> {
         return inferred;
     }
     match e {
-        Expression::ConstantAccess(a) => {
-            let name = String::from_utf8_lossy(a.name.value()).trim_start_matches('\\').to_string();
-            Some(vec![c.builtins.constants.get(&name)?.parse().ok()?])
-        }
         Expression::Array(a) => {
             let flags = a.elements.iter().find_map(|e| match e {
                 ArrayElement::KeyValue(kv)

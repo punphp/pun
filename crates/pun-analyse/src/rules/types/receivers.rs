@@ -325,13 +325,6 @@ pub(in super::super) fn check_method<'arena>(
         return;
     }
     if !c.has_method(&t, name.value).yes() {
-        // a true `method_exists($var, 'name')`
-        if let Expression::Variable(Variable::Direct(v)) = object {
-            let key = format!("{}::{method_name}", String::from_utf8_lossy(v.name));
-            if c.has_method_guard(&key) {
-                return;
-            }
-        }
         // ponytail: a parent's private method of the one class named (`method.private`) is reported as not found
         let message = format!("Call to an undefined method {}::{method_name}().", describe(c, &t));
         c.report(name, "method.notFound", message, None);
