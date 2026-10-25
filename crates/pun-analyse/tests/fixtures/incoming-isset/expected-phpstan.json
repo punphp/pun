@@ -1,11 +1,11 @@
 {
   "totals": {
     "errors": 0,
-    "file_errors": 52
+    "file_errors": 68
   },
   "files": {
     "flow.php": {
-      "errors": 52,
+      "errors": 68,
       "messages": [
         {
           "message": "Call to function compact() on a separate line has no effect.",
@@ -316,6 +316,102 @@
         {
           "message": "Call to function compact() on a separate line has no effect.",
           "line": 192,
+          "ignorable": true,
+          "identifier": "function.resultUnused"
+        },
+        {
+          "message": "Strict comparison using === between 1 and null will always evaluate to false.",
+          "line": 198,
+          "ignorable": true,
+          "identifier": "identical.alwaysFalse"
+        },
+        {
+          "message": "Call to function compact() on a separate line has no effect.",
+          "line": 200,
+          "ignorable": true,
+          "identifier": "function.resultUnused"
+        },
+        {
+          "message": "Call to function compact() on a separate line has no effect.",
+          "line": 203,
+          "ignorable": true,
+          "identifier": "function.resultUnused"
+        },
+        {
+          "message": "Parameter #1 (stdClass) of echo cannot be converted to string.",
+          "line": 211,
+          "ignorable": true,
+          "identifier": "echo.nonString"
+        },
+        {
+          "message": "Variable $value might not be defined.",
+          "line": 211,
+          "ignorable": true,
+          "identifier": "variable.undefined"
+        },
+        {
+          "message": "Call to function compact() contains possibly undefined variable $value.",
+          "line": 212,
+          "ignorable": true,
+          "identifier": "variable.undefined"
+        },
+        {
+          "message": "Call to function compact() on a separate line has no effect.",
+          "line": 212,
+          "ignorable": true,
+          "identifier": "function.resultUnused"
+        },
+        {
+          "message": "Variable $value in isset() is never defined.",
+          "line": 218,
+          "ignorable": true,
+          "identifier": "isset.variable"
+        },
+        {
+          "message": "Undefined variable: $value",
+          "line": 219,
+          "ignorable": true,
+          "identifier": "variable.undefined"
+        },
+        {
+          "message": "Parameter #1 (stdClass) of echo cannot be converted to string.",
+          "line": 223,
+          "ignorable": true,
+          "identifier": "echo.nonString"
+        },
+        {
+          "message": "Variable $value might not be defined.",
+          "line": 223,
+          "ignorable": true,
+          "identifier": "variable.undefined"
+        },
+        {
+          "message": "Call to function compact() contains possibly undefined variable $value.",
+          "line": 224,
+          "ignorable": true,
+          "identifier": "variable.undefined"
+        },
+        {
+          "message": "Call to function compact() on a separate line has no effect.",
+          "line": 224,
+          "ignorable": true,
+          "identifier": "function.resultUnused"
+        },
+        {
+          "message": "Undefined variable: $value",
+          "line": 228,
+          "ignorable": true,
+          "identifier": "variable.undefined"
+        },
+        {
+          "message": "Call to function compact() contains undefined variable $value.",
+          "line": 229,
+          "ignorable": true,
+          "identifier": "variable.undefined"
+        },
+        {
+          "message": "Call to function compact() on a separate line has no effect.",
+          "line": 229,
           "ignorable": true,
           "identifier": "function.resultUnused"
         }

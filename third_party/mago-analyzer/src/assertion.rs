@@ -170,16 +170,9 @@ where
             Construct::Isset(isset_construct) => {
                 for value in &isset_construct.values {
                     if let Some(value_id) = assertion_context.get_expression_id(value) {
-                        if let Expression::Variable(variable) = value
-                            && let Some(expression_type) = artifacts.get_expression_type(variable)
-                            && !expression_type.is_mixed()
-                            && !expression_type.possibly_undefined()
-                            && !expression_type.possibly_undefined_from_try()
-                        {
-                            if_types.entry(value_id).or_insert_with(|| vec![vec![Assertion::IsNotType(TAtomic::Null)]]);
-                        } else {
-                            if_types.entry(value_id).or_insert_with(|| vec![vec![Assertion::IsIsset]]);
-                        }
+                        // Keep isset's definition-certainty contract even for a known variable.
+                        // Its false edge is not interchangeable with an ordinary null comparison.
+                        if_types.entry(value_id).or_insert_with(|| vec![vec![Assertion::IsIsset]]);
                     }
                 }
             }

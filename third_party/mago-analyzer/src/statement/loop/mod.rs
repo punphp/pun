@@ -256,9 +256,20 @@ fn inherit_loop_block_context<'ctx, A>(
                 }
             }
 
-            for (variable, _) in inner_loop_block_context.locals {
+            let variable_branches = [block_context.variable_scope(), inner_loop_block_context.variable_scope()];
+            for (variable, variable_type) in inner_loop_block_context.locals {
                 block_context.variables_possibly_in_scope.insert(variable);
+                // Retain the actual exit type when defined, without declaring that a possibly
+                // empty loop ran. A later !isset edge must distinguish null from absence.
+                if !block_context.locals.contains_key(&variable)
+                    || block_context.variable_certainty(variable).is_absent()
+                {
+                    let mut possible_type = (*variable_type).clone();
+                    possible_type.set_possibly_undefined(true, None);
+                    block_context.locals.insert(variable, Rc::new(possible_type));
+                }
             }
+            block_context.merge_variable_scopes(&variable_branches, context.codebase);
         } else if known_infinite_loop {
             // WhileHandler/ForHandler: an always-true condition has no normal exit.
             // Only the observed break scopes contribute to the post-loop scope.

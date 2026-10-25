@@ -191,3 +191,40 @@ function nullableMixedNegativeIsset(mixed $value): void
     echo $value;
     compact('value');
 }
+
+function ordinaryNullComparison(): void
+{
+    $value = 1;
+    if ($value === null) {
+        echo $value;
+        compact('value');
+    }
+    echo $value;
+    compact('value');
+}
+
+/** @param list<\stdClass> $all */
+function zeroIterationCertainty(array $all): void
+{
+    foreach ($all as $value) {
+    }
+    echo $value;
+    compact('value');
+}
+
+/** @param list<\stdClass> $all */
+function previouslyAbsentForeachValue(array $all): void
+{
+    if (isset($value)) {
+        echo $value;
+    }
+    foreach ($all as $value) {
+    }
+    echo $value;
+    compact('value');
+    if (isset($value)) {
+        throw new \Exception();
+    }
+    echo $value;
+    compact('value');
+}
