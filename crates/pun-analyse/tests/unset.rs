@@ -101,6 +101,20 @@ fn template_array_intersections_preserve_only_surviving_identities() {
 }
 
 #[test]
+fn generic_key_subtraction_matches_phpstan() {
+    oracle("generic-keys.php", "generic-keys.json", 80400);
+}
+
+#[test]
+fn generic_key_and_value_identities_match_phpstan() {
+    oracle(
+        "generic-key-identities.php",
+        "generic-key-identities.json",
+        80400,
+    );
+}
+
+#[test]
 fn possibly_hooked_properties_depend_on_php_version() {
     oracle("version.php", "version.json", 80400);
     oracle("version.php", "version-82.json", 80200);

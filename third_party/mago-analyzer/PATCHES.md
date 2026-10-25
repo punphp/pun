@@ -884,3 +884,72 @@ separate native reflection in PHPStan; typed closure and callable output referen
 while a named function's non-nullable native reference remains an input. The public `variables` fixture
 checks positional, named, variadic, arrow, and typed-callable outputs alongside ordinary value and native
 input-reference controls. Expectations come from PHPStan 2.3.1.
+## Generic array keys after unset
+
+`src/statement/unset.rs:130–150,322–335,360,368–395` ports generic key subtraction from the
+same PHPStan 2.3.1 revision. The references are `ArrayType::unsetOffset()` at lines 519–537,
+`TypeCombinator::doRemove()`, and `TemplateTypeTrait::tryRemove()` at lines 399–423.
+
+A single literal integer or string offset removes that value from a generic array's key type.
+The existing strict literal reconciler supplies integer range splitting, finite string removal,
+and the non-empty-string refinement for removal of the empty string. No second scalar evaluator
+or rule-local type reconstruction is added. Empty key domains become empty constant arrays.
+Unknown offsets and unions of offsets do not subtract a particular key.
+
+Template keys keep their name, defining scope, intersection metadata, and union flags while their
+bounds narrow recursively. A compatible literal offset on a generic template array returns an
+ordinary array, matching PHPStan's `new self` in `ArrayType`. Disjoint and unknown offsets keep
+the outer template identity. Template arrays with additional intersections or known-item
+refinements do not enter this new projection path.
+
+An open shape retains its empty known-item map after its last explicit key is removed. This
+prevents a later unset from mistaking the remaining open shape for a generic array and subtracting
+its extra keys. The public repeated-unset control distinguishes these two representations.
+
+### Generic unset verification
+
+Public fixtures `unset/generic-keys.php` and `unset/generic-key-identities.php` use PHPStan's
+actual JSON diagnostics at level 0 and PHP version 80400. Their tests compare every message,
+identifier, line, tip, and ignorable flag. No diagnostic is filtered or suppressed.
+
+Before this patch, `unset/template-arrays.php:38` reports `array<int, int>` instead of
+`array<int<min, -1>|int<1, max>, int>`. After the patch, that fixture passes in full.
+All 18 oracle diagnostics in `generic-key-identities.php` match. Those controls include finite
+template exhaustion, unchanged template arguments, scalar value templates, numeric-string key
+normalization, nonnumeric string keys, and repeated unsets on an open shape.
+
+The combined public run passes 34 tests and retains two failing tests. Array metadata (1),
+array slicing (5), callable origins (2), debug types (10), and duplicate keys (9) all pass.
+The unset suite passes 7 of 9 tests. The exported Arrays harness passes. The exported UnsetRule
+harness matches 9 of 10 cases and retains the existing nested-invalid-offset failure.
+
+Fresh changed executable-line coverage against `712ce49a` is **51/51**. The six public test
+executables above provide the profiles. No coverage exclusion or private-helper test is used.
+The instrumented command is:
+
+```sh
+CARGO_BUILD_JOBS=1 RAYON_NUM_THREADS=2 CARGO_TARGET_DIR=target-unset-rule \
+	CARGO_LLVM_COV_TARGET_DIR="$PWD/target-unset-rule/coverage" \
+	timeout 900 nice cargo llvm-cov test --dep-coverage mago-analyzer \
+	-p punphp-analyse --test unset --test array_metadata --test array_slice \
+	--test duplicate_array_keys --test debug --test callable_origins --no-report
+```
+
+### Retained unset boundaries
+
+The failing tests keep these oracle expectations active:
+
+- `generic-keys.php:98–99`: mixed and benevolent array keys require `mixed~0`. Mago's mixed
+  representation cannot retain an excluded literal.
+- `generic-keys.php:108`: the public converter renders an empty open shape as a generic array.
+- `generic-keys.php:116`: an `isset`-refined generic array needs key subtraction together with
+  `hasOffsetValue(5, string)`. Mago's known-item representation also describes open constant
+  shapes, whose extra keys must not be subtracted. This patch does not guess which source produced it.
+- `generic-keys.php:137–138`: PHPStan seals a template constant-array mutation because the
+  `TemplateConstantArrayType` constructor omits its bound's unsealed metadata from the parent.
+  The current template-bound representation does not preserve that distinction.
+- Upstream `Variables/data/unset.php:18`: the nested invalid access needs PHPStan's `ErrorType`
+  transfer. Pun still emits the extra `Cannot unset offset 'b' on 1.` diagnostic.
+
+Generic non-key offsets still need shared PHP scalar-to-key conversion. This patch does not add
+an engine-wide error type, widen incoming declarations, change a gap list, or activate a rule mapping.

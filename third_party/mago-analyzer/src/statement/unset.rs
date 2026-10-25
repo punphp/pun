@@ -1,9 +1,11 @@
 use mago_allocator::Arena;
+use std::borrow::Cow;
 use std::collections::BTreeMap;
 use std::rc::Rc;
 use std::sync::Arc;
 
 use mago_bytes::BytesDisplay;
+use mago_codex::assertion::Assertion;
 use mago_codex::ttype::TType;
 use mago_codex::ttype::atomic::TAtomic;
 use mago_codex::ttype::atomic::array::TArray;
@@ -11,7 +13,7 @@ use mago_codex::ttype::atomic::array::key::ArrayKey;
 use mago_codex::ttype::atomic::array::keyed::TKeyedArray;
 use mago_codex::ttype::atomic::array::list::TList;
 use mago_codex::ttype::comparator::ComparisonResult;
-use mago_codex::ttype::comparator::union_comparator::is_contained_by;
+use mago_codex::ttype::comparator::union_comparator::{can_expression_types_be_identical, is_contained_by};
 use mago_codex::ttype::get_int;
 use mago_codex::ttype::union::TUnion;
 use mago_reporting::Annotation;
@@ -29,6 +31,7 @@ use crate::code::IssueCode;
 use crate::context::Context;
 use crate::context::block::BlockContext;
 use crate::error::AnalysisError;
+use crate::reconciler::negated_assertion_reconciler;
 use crate::utils::expression::get_block_expression_id;
 use mago_word::concat_word;
 
@@ -121,13 +124,30 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Unset<'arena> {
                     }
 
                     if let TAtomic::GenericParameter(parameter) = &mut atomic {
-                        // TemplateConstantArrayType::recreate preserves the template identity while
-                        // updating its bound. Other template kinds have different mutation contracts.
-                        if let [TAtomic::Array(TArray::Keyed(array))] = parameter.constraint.types.as_ref()
-                            && array.parameters.is_none()
-                        {
-                            let array = unset_keyed(context, array.clone(), key_type);
-                            parameter.constraint = Arc::new(TUnion::from_atomic(TAtomic::Array(TArray::Keyed(array))));
+                        // TemplateConstantArrayType::recreate preserves the template identity.
+                        // ArrayType::unsetOffset returns an ordinary array for a compatible literal
+                        // key, including when subtraction cannot express a more precise key type.
+                        if let [TAtomic::Array(TArray::Keyed(array))] = parameter.constraint.types.as_ref() {
+                            if array.parameters.is_none() {
+                                let array = unset_keyed(context, array.clone(), key_type);
+                                parameter.constraint =
+                                    Arc::new(TUnion::from_atomic(TAtomic::Array(TArray::Keyed(array))));
+                            } else if array.known_items.is_none()
+                                && parameter.intersection_types.is_none()
+                                && let Some((keys, _)) = &array.parameters
+                                && let Some(key) = array_key
+                                && can_expression_types_be_identical(
+                                    context.codebase,
+                                    keys,
+                                    &key.to_union(),
+                                    true,
+                                    false,
+                                )
+                            {
+                                let array = unset_keyed(context, array.clone(), key_type);
+                                atomics.push(TAtomic::Array(TArray::Keyed(array)));
+                                continue;
+                            }
                         }
                         for intersection in parameter.intersection_types.iter_mut().flatten() {
                             if let TAtomic::Array(TArray::Keyed(array)) = intersection {
@@ -296,12 +316,22 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Unset<'arena> {
     }
 }
 
-/// ConstantArrayType::unsetOffset() for already-normalized array keys: a finite union only weakens
-/// matching keys, and a general offset only weakens keys it definitely contains. Non-key inputs retain
-/// Mago's conservative fallback until the shared PHP scalar-to-key conversion is available here.
-fn unset_keyed<A: Arena>(context: &Context<'_, '_, A>, mut array: TKeyedArray, offset: &TUnion) -> TKeyedArray {
+/// ArrayType/ConstantArrayType::unsetOffset() for already-normalized array keys. Generic arrays
+/// subtract a single literal; finite unions and general offsets only weaken matching shape entries.
+/// Non-key inputs retain Mago's fallback until shared PHP scalar-to-key conversion is available here.
+fn unset_keyed<A: Arena>(context: &mut Context<'_, '_, A>, mut array: TKeyedArray, offset: &TUnion) -> TKeyedArray {
     let Some(items) = array.known_items.as_mut() else {
         array.non_empty = false;
+        if let Some((keys, _)) = &mut array.parameters
+            && let Some(key) = offset.get_single_array_key()
+        {
+            let remaining = subtract_key(context, keys, key);
+            if remaining.is_never() {
+                array.parameters = None;
+            } else {
+                *keys = Arc::new(remaining);
+            }
+        }
         return array;
     };
     let literal_keys: Vec<_> = offset.types.iter().filter_map(TAtomic::to_array_key).collect();
@@ -327,10 +357,41 @@ fn unset_keyed<A: Arena>(context: &Context<'_, '_, A>, mut array: TKeyedArray, o
         }
     }
     array.non_empty = items.values().any(|(optional, _)| !optional);
-    if items.is_empty() {
+    if items.is_empty() && array.parameters.is_none() {
         array.known_items = None;
     }
     array
+}
+
+/// TypeCombinator::remove and TemplateTypeTrait::tryRemove: use the existing strict literal
+/// reconciler for scalar subtraction, recursively preserving a template key's identity and flags.
+fn subtract_key<A: Arena>(context: &mut Context<'_, '_, A>, keys: &TUnion, key: ArrayKey) -> TUnion {
+    let mut remaining = Vec::new();
+    for atomic in keys.types.as_ref() {
+        if let TAtomic::GenericParameter(parameter) = atomic {
+            let constraint = subtract_key(context, &parameter.constraint, key);
+            if !constraint.is_never() {
+                remaining.push(TAtomic::GenericParameter(parameter.with_constraint(constraint)));
+            }
+        } else {
+            let narrowed = negated_assertion_reconciler::reconcile(
+                context,
+                &Assertion::IsNotIdentical(key.to_atomic()),
+                &TUnion::from_atomic(atomic.clone()),
+                None,
+                keys.get_id(),
+                None,
+                false,
+            );
+            remaining.extend(narrowed.types.into_owned().into_iter().filter(|atomic| !atomic.is_never()));
+        }
+    }
+    let mut result = keys.clone();
+    if remaining.is_empty() {
+        remaining.push(TAtomic::Never);
+    }
+    result.types = Cow::Owned(remaining);
+    result
 }
 
 fn check_property_unset<'arena, A>(
