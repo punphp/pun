@@ -6,7 +6,11 @@ use std::path::{Path, PathBuf};
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::{Arc, LazyLock, OnceLock};
 
-use mago_allocator::LocalArena;
+use mago_allocator::{Arena, LocalArena};
+use mago_analyzer::Analyzer;
+use mago_analyzer::analysis_result::AnalysisResult;
+use mago_analyzer::plugin::PluginRegistry;
+use mago_analyzer::settings::Settings;
 use mago_codex::metadata::CodebaseMetadata;
 use mago_codex::metadata::constant::ConstantMetadata;
 use mago_codex::metadata::flags::MetadataFlags;
@@ -16,15 +20,16 @@ use mago_codex::reference::SymbolReferences;
 use mago_codex::scanner::scan_program;
 use mago_codex::ttype::atomic::TAtomic;
 use mago_codex::ttype::atomic::scalar::TScalar;
+use mago_codex::ttype::get_int_or_float;
 use mago_codex::ttype::union::TUnion;
-use mago_database::file::{File, FileType};
+use mago_database::file::{File, FileId, FileType};
 use mago_names::ResolvedNames;
 use mago_names::resolver::NameResolver;
 use mago_php_version::PHPVersion;
 use mago_prelude::Prelude;
 use mago_span::HasSpan;
 use mago_span::Span;
-use mago_syntax::cst::{Hint, IntersectionHint, Program};
+use mago_syntax::cst::{self, ConstantAccess, Expression, Hint, IntersectionHint, Program};
 use mago_syntax::parser::parse_file;
 use mago_syntax::walker::MutWalker;
 use rayon::prelude::*;
@@ -257,7 +262,7 @@ fn scan_api(version: PHPVersion) -> CodebaseMetadata {
 /// Files scanned by one task: small enough that the threads finish together.
 const CHUNK: usize = 32;
 
-/// The analysed files as the scan read them, by path, for the rules to walk without reading them again.
+/// Analysed files and loaded global-constant declaration files, as the scan read them.
 pub(crate) type Sources = HashMap<PathBuf, Arc<File>>;
 
 pub(crate) fn build(
@@ -344,12 +349,14 @@ fn build_with_sources_at(
                             let Some(file) = read(path, file_type)? else {
                                 continue;
                             };
-                            metadata.extend(scan(
+                            let symbols = scan(
                                 arena,
                                 &file,
                                 version,
                                 Some((&index, &mut wanted, &mut declarations)),
-                            ));
+                            );
+                            let has_constants = !symbols.constants.is_empty();
+                            metadata.extend(symbols);
                             wanted.retain(|&w| !loaded[w]);
                             if file_type == FileType::Host {
                                 if names_phpstan(&file.contents) {
@@ -357,6 +364,8 @@ fn build_with_sources_at(
                                         std::thread::spawn(move || scan_api(version))
                                     });
                                 }
+                            }
+                            if file_type == FileType::Host || has_constants {
                                 sources.push((path.clone(), Arc::new(file)));
                             }
                         }
@@ -429,5 +438,208 @@ fn build_with_sources_at(
         Default::default(),
         Default::default(),
     );
+    resolve_initializers(&mut metadata, &sources, project);
     Ok((metadata, sources))
+}
+
+/// Resolve only global constants referenced by analysed code and their initializer dependencies. Scanning an
+/// autoload file remains lazy, and evaluating one initializer never walks that file's unrelated declarations.
+fn resolve_initializers(metadata: &mut CodebaseMetadata, sources: &Sources, project: &Project) {
+    let mut roots = Vec::new();
+    let mut arena = LocalArena::new();
+    for path in &project.analysed {
+        if let Some(file) = sources.get(path) {
+            let (program, names) = parse(&arena, file);
+            let mut inputs = ConstantInputs {
+                metadata,
+                names: &names,
+                names_found: Vec::new(),
+            };
+            inputs.walk_program(program, &mut ());
+            roots.extend(inputs.names_found);
+            arena.reset();
+        }
+    }
+    let mut resolver = Initializers {
+        metadata,
+        sources: sources
+            .values()
+            .map(|file| (file.id, file.as_ref()))
+            .collect(),
+        version: php_version(project.php_version),
+        visited: HashSet::new(),
+    };
+    for name in roots {
+        resolver.resolve(name);
+    }
+}
+
+struct ConstantInputs<'a, 'arena> {
+    metadata: &'a CodebaseMetadata,
+    names: &'a ResolvedNames<'arena>,
+    names_found: Vec<mago_word::Word>,
+}
+
+impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for ConstantInputs<'_, 'arena> {
+    fn walk_in_constant_access(&mut self, access: &'ast ConstantAccess<'arena>, _: &mut ()) {
+        // The same selection as ConstantAccess::analyze: existence stops fallback, and imported or
+        // qualified names can never accidentally select an unrelated global constant.
+        let selected = self
+            .metadata
+            .get_constant(self.names.get(access))
+            .or_else(|| {
+                (!access.name.value().contains(&b'\\') && !self.names.is_imported(&access.name))
+                    .then(|| self.metadata.get_constant(access.name.value()))
+                    .flatten()
+            });
+        if let Some(selected) = selected.filter(|k| !k.flags.is_built_in()) {
+            self.names_found.push(selected.name);
+        }
+    }
+}
+
+struct Initializers<'a> {
+    metadata: &'a mut CodebaseMetadata,
+    sources: HashMap<FileId, &'a File>,
+    version: PHPVersion,
+    visited: HashSet<Span>,
+}
+
+impl Initializers<'_> {
+    fn resolve(&mut self, name: mago_word::Word) {
+        let declaration = self
+            .metadata
+            .constants
+            .get_mut(&name)
+            .expect("selected constant exists");
+        let at = declaration.span;
+        if !self.visited.insert(at) {
+            return;
+        }
+        // ConstantResolver's currentlyResolving entry is mixed, not a copied scanner approximation.
+        // A global constant reflection uses its value, not its PHPDoc @var annotation.
+        let previous = declaration.inferred_type.take();
+        let declared = declaration.type_metadata.take();
+        let mut value = self.evaluate(at);
+        if let Some(value) = value.as_mut()
+            && value.is_mixed()
+            && let Some(previous) = previous.as_ref()
+            && previous == &get_int_or_float()
+        {
+            // Mago's full analyzer loses the scanner's numeric result when a cycle supplies mixed.
+            // Retain that existing bound, with PHPStan's benevolent-union flags, not an invented value.
+            *value = previous.clone();
+            value.set_ignore_nullable_issues(true);
+            value.set_ignore_falsable_issues(true);
+        }
+        let declaration = self
+            .metadata
+            .constants
+            .get_mut(&name)
+            .expect("selected constant exists");
+        declaration.type_metadata = value
+            .clone()
+            .map(|value| TypeMetadata::new(value, at))
+            .or(declared);
+        declaration.inferred_type = value.or(previous);
+    }
+
+    fn evaluate(&mut self, at: Span) -> Option<TUnion> {
+        struct Find<'ast, 'arena> {
+            at: Span,
+            expression: Option<&'ast Expression<'arena>>,
+            namespace: Option<cst::Namespace<'arena>>,
+        }
+        impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Find<'ast, 'arena> {
+            fn walk_in_namespace(&mut self, namespace: &'ast cst::Namespace<'arena>, _: &mut ()) {
+                if namespace.span().start.offset <= self.at.start.offset
+                    && self.at.end.offset <= namespace.span().end.offset
+                {
+                    self.namespace = Some(namespace.clone());
+                }
+            }
+            fn walk_in_constant_item(&mut self, item: &'ast cst::ConstantItem<'arena>, _: &mut ()) {
+                if item.span() == self.at {
+                    self.expression = Some(item.value);
+                }
+            }
+            fn walk_in_function_call(&mut self, call: &'ast cst::FunctionCall<'arena>, _: &mut ()) {
+                // A scanned define() has the invocation span rather than a ConstantItem span.
+                if call.span() == self.at {
+                    self.expression = call.argument_list.arguments.get(1).map(|arg| arg.value());
+                }
+            }
+        }
+        let file = *self.sources.get(&at.file_id)?;
+        let arena = LocalArena::new();
+        let (program, names) = parse(&arena, file);
+        let mut find = Find {
+            at,
+            expression: None,
+            namespace: None,
+        };
+        find.walk_program(program, &mut ());
+        let expression = find.expression?;
+        let mut inputs = ConstantInputs {
+            metadata: self.metadata,
+            names: &names,
+            names_found: Vec::new(),
+        };
+        inputs.walk_expression(expression, &mut ());
+        let mut inherited_benevolence = false;
+        for name in inputs.names_found {
+            self.resolve(name);
+            if let Some(value) = self
+                .metadata
+                .get_constant(name.as_bytes())
+                .and_then(|k| k.type_metadata.as_ref())
+            {
+                inherited_benevolence |= value.type_union.ignore_nullable_issues()
+                    && value.type_union.ignore_falsable_issues();
+            }
+        }
+        let statement = cst::Statement::Expression(cst::ExpressionStatement {
+            expression,
+            terminator: cst::Terminator::Semicolon(expression.span()),
+        });
+        let statements =
+            cst::Sequence::from_slice(arena.alloc_slice_fill_iter([statement].into_iter()));
+        let statement = if let Some(mut namespace) = find.namespace {
+            match &mut namespace.body {
+                cst::NamespaceBody::Implicit(body) => body.statements = statements,
+                cst::NamespaceBody::BraceDelimited(body) => body.statements = statements,
+            }
+            cst::Statement::Namespace(namespace)
+        } else {
+            statements[0].clone()
+        };
+        let isolated = arena.alloc(Program {
+            statements: cst::Sequence::from_slice(
+                arena.alloc_slice_fill_iter([statement].into_iter()),
+            ),
+            ..program.clone()
+        });
+        let registry = PluginRegistry::with_library_providers();
+        let analyzer = Analyzer::new(
+            &arena,
+            file,
+            &names,
+            self.metadata,
+            &registry,
+            Settings::new(self.version),
+        );
+        let mut result = AnalysisResult::new(SymbolReferences::new());
+        let artifacts = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
+            analyzer.analyze_with_artifacts(isolated, &mut result)
+        }))
+        .ok()?
+        .ok()?;
+        let mut value = artifacts.get_expression_type(expression)?.clone();
+        if inherited_benevolence && value == get_int_or_float() {
+            // Keep the numeric union's existing marker across the full evaluator's arithmetic join.
+            value.set_ignore_nullable_issues(true);
+            value.set_ignore_falsable_issues(true);
+        }
+        Some(value)
+    }
 }

@@ -611,14 +611,56 @@ then uses `llvm-cov export -format=lcov` directly. The intersection with added p
 includes `codebase.rs` and the four analyzer files in the table. Cargo's dependency-name report
 filter excludes this local patched path, so its empty report is not the measurement.
 
-### Remaining initializer precision boundary
+### Global initializer resolution before inference
 
-The file context retains only initializer values already analyzed in that context. It does not
-evaluate every declaration lazily across files. A public probe with `const KEY = 5.9 % 2.0` after
-the consuming function, or in a scanned-only file, still dumps a copied variable as `float|int`
-instead of PHPStan's `1`. Both duplicate-key diagnostics nevertheless match PHPStan through the
-existing source initializer evaluation. The probe did not alter expectations or gap lists.
-This patch does not claim complete global-constant inference parity or activate a rule mapping.
+The original file-context cache misses a declaration after the consuming function or in a
+scanned-only file. `const KEY = 5.9 % 2.0` therefore gives a copied variable `float|int`, although
+the array rule independently recovers its value `1`.
+
+Pun's `codebase::resolve_initializers()` now resolves referenced global declarations before the
+normal inference walk. It uses the same production expression evaluator as array initializer
+recovery, not another arithmetic implementation. The resolver retains only already-loaded global
+declaration files alongside the analysed sources. Composer's lazy scan rounds do not change.
+Only referenced initializers and their dependencies are evaluated. Other function bodies and
+declarations in a scanned file are not analysed.
+
+Each evaluation keeps the original file identity, resolved imports, and namespace. It runs an
+isolated expression statement against the declaration metadata, without publishing diagnostics
+or observer events. A declaration-span recursion guard removes the active approximation while
+resolving dependencies, matching `ConstantResolver`'s mixed recursive lookup. Completed values
+become authoritative declaration metadata, so ordinary assignments and later assertions see the
+same types. Global PHPDoc `@var` tags do not widen the reflected value. Builtin platform unions
+keep their existing metadata and are not reevaluated.
+
+When Mago's mixed operand loses the scanner's general `int|float` bound, the resolver preserves
+that bound with PHPStan's benevolent-union marker. The marker survives dependent numeric joins.
+Neither path manufactures a literal value for a cycle. Failed evaluations retain the original
+metadata. This does not implement general runtime evaluation of `define()` expressions that
+depend on a caller's local variables or function-specific dynamic return providers.
+
+`tests/constant_initializers.rs` compares full public diagnostics with PHPStan 2.3.1, including
+forward declarations, scanned dependencies, copies, reassignment, assertion narrowing, platform
+unions, recursive declarations, global PHPDoc, namespace identity, and literal `define()` values.
+The lazy-autoload control has an unreferenced file with a conflicting constant: scanning that
+file would change the observed value from `1` to `99`.
+
+Capture the expectations from `crates/pun-analyse/tests/fixtures/constant-initializers/`:
+
+```sh
+php /home/user/workspace/repo/.oracle/phpstan/vendor/bin/phpstan analyse \
+	-c phpstan.neon --no-progress --error-format=json |
+	jq '.files |= with_entries(.key |= split("/")[-1])' > expected-phpstan.json
+```
+
+The `global.neon`, `cycles.neon`, and `autoload.neon` captures use the same command with their
+matching `expected-*.json` names. The autoload oracle explicitly scans the selected declaration;
+Pun's public control discovers that file through Composer instead. Array key and unpacking code,
+providers, native state, conversion, mappings, and gap lists are unchanged.
+
+Verification matches all 29 fresh oracle diagnostics, including 28 full-type dumps. The combined
+public regressions pass 73 tests, and the exported `Constants/` and `Arrays/` rule filters pass
+without changing saved expectations. Fresh LLVM profiles cover all 165 changed executable lines
+in `codebase.rs`, measured against `9bc30d06` without exclusions.
 
 ## Closure::fromCallable provider backport
 

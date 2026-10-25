@@ -1,0 +1,26 @@
+{
+  "totals": {
+    "errors": 0,
+    "file_errors": 2
+  },
+  "files": {
+    "autoload.php": {
+      "errors": 2,
+      "messages": [
+        {
+          "message": "Dumped type: 1",
+          "line": 9,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: 9",
+          "line": 11,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        }
+      ]
+    }
+  },
+  "errors": []
+}

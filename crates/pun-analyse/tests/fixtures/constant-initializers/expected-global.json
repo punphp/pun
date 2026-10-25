@@ -1,0 +1,32 @@
+{
+  "totals": {
+    "errors": 0,
+    "file_errors": 3
+  },
+  "files": {
+    "global.php": {
+      "errors": 3,
+      "messages": [
+        {
+          "message": "Dumped type: 3",
+          "line": 6,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: 'reassigned'",
+          "line": 8,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: 1",
+          "line": 9,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        }
+      ]
+    }
+  },
+  "errors": []
+}

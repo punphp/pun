@@ -1,0 +1,5 @@
+parameters:
+    level: 0
+    phpVersion: 80400
+    paths: [autoload.php]
+    scanFiles: [vendor/Lazy/Loaded.php]
