@@ -44,6 +44,8 @@ struct ConditionalVariable {
 pub struct VariableState {
     pub after_extract_call: bool,
     pub absent: WordSet,
+    /// An impossible isset edge is still analyzed for diagnostics, but is not a continuing scope.
+    pub impossible: bool,
     /// Resolved input-reference contracts; unlike output references these cannot declare a variable.
     pub non_creating_references: HashSet<Span>,
     conditional: Vec<ConditionalVariable>,
@@ -132,7 +134,7 @@ impl BlockContext<'_> {
         }
         self.locals.clear();
         self.variables_possibly_in_scope.clear();
-        for branch in branches {
+        for branch in branches.iter().filter(|branch| !branch.state.impossible) {
             self.variables_possibly_in_scope.extend(&branch.possible);
             for (name, ty) in &branch.locals {
                 self.locals
@@ -148,17 +150,25 @@ impl BlockContext<'_> {
 
     /// ScopeOps::mergeVariableHolders/createConditionalExpressions. Only continuing branches contribute.
     pub fn merge_variable_scopes(&mut self, branches: &[VariableScope], codebase: &CodebaseMetadata) {
-        let Some(first) = branches.first() else { return };
-        self.variable_state.after_extract_call = branches.iter().all(|branch| branch.state.after_extract_call);
+        if branches.is_empty() {
+            return;
+        }
+        let branches = branches.iter().filter(|branch| !branch.state.impossible);
+        let Some(first) = branches.clone().next() else {
+            self.variable_state.impossible = true;
+            return;
+        };
+        self.variable_state.impossible = false;
+        self.variable_state.after_extract_call = branches.clone().all(|branch| branch.state.after_extract_call);
         self.variable_state.conditional = first
             .state
             .conditional
             .iter()
-            .filter(|holder| branches.iter().all(|branch| branch.state.conditional.contains(holder)))
+            .filter(|holder| branches.clone().all(|branch| branch.state.conditional.contains(holder)))
             .cloned()
             .collect();
         let names: WordSet = branches
-            .iter()
+            .clone()
             .flat_map(|branch| {
                 branch
                     .locals
@@ -170,13 +180,13 @@ impl BlockContext<'_> {
             .collect();
         for name in names {
             let initial = first.certainty(name);
-            let joined = if branches.iter().all(|branch| branch.certainty(name) == initial) {
+            let joined = if branches.clone().all(|branch| branch.certainty(name) == initial) {
                 initial
             } else {
                 VariableCertainty::Possible
             };
             self.set_variable_certainty(name, joined, None);
-            for branch in branches {
+            for branch in branches.clone() {
                 let branch_certainty = branch.certainty(name);
                 if branch_certainty == joined {
                     continue;
@@ -188,7 +198,7 @@ impl BlockContext<'_> {
                     // A disjoint branch type is a representable type difference. Overlapping types cannot
                     // establish this implication; PHPStan also rejects a non-discriminating guard.
                     if !branches
-                        .iter()
+                        .clone()
                         .filter(|other| !std::ptr::eq(*other, branch))
                         .all(|other| {
                             other.certainty(*guard) == VariableCertainty::Defined

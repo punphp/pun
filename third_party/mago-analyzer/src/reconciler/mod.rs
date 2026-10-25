@@ -195,11 +195,22 @@ pub fn reconcile_keyed_types<'ctx, A>(
         }
 
         // Type reconciliation may synthesize a type for an impossible isset branch. It must not
-        // turn a variable PHPStan already knows absent into a declaration.
-        if (has_isset || has_inverted_isset)
-            && block_context.variable_certainty(*key) == crate::context::block::VariableCertainty::Absent
-        {
-            block_context.variable_state.absent.insert(*key);
+        // turn a variable PHPStan already knows absent into a declaration. An uncached access
+        // on an existing root is not absence evidence: get_value_for_key resolves that path below.
+        if has_isset || has_inverted_isset {
+            let root = word(borrow_path_parts(key_str)[0]);
+            let absent_root = key_str.starts_with(b"$") && block_context.variable_certainty(root).is_absent();
+            if absent_root || block_context.variable_state.absent.contains(key) {
+                if absent_root {
+                    block_context.variable_state.absent.insert(root);
+                }
+                block_context.variable_state.absent.insert(*key);
+                // PHPStan's isset truthy narrowing rejects a definitely absent root. Keep observing
+                // this diagnostic-only branch, but do not merge it into continuing variable scopes.
+                block_context.variable_state.impossible |= new_type_parts.iter().any(|part| {
+                    part.iter().all(|assertion| matches!(assertion, Assertion::IsIsset | Assertion::IsEqualIsset))
+                });
+            }
         }
         let existing = block_context.locals.get(key).cloned();
         let did_type_exist = existing.is_some();
@@ -220,6 +231,20 @@ pub fn reconcile_keyed_types<'ctx, A>(
             )
             .map(Rc::new)
         });
+
+        // IssetHandler's non-true narrowing unsets a non-nullable direct variable. A nullable
+        // value can instead be null, so its existing definition certainty must survive.
+        if has_inverted_isset
+            && key_str.starts_with(b"$")
+            && borrow_path_parts(key_str).len() == 1
+            && before_adjustment.as_ref().is_some_and(|ty| !ty.can_be_null())
+            && new_type_parts.iter().any(|part| {
+                part.iter().all(|assertion| matches!(assertion, Assertion::IsNotIsset))
+            })
+        {
+            block_context.variable_state.impossible |= block_context.variable_certainty(*key).is_defined();
+            block_context.variable_state.absent.insert(*key);
+        }
 
         let mut result_type = before_adjustment.as_deref().map(Cow::Borrowed);
         for (i, new_type_part_parts) in new_type_parts.iter().enumerate() {

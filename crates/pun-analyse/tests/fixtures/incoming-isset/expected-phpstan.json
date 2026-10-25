@@ -1,0 +1,326 @@
+{
+  "totals": {
+    "errors": 0,
+    "file_errors": 52
+  },
+  "files": {
+    "flow.php": {
+      "errors": 52,
+      "messages": [
+        {
+          "message": "Call to function compact() on a separate line has no effect.",
+          "line": 12,
+          "ignorable": true,
+          "identifier": "function.resultUnused"
+        },
+        {
+          "message": "Variable $floatOrInt in isset() is never defined.",
+          "line": 14,
+          "ignorable": true,
+          "identifier": "isset.variable"
+        },
+        {
+          "message": "Call to function compact() on a separate line has no effect.",
+          "line": 18,
+          "ignorable": true,
+          "identifier": "function.resultUnused"
+        },
+        {
+          "message": "Call to function compact() on a separate line has no effect.",
+          "line": 30,
+          "ignorable": true,
+          "identifier": "function.resultUnused"
+        },
+        {
+          "message": "Variable $missing in isset() is never defined.",
+          "line": 35,
+          "ignorable": true,
+          "identifier": "isset.variable"
+        },
+        {
+          "message": "Undefined variable: $missing",
+          "line": 37,
+          "ignorable": true,
+          "identifier": "variable.undefined"
+        },
+        {
+          "message": "Undefined variable: $missing",
+          "line": 39,
+          "ignorable": true,
+          "identifier": "variable.undefined"
+        },
+        {
+          "message": "Undefined variable: $missing",
+          "line": 42,
+          "ignorable": true,
+          "identifier": "variable.undefined"
+        },
+        {
+          "message": "Variable $missing in isset() is never defined.",
+          "line": 47,
+          "ignorable": true,
+          "identifier": "isset.variable"
+        },
+        {
+          "message": "Undefined variable: $missing",
+          "line": 48,
+          "ignorable": true,
+          "identifier": "variable.undefined"
+        },
+        {
+          "message": "Call to function compact() contains undefined variable $missing.",
+          "line": 49,
+          "ignorable": true,
+          "identifier": "variable.undefined"
+        },
+        {
+          "message": "Call to function compact() on a separate line has no effect.",
+          "line": 49,
+          "ignorable": true,
+          "identifier": "function.resultUnused"
+        },
+        {
+          "message": "Undefined variable: $missing",
+          "line": 51,
+          "ignorable": true,
+          "identifier": "variable.undefined"
+        },
+        {
+          "message": "Call to function compact() contains undefined variable $missing.",
+          "line": 52,
+          "ignorable": true,
+          "identifier": "variable.undefined"
+        },
+        {
+          "message": "Call to function compact() on a separate line has no effect.",
+          "line": 52,
+          "ignorable": true,
+          "identifier": "function.resultUnused"
+        },
+        {
+          "message": "Variable $initialized in isset() is never defined.",
+          "line": 64,
+          "ignorable": true,
+          "identifier": "isset.variable"
+        },
+        {
+          "message": "Undefined variable: $right",
+          "line": 68,
+          "ignorable": true,
+          "identifier": "variable.undefined"
+        },
+        {
+          "message": "Call to function compact() contains undefined variable $right.",
+          "line": 69,
+          "ignorable": true,
+          "identifier": "variable.undefined"
+        },
+        {
+          "message": "Call to function compact() on a separate line has no effect.",
+          "line": 69,
+          "ignorable": true,
+          "identifier": "function.resultUnused"
+        },
+        {
+          "message": "Dumped type: non-empty-list<int>",
+          "line": 80,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: non-empty-list<int>",
+          "line": 90,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Variable $missing in isset() is never defined.",
+          "line": 95,
+          "ignorable": true,
+          "identifier": "isset.variable"
+        },
+        {
+          "message": "Undefined variable: $missing",
+          "line": 96,
+          "ignorable": true,
+          "identifier": "variable.undefined"
+        },
+        {
+          "message": "Call to function compact() contains undefined variable $missing.",
+          "line": 97,
+          "ignorable": true,
+          "identifier": "variable.undefined"
+        },
+        {
+          "message": "Call to function compact() on a separate line has no effect.",
+          "line": 97,
+          "ignorable": true,
+          "identifier": "function.resultUnused"
+        },
+        {
+          "message": "Undefined variable: $missing",
+          "line": 99,
+          "ignorable": true,
+          "identifier": "variable.undefined"
+        },
+        {
+          "message": "Call to function compact() contains undefined variable $missing.",
+          "line": 100,
+          "ignorable": true,
+          "identifier": "variable.undefined"
+        },
+        {
+          "message": "Call to function compact() on a separate line has no effect.",
+          "line": 100,
+          "ignorable": true,
+          "identifier": "function.resultUnused"
+        },
+        {
+          "message": "Variable $value in isset() always exists and is always null.",
+          "line": 106,
+          "ignorable": true,
+          "identifier": "isset.variable"
+        },
+        {
+          "message": "Call to function compact() on a separate line has no effect.",
+          "line": 110,
+          "ignorable": true,
+          "identifier": "function.resultUnused"
+        },
+        {
+          "message": "Undefined variable: $value",
+          "line": 121,
+          "ignorable": true,
+          "identifier": "variable.undefined"
+        },
+        {
+          "message": "Call to function compact() contains undefined variable $value.",
+          "line": 122,
+          "ignorable": true,
+          "identifier": "variable.undefined"
+        },
+        {
+          "message": "Call to function compact() on a separate line has no effect.",
+          "line": 122,
+          "ignorable": true,
+          "identifier": "function.resultUnused"
+        },
+        {
+          "message": "Variable $value might not be defined.",
+          "line": 133,
+          "ignorable": true,
+          "identifier": "variable.undefined"
+        },
+        {
+          "message": "Call to function compact() contains possibly undefined variable $value.",
+          "line": 134,
+          "ignorable": true,
+          "identifier": "variable.undefined"
+        },
+        {
+          "message": "Call to function compact() on a separate line has no effect.",
+          "line": 134,
+          "ignorable": true,
+          "identifier": "function.resultUnused"
+        },
+        {
+          "message": "Variable $value might not be defined.",
+          "line": 145,
+          "ignorable": true,
+          "identifier": "variable.undefined"
+        },
+        {
+          "message": "Call to function compact() contains possibly undefined variable $value.",
+          "line": 146,
+          "ignorable": true,
+          "identifier": "variable.undefined"
+        },
+        {
+          "message": "Call to function compact() on a separate line has no effect.",
+          "line": 146,
+          "ignorable": true,
+          "identifier": "function.resultUnused"
+        },
+        {
+          "message": "Call to function compact() on a separate line has no effect.",
+          "line": 159,
+          "ignorable": true,
+          "identifier": "function.resultUnused"
+        },
+        {
+          "message": "Variable $value in isset() always exists and is not nullable.",
+          "line": 165,
+          "ignorable": true,
+          "identifier": "isset.variable"
+        },
+        {
+          "message": "Undefined variable: $value",
+          "line": 166,
+          "ignorable": true,
+          "identifier": "variable.undefined"
+        },
+        {
+          "message": "Call to function compact() contains undefined variable $value.",
+          "line": 167,
+          "ignorable": true,
+          "identifier": "variable.undefined"
+        },
+        {
+          "message": "Call to function compact() on a separate line has no effect.",
+          "line": 167,
+          "ignorable": true,
+          "identifier": "function.resultUnused"
+        },
+        {
+          "message": "Call to function compact() on a separate line has no effect.",
+          "line": 170,
+          "ignorable": true,
+          "identifier": "function.resultUnused"
+        },
+        {
+          "message": "Variable $value in isset() always exists and is not nullable.",
+          "line": 176,
+          "ignorable": true,
+          "identifier": "isset.variable"
+        },
+        {
+          "message": "Undefined variable: $value",
+          "line": 177,
+          "ignorable": true,
+          "identifier": "variable.undefined"
+        },
+        {
+          "message": "Call to function compact() contains undefined variable $value.",
+          "line": 178,
+          "ignorable": true,
+          "identifier": "variable.undefined"
+        },
+        {
+          "message": "Call to function compact() on a separate line has no effect.",
+          "line": 178,
+          "ignorable": true,
+          "identifier": "function.resultUnused"
+        },
+        {
+          "message": "Call to function compact() on a separate line has no effect.",
+          "line": 182,
+          "ignorable": true,
+          "identifier": "function.resultUnused"
+        },
+        {
+          "message": "Call to function compact() on a separate line has no effect.",
+          "line": 189,
+          "ignorable": true,
+          "identifier": "function.resultUnused"
+        },
+        {
+          "message": "Call to function compact() on a separate line has no effect.",
+          "line": 192,
+          "ignorable": true,
+          "identifier": "function.resultUnused"
+        }
+      ]
+    }
+  },
+  "errors": []
+}
