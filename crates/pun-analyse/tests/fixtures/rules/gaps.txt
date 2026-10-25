@@ -2,11 +2,6 @@
 # tests/rules.rs fails when a listed case passes or an unlisted one fails.
 # method.staticCall on PHPStan\Node\InClassNode::__construct(): PHPStan's own classes, the parent::__construct() special case
 Api/ApiStaticCallRuleTest::testRuleOutOfPhpStan
-# dynamic constant names (`Foo::{$name}`) need the name's type
-Classes/ClassConstantRuleTest::testDynamicAccess
-# `new $object` where Mago types an object of an unknown class as mixed
-Classes/InstantiationRuleTest::testInstantiation
-Classes/InstantiationRuleTest::testBug4471
 # `abstract final` on a property is a php-parser error (phpstan.parse, nothing else reported); Mago parses it
 Properties/PropertyInClassRuleTest::testPhp84AndAbstractFinalHookedPropertiesParseError
 Properties/PropertyInClassRuleTest::testPhp84FinalPropertyHooks
