@@ -153,7 +153,7 @@ fn preset_override() {
     let pun = r.join("fake-pun");
     script(
         &pun,
-        "[ \"$1 $2 $3\" = 'migrate --preset psr12' ] && printf '<?php\\n\\n$a = array(1);\\n' > app.php; true",
+        "[ \"$*\" = 'migrate --from pint --preset psr12' ] && printf '<?php\\n\\n$a = array(1);\\n' > app.php; true",
     );
     let before = fs::read_to_string(r.join("context/reports/scoreboard.md")).unwrap();
     let (out, err, code) = harness(&r, &pun, &["--corpus", "a", "--preset", "psr12"]);
@@ -178,18 +178,20 @@ fn projects_without_pint_json_migrate_pint_defaults() {
     script(
         &pun,
         &format!(
-            "[ \"$1\" = migrate ] && {{ echo \"$*\" >> {0}; [ \"$2\" = --config ] && cat \"$3\" >> {0}; }}; true",
+            "[ \"$1\" = migrate ] && {{ echo \"$*\" >> {0}; [ \"$4\" = --config ] && cat \"$5\" >> {0}; }}; true",
             log.display()
         ),
     );
     harness(&r, &pun, &[]);
     let got = fs::read_to_string(&log).unwrap();
     let lines: Vec<&str> = got.lines().collect();
-    // a has a pint.json: plain `pun migrate`. b has none: an explicit `{}` (what Pint runs without one), outside the
-    // copied tree, so migrate converts Pint's defaults instead of writing the starter's lint tier.
+    // a has a pint.json: `pun migrate --from pint`. b has none: an explicit `{}` (what Pint runs without one),
+    // outside the copied tree, so migrate converts Pint's defaults instead of writing the starter's lint tier.
     assert_eq!(lines.len(), 3, "{got}");
-    assert_eq!(lines[0], "migrate");
-    let cfg = lines[1].strip_prefix("migrate --config ").unwrap();
+    assert_eq!(lines[0], "migrate --from pint");
+    let cfg = lines[1]
+        .strip_prefix("migrate --from pint --config ")
+        .unwrap();
     assert!(cfg.ends_with("/b/pint-defaults.json"), "{got}");
     assert!(!cfg.contains("/b/pun/"), "{got}");
     assert_eq!(lines[2], "{}");
