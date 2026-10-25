@@ -401,3 +401,116 @@ fn analyzer_copies_joins_and_offset_access_preserve_only_the_correct_exclusions(
         assert_eq!(*got.lock().unwrap(), want, "native={native}");
     }
 }
+
+#[test]
+fn negative_guards_produce_mixed_exclusions_without_an_injection_hook() {
+    let root = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("tests/fixtures/mixed-subtraction");
+    let mut project = pun_analyse::Project::new(vec![root.join("guards.php")], Vec::new());
+    project.php_version = 80400;
+    let mut got: Vec<_> = pun_analyse::run(&project)
+        .unwrap()
+        .into_iter()
+        .map(|e| (e.line, e.identifier, e.message, e.tip, e.can_be_ignored))
+        .collect();
+    let oracle: Value = serde_json::from_str(include_str!("fixtures/mixed-subtraction/guards.json"))
+        .unwrap();
+    let mut want: Vec<_> = oracle["files"]["guards.php"]["messages"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .map(|e| (
+            e["line"].as_i64().unwrap(),
+            e["identifier"].as_str().unwrap().to_string(),
+            e["message"].as_str().unwrap().to_string(),
+            e["tip"].as_str().map(str::to_string),
+            e["ignorable"].as_bool().unwrap(),
+        ))
+        .collect();
+    got.sort();
+    want.sort();
+    assert_eq!(got, want);
+}
+
+#[test]
+fn negative_guard_exclusions_are_independent_of_native_tracking() {
+    use std::borrow::Cow;
+    use std::sync::{Arc, Mutex};
+
+    use mago_allocator::LocalArena;
+    use mago_analyzer::analysis_result::AnalysisResult;
+    use mago_analyzer::plugin::{
+        ExpressionHook, HookContext, HookResult, PluginRegistry, Provider, ProviderMeta,
+    };
+    use mago_analyzer::{Analyzer, settings::Settings};
+    use mago_codex::{populator::populate_codebase, scanner::scan_program};
+    use mago_database::file::File;
+    use mago_names::resolver::NameResolver;
+    use mago_span::HasSpan;
+    use mago_syntax::{cst::{Call, Expression}, parser::parse_file};
+
+    const SOURCE: &[u8] = include_bytes!("fixtures/mixed-subtraction/guards.php");
+    struct Observe(Arc<Mutex<BTreeMap<u32, TUnion>>>);
+    impl Provider for Observe {
+        fn meta() -> &'static ProviderMeta {
+            static META: ProviderMeta = ProviderMeta::new(
+                "negative-mixed-guards", "negative-mixed-guards", "passive guard observations",
+            );
+            &META
+        }
+    }
+    impl ExpressionHook for Observe {
+        fn is_observer(&self) -> bool { true }
+
+        fn after_expression(
+            &self,
+            expression: &Expression<'_>,
+            context: &mut HookContext<'_, '_>,
+        ) -> HookResult<()> {
+            if let Expression::Call(Call::Function(call)) = expression
+                && matches!(call.function, Expression::Identifier(id) if id.value() == b"\\PHPStan\\dumpType")
+            {
+                let argument = call.argument_list.arguments.iter().next().unwrap().value();
+                let line = 1 + SOURCE[..expression.span().start.offset as usize]
+                    .iter().filter(|b| **b == b'\n').count() as u32;
+                self.0.lock().unwrap().insert(
+                    line, context.get_expression_type(argument).unwrap().clone(),
+                );
+            }
+            Ok(())
+        }
+    }
+    let prelude = mago_prelude::Prelude::build();
+    let mut baseline = None;
+    for native in [false, true] {
+        let arena = LocalArena::new();
+        let file = File::ephemeral(Cow::Borrowed(b"negative-mixed-guards.php"), Cow::Borrowed(SOURCE));
+        let program = parse_file(&arena, &file);
+        assert!(!program.has_errors());
+        let names = NameResolver::new(&arena).resolve(program);
+        let settings = Settings { track_native_types: native, ..Settings::default() };
+        let mut codebase = prelude.metadata.clone();
+        codebase.extend(scan_program(&arena, &file, program, &names, settings.version));
+        let mut references = prelude.symbol_references.clone();
+        populate_codebase(&mut codebase, &mut references, Default::default(), Default::default());
+        let observed = Arc::new(Mutex::new(BTreeMap::new()));
+        let mut registry = PluginRegistry::with_library_providers();
+        registry.register_expression_hook(Observe(Arc::clone(&observed)));
+        let analyzer = Analyzer::new(&arena, &file, &names, &codebase, &registry, settings);
+        let mut result = AnalysisResult::new(references);
+        let artifacts = analyzer.analyze_with_artifacts(program, &mut result).unwrap();
+        let observed = std::mem::take(&mut *observed.lock().unwrap());
+        // Actual PHPStan dumps mixed~int at line 8 and ErrorType after every failed-read guard.
+        let TAtomic::Mixed(not_int) = observed[&8].get_single() else { panic!("not mixed") };
+        assert_eq!(not_int.get_subtracted_type(), Some(&get_int()));
+        for line in [125, 128, 131] {
+            assert!(observed[&line].is_error(), "line {line}: {:?}", observed[&line]);
+        }
+        let state = (observed, artifacts.expression_types, format!("{:?}", result.issues));
+        if let Some(baseline) = &baseline {
+            assert_eq!(&state, baseline, "native tracking changed the full analysis");
+        } else {
+            baseline = Some(state);
+        }
+    }
+}

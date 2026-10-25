@@ -1361,3 +1361,48 @@ exclusions: 9 in array assignment and 64 in foreach. The generic-array accessory
 constant-shape widening control both execute. The dependency is instrumented explicitly with
 `cargo llvm-cov --dep-coverage mago-analyzer --no-report`; an unfiltered LCOV report retains the
 vendored source paths.
+
+## Negative guards retain mixed exclusions
+
+`simple_negated_assertion_reconciler.rs` uses the shared `TMixed::subtract()` for negative
+scalar, array, object, named-object, and null type assertions on mixed values. PHPStan 2.3.1's
+`MixedType::subtract()` unions repeated exclusions. Its `ErrorType::subtract()` retains error
+identity. The maintained API provides both contracts. The outer union retains its existing flags.
+Falsey mixed values also retain their finite positive domain through `get_empty()` and the shared
+intersection API. A negative guard must not widen a falsey value into an unrestricted complement.
+
+`negated_assertion_reconciler.rs` routes mixed literal comparisons through the same producer.
+Strict inequalities retain their constant exclusions. Loose comparisons do not claim strict
+type exclusions. Non-mixed literals keep the existing specialized handler. Predicate evaluation,
+reference processing, certainty, native dispatch, and Pun's conversion layer are unchanged.
+
+The public `mixed_subtraction` fixture `guards.php` contains the actual PHPStan 2.3.1 records for
+negative predicates, copies, repeated guards, short-circuit conditions, terminating branches,
+joins, reassignment, strict literals, null, truthiness, and failed reads. It also checks that a
+partial offset-domain exclusion permits unset while the complete excluded domain rejects it.
+Its Analyzer control compares all full expression types and issues with native tracking on and
+off, without an injection hook.
+
+The exact public oracle comparison retains three unresolved array descriptions at lines 30,
+39, and 41. PHPStan's `IsArrayFunctionTypeSpecifyingExtension` creates explicit mixed key and
+value parameters, producing `array<mixed, mixed>`. Mago's assertion uses placeholders, and Pun's
+current converter produces implicit mixed parameters and describes the exclusion as `array`.
+Those saved oracle records remain active. No converter, representation, mapping, or gap changes
+are part of this patch.
+
+One further active record at line 153 exposes the positive guard's falsey join: its `is_int`
+alternative contributes int instead of 0. `simple_assertion_reconciler.rs` still replaces mixed
+with the asserted type without intersecting its positive falsey constraint. That producer is
+outside this negative-assertion patch.
+
+The mutation control at lines 168 and 169 exposes the shared API's array subtraction boundary.
+After unset, PHPStan removes the empty array from the excluded array domain, leaving only
+non-empty arrays excluded. Codex's `mixed/subtraction.rs::remove()` currently handles integer
+partial differences but retains the complete array exclusion. The subsequent ArrayAccess guard
+therefore produces an extra unset error. The oracle record and negative control remain active.
+This shared API correction is outside the analyzer-producer ownership of this patch.
+
+This producer does not add iterable, callable, structural-accessory, or generic-constraint
+complements. Loose coercive comparisons also need separate transfers. A fresh PHPStan probe of
+`$value != 0` requires `mixed~(0|0.0|'0'|false|null)`, not just `mixed~0`. The unchanged resource
+predicate control returns mixed, matching PHPStan.

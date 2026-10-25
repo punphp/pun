@@ -47,11 +47,9 @@ where
     A: Arena,
 {
     let is_equality = assertion.has_equality();
-    if is_equality && assertion.has_literal_value() {
-        if existing_var_type.is_mixed() {
-            return existing_var_type.clone();
-        }
-
+    // Mixed strict inequalities use the shared subtraction path below. The literal
+    // handler specializes existing concrete alternatives, not mixed complements.
+    if is_equality && assertion.has_literal_value() && !existing_var_type.is_mixed() {
         return handle_literal_negated_equality(
             context,
             assertion,

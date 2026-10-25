@@ -18,6 +18,7 @@ use mago_codex::ttype::atomic::scalar::bool::TBool;
 use mago_codex::ttype::atomic::scalar::float::TFloat;
 use mago_codex::ttype::atomic::scalar::int::TInteger;
 use mago_codex::ttype::comparator::union_comparator;
+use mago_codex::ttype::get_empty;
 use mago_codex::ttype::get_mixed;
 use mago_codex::ttype::get_never;
 use mago_codex::ttype::get_null;
@@ -48,10 +49,27 @@ where
     let assertion_type = assertion.get_type();
 
     if let Some(assertion_type) = assertion_type {
-        // `mixed is not T` -> `mixed`, unless `T` is null,
-        // in which case it becomes `nonnull`
-        if existing_var_type.is_mixed() && !assertion_type.is_null() {
-            return Some(existing_var_type.clone());
+        // PHPStan's negative type guards retain MixedType::subtract() exclusions. Loose
+        // equality and non-type assertions need their own coercion or structural contracts.
+        let subtractable = matches!(assertion, Assertion::IsNotType(_) | Assertion::IsNotIdentical(_))
+            && matches!(
+                assertion_type,
+                TAtomic::Null | TAtomic::Scalar(_) | TAtomic::Array(_) | TAtomic::Object(TObject::Any | TObject::Named(_))
+            );
+        if let [TAtomic::Mixed(mixed)] = existing_var_type.types.as_ref()
+            && (subtractable || !assertion_type.is_null())
+        {
+            if !subtractable {
+                return Some(existing_var_type.clone());
+            }
+            let excluded = TUnion::from_atomic(assertion_type.clone());
+            let mut refined = mixed.subtract(&excluded, context.codebase);
+            // PHPStan's falsey scope is a finite union, not a mixed complement.
+            if mixed.is_falsy() {
+                refined = intersect_union_types(&refined, &get_empty(), context.codebase)
+                    .expect("subtracted mixed intersects finite falsey values");
+            }
+            return Some(existing_var_type.clone_with_types(refined.types.into_owned()));
         }
 
         match assertion_type {
