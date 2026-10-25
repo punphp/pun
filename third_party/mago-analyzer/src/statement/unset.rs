@@ -10,6 +10,8 @@ use mago_codex::ttype::atomic::array::TArray;
 use mago_codex::ttype::atomic::array::key::ArrayKey;
 use mago_codex::ttype::atomic::array::keyed::TKeyedArray;
 use mago_codex::ttype::atomic::array::list::TList;
+use mago_codex::ttype::comparator::ComparisonResult;
+use mago_codex::ttype::comparator::union_comparator::is_contained_by;
 use mago_codex::ttype::get_int;
 use mago_codex::ttype::union::TUnion;
 use mago_reporting::Annotation;
@@ -57,6 +59,11 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Unset<'arena> {
                 block_context.remove_variable(value_id.as_bytes(), true, context);
                 block_context.possibly_assigned_variable_ids.insert(*value_id);
                 block_context.references_possibly_from_confusing_scope.remove(value_id);
+                if matches!(value, Expression::Variable(_)) {
+                    block_context.invalidate_variable_certainty(*value_id);
+                    block_context.variables_possibly_in_scope.remove(value_id);
+                    block_context.variable_state.absent.insert(*value_id);
+                }
             }
 
             check_property_unset(context, artifacts, self.unset.span, value);
@@ -81,7 +88,7 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Unset<'arena> {
                 let mut atomics = vec![];
 
                 let array_key = key_type.get_single_array_key();
-                for atomic in Rc::unwrap_or_clone(array_variable).types.into_owned() {
+                for mut atomic in Rc::unwrap_or_clone(array_variable).types.into_owned() {
                     if let TAtomic::Scalar(scalar) = &atomic {
                         let scalar_str = scalar.get_id();
 
@@ -111,6 +118,22 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Unset<'arena> {
 
                         atomics.push(atomic);
                         continue;
+                    }
+
+                    if let TAtomic::GenericParameter(parameter) = &mut atomic {
+                        // TemplateConstantArrayType::recreate preserves the template identity while
+                        // updating its bound. Other template kinds have different mutation contracts.
+                        if let [TAtomic::Array(TArray::Keyed(array))] = parameter.constraint.types.as_ref()
+                            && array.parameters.is_none()
+                        {
+                            let array = unset_keyed(context, array.clone(), key_type);
+                            parameter.constraint = Arc::new(TUnion::from_atomic(TAtomic::Array(TArray::Keyed(array))));
+                        }
+                        for intersection in parameter.intersection_types.iter_mut().flatten() {
+                            if let TAtomic::Array(TArray::Keyed(array)) = intersection {
+                                *array = unset_keyed(context, array.clone(), key_type);
+                            }
+                        }
                     }
 
                     let TAtomic::Array(array) = atomic else {
@@ -255,68 +278,7 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Unset<'arena> {
                             }
                         }
                         TArray::Keyed(array) => {
-                            let TKeyedArray { known_items, parameters, non_empty, known_non_list } = array;
-                            let Some(mut known_items) = known_items else {
-                                atomics.push(TAtomic::Array(TArray::Keyed(TKeyedArray {
-                                    known_items: None,
-                                    parameters,
-                                    // We don't have any known items, so we can't unset anything.
-                                    // Mark the keyed array as potentially empty.
-                                    non_empty: false,
-                                    known_non_list,
-                                })));
-
-                                continue;
-                            };
-
-                            let Some(array_key) = &array_key else {
-                                atomics.push(TAtomic::Array(TArray::Keyed(TKeyedArray {
-                                    known_items: Some(
-                                        // We don't know the key value, so we can't unset it.
-                                        // Mark all items as potentially undefined.
-                                        Arc::unwrap_or_clone(known_items)
-                                            .into_iter()
-                                            .map(|(key, mut item)| {
-                                                // Mark the item as potentially undefined.
-                                                item.0 = true;
-
-                                                (key, item)
-                                            })
-                                            .collect::<BTreeMap<_, _>>()
-                                            .into(),
-                                    ),
-                                    parameters,
-                                    non_empty,
-                                    known_non_list,
-                                })));
-
-                                continue;
-                            };
-
-                            let Some(_) = Arc::make_mut(&mut known_items).remove(array_key) else {
-                                atomics.push(TAtomic::Array(TArray::Keyed(TKeyedArray {
-                                    known_items: Some(known_items),
-                                    parameters,
-                                    non_empty,
-                                    known_non_list,
-                                })));
-
-                                continue;
-                            };
-
-                            let (known_items, non_empty) = if known_items.is_empty() {
-                                // Completely empty now.
-                                (None, false)
-                            } else {
-                                (Some(known_items), true)
-                            };
-
-                            atomics.push(TAtomic::Array(TArray::Keyed(TKeyedArray {
-                                known_items,
-                                parameters,
-                                non_empty,
-                                known_non_list,
-                            })));
+                            atomics.push(TAtomic::Array(TArray::Keyed(unset_keyed(context, array, key_type))));
                         }
                     }
                 }
@@ -332,6 +294,43 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Unset<'arena> {
 
         Ok(())
     }
+}
+
+/// ConstantArrayType::unsetOffset() for already-normalized array keys: a finite union only weakens
+/// matching keys, and a general offset only weakens keys it definitely contains. Non-key inputs retain
+/// Mago's conservative fallback until the shared PHP scalar-to-key conversion is available here.
+fn unset_keyed<A: Arena>(context: &Context<'_, '_, A>, mut array: TKeyedArray, offset: &TUnion) -> TKeyedArray {
+    let Some(items) = array.known_items.as_mut() else {
+        array.non_empty = false;
+        return array;
+    };
+    let literal_keys: Vec<_> = offset.types.iter().filter_map(TAtomic::to_array_key).collect();
+    if let Some(key) = offset.get_single_array_key() {
+        Arc::make_mut(items).remove(&key);
+    } else {
+        for (key, (optional, _)) in Arc::make_mut(items) {
+            let matches = if offset.is_always_array_key(true) && !literal_keys.is_empty() {
+                literal_keys.contains(key)
+            } else {
+                !offset.is_always_array_key(true)
+                    || is_contained_by(
+                        context.codebase,
+                        &key.to_union(),
+                        offset,
+                        false,
+                        false,
+                        false,
+                        &mut ComparisonResult::new(),
+                    )
+            };
+            *optional |= matches;
+        }
+    }
+    array.non_empty = items.values().any(|(optional, _)| !optional);
+    if items.is_empty() {
+        array.known_items = None;
+    }
+    array
 }
 
 fn check_property_unset<'arena, A>(

@@ -91,6 +91,11 @@ fn key_casts_and_unsealed_offsets() {
 }
 
 #[test]
+fn unset_transfers_keep_incoming_metadata_and_invalidate_mutations() {
+    oracle("transfers.php", "transfers.json", 80400);
+}
+
+#[test]
 fn possibly_hooked_properties_depend_on_php_version() {
     oracle("version.php", "version.json", 80400);
     oracle("version.php", "version-82.json", 80200);

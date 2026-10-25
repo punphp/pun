@@ -1,0 +1,116 @@
+{
+  "totals": {
+    "errors": 0,
+    "file_errors": 17
+  },
+  "files": {
+    "transfers.php": {
+      "errors": 17,
+      "messages": [
+        {
+          "message": "Call to function unset() contains undefined variable $local.",
+          "line": 9,
+          "ignorable": true,
+          "identifier": "unset.variable"
+        },
+        {
+          "message": "Call to function unset() contains undefined variable $maybe.",
+          "line": 16,
+          "ignorable": true,
+          "identifier": "unset.variable"
+        },
+        {
+          "message": "Cannot unset offset 1 on array{a?: int}.",
+          "line": 28,
+          "ignorable": true,
+          "identifier": "unset.offset"
+        },
+        {
+          "message": "Cannot unset offset 'missing' on array{1: int, a?: int}.",
+          "line": 35,
+          "ignorable": true,
+          "identifier": "unset.offset"
+        },
+        {
+          "message": "Cannot unset offset 'missing' on array{1?: int, a?: int}.",
+          "line": 37,
+          "ignorable": true,
+          "identifier": "unset.offset"
+        },
+        {
+          "message": "Cannot unset offset 'missing' on T of array{}.",
+          "line": 46,
+          "ignorable": true,
+          "identifier": "unset.offset"
+        },
+        {
+          "message": "Cannot unset offset 10 on array{z: mixed, a: int, ...<string, int>}.",
+          "line": 54,
+          "ignorable": true,
+          "identifier": "unset.offset"
+        },
+        {
+          "message": "Dumped type: array{z: mixed, a: int}",
+          "line": 55,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Cannot unset offset 'missing' on array{z: mixed, a: int}.",
+          "line": 56,
+          "ignorable": true,
+          "identifier": "unset.offset"
+        },
+        {
+          "message": "Cannot unset offset 2 on non-empty-list&callable(): mixed.",
+          "line": 62,
+          "ignorable": true,
+          "identifier": "unset.offset"
+        },
+        {
+          "message": "Cannot unset offset 'missing' on array{'strlen', 'invoke'}.",
+          "line": 64,
+          "ignorable": true,
+          "identifier": "unset.offset"
+        },
+        {
+          "message": "Cannot unset offset 'missing' on array{other: 3}.",
+          "line": 72,
+          "ignorable": true,
+          "identifier": "unset.offset"
+        },
+        {
+          "message": "Cannot unset offset 'other' on non-empty-list&callable(): mixed.",
+          "line": 78,
+          "ignorable": true,
+          "identifier": "unset.offset"
+        },
+        {
+          "message": "Cannot unset offset 'other' on non-empty-list&callable(): mixed.",
+          "line": 85,
+          "ignorable": true,
+          "identifier": "unset.offset"
+        },
+        {
+          "message": "Cannot unset offset array{a: 1, z: 2} on array{a: 1, z: 2}.",
+          "line": 91,
+          "ignorable": true,
+          "identifier": "unset.offset"
+        },
+        {
+          "message": "Cannot unset offset 'missing' on array{z: mixed, a: 7}.",
+          "line": 98,
+          "ignorable": true,
+          "identifier": "unset.offset"
+        },
+        {
+          "message": "Cannot unset offset 'a' on array{z: mixed}.",
+          "line": 100,
+          "ignorable": true,
+          "identifier": "unset.offset"
+        }
+      ]
+    }
+  },
+  "errors": []
+}

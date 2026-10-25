@@ -1,6 +1,7 @@
 //! Source edges for information Mago erases: PHPDoc shape order and explicit mixed. These are not inferred types.
-//! Only straight-line local copies, declarations and inline call arguments carry an origin. A mutation,
-//! reference escape or control-flow join forgets it; conversion still requires Mago's actual expression type.
+//! Only straight-line local copies, declarations and inline call arguments carry an origin. Replacements,
+//! reference escapes and control-flow joins forget it. Offset unsets preserve source metadata, not values;
+//! conversion still requires Mago's actual expression type, including its post-unset narrowing.
 
 use std::collections::HashMap;
 use std::sync::Arc;
@@ -74,6 +75,7 @@ pub(super) fn collect(
         locals: HashMap::new(),
         current: None,
         calls: Vec::new(),
+        unset_targets: Vec::new(),
         control_depth: 0,
         found: HashMap::new(),
     };
@@ -122,6 +124,7 @@ struct Sources<'a, 'arena> {
     locals: HashMap<Vec<u8>, Origin>,
     current: Option<Function>,
     calls: Vec<Option<Arc<Call>>>,
+    unset_targets: Vec<Span>,
     control_depth: usize,
     found: Origins,
 }
@@ -230,7 +233,6 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Sources<'_, 'arena> {
                 | Statement::DoWhile(_)
                 | Statement::Switch(_)
                 | Statement::Try(_)
-                | Statement::Unset(_)
                 | Statement::Global(_)
                 | Statement::Static(_)
         ) {
@@ -248,13 +250,22 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Sources<'_, 'arena> {
                 | Statement::DoWhile(_)
                 | Statement::Switch(_)
                 | Statement::Try(_)
-                | Statement::Unset(_)
                 | Statement::Global(_)
                 | Statement::Static(_)
         ) {
             self.locals.clear();
             self.control_depth -= 1;
         }
+    }
+    fn walk_in_unset(&mut self, u: &'ast Unset<'arena>, _: &mut ()) {
+        self.unset_targets
+            .extend(u.values.iter().rev().map(HasSpan::span));
+    }
+    fn walk_array_access(&mut self, a: &'ast ArrayAccess<'arena>, ctx: &mut ()) {
+        // ArrayDimFetchHandler evaluates the index first. It can replace the receiver's value and
+        // source edge; syntax order must not attach the old declaration to that new value.
+        self.walk_expression(a.index, ctx);
+        self.walk_expression(a.array, ctx);
     }
     fn walk_in_expression(&mut self, e: &'ast Expression<'arena>, _: &mut ()) {
         if branching(e) {
@@ -282,6 +293,19 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Sources<'_, 'arena> {
         if let Expression::Parenthesized(p) = e {
             self.found
                 .insert(e.span(), Origin::Copy(p.expression.span()));
+        }
+        // Direct unsets discard the value. Offset unsets only mutate its inferred array: keep its
+        // source metadata, never a cached type. Conversion still uses the surviving inferred keys,
+        // values and optionality. PHPStan's CallableType::unsetOffset() also preserves callability.
+        if self.unset_targets.last() == Some(&e.span()) {
+            self.unset_targets.pop();
+            match super::super::types::flow::unparen(e) {
+                Expression::Variable(Variable::Direct(v)) => {
+                    self.locals.remove(v.name);
+                }
+                Expression::Variable(_) => self.locals.clear(),
+                _ => {}
+            }
         }
     }
     fn walk_in_function_call(&mut self, call: &'ast FunctionCall<'arena>, _: &mut ()) {
