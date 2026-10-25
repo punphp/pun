@@ -1062,3 +1062,63 @@ template value. Pun overlays exported empty-array constructor defaults before in
 Mago's nullable API-stub default is not the runtime value for ArrayObject and ArrayIterator.
 `generic_defaults/empty-arrays.json` retains the actual oracle's 15 diagnostics, including populated
 controls, optional shapes, generic empty lists, readonly assignment, and invalid unset offsets.
+
+## Template constant-array unset reconstruction
+
+`src/statement/unset.rs:134–154,167,174,321,470,523–571` distinguishes a declared template
+constant-array bound from a generic array with known offsets added by flow analysis.
+The declaration comes from `TypeResolutionContext`, matched by template name and defining entity.
+The transfer preserves the current inferred items and template identity. It does not replace the
+current value with the declaration's bound.
+
+The reference is PHPStan 2.3.1 at revision `cb3b7e99489b2e3789ee2eec10501cb7a72580ea`:
+
+- `Type/Generic/TemplateConstantArrayType.php:23–66`: the parent constructor omits unsealed
+  extras. `recreate()` builds the new bound from that sealed parent.
+- `Type/Constant/ConstantArrayType.php:1375–1505`: a matching literal removes a key. Finite
+  unions and general keys make matching items optional. A match still calls `recreate()` when
+  the matching item was already optional. A disjoint offset returns the original type.
+
+`unset_keyed()` reports whether the constant-array branch recreates its type, not whether the
+new map differs by value. A template constant-array mutation discards unsealed parameters only
+when that flag is true. Unchanged offsets preserve the original displayed bound.
+Pun's existing `rules/unset.rs::has_offset()` helper checks a template constant array against
+its sealed parent while retaining the unsealed bound in the diagnostic. Statement-entry
+observations and the shared expression readers are unchanged.
+
+`unset/template-open-shapes.json` records 20 diagnostics from the real oracle with PHP 8.4.
+Its public test covers copies, unchanged literals and unions, required and already-optional keys,
+general strings, class and method templates, ordinary open shapes, and an offset-refined generic
+array that must not become a sealed template shape. No existing expectation changes.
+
+Fresh instrumented public tests cover **38/38 changed executable lines** against this follow-up's
+parent: 32 in the maintained transfer and 6 in Pun's unset offset helper. No exclusions or
+private-helper tests contribute to that count. The combined run uses the seven-target command
+above directly in this worktree, not the earlier disposable manifest.
+It passes 38 tests and retains three failures: the remaining generic-key dumps, bug-13856, and the
+write-back fixture's shared reader, statement-entry observation, and shape-order differences.
+Separate exported Arrays, DefinedVariable, CompactVariables, and ReadOnlyProperty checks pass.
+The exported UnsetRule cases match 10 of 10, and the generic-key diagnostics improve from 30 of 36
+exact matches to 32 of 36.
+
+Validation uses the exact `expression/variable.rs` and `types/convert.rs` error-reader versions
+from main `d357ffbb`. Those validation-only changes are not part of this follow-up. On this base,
+the write-back fixture still matches 55 of 63 oracle diagnostics, and bug-13856 still lacks its
+line-73 diagnostic. All saved expectations remain active.
+
+### Remaining representation boundaries
+
+The original `generic-keys.php:137–138` diagnostics now match. Four dump mismatches remain:
+
+- Lines 98–99 require `mixed~0`. Neither maintained `TMixed` nor Pun's `Type::Mixed` stores a
+  subtracted literal. A shared representation and its operations are required.
+- Line 108 retains an empty known-item map with unsealed parameters. The converter's
+  `array()` shape guard requires a nonempty map, so it renders that value as a generic array.
+- Line 116 requires key subtraction together with `hasOffsetValue(5, string)`. Pun's accessory
+  model has no `HasOffsetValue`. Mago also uses the same keyed-array representation for declared
+  open shapes and generic arrays refined by offsets. Those cases require distinct unset
+  transfers. This patch does not guess from the map contents or restore a wider declaration.
+
+Indirect template bounds and unsealed constant-array-valued generic parents remain outside this
+direct keyed-bound correction. Whole-rule parity remains incomplete. The gap list and rule mapping
+are unchanged.

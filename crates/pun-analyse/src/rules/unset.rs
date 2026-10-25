@@ -287,7 +287,15 @@ fn has_offset(c: &Checker, ty: &Type, offset: &Type) -> Tri {
                 results.into_iter().min().unwrap_or(Tri::No)
             }
         }
-        Type::Template(t) => has_offset(c, &t.bound, offset),
+        Type::Template(t) => match &t.bound {
+            Type::ConstArray(array) => {
+                // TemplateConstantArrayType displays its bound, but its parent constructor is sealed.
+                let mut parent = array.clone();
+                parent.unsealed = None;
+                shape_offset(&parent, &array_key(offset))
+            }
+            bound => has_offset(c, bound, offset),
+        },
         Type::ConstArray(a) => shape_offset(a, &array_key(offset)),
         Type::Array(key, _) => {
             let offset = array_key(offset);

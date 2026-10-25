@@ -131,10 +131,27 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Unset<'arena> {
                         // ArrayType::unsetOffset returns an ordinary array for a compatible literal
                         // key, including when subtraction cannot express a more precise key type.
                         if let [TAtomic::Array(TArray::Keyed(array))] = parameter.constraint.types.as_ref() {
-                            if array.parameters.is_none() {
-                                let array = unset_keyed(context, array.clone(), key_type);
+                            let constant_bound = array.parameters.is_none()
+                                || context
+                                    .type_resolution_context
+                                    .get_template_definition(parameter.parameter_name)
+                                    .into_iter()
+                                    .flatten()
+                                    .any(|definition| {
+                                        definition.defining_entity == parameter.defining_entity
+                                            && matches!(definition.constraint.types.as_ref(),
+                                                [TAtomic::Array(TArray::Keyed(bound))]
+                                                    if bound.known_items.is_some())
+                                    });
+                            if constant_bound {
+                                let (mut updated, recreated) = unset_keyed(context, array.clone(), key_type);
+                                // TemplateConstantArrayType's parent omits unsealed extras. Its
+                                // displayed bound changes only when ConstantArrayType recreates it.
+                                if recreated {
+                                    updated.parameters = None;
+                                }
                                 parameter.constraint =
-                                    Arc::new(TUnion::from_atomic(TAtomic::Array(TArray::Keyed(array))));
+                                    Arc::new(TUnion::from_atomic(TAtomic::Array(TArray::Keyed(updated))));
                             } else if array.known_items.is_none()
                                 && parameter.intersection_types.is_none()
                                 && let Some((keys, _)) = &array.parameters
@@ -147,14 +164,14 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Unset<'arena> {
                                     false,
                                 )
                             {
-                                let array = unset_keyed(context, array.clone(), key_type);
+                                let (array, _) = unset_keyed(context, array.clone(), key_type);
                                 atomics.push(TAtomic::Array(TArray::Keyed(array)));
                                 continue;
                             }
                         }
                         for intersection in parameter.intersection_types.iter_mut().flatten() {
                             if let TAtomic::Array(TArray::Keyed(array)) = intersection {
-                                *array = unset_keyed(context, array.clone(), key_type);
+                                *array = unset_keyed(context, array.clone(), key_type).0;
                             }
                         }
                     }
@@ -301,7 +318,7 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Unset<'arena> {
                             }
                         }
                         TArray::Keyed(array) => {
-                            atomics.push(TAtomic::Array(TArray::Keyed(unset_keyed(context, array, key_type))));
+                            atomics.push(TAtomic::Array(TArray::Keyed(unset_keyed(context, array, key_type).0)));
                         }
                     }
                 }
@@ -450,7 +467,7 @@ fn set_existing_items<A: Arena>(context: &mut Context<'_, '_, A>, previous: &TUn
                             .iter()
                             .map(|atomic| {
                                 let array = constant_array(atomic).unwrap();
-                                TAtomic::Array(TArray::Keyed(unset_keyed(context, array, &index)))
+                                TAtomic::Array(TArray::Keyed(unset_keyed(context, array, &index).0))
                             })
                             .collect(),
                     );
@@ -503,7 +520,12 @@ fn constant_array(atomic: &TAtomic) -> Option<TKeyedArray> {
 /// ArrayType/ConstantArrayType::unsetOffset() for already-normalized array keys. Generic arrays
 /// subtract a single literal; finite unions and general offsets only weaken matching shape entries.
 /// Non-key inputs retain Mago's fallback until shared PHP scalar-to-key conversion is available here.
-fn unset_keyed<A: Arena>(context: &mut Context<'_, '_, A>, mut array: TKeyedArray, offset: &TUnion) -> TKeyedArray {
+/// The flag records ConstantArrayType::recreate(), even when matching keys were already optional.
+fn unset_keyed<A: Arena>(
+    context: &mut Context<'_, '_, A>,
+    mut array: TKeyedArray,
+    offset: &TUnion,
+) -> (TKeyedArray, bool) {
     let Some(items) = array.known_items.as_mut() else {
         array.non_empty = false;
         if let Some((keys, _)) = &mut array.parameters
@@ -516,11 +538,12 @@ fn unset_keyed<A: Arena>(context: &mut Context<'_, '_, A>, mut array: TKeyedArra
                 *keys = Arc::new(remaining);
             }
         }
-        return array;
+        return (array, false);
     };
     let literal_keys: Vec<_> = offset.types.iter().filter_map(TAtomic::to_array_key).collect();
+    let mut recreated = false;
     if let Some(key) = offset.get_single_array_key() {
-        Arc::make_mut(items).remove(&key);
+        recreated = Arc::make_mut(items).remove(&key).is_some();
     } else {
         for (key, (optional, _)) in Arc::make_mut(items) {
             let matches = if offset.is_always_array_key(true) && !literal_keys.is_empty() {
@@ -537,6 +560,7 @@ fn unset_keyed<A: Arena>(context: &mut Context<'_, '_, A>, mut array: TKeyedArra
                         &mut ComparisonResult::new(),
                     )
             };
+            recreated |= matches;
             *optional |= matches;
         }
     }
@@ -544,7 +568,7 @@ fn unset_keyed<A: Arena>(context: &mut Context<'_, '_, A>, mut array: TKeyedArra
     if items.is_empty() && array.parameters.is_none() {
         array.known_items = None;
     }
-    array
+    (array, recreated)
 }
 
 /// TypeCombinator::remove and TemplateTypeTrait::tryRemove: use the existing strict literal

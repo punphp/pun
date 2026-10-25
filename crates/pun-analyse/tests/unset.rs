@@ -134,6 +134,15 @@ fn generic_key_and_value_identities_match_phpstan() {
 }
 
 #[test]
+fn template_open_shape_mutation_uses_its_declared_parent() {
+    oracle(
+        "template-open-shapes.php",
+        "template-open-shapes.json",
+        80400,
+    );
+}
+
+#[test]
 fn virtual_unset_write_back_matches_phpstan() {
     oracle("write-back.php", "write-back.json", 80400);
 }
