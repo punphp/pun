@@ -1389,6 +1389,22 @@ impl Type {
         // (an `int` or a constant int never meets a range when sorting: it was merged, or sorted as a scalar)
         matches!(self, Type::Template(t) if matches!(t.bound, Type::Int | Type::ConstInt(_) | Type::IntRange(..)))
     }
+
+    /// TypeCombinator's array/iterable instanceof checks include the corresponding Template* subclasses.
+    /// Only dispatch uses this view: supertype reductions must still compare the original template identities.
+    fn array_class(&self) -> &Type {
+        match self {
+            Type::Template(t)
+                if matches!(
+                    t.bound,
+                    Type::Array(..) | Type::ConstArray(_) | Type::Iterable(..)
+                ) =>
+            {
+                &t.bound
+            }
+            _ => self,
+        }
+    }
 }
 
 fn describe_union(types: &[Type], level: Level) -> String {
@@ -1480,6 +1496,11 @@ fn describe_intersection_itself(this: &Type, types: &[Type], level: Level) -> St
     let is_list = this.is_list().yes();
     let is_array = this.is_array().yes();
     let is_non_empty_array = this.is_iterable_at_least_once().yes();
+    // IntersectionType::describeItself(): a template array describes itself, so its refinements cannot
+    // disappear into the ordinary array/list prefix that is only emitted for concrete ArrayType members.
+    let has_template_array = types
+        .iter()
+        .any(|t| matches!(t, Type::Template(t) if matches!(t.bound, Type::Array(..))));
     let mut described: Vec<(usize, String)> = Vec::new();
     let sorted = sort_types(types);
     for (i, t) in sorted.iter().enumerate() {
@@ -1547,7 +1568,12 @@ fn describe_intersection_itself(this: &Type, types: &[Type], level: Level) -> St
                     described.push((i, format!("{begin}{rest}")));
                     continue;
                 }
-                Type::Accessory(Accessory::NonEmptyArray | Accessory::List) => continue,
+                Type::Accessory(Accessory::NonEmptyArray | Accessory::List) => {
+                    if has_template_array {
+                        described.push((i, t.describe(level)));
+                    }
+                    continue;
+                }
                 _ => {}
             }
         }
@@ -3633,7 +3659,7 @@ pub fn intersect(types: Vec<Type>) -> Type {
     }
     let mut types = flat;
     // constant arrays first
-    types.sort_by_key(|t| !matches!(t, Type::ConstArray(_)));
+    types.sort_by_key(|t| !matches!(t.array_class(), Type::ConstArray(_)));
     let mut i = 0;
     'outer: while i < types.len() {
         let mut j = i + 1;
@@ -3657,7 +3683,7 @@ pub fn intersect(types: Vec<Type>) -> Type {
                 types.remove(i);
                 continue 'outer;
             }
-            let a_super = if let Type::Iterable(key, value) = &types[j] {
+            let a_super = if let Type::Iterable(key, value) = types[j].array_class() {
                 iterable_super_of_mixed(key, value, &types[i])
             } else {
                 is_super_type_of(&types[j], &types[i])
@@ -3666,7 +3692,7 @@ pub fn intersect(types: Vec<Type>) -> Type {
                 types.remove(j);
                 continue;
             }
-            let b_super = if let Type::Iterable(key, value) = &types[i] {
+            let b_super = if let Type::Iterable(key, value) = types[i].array_class() {
                 iterable_super_of_mixed(key, value, &types[j])
             } else {
                 is_super_type_of(&types[i], &types[j])
@@ -3681,7 +3707,7 @@ pub fn intersect(types: Vec<Type>) -> Type {
                     continue;
                 }
                 // ConstantArrayType & list / non-empty-array (constant arrays sort first, so the shape is i)
-                if let Type::ConstArray(ca) = &types[i] {
+                if let Type::ConstArray(ca) = types[i].array_class() {
                     let merged = match &types[j] {
                         Type::Accessory(Accessory::List) => Some(ca.make_list()),
                         Type::Accessory(Accessory::NonEmptyArray)
@@ -3694,7 +3720,15 @@ pub fn intersect(types: Vec<Type>) -> Type {
                         _ => None,
                     };
                     if let Some(merged) = merged {
-                        types[i] = Type::ConstArray(Box::new(merged));
+                        let bound = Type::ConstArray(Box::new(merged));
+                        // TemplateConstantArrayType::recreate() preserves scope, name, strategy and default.
+                        types[i] = match &types[i] {
+                            Type::Template(t) => Type::Template(Box::new(Template {
+                                bound,
+                                ..(**t).clone()
+                            })),
+                            _ => bound,
+                        };
                         types.remove(j);
                         continue 'inner;
                     }
@@ -3702,7 +3736,9 @@ pub fn intersect(types: Vec<Type>) -> Type {
                 // ConstantArrayType & ArrayType: key by key (constant arrays sort first, so the shape is i).
                 // ponytail: two constant arrays meet only through isSuperTypeOf(), not key by key.
                 // As PHPStan's `continue 2`, the merged shape is not compared with the later types again.
-                if let (Type::ConstArray(ca), Type::Array(..)) = (&types[i], &types[j]) {
+                if let (Type::ConstArray(ca), Type::Array(..)) =
+                    (types[i].array_class(), types[j].array_class())
+                {
                     types[i] = ca.intersect_array(&types[j]);
                     types.remove(j);
                     i += 1;
@@ -3710,9 +3746,9 @@ pub fn intersect(types: Vec<Type>) -> Type {
                 }
                 // `getKeyType()`: the raw key of an array, not its iterable key
                 if matches!(
-                    types[i],
+                    types[i].array_class(),
                     Type::Array(..) | Type::Iterable(..) | Type::ConstArray(_)
-                ) && let Type::Array(jk, _) | Type::Iterable(jk, _) = &types[j]
+                ) && let Type::Array(jk, _) | Type::Iterable(jk, _) = types[j].array_class()
                 {
                     let key = intersect(vec![types[i].iterable_key_type(), (**jk).clone()]);
                     let item = intersect(vec![
@@ -3720,7 +3756,7 @@ pub fn intersect(types: Vec<Type>) -> Type {
                         types[j].iterable_value_type(),
                     ]);
                     types[j] = if matches!(
-                        (&types[i], &types[j]),
+                        (types[i].array_class(), types[j].array_class()),
                         (Type::Iterable(..), Type::Iterable(..))
                     ) {
                         Type::Iterable(bx(key), bx(item))

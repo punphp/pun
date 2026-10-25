@@ -1,0 +1,1402 @@
+[
+    {
+        "bound": "array<string, int>",
+        "other": "array{a: int}",
+        "argument": false,
+        "reverse": false,
+        "otherTemplate": null,
+        "descriptions": [
+            "array{a: int}",
+            "array{a: int}",
+            "array<string, int>"
+        ],
+        "template": false
+    },
+    {
+        "bound": "array<string, int>",
+        "other": "array{a: int}",
+        "argument": false,
+        "reverse": true,
+        "otherTemplate": null,
+        "descriptions": [
+            "array{a: int}",
+            "array{a: int}",
+            "array<string, int>"
+        ],
+        "template": false
+    },
+    {
+        "bound": "array<string, int>",
+        "other": "array{a: int}",
+        "argument": true,
+        "reverse": false,
+        "otherTemplate": null,
+        "descriptions": [
+            "array{a: int}",
+            "array{a: int}",
+            "array<string, int>"
+        ],
+        "template": false
+    },
+    {
+        "bound": "array<string, int>",
+        "other": "array{a: int}",
+        "argument": true,
+        "reverse": true,
+        "otherTemplate": null,
+        "descriptions": [
+            "array{a: int}",
+            "array{a: int}",
+            "array<string, int>"
+        ],
+        "template": false
+    },
+    {
+        "bound": "array<string, int>",
+        "other": "array{a: 1, b?: 2}",
+        "argument": false,
+        "reverse": false,
+        "otherTemplate": null,
+        "descriptions": [
+            "array{a: 1, b?: 2}",
+            "array{a: 1, b?: 2}",
+            "array<string, int>"
+        ],
+        "template": false
+    },
+    {
+        "bound": "array<string, int>",
+        "other": "array{a: 1, b?: 2}",
+        "argument": false,
+        "reverse": true,
+        "otherTemplate": null,
+        "descriptions": [
+            "array{a: 1, b?: 2}",
+            "array{a: 1, b?: 2}",
+            "array<string, int>"
+        ],
+        "template": false
+    },
+    {
+        "bound": "array<string, int>",
+        "other": "array{a: 1, b?: 2}",
+        "argument": true,
+        "reverse": false,
+        "otherTemplate": null,
+        "descriptions": [
+            "array{a: 1, b?: 2}",
+            "array{a: 1, b?: 2}",
+            "array<string, int>"
+        ],
+        "template": false
+    },
+    {
+        "bound": "array<string, int>",
+        "other": "array{a: 1, b?: 2}",
+        "argument": true,
+        "reverse": true,
+        "otherTemplate": null,
+        "descriptions": [
+            "array{a: 1, b?: 2}",
+            "array{a: 1, b?: 2}",
+            "array<string, int>"
+        ],
+        "template": false
+    },
+    {
+        "bound": "array<string, int>",
+        "other": "array<int, int>",
+        "argument": false,
+        "reverse": false,
+        "otherTemplate": null,
+        "descriptions": [
+            "*NEVER*",
+            "*NEVER*",
+            "*NEVER*"
+        ],
+        "template": false
+    },
+    {
+        "bound": "array<string, int>",
+        "other": "array<int, int>",
+        "argument": false,
+        "reverse": true,
+        "otherTemplate": null,
+        "descriptions": [
+            "*NEVER*",
+            "*NEVER*",
+            "*NEVER*"
+        ],
+        "template": false
+    },
+    {
+        "bound": "array<string, int>",
+        "other": "array<int, int>",
+        "argument": true,
+        "reverse": false,
+        "otherTemplate": null,
+        "descriptions": [
+            "*NEVER*",
+            "*NEVER*",
+            "*NEVER*"
+        ],
+        "template": false
+    },
+    {
+        "bound": "array<string, int>",
+        "other": "array<int, int>",
+        "argument": true,
+        "reverse": true,
+        "otherTemplate": null,
+        "descriptions": [
+            "*NEVER*",
+            "*NEVER*",
+            "*NEVER*"
+        ],
+        "template": false
+    },
+    {
+        "bound": "array<int, int>",
+        "other": "array<string, int>",
+        "argument": false,
+        "reverse": false,
+        "otherTemplate": null,
+        "descriptions": [
+            "*NEVER*",
+            "*NEVER*",
+            "*NEVER*"
+        ],
+        "template": false
+    },
+    {
+        "bound": "array<int, int>",
+        "other": "array<string, int>",
+        "argument": false,
+        "reverse": true,
+        "otherTemplate": null,
+        "descriptions": [
+            "*NEVER*",
+            "*NEVER*",
+            "*NEVER*"
+        ],
+        "template": false
+    },
+    {
+        "bound": "array<int, int>",
+        "other": "array<string, int>",
+        "argument": true,
+        "reverse": false,
+        "otherTemplate": null,
+        "descriptions": [
+            "*NEVER*",
+            "*NEVER*",
+            "*NEVER*"
+        ],
+        "template": false
+    },
+    {
+        "bound": "array<int, int>",
+        "other": "array<string, int>",
+        "argument": true,
+        "reverse": true,
+        "otherTemplate": null,
+        "descriptions": [
+            "*NEVER*",
+            "*NEVER*",
+            "*NEVER*"
+        ],
+        "template": false
+    },
+    {
+        "bound": "array<int, int|string>",
+        "other": "array<int|string, int>",
+        "argument": false,
+        "reverse": false,
+        "otherTemplate": null,
+        "descriptions": [
+            "array<int, int>",
+            "array<int, int>",
+            "array<int, int>"
+        ],
+        "template": false
+    },
+    {
+        "bound": "array<int, int|string>",
+        "other": "array<int|string, int>",
+        "argument": false,
+        "reverse": true,
+        "otherTemplate": null,
+        "descriptions": [
+            "array<int, int>",
+            "array<int, int>",
+            "array<int, int>"
+        ],
+        "template": false
+    },
+    {
+        "bound": "array<int, int|string>",
+        "other": "array<int|string, int>",
+        "argument": true,
+        "reverse": false,
+        "otherTemplate": null,
+        "descriptions": [
+            "array<int, int>",
+            "array<int, int>",
+            "array<int, int>"
+        ],
+        "template": false
+    },
+    {
+        "bound": "array<int, int|string>",
+        "other": "array<int|string, int>",
+        "argument": true,
+        "reverse": true,
+        "otherTemplate": null,
+        "descriptions": [
+            "array<int, int>",
+            "array<int, int>",
+            "array<int, int>"
+        ],
+        "template": false
+    },
+    {
+        "bound": "array<int|string, int>",
+        "other": "array<int, int|string>",
+        "argument": false,
+        "reverse": false,
+        "otherTemplate": null,
+        "descriptions": [
+            "array<int, int>",
+            "array<int, int>",
+            "array<int, int>"
+        ],
+        "template": false
+    },
+    {
+        "bound": "array<int|string, int>",
+        "other": "array<int, int|string>",
+        "argument": false,
+        "reverse": true,
+        "otherTemplate": null,
+        "descriptions": [
+            "array<int, int>",
+            "array<int, int>",
+            "array<int, int>"
+        ],
+        "template": false
+    },
+    {
+        "bound": "array<int|string, int>",
+        "other": "array<int, int|string>",
+        "argument": true,
+        "reverse": false,
+        "otherTemplate": null,
+        "descriptions": [
+            "array<int, int>",
+            "array<int, int>",
+            "array<int, int>"
+        ],
+        "template": false
+    },
+    {
+        "bound": "array<int|string, int>",
+        "other": "array<int, int|string>",
+        "argument": true,
+        "reverse": true,
+        "otherTemplate": null,
+        "descriptions": [
+            "array<int, int>",
+            "array<int, int>",
+            "array<int, int>"
+        ],
+        "template": false
+    },
+    {
+        "bound": "array<string, int>",
+        "other": "array<string, int|string>",
+        "argument": false,
+        "reverse": false,
+        "otherTemplate": null,
+        "descriptions": [
+            "T of array<string, int> = array{} (function fixture(), parameter)",
+            "T of array<string, int> = array{}",
+            "T of array<string, int> = array"
+        ],
+        "template": true
+    },
+    {
+        "bound": "array<string, int>",
+        "other": "array<string, int|string>",
+        "argument": false,
+        "reverse": true,
+        "otherTemplate": null,
+        "descriptions": [
+            "T of array<string, int> = array{} (function fixture(), parameter)",
+            "T of array<string, int> = array{}",
+            "T of array<string, int> = array"
+        ],
+        "template": true
+    },
+    {
+        "bound": "array<string, int>",
+        "other": "array<string, int|string>",
+        "argument": true,
+        "reverse": false,
+        "otherTemplate": null,
+        "descriptions": [
+            "T of array<string, int> = array{} (function fixture(), argument)",
+            "T of array<string, int> = array{}",
+            "T of array<string, int> = array"
+        ],
+        "template": true
+    },
+    {
+        "bound": "array<string, int>",
+        "other": "array<string, int|string>",
+        "argument": true,
+        "reverse": true,
+        "otherTemplate": null,
+        "descriptions": [
+            "T of array<string, int> = array{} (function fixture(), argument)",
+            "T of array<string, int> = array{}",
+            "T of array<string, int> = array"
+        ],
+        "template": true
+    },
+    {
+        "bound": "array<string, int>",
+        "other": "array<string, int>",
+        "argument": false,
+        "reverse": false,
+        "otherTemplate": null,
+        "descriptions": [
+            "T of array<string, int> = array{} (function fixture(), parameter)",
+            "T of array<string, int> = array{}",
+            "T of array<string, int> = array"
+        ],
+        "template": true
+    },
+    {
+        "bound": "array<string, int>",
+        "other": "array<string, int>",
+        "argument": false,
+        "reverse": true,
+        "otherTemplate": null,
+        "descriptions": [
+            "T of array<string, int> = array{} (function fixture(), parameter)",
+            "T of array<string, int> = array{}",
+            "T of array<string, int> = array"
+        ],
+        "template": true
+    },
+    {
+        "bound": "array<string, int>",
+        "other": "array<string, int>",
+        "argument": true,
+        "reverse": false,
+        "otherTemplate": null,
+        "descriptions": [
+            "T of array<string, int> = array{} (function fixture(), argument)",
+            "T of array<string, int> = array{}",
+            "T of array<string, int> = array"
+        ],
+        "template": true
+    },
+    {
+        "bound": "array<string, int>",
+        "other": "array<string, int>",
+        "argument": true,
+        "reverse": true,
+        "otherTemplate": null,
+        "descriptions": [
+            "T of array<string, int> = array{} (function fixture(), argument)",
+            "T of array<string, int> = array{}",
+            "T of array<string, int> = array"
+        ],
+        "template": true
+    },
+    {
+        "bound": "array<string, int>",
+        "other": "mixed",
+        "argument": false,
+        "reverse": false,
+        "otherTemplate": null,
+        "descriptions": [
+            "T of array<string, int> = array{} (function fixture(), parameter)",
+            "T of array<string, int> = array{}",
+            "T of array<string, int> = array"
+        ],
+        "template": true
+    },
+    {
+        "bound": "array<string, int>",
+        "other": "mixed",
+        "argument": false,
+        "reverse": true,
+        "otherTemplate": null,
+        "descriptions": [
+            "T of array<string, int> = array{} (function fixture(), parameter)",
+            "T of array<string, int> = array{}",
+            "T of array<string, int> = array"
+        ],
+        "template": true
+    },
+    {
+        "bound": "array<string, int>",
+        "other": "mixed",
+        "argument": true,
+        "reverse": false,
+        "otherTemplate": null,
+        "descriptions": [
+            "T of array<string, int> = array{} (function fixture(), argument)",
+            "T of array<string, int> = array{}",
+            "T of array<string, int> = array"
+        ],
+        "template": true
+    },
+    {
+        "bound": "array<string, int>",
+        "other": "mixed",
+        "argument": true,
+        "reverse": true,
+        "otherTemplate": null,
+        "descriptions": [
+            "T of array<string, int> = array{} (function fixture(), argument)",
+            "T of array<string, int> = array{}",
+            "T of array<string, int> = array"
+        ],
+        "template": true
+    },
+    {
+        "bound": "array<string, int>",
+        "other": "int",
+        "argument": false,
+        "reverse": false,
+        "otherTemplate": null,
+        "descriptions": [
+            "*NEVER*",
+            "*NEVER*",
+            "*NEVER*"
+        ],
+        "template": false
+    },
+    {
+        "bound": "array<string, int>",
+        "other": "int",
+        "argument": false,
+        "reverse": true,
+        "otherTemplate": null,
+        "descriptions": [
+            "*NEVER*",
+            "*NEVER*",
+            "*NEVER*"
+        ],
+        "template": false
+    },
+    {
+        "bound": "array<string, int>",
+        "other": "int",
+        "argument": true,
+        "reverse": false,
+        "otherTemplate": null,
+        "descriptions": [
+            "*NEVER*",
+            "*NEVER*",
+            "*NEVER*"
+        ],
+        "template": false
+    },
+    {
+        "bound": "array<string, int>",
+        "other": "int",
+        "argument": true,
+        "reverse": true,
+        "otherTemplate": null,
+        "descriptions": [
+            "*NEVER*",
+            "*NEVER*",
+            "*NEVER*"
+        ],
+        "template": false
+    },
+    {
+        "bound": "array<string, int>",
+        "other": "non-empty-array<string, int>",
+        "argument": false,
+        "reverse": false,
+        "otherTemplate": null,
+        "descriptions": [
+            "T of array<string, int> = array{} (function fixture(), parameter)&non-empty-array",
+            "T of array<string, int> = array{}&non-empty-array",
+            "T of array<string, int> = array"
+        ],
+        "template": false
+    },
+    {
+        "bound": "array<string, int>",
+        "other": "non-empty-array<string, int>",
+        "argument": false,
+        "reverse": true,
+        "otherTemplate": null,
+        "descriptions": [
+            "T of array<string, int> = array{} (function fixture(), parameter)&non-empty-array",
+            "T of array<string, int> = array{}&non-empty-array",
+            "T of array<string, int> = array"
+        ],
+        "template": false
+    },
+    {
+        "bound": "array<string, int>",
+        "other": "non-empty-array<string, int>",
+        "argument": true,
+        "reverse": false,
+        "otherTemplate": null,
+        "descriptions": [
+            "T of array<string, int> = array{} (function fixture(), argument)&non-empty-array",
+            "T of array<string, int> = array{}&non-empty-array",
+            "T of array<string, int> = array"
+        ],
+        "template": false
+    },
+    {
+        "bound": "array<string, int>",
+        "other": "non-empty-array<string, int>",
+        "argument": true,
+        "reverse": true,
+        "otherTemplate": null,
+        "descriptions": [
+            "T of array<string, int> = array{} (function fixture(), argument)&non-empty-array",
+            "T of array<string, int> = array{}&non-empty-array",
+            "T of array<string, int> = array"
+        ],
+        "template": false
+    },
+    {
+        "bound": "array<int, int>",
+        "other": "list<int>",
+        "argument": false,
+        "reverse": false,
+        "otherTemplate": null,
+        "descriptions": [
+            "list<int>",
+            "list<int>",
+            "list<int>"
+        ],
+        "template": false
+    },
+    {
+        "bound": "array<int, int>",
+        "other": "list<int>",
+        "argument": false,
+        "reverse": true,
+        "otherTemplate": null,
+        "descriptions": [
+            "list<int>",
+            "list<int>",
+            "list<int>"
+        ],
+        "template": false
+    },
+    {
+        "bound": "array<int, int>",
+        "other": "list<int>",
+        "argument": true,
+        "reverse": false,
+        "otherTemplate": null,
+        "descriptions": [
+            "list<int>",
+            "list<int>",
+            "list<int>"
+        ],
+        "template": false
+    },
+    {
+        "bound": "array<int, int>",
+        "other": "list<int>",
+        "argument": true,
+        "reverse": true,
+        "otherTemplate": null,
+        "descriptions": [
+            "list<int>",
+            "list<int>",
+            "list<int>"
+        ],
+        "template": false
+    },
+    {
+        "bound": "array{a: int}",
+        "other": "array<string, int>",
+        "argument": false,
+        "reverse": false,
+        "otherTemplate": null,
+        "descriptions": [
+            "T of array{a: int} = array{} (function fixture(), parameter)",
+            "T of array{a: int} = array{}",
+            "T of array<string, int> = array"
+        ],
+        "template": true
+    },
+    {
+        "bound": "array{a: int}",
+        "other": "array<string, int>",
+        "argument": false,
+        "reverse": true,
+        "otherTemplate": null,
+        "descriptions": [
+            "T of array{a: int} = array{} (function fixture(), parameter)",
+            "T of array{a: int} = array{}",
+            "T of array<string, int> = array"
+        ],
+        "template": true
+    },
+    {
+        "bound": "array{a: int}",
+        "other": "array<string, int>",
+        "argument": true,
+        "reverse": false,
+        "otherTemplate": null,
+        "descriptions": [
+            "T of array{a: int} = array{} (function fixture(), argument)",
+            "T of array{a: int} = array{}",
+            "T of array<string, int> = array"
+        ],
+        "template": true
+    },
+    {
+        "bound": "array{a: int}",
+        "other": "array<string, int>",
+        "argument": true,
+        "reverse": true,
+        "otherTemplate": null,
+        "descriptions": [
+            "T of array{a: int} = array{} (function fixture(), argument)",
+            "T of array{a: int} = array{}",
+            "T of array<string, int> = array"
+        ],
+        "template": true
+    },
+    {
+        "bound": "array{a: int|string, b?: int}",
+        "other": "array<string, int>",
+        "argument": false,
+        "reverse": false,
+        "otherTemplate": null,
+        "descriptions": [
+            "array{a: int, b?: int}",
+            "array{a: int, b?: int}",
+            "array<string, int>"
+        ],
+        "template": false
+    },
+    {
+        "bound": "array{a: int|string, b?: int}",
+        "other": "array<string, int>",
+        "argument": false,
+        "reverse": true,
+        "otherTemplate": null,
+        "descriptions": [
+            "array{a: int, b?: int}",
+            "array{a: int, b?: int}",
+            "array<string, int>"
+        ],
+        "template": false
+    },
+    {
+        "bound": "array{a: int|string, b?: int}",
+        "other": "array<string, int>",
+        "argument": true,
+        "reverse": false,
+        "otherTemplate": null,
+        "descriptions": [
+            "array{a: int, b?: int}",
+            "array{a: int, b?: int}",
+            "array<string, int>"
+        ],
+        "template": false
+    },
+    {
+        "bound": "array{a: int|string, b?: int}",
+        "other": "array<string, int>",
+        "argument": true,
+        "reverse": true,
+        "otherTemplate": null,
+        "descriptions": [
+            "array{a: int, b?: int}",
+            "array{a: int, b?: int}",
+            "array<string, int>"
+        ],
+        "template": false
+    },
+    {
+        "bound": "array{a?: int}",
+        "other": "non-empty-array<string, int>",
+        "argument": false,
+        "reverse": false,
+        "otherTemplate": null,
+        "descriptions": [
+            "T of array{a: int} = array{} (function fixture(), parameter)",
+            "T of array{a: int} = array{}",
+            "T of array<string, int> = array"
+        ],
+        "template": true
+    },
+    {
+        "bound": "array{a?: int}",
+        "other": "non-empty-array<string, int>",
+        "argument": false,
+        "reverse": true,
+        "otherTemplate": null,
+        "descriptions": [
+            "T of array{a: int} = array{} (function fixture(), parameter)",
+            "T of array{a: int} = array{}",
+            "T of array<string, int> = array"
+        ],
+        "template": true
+    },
+    {
+        "bound": "array{a?: int}",
+        "other": "non-empty-array<string, int>",
+        "argument": true,
+        "reverse": false,
+        "otherTemplate": null,
+        "descriptions": [
+            "T of array{a: int} = array{} (function fixture(), argument)",
+            "T of array{a: int} = array{}",
+            "T of array<string, int> = array"
+        ],
+        "template": true
+    },
+    {
+        "bound": "array{a?: int}",
+        "other": "non-empty-array<string, int>",
+        "argument": true,
+        "reverse": true,
+        "otherTemplate": null,
+        "descriptions": [
+            "T of array{a: int} = array{} (function fixture(), argument)",
+            "T of array{a: int} = array{}",
+            "T of array<string, int> = array"
+        ],
+        "template": true
+    },
+    {
+        "bound": "array{0?: int, 1?: int}",
+        "other": "list<int>",
+        "argument": false,
+        "reverse": false,
+        "otherTemplate": null,
+        "descriptions": [
+            "T of list{0?: int, 1?: int} = array{} (function fixture(), parameter)",
+            "T of list{0?: int, 1?: int} = array{}",
+            "T of list<int, int> = array"
+        ],
+        "template": true
+    },
+    {
+        "bound": "array{0?: int, 1?: int}",
+        "other": "list<int>",
+        "argument": false,
+        "reverse": true,
+        "otherTemplate": null,
+        "descriptions": [
+            "T of list{0?: int, 1?: int} = array{} (function fixture(), parameter)",
+            "T of list{0?: int, 1?: int} = array{}",
+            "T of list<int, int> = array"
+        ],
+        "template": true
+    },
+    {
+        "bound": "array{0?: int, 1?: int}",
+        "other": "list<int>",
+        "argument": true,
+        "reverse": false,
+        "otherTemplate": null,
+        "descriptions": [
+            "T of list{0?: int, 1?: int} = array{} (function fixture(), argument)",
+            "T of list{0?: int, 1?: int} = array{}",
+            "T of list<int, int> = array"
+        ],
+        "template": true
+    },
+    {
+        "bound": "array{0?: int, 1?: int}",
+        "other": "list<int>",
+        "argument": true,
+        "reverse": true,
+        "otherTemplate": null,
+        "descriptions": [
+            "T of list{0?: int, 1?: int} = array{} (function fixture(), argument)",
+            "T of list{0?: int, 1?: int} = array{}",
+            "T of list<int, int> = array"
+        ],
+        "template": true
+    },
+    {
+        "bound": "array{a: int}",
+        "other": "list<int>",
+        "argument": false,
+        "reverse": false,
+        "otherTemplate": null,
+        "descriptions": [
+            "*NEVER*",
+            "*NEVER*",
+            "*NEVER*"
+        ],
+        "template": false
+    },
+    {
+        "bound": "array{a: int}",
+        "other": "list<int>",
+        "argument": false,
+        "reverse": true,
+        "otherTemplate": null,
+        "descriptions": [
+            "*NEVER*",
+            "*NEVER*",
+            "*NEVER*"
+        ],
+        "template": false
+    },
+    {
+        "bound": "array{a: int}",
+        "other": "list<int>",
+        "argument": true,
+        "reverse": false,
+        "otherTemplate": null,
+        "descriptions": [
+            "*NEVER*",
+            "*NEVER*",
+            "*NEVER*"
+        ],
+        "template": false
+    },
+    {
+        "bound": "array{a: int}",
+        "other": "list<int>",
+        "argument": true,
+        "reverse": true,
+        "otherTemplate": null,
+        "descriptions": [
+            "*NEVER*",
+            "*NEVER*",
+            "*NEVER*"
+        ],
+        "template": false
+    },
+    {
+        "bound": "array{a: int}",
+        "other": "array{a: int}",
+        "argument": false,
+        "reverse": false,
+        "otherTemplate": null,
+        "descriptions": [
+            "T of array{a: int} = array{} (function fixture(), parameter)",
+            "T of array{a: int} = array{}",
+            "T of array<string, int> = array"
+        ],
+        "template": true
+    },
+    {
+        "bound": "array{a: int}",
+        "other": "array{a: int}",
+        "argument": false,
+        "reverse": true,
+        "otherTemplate": null,
+        "descriptions": [
+            "T of array{a: int} = array{} (function fixture(), parameter)",
+            "T of array{a: int} = array{}",
+            "T of array<string, int> = array"
+        ],
+        "template": true
+    },
+    {
+        "bound": "array{a: int}",
+        "other": "array{a: int}",
+        "argument": true,
+        "reverse": false,
+        "otherTemplate": null,
+        "descriptions": [
+            "T of array{a: int} = array{} (function fixture(), argument)",
+            "T of array{a: int} = array{}",
+            "T of array<string, int> = array"
+        ],
+        "template": true
+    },
+    {
+        "bound": "array{a: int}",
+        "other": "array{a: int}",
+        "argument": true,
+        "reverse": true,
+        "otherTemplate": null,
+        "descriptions": [
+            "T of array{a: int} = array{} (function fixture(), argument)",
+            "T of array{a: int} = array{}",
+            "T of array<string, int> = array"
+        ],
+        "template": true
+    },
+    {
+        "bound": "array{a: int}",
+        "other": "array",
+        "argument": false,
+        "reverse": false,
+        "otherTemplate": null,
+        "descriptions": [
+            "T of array{a: int} = array{} (function fixture(), parameter)",
+            "T of array{a: int} = array{}",
+            "T of array<string, int> = array"
+        ],
+        "template": true
+    },
+    {
+        "bound": "array{a: int}",
+        "other": "array",
+        "argument": false,
+        "reverse": true,
+        "otherTemplate": null,
+        "descriptions": [
+            "T of array{a: int} = array{} (function fixture(), parameter)",
+            "T of array{a: int} = array{}",
+            "T of array<string, int> = array"
+        ],
+        "template": true
+    },
+    {
+        "bound": "array{a: int}",
+        "other": "array",
+        "argument": true,
+        "reverse": false,
+        "otherTemplate": null,
+        "descriptions": [
+            "T of array{a: int} = array{} (function fixture(), argument)",
+            "T of array{a: int} = array{}",
+            "T of array<string, int> = array"
+        ],
+        "template": true
+    },
+    {
+        "bound": "array{a: int}",
+        "other": "array",
+        "argument": true,
+        "reverse": true,
+        "otherTemplate": null,
+        "descriptions": [
+            "T of array{a: int} = array{} (function fixture(), argument)",
+            "T of array{a: int} = array{}",
+            "T of array<string, int> = array"
+        ],
+        "template": true
+    },
+    {
+        "bound": "iterable<int, int|string>",
+        "other": "array<int|string, int>",
+        "argument": false,
+        "reverse": false,
+        "otherTemplate": null,
+        "descriptions": [
+            "array<int, int>",
+            "array<int, int>",
+            "array<int, int>"
+        ],
+        "template": false
+    },
+    {
+        "bound": "iterable<int, int|string>",
+        "other": "array<int|string, int>",
+        "argument": false,
+        "reverse": true,
+        "otherTemplate": null,
+        "descriptions": [
+            "array<int, int>",
+            "array<int, int>",
+            "array<int, int>"
+        ],
+        "template": false
+    },
+    {
+        "bound": "iterable<int, int|string>",
+        "other": "array<int|string, int>",
+        "argument": true,
+        "reverse": false,
+        "otherTemplate": null,
+        "descriptions": [
+            "array<int, int>",
+            "array<int, int>",
+            "array<int, int>"
+        ],
+        "template": false
+    },
+    {
+        "bound": "iterable<int, int|string>",
+        "other": "array<int|string, int>",
+        "argument": true,
+        "reverse": true,
+        "otherTemplate": null,
+        "descriptions": [
+            "array<int, int>",
+            "array<int, int>",
+            "array<int, int>"
+        ],
+        "template": false
+    },
+    {
+        "bound": "array<int, int|string>",
+        "other": "iterable<int|string, int>",
+        "argument": false,
+        "reverse": false,
+        "otherTemplate": null,
+        "descriptions": [
+            "array<int, int>",
+            "array<int, int>",
+            "array<int, int>"
+        ],
+        "template": false
+    },
+    {
+        "bound": "array<int, int|string>",
+        "other": "iterable<int|string, int>",
+        "argument": false,
+        "reverse": true,
+        "otherTemplate": null,
+        "descriptions": [
+            "array<int, int>",
+            "array<int, int>",
+            "array<int, int>"
+        ],
+        "template": false
+    },
+    {
+        "bound": "array<int, int|string>",
+        "other": "iterable<int|string, int>",
+        "argument": true,
+        "reverse": false,
+        "otherTemplate": null,
+        "descriptions": [
+            "array<int, int>",
+            "array<int, int>",
+            "array<int, int>"
+        ],
+        "template": false
+    },
+    {
+        "bound": "array<int, int|string>",
+        "other": "iterable<int|string, int>",
+        "argument": true,
+        "reverse": true,
+        "otherTemplate": null,
+        "descriptions": [
+            "array<int, int>",
+            "array<int, int>",
+            "array<int, int>"
+        ],
+        "template": false
+    },
+    {
+        "bound": "iterable<int, int|string>",
+        "other": "iterable<int|string, int>",
+        "argument": false,
+        "reverse": false,
+        "otherTemplate": null,
+        "descriptions": [
+            "iterable<int, int>",
+            "iterable<int, int>",
+            "iterable<int, int>"
+        ],
+        "template": false
+    },
+    {
+        "bound": "iterable<int, int|string>",
+        "other": "iterable<int|string, int>",
+        "argument": false,
+        "reverse": true,
+        "otherTemplate": null,
+        "descriptions": [
+            "iterable<int, int>",
+            "iterable<int, int>",
+            "iterable<int, int>"
+        ],
+        "template": false
+    },
+    {
+        "bound": "iterable<int, int|string>",
+        "other": "iterable<int|string, int>",
+        "argument": true,
+        "reverse": false,
+        "otherTemplate": null,
+        "descriptions": [
+            "iterable<int, int>",
+            "iterable<int, int>",
+            "iterable<int, int>"
+        ],
+        "template": false
+    },
+    {
+        "bound": "iterable<int, int|string>",
+        "other": "iterable<int|string, int>",
+        "argument": true,
+        "reverse": true,
+        "otherTemplate": null,
+        "descriptions": [
+            "iterable<int, int>",
+            "iterable<int, int>",
+            "iterable<int, int>"
+        ],
+        "template": false
+    },
+    {
+        "bound": "array<string, int>",
+        "other": "array<string, int>",
+        "argument": false,
+        "reverse": false,
+        "otherTemplate": {
+            "name": "T",
+            "scope": "function fixture()"
+        },
+        "descriptions": [
+            "T of array<string, int> = array{} (function fixture(), parameter)",
+            "T of array<string, int> = array{}",
+            "T of array<string, int> = array"
+        ],
+        "template": true
+    },
+    {
+        "bound": "array<string, int>",
+        "other": "array<string, int>",
+        "argument": false,
+        "reverse": true,
+        "otherTemplate": {
+            "name": "T",
+            "scope": "function fixture()"
+        },
+        "descriptions": [
+            "T of array<string, int> = array{} (function fixture(), parameter)",
+            "T of array<string, int> = array{}",
+            "T of array<string, int> = array"
+        ],
+        "template": true
+    },
+    {
+        "bound": "array<string, int>",
+        "other": "array<string, int>",
+        "argument": true,
+        "reverse": false,
+        "otherTemplate": {
+            "name": "T",
+            "scope": "function fixture()"
+        },
+        "descriptions": [
+            "T of array<string, int> = array{} (function fixture(), argument)",
+            "T of array<string, int> = array{}",
+            "T of array<string, int> = array"
+        ],
+        "template": true
+    },
+    {
+        "bound": "array<string, int>",
+        "other": "array<string, int>",
+        "argument": true,
+        "reverse": true,
+        "otherTemplate": {
+            "name": "T",
+            "scope": "function fixture()"
+        },
+        "descriptions": [
+            "T of array<string, int> = array{} (function fixture(), parameter)",
+            "T of array<string, int> = array{}",
+            "T of array<string, int> = array"
+        ],
+        "template": true
+    },
+    {
+        "bound": "array<string, int>",
+        "other": "array<string, int>",
+        "argument": false,
+        "reverse": false,
+        "otherTemplate": {
+            "name": "U",
+            "scope": "function fixture()"
+        },
+        "descriptions": [
+            "array<string, int>",
+            "array<string, int>",
+            "array<string, int>"
+        ],
+        "template": false
+    },
+    {
+        "bound": "array<string, int>",
+        "other": "array<string, int>",
+        "argument": false,
+        "reverse": true,
+        "otherTemplate": {
+            "name": "U",
+            "scope": "function fixture()"
+        },
+        "descriptions": [
+            "array<string, int>",
+            "array<string, int>",
+            "array<string, int>"
+        ],
+        "template": false
+    },
+    {
+        "bound": "array<string, int>",
+        "other": "array<string, int>",
+        "argument": true,
+        "reverse": false,
+        "otherTemplate": {
+            "name": "U",
+            "scope": "function fixture()"
+        },
+        "descriptions": [
+            "array<string, int>",
+            "array<string, int>",
+            "array<string, int>"
+        ],
+        "template": false
+    },
+    {
+        "bound": "array<string, int>",
+        "other": "array<string, int>",
+        "argument": true,
+        "reverse": true,
+        "otherTemplate": {
+            "name": "U",
+            "scope": "function fixture()"
+        },
+        "descriptions": [
+            "array<string, int>",
+            "array<string, int>",
+            "array<string, int>"
+        ],
+        "template": false
+    },
+    {
+        "bound": "array<string, int>",
+        "other": "array<string, int>",
+        "argument": false,
+        "reverse": false,
+        "otherTemplate": {
+            "name": "T",
+            "scope": "function other()"
+        },
+        "descriptions": [
+            "array<string, int>",
+            "array<string, int>",
+            "array<string, int>"
+        ],
+        "template": false
+    },
+    {
+        "bound": "array<string, int>",
+        "other": "array<string, int>",
+        "argument": false,
+        "reverse": true,
+        "otherTemplate": {
+            "name": "T",
+            "scope": "function other()"
+        },
+        "descriptions": [
+            "array<string, int>",
+            "array<string, int>",
+            "array<string, int>"
+        ],
+        "template": false
+    },
+    {
+        "bound": "array<string, int>",
+        "other": "array<string, int>",
+        "argument": true,
+        "reverse": false,
+        "otherTemplate": {
+            "name": "T",
+            "scope": "function other()"
+        },
+        "descriptions": [
+            "array<string, int>",
+            "array<string, int>",
+            "array<string, int>"
+        ],
+        "template": false
+    },
+    {
+        "bound": "array<string, int>",
+        "other": "array<string, int>",
+        "argument": true,
+        "reverse": true,
+        "otherTemplate": {
+            "name": "T",
+            "scope": "function other()"
+        },
+        "descriptions": [
+            "array<string, int>",
+            "array<string, int>",
+            "array<string, int>"
+        ],
+        "template": false
+    },
+    {
+        "bound": "array<string, int>",
+        "other": "array{a: int}",
+        "argument": false,
+        "reverse": false,
+        "otherTemplate": {
+            "name": "U",
+            "scope": "function other()"
+        },
+        "descriptions": [
+            "array{a: int}",
+            "array{a: int}",
+            "array<string, int>"
+        ],
+        "template": false
+    },
+    {
+        "bound": "array<string, int>",
+        "other": "array{a: int}",
+        "argument": false,
+        "reverse": true,
+        "otherTemplate": {
+            "name": "U",
+            "scope": "function other()"
+        },
+        "descriptions": [
+            "array{a: int}",
+            "array{a: int}",
+            "array<string, int>"
+        ],
+        "template": false
+    },
+    {
+        "bound": "array<string, int>",
+        "other": "array{a: int}",
+        "argument": true,
+        "reverse": false,
+        "otherTemplate": {
+            "name": "U",
+            "scope": "function other()"
+        },
+        "descriptions": [
+            "array{a: int}",
+            "array{a: int}",
+            "array<string, int>"
+        ],
+        "template": false
+    },
+    {
+        "bound": "array<string, int>",
+        "other": "array{a: int}",
+        "argument": true,
+        "reverse": true,
+        "otherTemplate": {
+            "name": "U",
+            "scope": "function other()"
+        },
+        "descriptions": [
+            "array{a: int}",
+            "array{a: int}",
+            "array<string, int>"
+        ],
+        "template": false
+    }
+]
