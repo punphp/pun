@@ -219,6 +219,7 @@ pub fn accepts_with(a: &Type, b: &Type, strict: bool, sm: StrictMixed) -> Tri {
         }
         T::Accessory(Accessory::List) => accessory(b.is_list()),
         T::Accessory(Accessory::NonEmptyArray) => accessory(b.is_array().and(b.is_iterable_at_least_once())),
+        T::Accessory(Accessory::HasMethod(_)) => if compound { by() } else { Tri::No },
         // GenericObjectType, EnumCaseObjectType, a ConstantArrayType (ponytail: its key-by-key checkOurKeys() and
         // unsealed shapes are isSuperTypeOf() here)
         _ => is_super_type_of(a, b),

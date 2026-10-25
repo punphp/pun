@@ -1,0 +1,248 @@
+{
+  "totals": {
+    "errors": 0,
+    "file_errors": 39
+  },
+  "files": {
+    "method-accessories.php": {
+      "errors": 39,
+      "messages": [
+        {
+          "message": "Dumped type: class-string<static(MethodAccessories\\OpenType)>",
+          "line": 11,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: class-string<static(MethodAccessories\\OpenType)>&hasMethod(MiXeD)",
+          "line": 13,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: class-string<static>",
+          "line": 14,
+          "ignorable": false,
+          "identifier": "phpstan.dumpPhpDocType"
+        },
+        {
+          "message": "Dumped type: 'MethodAccessories\\\\OpenType'",
+          "line": 15,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: class-string<static(MethodAccessories\\OpenType)>&hasMethod(MiXeD)&hasMethod(Second)",
+          "line": 17,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: class-string<static(MethodAccessories\\OpenType)>",
+          "line": 20,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: class-string<static(MethodAccessories\\OpenType)>",
+          "line": 22,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: 'MethodAccessories\\\\OpenType'&hasMethod(SelfOnly)",
+          "line": 24,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: class-string<static(MethodAccessories\\OpenType)>",
+          "line": 25,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: class-string<static(MethodAccessories\\OpenType)>",
+          "line": 28,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: class-string<static(MethodAccessories\\OpenType)>&hasMethod(First)&hasMethod(Last)",
+          "line": 31,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: class-string<static(MethodAccessories\\OpenType)>&hasMethod(AfterExit)",
+          "line": 36,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: class-string<MethodAccessories\\OpenType>&hasMethod(CuStOm)",
+          "line": 44,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: class-string<MethodAccessories\\OpenType>",
+          "line": 45,
+          "ignorable": false,
+          "identifier": "phpstan.dumpPhpDocType"
+        },
+        {
+          "message": "Dumped type: string",
+          "line": 46,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: string",
+          "line": 49,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: 'MethodAccessories\\\\OpenType'&hasMethod(Literal)",
+          "line": 52,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: 'MethodAccessories\\\\OpenType'",
+          "line": 53,
+          "ignorable": false,
+          "identifier": "phpstan.dumpPhpDocType"
+        },
+        {
+          "message": "Dumped type: MethodAccessories\\OpenType&hasMethod(ExTrA)",
+          "line": 60,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: MethodAccessories\\OpenType",
+          "line": 61,
+          "ignorable": false,
+          "identifier": "phpstan.dumpPhpDocType"
+        },
+        {
+          "message": "Dumped type: MethodAccessories\\OpenType",
+          "line": 62,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: MethodAccessories\\OpenType",
+          "line": 64,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: MethodAccessories\\OpenType",
+          "line": 66,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: object&hasMethod(__INVOKE)",
+          "line": 68,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: class-string|(object&hasMethod(AnyMethod))",
+          "line": 71,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: class-string|object",
+          "line": 72,
+          "ignorable": false,
+          "identifier": "phpstan.dumpPhpDocType"
+        },
+        {
+          "message": "Dumped type: MethodAccessories\\OpenType",
+          "line": 75,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: MethodAccessories\\Annotated",
+          "line": 85,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: class-string<MethodAccessories\\Annotated>",
+          "line": 93,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: MethodAccessories\\OpenType",
+          "line": 100,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: MethodAccessories\\OpenType&hasMethod(Stored)",
+          "line": 104,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: MethodAccessories\\OpenType&hasMethod(MiXeD)",
+          "line": 111,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: MethodAccessories\\OpenType",
+          "line": 112,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: MethodAccessories\\OpenType&hasMethod(mixed)",
+          "line": 115,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: MethodAccessories\\OpenType&hasMethod(one)",
+          "line": 118,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: MethodAccessories\\OpenType&hasMethod(Same)",
+          "line": 121,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: MethodAccessories\\OpenType",
+          "line": 124,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: MethodAccessories\\OpenType&hasMethod(ElseIf)",
+          "line": 126,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: MethodAccessories\\OpenType",
+          "line": 128,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        }
+      ]
+    }
+  },
+  "errors": []
+}

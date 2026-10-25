@@ -1,0 +1,40 @@
+{
+  "totals": {
+    "errors": 0,
+    "file_errors": 4
+  },
+  "files": {
+    "method-guard-identity.php": {
+      "errors": 4,
+      "messages": [
+        {
+          "message": "Function method_guard_missing not found.",
+          "line": 16,
+          "ignorable": true,
+          "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+          "identifier": "function.notFound"
+        },
+        {
+          "message": "Access to undefined constant stdClass::METHOD_GUARD_MISSING.",
+          "line": 17,
+          "ignorable": true,
+          "identifier": "classConstant.notFound"
+        },
+        {
+          "message": "Constant METHOD_GUARD_MISSING not found.",
+          "line": 18,
+          "ignorable": true,
+          "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+          "identifier": "constant.notFound"
+        },
+        {
+          "message": "Call to an undefined method MethodGuardIdentity\\UnreachableThis::missing().",
+          "line": 29,
+          "ignorable": true,
+          "identifier": "method.notFound"
+        }
+      ]
+    }
+  },
+  "errors": []
+}

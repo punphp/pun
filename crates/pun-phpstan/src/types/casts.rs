@@ -40,6 +40,7 @@ pub fn cast_is_error(t: &Type, cast: Cast, sm: StrictMixed) -> bool {
         T::Array(..) | T::ConstArray(_) | T::Accessory(Accessory::List | Accessory::NonEmptyArray) => {
             matches!(cast, C::String | C::Number | C::BitwiseNot)
         }
+        T::Accessory(Accessory::HasMethod(n)) => cast != C::String || !n.eq_ignore_ascii_case("__toString"),
         T::Accessory(a) => {
             cast == C::Number && !matches!(a, Accessory::NumericString | Accessory::DecimalIntString { .. })
         }

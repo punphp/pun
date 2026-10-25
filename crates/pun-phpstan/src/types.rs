@@ -112,7 +112,7 @@ pub enum NeverKind {
     NonAccepting,
 }
 
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone, Debug)]
 pub enum Accessory {
     NonEmptyString,
     NonFalsyString,
@@ -126,6 +126,20 @@ pub enum Accessory {
     },
     List,
     NonEmptyArray,
+    /// `HasMethodType`: comparison is case-insensitive, description retains the literal spelling.
+    HasMethod(String),
+}
+
+impl PartialEq for Accessory {
+    fn eq(&self, other: &Self) -> bool {
+        match (self, other) {
+            (Self::HasMethod(a), Self::HasMethod(b)) => a.eq_ignore_ascii_case(b),
+            (Self::DecimalIntString { inverse: a }, Self::DecimalIntString { inverse: b }) => {
+                a == b
+            }
+            _ => std::mem::discriminant(self) == std::mem::discriminant(other),
+        }
+    }
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -374,6 +388,9 @@ impl Type {
 
     pub fn is_string(&self) -> Tri {
         self.query_c(&|t| {
+            if matches!(t, Type::Accessory(Accessory::HasMethod(_))) {
+                return Tri::Maybe;
+            }
             Tri::from(matches!(
                 t,
                 Type::String
@@ -414,6 +431,7 @@ impl Type {
     fn is_class_string(&self) -> Tri {
         self.query_c(&|t| match t {
             Type::ClassString(_) => Tri::Yes,
+            Type::Accessory(Accessory::HasMethod(_)) => Tri::Maybe,
             Type::String
             | Type::StringAcceptingStringable
             | Type::StringNotAcceptingStringable
@@ -503,7 +521,9 @@ impl Type {
             Type::Object(class, _) | Type::Static(class, _) | Type::This(class) => {
                 is_instance_of(class, "Traversable")
             }
-            Type::ObjectWithoutClass | Type::ObjectShape(_) => Tri::Maybe,
+            Type::ObjectWithoutClass
+            | Type::ObjectShape(_)
+            | Type::Accessory(Accessory::HasMethod(_)) => Tri::Maybe,
             _ => Tri::No,
         })
     }
@@ -521,7 +541,9 @@ impl Type {
                 | Type::This(_)
                 | Type::EnumCase(..)
                 | Type::Closure(_) => Tri::Yes,
-                Type::Callable(_) | Type::Iterable(..) => Tri::Maybe,
+                Type::Callable(_)
+                | Type::Iterable(..)
+                | Type::Accessory(Accessory::HasMethod(_)) => Tri::Maybe,
                 _ => Tri::No,
             }),
         }
@@ -608,7 +630,8 @@ impl Type {
                 | Accessory::NumericString
                 | Accessory::LiteralString
                 | Accessory::LowercaseString
-                | Accessory::UppercaseString,
+                | Accessory::UppercaseString
+                | Accessory::HasMethod(_),
             ) => Tri::Maybe,
             _ => Tri::No,
         })
@@ -657,6 +680,9 @@ impl Type {
     pub fn is_callable(&self) -> Tri {
         self.query(&|t| match t {
             Type::Callable(_) | Type::Closure(_) => Tri::Yes,
+            Type::Accessory(Accessory::HasMethod(n)) if n.eq_ignore_ascii_case("__invoke") => {
+                Tri::Yes
+            }
             Type::Accessory(Accessory::NumericString)
             | Type::Accessory(Accessory::DecimalIntString { inverse: false }) => Tri::No,
             Type::String
@@ -679,6 +705,53 @@ impl Type {
             }
             _ => Tri::No,
         })
+    }
+
+    /// `Type::hasMethod()`, using the same class metadata as the other shared type queries.
+    pub fn has_method(&self, name: &str) -> Tri {
+        self.query(&|t| match t {
+            Type::Accessory(Accessory::HasMethod(n)) => {
+                if n.eq_ignore_ascii_case(name) {
+                    Tri::Yes
+                } else {
+                    Tri::Maybe
+                }
+            }
+            Type::Object(n, _) | Type::Static(n, _) | Type::This(n) | Type::EnumCase(n, _) => {
+                match symbols::lookup(n) {
+                    Some(c) if has_method(&c, &name.to_ascii_lowercase()) => Tri::Yes,
+                    Some(c) if c.is_final => Tri::No,
+                    _ => Tri::Maybe,
+                }
+            }
+            Type::ClassString(_)
+            | Type::ObjectWithoutClass
+            | Type::ObjectShape(_)
+            | Type::Iterable(..)
+            | Type::Callable(_) => Tri::Maybe,
+            Type::ConstString(_) if t.is_class_string().yes() => Tri::Maybe,
+            _ => Tri::No,
+        })
+    }
+
+    /// MethodExistsTypeSpecifyingExtension's truthy literal-method refinement. Plain strings are unchanged;
+    /// class strings retain their string type, while mixed/object receivers gain only an object accessory.
+    pub fn require_method(self, name: &str) -> Type {
+        let accessory = Type::Accessory(Accessory::HasMethod(name.to_string()));
+        if self.is_string().yes() {
+            return if self.is_class_string().yes() {
+                intersect(vec![self, accessory])
+            } else {
+                self
+            };
+        }
+        intersect(vec![
+            self,
+            union(vec![
+                intersect(vec![Type::ObjectWithoutClass, accessory]),
+                Type::ClassString(None),
+            ]),
+        ])
     }
 
     /// `getObjectClassNames()`
@@ -1024,7 +1097,7 @@ impl Type {
 }
 
 impl Accessory {
-    fn describe(&self) -> &'static str {
+    fn describe(&self) -> String {
         match self {
             Accessory::NonEmptyString => "non-empty-string",
             Accessory::NonFalsyString => "non-falsy-string",
@@ -1036,11 +1109,16 @@ impl Accessory {
             Accessory::DecimalIntString { inverse: true } => "non-decimal-int-string",
             Accessory::List => "list",
             Accessory::NonEmptyArray => "non-empty-array",
+            Accessory::HasMethod(name) => return format!("hasMethod({name})"),
         }
+        .to_string()
     }
 
     fn is_string_accessory(&self) -> bool {
-        !matches!(self, Accessory::List | Accessory::NonEmptyArray)
+        !matches!(
+            self,
+            Accessory::List | Accessory::NonEmptyArray | Accessory::HasMethod(_)
+        )
     }
 }
 
@@ -1405,6 +1483,9 @@ fn describe_intersection_itself(this: &Type, types: &[Type], level: Level) -> St
     let mut described: Vec<(usize, String)> = Vec::new();
     let sorted = sort_types(types);
     for (i, t) in sorted.iter().enumerate() {
+        if level != Level::Precise && matches!(t, Type::Accessory(Accessory::HasMethod(_))) {
+            continue;
+        }
         if let Type::Accessory(a) = t
             && a.is_string_accessory()
         {
@@ -1555,6 +1636,7 @@ fn print_templates(sig: &Signature) -> String {
 /// `Printer::print($type->toPhpDocNode())`
 pub fn to_phpdoc(t: &Type) -> String {
     match t {
+        Type::Accessory(Accessory::HasMethod(_)) => String::new(),
         Type::Mixed { .. } | Type::Error => "mixed".to_string(),
         Type::Never(_) => "never".to_string(),
         Type::ConstInt(i) => i.to_string(),
@@ -1606,6 +1688,18 @@ pub fn to_phpdoc(t: &Type) -> String {
                 }
                 _ => t.describe(Level::Precise),
             }
+        }
+        Type::Intersection(types)
+            if types
+                .iter()
+                .any(|t| matches!(t, Type::Accessory(Accessory::HasMethod(_)))) =>
+        {
+            let printable: Vec<_> = types
+                .iter()
+                .filter(|t| !matches!(t, Type::Accessory(Accessory::HasMethod(_))))
+                .cloned()
+                .collect();
+            to_phpdoc(&intersect(printable))
         }
         Type::Intersection(_) => t.describe(Level::Precise),
         Type::Template(tpl) => tpl.name.clone(),
@@ -2590,6 +2684,7 @@ fn accessory_super(acc: &Accessory, b: &Type) -> Tri {
         Accessory::DecimalIntString { inverse } => decimal_int_super(*inverse, b),
         Accessory::List => b.is_list(),
         Accessory::NonEmptyArray => b.is_array().and(b.is_iterable_at_least_once()),
+        Accessory::HasMethod(name) => b.has_method(name),
     }
 }
 
@@ -2841,6 +2936,7 @@ fn is_sub_type_of(a: &Type, b: &Type) -> Tri {
                         Accessory::DecimalIntString { inverse } => decimal_int_super(*inverse, b),
                         Accessory::NonEmptyArray => b.is_array().and(b.is_iterable_at_least_once()),
                         Accessory::List => b.is_list(),
+                        Accessory::HasMethod(name) => b.has_method(name),
                     };
                     q.and(if same { Tri::Yes } else { Tri::Maybe })
                 }

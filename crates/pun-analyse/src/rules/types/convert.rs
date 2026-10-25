@@ -42,6 +42,7 @@ impl<'a, 'arena> Checker<'a, 'arena> {
         // Mago's keyed arrays are BTreeMaps: only the literal still knows PHP's insertion order. Unknown
         // keys/unpacks keep the inferred fallback, rather than inventing an order for a nonliteral shape.
         let ty = self.literal_array(e).unwrap_or_else(|| self.to_phpstan(t));
+        let ty = self.refine_method_guards(e, ty);
         // MutatingScope::enterFunction/enterClassMethod converts PHPDoc parameter/return values to arguments.
         // An inline @var annotation does not: its source metadata can restore that distinct template strategy.
         let ty = inferred_argument(&ty);

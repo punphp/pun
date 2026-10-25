@@ -4,7 +4,7 @@
 
 use mago_span::{HasSpan, Span};
 use mago_syntax::cst::*;
-use pun_phpstan::types::{Level, Tri, Type, is_super_type_of};
+use pun_phpstan::types::{Level, Tri, Type, intersect, is_super_type_of};
 
 use super::super::reflection::Lookup;
 use super::super::{Checker, calls, declared, members, params};
@@ -23,6 +23,44 @@ fn any(results: impl IntoIterator<Item = Tri>) -> Tri {
 }
 
 impl<'a> Checker<'a, '_> {
+    /// Restore the literal method accessory Mago does not carry. Called by `phpstan_type()` after conversion;
+    /// the existing branch guards determine where it holds, rather than the debug rule's rendering.
+    pub(in super::super) fn refine_method_guards(&self, e: &Expression, mut ty: Type) -> Type {
+        let Some(receiver) = super::super::scope::method_receiver(e, &|id| self.resolved(id)) else { return ty; };
+        let prefix = format!("{receiver}::");
+        let original = self.guards.iter().find_map(|g| match g {
+            super::super::scope::Guard::MethodSource(key, span) if key.starts_with(&prefix) => self.types.get(span),
+            _ => None,
+        }).map(|t| self.to_phpstan(t));
+        if let Some(original) = &original {
+            // Undo only Mago's method_exists-specific promotions/erasures, not a later instanceof/is_string
+            // refinement. In particular a named subclass must not be widened back to the pre-guard object.
+            if (matches!(ty, Type::ClassString(None)) && original.is_string().yes())
+                || matches!((&ty, original), (Type::ObjectWithoutClass, Type::Mixed { .. }))
+            {
+                ty = original.clone();
+            }
+        }
+        let classes = match &ty {
+            Type::ClassString(Some(t)) => t.object_class_names(),
+            _ => ty.object_class_names(),
+        };
+        for guard in &self.guards {
+            let super::super::scope::Guard::Method(key) = guard else { continue; };
+            let Some(method) = key.strip_prefix(&prefix) else { continue; };
+            // PHPStan does not narrow @method/mixin-only methods: the guard promises a native method.
+            if classes.iter().any(|n| {
+                matches!(self.method_of(n, method.as_bytes()), Ok(Some(_)))
+                    && self.class_like(n).found().is_some_and(|k| members::method(self, k, method.as_bytes()).is_none())
+            }) { continue; }
+            ty = declared::with_classes(self, || {
+                let specified = original.as_ref().unwrap_or(&ty).clone().require_method(method);
+                intersect(vec![specified, ty])
+            });
+        }
+        ty
+    }
+
     /// `Type::canCallMethods()`; `strict` says a `mixed` is the StrictMixedType findTypeToCheck() leaves.
     pub(super) fn can_call_methods(&self, t: &Type, strict: bool) -> Tri {
         self.capable(t, strict, true)
@@ -201,7 +239,7 @@ pub(in super::super) fn method_call<'arena>(
     if !c.has_method(&t, name.value).yes() {
         // a true `method_exists($var, 'name')`
         if let Expression::Variable(Variable::Direct(v)) = object {
-            let key = format!("{}::{method_name}", String::from_utf8_lossy(v.name)).to_ascii_lowercase();
+            let key = format!("{}::{method_name}", String::from_utf8_lossy(v.name));
             if c.guards.contains(&super::super::scope::Guard::Method(key)) {
                 return;
             }

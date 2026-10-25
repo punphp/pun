@@ -8,13 +8,14 @@ use std::collections::HashMap;
 
 use mago_codex::metadata::class_like::ClassLikeMetadata;
 use mago_codex::symbol::SymbolKind;
+use mago_span::{HasSpan, Span};
 use mago_syntax::cst::*;
 use mago_syntax::walker::MutWalker;
 
 use super::Checker;
 
 /// A `*_exists()` call known to be true; names as the string argument has them, without a leading `\`.
-#[derive(Clone, Debug, PartialEq, Eq)]
+#[derive(Clone, Debug, Eq)]
 pub enum Guard {
     Class(String),
     Function(String),
@@ -22,14 +23,36 @@ pub enum Guard {
     ClassConstant(String),
     /// `defined('FOO')`: the global constant `FOO` (its fully qualified name).
     Constant(String),
-    /// `method_exists(Foo::class, 'bar')`, lowercase `foo::bar` (`static`/`self` for those `::class`).
+    /// `method_exists(Foo::class, 'bar')`: receiver key and the method's original spelling.
     Method(String),
+    /// The receiver before Mago's `method_exists()` narrowing (which also changes plain strings and mixed).
+    MethodSource(String, Span),
     /// `!($this instanceof Foo)`: in a class that is a Foo, the code here is unreachable.
     ThisNotInstanceOf(String),
     /// `PHP_VERSION_ID` compared with an integer: its range here, bounds inclusive (`None` unbounded).
     PhpVersion(Option<i64>, Option<i64>),
     /// An expression with a type in the scope (`hasExpressionType()`), by its key (`$this->name`).
     Expr(String),
+}
+
+impl PartialEq for Guard {
+    fn eq(&self, other: &Self) -> bool {
+        match (self, other) {
+            (Self::Method(a), Self::Method(b)) | (Self::MethodSource(a, _), Self::MethodSource(b, _)) => {
+                let (a, am) = a.split_once("::").expect("method receiver key");
+                let (b, bm) = b.split_once("::").expect("method receiver key");
+                a == b && am.eq_ignore_ascii_case(bm)
+            }
+            (Self::Class(a), Self::Class(b))
+            | (Self::Function(a), Self::Function(b))
+            | (Self::ClassConstant(a), Self::ClassConstant(b))
+            | (Self::Constant(a), Self::Constant(b))
+            | (Self::ThisNotInstanceOf(a), Self::ThisNotInstanceOf(b))
+            | (Self::Expr(a), Self::Expr(b)) => a == b,
+            (Self::PhpVersion(a, b), Self::PhpVersion(c, d)) => (a, b) == (c, d),
+            _ => false,
+        }
+    }
 }
 
 /// Guards from `expr` being true. `var` looks a variable's remembered guards up.
@@ -102,7 +125,15 @@ fn truthy_of(
         },
         Expression::Variable(Variable::Direct(v)) => var(v.name),
         Expression::Assignment(a) => truthy(a.rhs, var, resolve),
-        Expression::Call(Call::Function(call)) => exists_call(call, resolve).into_iter().collect(),
+        Expression::Call(Call::Function(call)) => {
+            let Some(guard) = exists_call(call, resolve) else { return Vec::new(); };
+            let mut guards = Vec::new();
+            if let Guard::Method(key) = &guard {
+                guards.push(Guard::MethodSource(key.clone(), call.argument_list.arguments.first().expect("exists receiver").value().span()));
+            }
+            guards.push(guard);
+            guards
+        }
         _ => Vec::new(),
     }
 }
@@ -264,28 +295,10 @@ fn exists_call(call: &FunctionCall, resolve: &dyn Fn(&Identifier) -> String) -> 
     .to_ascii_lowercase();
     let arg = call.argument_list.arguments.first()?.value();
     if name.trim_start_matches('\\') == "method_exists" {
-        let class = match arg {
-            Expression::Access(Access::ClassConstant(ClassConstantAccess {
-                class: Expression::Static(_) | Expression::Self_(_),
-                constant: ClassLikeConstantSelector::Identifier(c),
-                ..
-            })) if c.value.eq_ignore_ascii_case(b"class") => {
-                if matches!(arg, Expression::Access(Access::ClassConstant(a)) if matches!(a.class, Expression::Static(_)))
-                {
-                    "static".to_string()
-                } else {
-                    "self".to_string()
-                }
-            }
-            // a variable's object gets the method (`$this::name`, `$foo::name`)
-            Expression::Variable(Variable::Direct(v)) => String::from_utf8_lossy(v.name).into_owned(),
-            _ => constant_string(arg, resolve)?,
-        };
+        let class = method_receiver(arg, resolve)?;
         let method = call.argument_list.arguments.get(1)?.value();
         let method = constant_string(method, resolve)?;
-        return Some(Guard::Method(
-            format!("{}::{}", class.trim_start_matches('\\'), method).to_ascii_lowercase(),
-        ));
+        return Some(Guard::Method(format!("{class}::{method}")));
     }
     let value = constant_string(arg, resolve)?;
     let value = value.trim_start_matches('\\').to_string();
@@ -302,6 +315,41 @@ fn exists_call(call: &FunctionCall, resolve: &dyn Fn(&Identifier) -> String) -> 
         }),
         _ => None,
     }
+}
+
+/// The bounded receivers shared by literal `method_exists()` guards and their type refinement.
+pub(super) fn method_receiver(e: &Expression, resolve: &dyn Fn(&Identifier) -> String) -> Option<String> {
+    let receiver = match e {
+        Expression::Parenthesized(p) => return method_receiver(p.expression, resolve),
+        Expression::Access(Access::ClassConstant(ClassConstantAccess {
+            class: Expression::Static(_),
+            constant: ClassLikeConstantSelector::Identifier(c),
+            ..
+        })) if c.value.eq_ignore_ascii_case(b"class") => "static".to_string(),
+        Expression::Access(Access::ClassConstant(ClassConstantAccess {
+            class: Expression::Self_(_),
+            constant: ClassLikeConstantSelector::Identifier(c),
+            ..
+        })) if c.value.eq_ignore_ascii_case(b"class") => "self".to_string(),
+        Expression::Variable(Variable::Direct(v)) => return Some(String::from_utf8_lossy(v.name).into_owned()),
+        _ => constant_string(e, resolve)?,
+    };
+    Some(receiver.trim_start_matches('\\').to_ascii_lowercase())
+}
+
+/// Collect the pre-guard types in the same inference run as the expressions the rules check.
+pub(super) fn typed_method_receivers(program: &Program) -> Vec<Span> {
+    struct Wanted(Vec<Span>);
+    impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Wanted {
+        fn walk_in_function_call(&mut self, call: &'ast FunctionCall<'arena>, _: &mut ()) {
+            if matches!(exists_call(call, &|id| String::from_utf8_lossy(id.value()).into_owned()), Some(Guard::Method(_))) {
+                self.0.push(call.argument_list.arguments.first().expect("exists receiver").value().span());
+            }
+        }
+    }
+    let mut wanted = Wanted(Vec::new());
+    wanted.walk_program(program, &mut ());
+    wanted.0
 }
 
 fn constant_string(e: &Expression, resolve: &dyn Fn(&Identifier) -> String) -> Option<String> {

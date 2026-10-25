@@ -1,0 +1,534 @@
+[
+    {
+        "base": "accessory",
+        "method": "MiXeD",
+        "describe": [
+            "hasMethod(MiXeD)",
+            "hasMethod(MiXeD)",
+            "hasMethod(MiXeD)"
+        ],
+        "phpdoc": "",
+        "has": [
+            "Yes",
+            "Maybe"
+        ],
+        "queries": [
+            "Maybe",
+            "No",
+            "Maybe",
+            "Maybe",
+            "Maybe"
+        ],
+        "super": [
+            "Yes",
+            "Yes",
+            "Maybe"
+        ],
+        "accepts": [
+            "Yes",
+            "Yes"
+        ],
+        "casts": [
+            true,
+            true,
+            true,
+            true,
+            false,
+            true
+        ]
+    },
+    {
+        "base": "accessory",
+        "method": "__INVOKE",
+        "describe": [
+            "hasMethod(__INVOKE)",
+            "hasMethod(__INVOKE)",
+            "hasMethod(__INVOKE)"
+        ],
+        "phpdoc": "",
+        "has": [
+            "Maybe",
+            "Maybe"
+        ],
+        "queries": [
+            "Maybe",
+            "No",
+            "Maybe",
+            "Maybe",
+            "Yes"
+        ],
+        "super": [
+            "Maybe",
+            "Maybe",
+            "Maybe"
+        ],
+        "accepts": [
+            "Maybe",
+            "Maybe"
+        ],
+        "casts": [
+            true,
+            true,
+            true,
+            true,
+            false,
+            true
+        ]
+    },
+    {
+        "base": "accessory",
+        "method": "__ToStRiNg",
+        "describe": [
+            "hasMethod(__ToStRiNg)",
+            "hasMethod(__ToStRiNg)",
+            "hasMethod(__ToStRiNg)"
+        ],
+        "phpdoc": "",
+        "has": [
+            "Maybe",
+            "Maybe"
+        ],
+        "queries": [
+            "Maybe",
+            "No",
+            "Maybe",
+            "Maybe",
+            "Maybe"
+        ],
+        "super": [
+            "Maybe",
+            "Maybe",
+            "Maybe"
+        ],
+        "accepts": [
+            "Maybe",
+            "Maybe"
+        ],
+        "casts": [
+            false,
+            true,
+            true,
+            true,
+            false,
+            true
+        ]
+    },
+    {
+        "base": "object",
+        "method": "MiXeD",
+        "describe": [
+            "object",
+            "object",
+            "object&hasMethod(MiXeD)"
+        ],
+        "phpdoc": "object",
+        "has": [
+            "Yes",
+            "Maybe"
+        ],
+        "queries": [
+            "No",
+            "No",
+            "Maybe",
+            "Yes",
+            "Maybe"
+        ],
+        "super": [
+            "Yes",
+            "Maybe",
+            "Maybe"
+        ],
+        "accepts": [
+            "Yes",
+            "Maybe"
+        ],
+        "casts": [
+            true,
+            true,
+            true,
+            true,
+            false,
+            true
+        ]
+    },
+    {
+        "base": "class-string",
+        "method": "MiXeD",
+        "describe": [
+            "class-string",
+            "class-string",
+            "class-string&hasMethod(MiXeD)"
+        ],
+        "phpdoc": "class-string",
+        "has": [
+            "Yes",
+            "Maybe"
+        ],
+        "queries": [
+            "Yes",
+            "No",
+            "No",
+            "No",
+            "Maybe"
+        ],
+        "super": [
+            "Yes",
+            "Maybe",
+            "Maybe"
+        ],
+        "accepts": [
+            "Yes",
+            "Maybe"
+        ],
+        "casts": [
+            false,
+            true,
+            false,
+            false,
+            false,
+            false
+        ]
+    },
+    {
+        "base": "static-string",
+        "method": "MiXeD",
+        "describe": [
+            "class-string<static(Exception)>",
+            "class-string<static(Exception)>",
+            "class-string<static(Exception)>&hasMethod(MiXeD)"
+        ],
+        "phpdoc": "class-string<static>",
+        "has": [
+            "Yes",
+            "Maybe"
+        ],
+        "queries": [
+            "Yes",
+            "No",
+            "No",
+            "No",
+            "Maybe"
+        ],
+        "super": [
+            "Yes",
+            "Maybe",
+            "Maybe"
+        ],
+        "accepts": [
+            "Yes",
+            "Maybe"
+        ],
+        "casts": [
+            false,
+            true,
+            false,
+            false,
+            false,
+            false
+        ]
+    },
+    {
+        "base": "Exception",
+        "method": "MiXeD",
+        "describe": [
+            "Exception",
+            "Exception",
+            "Exception&hasMethod(MiXeD)"
+        ],
+        "phpdoc": "Exception",
+        "has": [
+            "Yes",
+            "Maybe"
+        ],
+        "queries": [
+            "No",
+            "No",
+            "No",
+            "Yes",
+            "Maybe"
+        ],
+        "super": [
+            "Yes",
+            "Maybe",
+            "Maybe"
+        ],
+        "accepts": [
+            "Yes",
+            "Maybe"
+        ],
+        "casts": [
+            false,
+            true,
+            true,
+            true,
+            false,
+            true
+        ]
+    },
+    {
+        "base": "Exception",
+        "method": "getMessage",
+        "describe": [
+            "Exception",
+            "Exception",
+            "Exception"
+        ],
+        "phpdoc": "Exception",
+        "has": [
+            "Maybe",
+            "Maybe"
+        ],
+        "queries": [
+            "No",
+            "No",
+            "No",
+            "Yes",
+            "Maybe"
+        ],
+        "super": [
+            "Maybe",
+            "Maybe",
+            "Maybe"
+        ],
+        "accepts": [
+            "No",
+            "Maybe"
+        ],
+        "casts": [
+            false,
+            true,
+            true,
+            true,
+            false,
+            true
+        ]
+    },
+    {
+        "base": "Closure",
+        "method": "MiXeD",
+        "describe": [
+            "*NEVER*",
+            "*NEVER*",
+            "*NEVER*"
+        ],
+        "phpdoc": "never",
+        "has": [
+            "No",
+            "No"
+        ],
+        "queries": [
+            "No",
+            "No",
+            "Yes",
+            "Yes",
+            "No"
+        ],
+        "super": [
+            "Yes",
+            "No",
+            "Yes"
+        ],
+        "accepts": [
+            "Yes",
+            "Yes"
+        ],
+        "casts": [
+            false,
+            false,
+            false,
+            false,
+            false,
+            false
+        ]
+    },
+    {
+        "base": "string",
+        "method": "MiXeD",
+        "describe": [
+            "string",
+            "string",
+            "string"
+        ],
+        "phpdoc": "string",
+        "has": [
+            "No",
+            "No"
+        ],
+        "queries": [
+            "Yes",
+            "No",
+            "No",
+            "No",
+            "Maybe"
+        ],
+        "super": [
+            "No",
+            "No",
+            "No"
+        ],
+        "accepts": [
+            "No",
+            "No"
+        ],
+        "casts": [
+            false,
+            true,
+            false,
+            false,
+            false,
+            false
+        ]
+    },
+    {
+        "base": "'Exception'",
+        "method": "MiXeD",
+        "describe": [
+            "string",
+            "'Exception'",
+            "'Exception'&hasMethod(MiXeD)"
+        ],
+        "phpdoc": "'Exception'",
+        "has": [
+            "Yes",
+            "Maybe"
+        ],
+        "queries": [
+            "Yes",
+            "No",
+            "No",
+            "No",
+            "No"
+        ],
+        "super": [
+            "Yes",
+            "Maybe",
+            "Maybe"
+        ],
+        "accepts": [
+            "Yes",
+            "Maybe"
+        ],
+        "casts": [
+            false,
+            true,
+            false,
+            false,
+            false,
+            false
+        ]
+    },
+    {
+        "base": "mixed",
+        "method": "MiXeD",
+        "describe": [
+            "class-string|object",
+            "class-string|object",
+            "class-string|(object&hasMethod(MiXeD))"
+        ],
+        "phpdoc": "class-string|object",
+        "has": [
+            "Maybe",
+            "Maybe"
+        ],
+        "queries": [
+            "Maybe",
+            "No",
+            "Maybe",
+            "Maybe",
+            "Maybe"
+        ],
+        "super": [
+            "Maybe",
+            "Maybe",
+            "Maybe"
+        ],
+        "accepts": [
+            "Maybe",
+            "Maybe"
+        ],
+        "casts": [
+            true,
+            true,
+            true,
+            true,
+            false,
+            true
+        ]
+    },
+    {
+        "base": "int",
+        "method": "MiXeD",
+        "describe": [
+            "*NEVER*",
+            "*NEVER*",
+            "*NEVER*"
+        ],
+        "phpdoc": "never",
+        "has": [
+            "No",
+            "No"
+        ],
+        "queries": [
+            "No",
+            "No",
+            "Yes",
+            "Yes",
+            "No"
+        ],
+        "super": [
+            "Yes",
+            "No",
+            "Yes"
+        ],
+        "accepts": [
+            "Yes",
+            "Yes"
+        ],
+        "casts": [
+            false,
+            false,
+            false,
+            false,
+            false,
+            false
+        ]
+    },
+    {
+        "base": "object|string",
+        "method": "MiXeD",
+        "describe": [
+            "class-string|object",
+            "class-string|object",
+            "class-string|(object&hasMethod(MiXeD))"
+        ],
+        "phpdoc": "class-string|object",
+        "has": [
+            "Maybe",
+            "Maybe"
+        ],
+        "queries": [
+            "Maybe",
+            "No",
+            "Maybe",
+            "Maybe",
+            "Maybe"
+        ],
+        "super": [
+            "Maybe",
+            "Maybe",
+            "Maybe"
+        ],
+        "accepts": [
+            "Maybe",
+            "Maybe"
+        ],
+        "casts": [
+            true,
+            true,
+            true,
+            true,
+            false,
+            true
+        ]
+    }
+]
