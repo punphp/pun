@@ -21,6 +21,7 @@ const PORTED: &[&str] = &[
     "postInc.type",
     "preInc.type",
     "throws.void",
+    "throws.notThrowable",
     "nullsafe.neverNull",
     "property.unusedType",
     "return.unusedType",

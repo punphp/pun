@@ -101,6 +101,7 @@ pub fn nop(c: &mut Checker, end: Span) {
         .unwrap_or(0);
     let names = Position::new(code as u32);
     node(c, at);
+    super::invalid_throws::node(c, at);
     super::var_tags::check(c, at, Span::new(end.file_id, names, names));
     super::var_names::clause(c, at);
 }
@@ -109,6 +110,7 @@ pub fn nop(c: &mut Checker, end: Span) {
 /// both rules and InvalidPhpDocVarTagTypeRule.
 pub fn clause(c: &mut Checker, at: Span) {
     node(c, at);
+    super::invalid_throws::node(c, at);
     super::var_tags::node(c, at);
     super::var_names::clause(c, at);
 }

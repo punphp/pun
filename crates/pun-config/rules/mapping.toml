@@ -1256,7 +1256,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "types/invalid-property-type" = { preset = "basic", ported = true, status = "decided" }
 "types/invalid-regex" = { preset = "basic", ported = true, status = "decided" }
 "types/invalid-self-out-tag" = { preset = "essential", status = "decided" }
-"types/invalid-throws-tag" = { preset = "essential", status = "decided" }
+"types/invalid-throws-tag" = { preset = "essential", ported = true, status = "decided", summary = "Reports `@throws` types that are not subtypes of `Throwable`. Standalone `void` means no exception is thrown. Both branches of a conditional type must be valid. A union containing `void` is invalid." }
 "types/invalid-trait-method-tag-template" = { preset = "essential", ported = true, status = "decided" }
 "types/invalid-trait-template" = { preset = "essential", ported = true, status = "decided" }
 "types/invalid-trait-use-generics" = { preset = "essential", ported = true, status = "decided" }

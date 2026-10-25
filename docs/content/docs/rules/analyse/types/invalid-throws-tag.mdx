@@ -7,7 +7,7 @@ pagination: false
 
 <RuleId id="analyse/types/invalid-throws-tag" />
 
-Enabled by the [`analyse-essential`](/docs/rules/presets/analyse-essential), [`analyse-recommended`](/docs/rules/presets/analyse-recommended), [`analyse-strict`](/docs/rules/presets/analyse-strict), [`analyse-max`](/docs/rules/presets/analyse-max) presets. Fix: none (report only). **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`analyse-essential`](/docs/rules/presets/analyse-essential), [`analyse-recommended`](/docs/rules/presets/analyse-recommended), [`analyse-strict`](/docs/rules/presets/analyse-strict), [`analyse-max`](/docs/rules/presets/analyse-max) presets. Fix: none (report only).
 
 ## Replaces
 
@@ -25,6 +25,9 @@ Enabled by the [`analyse-essential`](/docs/rules/presets/analyse-essential), [`a
 // @pun-ignore analyse/types/invalid-throws-tag -- explain the exception
 ```
 
+## What it does
+
+Reports `@throws` types that are not subtypes of `Throwable`. Standalone `void` means no exception is thrown. Both branches of a conditional type must be valid. A union containing `void` is invalid.
 
 ## Options
 

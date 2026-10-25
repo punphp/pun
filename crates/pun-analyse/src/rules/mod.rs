@@ -25,6 +25,7 @@ mod hierarchy;
 mod infer;
 mod internal;
 mod internal_usage;
+mod invalid_throws;
 mod larastan;
 mod members;
 mod missing_types;
@@ -110,6 +111,7 @@ pub fn reports(identifier: &str) -> bool {
         || conditional_return::IDENTIFIERS.contains(&identifier)
         || assert_tags::IDENTIFIERS.contains(&identifier)
         || phpdoc_types::IDENTIFIERS.contains(&identifier)
+        || invalid_throws::IDENTIFIERS.contains(&identifier)
         || var_names::IDENTIFIERS.contains(&identifier)
         || variance::IDENTIFIERS.contains(&identifier)
 }
@@ -1197,6 +1199,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
             types::too_wide_properties(self, k, class.members.as_slice());
         }
         type_aliases::class_like(self, class.span());
+        invalid_throws::node(self, class.span());
         missing_types::class(self, class);
         generics::class(self, class);
         larastan::class(self, class);
@@ -1246,6 +1249,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
             class_tags::class_like(self, i.span(), k);
         }
         type_aliases::class_like(self, i.span());
+        invalid_throws::node(self, i.span());
         missing_types::interface(self, i);
         generics::interface(self, i);
     }
@@ -1295,6 +1299,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
             dead_code::unused_private(self, k, e.members.as_slice());
         }
         type_aliases::class_like(self, e.span());
+        invalid_throws::node(self, e.span());
         missing_types::enum_(self, e);
         generics::enum_(self, e);
     }
@@ -1343,6 +1348,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         attributes::trait_in_context(self, t);
         type_aliases::trait_use(self, t.span(), &name, &class);
         class_tags::trait_use(self, t.span(), &name, &class);
+        invalid_throws::node(self, t.span());
         for member in t.members.iter() {
             if let ClassLikeMember::Method(m) = member {
                 let original = String::from_utf8_lossy(m.name.value).into_owned();
@@ -1440,6 +1446,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
             types::too_wide_properties(self, k, a.members.as_slice());
         }
         generics::anonymous(self, a, &name, &display);
+        invalid_throws::anonymous(self, a);
         constants::read_only_class(self, a.span(), a.modifiers.as_slice(), true);
     }
 
@@ -1449,6 +1456,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         conditional_return::function(self, f);
         assert_tags::function(self, f);
         phpdoc_types::function(self, f);
+        invalid_throws::function(self, f);
         self.enter_this(false);
         functions::inner_function(self, f);
         self.larastan_enter_function(&f.parameter_list);
@@ -1538,6 +1546,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         conditional_return::method(self, m);
         assert_tags::method(self, m);
         phpdoc_types::method(self, m);
+        invalid_throws::method(self, m);
         phpdoc_types::promoted(self, m);
         self.enter_this(!m.modifiers.iter().any(|x| matches!(x, Modifier::Static(_))));
         functions::function_like(self, m, &m.parameter_list);
@@ -2101,6 +2110,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
     }
     fn walk_in_property(&mut self, p: &'ast Property<'arena>, _: &mut ()) {
         phpdoc_tags::node(self, p.span());
+        invalid_throws::node(self, p.span());
         let names: Vec<&[u8]> = p.variables().iter().map(|v| v.name).collect();
         names::property_type(self, p.span(), p.hint(), &names);
         signatures::property(self, p.span(), p.hint(), &names);
@@ -2140,6 +2150,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
     }
     fn walk_in_class_like_constant(&mut self, k: &'ast ClassLikeConstant<'arena>, _: &mut ()) {
         phpdoc_tags::node(self, k.span());
+        invalid_throws::node(self, k.span());
         declarations::constant(self, k);
         constants::class_constant(self, k);
         missing_types::class_constant(self, k);
@@ -2332,6 +2343,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
     }
     fn walk_in_property_hook(&mut self, h: &'ast PropertyHook<'arena>, _: &mut ()) {
         phpdoc_tags::node(self, h.span());
+        invalid_throws::node(self, h.span());
         self.enter_this(true);
         attributes::property_hook(self, h);
         if let Some(params) = &h.parameter_list {
@@ -2376,6 +2388,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         self.pop_frame();
     }
     fn walk_in_statement(&mut self, s: &'ast Statement<'arena>, _: &mut ()) {
+        invalid_throws::statement(self, s);
         phpdoc_tags::statement(self, s);
         statements::statement_position(self, s);
         if self.unreachable.contains(&s.span()) {

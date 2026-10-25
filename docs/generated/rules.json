@@ -24679,7 +24679,7 @@
       "id": "analyse/types/invalid-throws-tag",
       "command": "analyse",
       "group": "types",
-      "summary": "",
+      "summary": "Reports @throws types that are not subtypes of Throwable. Standalone void means no exception is thrown. Both branches of a conditional type must be valid. A union containing void is invalid.",
       "enabled": [
         "analyse-essential",
         "analyse-recommended",
@@ -24696,7 +24696,7 @@
         "PHPStan\\Rules\\PhpDoc\\InvalidThrowsPhpDocValueRule",
         "throws.notThrowable"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/types/invalid-trait-method-tag-template",

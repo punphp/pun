@@ -1,0 +1,12 @@
+parameters:
+    level: 2
+    phpVersion: 80400
+    paths:
+        - incompatible-throws.php
+        - merge-inherited-throws.php
+        - invalid-throws-property-hook.php
+        - throws-with-require.php
+        - controls.php
+        - boundaries.php
+        - ignored.php
+        - hook-templates.php

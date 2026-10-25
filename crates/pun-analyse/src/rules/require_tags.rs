@@ -35,7 +35,7 @@ pub const IDENTIFIERS: &[&str] = &[
 ];
 
 /// The resolved types of a class-like's tags named `names` (PhpDocNodeResolver: the tags of the first name first).
-fn tag_types(c: &Checker, k: &ClassLikeMetadata, names: [&str; 2]) -> Vec<Type> {
+pub(super) fn tag_types(c: &Checker, k: &ClassLikeMetadata, names: [&str; 2]) -> Vec<Type> {
     let Some(doc) = c.class_doc(k) else {
         return Vec::new();
     };

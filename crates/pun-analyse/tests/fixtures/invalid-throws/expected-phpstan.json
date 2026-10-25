@@ -1,0 +1,546 @@
+[
+  {
+    "file": "boundaries.php",
+    "line": 6,
+    "identifier": "throws.notThrowable",
+    "message": "PHPDoc tag @throws with type bool is not subtype of Throwable",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "boundaries.php",
+    "line": 9,
+    "identifier": "throws.notThrowable",
+    "message": "PHPDoc tag @throws with type string is not subtype of Throwable",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "boundaries.php",
+    "line": 12,
+    "identifier": "throws.notThrowable",
+    "message": "PHPDoc tag @throws with type float is not subtype of Throwable",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "boundaries.php",
+    "line": 15,
+    "identifier": "throws.notThrowable",
+    "message": "PHPDoc tag @throws with type bool is not subtype of Throwable",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "boundaries.php",
+    "line": 17,
+    "identifier": "throws.notThrowable",
+    "message": "PHPDoc tag @throws with type string is not subtype of Throwable",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "boundaries.php",
+    "line": 19,
+    "identifier": "throws.notThrowable",
+    "message": "PHPDoc tag @throws with type float is not subtype of Throwable",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "boundaries.php",
+    "line": 23,
+    "identifier": "throws.notThrowable",
+    "message": "PHPDoc tag @throws with type int is not subtype of Throwable",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "boundaries.php",
+    "line": 25,
+    "identifier": "throws.notThrowable",
+    "message": "PHPDoc tag @throws with type string is not subtype of Throwable",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "boundaries.php",
+    "line": 29,
+    "identifier": "throws.notThrowable",
+    "message": "PHPDoc tag @throws with type int is not subtype of Throwable",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "boundaries.php",
+    "line": 41,
+    "identifier": "throws.notThrowable",
+    "message": "PHPDoc tag @throws with type bool is not subtype of Throwable",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "boundaries.php",
+    "line": 44,
+    "identifier": "throws.notThrowable",
+    "message": "PHPDoc tag @throws with type string is not subtype of Throwable",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "boundaries.php",
+    "line": 47,
+    "identifier": "throws.notThrowable",
+    "message": "PHPDoc tag @throws with type int is not subtype of Throwable",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "boundaries.php",
+    "line": 49,
+    "identifier": "throws.notThrowable",
+    "message": "PHPDoc tag @throws with type bool is not subtype of Throwable",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "boundaries.php",
+    "line": 51,
+    "identifier": "throws.notThrowable",
+    "message": "PHPDoc tag @throws with type float is not subtype of Throwable",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "boundaries.php",
+    "line": 53,
+    "identifier": "throws.notThrowable",
+    "message": "PHPDoc tag @throws with type int is not subtype of Throwable",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "boundaries.php",
+    "line": 55,
+    "identifier": "throws.notThrowable",
+    "message": "PHPDoc tag @throws with type string is not subtype of Throwable",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "boundaries.php",
+    "line": 58,
+    "identifier": "throws.notThrowable",
+    "message": "PHPDoc tag @throws with type bool is not subtype of Throwable",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "boundaries.php",
+    "line": 60,
+    "identifier": "throws.notThrowable",
+    "message": "PHPDoc tag @throws with type string is not subtype of Throwable",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "boundaries.php",
+    "line": 63,
+    "identifier": "throws.notThrowable",
+    "message": "PHPDoc tag @throws with type bool is not subtype of Throwable",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "boundaries.php",
+    "line": 65,
+    "identifier": "throws.notThrowable",
+    "message": "PHPDoc tag @throws with type string is not subtype of Throwable",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "boundaries.php",
+    "line": 69,
+    "identifier": "throws.notThrowable",
+    "message": "PHPDoc tag @throws with type int is not subtype of Throwable",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "boundaries.php",
+    "line": 71,
+    "identifier": "throws.notThrowable",
+    "message": "PHPDoc tag @throws with type string is not subtype of Throwable",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "boundaries.php",
+    "line": 75,
+    "identifier": "throws.notThrowable",
+    "message": "PHPDoc tag @throws with type bool is not subtype of Throwable",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "boundaries.php",
+    "line": 80,
+    "identifier": "throws.notThrowable",
+    "message": "PHPDoc tag @throws with type int is not subtype of Throwable",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "boundaries.php",
+    "line": 83,
+    "identifier": "throws.notThrowable",
+    "message": "PHPDoc tag @throws with type bool is not subtype of Throwable",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "boundaries.php",
+    "line": 86,
+    "identifier": "throws.notThrowable",
+    "message": "PHPDoc tag @throws with type bool is not subtype of Throwable",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "boundaries.php",
+    "line": 88,
+    "identifier": "throws.notThrowable",
+    "message": "PHPDoc tag @throws with type string is not subtype of Throwable",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "boundaries.php",
+    "line": 92,
+    "identifier": "throws.notThrowable",
+    "message": "PHPDoc tag @throws with type float is not subtype of Throwable",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "boundaries.php",
+    "line": 96,
+    "identifier": "throws.notThrowable",
+    "message": "PHPDoc tag @throws with type int is not subtype of Throwable",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "boundaries.php",
+    "line": 99,
+    "identifier": "throws.notThrowable",
+    "message": "PHPDoc tag @throws with type string is not subtype of Throwable",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "boundaries.php",
+    "line": 32,
+    "identifier": "throws.notThrowable",
+    "message": "PHPDoc tag @throws with type string is not subtype of Throwable",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "boundaries.php",
+    "line": 35,
+    "identifier": "throws.notThrowable",
+    "message": "PHPDoc tag @throws with type bool is not subtype of Throwable",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "controls.php",
+    "line": 17,
+    "identifier": "throws.notThrowable",
+    "message": "PHPDoc tag @throws with type string is not subtype of Throwable",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "controls.php",
+    "line": 23,
+    "identifier": "throws.notThrowable",
+    "message": "PHPDoc tag @throws with type bool is not subtype of Throwable",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "controls.php",
+    "line": 32,
+    "identifier": "throws.notThrowable",
+    "message": "PHPDoc tag @throws with type Exception|string is not subtype of Throwable",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "controls.php",
+    "line": 38,
+    "identifier": "throws.notThrowable",
+    "message": "PHPDoc tag @throws with type mixed is not subtype of Throwable",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "controls.php",
+    "line": 41,
+    "identifier": "throws.notThrowable",
+    "message": "PHPDoc tag @throws with type null is not subtype of Throwable",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "controls.php",
+    "line": 44,
+    "identifier": "throws.notThrowable",
+    "message": "PHPDoc tag @throws with type class-string<Exception> is not subtype of Throwable",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "controls.php",
+    "line": 47,
+    "identifier": "throws.notThrowable",
+    "message": "PHPDoc tag @throws with type (int is int ? Exception : stdClass) is not subtype of Throwable",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "controls.php",
+    "line": 53,
+    "identifier": "throws.notThrowable",
+    "message": "PHPDoc tag @throws with type (int is string ? Exception|void : Exception) is not subtype of Throwable",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "controls.php",
+    "line": 71,
+    "identifier": "throws.notThrowable",
+    "message": "PHPDoc tag @throws with type T is not subtype of Throwable",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "controls.php",
+    "line": 91,
+    "identifier": "throws.notThrowable",
+    "message": "PHPDoc tag @throws with type ThrowsControls\\Plain is not subtype of Throwable",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "controls.php",
+    "line": 94,
+    "identifier": "throws.notThrowable",
+    "message": "PHPDoc tag @throws with type ThrowsControls\\NotAnInterface is not subtype of Throwable",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "controls.php",
+    "line": 97,
+    "identifier": "throws.notThrowable",
+    "message": "PHPDoc tag @throws with type ThrowsControls\\NotAnInterfaceEither is not subtype of Throwable",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "controls.php",
+    "line": 100,
+    "identifier": "throws.notThrowable",
+    "message": "PHPDoc tag @throws with type ThrowsControls\\Missing is not subtype of Throwable",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "hook-templates.php",
+    "line": 22,
+    "identifier": "throws.notThrowable",
+    "message": "PHPDoc tag @throws with type E of stdClass is not subtype of Throwable",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "hook-templates.php",
+    "line": 30,
+    "identifier": "throws.notThrowable",
+    "message": "PHPDoc tag @throws with type U of stdClass is not subtype of Throwable",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "hook-templates.php",
+    "line": 32,
+    "identifier": "throws.notThrowable",
+    "message": "PHPDoc tag @throws with type U of stdClass is not subtype of Throwable",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "ignored.php",
+    "line": 9,
+    "identifier": "throws.notThrowable",
+    "message": "PHPDoc tag @throws with type string is not subtype of Throwable",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "incompatible-throws.php",
+    "line": 54,
+    "identifier": "throws.notThrowable",
+    "message": "PHPDoc tag @throws with type Undefined is not subtype of Throwable",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "incompatible-throws.php",
+    "line": 61,
+    "identifier": "throws.notThrowable",
+    "message": "PHPDoc tag @throws with type bool is not subtype of Throwable",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "incompatible-throws.php",
+    "line": 68,
+    "identifier": "throws.notThrowable",
+    "message": "PHPDoc tag @throws with type DateTimeImmutable is not subtype of Throwable",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "incompatible-throws.php",
+    "line": 75,
+    "identifier": "throws.notThrowable",
+    "message": "PHPDoc tag @throws with type DateTimeImmutable|Throwable is not subtype of Throwable",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "incompatible-throws.php",
+    "line": 82,
+    "identifier": "throws.notThrowable",
+    "message": "PHPDoc tag @throws with type DateTimeImmutable&IteratorAggregate is not subtype of Throwable",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "incompatible-throws.php",
+    "line": 96,
+    "identifier": "throws.notThrowable",
+    "message": "PHPDoc tag @throws with type Throwable|void is not subtype of Throwable",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "incompatible-throws.php",
+    "line": 103,
+    "identifier": "throws.notThrowable",
+    "message": "PHPDoc tag @throws with type stdClass|void is not subtype of Throwable",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "incompatible-throws.php",
+    "line": 118,
+    "identifier": "throws.notThrowable",
+    "message": "PHPDoc tag @throws with type stdClass is not subtype of Throwable",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "incompatible-throws.php",
+    "line": 141,
+    "identifier": "throws.notThrowable",
+    "message": "PHPDoc tag @throws with type ($x is int ? stdClass : void) is not subtype of Throwable",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "incompatible-throws.php",
+    "line": 159,
+    "identifier": "throws.notThrowable",
+    "message": "PHPDoc tag @throws with type (TKey of int|string is int ? void : stdClass) is not subtype of Throwable",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "incompatible-throws.php",
+    "line": 177,
+    "identifier": "throws.notThrowable",
+    "message": "PHPDoc tag @throws with type ($x is int ? Exception : ($y is int ? stdClass : void)) is not subtype of Throwable",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "invalid-throws-property-hook.php",
+    "line": 17,
+    "identifier": "throws.notThrowable",
+    "message": "PHPDoc tag @throws with type DateTimeImmutable is not subtype of Throwable",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "merge-inherited-throws.php",
+    "line": 13,
+    "identifier": "throws.notThrowable",
+    "message": "PHPDoc tag @throws with type InvalidThrowsPhpDocMergeInherited\\A is not subtype of Throwable",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "merge-inherited-throws.php",
+    "line": 19,
+    "identifier": "throws.notThrowable",
+    "message": "PHPDoc tag @throws with type InvalidThrowsPhpDocMergeInherited\\B is not subtype of Throwable",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "merge-inherited-throws.php",
+    "line": 28,
+    "identifier": "throws.notThrowable",
+    "message": "PHPDoc tag @throws with type InvalidThrowsPhpDocMergeInherited\\C|InvalidThrowsPhpDocMergeInherited\\D is not subtype of Throwable",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "throws-with-require.php",
+    "line": 25,
+    "identifier": "throws.notThrowable",
+    "message": "PHPDoc tag @throws with type ThrowsWithRequire\\RequiresExtendsStdClassInterface is not subtype of Throwable",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "throws-with-require.php",
+    "line": 39,
+    "identifier": "throws.notThrowable",
+    "message": "PHPDoc tag @throws with type DateTimeInterface|ThrowsWithRequire\\RequiresExtendsExceptionInterface is not subtype of Throwable",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "throws-with-require.php",
+    "line": 46,
+    "identifier": "throws.notThrowable",
+    "message": "PHPDoc tag @throws with type Exception|ThrowsWithRequire\\RequiresExtendsStdClassInterface is not subtype of Throwable",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "throws-with-require.php",
+    "line": 74,
+    "identifier": "throws.notThrowable",
+    "message": "PHPDoc tag @throws with type Iterator&ThrowsWithRequire\\RequiresExtendsStdClassInterface is not subtype of Throwable",
+    "tip": null,
+    "ignorable": true
+  }
+]

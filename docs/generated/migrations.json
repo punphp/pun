@@ -23911,7 +23911,7 @@
         "rules": [
           "analyse/types/invalid-throws-tag"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
