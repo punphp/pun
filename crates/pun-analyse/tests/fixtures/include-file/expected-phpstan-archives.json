@@ -382,5 +382,21 @@
         "message": "Path in include() \"phar://archives/truncated.tar/ok.php\" is not a file or it does not exist.",
         "tip": null,
         "ignorable": true
+    },
+    {
+        "file": "$ROOT/archives.php",
+        "line": 80,
+        "identifier": "include.fileNotFound",
+        "message": "Path in include() \"phar://archives/nested-3.phar.gz/ok.php\" is not a file or it does not exist.",
+        "tip": null,
+        "ignorable": true
+    },
+    {
+        "file": "$ROOT/archives.php",
+        "line": 81,
+        "identifier": "include.fileNotFound",
+        "message": "Path in include() \"phar://archives/nested-4.phar.gz/ok.php\" is not a file or it does not exist.",
+        "tip": null,
+        "ignorable": true
     }
 ]

@@ -49,6 +49,14 @@ $zip->addFromString('back\\', '<?php');
 $zip->close();
 
 $native = file_get_contents("$dir/native.phar");
+// ext/phar/phar.c decrements its restart counter before dispatch: two gzip layers work, three do not.
+$nested = $native;
+for ($layers = 1; $layers <= 4; $layers++) {
+    $nested = gzencode($nested);
+    if ($layers >= 2) {
+        file_put_contents("$dir/nested-$layers.phar.gz", $nested);
+    }
+}
 copy("$dir/native.phar", "$dir/archive.bin");
 copy("$dir/native.phar", "$dir/noextension");
 // Change the stub while retaining the manifest and ask PHP's hash implementation to re-sign it.

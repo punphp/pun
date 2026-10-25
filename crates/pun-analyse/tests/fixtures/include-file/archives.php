@@ -76,3 +76,6 @@ include 'phar://archives/truncated.tar/ok.php';
 if (is_file('phar://archives/missing.phar/ok.php')) {
     include 'phar://archives/missing.phar/ok.php';
 }
+include 'phar://archives/nested-2.phar.gz/ok.php';
+include 'phar://archives/nested-3.phar.gz/ok.php';
+include 'phar://archives/nested-4.phar.gz/ok.php';

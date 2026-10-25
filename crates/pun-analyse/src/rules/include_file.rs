@@ -296,12 +296,17 @@ fn phar_file(cwd: &Path, path: &str) -> Option<bool> {
 /// PHP dispatches by contents, not by the archive extension. Stat only needs the manifest/index: member PHP,
 /// serialized metadata and stubs are never evaluated, extracted or deserialized.
 fn archive_file(bytes: &[u8], member: &[u8], recursion: u8) -> Option<bool> {
-    if bytes.starts_with(b"\x1f\x8b\x08") && recursion > 0 {
+    if bytes.starts_with(b"\x1f\x8b\x08") {
         let mut unpacked = Vec::new();
         flate2::read::GzDecoder::new(bytes)
             .read_to_end(&mut unpacked)
             .ok()?;
-        return archive_file(&unpacked, member, recursion - 1);
+        // ext/phar/phar.c rejects --recursion_count == 0 before restarting archive dispatch.
+        let recursion = recursion - 1;
+        if recursion == 0 {
+            return None;
+        }
+        return archive_file(&unpacked, member, recursion);
     }
     if bytes.starts_with(b"PK\x03\x04") {
         return zip_file(bytes, member);
