@@ -69,7 +69,9 @@ fn engine_exception_reporting_preserves_certainty_and_switch_errors_propagate() 
     use mago_allocator::LocalArena;
     use mago_analyzer::Analyzer;
     use mago_analyzer::analysis_result::AnalysisResult;
+    use mago_analyzer::code::IssueCode;
     use mago_analyzer::error::AnalysisError;
+    use mago_analyzer::plugin::context::InvocationInfo;
     use mago_analyzer::plugin::{
         ExpressionHook, ExpressionHookResult, HookContext, HookResult, PluginError, PluginRegistry,
         Provider, ProviderMeta,
@@ -79,6 +81,7 @@ fn engine_exception_reporting_preserves_certainty_and_switch_errors_propagate() 
     use mago_codex::scanner::scan_program;
     use mago_database::file::File;
     use mago_names::resolver::NameResolver;
+    use mago_reporting::{Annotation, Issue};
     use mago_span::HasSpan;
     use mago_syntax::cst::{Expression, Literal, Variable};
     use mago_syntax::parser::parse_file;
@@ -98,6 +101,26 @@ fn engine_exception_reporting_preserves_certainty_and_switch_errors_propagate() 
         }
     }
     impl ExpressionHook for Observe {
+        fn before_arguments(
+            &self,
+            invocation: &InvocationInfo<'_, '_, '_>,
+            context: &mut HookContext<'_, '_>,
+        ) -> HookResult<()> {
+            if invocation.function_name() == "abortArguments" {
+                return Err(PluginError::Internal {
+                    reason: "argument scope failed".into(),
+                });
+            }
+            if invocation.function_name() == "documented" {
+                context.report(
+                    IssueCode::UndefinedVariable,
+                    Issue::error("resolved argument diagnostic")
+                        .with_annotation(Annotation::primary(invocation.span())),
+                );
+            }
+            Ok(())
+        }
+
         fn before_expression(
             &self,
             expression: &Expression<'_>,
@@ -158,6 +181,12 @@ function budget(bool $flag): void {
             200,
             None,
         ),
+        (
+            "<?php function abortArguments($value): void {} abortArguments($argument);",
+            false,
+            200,
+            None,
+        ),
     ] {
         let file = File::ephemeral(
             Cow::Borrowed(b"variable-engine.php"),
@@ -202,15 +231,26 @@ function budget(bool $flag): void {
         let analysed = analyzer.analyze_with_artifacts(program, &mut result);
         if let Some(expected) = expected {
             analysed.unwrap();
+            if source == THROWS {
+                assert!(result.issues.iter().any(|issue| {
+                    issue.message == "resolved argument diagnostic"
+                        && issue.code.as_deref() == Some(IssueCode::UndefinedVariable.as_str())
+                }));
+            }
             assert_eq!(
                 *found.lock().unwrap(),
                 BTreeMap::from([(reads[0], expected[0]), (reads[1], expected[1])]),
                 "check_throws={check_throws}",
             );
         } else {
+            let expected = if source.contains("abortArguments") {
+                "argument scope failed"
+            } else {
+                "switch condition failed"
+            };
             assert!(
                 matches!(analysed, Err(AnalysisError::Plugin(PluginError::Internal { reason }))
-                if reason == "switch condition failed")
+                if reason == expected)
             );
         }
     }

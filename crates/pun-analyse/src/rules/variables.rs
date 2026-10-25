@@ -4,6 +4,8 @@
 use std::collections::{HashMap, HashSet};
 
 use mago_analyzer::plugin::HookContext;
+use mago_analyzer::plugin::context::InvocationInfo;
+use mago_codex::identifier::function_like::FunctionLikeIdentifier;
 use mago_codex::ttype::union::TUnion;
 use mago_span::{HasSpan, Span};
 use mago_syntax::cst::*;
@@ -303,124 +305,28 @@ pub(super) fn allowed_expressions(program: &Program) -> HashSet<Span> {
 /// ArgumentsHandler::processArgs(): output parameters allow undefined target chains, but a user parameter
 /// with a non-nullable native type and a built-in's read-reference parameter do not. The engine's
 /// inside_variable_reference flag cannot distinguish these cases.
-pub(super) fn allow_arguments<'s, 'arena>(
-    expr: &'s Expression<'arena>,
-    context: &HookContext<'_, '_>,
-    resolved: &'s HashMap<u32, (Vec<u8>, bool)>,
+pub(super) fn allow_arguments(
+    invocation: &InvocationInfo<'_, '_, '_>,
     builtins: &pun_phpstan::symbols::Symbols,
     allowed: &mut HashSet<Span>,
     non_creating: &mut HashSet<Span>,
 ) {
-    let resolve = |id: &'s Identifier<'arena>| -> &'s [u8] {
-        resolved
-            .get(&id.span().start.offset)
-            .map_or(id.value(), |(name, _)| name.as_slice())
-    };
-    let object_class = |object: &Expression| {
-        let ty = match object {
-            Expression::Variable(Variable::Direct(v)) => {
-                context.get_variable_type(v.name).map(|t| &**t)
-            }
-            _ => context.get_expression_type(object),
-        };
-        ty.and_then(|ty| ty.get_single_named_object())
-            .map(|o| o.get_name())
-    };
-    let (args, metadata, builtin) = match expr {
-        Expression::Call(Call::Function(f)) => {
-            let Expression::Identifier(id) = f.function else {
-                return;
-            };
-            let name = resolve(id);
-            let fallback = matches!(id, Identifier::Local(_))
-                && !resolved
-                    .get(&id.span().start.offset)
-                    .is_some_and(|(_, imported)| *imported);
-            let metadata = context.codebase().get_function(name).or_else(|| {
-                fallback
-                    .then(|| context.codebase().get_function(id.value()))
-                    .flatten()
-            });
-            let builtin = builtins
-                .functions
-                .get(&String::from_utf8_lossy(name).to_ascii_lowercase())
-                .or_else(|| {
-                    fallback
-                        .then(|| {
-                            builtins
-                                .functions
-                                .get(&String::from_utf8_lossy(id.value()).to_ascii_lowercase())
-                        })
-                        .flatten()
-                });
-            (&f.argument_list, metadata, builtin)
-        }
-        Expression::Call(Call::Method(m)) => {
-            let ClassLikeMemberSelector::Identifier(name) = &m.method else {
-                return;
-            };
-            let Some(class) = object_class(m.object) else {
-                return;
-            };
-            let metadata = context.codebase().get_method(class.as_bytes(), name.value);
-            let builtin = builtins
-                .classes
-                .get(&class.to_string().to_ascii_lowercase())
-                .and_then(|c| {
-                    c.methods
-                        .get(&String::from_utf8_lossy(name.value).to_ascii_lowercase())
-                });
-            (&m.argument_list, metadata, builtin)
-        }
-        Expression::Call(Call::StaticMethod(m)) => {
-            let ClassLikeMemberSelector::Identifier(name) = &m.method else {
-                return;
-            };
-            let class = match m.class {
-                Expression::Identifier(id) => Some(mago_word::word(resolve(id))),
-                Expression::Self_(_) | Expression::Static(_) => {
-                    context.scope().get_class_like_name()
-                }
-                object => object_class(object).or_else(|| {
-                    let ty = match object {
-                        Expression::Variable(Variable::Direct(v)) => {
-                            context.get_variable_type(v.name).map(|t| &**t)
-                        }
-                        _ => context.get_expression_type(object),
-                    };
-                    ty.and_then(|t| {
-                        t.get_single_class_string_value()
-                            .or_else(|| t.get_single_literal_string_value().map(mago_word::word))
-                    })
-                }),
-            };
-            let Some(class) = class else { return };
-            let metadata = context.codebase().get_method(class.as_bytes(), name.value);
-            let builtin = builtins
-                .classes
-                .get(&class.to_string().to_ascii_lowercase())
-                .and_then(|c| {
-                    c.methods
-                        .get(&String::from_utf8_lossy(name.value).to_ascii_lowercase())
-                });
-            (&m.argument_list, metadata, builtin)
-        }
-        Expression::Instantiation(n) => {
-            let (Expression::Identifier(id), Some(args)) = (n.class, &n.argument_list) else {
-                return;
-            };
-            let class = resolve(id);
-            let metadata = context.codebase().get_method(class, b"__construct");
-            let builtin = builtins
-                .classes
-                .get(&String::from_utf8_lossy(class).to_ascii_lowercase())
-                .and_then(|c| c.methods.get("__construct"));
-            (args, metadata, builtin)
-        }
-        _ => return,
+    let args = invocation.arguments();
+    let invocation = invocation.inner();
+    let metadata = invocation.target.get_function_like_metadata();
+    let builtin = match invocation.target.get_function_like_identifier() {
+        Some(FunctionLikeIdentifier::Function(name)) => builtins
+            .functions
+            .get(&name.to_string().to_ascii_lowercase()),
+        Some(FunctionLikeIdentifier::Method(class, name)) => builtins
+            .classes
+            .get(&class.to_string().to_ascii_lowercase())
+            .and_then(|class| class.methods.get(&name.to_string().to_ascii_lowercase())),
+        _ => None,
     };
     let builtin = builtin.filter(|_| metadata.is_none_or(|m| m.flags.is_built_in()));
-    for (i, arg) in args.arguments.iter().enumerate() {
+    for (i, arg) in args.iter().enumerate() {
+        let Some(value) = arg.value() else { continue };
         let permits = if let Some(builtin) = builtin {
             let variant = builtin
                 .variants
@@ -430,17 +336,16 @@ pub(super) fn allow_arguments<'s, 'arena>(
                         .iter()
                         .filter(|p| !p.optional && !p.variadic)
                         .count()
-                        <= args.arguments.len()
-                        && (v.params.iter().any(|p| p.variadic)
-                            || args.arguments.len() <= v.params.len())
+                        <= args.len()
+                        && (v.params.iter().any(|p| p.variadic) || args.len() <= v.params.len())
                 })
                 .or(builtin.variants.first());
             variant
-                .and_then(|v| match arg {
-                    Argument::Named(a) => v
+                .and_then(|v| match arg.get_parameter_name() {
+                    Some(name) => v
                         .params
                         .iter()
-                        .find(|p| p.name.as_bytes() == a.name.value)
+                        .find(|p| p.name.as_bytes() == name)
                         .or_else(|| v.params.last().filter(|p| p.variadic)),
                     _ => v
                         .params
@@ -452,17 +357,17 @@ pub(super) fn allow_arguments<'s, 'arena>(
                     // Mark the real argument transfer, not a pre-call variable snapshot: later
                     // arguments may assign that same input before the invocation completes.
                     if p.by_ref != pun_phpstan::symbols::ByRef::CreatesNewVariable {
-                        allow_target(arg.value(), non_creating);
+                        allow_target(value, non_creating);
                     }
                     p.by_ref == pun_phpstan::symbols::ByRef::CreatesNewVariable
                 })
         } else {
             metadata
-                .and_then(|m| match arg {
-                    Argument::Named(a) => m
+                .and_then(|m| match arg.get_parameter_name() {
+                    Some(name) => m
                         .parameters
                         .iter()
-                        .find(|p| &p.get_name().0.as_bytes()[1..] == a.name.value)
+                        .find(|p| &p.get_name().0.as_bytes()[1..] == name)
                         .or_else(|| m.parameters.last().filter(|p| p.flags.is_variadic())),
                     _ => m
                         .parameters
@@ -477,7 +382,7 @@ pub(super) fn allow_arguments<'s, 'arena>(
                 })
         };
         if permits {
-            allow_target(arg.value(), allowed);
+            allow_target(value, allowed);
         }
     }
 }

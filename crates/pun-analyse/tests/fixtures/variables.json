@@ -141,34 +141,49 @@
       "Undefined variable: $argv"
     ],
     [
-      98,
+      99,
       "variable.undefined",
       "Undefined variable: $staticRead"
     ],
     [
-      109,
+      110,
       "variable.undefined",
       "Undefined variable: $methodRead"
     ],
     [
-      119,
+      120,
       "variable.undefined",
       "Undefined variable: $unaryRead"
     ],
     [
-      129,
+      130,
       "variable.undefined",
       "Call to function compact() contains undefined variable $firstMissing."
     ],
     [
-      129,
+      130,
       "variable.undefined",
       "Call to function compact() contains undefined variable $secondMissing."
     ],
     [
-      142,
+      143,
       "variable.undefined",
       "Undefined variable: $globalCaptureMissing"
+    ],
+    [
+      177,
+      "variable.undefined",
+      "Undefined variable: $newInput"
+    ],
+    [
+      178,
+      "variable.undefined",
+      "Undefined variable: $returnedInput"
+    ],
+    [
+      179,
+      "variable.undefined",
+      "Undefined variable: $nullsafeInput"
     ]
   ],
   "edge": [
@@ -353,39 +368,54 @@
       "Variable variable name must be a string, but array was given."
     ],
     [
-      98,
+      99,
       "variable.undefined",
       "Undefined variable: $staticRead"
     ],
     [
-      109,
+      110,
       "variable.undefined",
       "Undefined variable: $methodRead"
     ],
     [
-      119,
+      120,
       "variable.undefined",
       "Undefined variable: $unaryRead"
     ],
     [
-      127,
+      128,
       "variable.undefined",
       "Variable $maybeReference might not be defined."
     ],
     [
-      129,
+      130,
       "variable.undefined",
       "Call to function compact() contains undefined variable $firstMissing."
     ],
     [
-      129,
+      130,
       "variable.undefined",
       "Call to function compact() contains undefined variable $secondMissing."
     ],
     [
-      142,
+      143,
       "variable.undefined",
       "Undefined variable: $globalCaptureMissing"
+    ],
+    [
+      177,
+      "variable.undefined",
+      "Undefined variable: $newInput"
+    ],
+    [
+      178,
+      "variable.undefined",
+      "Undefined variable: $returnedInput"
+    ],
+    [
+      179,
+      "variable.undefined",
+      "Undefined variable: $nullsafeInput"
     ]
   ],
   "maybe": [
@@ -545,39 +575,54 @@
       "Undefined variable: $argv"
     ],
     [
-      98,
+      99,
       "variable.undefined",
       "Undefined variable: $staticRead"
     ],
     [
-      109,
+      110,
       "variable.undefined",
       "Undefined variable: $methodRead"
     ],
     [
-      119,
+      120,
       "variable.undefined",
       "Undefined variable: $unaryRead"
     ],
     [
-      127,
+      128,
       "variable.undefined",
       "Variable $maybeReference might not be defined."
     ],
     [
-      129,
+      130,
       "variable.undefined",
       "Call to function compact() contains undefined variable $firstMissing."
     ],
     [
-      129,
+      130,
       "variable.undefined",
       "Call to function compact() contains undefined variable $secondMissing."
     ],
     [
-      142,
+      143,
       "variable.undefined",
       "Undefined variable: $globalCaptureMissing"
+    ],
+    [
+      177,
+      "variable.undefined",
+      "Undefined variable: $newInput"
+    ],
+    [
+      178,
+      "variable.undefined",
+      "Undefined variable: $returnedInput"
+    ],
+    [
+      179,
+      "variable.undefined",
+      "Undefined variable: $nullsafeInput"
     ]
   ],
   "quiet": [
@@ -737,34 +782,49 @@
       "Variable variable name must be a string, but array was given."
     ],
     [
-      98,
+      99,
       "variable.undefined",
       "Undefined variable: $staticRead"
     ],
     [
-      109,
+      110,
       "variable.undefined",
       "Undefined variable: $methodRead"
     ],
     [
-      119,
+      120,
       "variable.undefined",
       "Undefined variable: $unaryRead"
     ],
     [
-      129,
+      130,
       "variable.undefined",
       "Call to function compact() contains undefined variable $firstMissing."
     ],
     [
-      129,
+      130,
       "variable.undefined",
       "Call to function compact() contains undefined variable $secondMissing."
     ],
     [
-      142,
+      143,
       "variable.undefined",
       "Undefined variable: $globalCaptureMissing"
+    ],
+    [
+      177,
+      "variable.undefined",
+      "Undefined variable: $newInput"
+    ],
+    [
+      178,
+      "variable.undefined",
+      "Undefined variable: $returnedInput"
+    ],
+    [
+      179,
+      "variable.undefined",
+      "Undefined variable: $nullsafeInput"
     ]
   ]
 }

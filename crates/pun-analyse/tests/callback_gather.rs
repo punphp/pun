@@ -81,7 +81,7 @@ fn speculative_errors_propagate_and_expression_observers_run_once() {
     use mago_analyzer::Analyzer;
     use mago_analyzer::analysis_result::AnalysisResult;
     use mago_analyzer::error::AnalysisError;
-    use mago_analyzer::plugin::context::HookContext;
+    use mago_analyzer::plugin::context::{HookContext, InvocationInfo};
     use mago_analyzer::plugin::hook::{
         ExpressionHook, ExpressionHookResult, FunctionCallHook, HookResult,
     };
@@ -122,7 +122,7 @@ fn speculative_errors_propagate_and_expression_observers_run_once() {
         }
     }
 
-    struct Observer(Arc<AtomicUsize>);
+    struct Observer(Arc<AtomicUsize>, Arc<AtomicUsize>);
     impl Provider for Observer {
         fn meta() -> &'static ProviderMeta {
             static META: ProviderMeta = ProviderMeta::new(
@@ -136,6 +136,17 @@ fn speculative_errors_propagate_and_expression_observers_run_once() {
     impl ExpressionHook for Observer {
         fn is_observer(&self) -> bool {
             true
+        }
+
+        fn before_arguments(
+            &self,
+            invocation: &InvocationInfo<'_, '_, '_>,
+            _: &mut HookContext<'_, '_>,
+        ) -> HookResult<()> {
+            if invocation.function_name() == "failGather" {
+                self.1.fetch_add(1, Ordering::SeqCst);
+            }
+            Ok(())
         }
 
         fn after_expression(
@@ -173,7 +184,8 @@ fn speculative_errors_propagate_and_expression_observers_run_once() {
     let mut registry = PluginRegistry::new();
     registry.register_function_call_hook(FailOnce(AtomicBool::new(true)));
     let observed = Arc::new(AtomicUsize::new(0));
-    registry.register_expression_hook(Observer(Arc::clone(&observed)));
+    let arguments = Arc::new(AtomicUsize::new(0));
+    registry.register_expression_hook(Observer(Arc::clone(&observed), Arc::clone(&arguments)));
     let analyzer = Analyzer::new(
         &arena,
         &file,
@@ -195,6 +207,11 @@ fn speculative_errors_propagate_and_expression_observers_run_once() {
         observed.load(Ordering::SeqCst),
         1,
         "only the contextual walk publishes observer events"
+    );
+    assert_eq!(
+        arguments.load(Ordering::SeqCst),
+        1,
+        "only the contextual walk publishes resolved argument events"
     );
 }
 

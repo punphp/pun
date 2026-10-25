@@ -30,3 +30,6 @@ mago-syntax.workspace = true
 serde_json.workspace = true
 rayon.workspace = true
 foldhash.workspace = true
+
+[dev-dependencies]
+mago-reporting.workspace = true

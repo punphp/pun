@@ -836,3 +836,17 @@ checks cannot take this path. The existing changed-variable, certainty, and desc
 gates remain unchanged, as do native state, invocation, and plugin dispatch.
 `template_offset_certainty.php` checks absent and optional offsets, optional siblings, unreachable
 conditions, closed union alternatives, required list offsets, and string offsets against PHPStan.
+
+## Resolved argument observations
+
+Expression hooks receive `before_arguments()` after invocation resolution and before argument analysis.
+Pun's variable observer uses the resolved parameter metadata instead of resolving a receiver before its
+expression has run. This matches PHPStan's MethodCallHandler and ArgumentsHandler ordering and removes
+the observer's duplicate function/method lookup. Computed, chained and nullsafe receivers now use the
+same output-reference contract as local receivers. Non-nullable native input references still report
+undefined reads; PHPStan's built-in input/output classification remains authoritative.
+
+The dispatcher applies the existing observer exclusion during raw callback gathering. It does not call
+expression hooks twice, perform a second expression walk, or introduce a native-type transfer.
+`pun-analyse/tests/variables.rs` checks computed reference receivers against four fresh PHPStan 2.3.1
+configuration captures, including ordinary input-reference controls.

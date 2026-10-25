@@ -7,6 +7,7 @@ use std::sync::{Arc, Mutex};
 use mago_allocator::{Arena, LocalArena};
 use mago_analyzer::Analyzer;
 use mago_analyzer::analysis_result::AnalysisResult;
+use mago_analyzer::plugin::context::InvocationInfo;
 use mago_analyzer::plugin::{
     ExpressionHook, ExpressionHookResult, HookContext, HookResult, Provider, ProviderMeta,
 };
@@ -178,7 +179,6 @@ fn analyse_observed<'arena>(
             .collect();
         registry.register_expression_hook(Definedness {
             ids,
-            resolved: names.iter().map(|(start, _, name, imported)| (start, (name.to_vec(), imported))).collect(),
             builtins: super::reflection::builtins(php_version),
             found: Arc::clone(&found),
         });
@@ -244,7 +244,6 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for ArrayChildren<'_> {
 /// them. A loop body is analysed more than once: answers that differ are a maybe.
 struct Definedness {
     ids: HashMap<Span, Vec<u8>>,
-    resolved: HashMap<u32, (Vec<u8>, bool)>,
     builtins: &'static pun_phpstan::symbols::Symbols,
     found: Arc<Mutex<Found>>,
 }
@@ -273,13 +272,22 @@ impl ExpressionHook for Definedness {
         true
     }
 
+    fn before_arguments(
+        &self,
+        invocation: &InvocationInfo<'_, '_, '_>,
+        context: &mut HookContext<'_, '_>,
+    ) -> HookResult<()> {
+        let mut found = self.found.lock().expect("no hook panics while holding the lock");
+        let mut non_creating = HashSet::new();
+        variables::allow_arguments(invocation, self.builtins, &mut found.allowed, &mut non_creating);
+        context.block_context_mut().variable_state.non_creating_references.extend(non_creating);
+        Ok(())
+    }
+
     fn before_expression(&self, expr: &Expression<'_>, context: &mut HookContext<'_, '_>) -> HookResult<ExpressionHookResult> {
         let span = expr.span();
         {
             let mut found = self.found.lock().expect("no hook panics while holding the lock");
-            let mut non_creating = HashSet::new();
-            variables::allow_arguments(expr, context, &self.resolved, self.builtins, &mut found.allowed, &mut non_creating);
-            context.block_context_mut().variable_state.non_creating_references.extend(non_creating);
             match expr {
                 Expression::Variable(v) => observe_variable(v, context, &mut found),
                 Expression::Access(Access::StaticProperty(p)) => {

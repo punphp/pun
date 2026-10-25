@@ -90,6 +90,7 @@ class References
     public static function writeStatic(&$output): void {}
     public function readNative(int &$input): void {}
     public static function readStaticNative(int &$input): void {}
+    public function next(): self { return $this; }
 
     public function internal(): void
     {
@@ -160,3 +161,21 @@ function superglobals(): void
 $annotatedMain;
 echo $annotatedMain;
 compact('annotatedMain');
+
+function referenceReceiver(): References
+{
+    return new References();
+}
+
+function computedReferenceReceivers(): void
+{
+    (new References())->write($newOutput);
+    referenceReceiver()->write($returnedOutput);
+    (new References())->next()->write($chainedOutput);
+    referenceReceiver()?->write($nullsafeOutput);
+    referenceReceiver()::writeStatic($staticOutput);
+    (new References())->readNative($newInput);
+    referenceReceiver()->readNative($returnedInput);
+    referenceReceiver()?->readNative($nullsafeInput);
+    echo $newOutput, $returnedOutput, $chainedOutput, $nullsafeOutput, $staticOutput;
+}

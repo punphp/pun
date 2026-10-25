@@ -64,6 +64,8 @@ use crate::invocation::template_inference::infer_parameter_templates_from_defaul
 use crate::invocation::template_result::get_class_template_parameters_from_result;
 use crate::invocation::template_result::populate_template_result_from_invocation;
 use crate::invocation::template_result::refine_template_result_for_function_like;
+use crate::plugin::context::HookContext;
+use crate::plugin::context::InvocationInfo;
 use crate::utils::expression::get_block_expression_id;
 
 fn narrow_class_related_argument<A>(
@@ -241,6 +243,15 @@ where
     }
 
     populate_template_result_from_invocation(context, invocation, template_result);
+
+    if context.plugin_registry.has_expression_hooks() {
+        let mut hook_context = HookContext::new(context.codebase, context.source_file, block_context, artifacts);
+        hook_context.raw_callback_gather = context.raw_callback_gather_depth > 0;
+        context.plugin_registry.before_arguments(&InvocationInfo::new(invocation), &mut hook_context)?;
+        for reported in hook_context.take_issues() {
+            context.collector.report_with_code(reported.code, reported.issue);
+        }
+    }
 
     let arg_count = invocation.arguments_source.argument_count();
     let mut analyzed_argument_types = vec![None; arg_count];

@@ -930,6 +930,21 @@ impl PluginRegistry {
         Ok(ExpressionHookResult::Continue)
     }
 
+    /// Run expression hooks with the resolved callee before argument analysis.
+    pub fn before_arguments(
+        &self,
+        invocation: &InvocationInfo<'_, '_, '_>,
+        context: &mut HookContext<'_, '_>,
+    ) -> PluginResult<()> {
+        for hook in &self.expression_hooks {
+            if context.raw_callback_gather && hook.is_observer() {
+                continue;
+            }
+            hook.before_arguments(invocation, context)?;
+        }
+        Ok(())
+    }
+
     /// Run all registered expression hooks after analysis.
     ///
     /// # Errors

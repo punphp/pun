@@ -3,6 +3,7 @@
 use mago_syntax::cst::Expression;
 
 use crate::plugin::context::HookContext;
+use crate::plugin::context::InvocationInfo;
 use crate::plugin::hook::ExpressionHookResult;
 use crate::plugin::hook::HookResult;
 use crate::plugin::provider::Provider;
@@ -34,6 +35,15 @@ pub trait ExpressionHook: Provider {
         _context: &mut HookContext<'_, '_>,
     ) -> HookResult<ExpressionHookResult> {
         Ok(ExpressionHookResult::Continue)
+    }
+
+    /// Called after the callee is resolved, before any argument is analyzed.
+    fn before_arguments(
+        &self,
+        _invocation: &InvocationInfo<'_, '_, '_>,
+        _context: &mut HookContext<'_, '_>,
+    ) -> HookResult<()> {
+        Ok(())
     }
 
     /// Called after an expression has been analyzed.
