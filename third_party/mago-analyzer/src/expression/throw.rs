@@ -11,6 +11,7 @@ use mago_syntax::cst::Throw;
 
 use crate::analyzable::Analyzable;
 use crate::artifacts::AnalysisArtifacts;
+use crate::artifacts::VariableThrowKind;
 use crate::code::IssueCode;
 use crate::context::Context;
 use crate::context::block::BlockContext;
@@ -53,11 +54,13 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Throw<'arena> {
             }
         }
 
-        if let Some(exception_type) = artifacts.get_expression_type(self.exception) {
+        if let Some(exception_type) = artifacts.get_expression_type(self.exception).cloned() {
             for exception_atomic in exception_type.types.as_ref() {
                 if exception_atomic.extends_or_implements(context.codebase, b"Throwable") {
                     for object_name in exception_atomic.get_all_object_names() {
                         block_context.possibly_thrown_exceptions.entry(object_name).or_default().insert(self.span());
+                        artifacts.variable_throw_scopes.entry((self.span(), VariableThrowKind::Expression)).or_default()
+                            .insert(object_name, block_context.variable_scope());
                     }
                 } else {
                     let exception_atomic_str = exception_atomic.get_id();

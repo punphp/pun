@@ -31,7 +31,6 @@ use mago_codex::ttype::atomic::scalar::bool::TBool;
 use mago_codex::ttype::atomic::scalar::int::TInteger;
 use mago_codex::ttype::combine_union_types;
 use mago_codex::ttype::combine_union_types_preserving_array_shapes;
-use mago_codex::ttype::combine_union_types_rc;
 use mago_codex::ttype::combiner::CombinerOptions;
 use mago_codex::ttype::get_array_parameters;
 use mago_codex::ttype::get_arraykey;
@@ -1444,26 +1443,6 @@ fn update_loop_scope_contexts<'ctx, A>(
         }
         if let Some(locals) = back_edge {
             continue_context.locals = locals;
-        }
-        for (variable_id, variable_type) in &loop_scope.redefined_loop_variables {
-            continue_context.locals.insert(*variable_id, Rc::clone(variable_type));
-        }
-
-        for (variable_id, variable_type) in &loop_scope.possibly_redefined_loop_variables {
-            if continue_context.has_variable_atom(*variable_id) {
-                continue_context.locals.insert(
-                    *variable_id,
-                    combine_union_types_rc(
-                        unsafe {
-                            // SAFETY: we know that variable_id exists in continue_context.locals.
-                            continue_context.locals.get(variable_id).unwrap_unchecked()
-                        },
-                        variable_type,
-                        context.codebase,
-                        CombinerOptions::default(),
-                    ),
-                );
-            }
         }
     } else {
         loop_context.locals.clone_from(&pre_outer_context.locals);

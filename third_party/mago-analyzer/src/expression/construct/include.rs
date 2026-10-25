@@ -147,6 +147,7 @@ where
         true,
     )?;
 
+    block_context.variable_state.after_extract_call = true;
     artifacts.set_expression_type(&construct_span, get_mixed());
 
     Ok(())

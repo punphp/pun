@@ -62,6 +62,9 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for FunctionCall<'arena> {
         let mut template_result = TemplateResult::default();
         let (invocation_targets, _) =
             resolve_targets(context, block_context, artifacts, self.function, &mut template_result)?;
+        let extracts_variables = invocation_targets.iter().any(|target| {
+            matches!(target.get_function_like_identifier(), Some(FunctionLikeIdentifier::Function(name)) if name.as_bytes().eq_ignore_ascii_case(b"extract"))
+        });
 
         let native_return = if block_context.native_locals.is_some()
             && !context.plugin_registry.has_function_assertion_providers()
@@ -96,6 +99,9 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for FunctionCall<'arena> {
             artifacts.set_rc_native_expression_type(self, std::rc::Rc::new(native_return));
         }
 
+        if extracts_variables {
+            block_context.variable_state.after_extract_call = true;
+        }
         if context.plugin_registry.has_function_call_hooks() {
             let mut hook_context = HookContext::new(context.codebase, context.source_file, block_context, artifacts);
             context.plugin_registry.after_function_call(self, &mut hook_context)?;

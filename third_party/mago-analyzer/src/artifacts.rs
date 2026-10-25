@@ -20,6 +20,7 @@ use mago_syntax::cst::Node;
 use crate::artifacts::editor::EditorArtifacts;
 use crate::context::block::BlockContext;
 use crate::context::block::ReferenceConstraintSource;
+use crate::context::block::VariableScope;
 use crate::context::scope::case_scope::CaseScope;
 use crate::context::scope::loop_scope::LoopScope;
 use crate::readonly::PendingReadonlyPropertyWrite;
@@ -45,6 +46,13 @@ pub(crate) enum VariableDefinedness {
     PossiblyDefined = 2,
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub(crate) enum VariableThrowKind {
+    Expression,
+    Declared,
+    Implicit,
+}
+
 /// Represents scope information extracted from a `Closure::bind()` or `Closure::bindTo()` call.
 /// This is used to pass the bound class scope to closure/arrow function analysis.
 #[derive(Debug, Clone)]
@@ -61,6 +69,12 @@ pub struct ResolvedMethodCall {
     pub span: (u32, u32),
     pub class: Word,
     pub method: Word,
+}
+
+pub(crate) struct BranchFlow {
+    loop_scope: Option<LoopScope>,
+    case_scopes: Vec<CaseScope>,
+    throw_scopes: HashMap<(Span, VariableThrowKind), WordMap<VariableScope>>,
 }
 
 #[derive(Debug, Clone)]
@@ -86,6 +100,7 @@ pub struct AnalysisArtifacts {
     pub resolved_method_calls: Vec<ResolvedMethodCall>,
     pub(crate) editor: Option<EditorArtifacts>,
     pub(crate) variable_definedness: HashMap<(u32, u32), WordMap<VariableDefinedness>>,
+    pub(crate) variable_throw_scopes: HashMap<(Span, VariableThrowKind), WordMap<VariableScope>>,
     variable_definedness_targets: Option<Arc<[bool; u8::MAX as usize + 1]>>,
     pub(crate) pending_readonly_property_writes: Vec<PendingReadonlyPropertyWrite>,
     pub(crate) static_local_types: Option<WordMap<Rc<TUnion>>>,
@@ -124,12 +139,29 @@ impl AnalysisArtifacts {
             resolved_method_calls: Vec::new(),
             editor: None,
             variable_definedness: HashMap::default(),
+            variable_throw_scopes: HashMap::default(),
             variable_definedness_targets: None,
             pending_readonly_property_writes: Vec::new(),
             static_local_types: None,
             expression_type_checkpoints: ExpressionTypeCheckpoints::default(),
             retain_completed_expression_types: true,
         }
+    }
+
+    /// Impossible branches are still analysed for diagnostics and expression observers, but their
+    /// break/continue/throw edges do not contribute to the enclosing statement's flow.
+    pub(crate) fn branch_flow(&self) -> BranchFlow {
+        BranchFlow {
+            loop_scope: self.loop_scope.clone(),
+            case_scopes: self.case_scopes.clone(),
+            throw_scopes: self.variable_throw_scopes.clone(),
+        }
+    }
+
+    pub(crate) fn restore_branch_flow(&mut self, flow: BranchFlow) {
+        self.loop_scope = flow.loop_scope;
+        self.case_scopes = flow.case_scopes;
+        self.variable_throw_scopes = flow.throw_scopes;
     }
 
     pub(crate) fn with_retained_expression_types(mut self, retain: bool) -> Self {

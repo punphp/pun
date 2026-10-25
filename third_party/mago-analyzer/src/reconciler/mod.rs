@@ -194,6 +194,13 @@ pub fn reconcile_keyed_types<'ctx, A>(
             block_context.definitely_uninitialized_property_ids.remove(key);
         }
 
+        // Type reconciliation may synthesize a type for an impossible isset branch. It must not
+        // turn a variable PHPStan already knows absent into a declaration.
+        if (has_isset || has_inverted_isset)
+            && block_context.variable_certainty(*key) == crate::context::block::VariableCertainty::Absent
+        {
+            block_context.variable_state.absent.insert(*key);
+        }
         let existing = block_context.locals.get(key).cloned();
         let did_type_exist = existing.is_some();
         let mut has_object_array_access = false;
@@ -451,6 +458,7 @@ pub fn reconcile_keyed_types<'ctx, A>(
             }
         }
     }
+    block_context.apply_variable_conditions(context.codebase);
 }
 
 fn reconcile_optional_entry_type<A>(

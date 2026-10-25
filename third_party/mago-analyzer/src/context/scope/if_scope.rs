@@ -11,10 +11,13 @@ use mago_word::WordMap;
 use mago_word::WordSet;
 
 use crate::context::block::BlockContext;
+use crate::context::block::VariableScope;
 use crate::context::scope::control_action::ControlActionSet;
 
 #[derive(Clone, Debug, Default)]
 pub struct IfScope<'ctx> {
+    pub variable_branches: Vec<VariableScope>,
+    pub else_is_unreachable: bool,
     pub new_variables: Option<WordMap<Rc<TUnion>>>,
     pub new_variables_possibly_in_scope: WordSet,
     pub possibly_defined_variable_types: WordMap<Rc<TUnion>>,
@@ -43,6 +46,8 @@ pub struct IfScope<'ctx> {
 impl IfScope<'_> {
     pub fn new() -> Self {
         Self {
+            variable_branches: Vec::new(),
+            else_is_unreachable: false,
             new_variables: None,
             new_variables_possibly_in_scope: WordSet::default(),
             possibly_defined_variable_types: WordMap::default(),

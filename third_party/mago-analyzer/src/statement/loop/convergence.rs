@@ -50,6 +50,7 @@ where
         && context.type_resolution_context.is_empty()
         && artifacts.static_local_types.is_none()
         && artifacts.pending_readonly_property_writes.is_empty()
+        && artifacts.variable_throw_scopes.is_empty()
         && [input, parent, pre_loop]
             .iter()
             .all(|block| block.finally_scope.is_none() && block.if_body_context.is_none())
@@ -159,6 +160,7 @@ impl<'ctx> Snapshot<'ctx> {
             && self.scope == context.scope
             && self.statement_span == context.statement_span
             && artifacts.static_local_types.is_none()
+            && artifacts.variable_throw_scopes.is_empty()
             && same_block(&self.input, input)
             && same_types(&self.loop_locals, &loop_context.locals)
             && same_block(&self.parent, parent)
@@ -384,6 +386,7 @@ fn same_scope_context(left: &ScopeContext<'_>, right: &ScopeContext<'_>) -> bool
 fn same_flow(left: &BlockContext<'_>, right: &BlockContext<'_>) -> bool {
     left.flags == right.flags
         && same_scope_context(&left.scope, &right.scope)
+        && left.variable_state == right.variable_state
         && left.static_locals == right.static_locals
         && left.variables_possibly_in_scope == right.variables_possibly_in_scope
         && left.conditionally_referenced_variable_ids == right.conditionally_referenced_variable_ids
@@ -797,5 +800,16 @@ mod tests {
         after.possibly_undefined_variable_ids.insert(word("$a"));
         assert!(same_types(&before.locals, &after.locals));
         assert!(!same_flow(&before, &after));
+
+        // Equal local types are insufficient if a continuing pass gains an exit edge.
+        let scope = LoopScope::new(Span::zero(), before.locals.clone(), None);
+        let mut with_break = scope.clone();
+        with_break.break_locals = Some(before.locals.clone());
+        assert!(!same_scope(&scope, &with_break));
+        assert!(!same_scope(&with_break, &scope));
+        let mut with_continue = scope.clone();
+        with_continue.continue_locals = Some(before.locals.clone());
+        assert!(!same_scope(&scope, &with_continue));
+        assert!(!same_scope(&with_continue, &scope));
     }
 }

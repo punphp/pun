@@ -178,7 +178,6 @@ fn analyse_observed<'arena>(
             .collect();
         registry.register_expression_hook(Definedness {
             ids,
-            variables: variables.is_some(),
             resolved: names.iter().map(|(start, _, name, imported)| (start, (name.to_vec(), imported))).collect(),
             builtins: super::reflection::builtins(php_version),
             found: Arc::clone(&found),
@@ -245,7 +244,6 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for ArrayChildren<'_> {
 /// them. A loop body is analysed more than once: answers that differ are a maybe.
 struct Definedness {
     ids: HashMap<Span, Vec<u8>>,
-    variables: bool,
     resolved: HashMap<u32, (Vec<u8>, bool)>,
     builtins: &'static pun_phpstan::symbols::Symbols,
     found: Arc<Mutex<Found>>,
@@ -277,9 +275,11 @@ impl ExpressionHook for Definedness {
 
     fn before_expression(&self, expr: &Expression<'_>, context: &mut HookContext<'_, '_>) -> HookResult<ExpressionHookResult> {
         let span = expr.span();
-        if self.variables {
+        {
             let mut found = self.found.lock().expect("no hook panics while holding the lock");
-            variables::allow_arguments(expr, context, &self.resolved, self.builtins, &mut found.allowed);
+            let mut non_creating = HashSet::new();
+            variables::allow_arguments(expr, context, &self.resolved, self.builtins, &mut found.allowed, &mut non_creating);
+            context.block_context_mut().variable_state.non_creating_references.extend(non_creating);
             match expr {
                 Expression::Variable(v) => observe_variable(v, context, &mut found),
                 Expression::Access(Access::StaticProperty(p)) => {
@@ -340,15 +340,22 @@ impl ExpressionHook for Definedness {
     }
 
     fn after_expression(&self, expr: &Expression<'_>, context: &mut HookContext<'_, '_>) -> HookResult<()> {
-        if self.variables {
+        {
             if let Some(source) = self.found.lock().expect("no hook panics while holding the lock").reference_sources.remove(&expr.span()) {
                 source.restore(context);
             }
-            let dynamic = matches!(expr, Expression::Variable(Variable::Indirect(_) | Variable::Nested(_)));
+            let (dynamic, guard) = match expr {
+                Expression::Variable(Variable::Nested(n)) => (true, Some(n.variable)),
+                Expression::Variable(Variable::Indirect(i)) => (true, match super::types::flow::unparen(i.expression) {
+                    Expression::Variable(v) => Some(v),
+                    _ => None,
+                }),
+                _ => (false, None),
+            };
             if dynamic {
                 let mut found = self.found.lock().expect("no hook panics while holding the lock");
                 if !found.allowed.contains(&expr.span()) {
-                    found.variables.scopes.insert(expr.span(), variables::Certainty::of(context));
+                    found.variables.scopes.insert(expr.span(), variables::Certainty::for_name(guard, context));
                 }
             }
         }

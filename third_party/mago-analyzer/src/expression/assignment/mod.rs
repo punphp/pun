@@ -747,6 +747,7 @@ pub fn analyze_assignment_to_variable<'ctx, 'arena, A>(
         });
     }
 
+    block_context.invalidate_variable_certainty(variable_id);
     block_context.locals.insert(variable_id, assigned_type);
     block_context.variables_possibly_in_scope.insert(variable_id);
 }

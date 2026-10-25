@@ -182,7 +182,9 @@ where
                 }
 
                 Rc::new(get_mixed())
-            } else if block_context.flags.inside_variable_reference() {
+            } else if block_context.flags.inside_variable_reference()
+                && !block_context.variable_state.non_creating_references.contains(&variable_span)
+            {
                 context.collector.report_with_code(
                     IssueCode::ReferenceToUndefinedVariable,
                     Issue::help(format!("Reference created from a previously undefined variable `{variable_name}`.",))

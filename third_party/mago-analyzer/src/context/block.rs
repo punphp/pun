@@ -31,6 +31,10 @@ use crate::reconciler::assertion_reconciler;
 use crate::reconciler::negated_assertion_reconciler;
 use mago_bytes::BytesDisplay;
 
+#[path = "variable_scope.rs"]
+mod variable_scope;
+pub use variable_scope::{VariableCertainty, VariableScope, VariableState};
+
 #[derive(Clone, PartialEq, Eq, Debug)]
 pub enum BreakContext {
     Switch(Span),
@@ -58,6 +62,8 @@ pub struct BlockContext<'ctx> {
     pub locals: WordMap<Rc<TUnion>>,
     /// None means disabled or invalidated, never PHP's mixed type. Clones own their native state.
     pub(crate) native_locals: Option<WordMap<Rc<TUnion>>>,
+    /// PHPStan's variable holders are independent of reconciled expression types.
+    pub variable_state: VariableState,
     pub static_locals: WordSet,
     pub variables_possibly_in_scope: WordSet,
     pub conditionally_referenced_variable_ids: WordSet,
@@ -208,6 +214,7 @@ impl<'ctx> BlockContext<'ctx> {
             scope,
             locals: if register_super_globals { get_super_globals() } else { WordMap::default() },
             native_locals: None,
+            variable_state: VariableState::default(),
             static_locals: WordSet::default(),
             variables_possibly_in_scope: WordSet::default(),
             conditionally_referenced_variable_ids: WordSet::default(),

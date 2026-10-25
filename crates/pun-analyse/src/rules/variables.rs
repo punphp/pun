@@ -99,6 +99,7 @@ impl Certainty {
             .locals
             .keys()
             .chain(block.variables_possibly_in_scope.iter())
+            .chain(block.variable_state.absent.iter())
             .map(|name| {
                 let name = String::from_utf8_lossy(name.as_bytes()).into_owned();
                 let certainty = defined(context, &name);
@@ -110,6 +111,42 @@ impl Certainty {
             otherwise: default_certainty(context),
             main: is_main(context),
         }
+    }
+
+    /// DefinedVariableRule filters each constant name's scope by `name-expression === name`.
+    pub fn for_name(guard: Option<&Variable>, context: &HookContext<'_, '_>) -> Self {
+        let mut result = Self::of(context);
+        if let Some(Variable::Direct(guard)) = guard
+            && let Some(ty) = context.get_variable_type(guard.name)
+        {
+            for value in ty
+                .types
+                .iter()
+                .filter_map(|atomic| atomic.get_literal_string_value())
+            {
+                let mut filtered = context.block_context().clone();
+                filtered.locals.insert(
+                    mago_word::word(guard.name),
+                    std::rc::Rc::new(mago_codex::ttype::get_literal_string(mago_word::word(
+                        value,
+                    ))),
+                );
+                filtered.apply_variable_conditions(context.codebase());
+                let target = format!("${}", String::from_utf8_lossy(value));
+                let certainty = filtered.variable_certainty(mago_word::word(&target));
+                if certainty
+                    != context
+                        .block_context()
+                        .variable_certainty(mago_word::word(&target))
+                {
+                    // A conditional holder only refines the merged Maybe to a definite Yes or No.
+                    result
+                        .variables
+                        .insert(target, Tri::from(certainty.is_defined()));
+                }
+            }
+        }
+        result
     }
 
     pub fn get(&self, name: &str) -> Tri {
@@ -129,9 +166,7 @@ impl Certainty {
 }
 
 fn default_certainty(context: &HookContext<'_, '_>) -> Tri {
-    if context.scope().get_function_like().is_none()
-        && context.scope().get_property_hook().is_none()
-    {
+    if context.block_context().can_any_variable_exist() {
         Tri::Maybe
     } else {
         Tri::No
@@ -156,11 +191,13 @@ pub(super) fn defined(context: &HookContext<'_, '_>, name: &str) -> Tri {
     {
         return default_certainty(context);
     }
-    match block.locals.get(&id) {
-        Some(t) if t.possibly_undefined() || t.possibly_undefined_from_try() => Tri::Maybe,
-        Some(_) => Tri::Yes,
-        None if block.variables_possibly_in_scope.contains(&id) => Tri::Maybe,
-        None => default_certainty(context),
+    let certainty = block.variable_certainty(id);
+    if certainty.is_defined() {
+        Tri::Yes
+    } else if certainty.is_absent() {
+        Tri::No
+    } else {
+        Tri::Maybe
     }
 }
 
@@ -249,6 +286,7 @@ pub(super) fn allow_arguments<'s, 'arena>(
     resolved: &'s HashMap<u32, (Vec<u8>, bool)>,
     builtins: &pun_phpstan::symbols::Symbols,
     allowed: &mut HashSet<Span>,
+    non_creating: &mut HashSet<Span>,
 ) {
     let resolve = |id: &'s Identifier<'arena>| -> &'s [u8] {
         resolved
@@ -386,7 +424,15 @@ pub(super) fn allow_arguments<'s, 'arena>(
                         .get(i)
                         .or_else(|| v.params.last().filter(|p| p.variadic)),
                 })
-                .is_some_and(|p| p.by_ref == pun_phpstan::symbols::ByRef::CreatesNewVariable)
+                .is_some_and(|p| {
+                    // Some Mago builtin signatures use a reference where PHPStan reads a value.
+                    // Mark the real argument transfer, not a pre-call variable snapshot: later
+                    // arguments may assign that same input before the invocation completes.
+                    if p.by_ref != pun_phpstan::symbols::ByRef::CreatesNewVariable {
+                        allow_target(arg.value(), non_creating);
+                    }
+                    p.by_ref == pun_phpstan::symbols::ByRef::CreatesNewVariable
+                })
         } else {
             metadata
                 .and_then(|m| match arg {

@@ -23,6 +23,7 @@ use mago_syntax::cst::Try;
 
 use crate::analyzable::Analyzable;
 use crate::artifacts::AnalysisArtifacts;
+use crate::artifacts::VariableThrowKind;
 use crate::code::IssueCode;
 use crate::context::Context;
 use crate::context::block::BlockContext;
@@ -58,6 +59,7 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Try<'arena> {
         }
 
         let existing_thrown_exceptions = std::mem::take(&mut block_context.possibly_thrown_exceptions);
+        let existing_throw_scopes = std::mem::take(&mut artifacts.variable_throw_scopes);
         let old_block_context_locals = block_context.locals.clone();
         let mut try_block_context = block_context.clone();
 
@@ -100,6 +102,8 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Try<'arena> {
             }
         }
         block_context.flags.set_inside_try(was_inside_try);
+        let mut throw_scopes = std::mem::take(&mut artifacts.variable_throw_scopes);
+        let has_observed_throws = !throw_scopes.is_empty();
         if !self.catch_clauses.is_empty() {
             block_context.flags.set_has_returned(false);
         }
@@ -276,6 +280,34 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Try<'arena> {
             }
 
             catch_block_context.clauses = vec![];
+            let mut catch_entries = Vec::new();
+            let catches_all = |exception: &Word| caught_classes.iter().any(|caught| {
+                exception.as_bytes().eq_ignore_ascii_case(caught.as_bytes())
+                    || context.codebase.is_instance_of(exception.as_bytes(), caught.as_bytes())
+            });
+            let matches = |exception: &Word| catches_all(exception) || caught_classes.iter().any(|caught| {
+                context.codebase.is_instance_of(caught.as_bytes(), exception.as_bytes())
+            });
+            let broad = [b"Exception".as_slice(), b"Error", b"Throwable"].iter().any(|exception| {
+                caught_classes.iter().any(|caught| exception.eq_ignore_ascii_case(caught.as_bytes())
+                    || context.codebase.is_instance_of(exception, caught.as_bytes()))
+            });
+            let include_implicit = broad || !throw_scopes.iter().any(|((_, kind), thrown)| {
+                *kind == VariableThrowKind::Declared && thrown.keys().any(matches)
+            });
+            for ((_, kind), thrown) in &mut throw_scopes {
+                if *kind == VariableThrowKind::Implicit && !include_implicit { continue; }
+                thrown.retain(|exception, scope| {
+                    if matches(exception) {
+                        catch_entries.push(scope.clone());
+                        !catches_all(exception)
+                    } else {
+                        true
+                    }
+                });
+            }
+            if catch_entries.is_empty() && has_observed_throws { continue; }
+            catch_block_context.merge_variable_scope_types(&catch_entries, context.codebase);
             if let Some(catch_variable) = catch_clause.variable.as_ref() {
                 let exception_type = TUnion::new(
                     caught_classes
@@ -285,6 +317,7 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Try<'arena> {
                 );
 
                 let catch_var_name = Word::from(catch_variable.name);
+                catch_block_context.invalidate_variable_certainty(catch_var_name);
                 catch_block_context.locals.insert(catch_var_name, Rc::new(exception_type));
                 catch_block_context.remove_variable_from_conflicting_clauses(context, catch_var_name, None);
                 catch_block_context.variables_possibly_in_scope.insert(catch_var_name);
@@ -436,6 +469,8 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Try<'arena> {
         for (possibly_thrown_exception, throw_spans) in existing_thrown_exceptions {
             block_context.possibly_thrown_exceptions.entry(possibly_thrown_exception).or_default().extend(throw_spans);
         }
+        artifacts.variable_throw_scopes.extend(existing_throw_scopes);
+        artifacts.variable_throw_scopes.extend(throw_scopes.into_iter().filter(|(_, scopes)| !scopes.is_empty()));
 
         block_context.flags.set_has_returned(if finally_has_returned {
             true

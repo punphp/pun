@@ -40,6 +40,7 @@ use mago_word::WordSet;
 use mago_word::concat_word;
 
 use crate::artifacts::AnalysisArtifacts;
+use crate::artifacts::VariableThrowKind;
 use crate::code::IssueCode;
 use crate::context::Context;
 use crate::context::block::BlockContext;
@@ -80,6 +81,10 @@ where
     update_by_reference_argument_types(context, block_context, artifacts, invoication, template_result, parameters)?;
     clear_object_property_narrowings(context, block_context, invoication, this_variable);
 
+    if block_context.flags.inside_try() && invoication.target.get_function_like_metadata().is_none() {
+        artifacts.variable_throw_scopes.entry((invoication.span, VariableThrowKind::Implicit)).or_default()
+            .insert(mago_word::word(b"Throwable"), block_context.variable_scope());
+    }
     let Some(identifier) = invoication.target.get_function_like_identifier() else {
         return Ok(());
     };
@@ -142,12 +147,27 @@ where
         }
     }
 
-    if context.settings.check_throws {
+    if context.settings.check_throws || block_context.flags.inside_try() {
         let thrown_types = context.codebase.get_function_like_thrown_types(
             invoication.target.get_method_context().map(|context| context.class_like_metadata),
             metadata,
         );
 
+        // FuncCallHandler/NewHandler's implicit throw point, on the post-argument scope. An exception
+        // constructor inside `throw` does not itself add an undocumented-Throwable entry.
+        if thrown_types.is_empty() && block_context.flags.inside_try() {
+            let exception_constructor = block_context.flags.inside_throw()
+                && matches!(identifier, FunctionLikeIdentifier::Method(class, method)
+                    if method.as_bytes().eq_ignore_ascii_case(b"__construct")
+                        && context.codebase.is_instance_of(class.as_bytes(), b"Throwable"));
+            let no_argument_builtin = matches!(identifier, FunctionLikeIdentifier::Function(_))
+                && metadata.flags.is_built_in() && invoication.arguments_source.is_empty()
+                && metadata.parameters.iter().all(|parameter| parameter.flags.has_default() || parameter.flags.is_variadic());
+            if !exception_constructor && !no_argument_builtin {
+                artifacts.variable_throw_scopes.entry((invoication.span, VariableThrowKind::Implicit)).or_default()
+                    .insert(mago_word::word(b"Throwable"), block_context.variable_scope());
+            }
+        }
         for thrown_exception_type in thrown_types {
             let resolved_exception_type = resolve_invocation_type(
                 context,
@@ -159,12 +179,20 @@ where
 
             for exception_atomic in resolved_exception_type.types.into_owned() {
                 for exception in exception_atomic.get_all_object_names() {
-                    block_context.possibly_thrown_exceptions.entry(exception).or_default().insert(invoication.span);
+                    if context.settings.check_throws {
+                        block_context.possibly_thrown_exceptions.entry(exception).or_default().insert(invoication.span);
+                    }
+                    if block_context.flags.inside_try() {
+                        artifacts.variable_throw_scopes.entry((invoication.span, VariableThrowKind::Declared)).or_default()
+                            .insert(exception, block_context.variable_scope());
+                    }
                 }
             }
         }
 
-        collect_plugin_throw_types(context, block_context, artifacts, invoication, identifier);
+        if context.settings.check_throws {
+            collect_plugin_throw_types(context, block_context, artifacts, invoication, identifier);
+        }
     }
 
     if !apply_assertions {
@@ -338,6 +366,13 @@ where
         );
 
         if let Some(argument) = argument {
+            // An input reference cannot create its source. Query the post-argument running scope:
+            // another argument may have assigned this variable after its initial read.
+            if block_context.variable_state.non_creating_references.contains(&argument.span())
+                && argument_id.is_some_and(|name| !block_context.variable_certainty(name).is_defined())
+            {
+                continue;
+            }
             let argument_type = artifacts.get_expression_type(argument).cloned().unwrap_or_else(get_mixed);
             if !is_argument_mutated_by_reference(
                 &invocation.target,

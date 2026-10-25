@@ -322,7 +322,7 @@ pub fn insert_variable_from_docblock<'ctx, A>(
     context: &mut Context<'ctx, '_, A>,
     block_context: &mut BlockContext<'ctx>,
     variable_name: mago_word::Word,
-    variable_type: TUnion,
+    mut variable_type: TUnion,
     variable_type_span: Span,
     override_existing: bool,
 ) where
@@ -330,6 +330,14 @@ pub fn insert_variable_from_docblock<'ctx, A>(
 {
     if !override_existing && block_context.locals.contains_key(&variable_name) {
         return;
+    }
+
+    let certainty = block_context.variable_certainty(variable_name);
+    if certainty == crate::context::block::VariableCertainty::Absent && variable_name.as_bytes() != b"$this" {
+        return;
+    }
+    if !block_context.can_any_variable_exist() && certainty == crate::context::block::VariableCertainty::Possible {
+        variable_type.set_possibly_undefined(true, None);
     }
 
     if let Some(previous_type) = block_context.locals.remove(&variable_name) {
@@ -399,7 +407,7 @@ pub fn insert_variable_from_docblock<'ctx, A>(
         }
 
         block_context.locals.insert(variable_name, Rc::new(variable_type));
-    } else if block_context.scope.get_function_like().is_none() || variable_name.as_bytes() == b"$this" {
+    } else if block_context.can_any_variable_exist() || variable_name.as_bytes() == b"$this" {
         block_context.locals.insert(variable_name, Rc::new(variable_type));
     }
 }

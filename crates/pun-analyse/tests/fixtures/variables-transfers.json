@@ -1,0 +1,222 @@
+[
+  [
+    8,
+    "variable.undefined",
+    "Undefined variable: $absent"
+  ],
+  [
+    9,
+    "variable.undefined",
+    "Call to function compact() contains undefined variable $absent."
+  ],
+  [
+    14,
+    "variable.undefined",
+    "Variable $maybe might not be defined."
+  ],
+  [
+    15,
+    "variable.undefined",
+    "Call to function compact() contains possibly undefined variable $maybe."
+  ],
+  [
+    17,
+    "variable.undefined",
+    "Variable $extracted might not be defined."
+  ],
+  [
+    18,
+    "variable.undefined",
+    "Call to function compact() contains possibly undefined variable $extracted."
+  ],
+  [
+    29,
+    "variable.undefined",
+    "Undefined variable: $conditional"
+  ],
+  [
+    30,
+    "variable.undefined",
+    "Call to function compact() contains undefined variable $conditional."
+  ],
+  [
+    35,
+    "variable.undefined",
+    "Variable $unknown might not be defined."
+  ],
+  [
+    36,
+    "variable.undefined",
+    "Call to function compact() contains possibly undefined variable $unknown."
+  ],
+  [
+    54,
+    "variable.undefined",
+    "Variable $left might not be defined."
+  ],
+  [
+    55,
+    "variable.undefined",
+    "Call to function compact() contains possibly undefined variable $left."
+  ],
+  [
+    68,
+    "variable.undefined",
+    "Variable $one might not be defined."
+  ],
+  [
+    68,
+    "variable.undefined",
+    "Variable $two might not be defined."
+  ],
+  [
+    69,
+    "variable.undefined",
+    "Call to function compact() contains possibly undefined variable $one."
+  ],
+  [
+    69,
+    "variable.undefined",
+    "Call to function compact() contains possibly undefined variable $two."
+  ],
+  [
+    95,
+    "variable.undefined",
+    "Undefined variable: $alsoNever"
+  ],
+  [
+    95,
+    "variable.undefined",
+    "Undefined variable: $never"
+  ],
+  [
+    95,
+    "variable.undefined",
+    "Undefined variable: $otherwise"
+  ],
+  [
+    96,
+    "variable.undefined",
+    "Call to function compact() contains undefined variable $alsoNever."
+  ],
+  [
+    96,
+    "variable.undefined",
+    "Call to function compact() contains undefined variable $never."
+  ],
+  [
+    96,
+    "variable.undefined",
+    "Call to function compact() contains undefined variable $otherwise."
+  ],
+  [
+    115,
+    "variable.undefined",
+    "Variable $fallthrough might not be defined."
+  ],
+  [
+    116,
+    "variable.undefined",
+    "Call to function compact() contains possibly undefined variable $fallthrough."
+  ],
+  [
+    122,
+    "variable.undefined",
+    "Undefined variable: $missing"
+  ],
+  [
+    148,
+    "variable.undefined",
+    "Undefined variable: $after"
+  ],
+  [
+    149,
+    "variable.undefined",
+    "Call to function compact() contains undefined variable $after."
+  ],
+  [
+    156,
+    "variable.undefined",
+    "Variable $afterCall might not be defined."
+  ],
+  [
+    157,
+    "variable.undefined",
+    "Call to function compact() contains possibly undefined variable $afterCall."
+  ],
+  [
+    186,
+    "variable.undefined",
+    "Undefined variable: $left"
+  ],
+  [
+    186,
+    "variable.undefined",
+    "Undefined variable: $right"
+  ],
+  [
+    187,
+    "variable.undefined",
+    "Undefined variable: $left"
+  ],
+  [
+    187,
+    "variable.undefined",
+    "Undefined variable: $right"
+  ],
+  [
+    213,
+    "variable.undefined",
+    "Variable $right might not be defined."
+  ],
+  [
+    214,
+    "variable.undefined",
+    "Call to function compact() contains possibly undefined variable $right."
+  ],
+  [
+    221,
+    "variable.undefined",
+    "Undefined variable: $input"
+  ],
+  [
+    222,
+    "variable.undefined",
+    "Undefined variable: $input"
+  ],
+  [
+    227,
+    "variable.undefined",
+    "Undefined variable: $later"
+  ],
+  [
+    232,
+    "variable.undefined",
+    "Variable $maybeInput might not be defined."
+  ],
+  [
+    233,
+    "variable.undefined",
+    "Variable $maybeInput might not be defined."
+  ],
+  [
+    249,
+    "variable.undefined",
+    "Variable $conditional might not be defined."
+  ],
+  [
+    250,
+    "variable.undefined",
+    "Call to function compact() contains possibly undefined variable $conditional."
+  ],
+  [
+    266,
+    "variable.undefined",
+    "Undefined variable: $never"
+  ],
+  [
+    267,
+    "variable.undefined",
+    "Call to function compact() contains undefined variable $never."
+  ]
+]
