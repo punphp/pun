@@ -730,6 +730,11 @@ fn determine_numeric_result(op: &BinaryOperator<'_>, left: &TAtomic, right: &TAt
                     if matches!(op, BinaryOperator::Division(_)) {
                         if right_int.is_zero() {
                             vec![TAtomic::Never]
+                        } else if let (TInteger::Literal(left), TInteger::Literal(right)) = (*left_int, *right_int)
+                            && left.checked_div(right).is_none()
+                        {
+                            // PHP promotes signed-division overflow to float instead of truncating or panicking.
+                            vec![TAtomic::Scalar(TScalar::literal_float(left as f64 / right as f64))]
                         } else {
                             vec![TAtomic::Scalar(TScalar::int()), TAtomic::Scalar(TScalar::float())]
                         }
@@ -852,6 +857,7 @@ fn calculate_int_arithmetic(op: &BinaryOperator<'_>, left: TInteger, right: TInt
         BinaryOperator::Addition(_) => left + right,
         BinaryOperator::Subtraction(_) => left - right,
         BinaryOperator::Multiplication(_) => left * right,
+        BinaryOperator::Modulo(_) if matches!((left, right), (Literal(i64::MIN), Literal(-1))) => Literal(0),
         BinaryOperator::Modulo(_) => left % right,
         BinaryOperator::BitwiseAnd(_) => left & right,
         BinaryOperator::BitwiseOr(_) => left | right,
@@ -859,13 +865,11 @@ fn calculate_int_arithmetic(op: &BinaryOperator<'_>, left: TInteger, right: TInt
         BinaryOperator::LeftShift(_) => left << right,
         BinaryOperator::RightShift(_) => left >> right,
         BinaryOperator::Division(_) => match (left, right) {
-            (Literal(l_val), Literal(r_val)) => {
-                if r_val != 0 && l_val % r_val == 0 {
-                    Literal(l_val / r_val)
-                } else {
-                    Unspecified
-                }
-            }
+            (Literal(l_val), Literal(r_val)) => l_val
+                .checked_rem(r_val)
+                .filter(|remainder| *remainder == 0)
+                .and_then(|_| l_val.checked_div(r_val))
+                .map_or(Unspecified, Literal),
             _ => Unspecified,
         },
         BinaryOperator::Exponentiation(_) => match (left, right) {

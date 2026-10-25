@@ -372,3 +372,77 @@ intersected with added or replaced lines against `20d3e19c`, reports **232/232 c
 executable lines** in `src/native.rs` and **123/123 changed test executable lines** in `native_lane.rs`.
 There are no coverage exclusions or private-helper tests. These are line-coverage measurements, not
 branch coverage or a claim of complete native operator parity.
+
+## Literal integer division overflow
+
+`src/expression/binary/arithmetic.rs` uses checked remainder and division when folding integer division.
+After the existing zero check, signed division overflow produces a literal float through the normal
+numeric-result path. The matching `PHP_INT_MIN % -1` case produces literal integer zero instead of
+falling back to general `int`. Other arithmetic precision and error-result handling are unchanged.
+
+The reference is PHPStan 2.3.1's `Reflection/InitializerExprTypeResolver.php`, `getDivType()` and
+`getModType()`, at the source revision above. `getDivType()` explicitly preserves the float result
+when integer division has no remainder but overflows. PHP 8.5.12 on this 64-bit host agrees.
+
+The public Analyzer regression is
+`crates/pun-analyse/tests/coverage.rs::literal_integer_division_overflow_matches_php_and_phpstan`.
+Its fixture directory is `tests/fixtures/coverage/integer-division-overflow/` in that crate.
+The PHP file has no annotations. `(-9223372036854775807 - 1)` constructs the actual minimum integer.
+The direct spelling `-9223372036854775808` is a separate control because PHP parses its positive
+literal as a float before negation.
+
+On unchanged arithmetic source `3d85e90f`, this public test panics at `arithmetic.rs:863:34`:
+`attempt to calculate the remainder with overflow`. The first expression reaches that code without
+an annotation, alternate walk, or file skip. The patched analyzer returns float
+`9.223372036854776E+18` for minimum division by `-1` and integer `0` for the corresponding modulo.
+
+The committed expectations come from the pinned PHPStan executable and actual PHP evaluation.
+All 13 numeric results match their PHPStan dump and PHP runtime value. The controls include both
+signed integer neighbors, minimum division by `1` and `-2`, ordinary integral division, positive and
+negative fractional float division, negative modulo, and the direct overflowing literal spelling.
+The two zero-divisor controls produce PHP `DivisionByZeroError` and PHPStan `*ERROR*`. The test
+checks Mago's located `invalid-operand` diagnostics and unavailable native values for those controls.
+Mago's pre-existing mixed full-type fallback after the invalid pair is not PHPStan `ErrorType` parity
+and remains outside this patch. General non-integral integer division precision is also unchanged.
+
+Capture the PHPStan expectations from the repository root with the same pinned executable:
+
+```sh
+mkdir -p /tmp/pun-native-arithmetic-oracle
+sed -E 's/^([[:space:]]*)(.*); \/\/ result$/\1\\PHPStan\\dumpType(\2);/' \
+	crates/pun-analyse/tests/fixtures/coverage/integer-division-overflow/literals.php \
+	> /tmp/pun-native-arithmetic-oracle/literals.php
+php .oracle/phpstan/vendor/bin/phpstan analyse --level=0 --error-format=json --no-progress \
+	/tmp/pun-native-arithmetic-oracle/literals.php > /tmp/pun-native-arithmetic-oracle/result.json
+jq '[.files[].messages[] | select(.identifier == "phpstan.dumpType") | {line,message,identifier}]' \
+	/tmp/pun-native-arithmetic-oracle/result.json
+```
+
+The oracle exits 1 because dumps are diagnostics. The PHP runtime expectations evaluate each marked
+expression independently with `eval('return ' . $expression . ';')`, recording `get_debug_type()` and
+the value, or the caught exception's class and message. JSON uses `JSON_PRESERVE_ZERO_FRACTION`.
+Neither expectation file is generated from Pun.
+
+The focused test compares native tracking enabled and disabled: full expression types, references,
+and issues are equal. The unchanged native suite also compares all public full artifacts and observer
+counts, preserving the existing 29 scalar and 107 operator oracle expectations.
+
+The clean-profile validation passes **36 tests**: the focused regression, native lane 10/10, callback
+gathers 10/10, array slice 5/5, and debug 10/10. It uses one Cargo job, two Rayon threads, and the private
+target `/tmp/pun-native-operators-target`:
+
+```sh
+CARGO_BUILD_JOBS=1 RAYON_NUM_THREADS=2 CARGO_TARGET_DIR=/tmp/pun-native-operators-target \
+	CARGO_LLVM_COV_TARGET_DIR=/tmp/pun-native-operators-target/coverage \
+	timeout 900 nice cargo llvm-cov --dep-coverage mago-analyzer --no-report \
+	-p punphp-analyse --test coverage -- literal_integer_division_overflow_matches_php_and_phpstan
+CARGO_BUILD_JOBS=1 RAYON_NUM_THREADS=2 CARGO_TARGET_DIR=/tmp/pun-native-operators-target \
+	CARGO_LLVM_COV_TARGET_DIR=/tmp/pun-native-operators-target/coverage \
+	timeout 900 nice cargo llvm-cov --dep-coverage mago-analyzer --no-report \
+	-p punphp-analyse --test native_lane --test callback_gather --test array_slice --test debug
+```
+
+LCOV export from these five executables and the merged fresh profile, intersected with added or
+replaced source lines against `3d85e90f`, reports **9/9 changed analyzer executable lines** and
+**104/104 changed test executable lines**. No coverage exclusions, gap entries, or private-helper tests
+are used. This measures changed executable lines, not branch coverage or the whole analyzer.

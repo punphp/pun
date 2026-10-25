@@ -1,0 +1,77 @@
+[
+  {
+    "line": 6,
+    "message": "Dumped type: 9.223372036854776E+18",
+    "identifier": "phpstan.dumpType"
+  },
+  {
+    "line": 11,
+    "message": "Dumped type: 0",
+    "identifier": "phpstan.dumpType"
+  },
+  {
+    "line": 16,
+    "message": "Dumped type: 9223372036854775807",
+    "identifier": "phpstan.dumpType"
+  },
+  {
+    "line": 21,
+    "message": "Dumped type: -9223372036854775808",
+    "identifier": "phpstan.dumpType"
+  },
+  {
+    "line": 26,
+    "message": "Dumped type: 4611686018427387904",
+    "identifier": "phpstan.dumpType"
+  },
+  {
+    "line": 31,
+    "message": "Dumped type: -9223372036854775807",
+    "identifier": "phpstan.dumpType"
+  },
+  {
+    "line": 36,
+    "message": "Dumped type: 9223372036854775807",
+    "identifier": "phpstan.dumpType"
+  },
+  {
+    "line": 41,
+    "message": "Dumped type: 2",
+    "identifier": "phpstan.dumpType"
+  },
+  {
+    "line": 46,
+    "message": "Dumped type: 3.5",
+    "identifier": "phpstan.dumpType"
+  },
+  {
+    "line": 51,
+    "message": "Dumped type: -3.5",
+    "identifier": "phpstan.dumpType"
+  },
+  {
+    "line": 56,
+    "message": "Dumped type: -1",
+    "identifier": "phpstan.dumpType"
+  },
+  {
+    "line": 61,
+    "message": "Dumped type: 0",
+    "identifier": "phpstan.dumpType"
+  },
+  {
+    "line": 66,
+    "message": "Dumped type: *ERROR*",
+    "identifier": "phpstan.dumpType"
+  },
+  {
+    "line": 71,
+    "message": "Dumped type: *ERROR*",
+    "identifier": "phpstan.dumpType"
+  },
+  {
+    "line": 76,
+    "message": "Dumped type: 9.223372036854776E+18",
+    "identifier": "phpstan.dumpType"
+  }
+]

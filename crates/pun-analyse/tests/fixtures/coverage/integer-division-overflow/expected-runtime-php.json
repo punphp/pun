@@ -1,0 +1,92 @@
+[
+    {
+        "line": 6,
+        "expression": "(-9223372036854775807 - 1) \/ -1",
+        "type": "float",
+        "value": 9.223372036854776e+18
+    },
+    {
+        "line": 11,
+        "expression": "(-9223372036854775807 - 1) % -1",
+        "type": "int",
+        "value": 0
+    },
+    {
+        "line": 16,
+        "expression": "-9223372036854775807 \/ -1",
+        "type": "int",
+        "value": 9223372036854775807
+    },
+    {
+        "line": 21,
+        "expression": "(-9223372036854775807 - 1) \/ 1",
+        "type": "int",
+        "value": -9223372036854775808
+    },
+    {
+        "line": 26,
+        "expression": "(-9223372036854775807 - 1) \/ -2",
+        "type": "int",
+        "value": 4611686018427387904
+    },
+    {
+        "line": 31,
+        "expression": "9223372036854775807 \/ -1",
+        "type": "int",
+        "value": -9223372036854775807
+    },
+    {
+        "line": 36,
+        "expression": "9223372036854775807 \/ 1",
+        "type": "int",
+        "value": 9223372036854775807
+    },
+    {
+        "line": 41,
+        "expression": "6 \/ 3",
+        "type": "int",
+        "value": 2
+    },
+    {
+        "line": 46,
+        "expression": "7.0 \/ 2",
+        "type": "float",
+        "value": 3.5
+    },
+    {
+        "line": 51,
+        "expression": "-7.0 \/ 2",
+        "type": "float",
+        "value": -3.5
+    },
+    {
+        "line": 56,
+        "expression": "-7 % 3",
+        "type": "int",
+        "value": -1
+    },
+    {
+        "line": 61,
+        "expression": "-9223372036854775807 % -1",
+        "type": "int",
+        "value": 0
+    },
+    {
+        "line": 66,
+        "expression": "1 \/ 0",
+        "exception": "DivisionByZeroError",
+        "message": "Division by zero"
+    },
+    {
+        "line": 71,
+        "expression": "1 % 0",
+        "exception": "DivisionByZeroError",
+        "message": "Modulo by zero"
+    },
+    {
+        "line": 76,
+        "expression": "-9223372036854775808 \/ -1",
+        "type": "float",
+        "value": 9.223372036854776e+18
+    }
+]

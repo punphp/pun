@@ -129,3 +129,143 @@ fn circular_hierarchy_ends() {
     project.level = 6;
     assert!(pun_analyse::run(&project).is_ok());
 }
+
+#[test]
+fn literal_integer_division_overflow_matches_php_and_phpstan() {
+    use std::borrow::Cow;
+
+    use mago_allocator::LocalArena;
+    use mago_analyzer::{
+        Analyzer, analysis_result::AnalysisResult, plugin::PluginRegistry, settings::Settings,
+    };
+    use mago_codex::{
+        populator::populate_codebase, reference::SymbolReferences, scanner::scan_program,
+    };
+    use mago_database::file::{File, FileId, FileType};
+    use mago_names::resolver::NameResolver;
+    use mago_span::{Position, Span};
+    use mago_syntax::parser::parse_file;
+
+    let code = include_bytes!("fixtures/coverage/integer-division-overflow/literals.php");
+    let oracle: Value = serde_json::from_str(include_str!(
+        "fixtures/coverage/integer-division-overflow/expected-types-phpstan.json"
+    ))
+    .unwrap();
+    let runtime: Value = serde_json::from_str(include_str!(
+        "fixtures/coverage/integer-division-overflow/expected-runtime-php.json"
+    ))
+    .unwrap();
+    let analyze = |native| {
+        let file = File::new(
+            Cow::Borrowed(b"literals.php"),
+            FileType::Host,
+            None,
+            Cow::Borrowed(code.as_slice()),
+        );
+        let arena = LocalArena::new();
+        let program = parse_file(&arena, &file);
+        assert!(!program.has_errors());
+        let names = NameResolver::new(&arena).resolve(program);
+        let mut settings = Settings::default();
+        settings.track_native_types = native;
+        let mut codebase = scan_program(&arena, &file, program, &names, settings.version);
+        let mut references = SymbolReferences::new();
+        populate_codebase(
+            &mut codebase,
+            &mut references,
+            Default::default(),
+            Default::default(),
+        );
+        let registry = PluginRegistry::new();
+        let analyzer = Analyzer::new(&arena, &file, &names, &codebase, &registry, settings);
+        let mut result = AnalysisResult::new(references);
+        let artifacts = analyzer
+            .analyze_with_artifacts(program, &mut result)
+            .unwrap();
+        (artifacts, result)
+    };
+    let (enabled, result) = analyze(true);
+    let (disabled, off_result) = analyze(false);
+    assert_eq!(enabled.expression_types, disabled.expression_types);
+    assert_eq!(result.symbol_references, off_result.symbol_references);
+    assert_eq!(
+        format!("{:?}", result.issues),
+        format!("{:?}", off_result.issues)
+    );
+    assert_eq!(
+        result
+            .issues
+            .iter()
+            .filter(|issue| issue.code.as_deref() == Some("invalid-operand"))
+            .count(),
+        2
+    );
+
+    let oracle = oracle.as_array().unwrap();
+    let runtime = runtime.as_array().unwrap();
+    assert_eq!(oracle.len(), runtime.len());
+    let mut offset = 0;
+    let mut checked = 0;
+    for (line, source) in std::str::from_utf8(code)
+        .unwrap()
+        .split_inclusive('\n')
+        .enumerate()
+    {
+        if let Some((expression, _)) = source.split_once("// result") {
+            let expression = expression.trim_end().strip_suffix(';').unwrap();
+            let start = offset + expression.len() - expression.trim_start().len();
+            let span = Span::new(
+                FileId::zero(),
+                Position::new(start as u32),
+                Position::new((offset + expression.len()) as u32),
+            );
+            let ty = enabled.get_expression_type(&span).unwrap();
+            let php = &runtime[checked];
+            let phpstan = &oracle[checked];
+            assert_eq!(php["line"], line + 1);
+            assert_eq!(phpstan["line"], php["line"]);
+            assert_eq!(php["expression"], expression.trim());
+            let expected = phpstan["message"]
+                .as_str()
+                .unwrap()
+                .strip_prefix("Dumped type: ")
+                .unwrap();
+            if php["exception"] == "DivisionByZeroError" {
+                assert_eq!(expected, "*ERROR*");
+                // PHPStan's ErrorType is not a scalar expectation. Verify Mago's rejection at
+                // this expression; its existing invalid-operand fallback is outside this patch.
+                assert!(result.issues.iter().any(|issue| {
+                    issue.code.as_deref() == Some("invalid-operand")
+                        && issue.annotations.iter().any(|annotation| {
+                            annotation.kind.is_primary()
+                                && annotation.span.start.offset >= span.start.offset
+                                && annotation.span.end.offset <= span.end.offset
+                        })
+                }));
+                assert!(enabled.get_native_expression_type(&span).is_none());
+            } else {
+                if php["type"] == "int" {
+                    let value = php["value"].as_i64().unwrap();
+                    assert_eq!(expected.parse::<i64>().unwrap(), value);
+                    assert_eq!(ty.get_single_literal_int_value(), Some(value));
+                } else {
+                    assert_eq!(php["type"], "float");
+                    let value = php["value"].as_f64().unwrap();
+                    assert_eq!(expected.parse::<f64>().unwrap(), value);
+                    assert_eq!(ty.get_single_literal_float_value(), Some(value));
+                }
+                assert_eq!(
+                    enabled
+                        .get_native_expression_type(&span)
+                        .unwrap()
+                        .get_single(),
+                    ty.get_single()
+                );
+            }
+            assert!(disabled.get_native_expression_type(&span).is_none());
+            checked += 1;
+        }
+        offset += source.len();
+    }
+    assert_eq!(checked, oracle.len());
+}
