@@ -1,0 +1,366 @@
+{
+  "default": [
+    {
+      "message": "Dumped type #1: Name of 'duplicate' (function VariableNameTemplateContainers\\containers(), argument)|'duplicate'",
+      "line": 21,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type #2: array{value: Name of 'duplicate' (function VariableNameTemplateContainers\\containers(), argument)|'duplicate'}",
+      "line": 21,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type #3: array<string, Name of 'duplicate' (function VariableNameTemplateContainers\\containers(), argument)|'duplicate'>",
+      "line": 21,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type #4: iterable<int, Name of 'duplicate' (function VariableNameTemplateContainers\\containers(), argument)|'duplicate'>",
+      "line": 21,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type #5: VariableNameTemplateContainers\\Box<Name of 'duplicate' (function VariableNameTemplateContainers\\containers(), argument)|'duplicate'>",
+      "line": 21,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: array{value: Name of 'duplicate' (function VariableNameTemplateContainers\\containers(), argument)|'duplicate'}",
+      "line": 23,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Call to function compact() contains undefined variable $duplicate.",
+      "line": 24,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Call to function compact() contains undefined variable $duplicate.",
+      "line": 24,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Dumped type: array{value: 'existing'}",
+      "line": 26,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: 'existing'",
+      "line": 30,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: Name of 'duplicate' (function VariableNameTemplateContainers\\containers(), parameter)",
+      "line": 35,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: Name of 'duplicate' (function VariableNameTemplateContainers\\containers(), parameter)|'duplicate'",
+      "line": 38,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Call to function compact() contains undefined variable $duplicate.",
+      "line": 39,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Call to function compact() contains undefined variable $duplicate.",
+      "line": 39,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Dumped type: Name of 'duplicate' (function VariableNameTemplateContainers\\containers(), parameter)|'duplicate'",
+      "line": 41,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Call to function compact() contains undefined variable $duplicate.",
+      "line": 42,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Call to function compact() contains undefined variable $duplicate.",
+      "line": 42,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Dumped type: array{value: Name of 'duplicate' (function VariableNameTemplateContainers\\containers(), parameter)|'duplicate'}",
+      "line": 45,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Call to function compact() contains undefined variable $duplicate.",
+      "line": 46,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Call to function compact() contains undefined variable $duplicate.",
+      "line": 46,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Call to function compact() contains undefined variable $duplicate.",
+      "line": 48,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Call to function compact() contains undefined variable $duplicate.",
+      "line": 48,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Dumped type: 'duplicate'|(Name of 'duplicate'|'other' (function VariableNameTemplateContainers\\narrowing(), argument))",
+      "line": 57,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Call to function compact() contains undefined variable $duplicate.",
+      "line": 59,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Call to function compact() contains undefined variable $duplicate.",
+      "line": 59,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Dumped type: 'existing'",
+      "line": 62,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: 'duplicate'|(Child of Names of 'duplicate'|'other' (function VariableNameTemplateContainers\\templateBounds(), argument) (function VariableNameTemplateContainers\\templateBounds(), argument))",
+      "line": 74,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Call to function compact() contains undefined variable $duplicate.",
+      "line": 75,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Call to function compact() contains undefined variable $duplicate.",
+      "line": 75,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Call to function compact() contains undefined variable $other.",
+      "line": 75,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    }
+  ],
+  "maybe": [
+    {
+      "message": "Dumped type #1: Name of 'duplicate' (function VariableNameTemplateContainers\\containers(), argument)|'duplicate'",
+      "line": 21,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type #2: array{value: Name of 'duplicate' (function VariableNameTemplateContainers\\containers(), argument)|'duplicate'}",
+      "line": 21,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type #3: array<string, Name of 'duplicate' (function VariableNameTemplateContainers\\containers(), argument)|'duplicate'>",
+      "line": 21,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type #4: iterable<int, Name of 'duplicate' (function VariableNameTemplateContainers\\containers(), argument)|'duplicate'>",
+      "line": 21,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type #5: VariableNameTemplateContainers\\Box<Name of 'duplicate' (function VariableNameTemplateContainers\\containers(), argument)|'duplicate'>",
+      "line": 21,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: array{value: Name of 'duplicate' (function VariableNameTemplateContainers\\containers(), argument)|'duplicate'}",
+      "line": 23,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Call to function compact() contains undefined variable $duplicate.",
+      "line": 24,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Call to function compact() contains undefined variable $duplicate.",
+      "line": 24,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Dumped type: array{value: 'existing'}",
+      "line": 26,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: 'existing'",
+      "line": 30,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: Name of 'duplicate' (function VariableNameTemplateContainers\\containers(), parameter)",
+      "line": 35,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: Name of 'duplicate' (function VariableNameTemplateContainers\\containers(), parameter)|'duplicate'",
+      "line": 38,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Call to function compact() contains undefined variable $duplicate.",
+      "line": 39,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Call to function compact() contains undefined variable $duplicate.",
+      "line": 39,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Dumped type: Name of 'duplicate' (function VariableNameTemplateContainers\\containers(), parameter)|'duplicate'",
+      "line": 41,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Call to function compact() contains undefined variable $duplicate.",
+      "line": 42,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Call to function compact() contains undefined variable $duplicate.",
+      "line": 42,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Dumped type: array{value: Name of 'duplicate' (function VariableNameTemplateContainers\\containers(), parameter)|'duplicate'}",
+      "line": 45,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Call to function compact() contains undefined variable $duplicate.",
+      "line": 46,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Call to function compact() contains undefined variable $duplicate.",
+      "line": 46,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Call to function compact() contains undefined variable $duplicate.",
+      "line": 48,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Call to function compact() contains undefined variable $duplicate.",
+      "line": 48,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Dumped type: 'duplicate'|(Name of 'duplicate'|'other' (function VariableNameTemplateContainers\\narrowing(), argument))",
+      "line": 57,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Call to function compact() contains undefined variable $duplicate.",
+      "line": 59,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Call to function compact() contains undefined variable $duplicate.",
+      "line": 59,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Dumped type: 'existing'",
+      "line": 62,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: 'duplicate'|(Child of Names of 'duplicate'|'other' (function VariableNameTemplateContainers\\templateBounds(), argument) (function VariableNameTemplateContainers\\templateBounds(), argument))",
+      "line": 74,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Call to function compact() contains undefined variable $duplicate.",
+      "line": 75,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Call to function compact() contains undefined variable $duplicate.",
+      "line": 75,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Call to function compact() contains undefined variable $other.",
+      "line": 75,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    }
+  ]
+}

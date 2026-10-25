@@ -556,14 +556,41 @@ impl Type {
     }
 
     fn is_constant_scalar(&self) -> bool {
-        matches!(
-            self,
+        match self.scalar_class_type() {
             Type::ConstBool(_)
-                | Type::ConstInt(_)
-                | Type::ConstFloat(_)
-                | Type::ConstString(_)
-                | Type::Null
-        )
+            | Type::ConstInt(_)
+            | Type::ConstFloat(_)
+            | Type::ConstString(_)
+            | Type::Null => true,
+            // UnionType's query aggregates its members, but it does not implement ConstantScalarType.
+            Type::Union(parts) | Type::Benevolent(parts) => parts.iter().all(Self::is_constant_scalar),
+            _ => false,
+        }
+    }
+
+    /// TemplateTypeFactory's scalar subclasses, for instanceof dispatch only. A direct constant string/int
+    /// bound creates a constant subclass; using that template as another bound creates StringType/IntegerType.
+    /// NullType stays constant through nested bounds, while BooleanType never becomes ConstantBooleanType.
+    fn scalar_class_type(&self) -> &Type {
+        match self {
+            Type::Template(t) => match &t.bound {
+                bound @ (Type::ConstInt(_) | Type::ConstString(_) | Type::Null) => bound,
+                bound @ (Type::Union(_) | Type::Benevolent(_)) => bound,
+                Type::String => &Type::String,
+                Type::Int | Type::IntRange(..) => &Type::Int,
+                Type::Bool | Type::ConstBool(_) => &Type::Bool,
+                Type::Template(_) => match t.bound.scalar_class_type() {
+                    Type::String | Type::ConstString(_) => &Type::String,
+                    Type::Int | Type::ConstInt(_) => &Type::Int,
+                    Type::Bool => &Type::Bool,
+                    Type::Null => &Type::Null,
+                    bound @ (Type::Union(_) | Type::Benevolent(_)) => bound,
+                    _ => self,
+                },
+                _ => self,
+            },
+            _ => self,
+        }
     }
 
     pub fn is_list(&self) -> Tri {
@@ -1414,6 +1441,10 @@ pub fn sort_types(types: &[Type]) -> Vec<Type> {
         return sorted;
     }
     sorted.sort_by(compare_in_union);
+    // NullType's non-reflexive PHP comparator reverses equal-null groups in small scalar unions.
+    if let Some(first) = sorted.iter().position(|t| matches!(t.scalar_class_type(), Type::Null)) {
+        sorted[first..].reverse();
+    }
     sorted
 }
 
@@ -1427,9 +1458,11 @@ fn compare_strings(a: &str, b: &str) -> Ordering {
 }
 
 fn compare_in_union(a: &Type, b: &Type) -> Ordering {
-    if matches!(a, Type::Null) {
+    let a_class = a.scalar_class_type();
+    let b_class = b.scalar_class_type();
+    if matches!(a_class, Type::Null) {
         return Ordering::Greater;
-    } else if matches!(b, Type::Null) {
+    } else if matches!(b_class, Type::Null) {
         return Ordering::Less;
     }
     match (a, b) {
@@ -1445,12 +1478,18 @@ fn compare_in_union(a: &Type, b: &Type) -> Ordering {
     if a_bool != b_bool {
         return a_bool.cmp(&b_bool);
     }
-    let a_scalar = a.is_constant_scalar() && !matches!(a, Type::Null);
-    let b_scalar = b.is_constant_scalar() && !matches!(b, Type::Null);
+    let constant_class = |t: &Type| {
+        matches!(
+            t,
+            Type::ConstBool(_) | Type::ConstInt(_) | Type::ConstFloat(_) | Type::ConstString(_)
+        )
+    };
+    let a_scalar = constant_class(a_class);
+    let b_scalar = constant_class(b_class);
     if a_scalar != b_scalar {
         return b_scalar.cmp(&a_scalar);
     }
-    let number = |t: &Type| match t {
+    let number = |t: &Type| match t.scalar_class_type() {
         Type::ConstInt(i) => Some(*i as f64),
         Type::ConstFloat(f) => Some(*f),
         _ => None,
@@ -1461,14 +1500,15 @@ fn compare_in_union(a: &Type, b: &Type) -> Ordering {
             return cmp;
         }
         // an int before the equal float (two equal numbers of one kind are one type)
-        return matches!(b, Type::ConstInt(_)).cmp(&matches!(a, Type::ConstInt(_)));
+        return matches!(b_class, Type::ConstInt(_))
+            .cmp(&matches!(a_class, Type::ConstInt(_)));
     }
-    match (a, b) {
+    match (a_class, b_class) {
         (Type::IntRange(a_min, _), Type::IntRange(b_min, _)) => {
             return a_min.unwrap_or(i64::MIN).cmp(&b_min.unwrap_or(i64::MIN));
         }
-        (Type::IntRange(..), _) if b.is_plain_integer_class() => return Ordering::Greater,
-        (_, Type::IntRange(..)) if a.is_plain_integer_class() => return Ordering::Less,
+        (Type::IntRange(..), Type::Int | Type::ConstInt(_)) => return Ordering::Greater,
+        (Type::Int | Type::ConstInt(_), Type::IntRange(..)) => return Ordering::Less,
         (Type::ConstString(x), Type::ConstString(y)) => return compare_strings(x, y),
         _ => {}
     }
@@ -1490,13 +1530,6 @@ fn compare_in_union(a: &Type, b: &Type) -> Ordering {
 }
 
 impl Type {
-    /// `$t instanceof IntegerType` for `IntegerRangeType` comparisons: TemplateIntegerType /
-    /// TemplateConstantIntegerType.
-    fn is_plain_integer_class(&self) -> bool {
-        // (an `int` or a constant int never meets a range when sorting: it was merged, or sorted as a scalar)
-        matches!(self, Type::Template(t) if matches!(t.bound, Type::Int | Type::ConstInt(_) | Type::IntRange(..)))
-    }
-
     /// TypeCombinator's array/iterable instanceof checks include the corresponding Template* subclasses.
     /// Only dispatch uses this view: supertype reductions must still compare the original template identities.
     fn array_class(&self) -> &Type {
@@ -1521,7 +1554,7 @@ fn describe_union(types: &[Type], level: Level) -> String {
             let d = t.describe(level);
             let wrap = match t {
                 Type::Closure(_) | Type::Callable(_) => true,
-                Type::Template(tpl) if matches!(tpl.bound, Type::Union(_)) => true,
+                Type::Template(_) if matches!(t.scalar_class_type(), Type::Union(_)) => true,
                 Type::Template(tpl) => {
                     i + 1 < types.len()
                         && level != Level::Precise
@@ -1553,7 +1586,11 @@ fn describe_union(types: &[Type], level: Level) -> String {
             .iter()
             .map(|t| {
                 if t.is_constant_value().yes() && !matches!(t, Type::ConstBool(_)) {
-                    t.generalize()
+                    match t.scalar_class_type() {
+                        scalar @ (Type::ConstString(_) | Type::ConstInt(_)) => scalar.generalize(),
+                        Type::Bool | Type::String | Type::Int if matches!(t, Type::Template(_)) => t.clone(),
+                        _ => t.generalize(),
+                    }
                 } else {
                     t.clone()
                 }
@@ -3181,7 +3218,7 @@ pub fn union(types: Vec<Type>) -> Type {
         return types.pop().expect("one type");
     }
     let mut arrays = Vec::new();
-    // scalar constants per class, in first-seen order: bool, int, float, string, null
+    // Scalar constants per runtime class, including the distinct TemplateConstant* / TemplateNullType buckets.
     let mut scalars: Vec<(u8, Vec<Type>)> = Vec::new();
     let mut generic = [false; 5];
     let mut ranges = Vec::new();
@@ -3191,7 +3228,13 @@ pub fn union(types: Vec<Type>) -> Type {
             let class = scalar_class(&t);
             match scalars.iter_mut().find(|(c, _)| *c == class) {
                 Some((_, items)) => {
-                    if !items.contains(&t) {
+                    if !items.iter().any(|other| {
+                        if matches!(t, Type::Template(_)) {
+                            other.describe(Level::Precise) == t.describe(Level::Precise)
+                        } else {
+                            other == &t
+                        }
+                    }) {
                         items.push(t);
                     }
                 }
@@ -3301,6 +3344,11 @@ fn scalar_class(t: &Type) -> u8 {
         Type::ConstInt(_) => 1,
         Type::ConstFloat(_) => 2,
         Type::ConstString(_) => 3,
+        Type::Template(t) if matches!(t.bound, Type::ConstInt(_)) => 5,
+        Type::Template(t) if matches!(t.bound, Type::ConstString(_)) => 6,
+        Type::Template(_) if matches!(t.scalar_class_type(), Type::Union(_)) => 8,
+        Type::Template(_) if matches!(t.scalar_class_type(), Type::Benevolent(_)) => 9,
+        Type::Template(_) => 7, // TemplateNullType, including a nested null-template bound
         _ => 4,
     }
 }
@@ -3315,6 +3363,18 @@ enum Merge {
 
 /// `TypeCombinator::compareTypesInUnion()`
 fn compare_in_union_merge(a: &Type, b: &Type) -> Option<Merge> {
+    // ConstantStringType/ConstantIntegerType check their nonconstant parent class before CompoundType.
+    // In particular a literal is only maybe wider than a nested TemplateStringType/TemplateIntegerType,
+    // even when that template's bound happens to be the same constant literal.
+    let super_type = |a: &Type, b: &Type| {
+        if (a.is_constant_scalar() && !matches!(a, Type::Template(_)))
+            || matches!(a, Type::IntRange(..))
+        {
+            is_super_type_of(a, b.scalar_class_type())
+        } else {
+            is_super_type_of(a, b)
+        }
+    };
     if let Type::SubtractedMixed { explicit, excluded } = a {
         return Some(Merge::A(mixed::join(*explicit, excluded, b)));
     }
@@ -3355,16 +3415,16 @@ fn compare_in_union_merge(a: &Type, b: &Type) -> Option<Merge> {
                 | Type::EnumCase(..)
         )
     };
-    if subtractable(a) && is_super_type_of(a, b).yes() {
+    if subtractable(a) && super_type(a, b).yes() {
         return Some(Merge::A(a.clone()));
     }
-    if subtractable(b) && is_super_type_of(b, a).yes() {
+    if subtractable(b) && super_type(b, a).yes() {
         return Some(Merge::B(b.clone()));
     }
-    if is_super_type_of(b, a).yes() {
+    if super_type(b, a).yes() {
         return Some(Merge::B(b.clone()));
     }
-    if is_super_type_of(a, b).yes() {
+    if super_type(a, b).yes() {
         return Some(Merge::A(a.clone()));
     }
     // (a constant string is always `b`: constant scalars merge into the other types one by one)

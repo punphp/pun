@@ -25,7 +25,7 @@ fn check(fixture: &str) {
         let got: Vec<_> = run(&project)
             .unwrap()
             .into_iter()
-            .filter(|e| e.identifier.starts_with("variable."))
+            .filter(|e| e.identifier.starts_with("variable.") || e.identifier == "phpstan.dumpType")
             .map(|e| (e.line, e.identifier, e.message, e.tip, e.can_be_ignored))
             .collect();
         let mut want: Vec<_> = expected[mode]
@@ -64,7 +64,12 @@ fn late_types_and_nonconstant_unions_do_not_invent_names() {
 
 #[test]
 fn template_union_source_keeps_each_distinct_constant_type() {
-    // Keep the real oracle regression active: conversion currently combines the union before
-    // applying argument strategy, erasing its template member. The rule cannot recover that source.
+    // A constant template and an ordinary literal occupy separate runtime-class union buckets,
+    // regardless of template strategy. Compact must observe both surviving constant-string members.
     check("template-union-source");
+}
+
+#[test]
+fn template_scalar_unions_keep_container_annotation_and_narrowed_names() {
+    check("template-containers");
 }

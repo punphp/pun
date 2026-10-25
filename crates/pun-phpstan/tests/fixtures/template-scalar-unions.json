@@ -1,0 +1,5802 @@
+[
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "'duplicate'",
+                "argument": false
+            },
+            "'duplicate'"
+        ],
+        "descriptions": [
+            "T of 'duplicate' (function fixture(), parameter)|'duplicate'",
+            "(T of 'duplicate')|'duplicate'",
+            "string"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            "'duplicate'",
+            {
+                "name": "T",
+                "bound": "'duplicate'",
+                "argument": false
+            }
+        ],
+        "descriptions": [
+            "'duplicate'|T of 'duplicate' (function fixture(), parameter)",
+            "'duplicate'|T of 'duplicate'",
+            "string"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "'duplicate'",
+                "argument": false
+            },
+            "'other'"
+        ],
+        "descriptions": [
+            "T of 'duplicate' (function fixture(), parameter)|'other'",
+            "(T of 'duplicate')|'other'",
+            "string"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            "'other'",
+            {
+                "name": "T",
+                "bound": "'duplicate'",
+                "argument": false
+            }
+        ],
+        "descriptions": [
+            "T of 'duplicate' (function fixture(), parameter)|'other'",
+            "(T of 'duplicate')|'other'",
+            "string"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "'duplicate'",
+                "argument": false
+            },
+            "string"
+        ],
+        "descriptions": [
+            "string",
+            "string",
+            "string"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            "string",
+            {
+                "name": "T",
+                "bound": "'duplicate'",
+                "argument": false
+            }
+        ],
+        "descriptions": [
+            "string",
+            "string",
+            "string"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "'duplicate'",
+                "argument": false
+            },
+            "int"
+        ],
+        "descriptions": [
+            "T of 'duplicate' (function fixture(), parameter)|int",
+            "(T of 'duplicate')|int",
+            "int|string"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            "int",
+            {
+                "name": "T",
+                "bound": "'duplicate'",
+                "argument": false
+            }
+        ],
+        "descriptions": [
+            "T of 'duplicate' (function fixture(), parameter)|int",
+            "(T of 'duplicate')|int",
+            "int|string"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "'duplicate'",
+                "argument": false
+            },
+            "null"
+        ],
+        "descriptions": [
+            "T of 'duplicate' (function fixture(), parameter)|null",
+            "(T of 'duplicate')|null",
+            "string|null"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            "null",
+            {
+                "name": "T",
+                "bound": "'duplicate'",
+                "argument": false
+            }
+        ],
+        "descriptions": [
+            "T of 'duplicate' (function fixture(), parameter)|null",
+            "(T of 'duplicate')|null",
+            "string|null"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "'duplicate'",
+                    "argument": false
+                },
+                "argument": false
+            },
+            "'duplicate'"
+        ],
+        "descriptions": [
+            "'duplicate'|U of T of 'duplicate' (function fixture(), parameter) (function fixture(), parameter)",
+            "'duplicate'|U of T of 'duplicate'",
+            "string"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            "'duplicate'",
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "'duplicate'",
+                    "argument": false
+                },
+                "argument": false
+            }
+        ],
+        "descriptions": [
+            "'duplicate'|U of T of 'duplicate' (function fixture(), parameter) (function fixture(), parameter)",
+            "'duplicate'|U of T of 'duplicate'",
+            "string"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "'duplicate'",
+                    "argument": false
+                },
+                "argument": false
+            },
+            "'other'"
+        ],
+        "descriptions": [
+            "'other'|U of T of 'duplicate' (function fixture(), parameter) (function fixture(), parameter)",
+            "'other'|U of T of 'duplicate'",
+            "string"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            "'other'",
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "'duplicate'",
+                    "argument": false
+                },
+                "argument": false
+            }
+        ],
+        "descriptions": [
+            "'other'|U of T of 'duplicate' (function fixture(), parameter) (function fixture(), parameter)",
+            "'other'|U of T of 'duplicate'",
+            "string"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "'duplicate'",
+                    "argument": false
+                },
+                "argument": false
+            },
+            "string"
+        ],
+        "descriptions": [
+            "string",
+            "string",
+            "string"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            "string",
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "'duplicate'",
+                    "argument": false
+                },
+                "argument": false
+            }
+        ],
+        "descriptions": [
+            "string",
+            "string",
+            "string"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "'duplicate'",
+                    "argument": false
+                },
+                "argument": false
+            },
+            "int"
+        ],
+        "descriptions": [
+            "int|U of T of 'duplicate' (function fixture(), parameter) (function fixture(), parameter)",
+            "int|U of T of 'duplicate'",
+            "int|U of T of string"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            "int",
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "'duplicate'",
+                    "argument": false
+                },
+                "argument": false
+            }
+        ],
+        "descriptions": [
+            "int|U of T of 'duplicate' (function fixture(), parameter) (function fixture(), parameter)",
+            "int|U of T of 'duplicate'",
+            "int|U of T of string"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "'duplicate'",
+                    "argument": false
+                },
+                "argument": false
+            },
+            "null"
+        ],
+        "descriptions": [
+            "U of T of 'duplicate' (function fixture(), parameter) (function fixture(), parameter)|null",
+            "(U of T of 'duplicate')|null",
+            "(U of T of string)|null"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            "null",
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "'duplicate'",
+                    "argument": false
+                },
+                "argument": false
+            }
+        ],
+        "descriptions": [
+            "U of T of 'duplicate' (function fixture(), parameter) (function fixture(), parameter)|null",
+            "(U of T of 'duplicate')|null",
+            "(U of T of string)|null"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "'duplicate'",
+                "argument": false
+            },
+            {
+                "name": "T",
+                "bound": "'duplicate'",
+                "argument": false
+            }
+        ],
+        "descriptions": [
+            "T of 'duplicate' (function fixture(), parameter)",
+            "T of 'duplicate'",
+            "T of string"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "'duplicate'",
+                "argument": false
+            },
+            {
+                "name": "T",
+                "bound": "'duplicate'",
+                "argument": true
+            }
+        ],
+        "descriptions": [
+            "T of 'duplicate' (function fixture(), parameter)|T of 'duplicate' (function fixture(), argument)",
+            "(T of 'duplicate')|T of 'duplicate'",
+            "string"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "'duplicate'",
+                "argument": false
+            },
+            {
+                "name": "Other",
+                "bound": "'duplicate'",
+                "argument": false
+            }
+        ],
+        "descriptions": [
+            "T of 'duplicate' (function fixture(), parameter)|Other of 'duplicate' (function fixture(), parameter)",
+            "(T of 'duplicate')|Other of 'duplicate'",
+            "string"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "'duplicate'",
+                "argument": false
+            },
+            {
+                "name": "T",
+                "bound": "'duplicate'",
+                "argument": false,
+                "function": "other"
+            }
+        ],
+        "descriptions": [
+            "T of 'duplicate' (function fixture(), parameter)|T of 'duplicate' (function other(), parameter)",
+            "(T of 'duplicate')|T of 'duplicate'",
+            "string"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "'duplicate'",
+                "argument": true
+            },
+            "'duplicate'"
+        ],
+        "descriptions": [
+            "T of 'duplicate' (function fixture(), argument)|'duplicate'",
+            "(T of 'duplicate')|'duplicate'",
+            "string"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            "'duplicate'",
+            {
+                "name": "T",
+                "bound": "'duplicate'",
+                "argument": true
+            }
+        ],
+        "descriptions": [
+            "'duplicate'|T of 'duplicate' (function fixture(), argument)",
+            "'duplicate'|T of 'duplicate'",
+            "string"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "'duplicate'",
+                "argument": true
+            },
+            "'other'"
+        ],
+        "descriptions": [
+            "T of 'duplicate' (function fixture(), argument)|'other'",
+            "(T of 'duplicate')|'other'",
+            "string"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            "'other'",
+            {
+                "name": "T",
+                "bound": "'duplicate'",
+                "argument": true
+            }
+        ],
+        "descriptions": [
+            "T of 'duplicate' (function fixture(), argument)|'other'",
+            "(T of 'duplicate')|'other'",
+            "string"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "'duplicate'",
+                "argument": true
+            },
+            "string"
+        ],
+        "descriptions": [
+            "string",
+            "string",
+            "string"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            "string",
+            {
+                "name": "T",
+                "bound": "'duplicate'",
+                "argument": true
+            }
+        ],
+        "descriptions": [
+            "string",
+            "string",
+            "string"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "'duplicate'",
+                "argument": true
+            },
+            "int"
+        ],
+        "descriptions": [
+            "T of 'duplicate' (function fixture(), argument)|int",
+            "(T of 'duplicate')|int",
+            "int|string"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            "int",
+            {
+                "name": "T",
+                "bound": "'duplicate'",
+                "argument": true
+            }
+        ],
+        "descriptions": [
+            "T of 'duplicate' (function fixture(), argument)|int",
+            "(T of 'duplicate')|int",
+            "int|string"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "'duplicate'",
+                "argument": true
+            },
+            "null"
+        ],
+        "descriptions": [
+            "T of 'duplicate' (function fixture(), argument)|null",
+            "(T of 'duplicate')|null",
+            "string|null"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            "null",
+            {
+                "name": "T",
+                "bound": "'duplicate'",
+                "argument": true
+            }
+        ],
+        "descriptions": [
+            "T of 'duplicate' (function fixture(), argument)|null",
+            "(T of 'duplicate')|null",
+            "string|null"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "'duplicate'",
+                    "argument": true
+                },
+                "argument": true
+            },
+            "'duplicate'"
+        ],
+        "descriptions": [
+            "'duplicate'|U of T of 'duplicate' (function fixture(), argument) (function fixture(), argument)",
+            "'duplicate'|U of T of 'duplicate'",
+            "string"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            "'duplicate'",
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "'duplicate'",
+                    "argument": true
+                },
+                "argument": true
+            }
+        ],
+        "descriptions": [
+            "'duplicate'|U of T of 'duplicate' (function fixture(), argument) (function fixture(), argument)",
+            "'duplicate'|U of T of 'duplicate'",
+            "string"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "'duplicate'",
+                    "argument": true
+                },
+                "argument": true
+            },
+            "'other'"
+        ],
+        "descriptions": [
+            "'other'|U of T of 'duplicate' (function fixture(), argument) (function fixture(), argument)",
+            "'other'|U of T of 'duplicate'",
+            "string"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            "'other'",
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "'duplicate'",
+                    "argument": true
+                },
+                "argument": true
+            }
+        ],
+        "descriptions": [
+            "'other'|U of T of 'duplicate' (function fixture(), argument) (function fixture(), argument)",
+            "'other'|U of T of 'duplicate'",
+            "string"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "'duplicate'",
+                    "argument": true
+                },
+                "argument": true
+            },
+            "string"
+        ],
+        "descriptions": [
+            "string",
+            "string",
+            "string"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            "string",
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "'duplicate'",
+                    "argument": true
+                },
+                "argument": true
+            }
+        ],
+        "descriptions": [
+            "string",
+            "string",
+            "string"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "'duplicate'",
+                    "argument": true
+                },
+                "argument": true
+            },
+            "int"
+        ],
+        "descriptions": [
+            "int|U of T of 'duplicate' (function fixture(), argument) (function fixture(), argument)",
+            "int|U of T of 'duplicate'",
+            "int|U of T of string"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            "int",
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "'duplicate'",
+                    "argument": true
+                },
+                "argument": true
+            }
+        ],
+        "descriptions": [
+            "int|U of T of 'duplicate' (function fixture(), argument) (function fixture(), argument)",
+            "int|U of T of 'duplicate'",
+            "int|U of T of string"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "'duplicate'",
+                    "argument": true
+                },
+                "argument": true
+            },
+            "null"
+        ],
+        "descriptions": [
+            "U of T of 'duplicate' (function fixture(), argument) (function fixture(), argument)|null",
+            "(U of T of 'duplicate')|null",
+            "(U of T of string)|null"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            "null",
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "'duplicate'",
+                    "argument": true
+                },
+                "argument": true
+            }
+        ],
+        "descriptions": [
+            "U of T of 'duplicate' (function fixture(), argument) (function fixture(), argument)|null",
+            "(U of T of 'duplicate')|null",
+            "(U of T of string)|null"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "'duplicate'",
+                "argument": true
+            },
+            {
+                "name": "T",
+                "bound": "'duplicate'",
+                "argument": true
+            }
+        ],
+        "descriptions": [
+            "T of 'duplicate' (function fixture(), argument)",
+            "T of 'duplicate'",
+            "T of string"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "'duplicate'",
+                "argument": true
+            },
+            {
+                "name": "T",
+                "bound": "'duplicate'",
+                "argument": false
+            }
+        ],
+        "descriptions": [
+            "T of 'duplicate' (function fixture(), argument)|T of 'duplicate' (function fixture(), parameter)",
+            "(T of 'duplicate')|T of 'duplicate'",
+            "string"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "'duplicate'",
+                "argument": true
+            },
+            {
+                "name": "Other",
+                "bound": "'duplicate'",
+                "argument": true
+            }
+        ],
+        "descriptions": [
+            "T of 'duplicate' (function fixture(), argument)|Other of 'duplicate' (function fixture(), argument)",
+            "(T of 'duplicate')|Other of 'duplicate'",
+            "string"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "'duplicate'",
+                "argument": true
+            },
+            {
+                "name": "T",
+                "bound": "'duplicate'",
+                "argument": true,
+                "function": "other"
+            }
+        ],
+        "descriptions": [
+            "T of 'duplicate' (function fixture(), argument)|T of 'duplicate' (function other(), argument)",
+            "(T of 'duplicate')|T of 'duplicate'",
+            "string"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "1",
+                "argument": false
+            },
+            "1"
+        ],
+        "descriptions": [
+            "T of 1 (function fixture(), parameter)|1",
+            "(T of 1)|1",
+            "int"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            "1",
+            {
+                "name": "T",
+                "bound": "1",
+                "argument": false
+            }
+        ],
+        "descriptions": [
+            "1|T of 1 (function fixture(), parameter)",
+            "1|T of 1",
+            "int"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "1",
+                "argument": false
+            },
+            "2"
+        ],
+        "descriptions": [
+            "T of 1 (function fixture(), parameter)|2",
+            "(T of 1)|2",
+            "int"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            "2",
+            {
+                "name": "T",
+                "bound": "1",
+                "argument": false
+            }
+        ],
+        "descriptions": [
+            "T of 1 (function fixture(), parameter)|2",
+            "(T of 1)|2",
+            "int"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "1",
+                "argument": false
+            },
+            "int"
+        ],
+        "descriptions": [
+            "int",
+            "int",
+            "int"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            "int",
+            {
+                "name": "T",
+                "bound": "1",
+                "argument": false
+            }
+        ],
+        "descriptions": [
+            "int",
+            "int",
+            "int"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "1",
+                "argument": false
+            },
+            "int<0, 3>"
+        ],
+        "descriptions": [
+            "int<0, 3>",
+            "int<0, 3>",
+            "int<0, 3>"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            "int<0, 3>",
+            {
+                "name": "T",
+                "bound": "1",
+                "argument": false
+            }
+        ],
+        "descriptions": [
+            "int<0, 3>",
+            "int<0, 3>",
+            "int<0, 3>"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "1",
+                "argument": false
+            },
+            "string"
+        ],
+        "descriptions": [
+            "T of 1 (function fixture(), parameter)|string",
+            "(T of 1)|string",
+            "int|string"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            "string",
+            {
+                "name": "T",
+                "bound": "1",
+                "argument": false
+            }
+        ],
+        "descriptions": [
+            "T of 1 (function fixture(), parameter)|string",
+            "(T of 1)|string",
+            "int|string"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "1",
+                "argument": false
+            },
+            "null"
+        ],
+        "descriptions": [
+            "T of 1 (function fixture(), parameter)|null",
+            "(T of 1)|null",
+            "int|null"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            "null",
+            {
+                "name": "T",
+                "bound": "1",
+                "argument": false
+            }
+        ],
+        "descriptions": [
+            "T of 1 (function fixture(), parameter)|null",
+            "(T of 1)|null",
+            "int|null"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "1",
+                    "argument": false
+                },
+                "argument": false
+            },
+            "1"
+        ],
+        "descriptions": [
+            "U of T of 1 (function fixture(), parameter) (function fixture(), parameter)",
+            "U of T of 1",
+            "U of T of int"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            "1",
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "1",
+                    "argument": false
+                },
+                "argument": false
+            }
+        ],
+        "descriptions": [
+            "U of T of 1 (function fixture(), parameter) (function fixture(), parameter)",
+            "U of T of 1",
+            "U of T of int"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "1",
+                    "argument": false
+                },
+                "argument": false
+            },
+            "2"
+        ],
+        "descriptions": [
+            "U of T of 1 (function fixture(), parameter) (function fixture(), parameter)",
+            "U of T of 1",
+            "U of T of int"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            "2",
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "1",
+                    "argument": false
+                },
+                "argument": false
+            }
+        ],
+        "descriptions": [
+            "U of T of 1 (function fixture(), parameter) (function fixture(), parameter)",
+            "U of T of 1",
+            "U of T of int"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "1",
+                    "argument": false
+                },
+                "argument": false
+            },
+            "int"
+        ],
+        "descriptions": [
+            "int",
+            "int",
+            "int"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            "int",
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "1",
+                    "argument": false
+                },
+                "argument": false
+            }
+        ],
+        "descriptions": [
+            "int",
+            "int",
+            "int"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "1",
+                    "argument": false
+                },
+                "argument": false
+            },
+            "int<0, 3>"
+        ],
+        "descriptions": [
+            "U of T of 1 (function fixture(), parameter) (function fixture(), parameter)|int<0, 3>",
+            "(U of T of 1)|int<0, 3>",
+            "(U of T of int)|int<0, 3>"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            "int<0, 3>",
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "1",
+                    "argument": false
+                },
+                "argument": false
+            }
+        ],
+        "descriptions": [
+            "U of T of 1 (function fixture(), parameter) (function fixture(), parameter)|int<0, 3>",
+            "(U of T of 1)|int<0, 3>",
+            "(U of T of int)|int<0, 3>"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "1",
+                    "argument": false
+                },
+                "argument": false
+            },
+            "string"
+        ],
+        "descriptions": [
+            "string|U of T of 1 (function fixture(), parameter) (function fixture(), parameter)",
+            "string|U of T of 1",
+            "string|U of T of int"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            "string",
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "1",
+                    "argument": false
+                },
+                "argument": false
+            }
+        ],
+        "descriptions": [
+            "string|U of T of 1 (function fixture(), parameter) (function fixture(), parameter)",
+            "string|U of T of 1",
+            "string|U of T of int"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "1",
+                    "argument": false
+                },
+                "argument": false
+            },
+            "null"
+        ],
+        "descriptions": [
+            "U of T of 1 (function fixture(), parameter) (function fixture(), parameter)|null",
+            "(U of T of 1)|null",
+            "(U of T of int)|null"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            "null",
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "1",
+                    "argument": false
+                },
+                "argument": false
+            }
+        ],
+        "descriptions": [
+            "U of T of 1 (function fixture(), parameter) (function fixture(), parameter)|null",
+            "(U of T of 1)|null",
+            "(U of T of int)|null"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "1",
+                "argument": false
+            },
+            {
+                "name": "T",
+                "bound": "1",
+                "argument": false
+            }
+        ],
+        "descriptions": [
+            "T of 1 (function fixture(), parameter)",
+            "T of 1",
+            "T of int"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "1",
+                "argument": false
+            },
+            {
+                "name": "T",
+                "bound": "1",
+                "argument": true
+            }
+        ],
+        "descriptions": [
+            "T of 1 (function fixture(), parameter)|T of 1 (function fixture(), argument)",
+            "(T of 1)|T of 1",
+            "int"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "1",
+                "argument": false
+            },
+            {
+                "name": "Other",
+                "bound": "1",
+                "argument": false
+            }
+        ],
+        "descriptions": [
+            "T of 1 (function fixture(), parameter)|Other of 1 (function fixture(), parameter)",
+            "(T of 1)|Other of 1",
+            "int"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "1",
+                "argument": false
+            },
+            {
+                "name": "T",
+                "bound": "1",
+                "argument": false,
+                "function": "other"
+            }
+        ],
+        "descriptions": [
+            "T of 1 (function fixture(), parameter)|T of 1 (function other(), parameter)",
+            "(T of 1)|T of 1",
+            "int"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "1",
+                "argument": true
+            },
+            "1"
+        ],
+        "descriptions": [
+            "T of 1 (function fixture(), argument)|1",
+            "(T of 1)|1",
+            "int"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            "1",
+            {
+                "name": "T",
+                "bound": "1",
+                "argument": true
+            }
+        ],
+        "descriptions": [
+            "1|T of 1 (function fixture(), argument)",
+            "1|T of 1",
+            "int"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "1",
+                "argument": true
+            },
+            "2"
+        ],
+        "descriptions": [
+            "T of 1 (function fixture(), argument)|2",
+            "(T of 1)|2",
+            "int"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            "2",
+            {
+                "name": "T",
+                "bound": "1",
+                "argument": true
+            }
+        ],
+        "descriptions": [
+            "T of 1 (function fixture(), argument)|2",
+            "(T of 1)|2",
+            "int"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "1",
+                "argument": true
+            },
+            "int"
+        ],
+        "descriptions": [
+            "int",
+            "int",
+            "int"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            "int",
+            {
+                "name": "T",
+                "bound": "1",
+                "argument": true
+            }
+        ],
+        "descriptions": [
+            "int",
+            "int",
+            "int"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "1",
+                "argument": true
+            },
+            "int<0, 3>"
+        ],
+        "descriptions": [
+            "int<0, 3>",
+            "int<0, 3>",
+            "int<0, 3>"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            "int<0, 3>",
+            {
+                "name": "T",
+                "bound": "1",
+                "argument": true
+            }
+        ],
+        "descriptions": [
+            "int<0, 3>",
+            "int<0, 3>",
+            "int<0, 3>"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "1",
+                "argument": true
+            },
+            "string"
+        ],
+        "descriptions": [
+            "T of 1 (function fixture(), argument)|string",
+            "(T of 1)|string",
+            "int|string"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            "string",
+            {
+                "name": "T",
+                "bound": "1",
+                "argument": true
+            }
+        ],
+        "descriptions": [
+            "T of 1 (function fixture(), argument)|string",
+            "(T of 1)|string",
+            "int|string"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "1",
+                "argument": true
+            },
+            "null"
+        ],
+        "descriptions": [
+            "T of 1 (function fixture(), argument)|null",
+            "(T of 1)|null",
+            "int|null"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            "null",
+            {
+                "name": "T",
+                "bound": "1",
+                "argument": true
+            }
+        ],
+        "descriptions": [
+            "T of 1 (function fixture(), argument)|null",
+            "(T of 1)|null",
+            "int|null"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "1",
+                    "argument": true
+                },
+                "argument": true
+            },
+            "1"
+        ],
+        "descriptions": [
+            "U of T of 1 (function fixture(), argument) (function fixture(), argument)",
+            "U of T of 1",
+            "U of T of int"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            "1",
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "1",
+                    "argument": true
+                },
+                "argument": true
+            }
+        ],
+        "descriptions": [
+            "U of T of 1 (function fixture(), argument) (function fixture(), argument)",
+            "U of T of 1",
+            "U of T of int"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "1",
+                    "argument": true
+                },
+                "argument": true
+            },
+            "2"
+        ],
+        "descriptions": [
+            "U of T of 1 (function fixture(), argument) (function fixture(), argument)",
+            "U of T of 1",
+            "U of T of int"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            "2",
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "1",
+                    "argument": true
+                },
+                "argument": true
+            }
+        ],
+        "descriptions": [
+            "U of T of 1 (function fixture(), argument) (function fixture(), argument)",
+            "U of T of 1",
+            "U of T of int"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "1",
+                    "argument": true
+                },
+                "argument": true
+            },
+            "int"
+        ],
+        "descriptions": [
+            "int",
+            "int",
+            "int"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            "int",
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "1",
+                    "argument": true
+                },
+                "argument": true
+            }
+        ],
+        "descriptions": [
+            "int",
+            "int",
+            "int"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "1",
+                    "argument": true
+                },
+                "argument": true
+            },
+            "int<0, 3>"
+        ],
+        "descriptions": [
+            "U of T of 1 (function fixture(), argument) (function fixture(), argument)|int<0, 3>",
+            "(U of T of 1)|int<0, 3>",
+            "(U of T of int)|int<0, 3>"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            "int<0, 3>",
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "1",
+                    "argument": true
+                },
+                "argument": true
+            }
+        ],
+        "descriptions": [
+            "U of T of 1 (function fixture(), argument) (function fixture(), argument)|int<0, 3>",
+            "(U of T of 1)|int<0, 3>",
+            "(U of T of int)|int<0, 3>"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "1",
+                    "argument": true
+                },
+                "argument": true
+            },
+            "string"
+        ],
+        "descriptions": [
+            "string|U of T of 1 (function fixture(), argument) (function fixture(), argument)",
+            "string|U of T of 1",
+            "string|U of T of int"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            "string",
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "1",
+                    "argument": true
+                },
+                "argument": true
+            }
+        ],
+        "descriptions": [
+            "string|U of T of 1 (function fixture(), argument) (function fixture(), argument)",
+            "string|U of T of 1",
+            "string|U of T of int"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "1",
+                    "argument": true
+                },
+                "argument": true
+            },
+            "null"
+        ],
+        "descriptions": [
+            "U of T of 1 (function fixture(), argument) (function fixture(), argument)|null",
+            "(U of T of 1)|null",
+            "(U of T of int)|null"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            "null",
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "1",
+                    "argument": true
+                },
+                "argument": true
+            }
+        ],
+        "descriptions": [
+            "U of T of 1 (function fixture(), argument) (function fixture(), argument)|null",
+            "(U of T of 1)|null",
+            "(U of T of int)|null"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "1",
+                "argument": true
+            },
+            {
+                "name": "T",
+                "bound": "1",
+                "argument": true
+            }
+        ],
+        "descriptions": [
+            "T of 1 (function fixture(), argument)",
+            "T of 1",
+            "T of int"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "1",
+                "argument": true
+            },
+            {
+                "name": "T",
+                "bound": "1",
+                "argument": false
+            }
+        ],
+        "descriptions": [
+            "T of 1 (function fixture(), argument)|T of 1 (function fixture(), parameter)",
+            "(T of 1)|T of 1",
+            "int"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "1",
+                "argument": true
+            },
+            {
+                "name": "Other",
+                "bound": "1",
+                "argument": true
+            }
+        ],
+        "descriptions": [
+            "T of 1 (function fixture(), argument)|Other of 1 (function fixture(), argument)",
+            "(T of 1)|Other of 1",
+            "int"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "1",
+                "argument": true
+            },
+            {
+                "name": "T",
+                "bound": "1",
+                "argument": true,
+                "function": "other"
+            }
+        ],
+        "descriptions": [
+            "T of 1 (function fixture(), argument)|T of 1 (function other(), argument)",
+            "(T of 1)|T of 1",
+            "int"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "null",
+                "argument": false
+            },
+            "null"
+        ],
+        "descriptions": [
+            "null|T of null (function fixture(), parameter)",
+            "null|T of null",
+            "(T of null)|null"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            "null",
+            {
+                "name": "T",
+                "bound": "null",
+                "argument": false
+            }
+        ],
+        "descriptions": [
+            "T of null (function fixture(), parameter)|null",
+            "(T of null)|null",
+            "null|T of null"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "null",
+                "argument": false
+            },
+            "string"
+        ],
+        "descriptions": [
+            "string|T of null (function fixture(), parameter)",
+            "string|T of null",
+            "string|T of null"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            "string",
+            {
+                "name": "T",
+                "bound": "null",
+                "argument": false
+            }
+        ],
+        "descriptions": [
+            "string|T of null (function fixture(), parameter)",
+            "string|T of null",
+            "string|T of null"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "null",
+                "argument": false
+            },
+            "bool"
+        ],
+        "descriptions": [
+            "bool|T of null (function fixture(), parameter)",
+            "bool|T of null",
+            "bool|T of null"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            "bool",
+            {
+                "name": "T",
+                "bound": "null",
+                "argument": false
+            }
+        ],
+        "descriptions": [
+            "bool|T of null (function fixture(), parameter)",
+            "bool|T of null",
+            "bool|T of null"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "null",
+                    "argument": false
+                },
+                "argument": false
+            },
+            "null"
+        ],
+        "descriptions": [
+            "null|U of T of null (function fixture(), parameter) (function fixture(), parameter)",
+            "null|U of T of null",
+            "(U of T of null)|null"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            "null",
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "null",
+                    "argument": false
+                },
+                "argument": false
+            }
+        ],
+        "descriptions": [
+            "U of T of null (function fixture(), parameter) (function fixture(), parameter)|null",
+            "(U of T of null)|null",
+            "null|U of T of null"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "null",
+                    "argument": false
+                },
+                "argument": false
+            },
+            "string"
+        ],
+        "descriptions": [
+            "string|U of T of null (function fixture(), parameter) (function fixture(), parameter)",
+            "string|U of T of null",
+            "string|U of T of null"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            "string",
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "null",
+                    "argument": false
+                },
+                "argument": false
+            }
+        ],
+        "descriptions": [
+            "string|U of T of null (function fixture(), parameter) (function fixture(), parameter)",
+            "string|U of T of null",
+            "string|U of T of null"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "null",
+                    "argument": false
+                },
+                "argument": false
+            },
+            "bool"
+        ],
+        "descriptions": [
+            "bool|U of T of null (function fixture(), parameter) (function fixture(), parameter)",
+            "bool|U of T of null",
+            "bool|U of T of null"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            "bool",
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "null",
+                    "argument": false
+                },
+                "argument": false
+            }
+        ],
+        "descriptions": [
+            "bool|U of T of null (function fixture(), parameter) (function fixture(), parameter)",
+            "bool|U of T of null",
+            "bool|U of T of null"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "null",
+                "argument": false
+            },
+            {
+                "name": "T",
+                "bound": "null",
+                "argument": false
+            }
+        ],
+        "descriptions": [
+            "T of null (function fixture(), parameter)",
+            "T of null",
+            "T of null"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "null",
+                "argument": false
+            },
+            {
+                "name": "T",
+                "bound": "null",
+                "argument": true
+            }
+        ],
+        "descriptions": [
+            "T of null (function fixture(), argument)|T of null (function fixture(), parameter)",
+            "(T of null)|T of null",
+            "(T of null)|T of null"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "null",
+                "argument": false
+            },
+            {
+                "name": "Other",
+                "bound": "null",
+                "argument": false
+            }
+        ],
+        "descriptions": [
+            "Other of null (function fixture(), parameter)|T of null (function fixture(), parameter)",
+            "(Other of null)|T of null",
+            "(T of null)|Other of null"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "null",
+                "argument": false
+            },
+            {
+                "name": "T",
+                "bound": "null",
+                "argument": false,
+                "function": "other"
+            }
+        ],
+        "descriptions": [
+            "T of null (function other(), parameter)|T of null (function fixture(), parameter)",
+            "(T of null)|T of null",
+            "(T of null)|T of null"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "null",
+                "argument": true
+            },
+            "null"
+        ],
+        "descriptions": [
+            "null|T of null (function fixture(), argument)",
+            "null|T of null",
+            "(T of null)|null"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            "null",
+            {
+                "name": "T",
+                "bound": "null",
+                "argument": true
+            }
+        ],
+        "descriptions": [
+            "T of null (function fixture(), argument)|null",
+            "(T of null)|null",
+            "null|T of null"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "null",
+                "argument": true
+            },
+            "string"
+        ],
+        "descriptions": [
+            "string|T of null (function fixture(), argument)",
+            "string|T of null",
+            "string|T of null"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            "string",
+            {
+                "name": "T",
+                "bound": "null",
+                "argument": true
+            }
+        ],
+        "descriptions": [
+            "string|T of null (function fixture(), argument)",
+            "string|T of null",
+            "string|T of null"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "null",
+                "argument": true
+            },
+            "bool"
+        ],
+        "descriptions": [
+            "bool|T of null (function fixture(), argument)",
+            "bool|T of null",
+            "bool|T of null"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            "bool",
+            {
+                "name": "T",
+                "bound": "null",
+                "argument": true
+            }
+        ],
+        "descriptions": [
+            "bool|T of null (function fixture(), argument)",
+            "bool|T of null",
+            "bool|T of null"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "null",
+                    "argument": true
+                },
+                "argument": true
+            },
+            "null"
+        ],
+        "descriptions": [
+            "null|U of T of null (function fixture(), argument) (function fixture(), argument)",
+            "null|U of T of null",
+            "(U of T of null)|null"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            "null",
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "null",
+                    "argument": true
+                },
+                "argument": true
+            }
+        ],
+        "descriptions": [
+            "U of T of null (function fixture(), argument) (function fixture(), argument)|null",
+            "(U of T of null)|null",
+            "null|U of T of null"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "null",
+                    "argument": true
+                },
+                "argument": true
+            },
+            "string"
+        ],
+        "descriptions": [
+            "string|U of T of null (function fixture(), argument) (function fixture(), argument)",
+            "string|U of T of null",
+            "string|U of T of null"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            "string",
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "null",
+                    "argument": true
+                },
+                "argument": true
+            }
+        ],
+        "descriptions": [
+            "string|U of T of null (function fixture(), argument) (function fixture(), argument)",
+            "string|U of T of null",
+            "string|U of T of null"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "null",
+                    "argument": true
+                },
+                "argument": true
+            },
+            "bool"
+        ],
+        "descriptions": [
+            "bool|U of T of null (function fixture(), argument) (function fixture(), argument)",
+            "bool|U of T of null",
+            "bool|U of T of null"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            "bool",
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "null",
+                    "argument": true
+                },
+                "argument": true
+            }
+        ],
+        "descriptions": [
+            "bool|U of T of null (function fixture(), argument) (function fixture(), argument)",
+            "bool|U of T of null",
+            "bool|U of T of null"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "null",
+                "argument": true
+            },
+            {
+                "name": "T",
+                "bound": "null",
+                "argument": true
+            }
+        ],
+        "descriptions": [
+            "T of null (function fixture(), argument)",
+            "T of null",
+            "T of null"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "null",
+                "argument": true
+            },
+            {
+                "name": "T",
+                "bound": "null",
+                "argument": false
+            }
+        ],
+        "descriptions": [
+            "T of null (function fixture(), parameter)|T of null (function fixture(), argument)",
+            "(T of null)|T of null",
+            "(T of null)|T of null"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "null",
+                "argument": true
+            },
+            {
+                "name": "Other",
+                "bound": "null",
+                "argument": true
+            }
+        ],
+        "descriptions": [
+            "Other of null (function fixture(), argument)|T of null (function fixture(), argument)",
+            "(Other of null)|T of null",
+            "(T of null)|Other of null"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "null",
+                "argument": true
+            },
+            {
+                "name": "T",
+                "bound": "null",
+                "argument": true,
+                "function": "other"
+            }
+        ],
+        "descriptions": [
+            "T of null (function other(), argument)|T of null (function fixture(), argument)",
+            "(T of null)|T of null",
+            "(T of null)|T of null"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "true",
+                "argument": false
+            },
+            "true"
+        ],
+        "descriptions": [
+            "T of true (function fixture(), parameter)",
+            "T of true",
+            "T of true"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            "true",
+            {
+                "name": "T",
+                "bound": "true",
+                "argument": false
+            }
+        ],
+        "descriptions": [
+            "T of true (function fixture(), parameter)",
+            "T of true",
+            "T of true"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "true",
+                "argument": false
+            },
+            "false"
+        ],
+        "descriptions": [
+            "T of true (function fixture(), parameter)",
+            "T of true",
+            "T of true"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            "false",
+            {
+                "name": "T",
+                "bound": "true",
+                "argument": false
+            }
+        ],
+        "descriptions": [
+            "T of true (function fixture(), parameter)",
+            "T of true",
+            "T of true"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "true",
+                "argument": false
+            },
+            "bool"
+        ],
+        "descriptions": [
+            "bool",
+            "bool",
+            "bool"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            "bool",
+            {
+                "name": "T",
+                "bound": "true",
+                "argument": false
+            }
+        ],
+        "descriptions": [
+            "bool",
+            "bool",
+            "bool"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "true",
+                "argument": false
+            },
+            "null"
+        ],
+        "descriptions": [
+            "T of true (function fixture(), parameter)|null",
+            "(T of true)|null",
+            "(T of true)|null"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            "null",
+            {
+                "name": "T",
+                "bound": "true",
+                "argument": false
+            }
+        ],
+        "descriptions": [
+            "T of true (function fixture(), parameter)|null",
+            "(T of true)|null",
+            "(T of true)|null"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "true",
+                    "argument": false
+                },
+                "argument": false
+            },
+            "true"
+        ],
+        "descriptions": [
+            "U of T of true (function fixture(), parameter) (function fixture(), parameter)",
+            "U of T of true",
+            "U of T of true"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            "true",
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "true",
+                    "argument": false
+                },
+                "argument": false
+            }
+        ],
+        "descriptions": [
+            "U of T of true (function fixture(), parameter) (function fixture(), parameter)",
+            "U of T of true",
+            "U of T of true"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "true",
+                    "argument": false
+                },
+                "argument": false
+            },
+            "false"
+        ],
+        "descriptions": [
+            "U of T of true (function fixture(), parameter) (function fixture(), parameter)",
+            "U of T of true",
+            "U of T of true"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            "false",
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "true",
+                    "argument": false
+                },
+                "argument": false
+            }
+        ],
+        "descriptions": [
+            "U of T of true (function fixture(), parameter) (function fixture(), parameter)",
+            "U of T of true",
+            "U of T of true"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "true",
+                    "argument": false
+                },
+                "argument": false
+            },
+            "bool"
+        ],
+        "descriptions": [
+            "bool",
+            "bool",
+            "bool"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            "bool",
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "true",
+                    "argument": false
+                },
+                "argument": false
+            }
+        ],
+        "descriptions": [
+            "bool",
+            "bool",
+            "bool"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "true",
+                    "argument": false
+                },
+                "argument": false
+            },
+            "null"
+        ],
+        "descriptions": [
+            "U of T of true (function fixture(), parameter) (function fixture(), parameter)|null",
+            "(U of T of true)|null",
+            "(U of T of true)|null"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            "null",
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "true",
+                    "argument": false
+                },
+                "argument": false
+            }
+        ],
+        "descriptions": [
+            "U of T of true (function fixture(), parameter) (function fixture(), parameter)|null",
+            "(U of T of true)|null",
+            "(U of T of true)|null"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "true",
+                "argument": false
+            },
+            {
+                "name": "T",
+                "bound": "true",
+                "argument": false
+            }
+        ],
+        "descriptions": [
+            "T of true (function fixture(), parameter)",
+            "T of true",
+            "T of true"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "true",
+                "argument": false
+            },
+            {
+                "name": "T",
+                "bound": "true",
+                "argument": true
+            }
+        ],
+        "descriptions": [
+            "T of true (function fixture(), argument)",
+            "T of true",
+            "T of true"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "true",
+                "argument": false
+            },
+            {
+                "name": "Other",
+                "bound": "true",
+                "argument": false
+            }
+        ],
+        "descriptions": [
+            "Other of true (function fixture(), parameter)|T of true (function fixture(), parameter)",
+            "(Other of true)|T of true",
+            "(Other of true)|T of true"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "true",
+                "argument": false
+            },
+            {
+                "name": "T",
+                "bound": "true",
+                "argument": false,
+                "function": "other"
+            }
+        ],
+        "descriptions": [
+            "T of true (function fixture(), parameter)|T of true (function other(), parameter)",
+            "(T of true)|T of true",
+            "(T of true)|T of true"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "true",
+                "argument": true
+            },
+            "true"
+        ],
+        "descriptions": [
+            "T of true (function fixture(), argument)",
+            "T of true",
+            "T of true"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            "true",
+            {
+                "name": "T",
+                "bound": "true",
+                "argument": true
+            }
+        ],
+        "descriptions": [
+            "T of true (function fixture(), argument)",
+            "T of true",
+            "T of true"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "true",
+                "argument": true
+            },
+            "false"
+        ],
+        "descriptions": [
+            "T of true (function fixture(), argument)",
+            "T of true",
+            "T of true"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            "false",
+            {
+                "name": "T",
+                "bound": "true",
+                "argument": true
+            }
+        ],
+        "descriptions": [
+            "T of true (function fixture(), argument)",
+            "T of true",
+            "T of true"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "true",
+                "argument": true
+            },
+            "bool"
+        ],
+        "descriptions": [
+            "bool",
+            "bool",
+            "bool"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            "bool",
+            {
+                "name": "T",
+                "bound": "true",
+                "argument": true
+            }
+        ],
+        "descriptions": [
+            "bool",
+            "bool",
+            "bool"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "true",
+                "argument": true
+            },
+            "null"
+        ],
+        "descriptions": [
+            "T of true (function fixture(), argument)|null",
+            "(T of true)|null",
+            "(T of true)|null"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            "null",
+            {
+                "name": "T",
+                "bound": "true",
+                "argument": true
+            }
+        ],
+        "descriptions": [
+            "T of true (function fixture(), argument)|null",
+            "(T of true)|null",
+            "(T of true)|null"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "true",
+                    "argument": true
+                },
+                "argument": true
+            },
+            "true"
+        ],
+        "descriptions": [
+            "U of T of true (function fixture(), argument) (function fixture(), argument)",
+            "U of T of true",
+            "U of T of true"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            "true",
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "true",
+                    "argument": true
+                },
+                "argument": true
+            }
+        ],
+        "descriptions": [
+            "U of T of true (function fixture(), argument) (function fixture(), argument)",
+            "U of T of true",
+            "U of T of true"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "true",
+                    "argument": true
+                },
+                "argument": true
+            },
+            "false"
+        ],
+        "descriptions": [
+            "U of T of true (function fixture(), argument) (function fixture(), argument)",
+            "U of T of true",
+            "U of T of true"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            "false",
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "true",
+                    "argument": true
+                },
+                "argument": true
+            }
+        ],
+        "descriptions": [
+            "U of T of true (function fixture(), argument) (function fixture(), argument)",
+            "U of T of true",
+            "U of T of true"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "true",
+                    "argument": true
+                },
+                "argument": true
+            },
+            "bool"
+        ],
+        "descriptions": [
+            "bool",
+            "bool",
+            "bool"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            "bool",
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "true",
+                    "argument": true
+                },
+                "argument": true
+            }
+        ],
+        "descriptions": [
+            "bool",
+            "bool",
+            "bool"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "true",
+                    "argument": true
+                },
+                "argument": true
+            },
+            "null"
+        ],
+        "descriptions": [
+            "U of T of true (function fixture(), argument) (function fixture(), argument)|null",
+            "(U of T of true)|null",
+            "(U of T of true)|null"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            "null",
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "true",
+                    "argument": true
+                },
+                "argument": true
+            }
+        ],
+        "descriptions": [
+            "U of T of true (function fixture(), argument) (function fixture(), argument)|null",
+            "(U of T of true)|null",
+            "(U of T of true)|null"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "true",
+                "argument": true
+            },
+            {
+                "name": "T",
+                "bound": "true",
+                "argument": true
+            }
+        ],
+        "descriptions": [
+            "T of true (function fixture(), argument)",
+            "T of true",
+            "T of true"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "true",
+                "argument": true
+            },
+            {
+                "name": "T",
+                "bound": "true",
+                "argument": false
+            }
+        ],
+        "descriptions": [
+            "T of true (function fixture(), parameter)",
+            "T of true",
+            "T of true"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "true",
+                "argument": true
+            },
+            {
+                "name": "Other",
+                "bound": "true",
+                "argument": true
+            }
+        ],
+        "descriptions": [
+            "Other of true (function fixture(), argument)|T of true (function fixture(), argument)",
+            "(Other of true)|T of true",
+            "(Other of true)|T of true"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "true",
+                "argument": true
+            },
+            {
+                "name": "T",
+                "bound": "true",
+                "argument": true,
+                "function": "other"
+            }
+        ],
+        "descriptions": [
+            "T of true (function fixture(), argument)|T of true (function other(), argument)",
+            "(T of true)|T of true",
+            "(T of true)|T of true"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "string",
+                "argument": false
+            },
+            "'duplicate'"
+        ],
+        "descriptions": [
+            "'duplicate'|T of string (function fixture(), parameter)",
+            "'duplicate'|T of string",
+            "string"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            "'duplicate'",
+            {
+                "name": "T",
+                "bound": "string",
+                "argument": false
+            }
+        ],
+        "descriptions": [
+            "'duplicate'|T of string (function fixture(), parameter)",
+            "'duplicate'|T of string",
+            "string"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "string",
+                "argument": false
+            },
+            "string"
+        ],
+        "descriptions": [
+            "string",
+            "string",
+            "string"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            "string",
+            {
+                "name": "T",
+                "bound": "string",
+                "argument": false
+            }
+        ],
+        "descriptions": [
+            "string",
+            "string",
+            "string"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "string",
+                "argument": false
+            },
+            "null"
+        ],
+        "descriptions": [
+            "T of string (function fixture(), parameter)|null",
+            "(T of string)|null",
+            "(T of string)|null"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            "null",
+            {
+                "name": "T",
+                "bound": "string",
+                "argument": false
+            }
+        ],
+        "descriptions": [
+            "T of string (function fixture(), parameter)|null",
+            "(T of string)|null",
+            "(T of string)|null"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "string",
+                    "argument": false
+                },
+                "argument": false
+            },
+            "'duplicate'"
+        ],
+        "descriptions": [
+            "'duplicate'|U of T of string (function fixture(), parameter) (function fixture(), parameter)",
+            "'duplicate'|U of T of string",
+            "string"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            "'duplicate'",
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "string",
+                    "argument": false
+                },
+                "argument": false
+            }
+        ],
+        "descriptions": [
+            "'duplicate'|U of T of string (function fixture(), parameter) (function fixture(), parameter)",
+            "'duplicate'|U of T of string",
+            "string"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "string",
+                    "argument": false
+                },
+                "argument": false
+            },
+            "string"
+        ],
+        "descriptions": [
+            "string",
+            "string",
+            "string"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            "string",
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "string",
+                    "argument": false
+                },
+                "argument": false
+            }
+        ],
+        "descriptions": [
+            "string",
+            "string",
+            "string"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "string",
+                    "argument": false
+                },
+                "argument": false
+            },
+            "null"
+        ],
+        "descriptions": [
+            "U of T of string (function fixture(), parameter) (function fixture(), parameter)|null",
+            "(U of T of string)|null",
+            "(U of T of string)|null"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            "null",
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "string",
+                    "argument": false
+                },
+                "argument": false
+            }
+        ],
+        "descriptions": [
+            "U of T of string (function fixture(), parameter) (function fixture(), parameter)|null",
+            "(U of T of string)|null",
+            "(U of T of string)|null"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "string",
+                "argument": false
+            },
+            {
+                "name": "T",
+                "bound": "string",
+                "argument": false
+            }
+        ],
+        "descriptions": [
+            "T of string (function fixture(), parameter)",
+            "T of string",
+            "T of string"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "string",
+                "argument": false
+            },
+            {
+                "name": "T",
+                "bound": "string",
+                "argument": true
+            }
+        ],
+        "descriptions": [
+            "T of string (function fixture(), argument)",
+            "T of string",
+            "T of string"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "string",
+                "argument": false
+            },
+            {
+                "name": "Other",
+                "bound": "string",
+                "argument": false
+            }
+        ],
+        "descriptions": [
+            "Other of string (function fixture(), parameter)|T of string (function fixture(), parameter)",
+            "(Other of string)|T of string",
+            "(Other of string)|T of string"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "string",
+                "argument": false
+            },
+            {
+                "name": "T",
+                "bound": "string",
+                "argument": false,
+                "function": "other"
+            }
+        ],
+        "descriptions": [
+            "T of string (function fixture(), parameter)|T of string (function other(), parameter)",
+            "(T of string)|T of string",
+            "(T of string)|T of string"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "string",
+                "argument": true
+            },
+            "'duplicate'"
+        ],
+        "descriptions": [
+            "'duplicate'|T of string (function fixture(), argument)",
+            "'duplicate'|T of string",
+            "string"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            "'duplicate'",
+            {
+                "name": "T",
+                "bound": "string",
+                "argument": true
+            }
+        ],
+        "descriptions": [
+            "'duplicate'|T of string (function fixture(), argument)",
+            "'duplicate'|T of string",
+            "string"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "string",
+                "argument": true
+            },
+            "string"
+        ],
+        "descriptions": [
+            "string",
+            "string",
+            "string"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            "string",
+            {
+                "name": "T",
+                "bound": "string",
+                "argument": true
+            }
+        ],
+        "descriptions": [
+            "string",
+            "string",
+            "string"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "string",
+                "argument": true
+            },
+            "null"
+        ],
+        "descriptions": [
+            "T of string (function fixture(), argument)|null",
+            "(T of string)|null",
+            "(T of string)|null"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            "null",
+            {
+                "name": "T",
+                "bound": "string",
+                "argument": true
+            }
+        ],
+        "descriptions": [
+            "T of string (function fixture(), argument)|null",
+            "(T of string)|null",
+            "(T of string)|null"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "string",
+                    "argument": true
+                },
+                "argument": true
+            },
+            "'duplicate'"
+        ],
+        "descriptions": [
+            "'duplicate'|U of T of string (function fixture(), argument) (function fixture(), argument)",
+            "'duplicate'|U of T of string",
+            "string"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            "'duplicate'",
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "string",
+                    "argument": true
+                },
+                "argument": true
+            }
+        ],
+        "descriptions": [
+            "'duplicate'|U of T of string (function fixture(), argument) (function fixture(), argument)",
+            "'duplicate'|U of T of string",
+            "string"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "string",
+                    "argument": true
+                },
+                "argument": true
+            },
+            "string"
+        ],
+        "descriptions": [
+            "string",
+            "string",
+            "string"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            "string",
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "string",
+                    "argument": true
+                },
+                "argument": true
+            }
+        ],
+        "descriptions": [
+            "string",
+            "string",
+            "string"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "string",
+                    "argument": true
+                },
+                "argument": true
+            },
+            "null"
+        ],
+        "descriptions": [
+            "U of T of string (function fixture(), argument) (function fixture(), argument)|null",
+            "(U of T of string)|null",
+            "(U of T of string)|null"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            "null",
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "string",
+                    "argument": true
+                },
+                "argument": true
+            }
+        ],
+        "descriptions": [
+            "U of T of string (function fixture(), argument) (function fixture(), argument)|null",
+            "(U of T of string)|null",
+            "(U of T of string)|null"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "string",
+                "argument": true
+            },
+            {
+                "name": "T",
+                "bound": "string",
+                "argument": true
+            }
+        ],
+        "descriptions": [
+            "T of string (function fixture(), argument)",
+            "T of string",
+            "T of string"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "string",
+                "argument": true
+            },
+            {
+                "name": "T",
+                "bound": "string",
+                "argument": false
+            }
+        ],
+        "descriptions": [
+            "T of string (function fixture(), parameter)",
+            "T of string",
+            "T of string"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "string",
+                "argument": true
+            },
+            {
+                "name": "Other",
+                "bound": "string",
+                "argument": true
+            }
+        ],
+        "descriptions": [
+            "Other of string (function fixture(), argument)|T of string (function fixture(), argument)",
+            "(Other of string)|T of string",
+            "(Other of string)|T of string"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "string",
+                "argument": true
+            },
+            {
+                "name": "T",
+                "bound": "string",
+                "argument": true,
+                "function": "other"
+            }
+        ],
+        "descriptions": [
+            "T of string (function fixture(), argument)|T of string (function other(), argument)",
+            "(T of string)|T of string",
+            "(T of string)|T of string"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "int",
+                "argument": false
+            },
+            "1"
+        ],
+        "descriptions": [
+            "T of int (function fixture(), parameter)",
+            "T of int",
+            "T of int"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            "1",
+            {
+                "name": "T",
+                "bound": "int",
+                "argument": false
+            }
+        ],
+        "descriptions": [
+            "T of int (function fixture(), parameter)",
+            "T of int",
+            "T of int"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "int",
+                "argument": false
+            },
+            "int"
+        ],
+        "descriptions": [
+            "int",
+            "int",
+            "int"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            "int",
+            {
+                "name": "T",
+                "bound": "int",
+                "argument": false
+            }
+        ],
+        "descriptions": [
+            "int",
+            "int",
+            "int"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "int",
+                "argument": false
+            },
+            "null"
+        ],
+        "descriptions": [
+            "T of int (function fixture(), parameter)|null",
+            "(T of int)|null",
+            "(T of int)|null"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            "null",
+            {
+                "name": "T",
+                "bound": "int",
+                "argument": false
+            }
+        ],
+        "descriptions": [
+            "T of int (function fixture(), parameter)|null",
+            "(T of int)|null",
+            "(T of int)|null"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "int",
+                    "argument": false
+                },
+                "argument": false
+            },
+            "1"
+        ],
+        "descriptions": [
+            "U of T of int (function fixture(), parameter) (function fixture(), parameter)",
+            "U of T of int",
+            "U of T of int"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            "1",
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "int",
+                    "argument": false
+                },
+                "argument": false
+            }
+        ],
+        "descriptions": [
+            "U of T of int (function fixture(), parameter) (function fixture(), parameter)",
+            "U of T of int",
+            "U of T of int"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "int",
+                    "argument": false
+                },
+                "argument": false
+            },
+            "int"
+        ],
+        "descriptions": [
+            "int",
+            "int",
+            "int"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            "int",
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "int",
+                    "argument": false
+                },
+                "argument": false
+            }
+        ],
+        "descriptions": [
+            "int",
+            "int",
+            "int"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "int",
+                    "argument": false
+                },
+                "argument": false
+            },
+            "null"
+        ],
+        "descriptions": [
+            "U of T of int (function fixture(), parameter) (function fixture(), parameter)|null",
+            "(U of T of int)|null",
+            "(U of T of int)|null"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            "null",
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "int",
+                    "argument": false
+                },
+                "argument": false
+            }
+        ],
+        "descriptions": [
+            "U of T of int (function fixture(), parameter) (function fixture(), parameter)|null",
+            "(U of T of int)|null",
+            "(U of T of int)|null"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "int",
+                "argument": false
+            },
+            {
+                "name": "T",
+                "bound": "int",
+                "argument": false
+            }
+        ],
+        "descriptions": [
+            "T of int (function fixture(), parameter)",
+            "T of int",
+            "T of int"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "int",
+                "argument": false
+            },
+            {
+                "name": "T",
+                "bound": "int",
+                "argument": true
+            }
+        ],
+        "descriptions": [
+            "T of int (function fixture(), argument)",
+            "T of int",
+            "T of int"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "int",
+                "argument": false
+            },
+            {
+                "name": "Other",
+                "bound": "int",
+                "argument": false
+            }
+        ],
+        "descriptions": [
+            "Other of int (function fixture(), parameter)|T of int (function fixture(), parameter)",
+            "(Other of int)|T of int",
+            "(Other of int)|T of int"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "int",
+                "argument": false
+            },
+            {
+                "name": "T",
+                "bound": "int",
+                "argument": false,
+                "function": "other"
+            }
+        ],
+        "descriptions": [
+            "T of int (function fixture(), parameter)|T of int (function other(), parameter)",
+            "(T of int)|T of int",
+            "(T of int)|T of int"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "int",
+                "argument": true
+            },
+            "1"
+        ],
+        "descriptions": [
+            "T of int (function fixture(), argument)",
+            "T of int",
+            "T of int"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            "1",
+            {
+                "name": "T",
+                "bound": "int",
+                "argument": true
+            }
+        ],
+        "descriptions": [
+            "T of int (function fixture(), argument)",
+            "T of int",
+            "T of int"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "int",
+                "argument": true
+            },
+            "int"
+        ],
+        "descriptions": [
+            "int",
+            "int",
+            "int"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            "int",
+            {
+                "name": "T",
+                "bound": "int",
+                "argument": true
+            }
+        ],
+        "descriptions": [
+            "int",
+            "int",
+            "int"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "int",
+                "argument": true
+            },
+            "null"
+        ],
+        "descriptions": [
+            "T of int (function fixture(), argument)|null",
+            "(T of int)|null",
+            "(T of int)|null"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            "null",
+            {
+                "name": "T",
+                "bound": "int",
+                "argument": true
+            }
+        ],
+        "descriptions": [
+            "T of int (function fixture(), argument)|null",
+            "(T of int)|null",
+            "(T of int)|null"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "int",
+                    "argument": true
+                },
+                "argument": true
+            },
+            "1"
+        ],
+        "descriptions": [
+            "U of T of int (function fixture(), argument) (function fixture(), argument)",
+            "U of T of int",
+            "U of T of int"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            "1",
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "int",
+                    "argument": true
+                },
+                "argument": true
+            }
+        ],
+        "descriptions": [
+            "U of T of int (function fixture(), argument) (function fixture(), argument)",
+            "U of T of int",
+            "U of T of int"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "int",
+                    "argument": true
+                },
+                "argument": true
+            },
+            "int"
+        ],
+        "descriptions": [
+            "int",
+            "int",
+            "int"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            "int",
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "int",
+                    "argument": true
+                },
+                "argument": true
+            }
+        ],
+        "descriptions": [
+            "int",
+            "int",
+            "int"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "int",
+                    "argument": true
+                },
+                "argument": true
+            },
+            "null"
+        ],
+        "descriptions": [
+            "U of T of int (function fixture(), argument) (function fixture(), argument)|null",
+            "(U of T of int)|null",
+            "(U of T of int)|null"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            "null",
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "int",
+                    "argument": true
+                },
+                "argument": true
+            }
+        ],
+        "descriptions": [
+            "U of T of int (function fixture(), argument) (function fixture(), argument)|null",
+            "(U of T of int)|null",
+            "(U of T of int)|null"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "int",
+                "argument": true
+            },
+            {
+                "name": "T",
+                "bound": "int",
+                "argument": true
+            }
+        ],
+        "descriptions": [
+            "T of int (function fixture(), argument)",
+            "T of int",
+            "T of int"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "int",
+                "argument": true
+            },
+            {
+                "name": "T",
+                "bound": "int",
+                "argument": false
+            }
+        ],
+        "descriptions": [
+            "T of int (function fixture(), parameter)",
+            "T of int",
+            "T of int"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "int",
+                "argument": true
+            },
+            {
+                "name": "Other",
+                "bound": "int",
+                "argument": true
+            }
+        ],
+        "descriptions": [
+            "Other of int (function fixture(), argument)|T of int (function fixture(), argument)",
+            "(Other of int)|T of int",
+            "(Other of int)|T of int"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "int",
+                "argument": true
+            },
+            {
+                "name": "T",
+                "bound": "int",
+                "argument": true,
+                "function": "other"
+            }
+        ],
+        "descriptions": [
+            "T of int (function fixture(), argument)|T of int (function other(), argument)",
+            "(T of int)|T of int",
+            "(T of int)|T of int"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "'duplicate'|'other'",
+                "argument": false
+            },
+            "'duplicate'"
+        ],
+        "descriptions": [
+            "'duplicate'|(T of 'duplicate'|'other' (function fixture(), parameter))",
+            "'duplicate'|(T of 'duplicate'|'other')",
+            "string"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            "'duplicate'",
+            {
+                "name": "T",
+                "bound": "'duplicate'|'other'",
+                "argument": false
+            }
+        ],
+        "descriptions": [
+            "'duplicate'|(T of 'duplicate'|'other' (function fixture(), parameter))",
+            "'duplicate'|(T of 'duplicate'|'other')",
+            "string"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "'duplicate'|'other'",
+                "argument": false
+            },
+            "string"
+        ],
+        "descriptions": [
+            "string",
+            "string",
+            "string"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            "string",
+            {
+                "name": "T",
+                "bound": "'duplicate'|'other'",
+                "argument": false
+            }
+        ],
+        "descriptions": [
+            "string",
+            "string",
+            "string"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "'duplicate'|'other'",
+                "argument": false
+            },
+            "null"
+        ],
+        "descriptions": [
+            "(T of 'duplicate'|'other' (function fixture(), parameter))|null",
+            "(T of 'duplicate'|'other')|null",
+            "(T of string)|null"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            "null",
+            {
+                "name": "T",
+                "bound": "'duplicate'|'other'",
+                "argument": false
+            }
+        ],
+        "descriptions": [
+            "(T of 'duplicate'|'other' (function fixture(), parameter))|null",
+            "(T of 'duplicate'|'other')|null",
+            "(T of string)|null"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "'duplicate'|'other'",
+                    "argument": false
+                },
+                "argument": false
+            },
+            "'duplicate'"
+        ],
+        "descriptions": [
+            "'duplicate'|(U of T of 'duplicate'|'other' (function fixture(), parameter) (function fixture(), parameter))",
+            "'duplicate'|(U of T of 'duplicate'|'other')",
+            "string"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            "'duplicate'",
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "'duplicate'|'other'",
+                    "argument": false
+                },
+                "argument": false
+            }
+        ],
+        "descriptions": [
+            "'duplicate'|(U of T of 'duplicate'|'other' (function fixture(), parameter) (function fixture(), parameter))",
+            "'duplicate'|(U of T of 'duplicate'|'other')",
+            "string"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "'duplicate'|'other'",
+                    "argument": false
+                },
+                "argument": false
+            },
+            "string"
+        ],
+        "descriptions": [
+            "string",
+            "string",
+            "string"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            "string",
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "'duplicate'|'other'",
+                    "argument": false
+                },
+                "argument": false
+            }
+        ],
+        "descriptions": [
+            "string",
+            "string",
+            "string"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "'duplicate'|'other'",
+                    "argument": false
+                },
+                "argument": false
+            },
+            "null"
+        ],
+        "descriptions": [
+            "(U of T of 'duplicate'|'other' (function fixture(), parameter) (function fixture(), parameter))|null",
+            "(U of T of 'duplicate'|'other')|null",
+            "(U of T of string)|null"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            "null",
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "'duplicate'|'other'",
+                    "argument": false
+                },
+                "argument": false
+            }
+        ],
+        "descriptions": [
+            "(U of T of 'duplicate'|'other' (function fixture(), parameter) (function fixture(), parameter))|null",
+            "(U of T of 'duplicate'|'other')|null",
+            "(U of T of string)|null"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "'duplicate'|'other'",
+                "argument": false
+            },
+            {
+                "name": "T",
+                "bound": "'duplicate'|'other'",
+                "argument": false
+            }
+        ],
+        "descriptions": [
+            "T of 'duplicate'|'other' (function fixture(), parameter)",
+            "T of 'duplicate'|'other'",
+            "T of string"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "'duplicate'|'other'",
+                "argument": false
+            },
+            {
+                "name": "T",
+                "bound": "'duplicate'|'other'",
+                "argument": true
+            }
+        ],
+        "descriptions": [
+            "(T of 'duplicate'|'other' (function fixture(), argument))|(T of 'duplicate'|'other' (function fixture(), parameter))",
+            "(T of 'duplicate'|'other')",
+            "T of string"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "'duplicate'|'other'",
+                "argument": false
+            },
+            {
+                "name": "Other",
+                "bound": "'duplicate'|'other'",
+                "argument": false
+            }
+        ],
+        "descriptions": [
+            "(Other of 'duplicate'|'other' (function fixture(), parameter))|(T of 'duplicate'|'other' (function fixture(), parameter))",
+            "(Other of 'duplicate'|'other')|(T of 'duplicate'|'other')",
+            "(Other of string)|T of string"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "'duplicate'|'other'",
+                "argument": false
+            },
+            {
+                "name": "T",
+                "bound": "'duplicate'|'other'",
+                "argument": false,
+                "function": "other"
+            }
+        ],
+        "descriptions": [
+            "(T of 'duplicate'|'other' (function fixture(), parameter))|(T of 'duplicate'|'other' (function other(), parameter))",
+            "(T of 'duplicate'|'other')",
+            "(T of string)|T of string"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "'duplicate'|'other'",
+                "argument": true
+            },
+            "'duplicate'"
+        ],
+        "descriptions": [
+            "'duplicate'|(T of 'duplicate'|'other' (function fixture(), argument))",
+            "'duplicate'|(T of 'duplicate'|'other')",
+            "string"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            "'duplicate'",
+            {
+                "name": "T",
+                "bound": "'duplicate'|'other'",
+                "argument": true
+            }
+        ],
+        "descriptions": [
+            "'duplicate'|(T of 'duplicate'|'other' (function fixture(), argument))",
+            "'duplicate'|(T of 'duplicate'|'other')",
+            "string"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "'duplicate'|'other'",
+                "argument": true
+            },
+            "string"
+        ],
+        "descriptions": [
+            "string",
+            "string",
+            "string"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            "string",
+            {
+                "name": "T",
+                "bound": "'duplicate'|'other'",
+                "argument": true
+            }
+        ],
+        "descriptions": [
+            "string",
+            "string",
+            "string"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "'duplicate'|'other'",
+                "argument": true
+            },
+            "null"
+        ],
+        "descriptions": [
+            "(T of 'duplicate'|'other' (function fixture(), argument))|null",
+            "(T of 'duplicate'|'other')|null",
+            "(T of string)|null"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            "null",
+            {
+                "name": "T",
+                "bound": "'duplicate'|'other'",
+                "argument": true
+            }
+        ],
+        "descriptions": [
+            "(T of 'duplicate'|'other' (function fixture(), argument))|null",
+            "(T of 'duplicate'|'other')|null",
+            "(T of string)|null"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "'duplicate'|'other'",
+                    "argument": true
+                },
+                "argument": true
+            },
+            "'duplicate'"
+        ],
+        "descriptions": [
+            "'duplicate'|(U of T of 'duplicate'|'other' (function fixture(), argument) (function fixture(), argument))",
+            "'duplicate'|(U of T of 'duplicate'|'other')",
+            "string"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            "'duplicate'",
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "'duplicate'|'other'",
+                    "argument": true
+                },
+                "argument": true
+            }
+        ],
+        "descriptions": [
+            "'duplicate'|(U of T of 'duplicate'|'other' (function fixture(), argument) (function fixture(), argument))",
+            "'duplicate'|(U of T of 'duplicate'|'other')",
+            "string"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "'duplicate'|'other'",
+                    "argument": true
+                },
+                "argument": true
+            },
+            "string"
+        ],
+        "descriptions": [
+            "string",
+            "string",
+            "string"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            "string",
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "'duplicate'|'other'",
+                    "argument": true
+                },
+                "argument": true
+            }
+        ],
+        "descriptions": [
+            "string",
+            "string",
+            "string"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "'duplicate'|'other'",
+                    "argument": true
+                },
+                "argument": true
+            },
+            "null"
+        ],
+        "descriptions": [
+            "(U of T of 'duplicate'|'other' (function fixture(), argument) (function fixture(), argument))|null",
+            "(U of T of 'duplicate'|'other')|null",
+            "(U of T of string)|null"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            "null",
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "'duplicate'|'other'",
+                    "argument": true
+                },
+                "argument": true
+            }
+        ],
+        "descriptions": [
+            "(U of T of 'duplicate'|'other' (function fixture(), argument) (function fixture(), argument))|null",
+            "(U of T of 'duplicate'|'other')|null",
+            "(U of T of string)|null"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "'duplicate'|'other'",
+                "argument": true
+            },
+            {
+                "name": "T",
+                "bound": "'duplicate'|'other'",
+                "argument": true
+            }
+        ],
+        "descriptions": [
+            "T of 'duplicate'|'other' (function fixture(), argument)",
+            "T of 'duplicate'|'other'",
+            "T of string"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "'duplicate'|'other'",
+                "argument": true
+            },
+            {
+                "name": "T",
+                "bound": "'duplicate'|'other'",
+                "argument": false
+            }
+        ],
+        "descriptions": [
+            "(T of 'duplicate'|'other' (function fixture(), argument))|(T of 'duplicate'|'other' (function fixture(), parameter))",
+            "(T of 'duplicate'|'other')",
+            "T of string"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "'duplicate'|'other'",
+                "argument": true
+            },
+            {
+                "name": "Other",
+                "bound": "'duplicate'|'other'",
+                "argument": true
+            }
+        ],
+        "descriptions": [
+            "(Other of 'duplicate'|'other' (function fixture(), argument))|(T of 'duplicate'|'other' (function fixture(), argument))",
+            "(Other of 'duplicate'|'other')|(T of 'duplicate'|'other')",
+            "(Other of string)|T of string"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "'duplicate'|'other'",
+                "argument": true
+            },
+            {
+                "name": "T",
+                "bound": "'duplicate'|'other'",
+                "argument": true,
+                "function": "other"
+            }
+        ],
+        "descriptions": [
+            "(T of 'duplicate'|'other' (function fixture(), argument))|(T of 'duplicate'|'other' (function other(), argument))",
+            "(T of 'duplicate'|'other')",
+            "(T of string)|T of string"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "__benevolent<'duplicate'|'other'>",
+                "argument": false
+            },
+            "'duplicate'"
+        ],
+        "descriptions": [
+            "'duplicate'|T of ('duplicate'|'other') (function fixture(), parameter)",
+            "'duplicate'|T of ('duplicate'|'other')",
+            "string"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            "'duplicate'",
+            {
+                "name": "T",
+                "bound": "__benevolent<'duplicate'|'other'>",
+                "argument": false
+            }
+        ],
+        "descriptions": [
+            "'duplicate'|T of ('duplicate'|'other') (function fixture(), parameter)",
+            "'duplicate'|T of ('duplicate'|'other')",
+            "string"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "__benevolent<'duplicate'|'other'>",
+                "argument": false
+            },
+            "string"
+        ],
+        "descriptions": [
+            "string",
+            "string",
+            "string"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            "string",
+            {
+                "name": "T",
+                "bound": "__benevolent<'duplicate'|'other'>",
+                "argument": false
+            }
+        ],
+        "descriptions": [
+            "string",
+            "string",
+            "string"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "__benevolent<'duplicate'|'other'>",
+                "argument": false
+            },
+            "null"
+        ],
+        "descriptions": [
+            "T of ('duplicate'|'other') (function fixture(), parameter)|null",
+            "(T of ('duplicate'|'other'))|null",
+            "(T of string)|null"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            "null",
+            {
+                "name": "T",
+                "bound": "__benevolent<'duplicate'|'other'>",
+                "argument": false
+            }
+        ],
+        "descriptions": [
+            "T of ('duplicate'|'other') (function fixture(), parameter)|null",
+            "(T of ('duplicate'|'other'))|null",
+            "(T of string)|null"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "__benevolent<'duplicate'|'other'>",
+                    "argument": false
+                },
+                "argument": false
+            },
+            "'duplicate'"
+        ],
+        "descriptions": [
+            "'duplicate'|U of T of ('duplicate'|'other') (function fixture(), parameter) (function fixture(), parameter)",
+            "'duplicate'|U of T of ('duplicate'|'other')",
+            "string"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            "'duplicate'",
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "__benevolent<'duplicate'|'other'>",
+                    "argument": false
+                },
+                "argument": false
+            }
+        ],
+        "descriptions": [
+            "'duplicate'|U of T of ('duplicate'|'other') (function fixture(), parameter) (function fixture(), parameter)",
+            "'duplicate'|U of T of ('duplicate'|'other')",
+            "string"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "__benevolent<'duplicate'|'other'>",
+                    "argument": false
+                },
+                "argument": false
+            },
+            "string"
+        ],
+        "descriptions": [
+            "string",
+            "string",
+            "string"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            "string",
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "__benevolent<'duplicate'|'other'>",
+                    "argument": false
+                },
+                "argument": false
+            }
+        ],
+        "descriptions": [
+            "string",
+            "string",
+            "string"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "__benevolent<'duplicate'|'other'>",
+                    "argument": false
+                },
+                "argument": false
+            },
+            "null"
+        ],
+        "descriptions": [
+            "U of T of ('duplicate'|'other') (function fixture(), parameter) (function fixture(), parameter)|null",
+            "(U of T of ('duplicate'|'other'))|null",
+            "(U of T of string)|null"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            "null",
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "__benevolent<'duplicate'|'other'>",
+                    "argument": false
+                },
+                "argument": false
+            }
+        ],
+        "descriptions": [
+            "U of T of ('duplicate'|'other') (function fixture(), parameter) (function fixture(), parameter)|null",
+            "(U of T of ('duplicate'|'other'))|null",
+            "(U of T of string)|null"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "__benevolent<'duplicate'|'other'>",
+                "argument": false
+            },
+            {
+                "name": "T",
+                "bound": "__benevolent<'duplicate'|'other'>",
+                "argument": false
+            }
+        ],
+        "descriptions": [
+            "T of ('duplicate'|'other') (function fixture(), parameter)",
+            "T of ('duplicate'|'other')",
+            "T of (string)"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "__benevolent<'duplicate'|'other'>",
+                "argument": false
+            },
+            {
+                "name": "T",
+                "bound": "__benevolent<'duplicate'|'other'>",
+                "argument": true
+            }
+        ],
+        "descriptions": [
+            "T of ('duplicate'|'other') (function fixture(), argument)|T of ('duplicate'|'other') (function fixture(), parameter)",
+            "(T of ('duplicate'|'other'))|T of ('duplicate'|'other')",
+            "T of string"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "__benevolent<'duplicate'|'other'>",
+                "argument": false
+            },
+            {
+                "name": "Other",
+                "bound": "__benevolent<'duplicate'|'other'>",
+                "argument": false
+            }
+        ],
+        "descriptions": [
+            "Other of ('duplicate'|'other') (function fixture(), parameter)|T of ('duplicate'|'other') (function fixture(), parameter)",
+            "(Other of ('duplicate'|'other'))|T of ('duplicate'|'other')",
+            "(Other of string)|T of string"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "__benevolent<'duplicate'|'other'>",
+                "argument": false
+            },
+            {
+                "name": "T",
+                "bound": "__benevolent<'duplicate'|'other'>",
+                "argument": false,
+                "function": "other"
+            }
+        ],
+        "descriptions": [
+            "T of ('duplicate'|'other') (function fixture(), parameter)|T of ('duplicate'|'other') (function other(), parameter)",
+            "(T of ('duplicate'|'other'))|T of ('duplicate'|'other')",
+            "(T of string)|T of string"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "__benevolent<'duplicate'|'other'>",
+                "argument": true
+            },
+            "'duplicate'"
+        ],
+        "descriptions": [
+            "'duplicate'|T of ('duplicate'|'other') (function fixture(), argument)",
+            "'duplicate'|T of ('duplicate'|'other')",
+            "string"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            "'duplicate'",
+            {
+                "name": "T",
+                "bound": "__benevolent<'duplicate'|'other'>",
+                "argument": true
+            }
+        ],
+        "descriptions": [
+            "'duplicate'|T of ('duplicate'|'other') (function fixture(), argument)",
+            "'duplicate'|T of ('duplicate'|'other')",
+            "string"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "__benevolent<'duplicate'|'other'>",
+                "argument": true
+            },
+            "string"
+        ],
+        "descriptions": [
+            "string",
+            "string",
+            "string"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            "string",
+            {
+                "name": "T",
+                "bound": "__benevolent<'duplicate'|'other'>",
+                "argument": true
+            }
+        ],
+        "descriptions": [
+            "string",
+            "string",
+            "string"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "__benevolent<'duplicate'|'other'>",
+                "argument": true
+            },
+            "null"
+        ],
+        "descriptions": [
+            "T of ('duplicate'|'other') (function fixture(), argument)|null",
+            "(T of ('duplicate'|'other'))|null",
+            "(T of string)|null"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            "null",
+            {
+                "name": "T",
+                "bound": "__benevolent<'duplicate'|'other'>",
+                "argument": true
+            }
+        ],
+        "descriptions": [
+            "T of ('duplicate'|'other') (function fixture(), argument)|null",
+            "(T of ('duplicate'|'other'))|null",
+            "(T of string)|null"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "__benevolent<'duplicate'|'other'>",
+                    "argument": true
+                },
+                "argument": true
+            },
+            "'duplicate'"
+        ],
+        "descriptions": [
+            "'duplicate'|U of T of ('duplicate'|'other') (function fixture(), argument) (function fixture(), argument)",
+            "'duplicate'|U of T of ('duplicate'|'other')",
+            "string"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            "'duplicate'",
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "__benevolent<'duplicate'|'other'>",
+                    "argument": true
+                },
+                "argument": true
+            }
+        ],
+        "descriptions": [
+            "'duplicate'|U of T of ('duplicate'|'other') (function fixture(), argument) (function fixture(), argument)",
+            "'duplicate'|U of T of ('duplicate'|'other')",
+            "string"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "__benevolent<'duplicate'|'other'>",
+                    "argument": true
+                },
+                "argument": true
+            },
+            "string"
+        ],
+        "descriptions": [
+            "string",
+            "string",
+            "string"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            "string",
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "__benevolent<'duplicate'|'other'>",
+                    "argument": true
+                },
+                "argument": true
+            }
+        ],
+        "descriptions": [
+            "string",
+            "string",
+            "string"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "__benevolent<'duplicate'|'other'>",
+                    "argument": true
+                },
+                "argument": true
+            },
+            "null"
+        ],
+        "descriptions": [
+            "U of T of ('duplicate'|'other') (function fixture(), argument) (function fixture(), argument)|null",
+            "(U of T of ('duplicate'|'other'))|null",
+            "(U of T of string)|null"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            "null",
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "__benevolent<'duplicate'|'other'>",
+                    "argument": true
+                },
+                "argument": true
+            }
+        ],
+        "descriptions": [
+            "U of T of ('duplicate'|'other') (function fixture(), argument) (function fixture(), argument)|null",
+            "(U of T of ('duplicate'|'other'))|null",
+            "(U of T of string)|null"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "__benevolent<'duplicate'|'other'>",
+                "argument": true
+            },
+            {
+                "name": "T",
+                "bound": "__benevolent<'duplicate'|'other'>",
+                "argument": true
+            }
+        ],
+        "descriptions": [
+            "T of ('duplicate'|'other') (function fixture(), argument)",
+            "T of ('duplicate'|'other')",
+            "T of (string)"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "__benevolent<'duplicate'|'other'>",
+                "argument": true
+            },
+            {
+                "name": "T",
+                "bound": "__benevolent<'duplicate'|'other'>",
+                "argument": false
+            }
+        ],
+        "descriptions": [
+            "T of ('duplicate'|'other') (function fixture(), argument)|T of ('duplicate'|'other') (function fixture(), parameter)",
+            "(T of ('duplicate'|'other'))|T of ('duplicate'|'other')",
+            "T of string"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "__benevolent<'duplicate'|'other'>",
+                "argument": true
+            },
+            {
+                "name": "Other",
+                "bound": "__benevolent<'duplicate'|'other'>",
+                "argument": true
+            }
+        ],
+        "descriptions": [
+            "Other of ('duplicate'|'other') (function fixture(), argument)|T of ('duplicate'|'other') (function fixture(), argument)",
+            "(Other of ('duplicate'|'other'))|T of ('duplicate'|'other')",
+            "(Other of string)|T of string"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "__benevolent<'duplicate'|'other'>",
+                "argument": true
+            },
+            {
+                "name": "T",
+                "bound": "__benevolent<'duplicate'|'other'>",
+                "argument": true,
+                "function": "other"
+            }
+        ],
+        "descriptions": [
+            "T of ('duplicate'|'other') (function fixture(), argument)|T of ('duplicate'|'other') (function other(), argument)",
+            "(T of ('duplicate'|'other'))|T of ('duplicate'|'other')",
+            "(T of string)|T of string"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "'duplicate'",
+                "argument": false
+            },
+            "'duplicate'",
+            "'duplicate'",
+            "'other'",
+            "1",
+            "null"
+        ],
+        "descriptions": [
+            "1|T of 'duplicate' (function fixture(), parameter)|'duplicate'|'other'|null",
+            "1|(T of 'duplicate')|'duplicate'|'other'|null",
+            "int|string|null"
+        ],
+        "members": 5
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "'duplicate'",
+                "argument": false
+            },
+            "int",
+            "string"
+        ],
+        "descriptions": [
+            "int|string",
+            "int|string",
+            "int|string"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "1",
+                "argument": false
+            },
+            "1.0",
+            "2.0"
+        ],
+        "descriptions": [
+            "T of 1 (function fixture(), parameter)|1.0|2.0",
+            "(T of 1)|1.0|2.0",
+            "float|int"
+        ],
+        "members": 3
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "2",
+                "argument": false
+            },
+            "1",
+            "0.5"
+        ],
+        "descriptions": [
+            "0.5|1|T of 2 (function fixture(), parameter)",
+            "0.5|1|T of 2",
+            "float|int"
+        ],
+        "members": 3
+    },
+    {
+        "inputs": [
+            {
+                "name": "N",
+                "bound": {
+                    "name": "U",
+                    "bound": "null",
+                    "argument": false
+                },
+                "argument": false
+            },
+            "null",
+            "true"
+        ],
+        "descriptions": [
+            "true|null|N of U of null (function fixture(), parameter) (function fixture(), parameter)",
+            "true|null|N of U of null",
+            "true|(N of U of null)|null"
+        ],
+        "members": 3
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "'duplicate'",
+                "argument": true
+            },
+            "'duplicate'",
+            "'duplicate'",
+            "'other'",
+            "1",
+            "null"
+        ],
+        "descriptions": [
+            "1|T of 'duplicate' (function fixture(), argument)|'duplicate'|'other'|null",
+            "1|(T of 'duplicate')|'duplicate'|'other'|null",
+            "int|string|null"
+        ],
+        "members": 5
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "'duplicate'",
+                "argument": true
+            },
+            "int",
+            "string"
+        ],
+        "descriptions": [
+            "int|string",
+            "int|string",
+            "int|string"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "1",
+                "argument": true
+            },
+            "1.0",
+            "2.0"
+        ],
+        "descriptions": [
+            "T of 1 (function fixture(), argument)|1.0|2.0",
+            "(T of 1)|1.0|2.0",
+            "float|int"
+        ],
+        "members": 3
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "2",
+                "argument": true
+            },
+            "1",
+            "0.5"
+        ],
+        "descriptions": [
+            "0.5|1|T of 2 (function fixture(), argument)",
+            "0.5|1|T of 2",
+            "float|int"
+        ],
+        "members": 3
+    },
+    {
+        "inputs": [
+            {
+                "name": "N",
+                "bound": {
+                    "name": "U",
+                    "bound": "null",
+                    "argument": true
+                },
+                "argument": true
+            },
+            "null",
+            "true"
+        ],
+        "descriptions": [
+            "true|null|N of U of null (function fixture(), argument) (function fixture(), argument)",
+            "true|null|N of U of null",
+            "true|(N of U of null)|null"
+        ],
+        "members": 3
+    }
+]
