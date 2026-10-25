@@ -14,6 +14,7 @@ use PHPStan\Type\Generic\TemplateTypeVariance;
 use PHPStan\Type\Type;
 use PHPStan\Type\TypeCombinator;
 use PHPStan\Type\UnionType;
+use PHPStan\Type\UnionTypeHelper;
 use PHPStan\Type\VerbosityLevel;
 
 $tmp = sys_get_temp_dir().'/pun-template-scalar-oracle';
@@ -75,5 +76,55 @@ foreach ([false, true] as $argument) {
     $record([['name' => 'T', 'bound' => '1', 'argument' => $argument], '1.0', '2.0']);
     $record([['name' => 'T', 'bound' => '2', 'argument' => $argument], '1', '0.5']);
     $record([['name' => 'N', 'bound' => ['name' => 'U', 'bound' => 'null', 'argument' => $argument], 'argument' => $argument], 'null', 'true']);
+}
+
+// PHP 8.5.12: php/php-src 136e049ac10b032c83018e65b63b6df858943750.
+// Capture the public helper, not a reimplementation of its comparator or Zend's sorting algorithm.
+$recordSort = function (array $spec) use (&$rows, $input): void {
+    $types = [];
+    for ($i = 0; $i < $spec['count']; $i++) {
+        $entry = $spec['pattern'][$i % count($spec['pattern'])];
+        if (is_array($entry)) {
+            $entry['name'] .= $i;
+        }
+        $types[] = $input($entry);
+    }
+    if ($spec['reverse']) {
+        $types = array_reverse($types);
+    }
+    $positions = [];
+    foreach ($types as $i => $type) {
+        $positions[spl_object_id($type)][] = $i;
+    }
+    $order = [];
+    foreach (UnionTypeHelper::sortTypes($types) as $type) {
+        $order[] = array_shift($positions[spl_object_id($type)]);
+    }
+    $rows[] = ['sort' => $spec, 'order' => $order];
+};
+$nulls = [['name' => 'N', 'bound' => 'null', 'argument' => false]];
+$mixed = [
+    '2',
+    $nulls[0],
+    "'z'",
+    ['name' => 'S', 'bound' => "'same'", 'argument' => false],
+    '1',
+    ['name' => 'A', 'bound' => "'same'", 'argument' => true],
+    "'same'",
+    ['name' => 'I', 'bound' => '1', 'argument' => false],
+    ['name' => 'J', 'bound' => '1', 'argument' => true],
+    'null',
+    'false',
+    '0.5',
+    'true',
+    'int<0, 3>',
+    ['name' => 'Nested', 'bound' => ['name' => 'Inner', 'bound' => 'null', 'argument' => true], 'argument' => false],
+];
+foreach (array_merge(range(0, 22), [31, 32, 33, 63, 64, 65, 127, 128, 129, 1023, 1024, 1025, 1026]) as $count) {
+    foreach ([$nulls, $mixed] as $pattern) {
+        foreach ([false, true] as $reverse) {
+            $recordSort(['count' => $count, 'pattern' => $pattern, 'reverse' => $reverse]);
+        }
+    }
 }
 echo json_encode($rows, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)."\n";

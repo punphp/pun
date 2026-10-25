@@ -14,6 +14,7 @@ mod casts;
 mod late_shape;
 mod mixed;
 mod reasons;
+mod sort;
 mod templates;
 mod unresolvable;
 mod verbosity;
@@ -1436,16 +1437,10 @@ fn export_string(value: &str) -> String {
 
 /// `UnionTypeHelper::sortTypes()`
 pub fn sort_types(types: &[Type]) -> Vec<Type> {
-    let mut sorted = types.to_vec();
-    if sorted.len() > 1024 {
-        return sorted;
+    if types.len() > 1024 {
+        return types.to_vec();
     }
-    sorted.sort_by(compare_in_union);
-    // NullType's non-reflexive PHP comparator reverses equal-null groups in small scalar unions.
-    if let Some(first) = sorted.iter().position(|t| matches!(t.scalar_class_type(), Type::Null)) {
-        sorted[first..].reverse();
-    }
-    sorted
+    sort::types(types)
 }
 
 fn compare_strings(a: &str, b: &str) -> Ordering {
