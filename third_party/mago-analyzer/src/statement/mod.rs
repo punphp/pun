@@ -84,6 +84,7 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Statement<'arena> {
         // to support the pattern: /** @var Type */ $var = something();
         if PrecedingDocblocks::new(context.comments, context.statement_span.start.offset).next().is_some() {
             if let Statement::Expression(ExpressionStatement { expression, .. }) = self
+                && matches!(unwrap_expression(expression), Expression::Assignment(_))
                 && let Some(target_var) = get_block_expression_id(expression, context, block_context)
             {
                 populate_docblock_variables_excluding(
@@ -92,7 +93,7 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Statement<'arena> {
                     artifacts,
                     true, // override existing for non-target variables
                     Some(target_var),
-                    matches!(unwrap_expression(expression), Expression::Assignment(_)),
+                    true,
                 );
             } else {
                 let override_existing = !matches!(self, Statement::Foreach(_));

@@ -705,6 +705,12 @@ Try/catch snapshots follow throw points even when exception diagnostics are disa
 branches still publish diagnostic observations, but their break, continue and throw edges do not
 contribute to the enclosing flow.
 
+Unreachable `else` bodies reconcile the negated conditions before publishing observations. An exhaustive
+`int|string` split therefore passes `never` to an `assertNever()` call, while an incomplete split retains
+the uncovered type. Only actual assignment statements defer their target's `@var` handling to the
+assignment analyzer. A standalone annotated global read receives its type before observation, without
+creating an absent function-local variable. The original four-mode variable expectations remain unchanged.
+
 The changes span `artifacts.rs`, block/if/loop contexts, assignment and variable analysis, function
 calls and invocation post-processing, include/throw, reconciliation, statement control flow and
 annotation handling. Pun's `rules/variables.rs` consumes the live observations for DefinedVariableRule

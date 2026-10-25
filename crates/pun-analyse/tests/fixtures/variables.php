@@ -155,3 +155,8 @@ function superglobals(): void
         echo $_SESSION;
     };
 }
+
+/** @var list<int> $annotatedMain */
+$annotatedMain;
+echo $annotatedMain;
+compact('annotatedMain');

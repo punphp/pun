@@ -1080,15 +1080,11 @@ fn analyze_else_statements<'ctx, 'arena, A>(
 where
     A: Arena,
 {
-    if if_scope.else_is_unreachable {
-        let flow = artifacts.branch_flow();
-        if let Some(statements) = else_statements {
-            analyze_statements(statements, context, else_block_context, artifacts)?;
-        }
-        artifacts.restore_branch_flow(flow);
-        return Ok(());
-    }
-    if else_statements.is_none() && if_scope.negated_clauses.is_empty() && else_block_context.clauses.is_empty() {
+    if !if_scope.else_is_unreachable
+        && else_statements.is_none()
+        && if_scope.negated_clauses.is_empty()
+        && else_block_context.clauses.is_empty()
+    {
         if_scope.variable_branches.push(else_block_context.variable_scope());
         if_scope.final_actions.insert(ControlAction::None);
         if_scope.assigned_variable_ids = None;
@@ -1163,6 +1159,15 @@ where
         for variable_id in variables_to_remove {
             else_block_context.remove_possible_reference(variable_id.as_bytes());
         }
+    }
+
+    if if_scope.else_is_unreachable {
+        let flow = artifacts.branch_flow();
+        if let Some(statements) = else_statements {
+            analyze_statements(statements, context, else_block_context, artifacts)?;
+        }
+        artifacts.restore_branch_flow(flow);
+        return Ok(());
     }
 
     // Check if any variable has become `never` after reconciliation, indicating the else clause is unreachable
