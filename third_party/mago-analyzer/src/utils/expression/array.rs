@@ -276,6 +276,7 @@ where
             TAtomic::Scalar(TScalar::String(_)) => {
                 let new_type = handle_array_access_on_string(
                     context,
+                    block_context,
                     atomic_var_type.clone(),
                     index_type,
                     &mut has_valid_expected_index,
@@ -1563,6 +1564,7 @@ where
 
 pub(crate) fn handle_array_access_on_string<A>(
     context: &Context<'_, '_, A>,
+    block_context: &BlockContext<'_>,
     string: TAtomic,
     index_type: &TUnion,
     has_valid_expected_index: &mut bool,
@@ -1601,6 +1603,27 @@ where
         *has_valid_expected_index = true;
     } else {
         expected_index_types.push(valid_index_type);
+    }
+
+    // StringType::getOffsetValueType fails only when the index is definitely not an integer.
+    // Argument compatibility is not enough: PHP accepts ints for float parameters, but float isInteger() is No.
+    let mut index_types = index_type.types.iter().collect::<Vec<_>>();
+    let mut can_be_integer = false;
+    while let Some(index_type) = index_types.pop() {
+        match index_type {
+            TAtomic::GenericParameter(parameter) => index_types.extend(parameter.constraint.types.iter()),
+            TAtomic::Mixed(_)
+            | TAtomic::Variable(_)
+            | TAtomic::Scalar(TScalar::Integer(_) | TScalar::ArrayKey | TScalar::Numeric | TScalar::Generic) => {
+                can_be_integer = true;
+                break;
+            }
+            _ => {}
+        }
+    }
+    if !can_be_integer {
+        // Like keyed-array reads, isset needs an absent-value placeholder for its continuing branches.
+        return if block_context.flags.inside_isset() { get_null() } else { get_error() };
     }
 
     let mut result = if non_empty { get_non_empty_string() } else { get_string() };
