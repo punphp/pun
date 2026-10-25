@@ -57,6 +57,16 @@ impl Analyse {
         let mut p = Array::new();
         let level = self.level();
         p.set(Key::from("level"), Value::Int(i64::from(level)));
+        // Pun is a CLI binary, with Project::new's argc/argv registration; never read php.ini by running PHP.
+        p.set(
+            Key::from("cliArgumentsVariablesRegistered"),
+            Value::Bool(true),
+        );
+        // config.level1.neon turns it on; an explicit `maybe` option below overrides the level's default.
+        p.set(
+            Key::from("checkMaybeUndefinedVariables"),
+            Value::Bool(level >= 1),
+        );
         // config.level2.neon turns it on
         p.set(
             Key::from("checkClassCaseSensitivity"),

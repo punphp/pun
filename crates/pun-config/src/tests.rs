@@ -1628,7 +1628,53 @@ fn analyse_parameters() {
         .analyse
         .parameters(&d);
     assert_eq!(p.get_str("checkClassCaseSensitivity"), Some(&V::Bool(true)));
-    assert_eq!(p.get_str("deprecationRulesInstalled"), Some(&V::Bool(false)));
+    assert_eq!(
+        p.get_str("deprecationRulesInstalled"),
+        Some(&V::Bool(false))
+    );
+}
+
+/// PHPStan's config.neon disables maybe checks, config.level1.neon enables them, and both variable rules read the
+/// same parameter. A rule's explicit `maybe` overrides either default, even when the other consumer is off.
+#[test]
+fn variable_parameters() {
+    use pun_phpstan::Value as V;
+    let d = dir(&[]);
+    let mut base = String::from("[analyse.rules]\n");
+    let groups: std::collections::BTreeSet<&str> = (rules().iter())
+        .filter_map(|(id, _)| id.strip_prefix("analyse/")?.split('/').next())
+        .collect();
+    for group in groups {
+        base.push_str(&format!("{group} = \"off\"\n"));
+    }
+    for consumer in ["undefined/variable", "undefined/compact-variable"] {
+        for level in [0, 1] {
+            for explicit in [None, Some(false), Some(true)] {
+                let option = match explicit {
+                    None => "\"on\"".to_string(),
+                    Some(value) => format!("{{ maybe = {value} }}"),
+                };
+                let constant = if level == 1 { "on" } else { "off" };
+                let text = format!(
+                    "{base}\"{consumer}\" = {option}\n\"undefined/constant\" = \"{constant}\"\n"
+                );
+                let a = from_toml(&d, &text).unwrap().analyse;
+                assert_eq!(a.level(), level, "{text}");
+                let p = a.parameters(&d);
+                // Pun is a CLI binary: keep Project::new's argv/argc recognition, without running PHP.
+                assert_eq!(
+                    p.get_str("cliArgumentsVariablesRegistered"),
+                    Some(&V::Bool(true)),
+                    "{text}"
+                );
+                assert_eq!(
+                    p.get_str("checkMaybeUndefinedVariables"),
+                    Some(&V::Bool(explicit.unwrap_or(level >= 1))),
+                    "{text}"
+                );
+            }
+        }
+    }
 }
 
 /// Larastan 3 requires `illuminate/*` `^11.44.2 || ^12.4.1 || ^13` (its composer.json); with it, its gated rules'

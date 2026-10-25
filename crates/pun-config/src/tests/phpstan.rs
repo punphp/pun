@@ -275,6 +275,65 @@ fn reads_level_paths_ignores_and_includes() {
     );
 }
 
+/// PHPStan 2.3.1's oracle reports both variable and compact() maybes at level 1 (not 0); explicitly changing
+/// checkMaybeUndefinedVariables reverses that behavior. Migration must keep that option on both consumers.
+#[test]
+fn migrates_maybe_undefined_variables() {
+    use pun_phpstan::Value as V;
+    for level in [0, 1] {
+        for explicit in [None, Some(false), Some(true)] {
+            let option = explicit.map_or_else(String::new, |value| {
+                format!("    checkMaybeUndefinedVariables: {value}\n")
+            });
+            let neon = format!("parameters:\n    level: {level}\n{option}");
+            let d = project(&neon, &[]);
+            let p = from_phpstan(&d, &d.join("phpstan.neon")).unwrap();
+            let expected = explicit.unwrap_or(level >= 1);
+            let changed = explicit.is_some_and(|value| value != (level >= 1));
+            let changes = if changed {
+                vec![(
+                    "checkMaybeUndefinedVariables".to_string(),
+                    V::Bool(expected),
+                )]
+            } else {
+                vec![]
+            };
+            assert_eq!(p.changed, changes, "{neon}");
+            assert!(p.unsupported.is_empty(), "{neon}: {:?}", p.unsupported);
+            let mut parts = Parts::default();
+            let done = compose(&d, &mut parts, &p).unwrap();
+            assert_eq!(done.options, usize::from(changed), "{neon}");
+            let text = parts.render();
+            let a = crate::from_toml(&d, &text).unwrap().analyse;
+            assert_eq!(a.level(), level, "{text}");
+            for consumer in [
+                "analyse/undefined/variable",
+                "analyse/undefined/compact-variable",
+            ] {
+                let rule = a.rules.iter().find(|rule| rule.id == consumer).unwrap();
+                let options = if changed {
+                    serde_json::json!({"maybe": expected})
+                } else {
+                    serde_json::Value::Null
+                };
+                assert_eq!(rule.options, options, "{neon}: {consumer}\n{text}");
+            }
+            let parameters = a.parameters(&d);
+            assert_eq!(
+                parameters.get_str("checkMaybeUndefinedVariables"),
+                Some(&V::Bool(expected)),
+                "{neon}\n{text}"
+            );
+            assert_eq!(
+                parameters.get_str("cliArgumentsVariablesRegistered"),
+                Some(&V::Bool(true)),
+                "{neon}\n{text}"
+            );
+            std::fs::remove_dir_all(d).unwrap();
+        }
+    }
+}
+
 /// `level: max` is 10; a level PHPStan rejects stops the migration with PHPStan's message.
 #[test]
 fn reads_max_and_rejects_bad_levels() {
