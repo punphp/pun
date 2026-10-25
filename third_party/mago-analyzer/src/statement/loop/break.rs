@@ -123,6 +123,11 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Break<'arena> {
                 loop_scope.final_actions.insert(ControlAction::LeaveSwitch);
             } else {
                 loop_scope.final_actions.insert(ControlAction::Break);
+                crate::context::scope::loop_scope::merge_exit_locals(
+                    &mut loop_scope.break_locals,
+                    &block_context.locals,
+                    context.codebase,
+                );
             }
 
             let mut removed_var_ids = WordSet::default();

@@ -66,6 +66,7 @@ use crate::context::block::BlockContext;
 use crate::context::block::BreakContext;
 use crate::context::scope::control_action::ControlAction;
 use crate::context::scope::loop_scope::LoopScope;
+use crate::context::scope::loop_scope::merge_exit_locals;
 use crate::context::scope::var_has_root;
 use crate::context::utils::inherit_branch_context_properties;
 use crate::error::AnalysisError;
@@ -244,8 +245,6 @@ fn inherit_loop_block_context<'ctx, A>(
     A: Arena,
 {
     let has_break = loop_scope.final_actions.contains(ControlAction::Break);
-    let has_continue = loop_scope.final_actions.contains(ControlAction::Continue);
-    let has_break_or_continue = has_break || has_continue;
     let can_leave_loop = !known_infinite_loop || has_break;
 
     inherit_branch_context_properties(context, block_context, &inner_loop_block_context);
@@ -261,9 +260,15 @@ fn inherit_loop_block_context<'ctx, A>(
             for (variable, _) in inner_loop_block_context.locals {
                 block_context.variables_possibly_in_scope.insert(variable);
             }
+        } else if known_infinite_loop {
+            // WhileHandler/ForHandler: an always-true condition has no normal exit.
+            // Only the observed break scopes contribute to the post-loop scope.
+            if let Some(break_locals) = loop_scope.break_locals {
+                block_context.locals = break_locals;
+            }
         } else {
             for (variable, variable_type) in inner_loop_block_context.locals {
-                if !has_break_or_continue {
+                if !has_break {
                     block_context.locals.insert(variable, variable_type);
                     continue;
                 }
@@ -843,6 +848,9 @@ where
                 clean_nodes(statements, artifacts);
 
                 let loop_scope = {
+                    // PHPStan's final pass publishes its own exit points, not speculative earlier passes.
+                    loop_scope.break_locals = None;
+                    loop_scope.continue_locals = None;
                     artifacts.set_loop_scope(loop_scope);
                     analyze_statements(statements, context, &mut continue_context, artifacts)?;
 
@@ -1430,6 +1438,13 @@ fn update_loop_scope_contexts<'ctx, A>(
     A: Arena,
 {
     if loop_scope.final_actions.contains(ControlAction::Continue) {
+        let mut back_edge = loop_scope.continue_locals.clone();
+        if !continue_context.flags.has_returned() {
+            merge_exit_locals(&mut back_edge, &continue_context.locals, context.codebase);
+        }
+        if let Some(locals) = back_edge {
+            continue_context.locals = locals;
+        }
         for (variable_id, variable_type) in &loop_scope.redefined_loop_variables {
             continue_context.locals.insert(*variable_id, Rc::clone(variable_type));
         }

@@ -423,6 +423,8 @@ fn same_scope(left: &LoopScope, right: &LoopScope) -> bool {
         && same_types(&left.possibly_redefined_loop_variables, &right.possibly_redefined_loop_variables)
         && same_types(&left.possibly_redefined_loop_parent_variables, &right.possibly_redefined_loop_parent_variables)
         && same_types(&left.possibly_defined_loop_parent_variables, &right.possibly_defined_loop_parent_variables)
+        && same_optional_types(left.break_locals.as_ref(), right.break_locals.as_ref())
+        && same_optional_types(left.continue_locals.as_ref(), right.continue_locals.as_ref())
         && same_types(&left.by_reference_loop_mutations, &right.by_reference_loop_mutations)
         && left.assignment_targets == right.assignment_targets
         && left.tracks_assignment_targets == right.tracks_assignment_targets
@@ -431,6 +433,14 @@ fn same_scope(left: &LoopScope, right: &LoopScope) -> bool {
         && left.truthy_pre_conditions == right.truthy_pre_conditions
         && left.condition_always_false == right.condition_always_false
         && same_optional_scope(left.parent_loop.as_deref(), right.parent_loop.as_deref())
+}
+
+fn same_optional_types(left: Option<&WordMap<Rc<TUnion>>>, right: Option<&WordMap<Rc<TUnion>>>) -> bool {
+    match (left, right) {
+        (Some(left), Some(right)) => same_types(left, right),
+        (None, None) => true,
+        _ => false,
+    }
 }
 
 fn same_optional_scope(left: Option<&LoopScope>, right: Option<&LoopScope>) -> bool {

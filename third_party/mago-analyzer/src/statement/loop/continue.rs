@@ -152,6 +152,11 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Continue<'arena> {
             };
 
             loop_scope.final_actions.insert(ControlAction::Continue);
+            crate::context::scope::loop_scope::merge_exit_locals(
+                &mut loop_scope.continue_locals,
+                &block_context.locals,
+                context.codebase,
+            );
 
             let mut removed_var_ids = WordSet::default();
             let redefined_vars =

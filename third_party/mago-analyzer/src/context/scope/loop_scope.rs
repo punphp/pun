@@ -3,6 +3,9 @@ use std::rc::Rc;
 use mago_word::WordMap;
 use mago_word::WordSet;
 
+use mago_codex::metadata::CodebaseMetadata;
+use mago_codex::ttype::combine_union_types;
+use mago_codex::ttype::combiner::CombinerOptions;
 use mago_codex::ttype::union::TUnion;
 use mago_span::Span;
 
@@ -17,6 +20,9 @@ pub struct LoopScope {
     pub possibly_redefined_loop_variables: WordMap<Rc<TUnion>>,
     pub possibly_redefined_loop_parent_variables: WordMap<Rc<TUnion>>,
     pub possibly_defined_loop_parent_variables: WordMap<Rc<TUnion>>,
+    /// Actual states at loop exits, separate from the back edge and the entry state.
+    pub break_locals: Option<WordMap<Rc<TUnion>>>,
+    pub continue_locals: Option<WordMap<Rc<TUnion>>>,
     pub by_reference_loop_mutations: WordMap<Rc<TUnion>>,
     pub assignment_targets: WordSet,
     pub tracks_assignment_targets: bool,
@@ -37,6 +43,8 @@ impl LoopScope {
             possibly_redefined_loop_variables: WordMap::default(),
             possibly_redefined_loop_parent_variables: WordMap::default(),
             possibly_defined_loop_parent_variables: WordMap::default(),
+            break_locals: None,
+            continue_locals: None,
             by_reference_loop_mutations: WordMap::default(),
             assignment_targets: WordSet::default(),
             tracks_assignment_targets: false,
@@ -50,5 +58,36 @@ impl LoopScope {
 
     pub fn with_parent_loop(self, parent_loop: Option<Box<LoopScope>>) -> Self {
         Self { parent_loop, ..self }
+    }
+}
+
+/// ScopeOps::mergeVariableHolders(): a local absent on one incoming edge is only possibly defined.
+/// Unlike the loop's mutation maps, this retains both new locals and their incoming-edge certainty.
+pub(crate) fn merge_exit_locals(
+    merged: &mut Option<WordMap<Rc<TUnion>>>,
+    incoming: &WordMap<Rc<TUnion>>,
+    codebase: &CodebaseMetadata,
+) {
+    let Some(existing) = merged else {
+        *merged = Some(incoming.clone());
+        return;
+    };
+    for (name, ty) in existing.iter_mut() {
+        let joined = match incoming.get(name) {
+            Some(other) => combine_union_types(ty, other, codebase, CombinerOptions::default()),
+            None => {
+                let mut optional = (**ty).clone();
+                optional.set_possibly_undefined(true, None);
+                optional
+            }
+        };
+        *ty = Rc::new(joined);
+    }
+    for (name, ty) in incoming {
+        if !existing.contains_key(name) {
+            let mut optional = (**ty).clone();
+            optional.set_possibly_undefined(true, None);
+            existing.insert(*name, Rc::new(optional));
+        }
     }
 }

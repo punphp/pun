@@ -1,0 +1,132 @@
+[
+  [
+    39,
+    "variable.undefined",
+    "Variable $sometimes might not be defined."
+  ],
+  [
+    40,
+    "variable.undefined",
+    "Call to function compact() contains possibly undefined variable $sometimes."
+  ],
+  [
+    48,
+    "variable.undefined",
+    "Variable $otherEdge might not be defined."
+  ],
+  [
+    49,
+    "variable.undefined",
+    "Call to function compact() contains possibly undefined variable $otherEdge."
+  ],
+  [
+    54,
+    "variable.undefined",
+    "Variable $skipped might not be defined."
+  ],
+  [
+    55,
+    "variable.undefined",
+    "Call to function compact() contains possibly undefined variable $skipped."
+  ],
+  [
+    86,
+    "variable.undefined",
+    "Undefined variable: $continued"
+  ],
+  [
+    87,
+    "variable.undefined",
+    "Call to function compact() contains undefined variable $continued."
+  ],
+  [
+    98,
+    "variable.undefined",
+    "Undefined variable: $notAssigned"
+  ],
+  [
+    99,
+    "variable.undefined",
+    "Variable $matches might not be defined."
+  ],
+  [
+    100,
+    "variable.undefined",
+    "Call to function compact() contains possibly undefined variable $matches."
+  ],
+  [
+    128,
+    "variable.undefined",
+    "Variable $maybe might not be defined."
+  ],
+  [
+    129,
+    "variable.undefined",
+    "Call to function compact() contains possibly undefined variable $maybe."
+  ],
+  [
+    131,
+    "variable.undefined",
+    "Undefined variable: $missing"
+  ],
+  [
+    133,
+    "variable.undefined",
+    "Undefined variable: $missing"
+  ],
+  [
+    134,
+    "variable.undefined",
+    "Call to function compact() contains undefined variable $missing."
+  ],
+  [
+    140,
+    "variable.undefined",
+    "Undefined variable: $name"
+  ],
+  [
+    141,
+    "variable.undefined",
+    "Call to function compact() contains undefined variable $name."
+  ],
+  [
+    150,
+    "variable.undefined",
+    "Variable $unknown might not be defined."
+  ],
+  [
+    151,
+    "variable.undefined",
+    "Call to function compact() contains possibly undefined variable $unknown."
+  ],
+  [
+    160,
+    "variable.undefined",
+    "Variable $name might not be defined."
+  ],
+  [
+    161,
+    "variable.undefined",
+    "Call to function compact() contains possibly undefined variable $name."
+  ],
+  [
+    182,
+    "variable.undefined",
+    "Undefined variable: $right"
+  ],
+  [
+    183,
+    "variable.undefined",
+    "Call to function compact() contains undefined variable $right."
+  ],
+  [
+    185,
+    "variable.undefined",
+    "Undefined variable: $left"
+  ],
+  [
+    186,
+    "variable.undefined",
+    "Call to function compact() contains undefined variable $left."
+  ]
+]

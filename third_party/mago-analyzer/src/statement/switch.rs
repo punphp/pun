@@ -42,6 +42,8 @@ use crate::context::scope::case_scope::CaseScope;
 use crate::context::scope::control_action::BreakType;
 use crate::context::scope::control_action::ControlAction;
 use crate::context::scope::control_action::ControlActionSet;
+use crate::context::scope::if_scope::IfScope;
+use crate::context::scope::loop_scope::merge_exit_locals;
 use crate::context::utils::inherit_branch_context_properties;
 use crate::error::AnalysisError;
 use crate::expression::binary::utils::is_always_identical_to;
@@ -49,6 +51,7 @@ use crate::formula::get_formula;
 use crate::formula::negate_or_synthesize;
 use crate::reconciler::reconcile_keyed_types;
 use crate::statement::analyze_statements;
+use crate::utils::conditional;
 use crate::utils::expression::get_expression_id;
 use crate::utils::expression::get_root_expression_id;
 use crate::utils::misc::check_for_paradox;
@@ -351,9 +354,8 @@ where
         let has_leaving_statements =
             has_ending_statements || (!case_actions.is_empty() && !case_actions.contains(ControlAction::None));
 
-        let mut case_block_context = original_block_context.clone();
-
         let mut case_equality_expression = None;
+        let mut matched_condition_context = None;
 
         if condition_is_synthetic {
             self.artifacts.set_expression_type(
@@ -399,7 +401,24 @@ where
                 }
             }
 
-            case_condition.analyze(self.context, self.block_context, self.artifacts)?;
+            if switch_condition_type.is_true() {
+                let branch = conditional::analyze(
+                    self.context,
+                    self.block_context,
+                    self.artifacts,
+                    &mut IfScope::new(),
+                    case_condition,
+                    false,
+                )?;
+                // A matched true case executes the truthy condition path, including short-circuited
+                // output arguments. Later cases can also arrive without executing that path.
+                let mut post_locals = Some(branch.post_if_context.locals);
+                merge_exit_locals(&mut post_locals, &branch.if_body_context.locals, self.context.codebase);
+                self.block_context.locals = post_locals.expect("the condition has a post-evaluation state");
+                matched_condition_context = Some(branch.if_body_context);
+            } else {
+                case_condition.analyze(self.context, self.block_context, self.artifacts)?;
+            }
             let has_alternate_entry = self.has_reachable_fallthrough || has_non_duplicate_empty_case;
             let condition_is_duplicate = self.check_for_duplicate_case_condition(
                 case_condition,
@@ -511,6 +530,9 @@ where
             ));
         }
 
+        // Case expressions run before entry to their statements. Keep assignments and output-reference
+        // effects from that actual evaluation, rather than the pre-condition switch snapshot.
+        let mut case_block_context = matched_condition_context.unwrap_or_else(|| self.block_context.clone());
         case_block_context.break_types.push(BreakContext::Switch(switch.span()));
         if !self.has_fallthrough {
             self.leftover_statement_groups.clear();

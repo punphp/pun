@@ -61,6 +61,42 @@ fn variable_contexts_and_configuration_match_phpstan() {
 }
 
 #[test]
+fn variable_flow_boundaries_match_phpstan() {
+    let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures");
+    let expected: Value =
+        serde_json::from_slice(&std::fs::read(root.join("variables-flow.json")).unwrap()).unwrap();
+    let mut params = pun_phpstan::Array::new();
+    params.set("level".into(), pun_phpstan::Value::Int(2));
+    params.set(
+        "checkMaybeUndefinedVariables".into(),
+        pun_phpstan::Value::Bool(true),
+    );
+    let mut project = Project::from_config(&root, &params);
+    project.analysed = vec![root.join("variables-flow.php")];
+    let mut got: Vec<_> = run(&project)
+        .unwrap()
+        .into_iter()
+        .filter(|e| e.identifier.starts_with("variable."))
+        .map(|e| (e.line, e.identifier, e.message))
+        .collect();
+    let mut want: Vec<_> = expected
+        .as_array()
+        .unwrap()
+        .iter()
+        .map(|e| {
+            (
+                e[0].as_i64().unwrap(),
+                e[1].as_str().unwrap().to_string(),
+                e[2].as_str().unwrap().to_string(),
+            )
+        })
+        .collect();
+    got.sort();
+    want.sort();
+    assert_eq!(got, want);
+}
+
+#[test]
 fn undefined_variables_match_phpstan() {
     let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/rules");
     let mut failures = Vec::new();
