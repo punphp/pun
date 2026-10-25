@@ -1,13 +1,15 @@
 //! Reason metadata is invisible to PHPStan type identity, queries, acceptance and descriptions.
 
-use pun_phpstan::resolve::{Scope, resolve_in, resolve_str};
+use pun_phpstan::resolve::{Scope, resolve_in, resolve_late, resolve_str};
+use pun_phpstan::symbols::{self, Class};
 use pun_phpstan::types::{
-    Cast, Level, NeverKind, ShapeBuilder, StrictMixed, Template, TemplateMap, Tri, Type, accepts,
-    accepts_reasons, cast_is_error, infer_template_types, intersect, is_super_type_of, mixed,
-    resolve_template_types, to_phpdoc, union,
+    Cast, Level, NeverKind, PropertyReflection, ShapeBuilder, StrictMixed, Template, TemplateMap,
+    Tri, Type, accepts, accepts_reasons, cast_is_error, infer_template_types, intersect,
+    is_super_type_of, mixed, resolve_template_types, to_phpdoc, union, with_property_reflections,
 };
 use serde_json::{Value, json};
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, HashMap};
+use std::sync::Arc;
 
 #[test]
 fn error_and_never_reasons_preserve_phpstan_type_semantics() {
@@ -275,4 +277,208 @@ fn offset_comparison_reasons_are_not_the_direct_mixed_intersection_fast_path() {
             "{label}"
         );
     }
+}
+
+fn observation(t: &Type) -> Value {
+    json!([t.describe(Level::Precise), t.unresolvable_reason()])
+}
+
+#[test]
+fn late_shapes_keep_query_substitution_and_identity_contracts() {
+    let oracle: Value =
+        serde_json::from_str(include_str!("fixtures/unresolvable-reasons.json")).unwrap();
+    for row in oracle["api"]["late"].as_array().unwrap() {
+        let late = resolve_in(
+            &pun_phpstan::phpdoc::parse(row["input"].as_str().unwrap()).unwrap(),
+            &Templates,
+        );
+        assert_eq!(format!("{:?}", late.has_method("absent")), row["hasMethod"]);
+        assert_eq!(
+            late.iterable_value_type().describe(Level::Precise),
+            row["iterableValue"]
+        );
+        assert_eq!(observation(&resolve_late(&late)), row["resolved"]);
+        let intersection = intersect(vec![
+            late,
+            resolve_str(row["other"].as_str().unwrap(), None),
+        ]);
+        assert_eq!(observation(&intersection), row["intersection"]);
+        let map = infer_template_types(
+            &Templates.template("K").unwrap(),
+            &Type::ConstString("target".into()),
+        )
+        .union(infer_template_types(
+            &Templates.template("L").unwrap(),
+            &Type::ConstString("value".into()),
+        ));
+        assert_eq!(
+            observation(&resolve_template_types(&intersection, &map)),
+            row["substituted"]
+        );
+    }
+    for row in oracle["api"]["identity"].as_array().unwrap() {
+        let resolve = |text: &str| {
+            if row[2].as_bool().unwrap() {
+                resolve_in(&pun_phpstan::phpdoc::parse(text).unwrap(), &Templates)
+            } else {
+                resolve_str(text, None)
+            }
+        };
+        assert_eq!(
+            json!(resolve(row[0].as_str().unwrap()) == resolve(row[1].as_str().unwrap())),
+            row[3],
+            "{row}"
+        );
+    }
+}
+
+#[test]
+fn unresolvable_metadata_survives_public_type_traversal_and_substitution() {
+    let oracle: Value =
+        serde_json::from_str(include_str!("fixtures/unresolvable-reasons.json")).unwrap();
+    for (name, t) in [
+        (
+            "error",
+            Type::Error.with_unresolvable_reason("An array key reason.".into()),
+        ),
+        (
+            "never",
+            Type::Never(NeverKind::Implicit)
+                .with_unresolvable_reason("An intersection reason.".into()),
+        ),
+    ] {
+        assert_eq!(
+            observation(&t.traverse(&Clone::clone)),
+            oracle["api"]["metadata"][name]["traverse"]
+        );
+        assert_eq!(
+            observation(&resolve_template_types(&t, &TemplateMap::default())),
+            oracle["api"]["metadata"][name]["substitute"]
+        );
+    }
+}
+
+fn property_scope(row: &Value) -> (String, Tri, Vec<PropertyReflection>) {
+    (
+        row["class"].as_str().unwrap().into(),
+        if row["missing"] == "No" {
+            Tri::No
+        } else {
+            Tri::Maybe
+        },
+        row["properties"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|p| PropertyReflection {
+                name: p["name"].as_str().unwrap().into(),
+                declaring_class: p["declaring"].as_str().unwrap().into(),
+                public: p["public"].as_bool().unwrap(),
+                readable: p["readable"].as_bool().unwrap(),
+                ty: resolve_str(p["type"].as_str().unwrap(), None),
+            })
+            .collect(),
+    )
+}
+
+fn reflected_class(row: &Value) -> Arc<Class> {
+    Arc::new(Class {
+        name: row["class"].as_str().unwrap().into(),
+        is_final: row["final"].as_bool().unwrap(),
+        properties: row["properties"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .filter(|p| p["public"].as_bool().unwrap())
+            .map(|p| p["name"].as_str().unwrap().into())
+            .collect(),
+        ancestors: vec![],
+        templates: vec![],
+        cases: vec![],
+        case_values: vec![],
+        is_interface: false,
+        is_trait: false,
+        is_enum: false,
+        constants: vec![],
+        methods: HashMap::new(),
+        iterable: None,
+        generics: HashMap::new(),
+        property_docs: HashMap::new(),
+    })
+}
+
+#[test]
+fn native_property_intersections_keep_source_reasons_and_operand_asymmetry() {
+    let oracle: Value =
+        serde_json::from_str(include_str!("fixtures/unresolvable-reasons.json")).unwrap();
+    let rows = oracle["api"]["properties"].as_array().unwrap();
+    let classes: Vec<_> = rows.iter().map(reflected_class).collect();
+    symbols::with_classes(
+        &|name| {
+            classes
+                .iter()
+                .find(|c| c.name.eq_ignore_ascii_case(name))
+                .cloned()
+        },
+        || {
+            with_property_reflections(rows.iter().map(property_scope).collect(), || {
+                for row in rows {
+                    let object = Type::Object(row["class"].as_str().unwrap().into(), vec![]);
+                    for case in row["intersections"].as_array().unwrap() {
+                        let shape = resolve_str(case["shape"].as_str().unwrap(), None);
+                        assert_eq!(
+                            observation(&intersect(vec![object.clone(), shape.clone()])),
+                            case["objectFirst"],
+                            "{row} {case}"
+                        );
+                        assert_eq!(
+                            observation(&intersect(vec![shape, object.clone()])),
+                            case["shapeFirst"],
+                            "{row} {case}"
+                        );
+                    }
+                }
+            });
+        },
+    );
+}
+
+#[test]
+fn nested_property_reflection_scopes_restore_source_comparisons() {
+    let oracle: Value =
+        serde_json::from_str(include_str!("fixtures/unresolvable-reasons.json")).unwrap();
+    let rows = oracle["api"]["properties"].as_array().unwrap();
+    let classes: Vec<_> = rows.iter().map(reflected_class).collect();
+    let check = |row: &Value| {
+        let case = &row["intersections"][0];
+        let result = intersect(vec![
+            Type::Object(row["class"].as_str().unwrap().into(), vec![]),
+            resolve_str(case["shape"].as_str().unwrap(), None),
+        ]);
+        assert_eq!(observation(&result), case["objectFirst"], "{row}");
+    };
+    symbols::with_classes(
+        &|name| {
+            classes
+                .iter()
+                .find(|c| c.name.eq_ignore_ascii_case(name))
+                .cloned()
+        },
+        || {
+            with_property_reflections(vec![property_scope(&rows[0])], || {
+                check(&rows[0]);
+                with_property_reflections(vec![property_scope(&rows[1])], || {
+                    check(&rows[1]);
+                    with_property_reflections(vec![property_scope(&rows[2])], || check(&rows[2]));
+                    check(&rows[1]);
+                });
+                check(&rows[0]);
+                let unwound = std::panic::catch_unwind(|| {
+                    with_property_reflections(vec![], || panic!("aborted reflection scope"))
+                });
+                assert!(unwound.is_err());
+                check(&rows[0]);
+            });
+        },
+    );
 }

@@ -703,5 +703,543 @@
             "string",
             false
         ]
-    ]
+    ],
+    "api": {
+        "phpstan": "2.3.1",
+        "properties": [
+            {
+                "class": "ReasonApi\\Missing",
+                "final": true,
+                "missing": "No",
+                "properties": [],
+                "intersections": [
+                    {
+                        "shape": "object{target: int}",
+                        "objectFirst": [
+                            "*NEVER*",
+                            "ReasonApi\\Missing does not have property $target."
+                        ],
+                        "shapeFirst": [
+                            "*NEVER*",
+                            null
+                        ]
+                    },
+                    {
+                        "shape": "object{target?: int}",
+                        "objectFirst": [
+                            "ReasonApi\\Missing",
+                            null
+                        ],
+                        "shapeFirst": [
+                            "ReasonApi\\Missing",
+                            null
+                        ]
+                    },
+                    {
+                        "shape": "object{first: int, second: int}",
+                        "objectFirst": [
+                            "*NEVER*",
+                            "ReasonApi\\Missing does not have property $first."
+                        ],
+                        "shapeFirst": [
+                            "*NEVER*",
+                            null
+                        ]
+                    },
+                    {
+                        "shape": "object{second: int, first: int}",
+                        "objectFirst": [
+                            "*NEVER*",
+                            "ReasonApi\\Missing does not have property $second."
+                        ],
+                        "shapeFirst": [
+                            "*NEVER*",
+                            null
+                        ]
+                    }
+                ]
+            },
+            {
+                "class": "ReasonApi\\Readable",
+                "final": true,
+                "missing": "No",
+                "properties": [
+                    {
+                        "name": "target",
+                        "declaring": "ReasonApi\\Readable",
+                        "public": true,
+                        "readable": true,
+                        "type": "int"
+                    }
+                ],
+                "intersections": [
+                    {
+                        "shape": "object{target: int}",
+                        "objectFirst": [
+                            "ReasonApi\\Readable",
+                            null
+                        ],
+                        "shapeFirst": [
+                            "ReasonApi\\Readable",
+                            null
+                        ]
+                    },
+                    {
+                        "shape": "object{target?: int}",
+                        "objectFirst": [
+                            "ReasonApi\\Readable",
+                            null
+                        ],
+                        "shapeFirst": [
+                            "ReasonApi\\Readable",
+                            null
+                        ]
+                    },
+                    {
+                        "shape": "object{first: int, second: int}",
+                        "objectFirst": [
+                            "*NEVER*",
+                            "ReasonApi\\Readable does not have property $first."
+                        ],
+                        "shapeFirst": [
+                            "*NEVER*",
+                            null
+                        ]
+                    },
+                    {
+                        "shape": "object{second: int, first: int}",
+                        "objectFirst": [
+                            "*NEVER*",
+                            "ReasonApi\\Readable does not have property $second."
+                        ],
+                        "shapeFirst": [
+                            "*NEVER*",
+                            null
+                        ]
+                    }
+                ]
+            },
+            {
+                "class": "ReasonApi\\PrivateProperty",
+                "final": true,
+                "missing": "No",
+                "properties": [
+                    {
+                        "name": "target",
+                        "declaring": "ReasonApi\\PrivateProperty",
+                        "public": false,
+                        "readable": true,
+                        "type": "int"
+                    }
+                ],
+                "intersections": [
+                    {
+                        "shape": "object{target: int}",
+                        "objectFirst": [
+                            "*NEVER*",
+                            "Property ReasonApi\\PrivateProperty::$target is not public."
+                        ],
+                        "shapeFirst": [
+                            "*NEVER*",
+                            null
+                        ]
+                    },
+                    {
+                        "shape": "object{target?: int}",
+                        "objectFirst": [
+                            "*NEVER*",
+                            "Property ReasonApi\\PrivateProperty::$target is not public."
+                        ],
+                        "shapeFirst": [
+                            "*NEVER*",
+                            null
+                        ]
+                    },
+                    {
+                        "shape": "object{first: int, second: int}",
+                        "objectFirst": [
+                            "*NEVER*",
+                            "ReasonApi\\PrivateProperty does not have property $first."
+                        ],
+                        "shapeFirst": [
+                            "*NEVER*",
+                            null
+                        ]
+                    },
+                    {
+                        "shape": "object{second: int, first: int}",
+                        "objectFirst": [
+                            "*NEVER*",
+                            "ReasonApi\\PrivateProperty does not have property $second."
+                        ],
+                        "shapeFirst": [
+                            "*NEVER*",
+                            null
+                        ]
+                    }
+                ]
+            },
+            {
+                "class": "ReasonApi\\WriteOnly",
+                "final": true,
+                "missing": "No",
+                "properties": [
+                    {
+                        "name": "target",
+                        "declaring": "ReasonApi\\WriteOnly",
+                        "public": true,
+                        "readable": false,
+                        "type": "int"
+                    }
+                ],
+                "intersections": [
+                    {
+                        "shape": "object{target: int}",
+                        "objectFirst": [
+                            "*NEVER*",
+                            "Property ReasonApi\\WriteOnly::$target is not readable."
+                        ],
+                        "shapeFirst": [
+                            "*NEVER*",
+                            null
+                        ]
+                    },
+                    {
+                        "shape": "object{target?: int}",
+                        "objectFirst": [
+                            "*NEVER*",
+                            "Property ReasonApi\\WriteOnly::$target is not readable."
+                        ],
+                        "shapeFirst": [
+                            "*NEVER*",
+                            null
+                        ]
+                    },
+                    {
+                        "shape": "object{first: int, second: int}",
+                        "objectFirst": [
+                            "*NEVER*",
+                            "ReasonApi\\WriteOnly does not have property $first."
+                        ],
+                        "shapeFirst": [
+                            "*NEVER*",
+                            null
+                        ]
+                    },
+                    {
+                        "shape": "object{second: int, first: int}",
+                        "objectFirst": [
+                            "*NEVER*",
+                            "ReasonApi\\WriteOnly does not have property $second."
+                        ],
+                        "shapeFirst": [
+                            "*NEVER*",
+                            null
+                        ]
+                    }
+                ]
+            },
+            {
+                "class": "ReasonApi\\WrongValue",
+                "final": true,
+                "missing": "No",
+                "properties": [
+                    {
+                        "name": "target",
+                        "declaring": "ReasonApi\\WrongValue",
+                        "public": true,
+                        "readable": true,
+                        "type": "string"
+                    }
+                ],
+                "intersections": [
+                    {
+                        "shape": "object{target: int}",
+                        "objectFirst": [
+                            "*NEVER*",
+                            null
+                        ],
+                        "shapeFirst": [
+                            "*NEVER*",
+                            null
+                        ]
+                    },
+                    {
+                        "shape": "object{target?: int}",
+                        "objectFirst": [
+                            "*NEVER*",
+                            null
+                        ],
+                        "shapeFirst": [
+                            "*NEVER*",
+                            null
+                        ]
+                    },
+                    {
+                        "shape": "object{first: int, second: int}",
+                        "objectFirst": [
+                            "*NEVER*",
+                            "ReasonApi\\WrongValue does not have property $first."
+                        ],
+                        "shapeFirst": [
+                            "*NEVER*",
+                            null
+                        ]
+                    },
+                    {
+                        "shape": "object{second: int, first: int}",
+                        "objectFirst": [
+                            "*NEVER*",
+                            "ReasonApi\\WrongValue does not have property $second."
+                        ],
+                        "shapeFirst": [
+                            "*NEVER*",
+                            null
+                        ]
+                    }
+                ]
+            },
+            {
+                "class": "ReasonApi\\Extensible",
+                "final": false,
+                "missing": "Maybe",
+                "properties": [],
+                "intersections": [
+                    {
+                        "shape": "object{target: int}",
+                        "objectFirst": [
+                            "object{target: int}&ReasonApi\\Extensible",
+                            null
+                        ],
+                        "shapeFirst": [
+                            "object{target: int}&ReasonApi\\Extensible",
+                            null
+                        ]
+                    },
+                    {
+                        "shape": "object{target?: int}",
+                        "objectFirst": [
+                            "ReasonApi\\Extensible",
+                            null
+                        ],
+                        "shapeFirst": [
+                            "ReasonApi\\Extensible",
+                            null
+                        ]
+                    },
+                    {
+                        "shape": "object{first: int, second: int}",
+                        "objectFirst": [
+                            "object{first: int, second: int}&ReasonApi\\Extensible",
+                            null
+                        ],
+                        "shapeFirst": [
+                            "object{first: int, second: int}&ReasonApi\\Extensible",
+                            null
+                        ]
+                    },
+                    {
+                        "shape": "object{second: int, first: int}",
+                        "objectFirst": [
+                            "object{second: int, first: int}&ReasonApi\\Extensible",
+                            null
+                        ],
+                        "shapeFirst": [
+                            "object{second: int, first: int}&ReasonApi\\Extensible",
+                            null
+                        ]
+                    }
+                ]
+            },
+            {
+                "class": "ReasonApi\\Ordered",
+                "final": true,
+                "missing": "No",
+                "properties": [
+                    {
+                        "name": "first",
+                        "declaring": "ReasonApi\\Ordered",
+                        "public": true,
+                        "readable": true,
+                        "type": "int"
+                    },
+                    {
+                        "name": "second",
+                        "declaring": "ReasonApi\\Ordered",
+                        "public": false,
+                        "readable": true,
+                        "type": "int"
+                    }
+                ],
+                "intersections": [
+                    {
+                        "shape": "object{target: int}",
+                        "objectFirst": [
+                            "*NEVER*",
+                            "ReasonApi\\Ordered does not have property $target."
+                        ],
+                        "shapeFirst": [
+                            "*NEVER*",
+                            null
+                        ]
+                    },
+                    {
+                        "shape": "object{target?: int}",
+                        "objectFirst": [
+                            "ReasonApi\\Ordered",
+                            null
+                        ],
+                        "shapeFirst": [
+                            "ReasonApi\\Ordered",
+                            null
+                        ]
+                    },
+                    {
+                        "shape": "object{first: int, second: int}",
+                        "objectFirst": [
+                            "*NEVER*",
+                            "Property ReasonApi\\Ordered::$second is not public."
+                        ],
+                        "shapeFirst": [
+                            "*NEVER*",
+                            null
+                        ]
+                    },
+                    {
+                        "shape": "object{second: int, first: int}",
+                        "objectFirst": [
+                            "*NEVER*",
+                            "Property ReasonApi\\Ordered::$second is not public."
+                        ],
+                        "shapeFirst": [
+                            "*NEVER*",
+                            null
+                        ]
+                    }
+                ]
+            }
+        ],
+        "late": [
+            {
+                "input": "array{K: int}",
+                "other": "array{target: int}",
+                "hasMethod": "No",
+                "iterableValue": "int",
+                "resolved": [
+                    "non-empty-array<int>",
+                    null
+                ],
+                "intersection": [
+                    "array{target: int}&array{K: int}",
+                    null
+                ],
+                "substituted": [
+                    "array{target: int}",
+                    null
+                ]
+            },
+            {
+                "input": "array{K?: int}",
+                "other": "array{target: int}",
+                "hasMethod": "No",
+                "iterableValue": "int",
+                "resolved": [
+                    "array<int>",
+                    null
+                ],
+                "intersection": [
+                    "array{target: int}&array{K?: int}",
+                    null
+                ],
+                "substituted": [
+                    "array{target: int}",
+                    null
+                ]
+            },
+            {
+                "input": "array{K: K|L}",
+                "other": "array{target: string}",
+                "hasMethod": "No",
+                "iterableValue": "K (function shape(), parameter)|L (function shape(), parameter)",
+                "resolved": [
+                    "non-empty-array<K (function shape(), parameter)|L (function shape(), parameter)>",
+                    null
+                ],
+                "intersection": [
+                    "array{target: string}&array{K: K|L}",
+                    null
+                ],
+                "substituted": [
+                    "array{target: 'target'|'value'}",
+                    null
+                ]
+            }
+        ],
+        "identity": [
+            [
+                "array{item: int}",
+                "array{item: int}",
+                false,
+                true
+            ],
+            [
+                "array{item: int}",
+                "array{item: string}",
+                false,
+                false
+            ],
+            [
+                "Closure(int): string",
+                "Closure(int): string",
+                false,
+                true
+            ],
+            [
+                "Closure(int): string",
+                "Closure(string): string",
+                false,
+                false
+            ],
+            [
+                "array{K: int}",
+                "array{K: int}",
+                true,
+                true
+            ],
+            [
+                "array{K: int}",
+                "array{L: int}",
+                true,
+                false
+            ],
+            [
+                "array{K: int}",
+                "array{K?: int}",
+                true,
+                false
+            ]
+        ],
+        "metadata": {
+            "error": {
+                "traverse": [
+                    "*ERROR*",
+                    "An array key reason."
+                ],
+                "substitute": [
+                    "*ERROR*",
+                    "An array key reason."
+                ]
+            },
+            "never": {
+                "traverse": [
+                    "*NEVER*",
+                    "An intersection reason."
+                ],
+                "substitute": [
+                    "*NEVER*",
+                    "An intersection reason."
+                ]
+            }
+        }
+    }
 }
