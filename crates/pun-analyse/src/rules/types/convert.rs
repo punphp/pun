@@ -14,8 +14,9 @@ use mago_codex::ttype::atomic::scalar::float::TFloat;
 use mago_codex::ttype::atomic::scalar::int::TInteger;
 use mago_codex::ttype::atomic::scalar::string::{TStringCasing, TStringLiteral};
 use mago_codex::ttype::union::TUnion;
+use mago_syntax::cst::{ArrayElement, Expression, TokenSeparatedSequence};
 use pun_phpstan::types::{
-    Accessory, ConstArray, NeverKind, Param, Signature, Template, Tri, Type, intersect, mixed, union,
+    Accessory, ConstArray, NeverKind, Param, ShapeBuilder, Signature, Template, Tri, Type, intersect, mixed, union,
 };
 
 use super::super::Checker;
@@ -37,7 +38,42 @@ impl<'a, 'arena> Checker<'a, 'arena> {
         {
             return Some(Type::Object(text(self.names.get(id)), vec![]));
         }
-        Some(self.to_phpstan(t))
+        // Mago's keyed arrays are BTreeMaps: only the literal still knows PHP's insertion order. Unknown
+        // keys/unpacks keep the inferred fallback, rather than inventing an order for a nonliteral shape.
+        let ty = self.literal_array(e).unwrap_or_else(|| self.to_phpstan(t));
+        // MutatingScope::enterFunction/enterClassMethod converts the PHPDoc types of values to arguments.
+        // Keep declaration conversion (`to_phpstan`) unchanged, including the templates' declaration strategy.
+        Some(inferred_argument(&ty))
+    }
+
+    /// InitializerExprTypeResolver::getArrayType(), bounded to required constant keys and literal unpacks.
+    fn literal_array(&self, e: &Expression) -> Option<Type> {
+        let elements = literal_elements(e)?;
+        if elements.len() > 256 { return None; }
+        let mut builder = ShapeBuilder::new();
+        for element in elements.iter() {
+            let value = self.phpstan_type(element.get_value()?)?;
+            match element {
+                ArrayElement::KeyValue(kv) => {
+                    let key = array_key(self.phpstan_type(kv.key)?)?;
+                    // There is no next auto index beyond PHP_INT_MAX. Keep Mago's result for that edge.
+                    if key == Type::ConstInt(i64::MAX) { return None; }
+                    builder.set(Some(key), value, false);
+                }
+                ArrayElement::Variadic(v) => {
+                    literal_elements(v.value)?;
+                    let Type::ConstArray(a) = value else { return None; };
+                    if !a.optional.is_empty() || a.unsealed.is_some() { return None; }
+                    for (key, value) in a.keys.iter().zip(&a.values) {
+                        // Unpacking renumbers integer keys, but replaces string keys in their original slots.
+                        let key = matches!(key, Type::ConstString(_)).then(|| key.clone());
+                        builder.set(key, value.clone(), false);
+                    }
+                }
+                _ => builder.set(None, value, false),
+            }
+        }
+        Some(builder.get())
     }
 
     /// A Mago type as PHPStan's.
@@ -350,12 +386,49 @@ impl<'a, 'arena> Checker<'a, 'arena> {
     }
 }
 
-/// A sealed shape through PHPStan's ConstantArrayTypeBuilder (`array{}` for no items).
 /// A template's bound: an unbounded template's is the explicit `mixed` of `@template T`.
 fn explicit_mixed(t: Type) -> Type {
     if matches!(t, Type::Mixed { .. }) { Type::Mixed { explicit: true } } else { t }
 }
 
+/// Value-level templates, recursively through class strings, shapes, bounds and other inferred containers.
+fn inferred_argument(t: &Type) -> Type {
+    match t {
+        Type::Template(t) => Type::Template(Box::new(Template {
+            bound: inferred_argument(&t.bound),
+            default: t.default.as_ref().map(inferred_argument),
+            argument: t.scope != "anonymous function",
+            ..(**t).clone()
+        })),
+        t => t.traverse(&inferred_argument),
+    }
+}
+
+fn literal_elements<'e, 'arena>(mut e: &'e Expression<'arena>) -> Option<&'e TokenSeparatedSequence<'arena, ArrayElement<'arena>>> {
+    while let Expression::Parenthesized(p) = e { e = p.expression; }
+    match e {
+        Expression::Array(a) => Some(&a.elements),
+        Expression::LegacyArray(a) => Some(&a.elements),
+        _ => None,
+    }
+}
+
+/// Constant scalar `toArrayKey()`: canonical decimal strings are ints; other strings keep their bytes.
+fn array_key(t: Type) -> Option<Type> {
+    Some(match t {
+        Type::ConstInt(_) => t,
+        Type::ConstString(s) => match s.parse::<i64>() {
+            Ok(i) if i.to_string() == s => Type::ConstInt(i),
+            _ => Type::ConstString(s),
+        },
+        Type::ConstBool(b) => Type::ConstInt(i64::from(b)),
+        Type::Null => Type::ConstString(String::new()),
+        Type::ConstFloat(f) if f >= i64::MIN as f64 && f < -(i64::MIN as f64) => Type::ConstInt(f.trunc() as i64),
+        _ => return None,
+    })
+}
+
+/// A sealed shape through PHPStan's ConstantArrayTypeBuilder (`array{}` for no items).
 fn finish_shape(shape: ConstArray) -> Type {
     let mut builder = pun_phpstan::types::ShapeBuilder::new();
     for (i, (k, v)) in shape.keys.iter().zip(&shape.values).enumerate() {

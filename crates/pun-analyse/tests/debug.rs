@@ -60,6 +60,16 @@ fn phpdoc_aware_types_and_distinct_serialization() {
 }
 
 #[test]
+fn literal_array_order_keys_unpack_and_unknown_fallbacks() {
+    check("arrays.php");
+}
+
+#[test]
+fn inferred_phpdoc_templates_are_arguments() {
+    check("templates.php");
+}
+
+#[test]
 fn unrelated_calls_and_deferred_rules_do_not_dump() {
     check("negative.php");
 }

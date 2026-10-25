@@ -132,6 +132,13 @@ pub(super) fn analyse<'arena>(
     if wanted.is_empty() {
         return Default::default();
     }
+    // Array conversion needs each key/value's actual inferred type, not just the enclosing wanted span.
+    // Retain only literals inside requested expressions; unrelated declarations must stay prunable.
+    let mut children = ArrayChildren { wanted: &wanted, spans: Vec::new() };
+    children.walk_program(program, &mut ());
+    let children = children.spans;
+    let mut wanted = wanted;
+    wanted.extend(children);
     let mut registry = super::return_types::registry(&file.contents);
     let found = Arc::<Mutex<Found>>::default();
     if !watched.is_empty() {
@@ -169,6 +176,32 @@ pub(super) fn analyse<'arena>(
     let found = std::mem::take(&mut *found.lock().expect("no hook panics while holding the lock"));
     types.extend(found.read);
     (types, found.defined)
+}
+
+struct ArrayChildren<'s> {
+    wanted: &'s [Span],
+    spans: Vec<Span>,
+}
+
+impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for ArrayChildren<'_> {
+    fn walk_in_expression(&mut self, e: &'ast Expression<'arena>, _: &mut ()) {
+        let elements = match e {
+            Expression::Array(a) => &a.elements,
+            Expression::LegacyArray(a) => &a.elements,
+            _ => return,
+        };
+        let span = e.span();
+        if !self.wanted.iter().any(|w| w.start.offset <= span.start.offset && w.end.offset >= span.end.offset) {
+            return;
+        }
+        self.spans.push(span);
+        for element in elements.iter() {
+            if let ArrayElement::KeyValue(kv) = element {
+                self.spans.push(kv.key.span());
+            }
+            self.spans.extend(element.get_value().map(HasSpan::span));
+        }
+    }
 }
 
 /// `$scope->hasVariableType()` of the watched direct variables, and `hasExpressionType()` of the other watched

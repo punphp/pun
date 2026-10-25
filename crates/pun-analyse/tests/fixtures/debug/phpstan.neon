@@ -1,3 +1,3 @@
 parameters:
     level: 0
-    paths: [calls.php, types.php, negative.php, ignored.php, unreachable.php]
+    paths: [calls.php, types.php, negative.php, ignored.php, unreachable.php, arrays.php, templates.php]

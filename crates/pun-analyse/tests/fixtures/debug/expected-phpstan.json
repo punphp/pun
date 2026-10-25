@@ -1,5 +1,245 @@
 [
   {
+    "file": "arrays.php",
+    "line": 8,
+    "identifier": "phpstan.dumpType",
+    "message": "Dumped type: array{z: 1, a: 2, m: 3}",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "arrays.php",
+    "line": 9,
+    "identifier": "array.duplicateKey",
+    "message": "Array has 2 duplicate keys with value 'z' ('z', 'z').",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "arrays.php",
+    "line": 9,
+    "identifier": "phpstan.dumpPhpDocType",
+    "message": "Dumped type: array{z: 3, a: 2}",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "arrays.php",
+    "line": 10,
+    "identifier": "phpstan.dumpPhpDocType",
+    "message": "Dumped type: array{z: array{y: 1, b: 2}, a: 3}",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "arrays.php",
+    "line": 11,
+    "identifier": "phpstan.dumpPhpDocType",
+    "message": "Dumped type: array{z: array{y: 1, b: 2}, a: 3}",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "arrays.php",
+    "line": 12,
+    "identifier": "array.duplicateKey",
+    "message": "Array has 2 duplicate keys with value 1 (true, '1').",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "arrays.php",
+    "line": 12,
+    "identifier": "phpstan.dumpPhpDocType",
+    "message": "Dumped type: array{1: 'replaced', 0: 'zero', '01': 'string'}",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "arrays.php",
+    "line": 13,
+    "identifier": "array.duplicateKey",
+    "message": "Array has 2 duplicate keys with value '' (null, '').",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "arrays.php",
+    "line": 13,
+    "identifier": "phpstan.dumpPhpDocType",
+    "message": "Dumped type: array{'': 'replaced', -1: 'negative', '+1': 'string', '-0': 'string'}",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "arrays.php",
+    "line": 14,
+    "identifier": "phpstan.dumpPhpDocType",
+    "message": "Dumped type: array{2: 'two', 3: 'zero', 0: 'zero-key', 4: 'four'}",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "arrays.php",
+    "line": 15,
+    "identifier": "phpstan.dumpPhpDocType",
+    "message": "Dumped type: array{z: 1, b: 4, a: 3}",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "arrays.php",
+    "line": 16,
+    "identifier": "phpstan.dumpPhpDocType",
+    "message": "Dumped type: array{10: 'ten', 11: 'x', 12: 'y', 13: 'z'}",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "arrays.php",
+    "line": 17,
+    "identifier": "phpstan.dumpPhpDocType",
+    "message": "Dumped type: array{true, false, true}",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "arrays.php",
+    "line": 18,
+    "identifier": "phpstan.dumpPhpDocType",
+    "message": "Dumped type: array{}",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "arrays.php",
+    "line": 19,
+    "identifier": "phpstan.dumpPhpDocType",
+    "message": "Dumped type: array{1: array{z: 1, a: 2}, 0: array{b: false, a: true}}",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "arrays.php",
+    "line": 24,
+    "identifier": "phpstan.dumpType",
+    "message": "Dumped type: array<string, int>",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "arrays.php",
+    "line": 25,
+    "identifier": "phpstan.dumpPhpDocType",
+    "message": "Dumped type: array<string, int>",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "arrays.php",
+    "line": 26,
+    "identifier": "phpstan.dumpType",
+    "message": "Dumped type: array<string, int>",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "arrays.php",
+    "line": 31,
+    "identifier": "phpstan.dumpType",
+    "message": "Dumped type: non-empty-array<string, int>",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "arrays.php",
+    "line": 32,
+    "identifier": "phpstan.dumpPhpDocType",
+    "message": "Dumped type: non-empty-array<string, int>",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "arrays.php",
+    "line": 33,
+    "identifier": "phpstan.dumpPhpDocType",
+    "message": "Dumped type: non-empty-array<string, int>",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "arrays.php",
+    "line": 39,
+    "identifier": "phpstan.dumpType",
+    "message": "Dumped type: list<int>",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "arrays.php",
+    "line": 40,
+    "identifier": "phpstan.dumpPhpDocType",
+    "message": "Dumped type: list<int>",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "arrays.php",
+    "line": 46,
+    "identifier": "phpstan.dumpPhpDocType",
+    "message": "Dumped type: array{z: 0, 9: true, a: 2}",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "arrays.php",
+    "line": 49,
+    "identifier": "array.duplicateKey",
+    "message": "Array has 2 duplicate keys with value 1 (1.9, 1).",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "arrays.php",
+    "line": 49,
+    "identifier": "phpstan.dumpPhpDocType",
+    "message": "Dumped type: array{1: 'replaced', 0: 'zero'}",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "arrays.php",
+    "line": 50,
+    "identifier": "phpstan.dumpPhpDocType",
+    "message": "Dumped type: array{'9223372036854775808': 'string', -9223372036854775808: 'int', 0: 'zero'}",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "arrays.php",
+    "line": 55,
+    "identifier": "phpstan.dumpPhpDocType",
+    "message": "Dumped type: array{a: 1, z: 2}",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "arrays.php",
+    "line": 58,
+    "identifier": "phpstan.dumpPhpDocType",
+    "message": "Dumped type: array{-5: 'negative', 0: 'next'}",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "arrays.php",
+    "line": 59,
+    "identifier": "phpstan.dumpPhpDocType",
+    "message": "Dumped type: array{9223372036854775807: 'max'}",
+    "tip": null,
+    "ignorable": false
+  },
+  {
     "file": "calls.php",
     "line": 4,
     "identifier": "phpstan.dumpType",
@@ -268,6 +508,94 @@
     "line": 42,
     "identifier": "phpstan.debugScope",
     "message": "$fn (Yes): 'PHPStan\\\\dumpPhpDocType'\n$callable (Yes): Closure(mixed, mixed ...): mixed\nnative $fn (Yes): 'PHPStan\\\\dumpPhpDocType'\nnative $callable (Yes): Closure(mixed, mixed ...): mixed",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "templates.php",
+    "line": 19,
+    "identifier": "phpstan.dumpType",
+    "message": "Dumped type: T of DebugTemplates\\Bound (function DebugTemplates\\typed(), argument)",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "templates.php",
+    "line": 20,
+    "identifier": "phpstan.dumpType",
+    "message": "Dumped type: class-string<T of DebugTemplates\\Bound (function DebugTemplates\\typed(), argument)>",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "templates.php",
+    "line": 21,
+    "identifier": "phpstan.dumpPhpDocType",
+    "message": "Dumped type: class-string<T>",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "templates.php",
+    "line": 22,
+    "identifier": "phpstan.dumpType",
+    "message": "Dumped type: array{T of DebugTemplates\\Bound (function DebugTemplates\\typed(), argument), class-string<T of DebugTemplates\\Bound (function DebugTemplates\\typed(), argument)>}",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "templates.php",
+    "line": 23,
+    "identifier": "phpstan.dumpType",
+    "message": "Dumped type: array{a: T of DebugTemplates\\Bound (function DebugTemplates\\typed(), argument), z: class-string<T of DebugTemplates\\Bound (function DebugTemplates\\typed(), argument)>}",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "templates.php",
+    "line": 24,
+    "identifier": "phpstan.dumpType",
+    "message": "Dumped type: T of DebugTemplates\\Bound (function DebugTemplates\\typed(), argument)",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "templates.php",
+    "line": 34,
+    "identifier": "phpstan.dumpType",
+    "message": "Dumped type: T of DebugTemplates\\Bound (class DebugTemplates\\GenericBox, argument)",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "templates.php",
+    "line": 35,
+    "identifier": "phpstan.dumpType",
+    "message": "Dumped type: array{T of DebugTemplates\\Bound (class DebugTemplates\\GenericBox, argument)}",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "templates.php",
+    "line": 46,
+    "identifier": "phpstan.dumpType",
+    "message": "Dumped type: T of DebugTemplates\\Bound (class DebugTemplates\\GenericBox, argument)",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "templates.php",
+    "line": 57,
+    "identifier": "phpstan.dumpType",
+    "message": "Dumped type: U of T of DebugTemplates\\Bound (function DebugTemplates\\nestedBound(), argument) (function DebugTemplates\\nestedBound(), argument)",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "templates.php",
+    "line": 58,
+    "identifier": "phpstan.dumpPhpDocType",
+    "message": "Dumped type: U",
     "tip": null,
     "ignorable": false
   },
