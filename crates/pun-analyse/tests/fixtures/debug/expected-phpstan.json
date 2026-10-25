@@ -806,5 +806,317 @@
     "message": "Dumped type: 1|'a'",
     "tip": null,
     "ignorable": false
+  },
+  {
+    "file": "declarations.php",
+    "line": 18,
+    "identifier": "phpstan.dumpType",
+    "message": "Dumped type #1: array",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "declarations.php",
+    "line": 18,
+    "identifier": "phpstan.dumpType",
+    "message": "Dumped type #2: array<mixed>",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "declarations.php",
+    "line": 18,
+    "identifier": "phpstan.dumpType",
+    "message": "Dumped type #3: list",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "declarations.php",
+    "line": 18,
+    "identifier": "phpstan.dumpType",
+    "message": "Dumped type #4: list<mixed>",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "declarations.php",
+    "line": 19,
+    "identifier": "phpstan.dumpType",
+    "message": "Dumped type #1: array",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "declarations.php",
+    "line": 19,
+    "identifier": "phpstan.dumpType",
+    "message": "Dumped type #2: array<mixed>",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "declarations.php",
+    "line": 19,
+    "identifier": "phpstan.dumpType",
+    "message": "Dumped type #3: list",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "declarations.php",
+    "line": 19,
+    "identifier": "phpstan.dumpType",
+    "message": "Dumped type #4: list<mixed>",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "declarations.php",
+    "line": 20,
+    "identifier": "phpstan.dumpType",
+    "message": "Dumped type #1: array",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "declarations.php",
+    "line": 20,
+    "identifier": "phpstan.dumpType",
+    "message": "Dumped type #2: array<mixed, mixed>",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "declarations.php",
+    "line": 21,
+    "identifier": "phpstan.dumpType",
+    "message": "Dumped type: array<mixed, mixed>",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "declarations.php",
+    "line": 25,
+    "identifier": "phpstan.dumpType",
+    "message": "Dumped type: list<mixed>",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "declarations.php",
+    "line": 26,
+    "identifier": "phpstan.dumpType",
+    "message": "Dumped type #1: array<array{id: string, bool: bool}>",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "declarations.php",
+    "line": 26,
+    "identifier": "phpstan.dumpType",
+    "message": "Dumped type #2: array{bool: bool, id: string}",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "declarations.php",
+    "line": 27,
+    "identifier": "phpstan.dumpPhpDocType",
+    "message": "Dumped type #1: array<array{id: string, bool: bool}>",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "declarations.php",
+    "line": 27,
+    "identifier": "phpstan.dumpPhpDocType",
+    "message": "Dumped type #2: array{bool: bool, id: string}",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "declarations.php",
+    "line": 29,
+    "identifier": "phpstan.dumpType",
+    "message": "Dumped type: array{bool: bool, id: string}",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "declarations.php",
+    "line": 31,
+    "identifier": "phpstan.dumpType",
+    "message": "Dumped type: array{id: 'x', bool: false}",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "declarations.php",
+    "line": 32,
+    "identifier": "phpstan.dumpType",
+    "message": "Dumped type: array{bool: false, id: 'x'}",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "declarations.php",
+    "line": 43,
+    "identifier": "phpstan.dumpType",
+    "message": "Dumped type: array{z: string, a: bool}",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "declarations.php",
+    "line": 44,
+    "identifier": "phpstan.dumpType",
+    "message": "Dumped type #1: list<mixed>",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "declarations.php",
+    "line": 44,
+    "identifier": "phpstan.dumpType",
+    "message": "Dumped type #2: array",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "declarations.php",
+    "line": 58,
+    "identifier": "phpstan.dumpType",
+    "message": "Dumped type: array<array{id: string, bool: bool}>",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "declarations.php",
+    "line": 59,
+    "identifier": "phpstan.dumpType",
+    "message": "Dumped type: array{id: string, bool: bool}",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "declarations.php",
+    "line": 60,
+    "identifier": "phpstan.dumpPhpDocType",
+    "message": "Dumped type: array{id: string, bool: bool}",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "declarations.php",
+    "line": 64,
+    "identifier": "phpstan.dumpType",
+    "message": "Dumped type: array{z: string, a: bool}",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "declarations.php",
+    "line": 68,
+    "identifier": "method.templateTypeNotInParameter",
+    "message": "Template type T of function DebugDeclarations\\templateAnnotation() is not referenced in a parameter.",
+    "tip": null,
+    "ignorable": true
+  },
+  {
+    "file": "declarations.php",
+    "line": 72,
+    "identifier": "phpstan.dumpType",
+    "message": "Dumped type: array{z: T (function DebugDeclarations\\templateAnnotation(), parameter), a: bool}",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "origins.php",
+    "line": 9,
+    "identifier": "phpstan.dumpType",
+    "message": "Dumped type: array{z: int, a: bool}",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "origins.php",
+    "line": 17,
+    "identifier": "phpstan.dumpType",
+    "message": "Dumped type #1: array{z?: int, a: bool}",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "origins.php",
+    "line": 17,
+    "identifier": "phpstan.dumpType",
+    "message": "Dumped type #2: iterable<string, array{z: int, a: bool}>",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "origins.php",
+    "line": 19,
+    "identifier": "phpstan.dumpType",
+    "message": "Dumped type: array{a: false, z: 2}",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "origins.php",
+    "line": 31,
+    "identifier": "phpstan.dumpType",
+    "message": "Dumped type: array{a: bool, z: string}",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "origins.php",
+    "line": 42,
+    "identifier": "phpstan.dumpType",
+    "message": "Dumped type: array{a: bool, z: string}",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "origins.php",
+    "line": 53,
+    "identifier": "phpstan.dumpType",
+    "message": "Dumped type: array{z: T (class DebugOrigins\\Box, parameter), a: bool}",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "origins.php",
+    "line": 67,
+    "identifier": "phpstan.dumpType",
+    "message": "Dumped type: array{z: string, a: bool}",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "origins.php",
+    "line": 71,
+    "identifier": "phpstan.dumpType",
+    "message": "Dumped type: int",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "origins.php",
+    "line": 77,
+    "identifier": "phpstan.dumpType",
+    "message": "Dumped type: array{z: string, a: bool}",
+    "tip": null,
+    "ignorable": false
+  },
+  {
+    "file": "origins.php",
+    "line": 77,
+    "identifier": "argument.unknown",
+    "message": "Unknown parameter $unexpected in call to function DebugOrigins\\each.",
+    "tip": null,
+    "ignorable": true
   }
 ]

@@ -322,6 +322,19 @@ pub fn codex_return(c: &Checker, f: &FunctionLikeMetadata, declaring: Option<&Cl
     codex_doc(c, f, declaring).ret
 }
 
+/// The declaration's PHPDoc name/template scope, also when an inline value annotation is read from a closure.
+pub(super) fn value_scope(c: &Checker, f: &FunctionLikeMetadata, class: Option<&ClassLikeMetadata>) -> NameScope {
+    let mut scope = scope_at(c, f.span, class);
+    if let Some((raw, _)) = doc_at(c, f.span) {
+        let name = text(f.original_name.as_bytes());
+        let describe = class.map_or_else(|| format!("function {name}()"), |k| format!("method {}::{name}()", original_name(k)));
+        for t in templates(&Doc::parse(&raw), &scope, &describe) {
+            scope.templates.insert(t.name.clone(), Type::Template(Box::new(t)));
+        }
+    }
+    scope
+}
+
 fn codex_doc(c: &Checker, f: &FunctionLikeMetadata, declaring: Option<&ClassLikeMetadata>) -> Resolved {
     match declaring {
         Some(k) => method_doc(c, k, &f.name.as_bytes().to_ascii_lowercase(), 0),

@@ -24,6 +24,10 @@ use pun_phpstan::types::Tri;
 
 use super::{Checker, assign, dead_code};
 
+#[path = "type_origins.rs"]
+mod origins;
+pub(super) use origins::{Origin, Origins};
+
 /// The expressions whose type a rule reads: the class of `new $expr`, the object or class expression of a call whose
 /// by-reference parameters matter, the expression of an `instanceof` naming a trait.
 struct TypedExpressions<'n, 'arena> {
@@ -101,7 +105,7 @@ pub(super) fn infer<'arena>(
     php_version: u32,
     level: u8,
     extra: Vec<Span>,
-) -> (HashMap<Span, TUnion>, HashMap<Span, Tri>) {
+) -> (HashMap<Span, TUnion>, HashMap<Span, Tri>, Origins) {
     let mut wanted = TypedExpressions {
         spans: Vec::new(),
         names,
@@ -128,17 +132,20 @@ pub(super) fn analyse<'arena>(
     php_version: u32,
     wanted: Vec<Span>,
     watched: Vec<Span>,
-) -> (HashMap<Span, TUnion>, HashMap<Span, Tri>) {
+) -> (HashMap<Span, TUnion>, HashMap<Span, Tri>, Origins) {
     if wanted.is_empty() {
         return Default::default();
     }
+    let origins = origins::collect(file, program, names, codebase);
+    let mut wanted = wanted;
+    wanted.extend(origins::dependencies(&origins, &wanted));
     // Array conversion needs each key/value's actual inferred type, not just the enclosing wanted span.
     // Retain only literals inside requested expressions; unrelated declarations must stay prunable.
     let mut children = ArrayChildren { wanted: &wanted, spans: Vec::new() };
     children.walk_program(program, &mut ());
     let children = children.spans;
-    let mut wanted = wanted;
     wanted.extend(children);
+    wanted.extend(origins::dependencies(&origins, &wanted));
     let mut registry = super::return_types::registry(&file.contents);
     let found = Arc::<Mutex<Found>>::default();
     if !watched.is_empty() {
@@ -175,7 +182,7 @@ pub(super) fn analyse<'arena>(
         .collect();
     let found = std::mem::take(&mut *found.lock().expect("no hook panics while holding the lock"));
     types.extend(found.read);
-    (types, found.defined)
+    (types, found.defined, origins)
 }
 
 struct ArrayChildren<'s> {

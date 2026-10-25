@@ -14,12 +14,13 @@ use mago_codex::ttype::atomic::scalar::float::TFloat;
 use mago_codex::ttype::atomic::scalar::int::TInteger;
 use mago_codex::ttype::atomic::scalar::string::{TStringCasing, TStringLiteral};
 use mago_codex::ttype::union::TUnion;
+use mago_span::{HasSpan, Span};
 use mago_syntax::cst::{ArrayElement, Expression, TokenSeparatedSequence};
 use pun_phpstan::types::{
     Accessory, ConstArray, NeverKind, Param, ShapeBuilder, Signature, Template, Tri, Type, intersect, mixed, union,
 };
 
-use super::super::Checker;
+use super::super::{Checker, declared, doc, infer};
 
 fn text(b: &[u8]) -> String {
     String::from_utf8_lossy(b).into_owned()
@@ -41,9 +42,109 @@ impl<'a, 'arena> Checker<'a, 'arena> {
         // Mago's keyed arrays are BTreeMaps: only the literal still knows PHP's insertion order. Unknown
         // keys/unpacks keep the inferred fallback, rather than inventing an order for a nonliteral shape.
         let ty = self.literal_array(e).unwrap_or_else(|| self.to_phpstan(t));
-        // MutatingScope::enterFunction/enterClassMethod converts the PHPDoc types of values to arguments.
-        // Keep declaration conversion (`to_phpstan`) unchanged, including the templates' declaration strategy.
-        Some(inferred_argument(&ty))
+        // MutatingScope::enterFunction/enterClassMethod converts PHPDoc parameter/return values to arguments.
+        // An inline @var annotation does not: its source metadata can restore that distinct template strategy.
+        let ty = inferred_argument(&ty);
+        let ty = self
+            .source_type(e.span(), &self.origins)
+            .map_or(ty.clone(), |source| restore(ty, &source));
+        Some(ty)
+    }
+
+    /// Only recover metadata from the expression's source edges. In particular, a structurally equal but
+    /// unrelated declaration is never evidence for an array's order or an implicit mixed's explicitness.
+    fn source_type(
+        &self,
+        span: Span,
+        origins: &std::collections::HashMap<Span, infer::Origin>,
+    ) -> Option<Type> {
+        let function = |key: &(mago_word::Word, mago_word::Word)| {
+            Some((
+                self.codebase.function_likes.get(key)?.as_ref(),
+                self.codebase.get_class_like(key.0.as_bytes()),
+            ))
+        };
+        match origins.get(&span)? {
+            infer::Origin::Parameter(key, i) => {
+                let (f, k) = function(key)?;
+                declared::codex_params(self, f, k)
+                    .into_iter()
+                    .nth(*i)
+                    .map(|t| inferred_argument(&t))
+            }
+            infer::Origin::Annotation(at, name, key) => {
+                let (raw, _) = declared::doc_at(self, *at)?;
+                let scope = key.and_then(|key| function(&key)).map_or_else(
+                    || declared::scope_at(self, *at, self.class_scope()),
+                    |(f, k)| declared::value_scope(self, f, k),
+                );
+                doc::Doc::parse(&raw)
+                    .var_types(&scope)
+                    .into_iter()
+                    .find(|(n, _)| n.is_empty() || n == name)
+                    .map(|(_, t)| t)
+            }
+            infer::Origin::Copy(from) => self.source_type(*from, origins),
+            infer::Origin::Call(call) => {
+                let (name, args) = (&call.name, &call.args);
+                // These extensions preserve their input key/value types. The provider alone decides keys,
+                // cardinality and listness; this edge restores only information its Mago types cannot store.
+                if matches!(name.as_str(), "array_slice" | "array_unique") {
+                    let (_, from) = args
+                        .iter()
+                        .enumerate()
+                        .find(|(i, (n, _))| {
+                            n.as_deref() == Some("array") || (*i == 0 && n.is_none())
+                        })?
+                        .1;
+                    let source = self.source_type(*from, origins)?;
+                    return Some(if matches!(source, Type::Mixed { .. }) {
+                        Type::array(source.clone(), source)
+                    } else {
+                        source
+                    });
+                }
+                declared::codex_return(self, self.codebase.get_function(name.as_bytes())?, None)
+                    .map(|t| inferred_argument(&t))
+            }
+            infer::Origin::Callback(call, argument, parameter) => {
+                let (name, args) = (&call.name, &call.args);
+                let f = self.codebase.get_function(name.as_bytes())?;
+                let params = declared::codex_params(self, f, None);
+                let positions: Vec<_> = args
+                    .iter()
+                    .enumerate()
+                    .map(|(i, (name, _))| match name {
+                        Some(n) => f
+                            .parameters
+                            .iter()
+                            .position(|p| &p.name.0.as_bytes()[1..] == n.as_bytes()),
+                        None => Some(i),
+                    })
+                    .collect();
+                let callable = params.get(positions[*argument]?)?;
+                let mut map = pun_phpstan::types::TemplateMap::default();
+                for (i, (_, span)) in args.iter().enumerate().filter(|(i, _)| i != argument) {
+                    let Some(p) = positions[i].and_then(|i| params.get(i)) else {
+                        continue;
+                    };
+                    let actual = self.types.get(span)?;
+                    let actual = self.to_phpstan(actual);
+                    let actual = self
+                        .source_type(*span, origins)
+                        .map_or(actual.clone(), |source| restore(actual, &source));
+                    map = map.union(declared::with_classes(self, || {
+                        pun_phpstan::types::infer_template_types(p, &actual)
+                    }));
+                }
+                let Type::Callable(Some(signature)) =
+                    pun_phpstan::types::resolve_template_types(callable, &map)
+                else {
+                    return None;
+                };
+                signature.params.get(*parameter).map(|p| p.ty.clone())
+            }
+        }
     }
 
     /// InitializerExprTypeResolver::getArrayType(), bounded to required constant keys and literal unpacks.
@@ -383,6 +484,55 @@ impl<'a, 'arena> Checker<'a, 'arena> {
                 }
             }
         }
+    }
+}
+
+/// Overlay only the two erased facts, never a declaration's broader value type over a narrowed inferred type.
+fn restore(actual: Type, source: &Type) -> Type {
+    match (actual, source) {
+        (Type::Template(mut actual), Type::Template(source))
+            if actual.name == source.name && actual.scope == source.scope =>
+        {
+            actual.argument = source.argument;
+            Type::Template(actual)
+        }
+        (Type::Mixed { .. }, Type::Mixed { explicit }) => Type::Mixed {
+            explicit: *explicit,
+        },
+        (Type::ConstArray(mut actual), Type::ConstArray(source))
+            if actual.keys.len() == source.keys.len()
+                && source.keys.iter().all(|k| actual.keys.contains(k)) =>
+        {
+            let positions: Vec<_> = source
+                .keys
+                .iter()
+                .map(|k| actual.keys.iter().position(|a| a == k).unwrap())
+                .collect();
+            actual.values = positions
+                .iter()
+                .enumerate()
+                .map(|(i, p)| restore(actual.values[*p].clone(), &source.values[i]))
+                .collect();
+            actual.optional = positions
+                .iter()
+                .enumerate()
+                .filter_map(|(i, p)| actual.optional.contains(p).then_some(i))
+                .collect();
+            actual.keys = source.keys.clone();
+            actual.is_list = source.is_list;
+            Type::ConstArray(actual)
+        }
+        (Type::Array(k, v), Type::Array(sk, sv) | Type::Iterable(sk, sv)) => {
+            Type::array(restore(*k, sk), restore(*v, sv))
+        }
+        (Type::Iterable(k, v), Type::Array(sk, sv) | Type::Iterable(sk, sv)) => {
+            Type::Iterable(Box::new(restore(*k, sk)), Box::new(restore(*v, sv)))
+        }
+        (Type::Intersection(parts), source) => {
+            intersect(parts.into_iter().map(|t| restore(t, source)).collect())
+        }
+        (actual, Type::Intersection(parts)) => parts.iter().fold(actual, restore),
+        (actual, _) => actual,
     }
 }
 

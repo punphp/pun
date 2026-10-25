@@ -756,6 +756,8 @@ pub struct Checker<'a, 'arena> {
     types: HashMap<Span, TUnion>,
     /// `$scope->hasVariableType()` where the wanted direct variables are read (see [`infer::analyse()`]).
     defined: HashMap<Span, pun_phpstan::types::Tri>,
+    /// This inference run's source provenance for PHPDoc metadata Mago's types cannot retain.
+    origins: infer::Origins,
     names: &'a ResolvedNames<'arena>,
     codebase: &'a CodebaseMetadata,
     classes: Vec<ClassScope>,

@@ -70,6 +70,58 @@ fn inferred_phpdoc_templates_are_arguments() {
 }
 
 #[test]
+fn declaration_order_and_explicit_mixed_follow_only_their_own_values() {
+    check("declarations.php");
+}
+
+#[test]
+fn annotation_scopes_contextual_arrows_and_invalidated_origins() {
+    check("origins.php");
+}
+
+#[test]
+fn contextual_callback_keeps_the_iterable_declarations_shape_order() {
+    let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/rules");
+    let oracle: Value = serde_json::from_slice(
+        &std::fs::read(root.join("Functions/CallToFunctionParametersRuleTest.json")).unwrap(),
+    )
+    .unwrap();
+    let case = oracle["cases"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|c| c["method"] == "testBug11386")
+        .unwrap();
+    let paths = |kind: &str| {
+        case[kind]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|p| root.join("data").join(p.as_str().unwrap()))
+            .collect()
+    };
+    let got: Vec<_> = run(&Project::new(paths("files"), paths("scan")))
+        .unwrap()
+        .into_iter()
+        .filter(|e| DUMPS.contains(&e.identifier.as_str()))
+        .map(|e| (e.line, e.message))
+        .collect();
+    let want: Vec<_> = case["errors"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .filter(|e| DUMPS.contains(&e["identifier"].as_str().unwrap()))
+        .map(|e| {
+            (
+                e["line"].as_i64().unwrap(),
+                e["message"].as_str().unwrap().to_string(),
+            )
+        })
+        .collect();
+    assert_eq!(got, want);
+}
+
+#[test]
 fn unrelated_calls_and_deferred_rules_do_not_dump() {
     check("negative.php");
 }
