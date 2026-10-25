@@ -168,12 +168,12 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Wanted<'_> {
         }
     }
     fn walk_in_method_call(&mut self, call: &'ast MethodCall<'arena>, _: &mut ()) {
-        if self.level >= 2 {
+        if self.level >= 2 || super::bind_scope::has_inline_closure(&call.argument_list) {
             receivers::typed(call.object, &mut self.spans);
         }
     }
     fn walk_in_null_safe_method_call(&mut self, call: &'ast NullSafeMethodCall<'arena>, _: &mut ()) {
-        if self.level >= 2 {
+        if self.level >= 2 || super::bind_scope::has_inline_closure(&call.argument_list) {
             receivers::typed(call.object, &mut self.spans);
         }
     }
@@ -193,7 +193,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Wanted<'_> {
         }
     }
     fn walk_in_static_method_call(&mut self, call: &'ast StaticMethodCall<'arena>, _: &mut ()) {
-        if self.level >= 2 {
+        if self.level >= 2 || super::bind_scope::has_inline_closure(&call.argument_list) {
             receivers::typed_class(call.class, &mut self.spans);
         }
     }

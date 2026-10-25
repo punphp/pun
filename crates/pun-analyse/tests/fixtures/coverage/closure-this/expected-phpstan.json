@@ -98,6 +98,90 @@
    "identifier": "variable.undefined",
    "message": "Undefined variable: $this",
    "tip": null
+  },
+  {
+   "file": "typed-receivers.php",
+   "line": 20,
+   "identifier": "method.notFound",
+   "message": "Call to an undefined method ClosureThis\\Request::childMethod().",
+   "tip": null
+  },
+  {
+   "file": "typed-receivers.php",
+   "line": 21,
+   "identifier": "method.notFound",
+   "message": "Call to an undefined method ClosureThis\\Request::childMethod().",
+   "tip": null
+  },
+  {
+   "file": "typed-receivers.php",
+   "line": 22,
+   "identifier": "method.notFound",
+   "message": "Call to an undefined method ClosureThis\\Request::childMethod().",
+   "tip": null
+  },
+  {
+   "file": "typed-receivers.php",
+   "line": 58,
+   "identifier": "staticMethod.notFound",
+   "message": "Call to an undefined static method ClosureThis\\Target::providerStatic().",
+   "tip": null
+  },
+  {
+   "file": "typed-receivers.php",
+   "line": 59,
+   "identifier": "method.notFound",
+   "message": "Call to an undefined method ClosureThis\\Target::providerOnly().",
+   "tip": null
+  },
+  {
+   "file": "typed-receivers.php",
+   "line": 69,
+   "identifier": "method.notFound",
+   "message": "Call to an undefined method ClosureThis\\Request::childMethod().",
+   "tip": null
+  },
+  {
+   "file": "typed-receivers.php",
+   "line": 70,
+   "identifier": "method.notFound",
+   "message": "Call to an undefined method ClosureThis\\Receivers\\TypedRequest::missingRequestMethod().",
+   "tip": null
+  },
+  {
+   "file": "typed-receivers.php",
+   "line": 80,
+   "identifier": "method.notFound",
+   "message": "Call to an undefined method ClosureThis\\Receivers\\Provider::targetMethod().",
+   "tip": null
+  },
+  {
+   "file": "typed-receivers.php",
+   "line": 81,
+   "identifier": "method.notFound",
+   "message": "Call to an undefined method ClosureThis\\Receivers\\Provider::targetMethod().",
+   "tip": null
+  },
+  {
+   "file": "typed-receivers.php",
+   "line": 82,
+   "identifier": "variable.undefined",
+   "message": "Undefined variable: $this",
+   "tip": null
+  },
+  {
+   "file": "typed-receivers.php",
+   "line": 83,
+   "identifier": "variable.undefined",
+   "message": "Undefined variable: $this",
+   "tip": null
+  },
+  {
+   "file": "typed-receivers.php",
+   "line": 84,
+   "identifier": "method.notFound",
+   "message": "Call to an undefined method ClosureThis\\Receivers\\Provider::targetMethod().",
+   "tip": null
   }
  ]
 }

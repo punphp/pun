@@ -15,7 +15,7 @@ pub(super) struct Binding {
     pub defines_this: bool,
 }
 
-fn has_inline_closure(args: &ArgumentList) -> bool {
+pub(super) fn has_inline_closure(args: &ArgumentList) -> bool {
     args.arguments.iter().any(|a| {
         let mut value = a.value();
         while let Expression::Parenthesized(p) = value {
@@ -47,8 +47,8 @@ impl<'arena> Checker<'_, 'arena> {
 
     /// CalledOnTypeUnresolvedMethodPrototypeReflection::transformStaticType(): `static`/`$this` tags use the
     /// receiver, not the method's declaring parent or trait; `self` tags remain their resolved declared class.
-    /// This level-0 slice handles named static receivers, `$this`, and directly instantiated objects. Other
-    /// receiver expressions need the type-collection hook independently of the level-2 call checks.
+    /// Other receiver expressions use their single inferred object class, ignoring nullability, independently of
+    /// the level-2 call checks. Multiple classes are not collapsed to an arbitrary binding scope.
     pub(super) fn bind_method_arguments(
         &mut self,
         receiver: &Expression<'arena>,
@@ -62,6 +62,7 @@ impl<'arena> Checker<'_, 'arena> {
         let ClassLikeMemberSelector::Identifier(name) = name else {
             return;
         };
+        let original_receiver = receiver;
         let mut receiver = receiver;
         while let Expression::Parenthesized(p) = receiver {
             receiver = p.expression;
@@ -75,7 +76,12 @@ impl<'arena> Checker<'_, 'arena> {
                 .and_then(|p| self.codebase.get_class_like(p.as_bytes())),
             _ => self
                 .bound_class_of(receiver, false)
-                .and_then(|n| self.class_like(&n).found()),
+                .and_then(|n| self.class_like(&n).found())
+                .or_else(|| {
+                    let names = self.phpstan_type(original_receiver)?.remove_null().object_class_names();
+                    let [name] = names.as_slice() else { return None };
+                    self.class_like(name).found()
+                }),
         };
         if let Some(class) = class
             && let Some(members::Method::User { f, declaring }) =
