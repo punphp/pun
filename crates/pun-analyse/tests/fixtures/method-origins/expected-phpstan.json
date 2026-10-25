@@ -1,0 +1,248 @@
+{
+  "controls.php": [
+    {
+      "message": "Dumped type: array",
+      "line": 32,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: array",
+      "line": 34,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: array",
+      "line": 35,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: array",
+      "line": 36,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: array|null",
+      "line": 37,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: int",
+      "line": 38,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: array{a: bool, z: string}",
+      "line": 40,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: array{a: bool, z: 'changed'}",
+      "line": 44,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    }
+  ],
+  "generics.php": [
+    {
+      "message": "Dumped type: T (class MethodOriginsGenerics\\Box, argument)",
+      "line": 17,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type #1: array<T (class MethodOriginsGenerics\\Box, argument)>",
+      "line": 22,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type #2: array<T (class MethodOriginsGenerics\\Box, argument)>",
+      "line": 22,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: array{z: string, a: bool}",
+      "line": 35,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: array{z: string, a: bool}",
+      "line": 38,
+      "ignorable": false,
+      "identifier": "phpstan.dumpPhpDocType"
+    },
+    {
+      "message": "Dumped type: array{z: string, a: bool}",
+      "line": 40,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: list<mixed>",
+      "line": 43,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: array",
+      "line": 46,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: array{z: string, a: bool}",
+      "line": 50,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: array{z: string, a: bool}",
+      "line": 55,
+      "ignorable": false,
+      "identifier": "phpstan.dumpPhpDocType"
+    },
+    {
+      "message": "Dumped type: array{z: string, a: bool}",
+      "line": 59,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: array{z: string, a: bool}",
+      "line": 66,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: array<mixed>",
+      "line": 84,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: array{z: string, a: bool}",
+      "line": 85,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: array<17, 29>",
+      "line": 89,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: array<19, 'literal'>",
+      "line": 90,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    }
+  ],
+  "returns.php": [
+    {
+      "message": "Dumped type: array{z: string, a: bool}",
+      "line": 25,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type #1: array{z: string, a: bool}",
+      "line": 32,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type #2: list<mixed>",
+      "line": 32,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type #3: array",
+      "line": 32,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type #1: array<mixed>",
+      "line": 33,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type #2: array{z: string, a: bool}",
+      "line": 33,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type #3: array{z: string, a: bool}",
+      "line": 33,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: array{z: string, a: bool}",
+      "line": 49,
+      "ignorable": false,
+      "identifier": "phpstan.dumpPhpDocType"
+    },
+    {
+      "message": "Dumped type #1: array{z: string, a: bool}",
+      "line": 50,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type #2: array{z: string, a: bool}",
+      "line": 50,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type #3: array{a: bool, z: string}",
+      "line": 50,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type #1: array<mixed>",
+      "line": 51,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type #2: array{z: string, a: bool}",
+      "line": 51,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type #1: list<mixed>",
+      "line": 52,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type #2: array",
+      "line": 52,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: array{a: bool, z: string}",
+      "line": 53,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    }
+  ]
+}

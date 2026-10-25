@@ -1,5 +1,5 @@
 //! Source edges for information Mago erases: PHPDoc shape order and explicit mixed. These are not inferred types.
-//! Only straight-line local copies, declarations and inline function arguments carry an origin. A mutation,
+//! Only straight-line local copies, declarations and inline call arguments carry an origin. A mutation,
 //! reference escape or control-flow join forgets it; conversion still requires Mago's actual expression type.
 
 use std::collections::HashMap;
@@ -19,6 +19,10 @@ pub(in super::super) type Function = (Word, Word);
 
 pub(in super::super) struct Call {
     pub name: String,
+    /// An instance receiver, whose actual inferred type must resolve the method before its docs are used.
+    pub receiver: Option<Span>,
+    /// A written static class name, or the lexical `self`/`static`/`parent` keyword. Neither field: a function.
+    pub class: Option<Word>,
     pub args: Vec<(Option<String>, Span)>,
 }
 
@@ -78,9 +82,12 @@ pub(super) fn dependencies(found: &Origins, wanted: &[Span]) -> Vec<Span> {
     while let Some(span) = pending.pop() {
         let more: Vec<Span> = match found.get(&span) {
             Some(Origin::Copy(s)) => vec![*s],
-            Some(Origin::Call(call) | Origin::Callback(call, ..)) => {
-                call.args.iter().map(|(_, s)| *s).collect()
-            }
+            Some(Origin::Call(call) | Origin::Callback(call, ..)) => call
+                .args
+                .iter()
+                .map(|(_, s)| *s)
+                .chain(call.receiver)
+                .collect(),
             _ => Vec::new(),
         };
         for span in more {
@@ -140,6 +147,31 @@ impl Sources<'_, '_> {
                 );
             }
         }
+    }
+
+    fn call(&mut self, span: Span, arguments: &ArgumentList, target: Option<Call>) {
+        let origin = target
+            .filter(|_| !arguments.arguments.iter().any(Argument::is_unpacked))
+            .map(|mut call| {
+                call.args = arguments
+                    .arguments
+                    .iter()
+                    .map(|arg| {
+                        let name = match arg {
+                            Argument::Named(n) => {
+                                Some(String::from_utf8_lossy(n.name.value).into_owned())
+                            }
+                            _ => None,
+                        };
+                        (name, arg.value().span())
+                    })
+                    .collect();
+                Arc::new(call)
+            });
+        if let Some(origin) = &origin {
+            self.found.insert(span, Origin::Call(Arc::clone(origin)));
+        }
+        self.calls.push(origin);
     }
 }
 
@@ -240,36 +272,16 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Sources<'_, 'arena> {
         }
     }
     fn walk_in_function_call(&mut self, call: &'ast FunctionCall<'arena>, _: &mut ()) {
-        let mut origin = None;
-        if let Expression::Identifier(id) = call.function
-            && !call
-                .argument_list
-                .arguments
-                .iter()
-                .any(Argument::is_unpacked)
-        {
-            let name = function_checks::function_name(self.names, self.codebase, id);
-            let args = call
-                .argument_list
-                .arguments
-                .iter()
-                .map(|a| {
-                    let name = match a {
-                        Argument::Named(n) => {
-                            Some(String::from_utf8_lossy(n.name.value).into_owned())
-                        }
-                        _ => None,
-                    };
-                    (name, a.value().span())
-                })
-                .collect();
-            origin = Some(Arc::new(Call { name, args }));
-        }
-        if let Some(origin) = &origin {
-            self.found
-                .insert(call.span(), Origin::Call(Arc::clone(origin)));
-        }
-        self.calls.push(origin);
+        let target = match call.function {
+            Expression::Identifier(id) => Some(Call {
+                name: function_checks::function_name(self.names, self.codebase, id),
+                receiver: None,
+                class: None,
+                args: Vec::new(),
+            }),
+            _ => None,
+        };
+        self.call(call.span(), &call.argument_list, target);
     }
     fn walk_out_function_call(&mut self, call: &'ast FunctionCall<'arena>, _: &mut ()) {
         self.calls.pop();
@@ -283,10 +295,43 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Sources<'_, 'arena> {
             self.locals.clear();
         }
     }
+    fn walk_in_method_call(&mut self, call: &'ast MethodCall<'arena>, _: &mut ()) {
+        let target = match &call.method {
+            ClassLikeMemberSelector::Identifier(name) => Some(Call {
+                name: String::from_utf8_lossy(name.value).into_owned(),
+                receiver: Some(call.object.span()),
+                class: None,
+                args: Vec::new(),
+            }),
+            _ => None,
+        };
+        self.call(call.span(), &call.argument_list, target);
+    }
     fn walk_out_method_call(&mut self, _: &'ast MethodCall<'arena>, _: &mut ()) {
+        self.calls.pop();
         self.locals.clear();
     }
+    fn walk_in_static_method_call(&mut self, call: &'ast StaticMethodCall<'arena>, _: &mut ()) {
+        let class = match call.class {
+            Expression::Identifier(id) => Some(mago_word::word(self.names.get(&id.span()))),
+            Expression::Self_(_) => Some(mago_word::word(b"self")),
+            Expression::Static(_) => Some(mago_word::word(b"static")),
+            Expression::Parent(_) => Some(mago_word::word(b"parent")),
+            _ => None,
+        };
+        let target = match (&call.method, class) {
+            (ClassLikeMemberSelector::Identifier(name), Some(class)) => Some(Call {
+                name: String::from_utf8_lossy(name.value).into_owned(),
+                receiver: None,
+                class: Some(class),
+                args: Vec::new(),
+            }),
+            _ => None,
+        };
+        self.call(call.span(), &call.argument_list, target);
+    }
     fn walk_out_static_method_call(&mut self, _: &'ast StaticMethodCall<'arena>, _: &mut ()) {
+        self.calls.pop();
         self.locals.clear();
     }
     fn walk_out_instantiation(&mut self, _: &'ast Instantiation<'arena>, _: &mut ()) {

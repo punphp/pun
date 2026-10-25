@@ -94,14 +94,20 @@ The unchanged analyzer reports `array<1|2|3, 1|2|3>` at `bug-10612.php:39`.
 The patched analyzer's public `run_mago()` reports `array<array-key, mixed>` there.
 Both contextual inner dumps retain `array{1}|array{2}|array{3}` and `1|2|3`.
 
-The public callback suite has five passing tests and five failures, all from the remaining
+At that revision, the public callback suite had five passing tests and five failures, all from the remaining
 `array` versus `array<mixed>` conversion difference. The failures include the original upstream case
 at levels 0, 5, and 9. Expectations remain the actual oracle messages. The array-slice suite passes
 all five tests, including Methods bug12880, and the debug suite passes all ten tests.
 
-`types/convert.rs::source_type(Origin::Call)` supplies the declared `array<RK, RV>` from
-the fixture's `@return`. Its `restore()` handles mixed against mixed, but not mixed against
-a template's bound. The semantic patch does not alter this separate metadata conversion.
+The remaining conversion difference came from `types/convert.rs::source_type(Origin::Call)`, which
+supplies the declared `array<RK, RV>` from the fixture's `@return`. At that revision, `restore()` handled
+mixed against mixed, but not mixed against a template's bound. The semantic patch does not alter
+this separate metadata conversion.
+
+Main integration adds template-bound restoration and resolved method-call provenance in Pun's shared
+conversion. The callback suite now passes all ten tests, including the original upstream case at levels
+0, 5, and 9 and the named-argument method callback. The precise inner dumps and constant/captured-return
+controls remain unchanged. The maintained analyzer patch remains the same three-file change measured below.
 
 The public Analyzer test injects a one-shot call-hook error during a gather and checks propagation.
 Its successful second analysis checks that an expression observer sees the callback body once.

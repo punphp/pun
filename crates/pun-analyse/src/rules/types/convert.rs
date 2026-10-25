@@ -66,7 +66,8 @@ impl<'a, 'arena> Checker<'a, 'arena> {
                 self.codebase.get_class_like(key.0.as_bytes()),
             ))
         };
-        match origins.get(&span)? {
+        let origin = origins.get(&span)?;
+        match origin {
             infer::Origin::Parameter(key, i) => {
                 let (f, k) = function(key)?;
                 declared::codex_params(self, f, k)
@@ -87,11 +88,15 @@ impl<'a, 'arena> Checker<'a, 'arena> {
                     .map(|(_, t)| t)
             }
             infer::Origin::Copy(from) => self.source_type(*from, origins),
-            infer::Origin::Call(call) => {
+            infer::Origin::Call(call) | infer::Origin::Callback(call, ..) => {
                 let (name, args) = (&call.name, &call.args);
                 // These extensions preserve their input key/value types. The provider alone decides keys,
                 // cardinality and listness; this edge restores only information its Mago types cannot store.
-                if matches!(name.as_str(), "array_slice" | "array_unique") {
+                if call.receiver.is_none()
+                    && call.class.is_none()
+                    && matches!(origin, infer::Origin::Call(_))
+                    && matches!(name.as_str(), "array_slice" | "array_unique")
+                {
                     let (_, from) = args
                         .iter()
                         .enumerate()
@@ -106,13 +111,89 @@ impl<'a, 'arena> Checker<'a, 'arena> {
                         source
                     });
                 }
-                declared::codex_return(self, self.codebase.get_function(name.as_bytes())?, None)
-                    .map(|t| inferred_argument(&t))
-            }
-            infer::Origin::Callback(call, argument, parameter) => {
-                let (name, args) = (&call.name, &call.args);
-                let f = self.codebase.get_function(name.as_bytes())?;
-                let params = declared::codex_params(self, f, None);
+                let (f, declaring, receiver_map) =
+                    if call.receiver.is_some() || call.class.is_some() {
+                        let (mut receiver, class) = if let Some(span) = call.receiver {
+                            let actual = self.to_phpstan(self.types.get(&span)?);
+                            let mut receiver = self
+                                .source_type(span, origins)
+                                .map_or(actual.clone(), |source| restore(actual, &source));
+                            while let Type::Template(template) = receiver {
+                                receiver = template.bound;
+                            }
+                            let name = match &receiver {
+                                Type::Object(name, _)
+                                | Type::Static(name, _)
+                                | Type::This(name) => name,
+                                _ => return None,
+                            };
+                            let class = self.codebase.get_class_like(name.as_bytes())?;
+                            (receiver, class)
+                        } else {
+                            let written = call.class?;
+                            let name = written.as_bytes();
+                            let context = match name {
+                                b"self" | b"static" | b"parent" => self.class_scope()?,
+                                _ => self.codebase.get_class_like(name)?,
+                            };
+                            let class = if name == b"parent" {
+                                self.codebase
+                                    .get_class_like(context.direct_parent_class?.as_bytes())?
+                            } else {
+                                context
+                            };
+                            let args = if matches!(name, b"self" | b"static" | b"parent") {
+                                declared::class_templates(self, context)
+                                    .into_iter()
+                                    .map(|t| Type::Template(Box::new(t)))
+                                    .collect()
+                            } else {
+                                Vec::new()
+                            };
+                            (Type::Object(declared::original_name(context), args), class)
+                        };
+                        if matches!(receiver, Type::This(_)) {
+                            receiver = Type::Object(
+                                declared::original_name(class),
+                                declared::class_templates(self, class)
+                                    .into_iter()
+                                    .map(|t| Type::Template(Box::new(t)))
+                                    .collect(),
+                            );
+                        }
+                        let super::super::members::Method::User { declaring, f } =
+                            super::super::members::method(self, class, name.as_bytes())?
+                        else {
+                            return None;
+                        };
+                        let pattern = Type::Object(
+                            declared::original_name(declaring),
+                            declared::class_templates(self, declaring)
+                                .into_iter()
+                                .map(|t| Type::Template(Box::new(t)))
+                                .collect(),
+                        );
+                        let map = pun_phpstan::types::infer_template_types(&pattern, &receiver);
+                        (f, Some(declaring), map)
+                    } else {
+                        (
+                            self.codebase.get_function(name.as_bytes())?,
+                            None,
+                            pun_phpstan::types::TemplateMap::default(),
+                        )
+                    };
+                let infer::Origin::Callback(_, argument, parameter) = origin else {
+                    return declared::codex_return(self, f, declaring).map(|t| {
+                        inferred_argument(&pun_phpstan::types::resolve_template_types(
+                            &t,
+                            &receiver_map,
+                        ))
+                    });
+                };
+                let params: Vec<_> = declared::codex_params(self, f, declaring)
+                    .iter()
+                    .map(|t| pun_phpstan::types::resolve_template_types(t, &receiver_map))
+                    .collect();
                 let positions: Vec<_> = args
                     .iter()
                     .enumerate()
@@ -499,11 +580,25 @@ fn restore(actual: Type, source: &Type) -> Type {
             if actual.name == source.name && actual.scope == source.scope =>
         {
             actual.argument = source.argument;
+            actual.bound = restore(actual.bound, &source.bound);
             Type::Template(actual)
         }
+        (actual, Type::Template(source)) => restore(actual, &source.bound),
         (Type::Mixed { .. }, Type::Mixed { explicit }) => Type::Mixed {
             explicit: *explicit,
         },
+        (Type::Object(name, actual), Type::Object(source_name, source))
+            if name.eq_ignore_ascii_case(source_name) && actual.len() == source.len() =>
+        {
+            Type::Object(
+                name,
+                actual
+                    .into_iter()
+                    .zip(source)
+                    .map(|(a, s)| restore(a, s))
+                    .collect(),
+            )
+        }
         (Type::ConstArray(mut actual), Type::ConstArray(source))
             if actual.keys.len() == source.keys.len()
                 && source.keys.iter().all(|k| actual.keys.contains(k)) =>
