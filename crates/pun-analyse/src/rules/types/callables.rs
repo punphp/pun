@@ -33,6 +33,7 @@ fn of_signature(c: &Checker, s: &Signature) -> Acceptor {
         types: s.params.iter().map(|p| declared::with_classes(c, || p.ty.describe(Level::TypeOnly))).collect(),
         variadics: s.params.iter().map(|p| p.variadic).collect(),
         builtin: false,
+        accepts_named_arguments: pun_phpstan::types::Tri::Yes,
         param_types: s.params.iter().map(|p| ParamType::Typed(p.ty.clone())).collect(),
         by_ref: s
             .params
@@ -54,6 +55,7 @@ fn inaccessible() -> Acceptor {
         types: vec![],
         variadics: vec![],
         builtin: false,
+        accepts_named_arguments: pun_phpstan::types::Tri::Yes,
         param_types: vec![],
         by_ref: vec![],
         class: None,
@@ -181,7 +183,11 @@ fn check(
     kind: params::CallKind,
     first_level: bool,
 ) {
-    let acceptor = params::select(c, Variants { all, named: None }, counts);
+    // CallCallablesRule / ArgumentsNormalizer combine the whole callable type's contract with AND, before
+    // signature selection (whose combineAcceptors uses OR).
+    let accepts_named = all.iter().fold(pun_phpstan::types::Tri::Yes, |accepts, a| accepts.and(a.accepts_named(c)));
+    let mut acceptor = params::select(c, Variants { all, named: None }, counts);
+    acceptor.accepts_named_arguments = accepts_named;
     let subject = described[..1].to_ascii_uppercase() + &described[1..];
     let call = params::Call { kind, subject: &subject, void_message: Some(format!("Result of {described} (void) is used.")) };
     params::check(c, &acceptor, counts, at, call, first_level);

@@ -1,0 +1,266 @@
+[
+  {
+    "message": "Function NoNamedArguments\\forbidden invoked with named argument $value, but it's not allowed because of @no-named-arguments.",
+    "line": 18,
+    "ignorable": true,
+    "identifier": "argument.named"
+  },
+  {
+    "message": "Function NoNamedArguments\\forbidden invoked with named argument $value, but it's not allowed because of @no-named-arguments.",
+    "line": 19,
+    "ignorable": true,
+    "identifier": "argument.named"
+  },
+  {
+    "message": "Parameter $value of function NoNamedArguments\\forbidden expects int, string given.",
+    "line": 19,
+    "ignorable": true,
+    "identifier": "argument.type"
+  },
+  {
+    "message": "Unknown parameter $unknown in call to function NoNamedArguments\\forbidden.",
+    "line": 20,
+    "ignorable": true,
+    "identifier": "argument.unknown"
+  },
+  {
+    "message": "Argument for parameter $value has already been passed.",
+    "line": 21,
+    "ignorable": true,
+    "identifier": "argument.duplicate"
+  },
+  {
+    "message": "Function NoNamedArguments\\forbidden invoked with named argument $value, but it's not allowed because of @no-named-arguments.",
+    "line": 21,
+    "ignorable": true,
+    "identifier": "argument.named"
+  },
+  {
+    "message": "Function NoNamedArguments\\variadic invoked with named argument $extra, but it's not allowed because of @no-named-arguments.",
+    "line": 25,
+    "ignorable": true,
+    "identifier": "argument.named"
+  },
+  {
+    "message": "Function NoNamedArguments\\variadic invoked with named argument $values, but it's not allowed because of @no-named-arguments.",
+    "line": 25,
+    "ignorable": true,
+    "identifier": "argument.named"
+  },
+  {
+    "message": "Unknown parameter $unknown in call to function NoNamedArguments\\noParameters.",
+    "line": 26,
+    "ignorable": true,
+    "identifier": "argument.unknown"
+  },
+  {
+    "message": "Function NoNamedArguments\\bodyVariadic invoked with named argument $value, but it's not allowed because of @no-named-arguments.",
+    "line": 27,
+    "ignorable": true,
+    "identifier": "argument.named"
+  },
+  {
+    "message": "Unknown parameter $extra in call to function NoNamedArguments\\bodyVariadic.",
+    "line": 28,
+    "ignorable": true,
+    "identifier": "argument.unknown"
+  },
+  {
+    "message": "Function NoNamedArguments\\forbidden invoked with named argument $value, but it's not allowed because of @no-named-arguments.",
+    "line": 30,
+    "ignorable": true,
+    "identifier": "argument.named"
+  },
+  {
+    "message": "Function NoNamedArguments\\variadic invoked with named argument $first, but it's not allowed because of @no-named-arguments.",
+    "line": 34,
+    "ignorable": true,
+    "identifier": "argument.named"
+  },
+  {
+    "message": "Function NoNamedArguments\\variadic invoked with named argument $second, but it's not allowed because of @no-named-arguments.",
+    "line": 34,
+    "ignorable": true,
+    "identifier": "argument.named"
+  },
+  {
+    "message": "Function NoNamedArguments\\forbidden invoked with unpacked array with string key, but it's not allowed because of @no-named-arguments.",
+    "line": 46,
+    "ignorable": true,
+    "identifier": "argument.named"
+  },
+  {
+    "message": "Function NoNamedArguments\\forbidden invoked with unpacked array with possibly string key, but it's not allowed because of @no-named-arguments.",
+    "line": 47,
+    "ignorable": true,
+    "identifier": "argument.named"
+  },
+  {
+    "message": "Function NoNamedArguments\\forbidden invoked with named argument $value, but it's not allowed because of @no-named-arguments.",
+    "line": 49,
+    "ignorable": true,
+    "identifier": "argument.named"
+  },
+  {
+    "message": "Function NoNamedArguments\\forbidden invoked with unpacked array with string key, but it's not allowed because of @no-named-arguments.",
+    "line": 50,
+    "ignorable": true,
+    "identifier": "argument.named"
+  },
+  {
+    "message": "Function NoNamedArguments\\forbidden invoked with named argument $value, but it's not allowed because of @no-named-arguments.",
+    "line": 52,
+    "ignorable": true,
+    "identifier": "argument.named"
+  },
+  {
+    "message": "Constructor of class NoNamedArguments\\Methods has an unused parameter $value.",
+    "line": 63,
+    "ignorable": true,
+    "identifier": "constructor.unusedParameter"
+  },
+  {
+    "message": "Class NoNamedArguments\\Methods constructor invoked with named argument $value, but it's not allowed because of @no-named-arguments.",
+    "line": 66,
+    "ignorable": true,
+    "identifier": "argument.named"
+  },
+  {
+    "message": "Method NoNamedArguments\\Methods::instance() invoked with named argument $value, but it's not allowed because of @no-named-arguments.",
+    "line": 67,
+    "ignorable": true,
+    "identifier": "argument.named"
+  },
+  {
+    "message": "Static method NoNamedArguments\\Methods::staticMethod() invoked with named argument $value, but it's not allowed because of @no-named-arguments.",
+    "line": 68,
+    "ignorable": true,
+    "identifier": "argument.named"
+  },
+  {
+    "message": "Constructor of class NoNamedArguments\\TaggedClass has an unused parameter $value.",
+    "line": 73,
+    "ignorable": true,
+    "identifier": "constructor.unusedParameter"
+  },
+  {
+    "message": "Class NoNamedArguments\\TaggedClass constructor invoked with named argument $value, but it's not allowed because of @no-named-arguments.",
+    "line": 79,
+    "ignorable": true,
+    "identifier": "argument.named"
+  },
+  {
+    "message": "Method NoNamedArguments\\TaggedClass::instance() invoked with named argument $value, but it's not allowed because of @no-named-arguments.",
+    "line": 80,
+    "ignorable": true,
+    "identifier": "argument.named"
+  },
+  {
+    "message": "Static method NoNamedArguments\\TaggedClass::staticMethod() invoked with named argument $value, but it's not allowed because of @no-named-arguments.",
+    "line": 81,
+    "ignorable": true,
+    "identifier": "argument.named"
+  },
+  {
+    "message": "Callable NoNamedArguments\\TaggedClass invoked with named argument $value, but it's not allowed because of @no-named-arguments.",
+    "line": 82,
+    "ignorable": true,
+    "identifier": "argument.named"
+  },
+  {
+    "message": "Class NoNamedArguments\\Child constructor invoked with named argument $value, but it's not allowed because of @no-named-arguments.",
+    "line": 88,
+    "ignorable": true,
+    "identifier": "argument.named"
+  },
+  {
+    "message": "Method NoNamedArguments\\Child::instance() invoked with named argument $value, but it's not allowed because of @no-named-arguments.",
+    "line": 89,
+    "ignorable": true,
+    "identifier": "argument.named"
+  },
+  {
+    "message": "Method NoNamedArguments\\Implementation::inherited() invoked with named argument $value, but it's not allowed because of @no-named-arguments.",
+    "line": 107,
+    "ignorable": true,
+    "identifier": "argument.named"
+  },
+  {
+    "message": "Attribute class NoNamedArguments\\AttributeConstructor constructor invoked with named argument $value, but it's not allowed because of @no-named-arguments.",
+    "line": 124,
+    "ignorable": true,
+    "identifier": "argument.named"
+  },
+  {
+    "message": "Attribute class NoNamedArguments\\AttributeConstructor constructor invoked with named argument $value, but it's not allowed because of @no-named-arguments.",
+    "line": 125,
+    "ignorable": true,
+    "identifier": "argument.named"
+  },
+  {
+    "message": "Parameter $value of attribute class NoNamedArguments\\AttributeConstructor constructor expects int, string given.",
+    "line": 125,
+    "ignorable": true,
+    "identifier": "argument.type"
+  },
+  {
+    "message": "Unknown parameter $unknown in call to NoNamedArguments\\AttributeConstructor constructor.",
+    "line": 126,
+    "ignorable": true,
+    "identifier": "argument.unknown"
+  },
+  {
+    "message": "Attribute class NoNamedArguments\\AttributeClass constructor invoked with named argument $value, but it's not allowed because of @no-named-arguments.",
+    "line": 128,
+    "ignorable": true,
+    "identifier": "argument.named"
+  },
+  {
+    "message": "Attribute class NoNamedArguments\\InheritedAttribute constructor invoked with named argument $value, but it's not allowed because of @no-named-arguments.",
+    "line": 129,
+    "ignorable": true,
+    "identifier": "argument.named"
+  },
+  {
+    "message": "Callable 'NoNamedArguments…' invoked with named argument $value, but it's not allowed because of @no-named-arguments.",
+    "line": 133,
+    "ignorable": true,
+    "identifier": "argument.named"
+  },
+  {
+    "message": "Callable array{NoNamedArguments\\Methods, 'instance'} invoked with named argument $value, but it's not allowed because of @no-named-arguments.",
+    "line": 135,
+    "ignorable": true,
+    "identifier": "argument.named"
+  },
+  {
+    "message": "Callable 'NoNamedArguments…' invoked with named argument $value, but it's not allowed because of @no-named-arguments.",
+    "line": 137,
+    "ignorable": true,
+    "identifier": "argument.named"
+  },
+  {
+    "message": "Callable passed to call_user_func() invoked with named argument $value, but it's not allowed because of @no-named-arguments.",
+    "line": 138,
+    "ignorable": true,
+    "identifier": "argument.named"
+  },
+  {
+    "message": "Unknown parameter $value in call to function call_user_func.",
+    "line": 138,
+    "ignorable": true,
+    "identifier": "argument.unknown"
+  },
+  {
+    "message": "Callable passed to call_user_func_array() invoked with named argument $value, but it's not allowed because of @no-named-arguments.",
+    "line": 139,
+    "ignorable": true,
+    "identifier": "argument.named"
+  },
+  {
+    "message": "Callable 'NoNamedArguments…' invoked with named argument $value, but it's not allowed because of @no-named-arguments.",
+    "line": 151,
+    "ignorable": true,
+    "identifier": "argument.named"
+  }
+]

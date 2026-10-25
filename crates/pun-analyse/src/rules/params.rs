@@ -1,4 +1,5 @@
-//! FunctionCallParametersCheck, the part level 0 runs: argument order, counts and names, and void results used.
+//! FunctionCallParametersCheck: shared argument ordering, counts, binding and named-argument policy. Type,
+//! reference and @no-named-arguments checks run from level 5, after the level-0 binding checks.
 
 use mago_codex::metadata::function_like::FunctionLikeMetadata;
 use mago_codex::ttype::TType;
@@ -25,6 +26,8 @@ pub struct Acceptor {
     pub variadics: Vec<bool>,
     /// A built-in's (no named argument goes to its variadic parameter).
     pub builtin: bool,
+    /// `acceptsNamedArguments()`, retained when acceptors are selected or combined.
+    pub accepts_named_arguments: Tri,
     /// Per parameter: its declared type (see [`ParamType`]) and `passedByReference()`.
     pub param_types: Vec<ParamType>,
     pub by_ref: Vec<ByRef>,
@@ -47,6 +50,24 @@ pub enum ParamType {
 }
 
 impl Acceptor {
+    /// Resolve a user reflection's PHPDoc before selection can discard its callee identity. Methods share the
+    /// inheritance and declaring-class contract used by the named-argument collector.
+    pub(super) fn accepts_named(&self, c: &Checker) -> Tri {
+        let accepts = self.callee.as_ref().and_then(|(class, name)| {
+            if let Some(class) = class {
+                let class = c.codebase.get_class_like(class.as_bytes())?;
+                let f = c.codebase.get_method(class.name.as_bytes(), name.as_bytes())?;
+                Some(super::named_argument::accepts(c, class, f))
+            } else {
+                let f = c.codebase.get_function(name.as_bytes())?;
+                Some(!super::declared::doc_at(c, f.span).is_some_and(|(doc, _)| {
+                    super::declarations::has_tag(&super::declarations::doc_tags(&doc), &["@no-named-arguments"])
+                }))
+            }
+        });
+        accepts.map_or(self.accepts_named_arguments, |yes| if yes { Tri::Yes } else { Tri::No })
+    }
+
     fn min(&self) -> usize {
         self.optional.iter().filter(|o| !**o).count()
     }
@@ -85,6 +106,7 @@ impl Acceptor {
                 .collect(),
             variadics: f.parameters.iter().map(|p| p.flags.is_variadic()).collect(),
             builtin: false,
+            accepts_named_arguments: Tri::Yes,
             param_types: vec![ParamType::User; f.parameters.len()],
             // PhpParameterReflection: a by-reference parameter of user code creates a new variable
             by_ref: f
@@ -107,6 +129,7 @@ impl Acceptor {
             types: v.params.iter().map(|p| describe(&p.ty)).collect(),
             variadics: v.params.iter().map(|p| p.variadic).collect(),
             builtin: true,
+            accepts_named_arguments: Tri::Yes,
             param_types: v.params.iter().map(|p| ParamType::Builtin(p.ty.clone())).collect(),
             by_ref: v.params.iter().map(|p| p.by_ref).collect(),
             class: None,
@@ -144,6 +167,10 @@ pub fn select(c: &Checker, variants: Variants, counts: &Counts) -> Acceptor {
         Some(named) if counts.named => named,
         _ => variants.all,
     };
+    let variants: Vec<_> = variants.into_iter().map(|mut v| {
+        v.accepts_named_arguments = v.accepts_named(c);
+        v
+    }).collect();
     if variants.len() == 1 {
         return variants.into_iter().next().expect("one");
     }
@@ -205,6 +232,7 @@ pub(super) fn combine(variants: &[&Acceptor]) -> Acceptor {
         types: Vec::new(),
         variadics: Vec::new(),
         builtin: variants.iter().any(|v| v.builtin),
+        accepts_named_arguments: variants.iter().fold(Tri::No, |accepts, v| accepts.or(v.accepts_named_arguments)),
         param_types: Vec::new(),
         by_ref: Vec::new(),
         class: variants.first().and_then(|v| v.class.clone()),
@@ -525,13 +553,46 @@ fn unpacked(e: &Expression) -> Unpacked {
         match el {
             ArrayElement::Value(_) => keys.push(None),
             ArrayElement::KeyValue(kv) => keys.push(match kv.key {
-                Expression::Literal(Literal::String(s)) => Some(String::from_utf8_lossy(s.value.unwrap_or_default()).into_owned()),
+                Expression::Literal(Literal::String(s)) => {
+                    let key = String::from_utf8_lossy(s.value.unwrap_or_default()).into_owned();
+                    (!key.parse::<i64>().is_ok_and(|i| i.to_string() == key)).then_some(key)
+                }
                 _ => None,
             }),
             _ => return Unpacked::Unknown,
         }
     }
     Unpacked::Keys(keys)
+}
+
+/// `getConstantArrays()` for unpacking: every union alternative must be constant. Keep the shortest
+/// alternative's positions, common names and the last alternative's optionality, as the upstream loop does.
+fn unpacked_types(ty: &Type) -> Option<Vec<(Option<String>, Type)>> {
+    fn arrays(ty: &Type) -> Option<Vec<&pun_phpstan::types::ConstArray>> {
+        match ty {
+            Type::ConstArray(a) => Some(vec![a]),
+            Type::Union(ts) | Type::Benevolent(ts) => {
+                Some(ts.iter().map(arrays).collect::<Option<Vec<_>>>()?.concat())
+            }
+            Type::Template(t) => arrays(&t.bound),
+            _ => None,
+        }
+    }
+    let arrays = arrays(ty)?;
+    let count = arrays.iter().map(|a| {
+        if a.unsealed.as_ref().is_some_and(|(key, _)| !matches!(key, Type::Never(_))) { 0 } else { a.keys.len() }
+    }).min()?;
+    Some((0..count).filter_map(|i| {
+        let key = &arrays[0].keys[i];
+        let name = match key {
+            Type::ConstString(s) if arrays.iter().all(|a| a.keys[i] == *key) => Some(s.clone()),
+            _ => None,
+        };
+        if name.is_none() && arrays.last().unwrap().optional.contains(&i) {
+            return None;
+        }
+        Some((name, pun_phpstan::types::union(arrays.iter().map(|a| a.values[i].clone()).collect())))
+    }).collect())
 }
 
 /// The calls FunctionCallParametersCheck checks.
@@ -555,18 +616,23 @@ pub struct Call<'s> {
 }
 
 /// `counts` is [`count()`] of the call's arguments.
-pub fn check<'a>(
+pub fn check(
     c: &mut Checker,
     acceptor: &Acceptor,
-    counts: &'a Counts,
+    counts: &Counts,
     at: impl HasSpan + Copy,
     call: Call,
     first_level: bool,
 ) {
     // the arguments after unpacking constant arrays
+    let inferred: Vec<_> = counts.args.iter().map(|arg| {
+        matches!(arg.unpack, Some(Unpacked::Unknown)).then(|| {
+            c.types.get(&arg.value).and_then(|t| unpacked_types(&c.to_phpstan(t)))
+        }).flatten()
+    }).collect();
     let mut arguments: Vec<Entry> = Vec::new();
     let (mut has_named, mut has_unpacked) = (false, false);
-    for arg in &counts.args {
+    for (arg, inferred) in counts.args.iter().zip(&inferred) {
         has_named |= arg.name.is_some();
         if has_named && arg.unpack.is_some() {
             let message = "Named argument cannot be followed by an unpacked (...) argument.".to_string();
@@ -577,11 +643,12 @@ pub fn check<'a>(
             let message = "Unpacked argument (...) cannot be followed by a non-unpacked argument.".to_string();
             c.report_non_ignorable(arg.span, "argument.nonUnpackAfterUnpacked", message, None);
         }
-        let entry = |name: Option<&'a str>, unpack: bool, value: Span| Entry {
+        let entry = |name, unpack, value| Entry {
             name,
             unpack,
             span: arg.span,
             value,
+            ty: None,
             kind: &arg.kind,
         };
         match &arg.unpack {
@@ -597,7 +664,15 @@ pub fn check<'a>(
             }
             Some(Unpacked::Unknown) => {
                 has_unpacked = true;
-                arguments.push(entry(None, true, arg.value));
+                if let Some(inferred) = inferred {
+                    has_named |= inferred.iter().any(|(name, _)| name.is_some());
+                    arguments.extend(inferred.iter().map(|(name, ty)| Entry {
+                        ty: Some(ty.clone()),
+                        ..entry(name.as_deref(), false, arg.value)
+                    }));
+                } else {
+                    arguments.push(entry(None, true, arg.value));
+                }
             }
         }
     }
@@ -608,8 +683,10 @@ pub fn check<'a>(
     if !has_named {
         let min = acceptor.min();
         let max = (!acceptor.variadic).then_some(acceptor.optional.len());
-        let invoked = if counts.unpack {
+        let invoked = if arguments.iter().any(|e| e.unpack) {
             max.map_or(min, |m| m.max(min))
+        } else if inferred.iter().any(Option::is_some) {
+            arguments.len()
         } else {
             counts.positional
         };
@@ -649,6 +726,37 @@ pub fn check<'a>(
     }
 }
 
+/// The per-bound-argument `@no-named-arguments` check. Like upstream, it runs only after processArguments and
+/// only when argument type/reference checking is enabled, immediately before that argument's type checks.
+pub(super) fn check_named(c: &mut Checker, acceptor: &Acceptor, e: &Entry, call: &Call) {
+    if acceptor.accepts_named_arguments.yes() {
+        return;
+    }
+    let argument = if let Some(name) = e.name {
+        format!("named argument ${name}")
+    } else if e.unpack {
+        let key = c.types.get(&e.value).map(|t| {
+            let key = c.to_phpstan(t).iterable_key_type();
+            // This is a certainty query, not lenient argument acceptance. BenevolentUnionType inherits
+            // UnionType::isString(), so an int|string array key is still only possibly a string.
+            match key {
+                Type::Benevolent(parts) => Type::Union(parts).is_string(),
+                key => key.is_string(),
+            }
+        }).unwrap_or(Tri::Maybe);
+        if key.no() {
+            return;
+        }
+        let key = if key.yes() { "string key" } else { "possibly string key" };
+        format!("unpacked array with {key}")
+    } else {
+        return;
+    };
+    c.report(e.span, "argument.named", format!(
+        "{} invoked with {argument}, but it's not allowed because of @no-named-arguments.", call.subject
+    ), None);
+}
+
 /// One argument after unpacking constant arrays.
 pub struct Entry<'a> {
     pub name: Option<&'a str>,
@@ -658,6 +766,8 @@ pub struct Entry<'a> {
     pub span: Span,
     /// The expression whose type is passed: the argument's value, or an unpacked constant array's element.
     pub value: Span,
+    /// An inferred constant array's element type (there is no separate expression for it).
+    pub ty: Option<Type>,
     pub kind: &'a ArgKind,
 }
 

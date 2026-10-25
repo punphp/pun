@@ -1,0 +1,109 @@
+{
+  "general": [],
+  "errors": [
+    {
+      "file": "pre80.php",
+      "line": 9,
+      "identifier": "argument.named",
+      "message": "Attribute class AttributePre80\\Arguments constructor invoked with named argument $number, but it's not allowed because of @no-named-arguments.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "pre80.php",
+      "line": 9,
+      "identifier": "argument.named",
+      "message": "Attribute class AttributePre80\\Arguments constructor invoked with named argument $text, but it's not allowed because of @no-named-arguments.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "pre80.php",
+      "line": 9,
+      "identifier": "argument.byRef",
+      "message": "Parameter $text of attribute class AttributePre80\\Arguments constructor is passed by reference, so it expects variables only",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "pre80.php",
+      "line": 10,
+      "identifier": "argument.named",
+      "message": "Attribute class AttributePre80\\Arguments constructor invoked with named argument $number, but it's not allowed because of @no-named-arguments.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "pre80.php",
+      "line": 10,
+      "identifier": "argument.named",
+      "message": "Attribute class AttributePre80\\Arguments constructor invoked with named argument $text, but it's not allowed because of @no-named-arguments.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "pre80.php",
+      "line": 10,
+      "identifier": "argument.type",
+      "message": "Parameter $number of attribute class AttributePre80\\Arguments constructor expects int, string given.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "pre80.php",
+      "line": 10,
+      "identifier": "argument.type",
+      "message": "Parameter $text of attribute class AttributePre80\\Arguments constructor expects string, int given.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "pre80.php",
+      "line": 10,
+      "identifier": "argument.byRef",
+      "message": "Parameter $text of attribute class AttributePre80\\Arguments constructor is passed by reference, so it expects variables only",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "pre80.php",
+      "line": 12,
+      "identifier": "argument.named",
+      "message": "Attribute class AttributePre80\\Arguments constructor invoked with named argument $number, but it's not allowed because of @no-named-arguments.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "pre80.php",
+      "line": 12,
+      "identifier": "argument.missing",
+      "message": "Missing parameter $text (string) in call to AttributePre80\\Arguments constructor.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "pre80.php",
+      "line": 14,
+      "identifier": "argument.missing",
+      "message": "Missing parameter $number (int) in call to AttributePre80\\Arguments constructor.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "pre80.php",
+      "line": 14,
+      "identifier": "argument.missing",
+      "message": "Missing parameter $text (string) in call to AttributePre80\\Arguments constructor.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "pre80.php",
+      "line": 14,
+      "identifier": "argument.unknown",
+      "message": "Unknown parameter $unknown in call to AttributePre80\\Arguments constructor.",
+      "tip": null,
+      "ignorable": true
+    }
+  ]
+}

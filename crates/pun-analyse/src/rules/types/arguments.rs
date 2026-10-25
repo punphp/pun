@@ -16,7 +16,7 @@ use super::super::{Checker, declared};
 use super::returns::strict_types;
 
 pub const IDENTIFIERS: &[&str] =
-    &["argument.type", "argument.byRef", "argument.unpackNonIterable", "argument.templateType"];
+    &["argument.type", "argument.byRef", "argument.unpackNonIterable", "argument.templateType", "argument.named"];
 
 /// `describeParameter()`: `Parameter #1 $a`, `Parameter $a` (named), `Named argument b for variadic parameter ...$a`.
 fn describe(acceptor: &Acceptor, p: usize, position_or_name: Option<Result<usize, &str>>) -> String {
@@ -107,7 +107,7 @@ fn infer(c: &Checker, acceptor: &Acceptor, args: &[Entry], parameters: &[Option<
     let mut passed: Vec<Option<Type>> = vec![None; declared.len()];
     for (e, p) in args.iter().zip(parameters) {
         if let Some(p) = *p
-            && let Some(t) = c.type_at(e.value)
+            && let Some(t) = e.ty.clone().or_else(|| c.type_at(e.value))
         {
             let t = if e.unpack { t.iterable_value_type() } else { t };
             passed[p] = Some(passed[p].take().map_or(t.clone(), |o| union(vec![o, t])));
@@ -262,8 +262,9 @@ pub(in super::super) fn arguments(
         let Some(p) = *p else {
             continue;
         };
+        super::super::params::check_named(c, acceptor, e, call);
         let by_ref = acceptor.by_ref[p];
-        let value = c.type_at(e.value).map(|t| if e.unpack { t.iterable_value_type() } else { t });
+        let value = e.ty.clone().or_else(|| c.type_at(e.value)).map(|t| if e.unpack { t.iterable_value_type() } else { t });
         // a built-in's by-reference parameter that creates the variable takes anything
         if (by_ref != ByRef::CreatesNewVariable || !acceptor.builtin)
             && let (Some(param), Some(value)) = (parameter_type(&resolved, p), value)

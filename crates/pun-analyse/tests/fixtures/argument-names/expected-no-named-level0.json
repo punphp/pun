@@ -1,0 +1,38 @@
+[
+  {
+    "message": "Unknown parameter $unknown in call to function NoNamedArguments\\forbidden.",
+    "line": 20,
+    "ignorable": true,
+    "identifier": "argument.unknown"
+  },
+  {
+    "message": "Argument for parameter $value has already been passed.",
+    "line": 21,
+    "ignorable": true,
+    "identifier": "argument.duplicate"
+  },
+  {
+    "message": "Unknown parameter $unknown in call to function NoNamedArguments\\noParameters.",
+    "line": 26,
+    "ignorable": true,
+    "identifier": "argument.unknown"
+  },
+  {
+    "message": "Unknown parameter $extra in call to function NoNamedArguments\\bodyVariadic.",
+    "line": 28,
+    "ignorable": true,
+    "identifier": "argument.unknown"
+  },
+  {
+    "message": "Unknown parameter $unknown in call to NoNamedArguments\\AttributeConstructor constructor.",
+    "line": 126,
+    "ignorable": true,
+    "identifier": "argument.unknown"
+  },
+  {
+    "message": "Unknown parameter $value in call to function call_user_func.",
+    "line": 138,
+    "ignorable": true,
+    "identifier": "argument.unknown"
+  }
+]

@@ -74,6 +74,7 @@ fn constructor_contracts_and_attribute_groups() {
 #[test]
 fn attribute_named_arguments_are_not_version_gated() {
     check("phpstan-contracts-php74");
+    check("phpstan-contracts-php74-level5");
 }
 
 #[test]
