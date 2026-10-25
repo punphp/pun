@@ -16,9 +16,6 @@ use mago_codex::ttype::{
     get_literal_int, get_literal_string, get_mixed, get_never, get_null, get_string,
     intersect_union_types,
 };
-use pun_phpstan::types::{
-    ConstArray, Level, NeverKind, Tri, Type, accepts, intersect, is_super_type_of, mixed, union,
-};
 use serde_json::Value;
 
 fn oracle() -> Value {
@@ -69,41 +66,6 @@ fn codex_types() -> BTreeMap<&'static str, TUnion> {
         ),
     ] {
         types.insert(name, TMixed::new().subtract(&excluded, &codebase));
-    }
-    types
-}
-
-fn phpstan_types() -> BTreeMap<&'static str, Type> {
-    let mut types = BTreeMap::from([
-        ("mixed", mixed()),
-        ("error", Type::Error),
-        ("zero", Type::ConstInt(0)),
-        ("one", Type::ConstInt(1)),
-        ("thirteen", Type::ConstInt(13)),
-        ("null", Type::Null),
-        ("int", Type::Int),
-        ("string", Type::String),
-        ("literal", Type::ConstString("x".into())),
-        ("empty", Type::ConstArray(Box::new(ConstArray::empty()))),
-        ("never", Type::Never(NeverKind::Implicit)),
-        ("explicit-never", Type::Never(NeverKind::Explicit)),
-        ("range", Type::int_range(Some(-1), Some(1))),
-    ]);
-    for (name, excluded) in [
-        ("not-zero", Type::ConstInt(0)),
-        ("not-one", Type::ConstInt(1)),
-        ("not-null", Type::Null),
-        ("not-int", Type::Int),
-        ("not-string", Type::String),
-        ("not-range", types["range"].clone()),
-        ("not-empty", types["empty"].clone()),
-        ("not-zero-null", union(vec![Type::ConstInt(0), Type::Null])),
-        (
-            "not-zero-empty",
-            union(vec![Type::ConstInt(0), types["empty"].clone()]),
-        ),
-    ] {
-        types.insert(name, Type::mixed_subtracted(false, excluded));
     }
     types
 }
@@ -316,122 +278,6 @@ fn shared_mixed_subtraction_union_intersection_and_serde_match_phpstan() {
             canonical(expected["types"][label]["precise"].as_str().unwrap())
         );
     }
-}
-
-#[test]
-fn pun_mixed_exclusions_describe_compare_and_accept_like_phpstan() {
-    let types = phpstan_types();
-    let expected = oracle();
-    let mut failures = Vec::new();
-    for (label, want) in expected["types"].as_object().unwrap() {
-        let parts: Vec<_> = label.split(':').collect();
-        let result = match parts.as_slice() {
-            ["union", a, b] => union(vec![types[a].clone(), types[b].clone()]),
-            ["intersect", a, b] => intersect(vec![types[a].clone(), types[b].clone()]),
-            [a] => types[a].clone(),
-            _ => continue, // Subtraction and unset originate in codex, not the conversion layer.
-        };
-        for (level, key) in [
-            (Level::Precise, "precise"),
-            (Level::Value, "value"),
-            (Level::TypeOnly, "typeOnly"),
-        ] {
-            let got = canonical(&result.describe(level));
-            if got != canonical(want[key].as_str().unwrap()) {
-                failures.push(format!("{label} {key}: {got}, expected {}", want[key]));
-            }
-        }
-    }
-    for (label, want) in expected["relations"].as_object().unwrap() {
-        let (a, b) = label.split_once(':').unwrap();
-        for (key, got) in [
-            ("super", is_super_type_of(&types[a], &types[b])),
-            ("accepts", accepts(&types[a], &types[b], true)),
-        ] {
-            let got = match got {
-                Tri::Yes => "yes",
-                Tri::Maybe => "maybe",
-                Tri::No => "no",
-            };
-            if got != want[key].as_str().unwrap() {
-                failures.push(format!("{label} {key}: {got}, expected {}", want[key]));
-            }
-        }
-    }
-    assert!(failures.is_empty(), "{}", failures.join("\n"));
-}
-
-#[test]
-fn mixed_exclusions_keep_public_traversal_cast_and_acceptance_diagnostics() {
-    use pun_phpstan::types::{Cast, StrictMixed, accepts_reasons, cast_is_error, to_phpdoc};
-    let types = phpstan_types();
-    let excluded = &types["not-zero"];
-    let expected = oracle();
-    let want = &expected["utilities"];
-    for (cast, label) in [
-        (Cast::String, "toString"),
-        (Cast::Integer, "toInteger"),
-        (Cast::BitwiseNot, "toBitwiseNotType"),
-    ] {
-        assert_eq!(
-            cast_is_error(excluded, cast, StrictMixed::default()),
-            want[label].as_bool().unwrap()
-        );
-    }
-    assert_eq!(to_phpdoc(excluded), want["phpdoc"]);
-    assert_eq!(excluded.is_cloneable().yes(), want["cloneable"]);
-    assert_eq!(excluded.is_implicit_mixed(), want["implicit"]);
-    assert_eq!(
-        Type::mixed_subtracted(true, Type::ConstInt(0)).is_implicit_mixed(),
-        want["explicit"]
-    );
-    assert_eq!(
-        Type::array(excluded.clone(), Type::Int).describe(Level::Precise),
-        want["array-int"]
-    );
-    assert_eq!(
-        Type::array(excluded.clone(), mixed()).describe(Level::Precise),
-        want["array-mixed"]
-    );
-    assert_eq!(
-        cast_is_error(
-            excluded,
-            Cast::Integer,
-            StrictMixed {
-                implicit: true,
-                explicit: false
-            }
-        ),
-        want["strict-toInteger"]
-    );
-    assert_eq!(
-        serde_json::to_value(accepts_reasons(
-            excluded,
-            &Type::ConstInt(0),
-            true,
-            StrictMixed::default()
-        ))
-        .unwrap(),
-        want["accepts-reasons"]
-    );
-    assert_eq!(
-        serde_json::to_value(accepts_reasons(
-            &Type::ConstInt(0),
-            excluded,
-            true,
-            StrictMixed::default()
-        ))
-        .unwrap(),
-        want["reasons"]
-    );
-    let shifted = excluded.traverse(&|t| {
-        if *t == Type::ConstInt(0) {
-            Type::ConstInt(1)
-        } else {
-            t.clone()
-        }
-    });
-    assert_eq!(shifted.describe(Level::Precise), want["traverse"]);
 }
 
 #[test]

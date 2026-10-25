@@ -86,6 +86,57 @@ $out['utilities'] = [
     'legacy-truthy-union' => C::union($types['not-zero'], C::remove($m, \PHPStan\Type\StaticTypeFactory::falsey()))->describe(V::precise()),
     'legacy-nonnull-contained' => $types['not-null']->isSuperTypeOf($m->subtract($n))->yes(),
 ];
+$tmp = sys_get_temp_dir() . '/pun-mixed-query-oracle';
+@mkdir($tmp);
+$container = (new \PHPStan\DependencyInjection\ContainerFactory($tmp))->create($tmp, [], []);
+$container->getByType(\PHPStan\Reflection\ReflectionProvider::class);
+$domains = [
+    'string' => new StringType(), 'literal-string' => new ConstantStringType('x'),
+    'float' => new \PHPStan\Type\FloatType(),
+    'literal-float' => new \PHPStan\Type\Constant\ConstantFloatType(1.5),
+    'bool' => new \PHPStan\Type\BooleanType(),
+    'false' => new \PHPStan\Type\Constant\ConstantBooleanType(false),
+    'array' => new ArrayType($m, $m), 'empty-array' => $empty,
+    'int-array' => new ArrayType(new IntegerType(), $m),
+    'list' => new \PHPStan\Type\IntersectionType([
+        new ArrayType(IntegerRangeType::fromInterval(0, null), $m),
+        new \PHPStan\Type\Accessory\AccessoryArrayListType(),
+    ]),
+    'nonempty-array' => new \PHPStan\Type\IntersectionType([
+        new ArrayType($m, $m), new \PHPStan\Type\Accessory\NonEmptyArrayType(),
+    ]),
+    'iterable' => new \PHPStan\Type\IterableType($m, $m),
+    'int-iterable' => new \PHPStan\Type\IterableType(new IntegerType(), $m),
+    'callable' => new \PHPStan\Type\CallableType(),
+    'partial-callable' => new \PHPStan\Type\CallableType([], new \PHPStan\Type\VoidType()),
+    'null' => $n, 'void' => new \PHPStan\Type\VoidType(),
+    'never' => new NeverType(), 'not-string' => $types['not-string'],
+    'string-float' => new \PHPStan\Type\UnionType([new StringType(), new \PHPStan\Type\FloatType()]),
+];
+$queryTypes = ['mixed' => $m, 'error' => new ErrorType()];
+foreach ($domains as $label => $domain) {
+    $queryTypes["exclude:$label"] = new MixedType(false, $domain);
+    $queryTypes["explicit:$label"] = new MixedType(true, $domain);
+    foreach (['union' => \PHPStan\Type\UnionType::class, 'benevolent' => \PHPStan\Type\BenevolentUnionType::class, 'intersection' => \PHPStan\Type\IntersectionType::class] as $kind => $class) {
+        $parts = [new MixedType(false, $domain)];
+        array_push($parts, ...($domain instanceof \PHPStan\Type\UnionType && $kind !== 'intersection' ? $domain->getTypes() : [$domain]));
+        $queryTypes["$kind:$label"] = new $class($parts);
+    }
+}
+foreach (['string', 'array', 'list', 'iterable', 'callable', 'null'] as $label) {
+    $bound = new MixedType(false, $domains[$label]);
+    $queryTypes["template:$label"] = \PHPStan\Type\Generic\TemplateTypeFactory::create(
+        \PHPStan\Type\Generic\TemplateTypeScope::createWithFunction('mixedQueries'),
+        'T', $bound, \PHPStan\Type\Generic\TemplateTypeVariance::createInvariant(),
+    );
+    $queryTypes["conditional:$label"] = new \PHPStan\Type\ConditionalType($z, new IntegerType(), $bound, $domains[$label], false);
+}
+$out['queries'] = [];
+foreach ($queryTypes as $label => $type) {
+    foreach (['isString', 'isFloat', 'isBoolean', 'isArray', 'isList', 'isIterable', 'isIterableAtLeastOnce', 'isCallable', 'isNull', 'isVoid'] as $query) {
+        $out['queries'][$label][$query] = strtolower($type->$query()->describe());
+    }
+}
 $sections = [];
 foreach ($out as $name => $rows) {
     $lines = [];

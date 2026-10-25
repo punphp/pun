@@ -385,6 +385,44 @@ impl Type {
         })
     }
 
+    /// MixedType excludes a query only when its subtracted type contains the complete domain.
+    /// `benevolent` selects UnionType::unionResults instead of notBenevolentUnionResults.
+    fn query_with_mixed_domain(
+        &self,
+        query: fn(&Type) -> Tri,
+        domain: fn() -> Type,
+        benevolent: bool,
+        f: &dyn Fn(&Type) -> Tri,
+    ) -> Tri {
+        match self {
+            Type::Union(types) => Tri::extreme_identity(types.iter().map(query)),
+            Type::Benevolent(types) if benevolent => types.iter().map(query).fold(Tri::No, Tri::or),
+            Type::Benevolent(types) => Tri::extreme_identity(types.iter().map(query)),
+            Type::Intersection(types) => Tri::max_min(types.iter().map(query)),
+            // TemplateMixedType inherits plain MixedType queries, not the bound's excluded set.
+            Type::Template(t) if matches!(&t.bound, Type::SubtractedMixed { .. }) => Tri::Maybe,
+            Type::Template(t) => query(&t.bound),
+            Type::Conditional(c) => query(&c.resolve()),
+            Type::SubtractedMixed { excluded, .. } => {
+                if is_super_type_of(excluded, &domain()).yes() { Tri::No } else { Tri::Maybe }
+            }
+            Type::Mixed { .. } | Type::Error => Tri::Maybe,
+            _ => f(self),
+        }
+    }
+
+    fn query_c_with_mixed_domain(
+        &self,
+        query: fn(&Type) -> Tri,
+        domain: fn() -> Type,
+        benevolent: bool,
+        f: &dyn Fn(&Type) -> Tri,
+    ) -> Tri {
+        self.query_with_mixed_domain(query, domain, benevolent, &|t| {
+            if matches!(t, Type::Callable(_)) { Tri::Maybe } else { f(t) }
+        })
+    }
+
     /// A callable array (`callable&array`): `array{class-string|object, non-falsy-string}`.
     fn is_callable_array(&self) -> bool {
         matches!(self, Type::Intersection(_)) && self.is_callable().yes() && self.is_array().yes()
@@ -397,11 +435,12 @@ impl Type {
                 return Tri::extreme_identity(ts.iter().map(Type::is_string));
             }
             Type::Intersection(ts) => return Tri::max_min(ts.iter().map(Type::is_string)),
+            Type::Template(t) if matches!(&t.bound, Type::SubtractedMixed { .. }) => return Tri::Maybe,
             Type::Template(t) => return t.bound.is_string(),
             Type::Conditional(c) => return c.resolve().is_string(),
             _ => {}
         }
-        self.query_c(&|t| {
+        self.query_c_with_mixed_domain(Self::is_string, || Type::String, false, &|t| {
             if matches!(t, Type::Accessory(Accessory::HasMethod(_))) {
                 return Tri::Maybe;
             }
@@ -435,11 +474,11 @@ impl Type {
     }
 
     pub fn is_float(&self) -> Tri {
-        self.query(&|t| Tri::from(matches!(t, Type::Float | Type::ConstFloat(_))))
+        self.query_with_mixed_domain(Self::is_float, || Type::Float, false, &|t| Tri::from(matches!(t, Type::Float | Type::ConstFloat(_))))
     }
 
     pub fn is_boolean(&self) -> Tri {
-        self.query(&|t| Tri::from(matches!(t, Type::Bool | Type::ConstBool(_))))
+        self.query_with_mixed_domain(Self::is_boolean, || Type::Bool, false, &|t| Tri::from(matches!(t, Type::Bool | Type::ConstBool(_))))
     }
 
     fn is_class_string(&self) -> Tri {
@@ -458,7 +497,8 @@ impl Type {
     }
 
     pub fn is_array(&self) -> Tri {
-        self.query_c(&|t| {
+        self.query_c_with_mixed_domain(Self::is_array, || Type::array(mixed(), mixed()), false, &|t| {
+            if matches!(t, Type::Iterable(..)) { return Tri::Maybe; }
             Tri::from(matches!(
                 t,
                 Type::Array(..)
@@ -510,7 +550,7 @@ impl Type {
         if self.is_callable_array() {
             return Tri::Yes;
         }
-        self.query_c(&|t| match t {
+        self.query_c_with_mixed_domain(Self::is_list, || Type::list(mixed()), false, &|t| match t {
             Type::Accessory(Accessory::List) => Tri::Yes,
             Type::ConstArray(a) => a.is_list,
             // `ArrayType::isList()`: no when no key can be a non-negative int
@@ -527,7 +567,7 @@ impl Type {
         if self.is_never() {
             return Tri::Yes;
         }
-        self.query_c(&|t| match t {
+        self.query_c_with_mixed_domain(Self::is_iterable, || Type::Iterable(bx(mixed()), bx(mixed())), true, &|t| match t {
             Type::Array(..)
             | Type::ConstArray(_)
             | Type::Iterable(..)
@@ -573,7 +613,8 @@ impl Type {
                 }
                 Tri::max_min(iterable.into_iter().map(Type::is_iterable_at_least_once))
             }
-            _ => self.query(&|t| match t {
+            _ => self.query_with_mixed_domain(Self::is_iterable_at_least_once, || Type::Iterable(bx(mixed()), bx(mixed())), true, &|t| match t {
+                Type::Never(_) => Tri::Maybe,
                 Type::ConstArray(a) => a.is_iterable_at_least_once(),
                 Type::Accessory(Accessory::NonEmptyArray) => Tri::Yes,
                 Type::Array(..) | Type::Iterable(..) | Type::Accessory(Accessory::List) => {
@@ -692,7 +733,7 @@ impl Type {
     }
 
     pub fn is_callable(&self) -> Tri {
-        self.query(&|t| match t {
+        self.query_with_mixed_domain(Self::is_callable, || Type::Callable(None), true, &|t| match t {
             Type::Callable(_) | Type::Closure(_) => Tri::Yes,
             Type::Accessory(Accessory::HasMethod(n)) if n.eq_ignore_ascii_case("__invoke") => {
                 Tri::Yes
@@ -3890,12 +3931,13 @@ fn range_try_intersect(min: Option<i64>, max: Option<i64>, other: &Type) -> Opti
 impl Type {
     /// `isNull()`
     pub fn is_null(&self) -> Tri {
-        self.query(&|t| Tri::from(matches!(t, Type::Null)))
+        self.query_with_mixed_domain(Self::is_null, || Type::Null, false, &|t| Tri::from(matches!(t, Type::Null)))
     }
 
     /// `isVoid()`
     pub fn is_void(&self) -> Tri {
-        self.query(&|t| Tri::from(matches!(t, Type::Void)))
+        if matches!(self, Type::Intersection(_)) { return Tri::No; }
+        self.query_with_mixed_domain(Self::is_void, || Type::Void, true, &|t| Tri::from(matches!(t, Type::Void)))
     }
 
     /// `$type instanceof MixedType && !$type->isExplicitMixed()`

@@ -146,9 +146,11 @@ mixed values. One analyzer reconciler arm reconstructs its already-moved atomic 
 the reconciliation result. Equality, hashes, ordering, and serde include the excluded set.
 Old serialized values default to no exclusion. No codex atomic variant, manifest, or Mago version changes.
 
-`pun-analyse/tests/mixed_subtraction.rs` checks public codex and Pun type operations against the
-captured PHPStan oracle in `tests/fixtures/mixed-subtraction`. Its public Analyzer regression injects
-the narrowed value through an expression hook, independently of the unset producer. Copies and
+`pun-phpstan/tests/mixed_subtraction.rs` owns the public Pun type-operation tests, so that crate's
+coverage run exercises its mixed implementation independently. `pun-analyse/tests/mixed_subtraction.rs`
+checks codex operations and Analyzer flow. Both use the same captured PHPStan oracle under
+`pun-analyse/tests/fixtures/mixed-subtraction`. The Analyzer regression injects the narrowed value
+through an expression hook, independently of the unset producer. Copies and
 joins retain `mixed~0`, joining `0` restores ordinary mixed, and an offset read returns ordinary mixed.
 The same assertions run with native tracking enabled and disabled.
 
@@ -172,3 +174,22 @@ analyzer adjustment, and Pun types. Total changed production coverage is 236/237
 The remaining line is the new excluded-set conversion expression in `rules/types/convert.rs`.
 The public Analyzer test supplies exclusions through a hook, but Pun's public runner has no such
 input hook. That conversion needs the separately owned unset producer for end-to-end coverage.
+
+### Exclusion-aware Pun queries
+
+Pun's string, float, boolean, array, list, iterable, iterable-at-least-once, callable, null, and void
+queries return `No` only when the excluded type contains the complete queried domain. A literal
+string exclusion does not exclude all strings. The list domain is the intersection of an array
+with nonnegative integer keys and the list accessory. The iterable domain includes objects, so
+excluding all arrays still leaves iterable values possible.
+
+These checks follow
+[`MixedType`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Type/MixedType.php#L892-L950).
+Compound queries dispatch each member's public query. Union and benevolent-union results retain
+PHPStan's method-specific aggregation. `TemplateMixedType` inherits plain mixed queries rather
+than querying its bound's excluded set. Domain types are constructed only for a subtracted mixed.
+
+The owning-crate regression checks 1,140 fresh PHPStan query results without duplicating the
+Analyzer tests. All 53 `punphp-phpstan` tests and 22 focused Analyzer tests pass. A fresh target
+running only `punphp-phpstan` covers 45/45 executable lines added by this query slice, and 155/155
+changed Pun type lines including the preceding mixed-subtraction implementation.
