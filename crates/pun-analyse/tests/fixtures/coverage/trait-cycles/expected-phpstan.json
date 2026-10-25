@@ -1,0 +1,68 @@
+{
+ "general": [],
+ "errors": [
+  {
+   "file": "members.php",
+   "line": 91,
+   "identifier": "arguments.count",
+   "message": "Static method TraitMemberControls\\Ordinary::take() invoked with 0 parameters, 1 required.",
+   "tip": null
+  },
+  {
+   "file": "members.php",
+   "line": 92,
+   "identifier": "arguments.count",
+   "message": "Static method TraitMemberControls\\Diamond::take() invoked with 0 parameters, 1 required.",
+   "tip": null
+  },
+  {
+   "file": "members.php",
+   "line": 93,
+   "identifier": "arguments.count",
+   "message": "Static method TraitMemberControls\\Preferred::take() invoked with 0 parameters, 1 required.",
+   "tip": null
+  },
+  {
+   "file": "members.php",
+   "line": 94,
+   "identifier": "arguments.count",
+   "message": "Static method TraitMemberControls\\ParentMethods::inherited() invoked with 0 parameters, 1 required.",
+   "tip": null
+  },
+  {
+   "file": "members.php",
+   "line": 95,
+   "identifier": "staticMethod.notFound",
+   "message": "Call to an undefined static method TraitMemberControls\\AnnotatedDiamond::missing().",
+   "tip": null
+  },
+  {
+   "file": "mutual.php (in context of class ClassTraitCycles\\UsesMutualCycle)",
+   "line": 8,
+   "identifier": "trait.notFound",
+   "message": "Trait ClassTraitCycles\\First uses unknown trait ClassTraitCycles\\MissingFirstTrait.",
+   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+  },
+  {
+   "file": "mutual.php (in context of class ClassTraitCycles\\UsesMutualCycle)",
+   "line": 14,
+   "identifier": "trait.notFound",
+   "message": "Trait ClassTraitCycles\\Second uses unknown trait ClassTraitCycles\\MissingSecondTrait.",
+   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+  },
+  {
+   "file": "self.php (in context of class ClassTraitCycles\\UsesSelfCycle)",
+   "line": 7,
+   "identifier": "trait.nameCase",
+   "message": "Trait ClassTraitCycles\\SelfCycle referenced with incorrect case: ClassTraitCycles\\selfcycle.",
+   "tip": null
+  },
+  {
+   "file": "self.php (in context of class ClassTraitCycles\\UsesSelfCycle)",
+   "line": 8,
+   "identifier": "trait.notFound",
+   "message": "Trait ClassTraitCycles\\SelfCycle uses unknown trait ClassTraitCycles\\MissingSelfTrait.",
+   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+  }
+ ]
+}
