@@ -33,6 +33,12 @@ Human output uses Pun IDs such as `analyse/undefined/function`. Machine reports 
 
 Static calls check PHPDoc `@method` signatures, including inherited tags. Pun checks their required and named arguments and reports static calls to non-static methods.
 
+When argument type checks are enabled, calls respect `@no-named-arguments` on functions, methods and constructors, including inherited policies. Named arguments and string-keyed unpacking produce PHPStan's `argument.named` diagnostic after argument binding. Unknown arguments retain their binding diagnostics.
+
+At PHPStan level 5 and above, shared argument checks validate allowed built-in constants and report unresolvable generic parameter types.
+They also reject static closures for parameters that require a bound `$this`.
+These checks also apply to attribute constructors.
+
 Dynamic `new $class` expressions report unknown class names even when another possible name exists.
 
 Dynamic constant fetches such as `Example::{$name}` check each possible name when the selector has a finite set of string values. The checks preserve branch narrowing and report missing or inaccessible constants.
