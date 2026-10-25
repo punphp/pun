@@ -1,0 +1,72 @@
+{
+  "bug-4806.php": [
+    {
+      "message": "Variable $object might not be defined.",
+      "line": 55,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Variable $object might not be defined.",
+      "line": 83,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Variable $object might not be defined.",
+      "line": 97,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    }
+  ],
+  "transfers.php": [
+    {
+      "message": "Variable $object might not be defined.",
+      "line": 51,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Variable $object might not be defined.",
+      "line": 61,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Variable $object might not be defined.",
+      "line": 71,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Variable $object might not be defined.",
+      "line": 92,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Variable $value might not be defined.",
+      "line": 168,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Variable $value might not be defined.",
+      "line": 170,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Variable $value might not be defined.",
+      "line": 180,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Variable $value might not be defined.",
+      "line": 182,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    }
+  ]
+}

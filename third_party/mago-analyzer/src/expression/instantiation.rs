@@ -37,6 +37,7 @@ use mago_word::word;
 
 use crate::analyzable::Analyzable;
 use crate::artifacts::AnalysisArtifacts;
+use crate::artifacts::VariableThrowKind;
 use crate::code::IssueCode;
 use crate::context::Context;
 use crate::context::block::BlockContext;
@@ -163,6 +164,12 @@ where
         );
 
         argument_list.analyze(context, block_context, artifacts)?;
+
+        // NewHandler keeps the post-argument implicit throw point for an unknown constructor.
+        if block_context.flags.inside_try() {
+            artifacts.variable_throw_scopes.entry((instantiation_span, VariableThrowKind::Implicit)).or_default()
+                .insert(word(b"Throwable"), block_context.variable_scope());
+        }
 
         return Ok(wrap_atomic(classname.get_object_type(context.codebase)));
     };
@@ -456,6 +463,18 @@ where
                 .map(|(_, _)| if is_spl_object_storage { get_never() } else { wrap_atomic(TAtomic::Placeholder) })
                 .collect(),
         );
+    }
+
+    // A dynamic non-final class without a constructor can name a subclass that declares one.
+    // Exact named instantiations and final classes have no constructor throw point.
+    if block_context.flags.inside_try()
+        && constructor_span.is_none()
+        && !metadata.flags.is_final()
+        && !classname.is_named()
+        && !classname.is_static()
+    {
+        artifacts.variable_throw_scopes.entry((instantiation_span, VariableThrowKind::Implicit)).or_default()
+            .insert(word(b"Throwable"), block_context.variable_scope());
     }
 
     if let Some(parameters) = &mut type_parameters

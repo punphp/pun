@@ -103,7 +103,12 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Try<'arena> {
         }
         block_context.flags.set_inside_try(was_inside_try);
         let mut throw_scopes = std::mem::take(&mut artifacts.variable_throw_scopes);
-        let has_observed_throws = !throw_scopes.is_empty();
+        let mut continuing_scopes = Vec::new();
+        if !block_context.flags.has_returned() {
+            continuing_scopes.push(block_context.variable_scope());
+        }
+        let mut finally_entry_scopes = vec![block_context.variable_scope()];
+        finally_entry_scopes.extend(throw_scopes.values().flat_map(|thrown| thrown.values().cloned()));
         if !self.catch_clauses.is_empty() {
             block_context.flags.set_has_returned(false);
         }
@@ -114,6 +119,10 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Try<'arena> {
             Some(artifacts),
             true,
         );
+        // Abrupt non-throw exits still use Mago's accumulated finally locals. For blocks
+        // without those exits every finally entry is an observed normal or throwing edge.
+        let mut finally_entries_complete =
+            try_block_control_actions.len() == 1 && try_block_control_actions.contains(ControlAction::None);
 
         let newly_assigned_variable_ids = std::mem::take(&mut block_context.assigned_variable_ids);
         block_context.assigned_variable_ids.extend(assigned_variable_ids);
@@ -197,7 +206,6 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Try<'arena> {
         }
 
         let mut original_block_context = try_block_context.clone();
-        let mut definitely_newly_assigned_var_ids = newly_assigned_variable_ids;
 
         for (i, catch_clause) in self.catch_clauses.iter().enumerate() {
             let mut catch_block_context = original_block_context.clone();
@@ -306,7 +314,9 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Try<'arena> {
                     }
                 });
             }
-            if catch_entries.is_empty() && has_observed_throws { continue; }
+            // TryCatchHandler never adds a catch edge without a matching throw point. In
+            // particular, an explicit `@throws void` is not an unknown implicit throw.
+            if catch_entries.is_empty() { continue; }
             catch_block_context.merge_variable_scope_types(&catch_entries, context.codebase);
             if let Some(catch_variable) = catch_clause.variable.as_ref() {
                 let exception_type = TUnion::new(
@@ -337,21 +347,16 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Try<'arena> {
                 );
             }
 
-            all_catches_leave = catch_actions.iter().all(|actions| !actions.contains(ControlAction::None));
-
-            let new_catch_assigned_variables_ids = catch_block_context.assigned_variable_ids.clone();
             catch_block_context.assigned_variable_ids.extend(old_catch_assigned_variable_ids);
 
             inherit_branch_context_properties(context, block_context, &catch_block_context);
 
             let catch_doesnt_leave_parent_scope = catch_actions[i].contains(ControlAction::None);
+            finally_entries_complete &= catch_actions[i].len() == 1 && catch_doesnt_leave_parent_scope;
+            finally_entry_scopes.push(catch_block_context.variable_scope());
 
             if catch_doesnt_leave_parent_scope {
-                definitely_newly_assigned_var_ids = new_catch_assigned_variables_ids
-                    .iter()
-                    .filter(|(key, _)| definitely_newly_assigned_var_ids.contains_key(*key))
-                    .map(|(key, value)| (*key, *value))
-                    .collect();
+                continuing_scopes.push(catch_block_context.variable_scope());
 
                 let end_action_only =
                     try_block_control_actions.len() == 1 && try_block_control_actions.contains(ControlAction::End);
@@ -404,6 +409,10 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Try<'arena> {
             }
         }
 
+        // Join actual continuing scopes, not the synthetic pre-try/post-try local union.
+        // An empty reachable catch is an edge; an impossible or terminating catch is not.
+        block_context.merge_variable_scope_types(&continuing_scopes, context.codebase);
+
         if !try_leaves_loop && let Some(loop_scope) = artifacts.loop_scope.as_mut() {
             loop_scope.final_actions.insert(ControlAction::None);
         }
@@ -426,6 +435,9 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Try<'arena> {
             finally_block_context.assigned_variable_ids = WordMap::default();
             finally_block_context.possibly_assigned_variable_ids = WordSet::default();
             finally_block_context.locals = finally_scope.locals;
+            if finally_entries_complete {
+                finally_block_context.merge_variable_scope_types(&finally_entry_scopes, context.codebase);
+            }
             for var_id in finally_block_context.locals.keys() {
                 if !old_block_context_locals.contains_key(var_id) {
                     finally_block_context.possibly_undefined_variable_ids.insert(*var_id);
@@ -451,34 +463,13 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Try<'arena> {
             }
         }
 
-        for (variable_id, _) in definitely_newly_assigned_var_ids {
-            let Some(variable_type) = block_context.locals.get_mut(&variable_id) else {
-                continue;
-            };
-
-            if !variable_type.possibly_undefined_from_try() {
-                continue;
-            }
-
-            let mut defined_variable_type = (**variable_type).clone();
-            defined_variable_type.set_possibly_undefined(false, Some(false));
-
-            *variable_type = Rc::new(defined_variable_type);
-        }
-
         for (possibly_thrown_exception, throw_spans) in existing_thrown_exceptions {
             block_context.possibly_thrown_exceptions.entry(possibly_thrown_exception).or_default().extend(throw_spans);
         }
         artifacts.variable_throw_scopes.extend(existing_throw_scopes);
         artifacts.variable_throw_scopes.extend(throw_scopes.into_iter().filter(|(_, scopes)| !scopes.is_empty()));
 
-        block_context.flags.set_has_returned(if finally_has_returned {
-            true
-        } else if !try_block_control_actions.contains(ControlAction::None) {
-            self.catch_clauses.is_empty() || all_catches_leave
-        } else {
-            false
-        });
+        block_context.flags.set_has_returned(finally_has_returned || continuing_scopes.is_empty());
 
         Ok(())
     }
