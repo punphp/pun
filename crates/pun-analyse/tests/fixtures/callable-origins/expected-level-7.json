@@ -1,0 +1,174 @@
+{
+  "assignments.php": [
+    {
+      "message": "Dumped type: callable(string): string",
+      "line": 14,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Parameter #1 of callable callable(string): string is passed by reference, so it expects variables only.",
+      "line": 15,
+      "ignorable": true,
+      "identifier": "argument.byRef"
+    },
+    {
+      "message": "Parameter #1 of callable on the right side of pipe operator is passed by reference.",
+      "line": 15,
+      "ignorable": true,
+      "identifier": "pipe.byRef"
+    },
+    {
+      "message": "Dumped type: callable(string): string",
+      "line": 17,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: Closure(string): 'literal'",
+      "line": 20,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Expression \"$copy\" on a separate line does not do anything.",
+      "line": 21,
+      "ignorable": true,
+      "identifier": "expr.resultUnused"
+    },
+    {
+      "message": "Dumped type: callable(string): string",
+      "line": 33,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type: callable(int): int",
+      "line": 44,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    }
+  ],
+  "signatures.php": [
+    {
+      "message": "Dumped type #1: callable(string): string",
+      "line": 18,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type #2: callable(string): string",
+      "line": 18,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type #3: callable(string ...): string",
+      "line": 18,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type #4: callable(string, int): bool",
+      "line": 18,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type #5: (callable(string): string)|null",
+      "line": 18,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type #6: (callable(string): string)|int",
+      "line": 18,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Dumped type #7: callable(string): string",
+      "line": 18,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Parameter #1 of callable on the right side of pipe operator is passed by reference.",
+      "line": 19,
+      "ignorable": true,
+      "identifier": "pipe.byRef"
+    },
+    {
+      "message": "Parameter #1 $named of callable on the right side of pipe operator is passed by reference.",
+      "line": 20,
+      "ignorable": true,
+      "identifier": "pipe.byRef"
+    },
+    {
+      "message": "Parameter #1 of callable on the right side of pipe operator is passed by reference.",
+      "line": 21,
+      "ignorable": true,
+      "identifier": "pipe.byRef"
+    },
+    {
+      "message": "Callable callable(string, int): bool invoked with 1 parameter, 2 required.",
+      "line": 22,
+      "ignorable": true,
+      "identifier": "arguments.count"
+    },
+    {
+      "message": "Parameter #1 of callable on the right side of pipe operator is passed by reference.",
+      "line": 23,
+      "ignorable": true,
+      "identifier": "pipe.byRef"
+    },
+    {
+      "message": "Trying to invoke (callable(string): string)|int but it might not be a callable.",
+      "line": 24,
+      "ignorable": true,
+      "identifier": "callable.nonCallable"
+    },
+    {
+      "message": "Parameter #1 of callable on the right side of pipe operator is passed by reference.",
+      "line": 25,
+      "ignorable": true,
+      "identifier": "pipe.byRef"
+    },
+    {
+      "message": "Dumped type: callable(string): string",
+      "line": 34,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Parameter #1 of callable on the right side of pipe operator is passed by reference.",
+      "line": 35,
+      "ignorable": true,
+      "identifier": "pipe.byRef"
+    },
+    {
+      "message": "Dumped type: callable(string): string",
+      "line": 47,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Parameter #1 of callable on the right side of pipe operator is passed by reference.",
+      "line": 48,
+      "ignorable": true,
+      "identifier": "pipe.byRef"
+    },
+    {
+      "message": "Dumped type: callable(string): string",
+      "line": 55,
+      "ignorable": false,
+      "identifier": "phpstan.dumpType"
+    },
+    {
+      "message": "Parameter #1 of callable on the right side of pipe operator is passed by reference.",
+      "line": 56,
+      "ignorable": true,
+      "identifier": "pipe.byRef"
+    }
+  ]
+}
