@@ -1,0 +1,19 @@
+{
+  "general": [],
+  "errors": [
+    {
+      "file": "origin-conditions.php",
+      "message": "Cannot access constant NO on null.",
+      "line": 18,
+      "ignorable": true,
+      "identifier": "classConstant.nonObject"
+    },
+    {
+      "file": "origin-conditions.php",
+      "message": "Cannot access constant NO on int.",
+      "line": 92,
+      "ignorable": true,
+      "identifier": "classConstant.nonObject"
+    }
+  ]
+}

@@ -1,0 +1,65 @@
+[
+    {
+        "kind": "template",
+        "types": [
+            "\\stdClass"
+        ],
+        "names": [
+            "stdClass"
+        ]
+    },
+    {
+        "kind": "template",
+        "types": [
+            "object"
+        ],
+        "names": []
+    },
+    {
+        "kind": "template",
+        "types": [
+            "\\stdClass",
+            "\\DateTimeImmutable"
+        ],
+        "names": [
+            "stdClass",
+            "DateTimeImmutable"
+        ]
+    },
+    {
+        "kind": "union",
+        "types": [
+            "\\stdClass",
+            "object"
+        ],
+        "names": []
+    },
+    {
+        "kind": "benevolent",
+        "types": [
+            "\\stdClass",
+            "object"
+        ],
+        "names": []
+    },
+    {
+        "kind": "benevolent",
+        "types": [
+            "\\stdClass",
+            "int"
+        ],
+        "names": [
+            "stdClass"
+        ]
+    },
+    {
+        "kind": "intersection",
+        "types": [
+            "\\stdClass",
+            "object"
+        ],
+        "names": [
+            "stdClass"
+        ]
+    }
+]

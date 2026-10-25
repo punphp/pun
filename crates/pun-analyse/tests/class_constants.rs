@@ -151,17 +151,33 @@ fn upstream_dynamic_access() {
 
 #[test]
 fn expression_type_guards_and_invalidation_at_each_rule_level() {
+    expression_guards("expression-guards", &[0, 1, 2, 7, 8, 9, 10]);
+}
+
+#[test]
+fn condition_origins_use_incoming_state_and_forget_replaced_values() {
+    expression_guards("origin-conditions", &[0, 1, 2, 7, 8, 9, 10]);
+}
+
+#[test]
+fn recovered_selectors_do_not_invent_a_constant_fetch() {
+    // PHPStan rejects the incomplete selector before running ClassConstantRule. Mago recovers the CST;
+    // the rule must still leave it without a fabricated constant name or receiver error.
+    expression_guards("recovered-selector", &[2]);
+}
+
+fn expression_guards(name: &str, levels: &[u8]) {
     let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/class_constants");
     let mut differences = Vec::new();
-    for level in [0, 1, 2, 7, 8, 9, 10] {
+    for &level in levels {
         let config = resolve(&Options {
-            config: Some(root.join("expression-guards.neon").to_string_lossy().into_owned()),
+            config: Some(root.join(format!("{name}.neon")).to_string_lossy().into_owned()),
             level: Some(level.to_string()),
             ..Options::for_project(&root.to_string_lossy())
         })
         .unwrap();
         let want: Value = serde_json::from_slice(
-            &std::fs::read(root.join(format!("expected-expression-guards-{level}.json"))).unwrap(),
+            &std::fs::read(root.join(format!("expected-{name}-{level}.json"))).unwrap(),
         )
         .unwrap();
         let relevant = |e: &Key| e.2.starts_with("classConstant.") || e.2 == "class.notFound";
@@ -179,7 +195,7 @@ fn expression_type_guards_and_invalidation_at_each_rule_level() {
                     extra.push(error);
                 }
             }
-            differences.push(format!("level {level}: extra {extra:#?}, missing {missing:#?}"));
+            differences.push(format!("{name}, level {level}: extra {extra:#?}, missing {missing:#?}"));
         }
     }
     assert!(differences.is_empty(), "{}", differences.join("\n"));

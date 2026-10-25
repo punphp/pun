@@ -1,0 +1,12 @@
+{
+  "general": [],
+  "errors": [
+    {
+      "file": "recovered-selector.php",
+      "message": "Syntax error, unexpected ')' on line 8",
+      "line": 8,
+      "ignorable": false,
+      "identifier": "phpstan.parse"
+    }
+  ]
+}

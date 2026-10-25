@@ -1,0 +1,96 @@
+{
+  "general": [],
+  "errors": [
+    {
+      "file": "origin-conditions.php",
+      "message": "Function ConstantOriginConditions\\mutatedBranch() has parameter $implicit with no type specified.",
+      "line": 10,
+      "ignorable": true,
+      "identifier": "missingType.parameter"
+    },
+    {
+      "file": "origin-conditions.php",
+      "message": "Function ConstantOriginConditions\\mutatedCondition() has parameter $implicit with no type specified.",
+      "line": 16,
+      "ignorable": true,
+      "identifier": "missingType.parameter"
+    },
+    {
+      "file": "origin-conditions.php",
+      "message": "Cannot access constant NO on null.",
+      "line": 18,
+      "ignorable": true,
+      "identifier": "classConstant.nonObject"
+    },
+    {
+      "file": "origin-conditions.php",
+      "message": "Function ConstantOriginConditions\\returningMutation() has parameter $implicit with no type specified.",
+      "line": 22,
+      "ignorable": true,
+      "identifier": "missingType.parameter"
+    },
+    {
+      "file": "origin-conditions.php",
+      "message": "Function ConstantOriginConditions\\elseifIncoming() has parameter $implicit with no type specified.",
+      "line": 27,
+      "ignorable": true,
+      "identifier": "missingType.parameter"
+    },
+    {
+      "file": "origin-conditions.php",
+      "message": "Function ConstantOriginConditions\\conditionalExpressions() has parameter $fallback with no type specified.",
+      "line": 46,
+      "ignorable": true,
+      "identifier": "missingType.parameter"
+    },
+    {
+      "file": "origin-conditions.php",
+      "message": "Function ConstantOriginConditions\\conditionalMutation() has parameter $implicit with no type specified.",
+      "line": 55,
+      "ignorable": true,
+      "identifier": "missingType.parameter"
+    },
+    {
+      "file": "origin-conditions.php",
+      "message": "Function ConstantOriginConditions\\unsetOrigin() has parameter $implicit with no type specified.",
+      "line": 65,
+      "ignorable": true,
+      "identifier": "missingType.parameter"
+    },
+    {
+      "file": "origin-conditions.php",
+      "message": "Function ConstantOriginConditions\\reversedMutation() has parameter $implicit with no type specified.",
+      "line": 76,
+      "ignorable": true,
+      "identifier": "missingType.parameter"
+    },
+    {
+      "file": "origin-conditions.php",
+      "message": "Function ConstantOriginConditions\\bothMutate() has parameter $implicit with no type specified.",
+      "line": 81,
+      "ignorable": true,
+      "identifier": "missingType.parameter"
+    },
+    {
+      "file": "origin-conditions.php",
+      "message": "Function ConstantOriginConditions\\nativeReceiver() has parameter $implicit with no type specified.",
+      "line": 91,
+      "ignorable": true,
+      "identifier": "missingType.parameter"
+    },
+    {
+      "file": "origin-conditions.php",
+      "message": "Cannot access constant NO on int.",
+      "line": 92,
+      "ignorable": true,
+      "identifier": "classConstant.nonObject"
+    },
+    {
+      "file": "origin-conditions.php",
+      "message": "Function ConstantOriginConditions\\shortCircuitMutation() has parameter $implicit with no type specified.",
+      "line": 96,
+      "ignorable": true,
+      "identifier": "missingType.parameter"
+    }
+  ]
+}

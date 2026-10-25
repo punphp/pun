@@ -413,6 +413,29 @@ fn object_class_names() {
             let ty = resolve_in(&phpdoc::parse(input).unwrap(), &InNamespace);
             assert_eq!(ty.object_class_names(), want, "{input}");
         }
+        // Fresh PHPStan 2.3.1 queries on the public template and compound constructors. Keep their raw
+        // composition: TypeCombinator can otherwise erase the unnamed object before the query runs.
+        let f = fixture("type-object-class-names-compounds.json");
+        for row in f.as_array().unwrap() {
+            let types: Vec<_> = row["types"].as_array().unwrap().iter().map(|input| {
+                resolve_in(&phpdoc::parse(input.as_str().unwrap()).unwrap(), &InNamespace)
+            }).collect();
+            let ty = match row["kind"].as_str().unwrap() {
+                "template" => Type::Template(Box::new(pun_phpstan::types::Template {
+                    scope: "function classConstants()".into(),
+                    name: "T".into(),
+                    bound: if types.len() == 1 { types[0].clone() } else { Type::Union(types) },
+                    default: None,
+                    argument: false,
+                })),
+                "union" => Type::Union(types),
+                "benevolent" => Type::Benevolent(types),
+                "intersection" => Type::Intersection(types),
+                other => panic!("unknown oracle constructor {other}"),
+            };
+            let want: Vec<_> = row["names"].as_array().unwrap().iter().map(|n| n.as_str().unwrap()).collect();
+            assert_eq!(ty.object_class_names(), want, "{row}");
+        }
     });
 }
 

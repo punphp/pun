@@ -1,0 +1,320 @@
+{
+  "general": [],
+  "errors": [
+    {
+      "file": "origin-conditions.php",
+      "message": "Cannot access constant NO on mixed.",
+      "line": 6,
+      "ignorable": true,
+      "identifier": "classConstant.nonObject"
+    },
+    {
+      "file": "origin-conditions.php",
+      "message": "Cannot access constant YES on mixed.",
+      "line": 6,
+      "ignorable": true,
+      "identifier": "classConstant.nonObject"
+    },
+    {
+      "file": "origin-conditions.php",
+      "message": "Cannot access constant AFTER on mixed.",
+      "line": 7,
+      "ignorable": true,
+      "identifier": "classConstant.nonObject"
+    },
+    {
+      "file": "origin-conditions.php",
+      "message": "Function ConstantOriginConditions\\mutatedBranch() has parameter $implicit with no type specified.",
+      "line": 10,
+      "ignorable": true,
+      "identifier": "missingType.parameter"
+    },
+    {
+      "file": "origin-conditions.php",
+      "message": "Cannot access constant NO on mixed.",
+      "line": 12,
+      "ignorable": true,
+      "identifier": "classConstant.nonObject"
+    },
+    {
+      "file": "origin-conditions.php",
+      "message": "Cannot access constant AFTER on mixed.",
+      "line": 13,
+      "ignorable": true,
+      "identifier": "classConstant.nonObject"
+    },
+    {
+      "file": "origin-conditions.php",
+      "message": "Function ConstantOriginConditions\\mutatedCondition() has parameter $implicit with no type specified.",
+      "line": 16,
+      "ignorable": true,
+      "identifier": "missingType.parameter"
+    },
+    {
+      "file": "origin-conditions.php",
+      "message": "Cannot access constant NO on null.",
+      "line": 18,
+      "ignorable": true,
+      "identifier": "classConstant.nonObject"
+    },
+    {
+      "file": "origin-conditions.php",
+      "message": "Function ConstantOriginConditions\\returningMutation() has parameter $implicit with no type specified.",
+      "line": 22,
+      "ignorable": true,
+      "identifier": "missingType.parameter"
+    },
+    {
+      "file": "origin-conditions.php",
+      "message": "Cannot access constant AFTER on mixed.",
+      "line": 24,
+      "ignorable": true,
+      "identifier": "classConstant.nonObject"
+    },
+    {
+      "file": "origin-conditions.php",
+      "message": "Function ConstantOriginConditions\\elseifIncoming() has parameter $implicit with no type specified.",
+      "line": 27,
+      "ignorable": true,
+      "identifier": "missingType.parameter"
+    },
+    {
+      "file": "origin-conditions.php",
+      "message": "Cannot access constant ELSEIF on mixed.",
+      "line": 29,
+      "ignorable": true,
+      "identifier": "classConstant.nonObject"
+    },
+    {
+      "file": "origin-conditions.php",
+      "message": "Cannot access constant ELSE on mixed.",
+      "line": 30,
+      "ignorable": true,
+      "identifier": "classConstant.nonObject"
+    },
+    {
+      "file": "origin-conditions.php",
+      "message": "Cannot access constant AFTER on mixed.",
+      "line": 31,
+      "ignorable": true,
+      "identifier": "classConstant.nonObject"
+    },
+    {
+      "file": "origin-conditions.php",
+      "message": "Cannot access constant YES on mixed.",
+      "line": 36,
+      "ignorable": true,
+      "identifier": "classConstant.nonObject"
+    },
+    {
+      "file": "origin-conditions.php",
+      "message": "Cannot access constant ELSEIF on mixed.",
+      "line": 38,
+      "ignorable": true,
+      "identifier": "classConstant.nonObject"
+    },
+    {
+      "file": "origin-conditions.php",
+      "message": "Cannot access constant NO on mixed.",
+      "line": 40,
+      "ignorable": true,
+      "identifier": "classConstant.nonObject"
+    },
+    {
+      "file": "origin-conditions.php",
+      "message": "Cannot access constant AFTER on mixed.",
+      "line": 42,
+      "ignorable": true,
+      "identifier": "classConstant.nonObject"
+    },
+    {
+      "file": "origin-conditions.php",
+      "message": "Cannot access constant NO_ELSE on mixed.",
+      "line": 43,
+      "ignorable": true,
+      "identifier": "classConstant.nonObject"
+    },
+    {
+      "file": "origin-conditions.php",
+      "message": "Function ConstantOriginConditions\\conditionalExpressions() has parameter $fallback with no type specified.",
+      "line": 46,
+      "ignorable": true,
+      "identifier": "missingType.parameter"
+    },
+    {
+      "file": "origin-conditions.php",
+      "message": "Cannot access constant NO on mixed.",
+      "line": 47,
+      "ignorable": true,
+      "identifier": "classConstant.nonObject"
+    },
+    {
+      "file": "origin-conditions.php",
+      "message": "Cannot access constant YES on mixed.",
+      "line": 47,
+      "ignorable": true,
+      "identifier": "classConstant.nonObject"
+    },
+    {
+      "file": "origin-conditions.php",
+      "message": "Cannot access constant SHORT on mixed.",
+      "line": 48,
+      "ignorable": true,
+      "identifier": "classConstant.nonObject"
+    },
+    {
+      "file": "origin-conditions.php",
+      "message": "Cannot access constant AND on mixed.",
+      "line": 49,
+      "ignorable": true,
+      "identifier": "classConstant.nonObject"
+    },
+    {
+      "file": "origin-conditions.php",
+      "message": "Cannot access constant OR on mixed.",
+      "line": 50,
+      "ignorable": true,
+      "identifier": "classConstant.nonObject"
+    },
+    {
+      "file": "origin-conditions.php",
+      "message": "Cannot access constant COALESCE on mixed.",
+      "line": 51,
+      "ignorable": true,
+      "identifier": "classConstant.nonObject"
+    },
+    {
+      "file": "origin-conditions.php",
+      "message": "Cannot access constant AFTER on mixed.",
+      "line": 52,
+      "ignorable": true,
+      "identifier": "classConstant.nonObject"
+    },
+    {
+      "file": "origin-conditions.php",
+      "message": "Function ConstantOriginConditions\\conditionalMutation() has parameter $implicit with no type specified.",
+      "line": 55,
+      "ignorable": true,
+      "identifier": "missingType.parameter"
+    },
+    {
+      "file": "origin-conditions.php",
+      "message": "Cannot access constant NO on mixed.",
+      "line": 56,
+      "ignorable": true,
+      "identifier": "classConstant.nonObject"
+    },
+    {
+      "file": "origin-conditions.php",
+      "message": "Cannot access constant NO on mixed.",
+      "line": 62,
+      "ignorable": true,
+      "identifier": "classConstant.nonObject"
+    },
+    {
+      "file": "origin-conditions.php",
+      "message": "Cannot access constant YES on mixed.",
+      "line": 62,
+      "ignorable": true,
+      "identifier": "classConstant.nonObject"
+    },
+    {
+      "file": "origin-conditions.php",
+      "message": "Function ConstantOriginConditions\\unsetOrigin() has parameter $implicit with no type specified.",
+      "line": 65,
+      "ignorable": true,
+      "identifier": "missingType.parameter"
+    },
+    {
+      "file": "origin-conditions.php",
+      "message": "Cannot access constant NO on mixed.",
+      "line": 67,
+      "ignorable": true,
+      "identifier": "classConstant.nonObject"
+    },
+    {
+      "file": "origin-conditions.php",
+      "message": "Cannot access constant AFTER on mixed.",
+      "line": 68,
+      "ignorable": true,
+      "identifier": "classConstant.nonObject"
+    },
+    {
+      "file": "origin-conditions.php",
+      "message": "Cannot access constant AFTER on mixed.",
+      "line": 69,
+      "ignorable": true,
+      "identifier": "classConstant.nonObject"
+    },
+    {
+      "file": "origin-conditions.php",
+      "message": "Cannot access constant NO on mixed.",
+      "line": 73,
+      "ignorable": true,
+      "identifier": "classConstant.nonObject"
+    },
+    {
+      "file": "origin-conditions.php",
+      "message": "Cannot access constant YES on mixed.",
+      "line": 73,
+      "ignorable": true,
+      "identifier": "classConstant.nonObject"
+    },
+    {
+      "file": "origin-conditions.php",
+      "message": "Function ConstantOriginConditions\\reversedMutation() has parameter $implicit with no type specified.",
+      "line": 76,
+      "ignorable": true,
+      "identifier": "missingType.parameter"
+    },
+    {
+      "file": "origin-conditions.php",
+      "message": "Cannot access constant YES on mixed.",
+      "line": 77,
+      "ignorable": true,
+      "identifier": "classConstant.nonObject"
+    },
+    {
+      "file": "origin-conditions.php",
+      "message": "Function ConstantOriginConditions\\bothMutate() has parameter $implicit with no type specified.",
+      "line": 81,
+      "ignorable": true,
+      "identifier": "missingType.parameter"
+    },
+    {
+      "file": "origin-conditions.php",
+      "message": "Cannot access constant AFTER on mixed.",
+      "line": 88,
+      "ignorable": true,
+      "identifier": "classConstant.nonObject"
+    },
+    {
+      "file": "origin-conditions.php",
+      "message": "Function ConstantOriginConditions\\nativeReceiver() has parameter $implicit with no type specified.",
+      "line": 91,
+      "ignorable": true,
+      "identifier": "missingType.parameter"
+    },
+    {
+      "file": "origin-conditions.php",
+      "message": "Cannot access constant NO on int.",
+      "line": 92,
+      "ignorable": true,
+      "identifier": "classConstant.nonObject"
+    },
+    {
+      "file": "origin-conditions.php",
+      "message": "Function ConstantOriginConditions\\shortCircuitMutation() has parameter $implicit with no type specified.",
+      "line": 96,
+      "ignorable": true,
+      "identifier": "missingType.parameter"
+    },
+    {
+      "file": "origin-conditions.php",
+      "message": "Cannot access constant AND on mixed.",
+      "line": 98,
+      "ignorable": true,
+      "identifier": "classConstant.nonObject"
+    }
+  ]
+}

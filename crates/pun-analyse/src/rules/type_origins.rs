@@ -1,6 +1,7 @@
 //! Source edges for information Mago erases: PHPDoc shape order and explicit mixed. These are not inferred types.
-//! Only straight-line local copies, declarations and inline call arguments carry an origin. Replacements,
-//! reference escapes and control-flow joins forget it. Offset unsets preserve source metadata, not values;
+//! Local copies, declarations and inline call arguments carry an origin. If/ternary/short-circuit branches
+//! read incoming state and join common origins or the upstream-selected equal mixed declaration. Other flow
+//! joins, replacements and reference escapes forget origins. Offset unsets preserve source metadata, not values;
 //! conversion still requires Mago's actual expression type, including its post-unset narrowing.
 
 use std::collections::HashMap;
@@ -18,6 +19,7 @@ use super::super::{doc, function_checks};
 
 pub(in super::super) type Function = (Word, Word);
 
+#[derive(PartialEq, Eq)]
 pub(in super::super) struct Call {
     pub name: String,
     /// An instance receiver, whose actual inferred type must resolve the method before its docs are used.
@@ -27,12 +29,13 @@ pub(in super::super) struct Call {
     pub args: Vec<(Option<String>, Span)>,
 }
 
+#[derive(PartialEq, Eq)]
 pub(in super::super) struct MethodCallGuard {
     pub receiver: Span,
     pub name: String,
 }
 
-#[derive(Clone)]
+#[derive(Clone, PartialEq, Eq)]
 pub(in super::super) enum Origin {
     Parameter(Function, usize),
     Annotation(Span, String, Option<Function>),
@@ -53,11 +56,10 @@ pub(in super::super) type Origins = HashMap<Span, Origin>;
 fn branching(e: &Expression) -> bool {
     matches!(
         e,
-        Expression::Conditional(_)
-            | Expression::Match(_)
+        Expression::Match(_)
             | Expression::Call(mago_syntax::cst::Call::NullSafeMethod(_))
             | Expression::Access(Access::NullSafeProperty(_))
-    ) || matches!(e, Expression::Binary(b) if b.operator.is_logical() || b.operator.is_null_coalesce())
+    )
 }
 
 pub(super) fn collect(
@@ -157,6 +159,34 @@ impl Sources<'_, '_> {
         (self.locals, self.current) = self.stack.pop().unwrap();
     }
 
+    fn explicit_mixed_parameter(&self, origin: &Origin) -> bool {
+        match origin {
+            Origin::Parameter(function, index) => self.codebase.function_likes.get(function)
+                .map(|f| &f.parameters[*index])
+                .is_some_and(|p| p.type_declaration_metadata.as_ref().is_none_or(|t| t.type_union.is_mixed())
+                    && p.type_metadata.as_ref().is_some_and(|t| t.type_union.is_mixed())),
+            Origin::Copy(span) => self.found.get(span).is_some_and(|o| self.explicit_mixed_parameter(o)),
+            _ => false,
+        }
+    }
+
+    fn merge(&mut self, mut paths: Vec<HashMap<Vec<u8>, Origin>>) {
+        let last = paths.pop().unwrap_or_default();
+        self.locals.clear();
+        for (name, origin) in last {
+            if !paths.iter().all(|p| p.contains_key(&name)) {
+                continue;
+            }
+            // ExpressionTypeHolder::and() keeps its left type when MixedType::equals() ignores the
+            // explicit flag. Callers order paths as the upstream merge, not by origin preference.
+            if self.explicit_mixed_parameter(&origin)
+                || paths.iter().all(|p| p.get(&name) == Some(&origin))
+            {
+                self.locals.insert(name, origin);
+            }
+        }
+    }
+
     fn closure(&mut self, span: Span, params: &FunctionLikeParameterList) {
         let callback = self.calls.last().and_then(|call| {
             let call = call.as_ref()?;
@@ -237,8 +267,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Sources<'_, 'arena> {
     fn walk_in_statement(&mut self, s: &'ast Statement<'arena>, _: &mut ()) {
         if matches!(
             s,
-            Statement::If(_)
-                | Statement::For(_)
+            Statement::For(_)
                 | Statement::Foreach(_)
                 | Statement::While(_)
                 | Statement::DoWhile(_)
@@ -254,8 +283,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Sources<'_, 'arena> {
     fn walk_out_statement(&mut self, s: &'ast Statement<'arena>, _: &mut ()) {
         if matches!(
             s,
-            Statement::If(_)
-                | Statement::For(_)
+            Statement::For(_)
                 | Statement::Foreach(_)
                 | Statement::While(_)
                 | Statement::DoWhile(_)
@@ -268,6 +296,71 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Sources<'_, 'arena> {
             self.control_depth -= 1;
         }
     }
+
+    fn walk_if(&mut self, i: &'ast If<'arena>, ctx: &mut ()) {
+        self.walk_expression(i.condition, ctx);
+        let mut branches: Vec<(Option<&Expression>, Vec<&Statement>)> = Vec::new();
+        let has_else = match &i.body {
+            IfBody::Statement(b) => {
+                branches.push((None, vec![b.statement]));
+                branches.extend(b.else_if_clauses.iter().map(|e| (Some(e.condition), vec![e.statement])));
+                if let Some(e) = &b.else_clause {
+                    branches.push((None, vec![e.statement]));
+                }
+                b.else_clause.is_some()
+            }
+            IfBody::ColonDelimited(b) => {
+                branches.push((None, b.statements.iter().collect()));
+                branches.extend(b.else_if_clauses.iter().map(|e| (Some(e.condition), e.statements.iter().collect())));
+                if let Some(e) = &b.else_clause {
+                    branches.push((None, e.statements.iter().collect()));
+                }
+                b.else_clause.is_some()
+            }
+        };
+        let mut next = self.locals.clone();
+        let mut paths = Vec::new();
+        for (condition, statements) in branches {
+            self.locals = next;
+            if let Some(condition) = condition {
+                self.walk_expression(condition, ctx);
+            }
+            next = self.locals.clone();
+            for statement in &statements {
+                self.walk_statement(statement, ctx);
+            }
+            if !super::super::scope::statements_terminate(statements.into_iter()) {
+                paths.push(self.locals.clone());
+            }
+        }
+        if !has_else {
+            paths.push(next);
+        }
+        self.merge(paths);
+    }
+
+    fn walk_conditional(&mut self, c: &'ast Conditional<'arena>, ctx: &mut ()) {
+        self.walk_expression(c.condition, ctx);
+        let entry = self.locals.clone();
+        if let Some(then) = c.then {
+            self.walk_expression(then, ctx);
+        }
+        let yes = std::mem::replace(&mut self.locals, entry);
+        self.walk_expression(c.r#else, ctx);
+        self.merge(vec![self.locals.clone(), yes]);
+    }
+
+    fn walk_binary(&mut self, b: &'ast Binary<'arena>, ctx: &mut ()) {
+        self.walk_expression(b.lhs, ctx);
+        let skipped = self.locals.clone();
+        self.walk_expression(b.rhs, ctx);
+        if matches!(b.operator, BinaryOperator::And(_) | BinaryOperator::LowAnd(_) | BinaryOperator::Or(_) | BinaryOperator::LowOr(_))
+            || b.operator.is_null_coalesce()
+        {
+            self.merge(vec![self.locals.clone(), skipped]);
+        }
+    }
+
     fn walk_in_unset(&mut self, u: &'ast Unset<'arena>, _: &mut ()) {
         self.unset_targets
             .extend(u.values.iter().rev().map(HasSpan::span));
@@ -283,8 +376,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Sources<'_, 'arena> {
             self.locals.clear();
             self.control_depth += 1;
         }
-        if self.control_depth == 0
-            && let Expression::Variable(Variable::Direct(v)) = e
+        if let Expression::Variable(Variable::Direct(v)) = e
             && let Some(origin) = self.locals.get(v.name)
         {
             self.found.insert(e.span(), origin.clone());

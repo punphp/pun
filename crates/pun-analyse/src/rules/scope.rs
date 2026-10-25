@@ -175,6 +175,9 @@ pub fn falsy(
 /// ExprPrinter identities for the value expressions used as class-constant receivers/selectors. Unlike
 /// inferred types, these identities distinguish two variables holding the same class and a dynamic selector
 /// from its current finite values. Parentheses and imported names do not change the identity.
+/// Calls, indirect variables and dynamic property selectors still need their purity/name contracts; these
+/// unavailable identities, type-dependent comparisons and falsy-mixed assignment conditions remain
+/// TypeSpecifier mapping boundaries.
 fn expression_key(e: &Expression, resolve: &dyn Fn(&Identifier) -> String) -> Option<String> {
     let key = |e| expression_key(e, resolve);
     Some(match super::types::flow::unparen(e) {
@@ -717,9 +720,6 @@ impl<'a, 'arena> Checker<'a, 'arena> {
             _ => false,
         };
         self.retain_guards(|guard| !contains(guard));
-        for guards in self.vars.values_mut() {
-            guards.retain(|g| !contains(g));
-        }
     }
 
     fn invalidate_element(&mut self, item: &ArrayElement) {
