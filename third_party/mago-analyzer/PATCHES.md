@@ -871,3 +871,16 @@ Pun's level helper still treats this error as implicit mixed when level 10 check
 The existing `coalesce_scope` oracle fixture includes nullable RHS reads, known-set plain operators,
 counterfactual assignment operators, optional self-assignment, and absent self-assignment. Its saved
 diagnostics come from PHPStan 2.3.1 through `scripts/export-analyse-expected.py`.
+
+## Named variadic reference arguments
+
+`invocation/analyzer.rs::find_named_parameter_offset` binds an unmatched named argument to the final
+variadic parameter. PHPStan's `ArgumentsNormalizer::reorderArgs()` and `ArgumentsHandler::processArgs()`
+use that parameter for both type checking and reference writes. Retaining only the argument's allowed-read
+observation would hide the initial undefined read but leave subsequent reads incorrectly undefined.
+
+Pun's resolved argument observer also reads callable-signature parameters. Closure parameters have no
+separate native reflection in PHPStan; typed closure and callable output references can create variables,
+while a named function's non-nullable native reference remains an input. The public `variables` fixture
+checks positional, named, variadic, arrow, and typed-callable outputs alongside ordinary value and native
+input-reference controls. Expectations come from PHPStan 2.3.1.

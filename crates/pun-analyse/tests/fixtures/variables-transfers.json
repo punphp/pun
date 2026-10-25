@@ -218,5 +218,15 @@
     267,
     "variable.undefined",
     "Call to function compact() contains undefined variable $never."
+  ],
+  [
+    298,
+    "variable.undefined",
+    "Undefined variable: $missingInput"
+  ],
+  [
+    299,
+    "variable.undefined",
+    "Undefined variable: $missingNativeInput"
   ]
 ]

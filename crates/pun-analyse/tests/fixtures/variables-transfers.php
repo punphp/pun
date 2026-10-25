@@ -280,3 +280,30 @@ function unreachableKnown(): void
     return;
     compact('known');
 }
+
+function closureReferences(): void
+{
+    $write = function (int &$output): void {};
+    $write($positional);
+    $write(output: $named);
+    echo $positional, $named;
+    $variadic = function (int &...$outputs): void {};
+    $variadic($first, $second);
+    $variadic(other: $namedVariadic);
+    echo $first, $second, $namedVariadic;
+    $arrow = fn (int &$output) => null;
+    $arrow($arrowOutput);
+    echo $arrowOutput;
+    $read = function (int $input): void {};
+    $read($missingInput);
+    nativeReference($missingNativeInput);
+}
+
+function nativeReference(int &$output): void {}
+
+/** @param callable(int &$output): void $write */
+function typedCallableReference(callable $write): void
+{
+    $write($typedOutput);
+    echo $typedOutput;
+}

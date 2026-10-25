@@ -125,13 +125,13 @@ where
     'ctx: 'target,
 {
     let argument_variable_name = concat_word!("$", argument_name);
-    if let InvocationTarget::FunctionLike { metadata, effective_signature: None, .. } = target {
-        return metadata.parameters.iter().position(|parameter| parameter.name.0 == argument_variable_name);
-    }
-
     target
         .iter_parameters()
         .position(|parameter| parameter.get_name().is_some_and(|param_name| argument_variable_name == param_name.0))
+        .or_else(|| {
+            let offset = target.parameter_count().checked_sub(1)?;
+            target.get_parameter(offset)?.is_variadic().then_some(offset)
+        })
 }
 
 /// Adjusts argument offset for variadic parameters.

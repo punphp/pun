@@ -302,9 +302,9 @@ pub(super) fn allowed_expressions(program: &Program) -> HashSet<Span> {
     allowed.0
 }
 
-/// ArgumentsHandler::processArgs(): output parameters allow undefined target chains, but a user parameter
-/// with a non-nullable native type and a built-in's read-reference parameter do not. The engine's
-/// inside_variable_reference flag cannot distinguish these cases.
+/// ArgumentsHandler::processArgs(): output parameters allow undefined target chains. A named user parameter
+/// with a non-nullable native type and a built-in's read-reference parameter do not. Closure/callable
+/// parameters have no separate native reflection. The engine's reference flag cannot distinguish these cases.
 pub(super) fn allow_arguments(
     invocation: &InvocationInfo<'_, '_, '_>,
     builtins: &pun_phpstan::symbols::Symbols,
@@ -362,24 +362,35 @@ pub(super) fn allow_arguments(
                     p.by_ref == pun_phpstan::symbols::ByRef::CreatesNewVariable
                 })
         } else {
-            metadata
-                .and_then(|m| match arg.get_parameter_name() {
-                    Some(name) => m
-                        .parameters
-                        .iter()
-                        .find(|p| &p.get_name().0.as_bytes()[1..] == name)
-                        .or_else(|| m.parameters.last().filter(|p| p.flags.is_variadic())),
-                    _ => m
-                        .parameters
-                        .get(i)
-                        .or_else(|| m.parameters.last().filter(|p| p.flags.is_variadic())),
-                })
-                .is_some_and(|p| {
-                    p.flags.is_by_reference()
-                        && p.type_declaration_metadata
-                            .as_ref()
-                            .is_none_or(|t| t.type_union.has_null() || t.type_union.is_mixed())
-                })
+            let parameter = match arg.get_parameter_name() {
+                Some(name) => invocation
+                    .target
+                    .iter_parameters()
+                    .find(|p| p.get_name().is_some_and(|n| &n.0.as_bytes()[1..] == name)),
+                _ => invocation.target.get_parameter(i),
+            }
+            .or_else(|| {
+                invocation
+                    .target
+                    .iter_parameters()
+                    .last()
+                    .filter(|p| p.is_variadic())
+            });
+            parameter.is_some_and(|p| {
+                p.is_by_reference()
+                    && (invocation
+                        .target
+                        .get_function_like_identifier()
+                        .is_some_and(|id| id.is_closure())
+                        || metadata
+                            .and_then(|m| {
+                                m.parameters
+                                    .iter()
+                                    .find(|original| Some(original.get_name()) == p.get_name())
+                            })
+                            .and_then(|p| p.type_declaration_metadata.as_ref())
+                            .is_none_or(|t| t.type_union.has_null() || t.type_union.is_mixed()))
+            })
         };
         if permits {
             allow_target(value, allowed);
