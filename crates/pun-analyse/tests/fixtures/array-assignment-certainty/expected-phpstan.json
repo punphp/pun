@@ -1,0 +1,79 @@
+{
+  "totals": {
+    "errors": 0,
+    "file_errors": 10
+  },
+  "files": {
+    "root-index.php": {
+      "errors": 3,
+      "messages": [
+        {
+          "message": "Function ArrayAssignmentCertainty\\rootIndex() returns void but does not have any side effects.",
+          "line": 5,
+          "ignorable": true,
+          "identifier": "void.pure"
+        },
+        {
+          "message": "Variable $root in isset() is never defined.",
+          "line": 7,
+          "ignorable": true,
+          "identifier": "isset.variable"
+        },
+        {
+          "message": "Undefined variable: $root",
+          "line": 8,
+          "ignorable": true,
+          "identifier": "variable.undefined"
+        }
+      ]
+    },
+    "transfers.php": {
+      "errors": 7,
+      "messages": [
+        {
+          "message": "Dumped type: non-empty-list<int>",
+          "line": 14,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: non-empty-list<int>",
+          "line": 27,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Undefined variable: $right",
+          "line": 43,
+          "ignorable": true,
+          "identifier": "variable.undefined"
+        },
+        {
+          "message": "Call to function compact() contains undefined variable $right.",
+          "line": 44,
+          "ignorable": true,
+          "identifier": "variable.undefined"
+        },
+        {
+          "message": "Variable $left might not be defined.",
+          "line": 59,
+          "ignorable": true,
+          "identifier": "variable.undefined"
+        },
+        {
+          "message": "Call to function compact() contains possibly undefined variable $left.",
+          "line": 60,
+          "ignorable": true,
+          "identifier": "variable.undefined"
+        },
+        {
+          "message": "Undefined variable: $missing",
+          "line": 67,
+          "ignorable": true,
+          "identifier": "variable.undefined"
+        }
+      ]
+    }
+  },
+  "errors": []
+}

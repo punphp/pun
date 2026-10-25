@@ -752,3 +752,33 @@ That separate dependency change is not included here.
 Fresh coverage against `00a825d6` measures **30/30 changed analyzer executable lines** and
 **169/169 test executable lines**, without exclusions. The instrumented private-target run passes
 all 36 tests in `generic_defaults`, `callback_gather`, `debug`, `native_lane`, and `instantiation`.
+
+## Array assignment certainty
+
+`src/expression/assignment/array_assignment.rs::analyze()` invalidates certainty at the final root
+transfer. Invalidating the root also removes stale absence and conditional holders for its descendant
+paths. The written root loses its possibly-undefined flags. Other locals retain their correlations.
+This happens after every index is read and after the fallible property update, not during the
+intermediate array-type calculations.
+
+Without this transfer, `$a[$t] = []` can retain the absence established by `!isset($a[$t])`.
+Input-reference handling then skips `array_unshift()`'s mutation. The existing level-4
+`Arrays/DeadForeachRuleTest::testBug2457` consequently reports a false `foreach.emptyArray` at line 24.
+PHPStan 2.3.1 reports no errors. No loop or reporting-rule changes are needed.
+
+The public `array_assignment_certainty` tests add precise non-loop mutation checks for assigned
+dynamic and nested paths. Both dumps change from `list<int>` to PHPStan's `non-empty-list<int>`.
+The controls retain unrelated correlated absence, forget a mutated discriminator, and report an
+undefined index. A public Analyzer observer also checks that a root used as its own nested index
+remains absent during the index read and becomes defined only after the write.
+
+Capture the oracle from `crates/pun-analyse/tests/fixtures/array-assignment-certainty`:
+
+```sh
+php /home/user/workspace/repo/.oracle/phpstan/vendor/bin/phpstan analyse \
+	-c phpstan.neon --no-progress --error-format=json |
+	jq '.files |= with_entries(.key |= split("/")[-1])' > expected-phpstan.json
+```
+
+Fresh LLVM profiles from the focused tests and their array, variable, callback, dead-code, and native
+controls cover **4/4 changed production executable lines**. No exclusions or gap entries change.

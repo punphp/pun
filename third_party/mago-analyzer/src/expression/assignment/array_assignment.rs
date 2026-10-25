@@ -116,7 +116,7 @@ where
     }
 
     let root_array_type = Rc::unwrap_or_clone(root_array_type);
-    let root_array_type = if !key_values.is_empty() {
+    let mut root_array_type = if !key_values.is_empty() {
         update_type_with_key_values(context, root_array_type, &current_type, &key_values, index_type.as_ref())
     } else if !root_is_string {
         update_array_assignment_child_type(
@@ -148,8 +148,13 @@ where
         )?;
     }
 
+    root_array_type.set_possibly_undefined(false, None);
+    root_array_type.set_possibly_undefined_from_try(false);
     let root_array_type = Rc::new(root_array_type);
     if let Some(root_var_id) = &root_var_id {
+        // All indices have been read. The committed write replaces absence and
+        // conditional holders for this root and its descendants, not other locals.
+        block_context.invalidate_variable_certainty(*root_var_id);
         block_context.locals.insert(*root_var_id, Rc::clone(&root_array_type));
 
         if let Some(constraint) = block_context.by_reference_constraints.get(root_var_id)
