@@ -782,3 +782,27 @@ php /home/user/workspace/repo/.oracle/phpstan/vendor/bin/phpstan analyse \
 
 Fresh LLVM profiles from the focused tests and their array, variable, callback, dead-code, and native
 controls cover **4/4 changed production executable lines**. No exclusions or gap entries change.
+
+## Assignment certainty and null-coalesce scopes
+
+`expression/assignment/mod.rs` clears the two possibly-undefined flags on a local's assigned type.
+The source expression keeps its flags. PHPStan's
+[`AssignHandler`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Analyser/ExprHandler/AssignHandler.php#L1361-L1371)
+assigns a direct local with certainty `yes`, independently of the source value's availability.
+This prevents an optional array offset or a coalesced property from making its assigned local optional.
+
+`expression/binary/null_coalesce.rs` joins the isset-success scope with the RHS scope through the shared
+variable-scope operations. It narrows the existing root local without evaluating the LHS twice.
+An absent root stays absent. A `never` RHS contributes no continuing scope, and the surviving LHS is
+non-null rather than truthy. PHPStan's
+[`CoalesceHandler`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Analyser/ExprHandler/CoalesceHandler.php#L88-L105)
+uses the same join, including RHS variable effects when the LHS is statically known.
+The expression's result-type selection and the skipped RHS's exception isolation stay unchanged.
+The passive native lane gains no transfers.
+
+`crates/pun-analyse/tests/coalesce_scope.rs` compares public diagnostics and type dumps with PHPStan 2.3.1.
+The fixture covers copied offsets, optional creation and reassignment, known-null and known-set operands,
+an absent LHS, self-assignment, and a terminating RHS. Regenerate its oracle with
+`scripts/export-analyse-expected.py crates/pun-analyse/tests/fixtures/coalesce-scope`.
+The unchanged level-1 and level-4 Variables fixtures also cover bug-10577, pr-4372, bug-14459, and
+unnecessary-null-coalesce-side-effects. No existing fixture expectation or gap is changed by this patch.

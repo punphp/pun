@@ -730,6 +730,10 @@ pub fn analyze_assignment_to_variable<'ctx, 'arena, A>(
     block_context.derived_local_sources.remove(&variable_id);
     block_context.possibly_undefined_variable_ids.remove(&variable_id);
 
+    // The source may be an optional offset or a conditional local, but this write defines its target.
+    Rc::make_mut(&mut assigned_type).set_possibly_undefined(false, None);
+    Rc::make_mut(&mut assigned_type).set_possibly_undefined_from_try(false);
+
     if artifacts.editor.is_some() {
         artifacts.set_rc_expression_type(&variable_span, Rc::clone(&assigned_type));
     }

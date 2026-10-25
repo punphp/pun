@@ -2,7 +2,7 @@ use mago_allocator::Arena;
 use std::borrow::Cow;
 use std::rc::Rc;
 
-use mago_algebra::find_satisfying_assignments;
+use mago_algebra::AssertionMap;
 use mago_codex::assertion::Assertion;
 use mago_codex::ttype::TType;
 use mago_codex::ttype::atomic::TAtomic;
@@ -26,11 +26,9 @@ use crate::artifacts::AnalysisArtifacts;
 use crate::code::IssueCode;
 use crate::context::Context;
 use crate::context::block::BlockContext;
-use crate::context::scope::if_scope::IfScope;
 use crate::error::AnalysisError;
-use crate::formula::get_formula;
 use crate::reconciler::reconcile_keyed_types;
-use crate::utils::conditional;
+use crate::utils::expression::get_root_expression_id;
 use crate::utils::misc::unwrap_expression;
 
 /// Analyzes the null coalescing operator (`??`).
@@ -71,8 +69,29 @@ where
         return Ok(());
     };
 
+    // CoalesceHandler joins the isset-success scope with the RHS scope, even for a statically known LHS.
+    // Narrow without walking the LHS again: its assignments and observer events must occur only once.
+    let mut lhs_context = block_context.clone();
+    if let Some(root) = get_root_expression_id(binary.lhs)
+        && !block_context.variable_certainty(root).is_absent()
+    {
+        let mut assertions = AssertionMap::default();
+        assertions.insert(root, vec![vec![Assertion::IsIsset]]);
+        reconcile_keyed_types(
+            context,
+            &assertions,
+            AssertionMap::default(),
+            &mut lhs_context,
+            &mut WordSet::default(),
+            &WordSet::default(),
+            &binary.lhs.span(),
+            false,
+            false,
+        );
+    }
+    let lhs_scope = lhs_context.variable_scope();
+    let rhs_scope;
     let mut result_type: TUnion;
-    let mut rhs_is_never = false;
 
     let is_static_var = is_rooted_in_static_local(binary.lhs, &block_context.static_locals);
 
@@ -97,6 +116,7 @@ where
 
         binary.rhs.analyze(context, block_context, artifacts)?;
         result_type = artifacts.get_expression_type(&binary.rhs).cloned().unwrap_or_else(get_mixed); // Fallback if RHS analysis fails
+        rhs_scope = block_context.variable_scope();
     } else if !lhs_type.has_nullish()
         && !lhs_type.possibly_undefined()
         && !lhs_type.possibly_undefined_from_try()
@@ -132,21 +152,27 @@ where
         let mut dead_rhs_context = block_context.clone();
         dead_rhs_context.flags.set_has_returned(true);
         binary.rhs.analyze(context, &mut dead_rhs_context, artifacts)?;
+        rhs_scope = dead_rhs_context.variable_scope();
     } else {
         let non_null_lhs_type = lhs_type.to_non_nullable();
         let has_returned = block_context.flags.has_returned();
         block_context.flags.set_has_returned(false);
         binary.rhs.analyze(context, block_context, artifacts)?;
         block_context.flags.set_has_returned(block_context.flags.has_returned() && has_returned);
+        rhs_scope = block_context.variable_scope();
 
         let rhs_type =
             artifacts.get_expression_type(&binary.rhs).map_or_else(|| Cow::Owned(get_mixed()), Cow::Borrowed);
 
-        rhs_is_never = rhs_type.is_never();
-
         result_type =
             combine_union_types(&non_null_lhs_type, &rhs_type, context.codebase, context.settings.combiner_options());
     }
+
+    let mut continuing_scopes = vec![lhs_scope];
+    if !artifacts.get_expression_type(&binary.rhs).is_some_and(TUnion::is_never) {
+        continuing_scopes.push(rhs_scope);
+    }
+    block_context.merge_variable_scope_types(&continuing_scopes, context.codebase);
 
     // Check if clauses guarantee non-null result from OR assertion
     // If we have assert($x !== null || $y !== null), then $x ?? $y cannot be null
@@ -179,47 +205,6 @@ where
     }
 
     artifacts.set_rc_expression_type(binary, Rc::new(result_type));
-
-    if rhs_is_never {
-        let assertion_context = context.get_assertion_context_from_block(block_context);
-        let if_clauses = get_formula(
-            binary.lhs.span(),
-            binary.lhs.span(),
-            binary.lhs,
-            assertion_context,
-            artifacts,
-            &context.settings.algebra_thresholds(),
-            context.settings.formula_size_threshold,
-        )
-        .unwrap();
-
-        let mut if_scope = IfScope::new();
-        let mut inner_block_context = block_context.clone();
-        inner_block_context.flags.set_inside_isset(true);
-        let if_conditional_scope =
-            conditional::analyze(context, &mut inner_block_context, artifacts, &mut if_scope, binary.lhs, false)?;
-        let mut conditionally_referenced_variable_ids = if_conditional_scope.conditionally_referenced_variable_ids;
-
-        let (reconcilable_if_types, active_if_types) = find_satisfying_assignments(
-            &if_clauses,
-            Some(binary.lhs.span()),
-            &mut conditionally_referenced_variable_ids,
-        );
-
-        let mut changed_variable_ids = mago_word::WordSet::default();
-
-        reconcile_keyed_types(
-            context,
-            &reconcilable_if_types,
-            active_if_types,
-            block_context,
-            &mut changed_variable_ids,
-            &conditionally_referenced_variable_ids,
-            &binary.lhs.span(),
-            false,
-            false,
-        );
-    }
 
     Ok(())
 }
