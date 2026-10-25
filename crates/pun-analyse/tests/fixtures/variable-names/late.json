@@ -1,0 +1,126 @@
+{
+  "default": [
+    {
+      "message": "Call to function compact() contains undefined variable $intBranch.",
+      "line": 12,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Call to function compact() contains undefined variable $stringBranch.",
+      "line": 12,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Undefined variable: $intBranch",
+      "line": 13,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Undefined variable: $stringBranch",
+      "line": 13,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Call to function compact() contains undefined variable $intBranch.",
+      "line": 15,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Call to function compact() contains undefined variable $stringBranch.",
+      "line": 15,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Call to function compact() contains undefined variable $intArray.",
+      "line": 25,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Call to function compact() contains undefined variable $stringArray.",
+      "line": 25,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Call to function compact() contains undefined variable $intArray.",
+      "line": 27,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Call to function compact() contains undefined variable $stringArray.",
+      "line": 27,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    }
+  ],
+  "maybe": [
+    {
+      "message": "Call to function compact() contains undefined variable $intBranch.",
+      "line": 12,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Call to function compact() contains undefined variable $stringBranch.",
+      "line": 12,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Undefined variable: $intBranch",
+      "line": 13,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Undefined variable: $stringBranch",
+      "line": 13,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Call to function compact() contains undefined variable $intBranch.",
+      "line": 15,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Call to function compact() contains undefined variable $stringBranch.",
+      "line": 15,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Call to function compact() contains undefined variable $intArray.",
+      "line": 25,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Call to function compact() contains undefined variable $stringArray.",
+      "line": 25,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Call to function compact() contains undefined variable $intArray.",
+      "line": 27,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Call to function compact() contains undefined variable $stringArray.",
+      "line": 27,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    }
+  ]
+}

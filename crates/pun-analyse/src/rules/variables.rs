@@ -430,9 +430,11 @@ pub(super) fn variable(c: &mut Checker, variable: &Variable) {
         };
         let mut names = Vec::new();
         constant_strings(&ty, &mut names);
+        let mut seen = HashSet::new();
         let main = scope.main;
         let names: Vec<_> = names
             .into_iter()
+            .filter(|name| seen.insert(name.clone()))
             .map(|name| {
                 let certainty = scope.get(&name);
                 (name, certainty)
@@ -511,13 +513,25 @@ pub(super) fn compact(c: &mut Checker, call: &FunctionCall) {
     }
 }
 
-/// Type::getConstantStrings(), including constant members of union types.
+/// Type::getConstantStrings(): template subclasses inherit extraction from their concrete parent.
 fn constant_strings(ty: &Type, out: &mut Vec<String>) {
     match ty {
         Type::ConstString(s) => {
             if !out.contains(s) {
                 out.push(s.clone());
             }
+        }
+        Type::Template(template) => {
+            let mut bound = &template.bound;
+            while let Type::Template(template) = bound {
+                bound = &template.bound;
+                // TemplateTypeFactory selects TemplateStringType before TemplateConstantStringType
+                // when the bound is itself a string template. Its inherited extraction is empty.
+                if matches!(bound, Type::ConstString(_)) {
+                    return;
+                }
+            }
+            constant_strings(bound, out);
         }
         Type::Union(types) | Type::Benevolent(types) => {
             let mut strings = Vec::new();
@@ -558,6 +572,7 @@ fn find_constant_strings(ty: &Type, out: &mut Vec<String>) {
 fn constant_arrays(ty: &Type) -> Vec<&pun_phpstan::types::ConstArray> {
     match ty {
         Type::ConstArray(a) => vec![a],
+        Type::Template(template) => constant_arrays(&template.bound),
         Type::Union(types) | Type::Benevolent(types) => {
             let mut arrays = Vec::new();
             for ty in types {

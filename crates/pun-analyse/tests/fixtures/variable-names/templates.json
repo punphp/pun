@@ -1,0 +1,390 @@
+{
+  "default": [
+    {
+      "message": "Call to function compact() contains undefined variable $missingLiteral.",
+      "line": 11,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Undefined variable: $missingLiteral",
+      "line": 12,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Call to function compact() contains undefined variable $missingLiteral.",
+      "line": 14,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Undefined variable: $missingLiteral",
+      "line": 15,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Call to function compact() contains undefined variable $missingUnion.",
+      "line": 25,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Undefined variable: $missingUnion",
+      "line": 26,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Call to function compact() contains undefined variable $first.",
+      "line": 35,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Call to function compact() contains undefined variable $second.",
+      "line": 35,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Undefined variable: $first",
+      "line": 36,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Undefined variable: $second",
+      "line": 36,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Call to function compact() contains undefined variable $missingDeep.",
+      "line": 46,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Call to function compact() contains undefined variable $missingNested.",
+      "line": 46,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Call to function compact() contains undefined variable $missingDeep.",
+      "line": 48,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Call to function compact() contains undefined variable $missingNested.",
+      "line": 48,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Call to function compact() contains undefined variable $nestedTemplate.",
+      "line": 61,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Call to function compact() contains undefined variable $nestedTemplate.",
+      "line": 61,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Call to function compact() contains undefined variable $arrayUnionFirst.",
+      "line": 81,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Call to function compact() contains undefined variable $arrayUnionSecond.",
+      "line": 81,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Call to function compact() contains undefined variable $arrayChild.",
+      "line": 141,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Call to function compact() contains undefined variable $arrayParent.",
+      "line": 141,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Call to function compact() contains undefined variable $unionChild.",
+      "line": 151,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Call to function compact() contains undefined variable $unionParent.",
+      "line": 151,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Undefined variable: $unionChild",
+      "line": 152,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Undefined variable: $unionParent",
+      "line": 152,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Call to function compact() contains undefined variable $left.",
+      "line": 162,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Call to function compact() contains undefined variable $overlap.",
+      "line": 162,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Call to function compact() contains undefined variable $overlap.",
+      "line": 162,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Call to function compact() contains undefined variable $right.",
+      "line": 162,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Undefined variable: $left",
+      "line": 163,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Undefined variable: $overlap",
+      "line": 163,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Undefined variable: $right",
+      "line": 163,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    }
+  ],
+  "maybe": [
+    {
+      "message": "Call to function compact() contains undefined variable $missingLiteral.",
+      "line": 11,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Undefined variable: $missingLiteral",
+      "line": 12,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Call to function compact() contains undefined variable $missingLiteral.",
+      "line": 14,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Undefined variable: $missingLiteral",
+      "line": 15,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Call to function compact() contains undefined variable $missingUnion.",
+      "line": 25,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Undefined variable: $missingUnion",
+      "line": 26,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Call to function compact() contains undefined variable $first.",
+      "line": 35,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Call to function compact() contains undefined variable $second.",
+      "line": 35,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Undefined variable: $first",
+      "line": 36,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Undefined variable: $second",
+      "line": 36,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Call to function compact() contains undefined variable $missingDeep.",
+      "line": 46,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Call to function compact() contains undefined variable $missingNested.",
+      "line": 46,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Call to function compact() contains undefined variable $missingDeep.",
+      "line": 48,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Call to function compact() contains undefined variable $missingNested.",
+      "line": 48,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Call to function compact() contains undefined variable $nestedTemplate.",
+      "line": 61,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Call to function compact() contains undefined variable $nestedTemplate.",
+      "line": 61,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Call to function compact() contains undefined variable $arrayUnionFirst.",
+      "line": 81,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Call to function compact() contains undefined variable $arrayUnionSecond.",
+      "line": 81,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Call to function compact() contains possibly undefined variable $maybe.",
+      "line": 93,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Variable $maybe might not be defined.",
+      "line": 94,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Call to function compact() contains undefined variable $arrayChild.",
+      "line": 141,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Call to function compact() contains undefined variable $arrayParent.",
+      "line": 141,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Call to function compact() contains undefined variable $unionChild.",
+      "line": 151,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Call to function compact() contains undefined variable $unionParent.",
+      "line": 151,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Undefined variable: $unionChild",
+      "line": 152,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Undefined variable: $unionParent",
+      "line": 152,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Call to function compact() contains undefined variable $left.",
+      "line": 162,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Call to function compact() contains undefined variable $overlap.",
+      "line": 162,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Call to function compact() contains undefined variable $overlap.",
+      "line": 162,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Call to function compact() contains undefined variable $right.",
+      "line": 162,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Undefined variable: $left",
+      "line": 163,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Undefined variable: $overlap",
+      "line": 163,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Undefined variable: $right",
+      "line": 163,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    }
+  ]
+}
