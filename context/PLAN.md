@@ -48,9 +48,12 @@ Pushpak resumed all commands on 2026-10-25. CI stays disabled.
   including attribute constructors and first-class callback policies. The call_user_func purity correction
   passes the complete original fixture and 21 callable, attribute and dead-code controls; both targeted level
   filters pass after removing seven further stale gaps. Optional unresolvable-type tips remain isolated work.
-  Inferred class-constant receivers pass their public oracle matrix but still lack general hasExpressionType
-  guards, so their mapping stays inactive. Isolated workers own those guards, argument reason producers,
-  literal-template variable names, array_rand count bounds and unset offset-query boundaries.
+  Inferred class-constant receivers and expression guards pass eight public tests at levels 0/1/2/7/8/9/10.
+  Incoming explicit-mixed origins survive conditions, while writes invalidate replaced receivers and selectors.
+  The Classes rule and level sweeps pass. Call/purity identities, indirect variables, dynamic property selectors
+  and general type-dependent comparisons remain unsupported, so the mapping stays inactive. Isolated workers
+  own argument reason producers, literal-template scalar buckets, array_rand count bounds and negative mixed
+  guard production; the unset offset-query batch awaits integration.
   Local phar:// archive checks and PHP's two-layer gzip restart limit are integrated: all seven include tests
   and 43 combined argument, array and unset controls pass. Fresh archive expectations match the real PHPStan
   public Analyser byte for byte. Runtime wrappers, PHAR aliases/mounts, OpenSSL signatures and bzip2 remain
@@ -59,7 +62,7 @@ Pushpak resumed all commands on 2026-10-25. CI stays disabled.
   New rules remain inactive. The broad public run passes 245 tests; its sole failed legacy Mago
   comparator now passes with the reader/unset controls after accounting for PHPStan's cascade policy using a
   fresh oracle capture. Its original Mago capture is unchanged. The combined PHPStan crate passes all 54 tests;
-  fresh owning-crate coverage is 9,732/9,735, with three class-name query lines awaiting public controls.
+  fresh owning-crate coverage is 9,735/9,735 after the public class-name compound-query controls.
   Full combined analyser fixture gates and coverage still need measurement. The 1,446-page docs build and
   rendered call, unpacking and archive-contract paragraphs pass inspection.
 - **Native scalar casts:** the subsequent default-off slice passes 37 combined native, callback, slice, debug
@@ -393,7 +396,7 @@ Gate passed ea7a84bc2d4c4f4b90ad177d911e6ade3accf253
 | analyse level 0 attributes: complete the twelve existing attribute-rule contracts against AttributesCheck, including constructor types and version/named-argument controls, before activating their mappings | doing (flag, group and level-1/5 controls verified; shared no-named-argument contract integrated; combined activation gate remains) |
 | analyse shared arguments: port FunctionCallParametersCheck's allowed-constant reflection metadata, constant identity, exclusive groups and bitmask checks with configured PHP-version and level gates | doing (integrated locally; three public regressions pass with PHPStan 2.3.1 expectations; combined full-crate verification remains) |
 | analyse shared arguments: port FunctionCallParametersCheck's bindable-static-closure and unresolvable-parameter checks, including attribute constructors | doing (shared contracts and first-class callback policies integrated; 21 combined public controls and targeted level filters pass; optional unresolvable-type tips remain isolated work) |
-| analyse class constants: extend ClassConstantRule's receiver checks beyond named classes and self/static/parent to inferred expression receivers at higher levels | doing (receiver matrix integrated locally; isolated scope-guard follow-up; mapping stays unported until hasExpressionType parity) |
+| analyse class constants: extend ClassConstantRule's receiver checks beyond named classes and self/static/parent to inferred expression receivers at higher levels | doing (receiver, expression-guard and incoming mixed-origin matrices integrated; eight public tests and Classes rule/level sweeps pass; call/purity identities, indirect variables, dynamic property selectors and general type-dependent comparisons remain; mapping stays unported) |
 | analyse call termination: distinguish implicit empty-domain inference from explicitly never-returning calls, preserving nested evaluation and PHPStan reachability | doing (constant-empty array_rand correction integrated and 14 neighboring controls pass; non-empty count bounds isolated; general generic-bottom termination remains unported) |
 | analyse level 0 includes: extend integrated RequireFileExistsRule and IncludedFilePathResolver beyond local files to supported stream paths before whole-rule activation | doing (local phar:// archive members and gzip restart boundary integrated; seven include tests and fresh PHPStan capture pass; runtime wrappers, aliases/mounts, OpenSSL signatures and bzip2 remain unsupported) |
 | analyse native types (needs Pushpak): exact `getNativeType()` needs full/native state on the same control-flow walk; Mago 1.57 exposes one lane and no PHPDoc-disable setting. Choose a maintained Mago source patch or a Pun-native scope engine. Default: preserve PHPStan's paired-state contract and leave native-dependent debug rules unported rather than substitute a comments-disabled second pass | needs Pushpak |

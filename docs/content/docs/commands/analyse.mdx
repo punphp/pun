@@ -45,6 +45,10 @@ Dynamic `new $class` expressions report unknown class names even when another po
 
 Dynamic constant fetches such as `Example::{$name}` check each possible name when the selector has a finite set of string values. The checks preserve branch narrowing and report missing or inaccessible constants.
 
+Class-constant checks retain expression guards across branches, ternaries and short-circuit conditions.
+Writes invalidate guards for the affected receiver or selector.
+General function-call identities, indirect variables, dynamic property selectors and type-dependent comparisons remain unsupported.
+
 Inline non-static closures and arrow functions use the class named by `@param-closure-this`.
 Pun resolves these tags on named functions and methods called through a class name or a single known object class, including nullable receivers.
 Bindings from multiple possible receiver classes remain unsupported.
