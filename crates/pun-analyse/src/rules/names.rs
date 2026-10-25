@@ -5,18 +5,55 @@ use mago_codex::ttype::TType;
 use mago_span::{HasSpan, Span};
 use mago_syntax::cst::*;
 use mago_word::word;
+use pun_phpstan::types::Type;
 
 use super::class_names::{self, Function, Location, Pair};
 use super::reflection::{Known, known};
 use super::scope::Guard;
 use super::{Checker, DISCOVERING_SYMBOLS_TIP};
 
-/// ClassConstantRule for `X::NAME` with a written class and constant name.
+/// ClassConstantRule::processNode(): a written constant or every finite name of a dynamic selector. Inferred
+/// expression types already reflect branch narrowing; an arbitrary string or a non-string union selects none.
 pub fn class_constant<'arena>(c: &mut Checker<'_, 'arena>, access: &ClassConstantAccess<'arena>) {
-    let ClassLikeConstantSelector::Identifier(constant) = &access.constant else {
-        return; // ponytail: dynamic constant names (`X::{$name}`) unchecked
-    };
-    let constant_name = String::from_utf8_lossy(constant.value).into_owned();
+    let mut names = Vec::new();
+    if let ClassLikeConstantSelector::Identifier(id) = &access.constant {
+        names.push(String::from_utf8_lossy(id.value).into_owned());
+    }
+    if let ClassLikeConstantSelector::Expression(selector) = &access.constant
+        && let Some(ty) = c.phpstan_type(selector.expression)
+    {
+        names = constant_strings(&ty);
+    }
+    // PHPStan keys constantNameScopes by the selected name, rather than checking a repeated value twice.
+    let mut seen = std::collections::HashSet::new();
+    for name in names {
+        if seen.insert(name.clone()) {
+            class_constant_named(c, access, &name);
+        }
+    }
+}
+
+/// `getConstantStrings()`: UnionType requires strings in every member, while IntersectionType collects them
+/// from each member (an accessory contributes none). TemplateConstantStringType retains its bound's value.
+fn constant_strings(ty: &Type) -> Vec<String> {
+    match ty {
+        Type::ConstString(s) => vec![s.clone()],
+        Type::Template(t) => constant_strings(&t.bound),
+        Type::Union(parts) | Type::Benevolent(parts) => {
+            let strings: Vec<_> = parts.iter().map(constant_strings).collect();
+            if strings.iter().any(Vec::is_empty) {
+                Vec::new()
+            } else {
+                strings.concat()
+            }
+        }
+        Type::Intersection(parts) => parts.iter().flat_map(constant_strings).collect(),
+        _ => Vec::new(),
+    }
+}
+
+/// ClassConstantRule::processSingleClassConstFetch() for the class names/keywords this rule resolves.
+fn class_constant_named(c: &mut Checker, access: &ClassConstantAccess, constant_name: &str) {
     let is_class = constant_name.eq_ignore_ascii_case("class");
     let written = String::from_utf8_lossy(&c.file.contents[access.class.span().to_range_usize()])
         .into_owned();
@@ -97,25 +134,27 @@ pub fn class_constant<'arena>(c: &mut Checker<'_, 'arena>, access: &ClassConstan
     if is_class {
         return;
     }
-    // `defined('X::NAME')` makes the fetch's type known (`hasExpressionType()`)
+    // DefinedConstantTypeSpecifyingExtension specifies a written fetch (`X::NAME`), not the original dynamic
+    // expression (`X::{$name}`). Selecting the same finite name does not make their expression keys equal.
     let guarded = match access.class {
         Expression::Identifier(id) => c.resolved(id),
         _ => written.clone(),
     };
-    if c.guards.contains(&Guard::ClassConstant(format!(
-        "{}::{constant_name}",
-        guarded.to_ascii_lowercase()
-    ))) {
+    let guarded =
+        Guard::ClassConstant(format!("{}::{constant_name}", guarded.to_ascii_lowercase()));
+    if matches!(access.constant, ClassLikeConstantSelector::Identifier(_))
+        && c.guards.contains(&guarded)
+    {
         return;
     }
     match class {
         Known::User(k) => {
             let Some(found) = k
                 .constants
-                .get(&word(constant.value))
+                .get(&word(constant_name.as_bytes()))
                 .map(|m| (m.visibility, m.span))
             else {
-                if !k.enum_cases.contains_key(&word(constant.value)) {
+                if !k.enum_cases.contains_key(&word(constant_name.as_bytes())) {
                     c.report(
                         access,
                         "classConstant.notFound",
@@ -135,7 +174,7 @@ pub fn class_constant<'arena>(c: &mut Checker<'_, 'arena>, access: &ClassConstan
                 .filter_map(|n| c.codebase.get_class_like(n.as_bytes()))
                 .filter(|a| {
                     a.constants
-                        .get(&word(constant.value))
+                        .get(&word(constant_name.as_bytes()))
                         .is_some_and(|m| m.span == span)
                 })
                 .last()
@@ -157,7 +196,7 @@ pub fn class_constant<'arena>(c: &mut Checker<'_, 'arena>, access: &ClassConstan
             }
         }
         Known::Builtin(k) => {
-            let name = constant_name.as_str();
+            let name = constant_name;
             let has = |k: &pun_phpstan::symbols::Class| {
                 k.constants.iter().any(|(n, _)| n == name) || k.cases.iter().any(|n| n == name)
             };

@@ -1,0 +1,637 @@
+{
+  "general": [],
+  "errors": [
+    {
+      "file": "dynamic.php",
+      "line": 17,
+      "identifier": "classConstant.notFound",
+      "message": "Access to undefined constant DynamicConstants\\Child::MISSING.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "dynamic.php",
+      "line": 17,
+      "identifier": "classConstant.dynamicFetch",
+      "message": "Fetching class constants with a dynamic name is supported only on PHP 8.3 and later.",
+      "tip": null,
+      "ignorable": false
+    },
+    {
+      "file": "dynamic.php",
+      "line": 18,
+      "identifier": "classConstant.notFound",
+      "message": "Access to undefined constant DynamicConstants\\Ancestor::MISSING.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "dynamic.php",
+      "line": 18,
+      "identifier": "classConstant.dynamicFetch",
+      "message": "Fetching class constants with a dynamic name is supported only on PHP 8.3 and later.",
+      "tip": null,
+      "ignorable": false
+    },
+    {
+      "file": "dynamic.php",
+      "line": 19,
+      "identifier": "classConstant.notFound",
+      "message": "Access to undefined constant static(DynamicConstants\\Child)::MISSING.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "dynamic.php",
+      "line": 19,
+      "identifier": "classConstant.dynamicFetch",
+      "message": "Fetching class constants with a dynamic name is supported only on PHP 8.3 and later.",
+      "tip": null,
+      "ignorable": false
+    },
+    {
+      "file": "dynamic.php",
+      "line": 20,
+      "identifier": "classConstant.notFound",
+      "message": "Access to undefined constant DynamicConstants\\Child::MISSING.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "dynamic.php",
+      "line": 20,
+      "identifier": "classConstant.dynamicFetch",
+      "message": "Fetching class constants with a dynamic name is supported only on PHP 8.3 and later.",
+      "tip": null,
+      "ignorable": false
+    },
+    {
+      "file": "dynamic.php",
+      "line": 21,
+      "identifier": "classConstant.dynamicFetch",
+      "message": "Fetching class constants with a dynamic name is supported only on PHP 8.3 and later.",
+      "tip": null,
+      "ignorable": false
+    },
+    {
+      "file": "dynamic.php",
+      "line": 22,
+      "identifier": "classConstant.dynamicFetch",
+      "message": "Fetching class constants with a dynamic name is supported only on PHP 8.3 and later.",
+      "tip": null,
+      "ignorable": false
+    },
+    {
+      "file": "dynamic.php",
+      "line": 24,
+      "identifier": "classConstant.private",
+      "message": "Access to private constant PRIVATE_NAME of class DynamicConstants\\Ancestor.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "dynamic.php",
+      "line": 24,
+      "identifier": "classConstant.dynamicFetch",
+      "message": "Fetching class constants with a dynamic name is supported only on PHP 8.3 and later.",
+      "tip": null,
+      "ignorable": false
+    },
+    {
+      "file": "dynamic.php",
+      "line": 26,
+      "identifier": "classConstant.dynamicFetch",
+      "message": "Fetching class constants with a dynamic name is supported only on PHP 8.3 and later.",
+      "tip": null,
+      "ignorable": false
+    },
+    {
+      "file": "dynamic.php",
+      "line": 28,
+      "identifier": "classConstant.dynamicFetch",
+      "message": "Fetching class constants with a dynamic name is supported only on PHP 8.3 and later.",
+      "tip": null,
+      "ignorable": false
+    },
+    {
+      "file": "dynamic.php",
+      "line": 37,
+      "identifier": "classConstant.private",
+      "message": "Access to private constant PRIVATE_NAME of class DynamicConstants\\Ancestor.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "dynamic.php",
+      "line": 37,
+      "identifier": "classConstant.protected",
+      "message": "Access to protected constant PROTECTED_NAME of class DynamicConstants\\Ancestor.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "dynamic.php",
+      "line": 37,
+      "identifier": "classConstant.notFound",
+      "message": "Access to undefined constant DynamicConstants\\Ancestor::MISSING.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "dynamic.php",
+      "line": 37,
+      "identifier": "classConstant.dynamicFetch",
+      "message": "Fetching class constants with a dynamic name is supported only on PHP 8.3 and later.",
+      "tip": null,
+      "ignorable": false
+    },
+    {
+      "file": "dynamic.php",
+      "line": 38,
+      "identifier": "classConstant.protected",
+      "message": "Access to protected constant PROTECTED_NAME of class DynamicConstants\\Ancestor.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "dynamic.php",
+      "line": 38,
+      "identifier": "classConstant.notFound",
+      "message": "Access to undefined constant DynamicConstants\\Child::MISSING.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "dynamic.php",
+      "line": 38,
+      "identifier": "classConstant.notFound",
+      "message": "Access to undefined constant DynamicConstants\\Child::PRIVATE_NAME.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "dynamic.php",
+      "line": 38,
+      "identifier": "class.nameCase",
+      "message": "Class DynamicConstants\\Child referenced with incorrect case: DynamicConstants\\CHILD.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "dynamic.php",
+      "line": 38,
+      "identifier": "class.nameCase",
+      "message": "Class DynamicConstants\\Child referenced with incorrect case: DynamicConstants\\CHILD.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "dynamic.php",
+      "line": 38,
+      "identifier": "class.nameCase",
+      "message": "Class DynamicConstants\\Child referenced with incorrect case: DynamicConstants\\CHILD.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "dynamic.php",
+      "line": 38,
+      "identifier": "class.nameCase",
+      "message": "Class DynamicConstants\\Child referenced with incorrect case: DynamicConstants\\CHILD.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "dynamic.php",
+      "line": 38,
+      "identifier": "classConstant.dynamicFetch",
+      "message": "Fetching class constants with a dynamic name is supported only on PHP 8.3 and later.",
+      "tip": null,
+      "ignorable": false
+    },
+    {
+      "file": "dynamic.php",
+      "line": 39,
+      "identifier": "class.notFound",
+      "message": "Access to constant MISSING on an unknown class DynamicConstants\\UnknownClass.",
+      "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+      "ignorable": true
+    },
+    {
+      "file": "dynamic.php",
+      "line": 39,
+      "identifier": "class.notFound",
+      "message": "Access to constant PRESENT on an unknown class DynamicConstants\\UnknownClass.",
+      "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+      "ignorable": true
+    },
+    {
+      "file": "dynamic.php",
+      "line": 39,
+      "identifier": "class.notFound",
+      "message": "Access to constant PRIVATE_NAME on an unknown class DynamicConstants\\UnknownClass.",
+      "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+      "ignorable": true
+    },
+    {
+      "file": "dynamic.php",
+      "line": 39,
+      "identifier": "class.notFound",
+      "message": "Access to constant PROTECTED_NAME on an unknown class DynamicConstants\\UnknownClass.",
+      "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+      "ignorable": true
+    },
+    {
+      "file": "dynamic.php",
+      "line": 39,
+      "identifier": "classConstant.dynamicFetch",
+      "message": "Fetching class constants with a dynamic name is supported only on PHP 8.3 and later.",
+      "tip": null,
+      "ignorable": false
+    },
+    {
+      "file": "dynamic.php",
+      "line": 40,
+      "identifier": "classConstant.onTrait",
+      "message": "Cannot access constant MISSING on trait DynamicConstants\\SharedTrait.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "dynamic.php",
+      "line": 40,
+      "identifier": "classConstant.onTrait",
+      "message": "Cannot access constant PRESENT on trait DynamicConstants\\SharedTrait.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "dynamic.php",
+      "line": 40,
+      "identifier": "classConstant.onTrait",
+      "message": "Cannot access constant PRIVATE_NAME on trait DynamicConstants\\SharedTrait.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "dynamic.php",
+      "line": 40,
+      "identifier": "classConstant.onTrait",
+      "message": "Cannot access constant PROTECTED_NAME on trait DynamicConstants\\SharedTrait.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "dynamic.php",
+      "line": 40,
+      "identifier": "classConstant.dynamicFetch",
+      "message": "Fetching class constants with a dynamic name is supported only on PHP 8.3 and later.",
+      "tip": null,
+      "ignorable": false
+    },
+    {
+      "file": "dynamic.php",
+      "line": 41,
+      "identifier": "classConstant.notFound",
+      "message": "Access to undefined constant DateTime::MISSING.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "dynamic.php",
+      "line": 41,
+      "identifier": "classConstant.notFound",
+      "message": "Access to undefined constant DateTime::PRESENT.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "dynamic.php",
+      "line": 41,
+      "identifier": "classConstant.notFound",
+      "message": "Access to undefined constant DateTime::PRIVATE_NAME.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "dynamic.php",
+      "line": 41,
+      "identifier": "classConstant.notFound",
+      "message": "Access to undefined constant DateTime::PROTECTED_NAME.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "dynamic.php",
+      "line": 41,
+      "identifier": "classConstant.dynamicFetch",
+      "message": "Fetching class constants with a dynamic name is supported only on PHP 8.3 and later.",
+      "tip": null,
+      "ignorable": false
+    },
+    {
+      "file": "dynamic.php",
+      "line": 42,
+      "identifier": "classConstant.notFound",
+      "message": "Access to undefined constant DynamicConstants\\Choice::MISSING.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "dynamic.php",
+      "line": 42,
+      "identifier": "classConstant.notFound",
+      "message": "Access to undefined constant DynamicConstants\\Choice::PRESENT.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "dynamic.php",
+      "line": 42,
+      "identifier": "classConstant.notFound",
+      "message": "Access to undefined constant DynamicConstants\\Choice::PRIVATE_NAME.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "dynamic.php",
+      "line": 42,
+      "identifier": "classConstant.notFound",
+      "message": "Access to undefined constant DynamicConstants\\Choice::PROTECTED_NAME.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "dynamic.php",
+      "line": 42,
+      "identifier": "classConstant.dynamicFetch",
+      "message": "Fetching class constants with a dynamic name is supported only on PHP 8.3 and later.",
+      "tip": null,
+      "ignorable": false
+    },
+    {
+      "file": "dynamic.php",
+      "line": 46,
+      "identifier": "classConstant.notFound",
+      "message": "Access to undefined constant DynamicConstants\\Choice::MISSING.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "dynamic.php",
+      "line": 46,
+      "identifier": "classConstant.dynamicFetch",
+      "message": "Fetching class constants with a dynamic name is supported only on PHP 8.3 and later.",
+      "tip": null,
+      "ignorable": false
+    },
+    {
+      "file": "dynamic.php",
+      "line": 49,
+      "identifier": "classConstant.dynamicFetch",
+      "message": "Fetching class constants with a dynamic name is supported only on PHP 8.3 and later.",
+      "tip": null,
+      "ignorable": false
+    },
+    {
+      "file": "dynamic.php",
+      "line": 52,
+      "identifier": "classConstant.dynamicFetch",
+      "message": "Fetching class constants with a dynamic name is supported only on PHP 8.3 and later.",
+      "tip": null,
+      "ignorable": false
+    },
+    {
+      "file": "dynamic.php",
+      "line": 58,
+      "identifier": "classConstant.notFound",
+      "message": "Access to undefined constant DynamicConstants\\Ancestor::MISSING.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "dynamic.php",
+      "line": 58,
+      "identifier": "classConstant.dynamicFetch",
+      "message": "Fetching class constants with a dynamic name is supported only on PHP 8.3 and later.",
+      "tip": null,
+      "ignorable": false
+    },
+    {
+      "file": "dynamic.php",
+      "line": 64,
+      "identifier": "classConstant.notFound",
+      "message": "Access to undefined constant DynamicConstants\\Ancestor::MISSING.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "dynamic.php",
+      "line": 64,
+      "identifier": "classConstant.dynamicFetch",
+      "message": "Fetching class constants with a dynamic name is supported only on PHP 8.3 and later.",
+      "tip": null,
+      "ignorable": false
+    },
+    {
+      "file": "dynamic.php",
+      "line": 66,
+      "identifier": "classConstant.notFound",
+      "message": "Access to undefined constant DynamicConstants\\Ancestor::MISSING.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "dynamic.php",
+      "line": 66,
+      "identifier": "classConstant.dynamicFetch",
+      "message": "Fetching class constants with a dynamic name is supported only on PHP 8.3 and later.",
+      "tip": null,
+      "ignorable": false
+    },
+    {
+      "file": "dynamic.php",
+      "line": 68,
+      "identifier": "classConstant.dynamicFetch",
+      "message": "Fetching class constants with a dynamic name is supported only on PHP 8.3 and later.",
+      "tip": null,
+      "ignorable": false
+    },
+    {
+      "file": "dynamic.php",
+      "line": 70,
+      "identifier": "class.notFound",
+      "message": "Access to constant MISSING on an unknown class DynamicConstants\\UnknownClass.",
+      "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+      "ignorable": true
+    },
+    {
+      "file": "dynamic.php",
+      "line": 70,
+      "identifier": "classConstant.dynamicFetch",
+      "message": "Fetching class constants with a dynamic name is supported only on PHP 8.3 and later.",
+      "tip": null,
+      "ignorable": false
+    },
+    {
+      "file": "dynamic.php",
+      "line": 72,
+      "identifier": "class.notFound",
+      "message": "Class DynamicConstants\\UnknownClass not found.",
+      "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+      "ignorable": true
+    },
+    {
+      "file": "dynamic.php",
+      "line": 72,
+      "identifier": "classConstant.dynamicFetch",
+      "message": "Fetching class constants with a dynamic name is supported only on PHP 8.3 and later.",
+      "tip": null,
+      "ignorable": false
+    },
+    {
+      "file": "dynamic.php",
+      "line": 78,
+      "identifier": "classConstant.dynamicFetch",
+      "message": "Fetching class constants with a dynamic name is supported only on PHP 8.3 and later.",
+      "tip": null,
+      "ignorable": false
+    },
+    {
+      "file": "dynamic.php",
+      "line": 80,
+      "identifier": "classConstant.notFound",
+      "message": "Access to undefined constant DynamicConstants\\Ancestor::MISSING.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "dynamic.php",
+      "line": 80,
+      "identifier": "classConstant.dynamicFetch",
+      "message": "Fetching class constants with a dynamic name is supported only on PHP 8.3 and later.",
+      "tip": null,
+      "ignorable": false
+    },
+    {
+      "file": "dynamic.php",
+      "line": 82,
+      "identifier": "classConstant.notFound",
+      "message": "Access to undefined constant DynamicConstants\\Ancestor::MISSING.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "dynamic.php",
+      "line": 82,
+      "identifier": "classConstant.dynamicFetch",
+      "message": "Fetching class constants with a dynamic name is supported only on PHP 8.3 and later.",
+      "tip": null,
+      "ignorable": false
+    },
+    {
+      "file": "dynamic.php",
+      "line": 87,
+      "identifier": "classConstant.dynamicFetch",
+      "message": "Fetching class constants with a dynamic name is supported only on PHP 8.3 and later.",
+      "tip": null,
+      "ignorable": false
+    },
+    {
+      "file": "dynamic.php",
+      "line": 87,
+      "identifier": "outOfClass.self",
+      "message": "Using self outside of class scope.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "dynamic.php",
+      "line": 88,
+      "identifier": "classConstant.dynamicFetch",
+      "message": "Fetching class constants with a dynamic name is supported only on PHP 8.3 and later.",
+      "tip": null,
+      "ignorable": false
+    },
+    {
+      "file": "dynamic.php",
+      "line": 88,
+      "identifier": "outOfClass.static",
+      "message": "Using static outside of class scope.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "dynamic.php",
+      "line": 89,
+      "identifier": "classConstant.dynamicFetch",
+      "message": "Fetching class constants with a dynamic name is supported only on PHP 8.3 and later.",
+      "tip": null,
+      "ignorable": false
+    },
+    {
+      "file": "dynamic.php",
+      "line": 89,
+      "identifier": "outOfClass.parent",
+      "message": "Using parent outside of class scope.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "dynamic.php",
+      "line": 95,
+      "identifier": "class.noParent",
+      "message": "Access to parent::MISSING but DynamicConstants\\NoParent does not extend any class.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "dynamic.php",
+      "line": 95,
+      "identifier": "classConstant.dynamicFetch",
+      "message": "Fetching class constants with a dynamic name is supported only on PHP 8.3 and later.",
+      "tip": null,
+      "ignorable": false
+    },
+    {
+      "file": "dynamic.php",
+      "line": 107,
+      "identifier": "classConstant.dynamicFetch",
+      "message": "Fetching class constants with a dynamic name is supported only on PHP 8.3 and later.",
+      "tip": null,
+      "ignorable": false
+    },
+    {
+      "file": "dynamic.php",
+      "line": 108,
+      "identifier": "classConstant.dynamicFetch",
+      "message": "Fetching class constants with a dynamic name is supported only on PHP 8.3 and later.",
+      "tip": null,
+      "ignorable": false
+    },
+    {
+      "file": "dynamic.php",
+      "line": 109,
+      "identifier": "classConstant.dynamicFetch",
+      "message": "Fetching class constants with a dynamic name is supported only on PHP 8.3 and later.",
+      "tip": null,
+      "ignorable": false
+    },
+    {
+      "file": "dynamic.php",
+      "line": 115,
+      "identifier": "classConstant.notFound",
+      "message": "Access to undefined constant DynamicConstants\\Ancestor::DynamicConstants\\Ancestor.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "dynamic.php",
+      "line": 115,
+      "identifier": "classConstant.dynamicFetch",
+      "message": "Fetching class constants with a dynamic name is supported only on PHP 8.3 and later.",
+      "tip": null,
+      "ignorable": false
+    }
+  ]
+}

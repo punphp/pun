@@ -35,6 +35,8 @@ Static calls check PHPDoc `@method` signatures, including inherited tags. Pun ch
 
 Dynamic `new $class` expressions report unknown class names even when another possible name exists.
 
+Dynamic constant fetches such as `Example::{$name}` check each possible name when the selector has a finite set of string values. The checks preserve branch narrowing and report missing or inaccessible constants.
+
 Inline non-static closures and arrow functions use the class named by `@param-closure-this`.
 Pun resolves these tags on named functions and methods called through a class name or a single known object class, including nullable receivers.
 Bindings from multiple possible receiver classes remain unsupported.
