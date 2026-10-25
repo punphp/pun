@@ -27,7 +27,7 @@ fn check(file: &str) {
             )
         })
         .collect();
-    want.sort();
+    want.sort_by(|a, b| (a.0, &a.2).cmp(&(b.0, &b.2)));
     assert!(!want.is_empty());
     assert_eq!(got, want, "{file}");
 }
@@ -45,6 +45,11 @@ fn literal_offsets_lengths_and_shapes() {
 #[test]
 fn invalid_inputs_and_insufficient_arity() {
     check("controls.php");
+}
+
+#[test]
+fn unrefined_inner_calls_keep_their_array_return() {
+    check("composition.php");
 }
 
 #[test]

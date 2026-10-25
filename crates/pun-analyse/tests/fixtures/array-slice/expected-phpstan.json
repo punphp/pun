@@ -1,11 +1,40 @@
 {
   "totals": {
     "errors": 0,
-    "file_errors": 63
+    "file_errors": 77
   },
   "files": {
+    "composition.php": {
+      "errors": 4,
+      "messages": [
+        {
+          "message": "Dumped type: int<0, max>",
+          "line": 16,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: array{}",
+          "line": 22,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: array{}",
+          "line": 27,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: array{}",
+          "line": 28,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        }
+      ]
+    },
     "controls.php": {
-      "errors": 5,
+      "errors": 12,
       "messages": [
         {
           "message": "Function array_slice invoked with 0 parameters, 2-4 required.",
@@ -36,11 +65,53 @@
           "line": 25,
           "ignorable": false,
           "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: list<string>",
+          "line": 34,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: list<string>",
+          "line": 35,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: list<string>",
+          "line": 36,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: list<string>",
+          "line": 37,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: list<string>",
+          "line": 38,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: array<int, string>",
+          "line": 39,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: array<int, string>",
+          "line": 40,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
         }
       ]
     },
     "general.php": {
-      "errors": 34,
+      "errors": 37,
       "messages": [
         {
           "message": "Dumped type: list<bool>",
@@ -243,6 +314,24 @@
         {
           "message": "Dumped type: array<int|string, bool|int>",
           "line": 57,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: list",
+          "line": 67,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: list<mixed>",
+          "line": 68,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: array<bool>",
+          "line": 69,
           "ignorable": false,
           "identifier": "phpstan.dumpType"
         }

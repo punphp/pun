@@ -102,7 +102,12 @@ impl FunctionReturnTypeProvider for ArraySlice {
         };
         let preserve = if preserve.is_true() {
             Some(true)
-        } else if preserve.is_false() {
+        } else if preserve.types.iter().all(|a| match a {
+            TAtomic::Scalar(TScalar::Bool(b)) => b.is_false(),
+            TAtomic::Mixed(_) | TAtomic::GenericParameter(_) | TAtomic::Reference(_) => false,
+            // PHPStan asks isTrue(), not PHP truthiness: even a literal 1 is definitely not the true type.
+            _ => true,
+        }) {
             Some(false)
         } else {
             None

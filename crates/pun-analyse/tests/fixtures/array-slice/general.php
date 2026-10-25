@@ -56,3 +56,15 @@ function alternatives(array $arrays): void
 {
     dumpType(array_slice($arrays, 1));
 }
+
+/**
+ * @param list $implicit
+ * @param list<mixed> $explicit
+ * @param array<mixed, bool> $keys
+ */
+function mixedParameters(array $implicit, array $explicit, array $keys): void
+{
+    dumpType(array_slice($implicit, 1));
+    dumpType(array_slice($explicit, 1));
+    dumpType(array_slice($keys, 1));
+}
