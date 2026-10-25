@@ -70,3 +70,9 @@ function wrappingFloatIsNotASaturatingCast(): void
     $a = [$large => 0, 9223372036854775807 => 1];
     $b = [9.223372036854776E18 => 0, 9223372036854775807 => 1];
 }
+
+function literalByteKeys(): void
+{
+    $distinct = ["\xff" => 1, "\xfe" => 2, "\u{FFFD}" => 3];
+    $parenthesized = [("\xff") => 1, "\xfe" => 2];
+}

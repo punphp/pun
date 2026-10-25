@@ -165,10 +165,17 @@ pub fn literal_array<'arena>(
         let at = element.span();
         let (key, key_types) = match element {
             ArrayElement::KeyValue(kv) => {
-                let values = key_type(c, kv.key, c.names, c.class_scope())
-                    .as_ref()
-                    .and_then(inferred_keys)
-                    .unwrap_or_default();
+                // PHP compares string keys as bytes. Routing literals through Type::ConstString
+                // would replace distinct invalid UTF-8 bytes with the same replacement character.
+                let values = match unparenthesized(kv.key) {
+                    Expression::Literal(Literal::String(s)) => {
+                        s.value.map(|value| vec![Key::of_string(value)])
+                    }
+                    _ => key_type(c, kv.key, c.names, c.class_scope())
+                        .as_ref()
+                        .and_then(inferred_keys),
+                }
+                .unwrap_or_default();
                 // once the implicit index is unknown an explicit key can't bring it back
                 if let [Key::Int(i)] = values.as_slice() {
                     auto = match auto {
