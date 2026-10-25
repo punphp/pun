@@ -130,30 +130,132 @@ fn span(range: (u32, u32)) -> mago_span::Span {
 
 // Only adapt the two tools' scalar display syntax, not their inferred types.
 fn oracle_mago_id(phpstan: &str) -> String {
+    let phpstan = if phpstan.starts_with('(') && phpstan.ends_with(')') && phpstan.contains('|') {
+        &phpstan[1..phpstan.len() - 1]
+    } else {
+        phpstan
+    };
     if phpstan.contains('|') {
         let mut types: Vec<_> = phpstan.split('|').map(oracle_mago_id).collect();
         types.sort();
         types.join("|")
+    } else if let Some(value) = phpstan
+        .strip_prefix("float(")
+        .and_then(|value| value.strip_suffix(')'))
+    {
+        format!("float({})", value.parse::<f64>().unwrap())
     } else if phpstan.starts_with('\'') {
         format!("string({phpstan})")
     } else if phpstan.parse::<i64>().is_ok() {
         format!("int({phpstan})")
-    } else if phpstan.parse::<f64>().is_ok() {
-        format!("float({phpstan})")
+    } else if let Ok(value) = phpstan.parse::<f64>() {
+        format!("float({value})")
     } else {
-        phpstan.to_owned()
+        phpstan
+            .replace("non-falsy-string", "truthy-string")
+            .replace(", ", ",")
     }
 }
 
 #[test]
 fn scalar_native_values_match_phpstan_and_do_not_change_the_full_walk() {
-    let code = include_bytes!("fixtures/native-lane/scalars.php");
-    let expected: serde_json::Value =
-        serde_json::from_str(include_str!("fixtures/native-lane/expected-phpstan.json")).unwrap();
+    check_native_fixture(
+        include_bytes!("fixtures/native-lane/scalars.php"),
+        include_str!("fixtures/native-lane/expected-phpstan.json"),
+    );
+}
+
+#[test]
+fn operator_native_values_match_phpstan_and_do_not_change_the_full_walk() {
+    check_native_fixture(
+        include_bytes!("fixtures/native-lane/operators.php"),
+        include_str!("fixtures/native-lane/expected-operators-phpstan.json"),
+    );
+}
+
+fn assert_full_artifacts_equal(enabled: &AnalysisArtifacts, disabled: &AnalysisArtifacts) {
+    assert_eq!(enabled.expression_types, disabled.expression_types);
+    assert_eq!(enabled.if_true_assertions, disabled.if_true_assertions);
+    assert_eq!(enabled.if_false_assertions, disabled.if_false_assertions);
+    assert_eq!(
+        enabled.true_branch_only_assertions,
+        disabled.true_branch_only_assertions
+    );
+    assert_eq!(
+        enabled.inferred_return_types,
+        disabled.inferred_return_types
+    );
+    assert_eq!(
+        enabled.inferred_yield_key_types,
+        disabled.inferred_yield_key_types
+    );
+    assert_eq!(
+        enabled.inferred_yield_value_types,
+        disabled.inferred_yield_value_types
+    );
+    assert_eq!(enabled.symbol_references, disabled.symbol_references);
+    assert_eq!(
+        enabled.fully_matched_switch_offsets,
+        disabled.fully_matched_switch_offsets
+    );
+    assert_eq!(
+        enabled.inferred_parameter_types,
+        disabled.inferred_parameter_types
+    );
+    assert_eq!(
+        enabled.method_initialized_properties,
+        disabled.method_initialized_properties
+    );
+    assert_eq!(
+        enabled.method_calls_this_methods,
+        disabled.method_calls_this_methods
+    );
+    assert_eq!(
+        enabled.method_calls_parent_constructor,
+        disabled.method_calls_parent_constructor
+    );
+    assert_eq!(
+        enabled.method_calls_parent_initializer,
+        disabled.method_calls_parent_initializer
+    );
+    assert_eq!(
+        enabled.resolved_method_calls,
+        disabled.resolved_method_calls
+    );
+    assert_eq!(
+        enabled
+            .closure_bind_scope
+            .as_ref()
+            .map(|scope| (scope.class_name, scope.has_this)),
+        disabled
+            .closure_bind_scope
+            .as_ref()
+            .map(|scope| (scope.class_name, scope.has_this))
+    );
+    assert_eq!(
+        enabled
+            .case_scopes
+            .iter()
+            .map(|scope| &scope.break_vars)
+            .collect::<Vec<_>>(),
+        disabled
+            .case_scopes
+            .iter()
+            .map(|scope| &scope.break_vars)
+            .collect::<Vec<_>>()
+    );
+    assert_eq!(
+        format!("{:?}", enabled.loop_scope),
+        format!("{:?}", disabled.loop_scope)
+    );
+}
+
+fn check_native_fixture(code: &[u8], oracle: &str) {
+    let expected: serde_json::Value = serde_json::from_str(oracle).unwrap();
     let (enabled, observed, issues) = analyze(code, true, PluginRegistry::new());
     let (disabled, off_observed, off_issues) = analyze(code, false, PluginRegistry::new());
     assert_eq!(issues, off_issues);
-    assert_eq!(enabled.expression_types, disabled.expression_types);
+    assert_full_artifacts_equal(&enabled, &disabled);
     assert_eq!(observed.visits, off_observed.visits);
     assert!(observed.visits.values().all(|count| *count == 1));
     let marked = marked_ranges(code, "// native");
@@ -202,7 +304,7 @@ fn unsupported_transfers_poison_the_scope_before_children_and_never_recover_by_a
         "Unknown::method();",
         "$callback = fn () => $value;",
         "$callback = function () use ($value) { return $value; };",
-        "$value = $value + 1;",
+        "$value = $value << 1;",
         "$value = $flag ? 2 : 3;",
         "$value = missingFunction();",
         "$name = 'missingFunction'; $value = $name();",
@@ -248,6 +350,73 @@ fn unsupported_transfers_poison_the_scope_before_children_and_never_recover_by_a
 }
 
 #[test]
+fn unsupported_operator_shapes_invalidate_without_changing_the_full_walk() {
+    for expression in [
+        "-$text",
+        "+true",
+        "$integer + '2'",
+        "null + 1",
+        "$unknown + 2",
+        "$nullable + 2",
+        "$decimal % 2",
+        "$integer % $integer",
+        "$integer / 0",
+        "$integer % 0",
+        "1e308 * 1e308",
+        "+1e999",
+        "$unknown === 2",
+        "$nullable === 2",
+        "($integer % 2) === 1",
+        "('prefix' . $text) === '0'",
+        "$text == '1'",
+        "$text < 2",
+        "true == false",
+        "'x' . 1",
+        "1 . 'x'",
+        "$integer ** 2",
+        "$integer & 2",
+        "$integer ^ 2",
+        "$integer | 2",
+        "$integer >> 2",
+        "~$integer",
+        "++$integer",
+        "$integer++",
+        "$flag && $flag",
+        "$flag || $flag",
+        "$flag and $flag",
+        "$flag or $flag",
+        "$nullable ?? 2",
+        "($integer % 2) + 1",
+    ] {
+        let code = format!(
+            "<?php function example(int $integer, float $decimal, string $text, bool $flag, ?int $nullable, mixed $unknown): void {{\n$value = 1;\n$value; // before\n{expression}; // unavailable\n$value = 99;\n$value; // unavailable\n}}\n"
+        );
+        let (enabled, observed, issues) = analyze(code.as_bytes(), true, PluginRegistry::new());
+        let (disabled, off_observed, off_issues) =
+            analyze(code.as_bytes(), false, PluginRegistry::new());
+        assert_full_artifacts_equal(&enabled, &disabled);
+        assert_eq!(observed.visits, off_observed.visits, "{expression}");
+        assert_eq!(issues, off_issues, "{expression}");
+        let before = marked_ranges(code.as_bytes(), "// before")[0].1;
+        assert_eq!(
+            enabled
+                .get_native_expression_type(&span(before))
+                .unwrap()
+                .get_id()
+                .as_str(),
+            Some("int(1)")
+        );
+        for (_, range) in marked_ranges(code.as_bytes(), "// unavailable") {
+            assert!(
+                enabled.get_native_expression_type(&span(range)).is_none(),
+                "{expression}"
+            );
+            assert_eq!(observed.native[&range], None, "{expression}");
+        }
+    }
+}
+
+#[test]
 fn unsupported_function_scopes_and_named_call_contracts_are_not_widened() {
     for parameters in [
         "int &$value",
@@ -255,7 +424,7 @@ fn unsupported_function_scopes_and_named_call_contracts_are_not_widened() {
         "array $value",
         "object $value",
         "callable $value",
-        "int $value = 1 + 2",
+        "int $value = 1 << 2",
     ] {
         let code =
             format!("<?php function example({parameters}): void {{\n$value; // unavailable\n}}\n");

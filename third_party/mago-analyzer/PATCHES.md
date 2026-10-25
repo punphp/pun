@@ -171,7 +171,7 @@ passes all 22 public tests. Direct `llvm-cov export` over those four executables
 changed executable production lines: Pun's `infer.rs` 3/3, and the maintained analyzer's expression
 dispatch 14/14, hook context 1/1, hook trait 3/3, and registry 6/6. No exclusions are used for this patch.
 
-## Passive native state: bounded first slice
+## Passive native state: bounded slices
 
 `Settings::track_native_types` defaults to `false`. When enabled, the existing analysis walk retains
 a second local map and a second expression map. The full lane still owns body traversal, path selection,
@@ -215,15 +215,53 @@ invalidate earlier, completed evaluations. Local queries describe the current li
   isolate speculative work. Scratch native values are not published. Callback bodies themselves remain
   outside this native subset.
 
+### Scalar operator transfers
+
+The second slice changes only `src/native.rs` in the analyzer. Its pure transfers consume available
+native operands after the full walk visits them. No operator calls an expression analyzer, emits a
+diagnostic, runs a provider, changes full locals, or chooses a control-flow path.
+
+The reference is PHPStan 2.3.1's `Reflection/InitializerExprTypeResolver.php`: `getUnaryPlusType()`,
+`getUnaryMinusType()`, `getPlusType()`, `getMinusType()`, `getMulType()`, `getDivType()`, `getModType()`,
+`resolveCommonMath()`, and `resolveConcatType()`. The bounded transfers use Mago's existing scalar
+types, constructors, and truthiness queries.
+
+- Unary `+` and `-` accept single general or literal integers and finite floats. Checked integer
+  arithmetic preserves constants and promotes overflow to a float, including negation of `PHP_INT_MIN`.
+- Binary `+`, `-`, `*`, and `/` accept those same numeric shapes. Exact constant integer division
+  retains an integer. General integer division by `1` or `-1`, and division of integer zero, yields
+  native `int`. Other general integer division yields `int|float`. An integer zero multiplier folds
+  to zero, including float zero when the other operand is a float. A float zero multiplier does not
+  receive that extra general-operand fold, matching PHPStan.
+- Integer `%` accepts a known nonzero integer divisor. Constants retain PHP's dividend sign.
+  A general integer dividend yields the bounded remainder range, or literal zero for divisors `1`
+  and `-1`. Division or modulo by known zero and non-finite results are unavailable.
+- `!` and non-short-circuit `xor` use native truthiness. Strict comparisons accept single general
+  or literal integers, finite floats, general or literal strings, booleans, and null. Numeric loose
+  equality, ordering, and spaceship comparisons are supported. Direct reads of the same local,
+  including parenthesized reads, retain PHPStan's equality result without a second evaluation.
+  Integer constant comparisons do not round through floats.
+- String concatenation accepts strings only. Constants concatenate bytes. Empty operands preserve
+  the other string, and general results retain non-empty or non-falsy guarantees. Mago flattens concat
+  trees without visiting intermediate binary nodes. The native transfer folds the same visited leaves
+  iteratively and publishes no synthetic artifacts or observer events for those intermediate nodes.
+
+Numeric coercion from strings, booleans, or null is unsupported. So are arithmetic on ranges or unions,
+float modulo, modulo with an unknown divisor, comparisons of refined non-literal strings or unions,
+and non-numeric loose comparisons. Short-circuit operators, coalesce, exponentiation, bitwise operators,
+casts, increments, decrements, and compound assignments remain unsupported. These cases return no native
+value and invalidate the live native scope. They never fall back to the full value or guessed `mixed`.
+
 ### Deliberate availability limits
 
-The first unsupported producer or transfer invalidates native availability for the current scope before
-its children run. Subsequent assignments do not recover that scope. This scope-wide rule is conservative:
-it avoids claiming that an unsupported operation left aliases or locals unchanged. Each separately
-analyzed named function can still initialize its own supported native scope.
+Unsupported syntax invalidates native availability before its children run. A supported operator with
+unsupported operand types invalidates availability when its native transfer consumes those operands.
+Completed operand artifacts remain valid records of their earlier evaluations. Subsequent assignments
+do not recover that scope. This scope-wide rule avoids claiming that an unsupported operation left
+aliases or locals unchanged. Each separately analyzed named function can initialize its own native scope.
 
 Branches, loops, joins, exceptional control flow, references, arrays, members, class scopes, methods,
-closures, arrows, captures, globals, statics, unset, operators, dynamic calls, and undefined local reads
+closures, arrows, captures, globals, statics, unset, dynamic calls, and undefined local reads
 are unsupported. Functions with by-reference returns or parameters, variadics, output parameters,
 assertions, generators, accessed globals, or non-scalar parameter declarations do not initialize native
 state and are not supported native call targets. Non-scalar native returns are also unavailable.
@@ -275,7 +313,7 @@ Export LCOV directly from the four instrumented test executables and the merged 
 added or replaced source lines with executable `DA` records. The `cargo llvm-cov --dep-coverage` report
 filter excludes this vendored path, so its empty report is not a coverage result.
 
-The final clean-profile run passes all 33 tests: native lane 8/8, callback gathers 10/10,
+The first slice's clean-profile run passes all 33 tests: native lane 8/8, callback gathers 10/10,
 array slice 5/5, and debug 10/10. The native suite compares 29 actual PHPStan native dumps, including
 nullable defaults, reassignment, copies, typed and untyped returns, assignment expressions, standalone
 annotations, and nested annotated assignments. It checks 27 unsupported body transitions, unsupported
@@ -302,3 +340,35 @@ not branch coverage or whole-analyzer coverage.
 | `src/statement/function_like/mod.rs` | 5/5 |
 | `src/statement/mod.rs` | 3/3 |
 | `src/utils/docblock.rs` | 6/6 |
+
+### Scalar operator verification
+
+`fixtures/native-lane/operators.php` adds 107 pinned PHPStan native dumps in
+`expected-operators-phpstan.json`. Capture them with the oracle command above, substituting
+`operators.php` for `scalars.php` and `expected-operators-phpstan.json` for `expected-phpstan.json`.
+The original 29 scalar expectations are unchanged. Display adaptation also normalizes float spelling,
+range spacing, and PHPStan's `non-falsy-string` to Mago's `truthy-string`. PHPStan's parenthesized
+benevolent numeric union displays as Mago's `int|float`. This does not enable native-dependent rules
+or add PHPStan's benevolent-union checking behavior to Mago.
+
+On unchanged native source `20d3e19c`, the public operator test fails at line 10: `+$integer` returns
+`None` instead of PHPStan's `int`. The completed slice passes all 35 tests: native lane 10/10, callback
+gathers 10/10, array slice 5/5, and debug 10/10. Native tracking on and off retain equal public full
+artifacts, issues, and observer visit counts. Both artifact queries and live observer queries match
+all 136 native dumps. Thirty-five additional unsupported operator shapes check absence at the failed
+expression and after reassignment. The previous unsupported arithmetic default and assignment cases
+now use shifts, while supported arithmetic defaults and assignments have positive oracle checks.
+
+The oracle caught another distinction during development: `0 / $integer` yields native `int`, not
+`int|float`. That case remains in the fixture. A direct constant `PHP_INT_MIN / -1` probe exposed an
+existing panic in the full analyzer's remainder calculation. That code is outside this slice and is
+unchanged. The fixture instead annotates the existing minimum-valued local on another assignment.
+PHPStan preserves its native constant while Mago's full local becomes general `int`, so the public
+test can verify native minimum division and modulo without that independent full-lane panic.
+
+The clean-profile run uses the instrumented command above with the private target
+`/tmp/pun-native-operators-target`. LCOV export from the four test executables and the merged profile,
+intersected with added or replaced lines against `20d3e19c`, reports **232/232 changed analyzer
+executable lines** in `src/native.rs` and **123/123 changed test executable lines** in `native_lane.rs`.
+There are no coverage exclusions or private-helper tests. These are line-coverage measurements, not
+branch coverage or a claim of complete native operator parity.
