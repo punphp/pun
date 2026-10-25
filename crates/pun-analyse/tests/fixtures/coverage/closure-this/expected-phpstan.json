@@ -1,0 +1,103 @@
+{
+ "general": [],
+ "errors": [
+  {
+   "file": "binding.php",
+   "line": 82,
+   "identifier": "method.notFound",
+   "message": "Call to an undefined method ClosureThis\\Request::missingRequestMethod().",
+   "tip": null
+  },
+  {
+   "file": "binding.php",
+   "line": 85,
+   "identifier": "method.notFound",
+   "message": "Call to an undefined method ClosureThis\\Request::childMethod().",
+   "tip": null
+  },
+  {
+   "file": "binding.php",
+   "line": 96,
+   "identifier": "method.notFound",
+   "message": "Call to an undefined method ClosureThis\\Binder::childOnly().",
+   "tip": null
+  },
+  {
+   "file": "binding.php",
+   "line": 99,
+   "identifier": "staticMethod.notFound",
+   "message": "Call to an undefined static method ClosureThis\\Target::providerStatic().",
+   "tip": null
+  },
+  {
+   "file": "binding.php",
+   "line": 100,
+   "identifier": "method.notFound",
+   "message": "Call to an undefined method ClosureThis\\Target::providerPrivate().",
+   "tip": null
+  },
+  {
+   "file": "binding.php",
+   "line": 104,
+   "identifier": "method.notFound",
+   "message": "Call to an undefined method ClosureThis\\Provider::targetMethod().",
+   "tip": null
+  },
+  {
+   "file": "binding.php",
+   "line": 105,
+   "identifier": "method.notFound",
+   "message": "Call to an undefined method ClosureThis\\Provider::targetMethod().",
+   "tip": null
+  },
+  {
+   "file": "binding.php",
+   "line": 106,
+   "identifier": "variable.undefined",
+   "message": "Undefined variable: $this",
+   "tip": null
+  },
+  {
+   "file": "binding.php",
+   "line": 107,
+   "identifier": "variable.undefined",
+   "message": "Undefined variable: $this",
+   "tip": null
+  },
+  {
+   "file": "binding.php",
+   "line": 108,
+   "identifier": "method.notFound",
+   "message": "Call to an undefined method ClosureThis\\Provider::targetMethod().",
+   "tip": null
+  },
+  {
+   "file": "binding.php",
+   "line": 111,
+   "identifier": "method.notFound",
+   "message": "Call to an undefined method ClosureThis\\Provider::targetMethod().",
+   "tip": null
+  },
+  {
+   "file": "binding.php",
+   "line": 113,
+   "identifier": "method.notFound",
+   "message": "Call to an undefined method ClosureThis\\Provider::targetMethod().",
+   "tip": null
+  },
+  {
+   "file": "binding.php",
+   "line": 121,
+   "identifier": "variable.undefined",
+   "message": "Undefined variable: $this",
+   "tip": null
+  },
+  {
+   "file": "binding.php",
+   "line": 122,
+   "identifier": "variable.undefined",
+   "message": "Undefined variable: $this",
+   "tip": null
+  }
+ ]
+}

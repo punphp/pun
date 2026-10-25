@@ -1,11 +1,173 @@
 //! The class a rebound closure's body is checked in (StaticCallHandler's `Closure::bind()` scope factory,
 //! MethodCallHandler's `->call()`, MutatingScope::enterClosureBind()/enterClosureCall()): the bound `$this`'s class.
 
+use mago_codex::metadata::class_like::ClassLikeMetadata;
+use mago_codex::metadata::function_like::FunctionLikeMetadata;
 use mago_syntax::cst::*;
+use pun_phpstan::types::Type;
 
-use super::Checker;
+use super::{Checker, declared, members, params};
+
+/// A PHPDoc binding assigns `$this` as well as a visibility scope. Explicit `Closure::bind()` keeps the existing
+/// scope-only approximation below: its third argument does not establish that `$this` exists.
+pub(super) struct Binding {
+    pub class: Option<String>,
+    pub defines_this: bool,
+}
+
+fn has_inline_closure(args: &ArgumentList) -> bool {
+    args.arguments.iter().any(|a| {
+        let mut value = a.value();
+        while let Expression::Parenthesized(p) = value {
+            value = p.expression;
+        }
+        matches!(value, Expression::Closure(_) | Expression::ArrowFunction(_))
+    })
+}
 
 impl<'arena> Checker<'_, 'arena> {
+    /// ArgumentsHandler::processArgs()/resolveClosureThisType(): named function calls, with NameResolver's
+    /// namespaced-to-global fallback (but never falling back through a `use function` import).
+    pub(super) fn bind_function_arguments(&mut self, call: &FunctionCall<'arena>) {
+        if !has_inline_closure(&call.argument_list) {
+            return;
+        }
+        let Expression::Identifier(id) = call.function else {
+            return;
+        };
+        let name = super::function_checks::function_name(self.names, self.codebase, id);
+        if let Some(f) = self
+            .codebase
+            .get_function(name.as_bytes())
+            .filter(|f| !f.flags.is_built_in())
+        {
+            self.bind_arguments(&call.argument_list, f, None, None);
+        }
+    }
+
+    /// CalledOnTypeUnresolvedMethodPrototypeReflection::transformStaticType(): `static`/`$this` tags use the
+    /// receiver, not the method's declaring parent or trait; `self` tags remain their resolved declared class.
+    /// This level-0 slice handles named static receivers, `$this`, and directly instantiated objects. Other
+    /// receiver expressions need the type-collection hook independently of the level-2 call checks.
+    pub(super) fn bind_method_arguments(
+        &mut self,
+        receiver: &Expression<'arena>,
+        name: &ClassLikeMemberSelector<'arena>,
+        args: &ArgumentList<'arena>,
+        is_static: bool,
+    ) {
+        if !has_inline_closure(args) {
+            return;
+        }
+        let ClassLikeMemberSelector::Identifier(name) = name else {
+            return;
+        };
+        let mut receiver = receiver;
+        while let Expression::Parenthesized(p) = receiver {
+            receiver = p.expression;
+        }
+        let class = match receiver {
+            Expression::Identifier(id) if is_static => self.class_like(&self.resolved(id)).found(),
+            Expression::Self_(_) | Expression::Static(_) if is_static => self.class_scope(),
+            Expression::Parent(_) if is_static => self
+                .class_scope()
+                .and_then(|k| k.direct_parent_class)
+                .and_then(|p| self.codebase.get_class_like(p.as_bytes())),
+            _ => self
+                .bound_class_of(receiver, false)
+                .and_then(|n| self.class_like(&n).found()),
+        };
+        if let Some(class) = class
+            && let Some(members::Method::User { f, declaring }) =
+                members::method(self, class, name.value)
+        {
+            // Mago's populated `used_traits` includes inherited traits. Their `self` is the class that first
+            // imports the method, whereas `static` below is still the receiver at this call site.
+            let declaring = class
+                .appearing_method_ids
+                .get(&mago_word::word(name.value.to_ascii_lowercase()))
+                .and_then(|id| self.codebase.get_class_like(id.get_class_name().as_bytes()))
+                .unwrap_or(declaring);
+            // `parent::` looks up the parent method, but forwards the calling class for late static binding.
+            let class = if is_static && matches!(receiver, Expression::Parent(_)) {
+                self.class_scope().unwrap_or(class)
+            } else {
+                class
+            };
+            let called = String::from_utf8_lossy(class.original_name.as_bytes()).into_owned();
+            self.bind_arguments(args, f, Some(declaring), Some(&called));
+        }
+    }
+
+    /// ArgumentsHandler's parameter matching, then its non-static inline Closure/ArrowFunction branches. An
+    /// unpack makes later positional indexes unknown, so it ends this direct-argument binding slice.
+    fn bind_arguments(
+        &mut self,
+        args: &ArgumentList<'arena>,
+        f: &FunctionLikeMetadata,
+        declaring: Option<&ClassLikeMetadata>,
+        called: Option<&str>,
+    ) {
+        let tags = declared::with_classes(self, || {
+            let mut tags = declared::codex_closure_this(self, f, declaring);
+            // A concrete trait method is reflected as declared by its using class (members::method()), but the
+            // codex only stores the method under the trait. Resolve its own tags at the trait's source location,
+            // with the using class as `self`/`parent`, retaining inherited tags for other parameters.
+            if let Some(class) = declaring
+                && !(f.span.file_id == class.span.file_id
+                    && class.span.start.offset <= f.span.start.offset
+                    && f.span.end.offset <= class.span.end.offset)
+                && let Some((raw, _)) = declared::doc_at(self, f.span)
+            {
+                let doc = super::doc::Doc::parse(&raw);
+                let scope = declared::scope_at(self, f.span, Some(class));
+                let scope = declared::with_method_templates(
+                    &scope,
+                    class,
+                    &String::from_utf8_lossy(f.original_name.as_bytes()),
+                    &doc.templates,
+                );
+                tags.extend(super::doc::Doc::named_types(&doc.closure_this, &scope));
+            }
+            tags
+        });
+        if tags.is_empty() {
+            return;
+        }
+        let acceptor = params::Acceptor::of(f);
+        for (i, arg) in args.arguments.iter().enumerate() {
+            let parameter = match arg {
+                Argument::Named(n) => acceptor
+                    .names
+                    .iter()
+                    .position(|p| p.as_bytes() == n.name.value),
+                Argument::Positional(p) if p.ellipsis.is_some() => break,
+                Argument::Positional(_) => (i < acceptor.names.len()).then_some(i),
+            }
+            .or_else(|| acceptor.variadics.iter().rposition(|v| *v));
+            let Some(tag) = parameter.and_then(|i| tags.get(&acceptor.names[i])) else {
+                continue;
+            };
+            let class = match tag {
+                Type::Object(n, _) => Some(n.as_str()),
+                Type::Static(_, _) | Type::This(_) => called,
+                // Templates, conditionals, unions and intersections need full closure `$this` type propagation,
+                // not a guessed single visibility class.
+                _ => None,
+            };
+            let Some(class) = class else { continue };
+            let mut value = arg.value();
+            while let Expression::Parenthesized(p) = value {
+                value = p.expression;
+            }
+            if matches!(value, Expression::Closure(f) if f.r#static.is_none())
+                || matches!(value, Expression::ArrowFunction(f) if f.r#static.is_none())
+            {
+                self.rebind(value, Some(class.to_string()), true);
+            }
+        }
+    }
+
     /// The class of `Closure::bind($closure, $newThis, $newScope)`'s `$this`: `$newScope`'s class when it is given,
     /// else `$newThis`'s.
     // ponytail: classes read from the written expressions (`X::class`, `'X'`, `new X`, `$this`), not their types; the

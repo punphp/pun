@@ -773,8 +773,9 @@ pub struct Checker<'a, 'arena> {
     /// `f(...)` on the right of `|>`: analysed as the call `f($x)`, not as a first-class callable.
     piped: HashSet<Span>,
     /// Closures whose `$this` is rebound: `(function () {...})->call($o)` (MethodCallHandler) and `Closure::bind()`
-    /// (StaticCallHandler); `->bindTo()` keeps the scope's `$this` (oracle-checked).
-    rebound: HashMap<Span, Option<String>>,
+    /// (StaticCallHandler), and inline `@param-closure-this` arguments (ArgumentsHandler). `->bindTo()` keeps the
+    /// scope's `$this` (oracle-checked).
+    rebound: HashMap<Span, bind_scope::Binding>,
     /// `Error::file`: the path, or `T.php (in context of class C)` inside a trait analysed for class C.
     label: String,
     /// Set when walking a trait in a class's context (`$scope->isInTrait()`).
@@ -960,12 +961,12 @@ impl<'a, 'arena> Checker<'a, 'arena> {
     }
 
     /// A rebound closure literal and the class of its bound `$this` (see [`Checker::bind_class()`]).
-    fn rebind(&mut self, mut e: &Expression, class: Option<String>) {
+    fn rebind(&mut self, mut e: &Expression, class: Option<String>, defines_this: bool) {
         while let Expression::Parenthesized(p) = e {
             e = p.expression;
         }
         if matches!(e, Expression::Closure(_) | Expression::ArrowFunction(_)) {
-            self.rebound.insert(e.span(), class);
+            self.rebound.insert(e.span(), bind_scope::Binding { class, defines_this });
         }
     }
 
@@ -1902,6 +1903,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
     }
 
     fn walk_in_function_call(&mut self, call: &'ast FunctionCall<'arena>, _: &mut ()) {
+        self.bind_function_arguments(call);
         dead_code::function_check(self, call);
         larastan::function_call(self, call);
         types::function_call(self, call);
@@ -1937,6 +1939,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         call: &'ast NullSafeMethodCall<'arena>,
         _: &mut (),
     ) {
+        self.bind_method_arguments(call.object, &call.method, &call.argument_list, false);
         internal::method_call(self, call.span(), call.object, &call.method);
         strict::dynamic_call(self, call.span(), call.object, &call.method);
         types::method_call(self, call.span(), call.object, &call.method, &call.argument_list, true);
@@ -1946,6 +1949,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         types::nullsafe_method(self, call);
     }
     fn walk_in_method_call(&mut self, call: &'ast MethodCall<'arena>, _: &mut ()) {
+        self.bind_method_arguments(call.object, &call.method, &call.argument_list, false);
         dead_code::method_check(self, call);
         internal::method_call(self, call.span(), call.object, &call.method);
         strict::dynamic_call(self, call.span(), call.object, &call.method);
@@ -1954,9 +1958,13 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
             && m.value.eq_ignore_ascii_case(b"call")
         {
             let class = self.call_class(&call.argument_list);
-            self.rebind(call.object, class);
+            self.rebind(call.object, class, false);
         }
-        calls::method_call(self, call);
+        // A static closure has no `$this`, even when its parameter carries a binding annotation. The undefined
+        // variable check reports it; there is no receiver on which to check methods.
+        if self.this_defined() {
+            calls::method_call(self, call);
+        }
         types::method_call(self, call.span(), call.object, &call.method, &call.argument_list, false);
         if let Some(name) = types::dynamic_names::member(&call.method) {
             types::dynamic_names::check(self, name, false, "Method", call.object, false, "method.nameNotString");
@@ -2002,6 +2010,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         internal::static_method_callable(self, m);
     }
     fn walk_in_static_method_call(&mut self, call: &'ast StaticMethodCall<'arena>, _: &mut ()) {
+        self.bind_method_arguments(call.class, &call.method, &call.argument_list, true);
         dead_code::static_method_check(self, call);
         through_static::method(self, call);
         internal::static_method_call(self, call);
@@ -2010,7 +2019,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
             self.closure_bind += 1;
             if let Some(Argument::Positional(a)) = call.argument_list.arguments.first() {
                 let class = self.bind_class(&call.argument_list);
-                self.rebind(a.value, class);
+                self.rebind(a.value, class, false);
             }
         }
         calls::static_method_call(self, call);
@@ -2152,7 +2161,11 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
     }
     fn walk_in_closure(&mut self, f: &'ast Closure<'arena>, _: &mut ()) {
         strict::closure(self, f);
-        self.enter_closure_this(f.r#static.is_some());
+        if self.rebound.get(&f.span()).is_some_and(|b| b.defines_this) {
+            self.enter_this(true);
+        } else {
+            self.enter_closure_this(f.r#static.is_some());
+        }
         functions::function_like(self, f, &f.parameter_list);
         functions::closure_use(self, f);
         self.larastan_enter_closure(f);
@@ -2172,9 +2185,9 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
                     .chain(f.use_clause.iter().flat_map(|u| u.variables.iter()).map(|u| u.variable.name)),
                 &f.body,
             ));
-        if let Some(name) = self.rebound.get(&f.span()) {
+        if let Some(binding) = self.rebound.get(&f.span()) {
             self.classes.push(ClassScope {
-                name: name.clone(),
+                name: binding.class.clone(),
                 constructor_guards: Vec::new(),
             });
         }
@@ -2236,15 +2249,19 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         types::anonymous_defaults(self, &f.parameter_list);
         types::arrow_function_returns(self, f);
         types::too_wide_arrow_function(self, f);
-        self.enter_closure_this(f.r#static.is_some());
+        if self.rebound.get(&f.span()).is_some_and(|b| b.defines_this) {
+            self.enter_this(true);
+        } else {
+            self.enter_closure_this(f.r#static.is_some());
+        }
         functions::function_like(self, f, &f.parameter_list);
         syntax::function_like_types(self, Some(&f.parameter_list), f.return_type_hint.as_ref());
         syntax::arrow_function(self, f);
         signatures::arrow_never(self, f);
         self.push_frame(FrameKind::Anonymous);
-        if let Some(name) = self.rebound.get(&f.span()) {
+        if let Some(binding) = self.rebound.get(&f.span()) {
             self.classes.push(ClassScope {
-                name: name.clone(),
+                name: binding.class.clone(),
                 constructor_guards: Vec::new(),
             });
         }
