@@ -1,0 +1,124 @@
+{
+ "general": [],
+ "errors": [
+  {
+   "file": "templates.php",
+   "line": 55,
+   "identifier": "method.templateTypeNotInParameter",
+   "message": "Template type TNegated of method TemplateParams\\BaseCollection::negated() is not referenced in a parameter.",
+   "tip": null
+  },
+  {
+   "file": "templates.php",
+   "line": 81,
+   "identifier": "method.templateTypeNotInParameter",
+   "message": "Template type TOverride of method TemplateParams\\ModelCollection::overridden() is not referenced in a parameter.",
+   "tip": null
+  },
+  {
+   "file": "templates.php",
+   "line": 84,
+   "identifier": "method.templateTypeNotInParameter",
+   "message": "Template type TFresh of method TemplateParams\\ModelCollection::differentTemplate() is not referenced in a parameter.",
+   "tip": null
+  },
+  {
+   "file": "templates.php",
+   "line": 90,
+   "identifier": "method.templateTypeNotInParameter",
+   "message": "Template type TNegated of method TemplateParams\\ModelCollection::negated() is not referenced in a parameter.",
+   "tip": null
+  },
+  {
+   "file": "templates.php",
+   "line": 120,
+   "identifier": "method.templateTypeNotInParameter",
+   "message": "Template type NamedType of method TemplateParams\\ConcreteTypeChild::named() is not referenced in a parameter.",
+   "tip": null
+  },
+  {
+   "file": "templates.php",
+   "line": 129,
+   "identifier": "method.templateTypeNotInParameter",
+   "message": "Template type TUnused of method TemplateParams\\LocalTypes::unused() is not referenced in a parameter.",
+   "tip": null
+  },
+  {
+   "file": "templates.php",
+   "line": 135,
+   "identifier": "method.templateTypeNotInParameter",
+   "message": "Template type TOutput of method TemplateParams\\LocalTypes::output() is not referenced in a parameter.",
+   "tip": null
+  },
+  {
+   "file": "templates.php",
+   "line": 155,
+   "identifier": "method.templateTypeNotInParameter",
+   "message": "Template type TConflict of method TemplateParams\\LocalTypes::incompatible() is not referenced in a parameter.",
+   "tip": null
+  },
+  {
+   "file": "templates.php",
+   "line": 173,
+   "identifier": "method.templateTypeNotInParameter",
+   "message": "Template type TTypeConditional of method TemplateParams\\LocalTypes::typeConditional() is not referenced in a parameter.",
+   "tip": null
+  },
+  {
+   "file": "templates.php",
+   "line": 202,
+   "identifier": "method.templateTypeNotInParameter",
+   "message": "Template type TNotSeen of method TemplateParams\\ScopedChild::scoped() is not referenced in a parameter.",
+   "tip": null
+  },
+  {
+   "file": "templates.php",
+   "line": 228,
+   "identifier": "method.templateTypeNotInParameter",
+   "message": "Template type TConditional of method TemplateParams\\NativeReturnChild::conditional() is not referenced in a parameter.",
+   "tip": null
+  },
+  {
+   "file": "templates.php",
+   "line": 237,
+   "identifier": "method.templateTypeNotInParameter",
+   "message": "Template type TConditional of method TemplateParams\\LocalReturnChild::conditional() is not referenced in a parameter.",
+   "tip": null
+  },
+  {
+   "file": "templates.php",
+   "line": 246,
+   "identifier": "method.templateTypeNotInParameter",
+   "message": "Template type TNative of method TemplateParams\\NativeParent::native() is not referenced in a parameter.",
+   "tip": null
+  },
+  {
+   "file": "templates.php",
+   "line": 253,
+   "identifier": "method.templateTypeNotInParameter",
+   "message": "Template type TNative of method TemplateParams\\NativeChild::native() is not referenced in a parameter.",
+   "tip": null
+  },
+  {
+   "file": "templates.php",
+   "line": 271,
+   "identifier": "method.templateTypeNotInParameter",
+   "message": "Template type TTypeConditional of method TemplateParams\\TypeConditionalParent::conditional() is not referenced in a parameter.",
+   "tip": null
+  },
+  {
+   "file": "templates.php",
+   "line": 277,
+   "identifier": "method.templateTypeNotInParameter",
+   "message": "Template type TTypeConditional of method TemplateParams\\TypeConditionalChild::conditional() is not referenced in a parameter.",
+   "tip": null
+  },
+  {
+   "file": "templates.php",
+   "line": 281,
+   "identifier": "method.templateTypeNotInParameter",
+   "message": "Template type TFunctionUnused of function TemplateParams\\standalone() is not referenced in a parameter.",
+   "tip": null
+  }
+ ]
+}

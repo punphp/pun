@@ -3,6 +3,7 @@
 //! unresolvable-type part of ExistingClassesInPropertiesRule (UnresolvableTypeHelper on the native type) and
 //! ExistingClassesInArrowFunctionTypehintsRule's `never` check. The class-existence part is names.rs `typehints()`.
 
+use std::cell::RefCell;
 use std::collections::{HashMap, HashSet};
 
 use mago_names::kind::NameKind;
@@ -790,17 +791,33 @@ pub fn check<'arena>(
             None,
         );
     }
-    templates(c, at, &of, &params, return_type, &doc);
+    templates(c, at, kind, &params, return_type, &doc);
     if matches!(kind, FunctionKind::Method(..)) {
         self_out(c, at, &subject, &doc);
     }
+}
+
+/// TypeTraverser on resolved PHPDoc: only real TemplateTypes count, with their original bounds and defaults.
+/// In particular, an inherited template must not be rebound to a same-named template in the child's scope.
+fn reference_type(ty: &Type, seen: &RefCell<HashSet<String>>) {
+    if let Type::Template(t) = ty {
+        seen.borrow_mut().insert(t.name.clone());
+        // Type::traverse visits the bound, but PHPStan's TemplateTypeTrait also visits the default.
+        if let Some(default) = &t.default {
+            reference_type(default, seen);
+        }
+    }
+    ty.traverse(&|inner| {
+        reference_type(inner, seen);
+        inner.clone()
+    });
 }
 
 /// The template types no parameter's type (or a non-negated conditional return type) references.
 fn templates(
     c: &mut Checker,
     at: Span,
-    of: &str,
+    kind: FunctionKind,
     params: &[&FunctionLikeParameter],
     return_type: Option<&FunctionLikeReturnTypeHint>,
     doc: &Doc,
@@ -822,6 +839,46 @@ fn templates(
     {
         reference(node, doc, &mut seen);
     }
+    // getParameters()->getType() includes inherited tags, renamed by position and filled only where a local tag
+    // is absent. Reuse the reflection resolver rather than interpreting the parent's text in the child's scope.
+    if let FunctionKind::Method(_, method) = kind
+        && let Some(class) = c.class_scope()
+        && let Some(method) = c
+            .codebase
+            .get_method(class.name.as_bytes(), method.as_bytes())
+    {
+        let inherited = super::declared::with_classes(c, || {
+            let inherited = RefCell::new(HashSet::new());
+            let types = super::declared::codex_params(c, method, Some(class));
+            for (p, ty) in params.iter().zip(&types) {
+                let name = String::from_utf8_lossy(&p.variable.name[1..]);
+                if !doc.params.contains_key(name.as_ref()) {
+                    reference_type(ty, &inherited);
+                }
+            }
+            if doc.ret.is_none() {
+                let native = return_type.map_or_else(pun_phpstan::types::mixed, |r| {
+                    super::declared::native(c, &r.hint, Some(class))
+                });
+                let ret = pun_phpstan::types::decide_type(
+                    native,
+                    super::declared::codex_return(c, method, Some(class)),
+                );
+                if let Type::Conditional(conditional) = &ret
+                    && !conditional.negated
+                    && matches!(
+                        conditional.subject,
+                        pun_phpstan::types::Subject::Parameter(_)
+                    )
+                {
+                    reference_type(&ret, &inherited);
+                }
+            }
+            inherited.into_inner()
+        });
+        seen.extend(inherited);
+    }
+    let of = kind.named();
     let mut reported = HashSet::new();
     for (name, ..) in &doc.templates {
         if !seen.contains(name) && reported.insert(name.clone()) {
