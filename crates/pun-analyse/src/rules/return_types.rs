@@ -18,11 +18,12 @@ use mago_codex::ttype::atomic::array::list::TList;
 use mago_codex::ttype::atomic::callable::TCallable;
 use mago_codex::ttype::atomic::scalar::TScalar;
 use mago_codex::ttype::cast::cast_atomic_to_callable;
+use mago_codex::ttype::combiner::CombinerOptions;
 use mago_codex::ttype::expander::get_parameter_dependent_signature_of_function_like_identifier;
 use mago_codex::ttype::union::TUnion;
 use mago_codex::ttype::{
-    get_array_parameters, get_false, get_keyed_array, get_mixed, get_never, get_non_negative_int,
-    get_null,
+    combine_union_types, get_array_parameters, get_false, get_int_or_string, get_keyed_array,
+    get_mixed, get_never, get_non_negative_int, get_null,
 };
 use mago_span::{HasSpan, Span};
 
@@ -30,7 +31,7 @@ use mago_span::{HasSpan, Span};
 pub(super) fn registry(contents: &[u8]) -> PluginRegistry {
     let mut registry = PluginRegistry::new();
     registry.register_function_provider(Benevolent);
-    registry.register_function_provider(ArraySlice);
+    registry.register_function_provider(ArrayFunctions);
     registry.register_method_provider(ClosureMethods(contents.to_vec()));
     registry
 }
@@ -48,20 +49,21 @@ pub(super) fn is_benevolent(t: &TUnion) -> bool {
 
 static META: ProviderMeta = ProviderMeta::new("pun", "pun", "PHPStan's dynamic return types");
 
-/// PHPStan 2.3.1's `ArraySliceFunctionReturnTypeExtension` and the array/list/non-empty `sliceArray` methods.
+/// PHPStan 2.3.1's array return types: ArrayRandFunctionReturnTypeExtension's constant-empty fallback, plus
+/// ArraySliceFunctionReturnTypeExtension and the array/list/non-empty sliceArray methods.
 /// Mago 1.57's prelude only has a conditional generic return type: it neither slices shapes nor turns integer-keyed
 /// non-lists back into lists. Keep this in the production registry, so assignments and subsequent calls see it too.
-struct ArraySlice;
+struct ArrayFunctions;
 
-impl Provider for ArraySlice {
+impl Provider for ArrayFunctions {
     fn meta() -> &'static ProviderMeta {
         &META
     }
 }
 
-impl FunctionReturnTypeProvider for ArraySlice {
+impl FunctionReturnTypeProvider for ArrayFunctions {
     fn targets() -> FunctionTarget {
-        FunctionTarget::Exact(b"array_slice")
+        FunctionTarget::ExactMultiple(&[b"array_rand", b"array_slice"])
     }
 
     fn get_return_type(
@@ -70,6 +72,46 @@ impl FunctionReturnTypeProvider for ArraySlice {
         invocation: &InvocationInfo<'_, '_, '_>,
     ) -> Option<TUnion> {
         let array = context.get_expression_type(invocation.get_argument(0, &[b"array"])?)?;
+        if invocation
+            .function_name()
+            .eq_ignore_ascii_case("array_rand")
+        {
+            let empty = array.types.iter().all(|atomic| match atomic {
+                TAtomic::Array(TArray::List(list)) => {
+                    // A generic list<never> is not a ConstantArrayType: PHPStan's ArrayType is only maybe empty.
+                    !list.non_empty
+                        && list.element_type.is_never()
+                        && list
+                            .known_elements
+                            .as_ref()
+                            .is_some_and(|items| items.is_empty())
+                }
+                TAtomic::Array(array) => array.is_empty(),
+                _ => false,
+            });
+            if !empty {
+                // Other inputs keep the declared fallback until inference preserves PHPStan's count bounds too.
+                return None;
+            }
+            // Picking from an empty array throws, but PHPStan deliberately returns int|string, not never.
+            // Fix the actual return type, rather than suppressing the resulting false dead-code diagnostic.
+            let keys = get_int_or_string();
+            let Some(num) = invocation.get_argument(1, &[b"num"]) else {
+                return Some(keys);
+            };
+            let num = context.get_expression_type(num)?;
+            if num.get_single_literal_int_value() == Some(1) {
+                return Some(keys);
+            }
+            let list = TUnion::from_atomic(TAtomic::Array(TArray::List(TList::new_non_empty(
+                Arc::new(keys.clone()),
+            ))));
+            return Some(if num.get_minimum_int_value().is_some_and(|min| min >= 2) {
+                list
+            } else {
+                combine_union_types(&keys, &list, context.codebase(), CombinerOptions::default())
+            });
+        }
         let offset = context.get_expression_type(invocation.get_argument(1, &[b"offset"])?)?;
         let length = match invocation.get_argument(2, &[b"length"]) {
             Some(e) => context.get_expression_type(e)?.clone(),
@@ -124,7 +166,7 @@ impl FunctionReturnTypeProvider for ArraySlice {
     }
 }
 
-impl ArraySlice {
+impl ArrayFunctions {
     fn slice(
         codebase: &CodebaseMetadata,
         array: &TArray,

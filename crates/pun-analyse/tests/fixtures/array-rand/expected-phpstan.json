@@ -1,0 +1,169 @@
+{
+  "totals": {
+    "errors": 0,
+    "file_errors": 25
+  },
+  "files": {
+    "reachability.php": {
+      "errors": 9,
+      "messages": [
+        {
+          "message": "Dumped type: 'only'",
+          "line": 30,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: 'reachable'",
+          "line": 31,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Unreachable statement - code above always terminates.",
+          "line": 37,
+          "ignorable": true,
+          "identifier": "deadCode.unreachable"
+        },
+        {
+          "message": "Unreachable statement - code above always terminates.",
+          "line": 43,
+          "ignorable": true,
+          "identifier": "deadCode.unreachable"
+        },
+        {
+          "message": "Unreachable statement - code above always terminates.",
+          "line": 49,
+          "ignorable": true,
+          "identifier": "deadCode.unreachable"
+        },
+        {
+          "message": "Unreachable statement - code above always terminates.",
+          "line": 55,
+          "ignorable": true,
+          "identifier": "deadCode.unreachable"
+        },
+        {
+          "message": "Dumped type: 'reachable'",
+          "line": 61,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: Closure(): 'only'",
+          "line": 67,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: 'reachable'",
+          "line": 68,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        }
+      ]
+    },
+    "types.php": {
+      "errors": 16,
+      "messages": [
+        {
+          "message": "Dumped type: int|string",
+          "line": 13,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: int|non-empty-list<int|string>|string",
+          "line": 14,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: int|string",
+          "line": 15,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: non-empty-list<int|string>",
+          "line": 16,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: int|non-empty-list<int|string>|string",
+          "line": 17,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: int|non-empty-list<int|string>|string",
+          "line": 18,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: non-empty-list<int|string>",
+          "line": 19,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: non-empty-list<int|string>",
+          "line": 20,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: int|string",
+          "line": 21,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: string",
+          "line": 31,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: int",
+          "line": 32,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: int<0, max>",
+          "line": 33,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: 5|'a'|'b'",
+          "line": 39,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: 'only'",
+          "line": 40,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: 'x'",
+          "line": 46,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Function array_rand invoked with 0 parameters, 1-2 required.",
+          "line": 65,
+          "ignorable": true,
+          "identifier": "arguments.count"
+        }
+      ]
+    }
+  },
+  "errors": []
+}

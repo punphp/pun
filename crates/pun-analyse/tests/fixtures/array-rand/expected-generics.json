@@ -1,0 +1,26 @@
+{
+  "totals": {
+    "errors": 0,
+    "file_errors": 2
+  },
+  "files": {
+    "generics.php": {
+      "errors": 2,
+      "messages": [
+        {
+          "message": "Dumped type: 'before'",
+          "line": 15,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: 'before'",
+          "line": 22,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        }
+      ]
+    }
+  },
+  "errors": []
+}
