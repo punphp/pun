@@ -1,0 +1,3 @@
+parameters:
+    level: 0
+    paths: [full.php, random.php]

@@ -1,0 +1,56 @@
+{
+  "totals": {
+    "errors": 0,
+    "file_errors": 7
+  },
+  "files": {
+    "random-versions.php": {
+      "errors": 7,
+      "messages": [
+        {
+          "message": "Dumped type: int<0, max>",
+          "line": 9,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: int<0, max>",
+          "line": 10,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: int<-2, 13>",
+          "line": 11,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: int<-11, 3>",
+          "line": 12,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Parameter #1 $min (13) of function random_int expects lower number than parameter #2 $max (-2).",
+          "line": 17,
+          "ignorable": true,
+          "identifier": "argument.type"
+        },
+        {
+          "message": "Parameter #1 $min (9) of function random_int expects lower number than parameter #2 $max (int<1, 8>).",
+          "line": 27,
+          "ignorable": true,
+          "identifier": "argument.type"
+        },
+        {
+          "message": "Function RandomVersions\\validControl() should return string but returns int<-5, 17>.",
+          "line": 32,
+          "ignorable": true,
+          "identifier": "return.type"
+        }
+      ]
+    }
+  },
+  "errors": []
+}

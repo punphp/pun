@@ -22,8 +22,9 @@ use mago_codex::ttype::combiner::CombinerOptions;
 use mago_codex::ttype::expander::get_parameter_dependent_signature_of_function_like_identifier;
 use mago_codex::ttype::union::TUnion;
 use mago_codex::ttype::{
-    combine_union_types, get_array_parameters, get_false, get_int_or_string, get_keyed_array,
-    get_mixed, get_never, get_non_negative_int, get_null,
+    combine_union_types, get_array_parameters, get_false, get_int, get_int_or_string,
+    get_int_range, get_iterable_parameters, get_keyed_array, get_literal_int, get_mixed, get_never,
+    get_non_negative_int, get_null, intersect_union_types,
 };
 use mago_span::{HasSpan, Span};
 
@@ -31,7 +32,7 @@ use mago_span::{HasSpan, Span};
 pub(super) fn registry(contents: &[u8]) -> PluginRegistry {
     let mut registry = PluginRegistry::new();
     registry.register_function_provider(Benevolent);
-    registry.register_function_provider(ArrayFunctions);
+    registry.register_function_provider(BuiltinFunctions);
     registry.register_method_provider(ClosureMethods(contents.to_vec()));
     registry
 }
@@ -49,21 +50,27 @@ pub(super) fn is_benevolent(t: &TUnion) -> bool {
 
 static META: ProviderMeta = ProviderMeta::new("pun", "pun", "PHPStan's dynamic return types");
 
-/// PHPStan 2.3.1's array return types: ArrayRandFunctionReturnTypeExtension's constant-empty fallback, plus
+/// PHPStan 2.3.1's ArrayRandFunctionReturnTypeExtension, RandomIntFunctionReturnTypeExtension,
 /// ArraySliceFunctionReturnTypeExtension and the array/list/non-empty sliceArray methods.
 /// Mago 1.57's prelude only has a conditional generic return type: it neither slices shapes nor turns integer-keyed
 /// non-lists back into lists. Keep this in the production registry, so assignments and subsequent calls see it too.
-struct ArrayFunctions;
+struct BuiltinFunctions;
 
-impl Provider for ArrayFunctions {
+impl Provider for BuiltinFunctions {
     fn meta() -> &'static ProviderMeta {
         &META
     }
 }
 
-impl FunctionReturnTypeProvider for ArrayFunctions {
+impl FunctionReturnTypeProvider for BuiltinFunctions {
     fn targets() -> FunctionTarget {
-        FunctionTarget::ExactMultiple(&[b"array_rand", b"array_slice"])
+        FunctionTarget::ExactMultiple(&[
+            b"array_rand",
+            b"array_slice",
+            b"rand",
+            b"mt_rand",
+            b"random_int",
+        ])
     }
 
     fn get_return_type(
@@ -71,42 +78,39 @@ impl FunctionReturnTypeProvider for ArrayFunctions {
         context: &ProviderContext<'_, '_, '_>,
         invocation: &InvocationInfo<'_, '_, '_>,
     ) -> Option<TUnion> {
+        if invocation.function_name().eq_ignore_ascii_case("rand")
+            || invocation.function_name().eq_ignore_ascii_case("mt_rand")
+            || invocation
+                .function_name()
+                .eq_ignore_ascii_case("random_int")
+        {
+            return RandomInt::get_return_type(context, invocation);
+        }
         let array = context.get_expression_type(invocation.get_argument(0, &[b"array"])?)?;
         if invocation
             .function_name()
             .eq_ignore_ascii_case("array_rand")
         {
-            let empty = array.types.iter().all(|atomic| match atomic {
-                TAtomic::Array(TArray::List(list)) => {
-                    // A generic list<never> is not a ConstantArrayType: PHPStan's ArrayType is only maybe empty.
-                    !list.non_empty
-                        && list.element_type.is_never()
-                        && list
-                            .known_elements
-                            .as_ref()
-                            .is_some_and(|items| items.is_empty())
-                }
-                TAtomic::Array(array) => array.is_empty(),
-                _ => false,
-            });
-            if !empty {
-                // Other inputs keep the declared fallback until inference preserves PHPStan's count bounds too.
-                return None;
-            }
+            let (keys, empty) = Self::iterable_keys(array, context.codebase());
             // Picking from an empty array throws, but PHPStan deliberately returns int|string, not never.
             // Fix the actual return type, rather than suppressing the resulting false dead-code diagnostic.
-            let keys = get_int_or_string();
+            let keys = if empty {
+                get_int_or_string()
+            } else {
+                intersect_union_types(&keys, &get_int_or_string(), context.codebase())
+                    .unwrap_or_else(get_never)
+            };
             let Some(num) = invocation.get_argument(1, &[b"num"]) else {
                 return Some(keys);
             };
             let num = context.get_expression_type(num)?;
-            if num.get_single_literal_int_value() == Some(1) {
+            if Self::count_in_range(num, 1, Some(1)) {
                 return Some(keys);
             }
             let list = TUnion::from_atomic(TAtomic::Array(TArray::List(TList::new_non_empty(
                 Arc::new(keys.clone()),
             ))));
-            return Some(if num.get_minimum_int_value().is_some_and(|min| min >= 2) {
+            return Some(if Self::count_in_range(num, 2, None) {
                 list
             } else {
                 combine_union_types(&keys, &list, context.codebase(), CombinerOptions::default())
@@ -166,7 +170,71 @@ impl FunctionReturnTypeProvider for ArrayFunctions {
     }
 }
 
-impl ArrayFunctions {
+impl BuiltinFunctions {
+    /// getIterableKeyType and isIterableAtLeastOnce()->no(), before the empty-input fallback. An empty arm
+    /// contributes no keys to a union that can be non-empty; applying the fallback per arm would widen it.
+    fn iterable_keys(array: &TUnion, codebase: &CodebaseMetadata) -> (TUnion, bool) {
+        let mut keys = get_never();
+        let mut empty = true;
+        for atomic in array.types.iter() {
+            let (part, part_empty) = match atomic {
+                TAtomic::GenericParameter(template) => {
+                    Self::iterable_keys(&template.constraint, codebase)
+                }
+                TAtomic::Array(TArray::List(list)) => {
+                    if let Some(items) = &list.known_elements
+                        && list.element_type.is_never()
+                    {
+                        let keys = items.keys().fold(get_never(), |keys, key| {
+                            combine_union_types(
+                                &keys,
+                                &get_literal_int(*key as i64),
+                                codebase,
+                                Default::default(),
+                            )
+                        });
+                        (keys, items.is_empty() && !list.non_empty)
+                    } else {
+                        // A generic list<never> is maybe empty, not ConstantArrayType's empty array.
+                        (get_non_negative_int(), false)
+                    }
+                }
+                TAtomic::Array(array) => {
+                    (get_array_parameters(array, codebase).0, array.is_empty())
+                }
+                TAtomic::Mixed(_) => (get_int_or_string(), false),
+                _ => get_iterable_parameters(atomic, codebase)
+                    .map_or_else(|| (get_never(), true), |(keys, _)| (keys, false)),
+            };
+            keys = combine_union_types(&keys, &part, codebase, CombinerOptions::default());
+            empty &= part_empty;
+        }
+        (keys, empty)
+    }
+
+    /// PHPStan checks the count's type, not its truthiness or integer cast. TemplateIntegerType is not an
+    /// IntegerRangeType, even with a range bound; TemplateConstantIntegerType retains its literal instead.
+    fn count_in_range(count: &TUnion, min: i64, max: Option<i64>) -> bool {
+        count.types.iter().all(|atomic| match atomic {
+            TAtomic::Never => true,
+            TAtomic::GenericParameter(template) => {
+                if template.constraint.types.len() > 1 {
+                    Self::count_in_range(&template.constraint, min, max)
+                } else {
+                    template
+                        .constraint
+                        .get_single_literal_int_value()
+                        .is_some_and(|n| n >= min && max.is_none_or(|max| n <= max))
+                }
+            }
+            _ => {
+                atomic.get_minimum_int_value().is_some_and(|n| n >= min)
+                    && max
+                        .is_none_or(|max| atomic.get_maximum_int_value().is_some_and(|n| n <= max))
+            }
+        })
+    }
+
     fn slice(
         codebase: &CodebaseMetadata,
         array: &TArray,
@@ -305,6 +373,129 @@ impl ArrayFunctions {
                         *key
                     };
                     (key, value.clone())
+                })
+                .collect(),
+        )
+    }
+}
+
+/// RandomIntFunctionReturnTypeExtension. PHPStan deliberately uses the same bounds and implicit-never
+/// invalid-interval result before and after PHP 8; rand alone swaps reversed bounds.
+struct RandomInt;
+
+impl RandomInt {
+    fn get_return_type(
+        context: &ProviderContext<'_, '_, '_>,
+        invocation: &InvocationInfo<'_, '_, '_>,
+    ) -> Option<TUnion> {
+        let min = invocation.get_argument(0, &[b"min"]);
+        let max = invocation.get_argument(1, &[b"max"]);
+        if invocation.has_no_arguments()
+            && !invocation
+                .function_name()
+                .eq_ignore_ascii_case("random_int")
+        {
+            return Some(get_non_negative_int());
+        }
+        let min = Self::to_integer(context.get_expression_type(min?)?);
+        let max = Self::to_integer(context.get_expression_type(max?)?);
+        let (min, max) = if invocation.function_name().eq_ignore_ascii_case("rand") {
+            let both = combine_union_types(&min, &max, context.codebase(), Default::default());
+            Self::bounds(&both)
+        } else {
+            (Self::bounds(&min).0, Self::bounds(&max).1)
+        };
+        // IntegerRangeType::fromInterval, including equal and machine-limit normalization that Mago's
+        // get_int_range does not perform. Do not turn invalid mt_rand/random_int bounds into a swapped range.
+        Some(match (min, max) {
+            (Some(min), Some(max)) if min > max => get_never(),
+            (Some(min), Some(max)) if min == max => get_literal_int(min),
+            (None, Some(i64::MIN)) => get_literal_int(i64::MIN),
+            (Some(i64::MAX), None) => get_literal_int(i64::MAX),
+            _ => get_int_range(min, max),
+        })
+    }
+    /// createRange iterates a top-level UnionType's members. A TemplateUnionType is such a union, but when
+    /// nested in rand's union with the other bound it is not itself an integer/range endpoint.
+    fn bounds(ty: &TUnion) -> (Option<i64>, Option<i64>) {
+        let ty = if let [TAtomic::GenericParameter(template)] = ty.types.as_ref()
+            && template.constraint.types.len() > 1
+        {
+            &template.constraint
+        } else {
+            ty
+        };
+        (ty.get_minimum_int_value(), ty.get_maximum_int_value())
+    }
+
+    /// PHPStan casts the argument types before extracting bounds, not just literal numeric expressions.
+    fn to_integer(ty: &TUnion) -> TUnion {
+        TUnion::from_vec(
+            ty.types
+                .iter()
+                .flat_map(|atomic| {
+                    let converted = match atomic {
+                        TAtomic::Scalar(TScalar::Integer(_)) => TUnion::from_atomic(atomic.clone()),
+                        TAtomic::GenericParameter(template) => {
+                            if template.constraint.is_int()
+                                && template.constraint.get_single_literal_int_value().is_none()
+                            {
+                                // toInteger keeps TemplateIntegerType itself; createRange recognizes only
+                                // IntegerRangeType/ConstantIntegerType, not the template's narrower bound.
+                                TUnion::from_atomic(atomic.clone())
+                            } else if template.constraint.is_bool() {
+                                // TemplateBooleanType inherits BooleanType, including for a literal bound.
+                                get_int_range(Some(0), Some(1))
+                            } else {
+                                Self::to_integer(&template.constraint)
+                            }
+                        }
+                        TAtomic::Null => get_literal_int(0),
+                        TAtomic::Scalar(TScalar::Bool(value)) => value.value.map_or_else(
+                            || get_int_range(Some(0), Some(1)),
+                            |value| get_literal_int(i64::from(value)),
+                        ),
+                        TAtomic::Scalar(TScalar::String(value)) => value
+                            .get_known_literal_value()
+                            .map_or_else(get_int, |value| {
+                                get_literal_int(pun_tokens::php_compat::intval(
+                                    &String::from_utf8_lossy(value),
+                                ))
+                            }),
+                        TAtomic::Scalar(TScalar::Float(value)) => {
+                            value.get_literal_value().map_or_else(get_int, |value| {
+                                // PHP's float cast truncates and wraps modulo 2^64; Rust's `as i64` saturates instead.
+                                let value = value.trunc() % 18446744073709551616.0;
+                                let value = if value >= 9223372036854775808.0 {
+                                    value - 18446744073709551616.0
+                                } else if value < -9223372036854775808.0 {
+                                    value + 18446744073709551616.0
+                                } else {
+                                    value
+                                };
+                                get_literal_int(value as i64)
+                            })
+                        }
+                        TAtomic::Array(array) => {
+                            let constant_empty = match array {
+                                TArray::List(list) => {
+                                    list.known_elements.is_some() && array.is_empty()
+                                }
+                                _ => array.is_empty(),
+                            };
+                            if constant_empty {
+                                get_literal_int(0)
+                            } else if array.is_non_empty() {
+                                get_literal_int(1)
+                            } else {
+                                get_int_range(Some(0), Some(1))
+                            }
+                        }
+                        // General numeric/string/mixed inputs cast to int. ErrorType from an invalid cast also
+                        // contributes an unbounded endpoint in createRange, rather than a fabricated literal 1.
+                        _ => get_int(),
+                    };
+                    converted.types.into_owned()
                 })
                 .collect(),
         )
