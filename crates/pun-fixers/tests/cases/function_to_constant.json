@@ -1,0 +1,22 @@
+[
+    {
+        "fixer": "function_to_constant",
+        "config": {
+            "functions": [
+                "get_class_this"
+            ]
+        },
+        "input": "<?php\n\nclass ClassNameResolver\n{\n    public static function declaringClass(): string\n    {\n        return get_class();\n    }\n}\n",
+        "expected": "<?php\n\nclass ClassNameResolver\n{\n    public static function declaringClass(): string\n    {\n        return get_class();\n    }\n}\n"
+    },
+    {
+        "fixer": "function_to_constant",
+        "config": {
+            "functions": [
+                "get_class"
+            ]
+        },
+        "input": "<?php\n\nclass ClassNameResolver\n{\n    public function runtimeClass(): string\n    {\n        return get_class($this);\n    }\n}\n",
+        "expected": "<?php\n\nclass ClassNameResolver\n{\n    public function runtimeClass(): string\n    {\n        return get_class($this);\n    }\n}\n"
+    }
+]

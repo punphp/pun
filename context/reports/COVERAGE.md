@@ -6,7 +6,7 @@
 | punphp | 5290 | 5290 | 100.00% | ok |
 | punphp-analyse | 31716 | 31715 | 100.00% | ok |
 | punphp-config | 2604 | 2604 | 100.00% | ok |
-| punphp-fixers | 25641 | 25641 | 100.00% | ok |
+| punphp-fixers | 34841 | 34841 | 100.00% | ok |
 | punphp-format | 1022 | 1022 | 100.00% | ok |
 | punphp-harness | 232 | 232 | 100.00% | ok |
 | punphp-lint | 21786 | 21786 | 100.00% | ok |
@@ -23,9 +23,7 @@ Uncovered lines:
 ## Exclusions
 
 - `crates/pun-fixers/src/fixers/normalize_index_brace.rs:23-31` fix body: CT_ARRAY_INDEX_BRACE_* only come from PHP < 8 `$a{1}`, which no longer lints (upstream on PHP 8.5 never reaches it either; its fixtures are all `#[RequiresPhp(< 8.0)]`).
-- `crates/pun-fixers/src/fixers/no_spaces_around_offset.rs:48` the `$a{0}` (CT_ARRAY_INDEX_BRACE) block type: as for normalize_index_brace, that syntax no longer lints on PHP 8.
 - `crates/pun-fixers/src/fixers/yoda_style.rs:421` the same `$a{0}` block type.
-- `crates/pun-fixers/src/fixers/method_argument_space.rs:334` ensureSingleLineForParentheses' `//` comment check: argumentContentIsMultiline already returns for any comment outside a nested block, and nested blocks are skipped by both loops, so a comment never precedes the whitespace (upstream has the same dead check).
 - `crates/pun-fixers/src/fixers/pint_laravel_blade/php_block_formatting.rs:221` formatDirectiveArg's fallback when the formatted host has no balanced `(...)`: the argument was cut out of the template by the same matchParen, so it is balanced, and the formatter either returns the host unchanged (a CompileError) or keeps it balanced (no fixer adds quotes or comments).
 - `crates/pun-cli/src/run.rs:640` the `Status::Lint` arm (the fixers produced code that no longer parses, PHP-CS-Fixer's TYPE_LINT): Pun's fixers port the pinned PHP-CS-Fixer's, and no known input makes them emit a parse error (the trailing-comma and first-class-callable cases tried against Pint are guarded upstream). pun-format's own tests reach `after_fix` with a test fixer.
 - `crates/pun-cli/src/run.rs:617-620` a lint error other than a syntax error (pun-lint's `FixBrokeSyntax`, `NoConvergence`): no known input makes the ported rules' fixes break the code or keep changing it; pun-lint's own tests reach both with test rules.
