@@ -1246,3 +1246,35 @@ The instrumented runs use one Cargo job, two Rayon threads, a private target dir
 `unset`, `mixed_subtraction`, `array_metadata`, `array_slice`, `duplicate_array_keys`, `debug`,
 `callable_origins`, `error_marker`, and `rules`, with `PUN_RULES_FILTER=Variables/UnsetRuleTest`.
 The separate `punphp-phpstan` run includes every package test.
+
+## Failed-read construct inputs
+
+The follow-up to `30804564` changes only
+`src/common/construct.rs::verify_construct_input_type()` in production. It returns before type
+verification when the input is ErrorType, following PHPStan 2.3.1's `Rules/Cast/EchoRule.php` and
+`PrintRule.php`, which skip ErrorType inputs. The failed read retains its primary diagnostic.
+`analyze_construct_inputs()` still evaluates inputs, processes subsequent echo values, and checks
+purity independently. Print still produces its ordinary result. No reader, native transfer, Pun
+query, or unset behavior changes.
+
+`crates/pun-analyse/tests/failed_constructs.rs` uses the fresh level-9, PHP-80400 oracle records in
+`tests/fixtures/failed-reads/expected-constructs-phpstan.json`. It checks primary read diagnostics,
+genuine invalid echo and print inputs, purity, two echo-argument increments, and print's result.
+The fixture covers failed inputs to echo, print, eval, exit, and die. It also retains Mago's existing
+null, false, and mixed exit errors, derived from its `int|string` input contract. Those three controls
+are not PHPStan compatibility assertions: this PHPStan oracle does not check those exit argument types.
+No saved expectation is replaced or suppressed.
+
+Before this correction, the unchanged `negated_isset_narrows_parent_array_type` test fails on two extra
+`MixedArgument` diagnostics. Afterward, all three raw array-access tests pass with their original
+expected issues, and the nine convergence tests pass. The new public fixture loses exactly ten
+failed-read type cascades while keeping its five genuine construct type errors, ten primary read
+diagnostics, and independent purity diagnostic. Its dumps remain `2` for the incremented index and
+`1` for print's result.
+
+Validation on `30804564` plus this correction passes all 27 focused public tests, including the
+11 native-on/off and 10 callback tests, the earlier failed-reader regressions, and both coalesce
+regressions. The unrelated unset failures recorded above are not changed or reclassified here.
+Fresh profiles cover **3/3 changed LLVM-mapped executable lines**: the condition, early return, and
+fall-through closing brace. LCOV counts are 36, 11, and 25, respectively, using only this run's
+current executables. No coverage exclusion is used.

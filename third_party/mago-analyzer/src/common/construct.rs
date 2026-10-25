@@ -188,6 +188,11 @@ fn verify_construct_input_type<'arena, A>(
 ) where
     A: Arena,
 {
+    // Failed reads retain their primary diagnostic, not a second construct type error.
+    if input_type.is_error() {
+        return;
+    }
+
     if input_type.is_never() {
         return report_never_input(
             context,

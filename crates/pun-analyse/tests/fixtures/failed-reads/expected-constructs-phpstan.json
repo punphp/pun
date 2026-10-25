@@ -1,0 +1,110 @@
+{
+  "totals": {
+    "errors": 0,
+    "file_errors": 16
+  },
+  "files": {
+    "constructs.php": {
+      "errors": 16,
+      "messages": [
+        {
+          "message": "Offset 'echo-missing' does not exist on array{present: 1}.",
+          "line": 8,
+          "ignorable": true,
+          "identifier": "offsetAccess.notFound"
+        },
+        {
+          "message": "Offset 'print-missing' does not exist on array{present: 1}.",
+          "line": 9,
+          "ignorable": true,
+          "identifier": "offsetAccess.notFound"
+        },
+        {
+          "message": "Offset 'eval-missing' does not exist on array{present: 1}.",
+          "line": 10,
+          "ignorable": true,
+          "identifier": "offsetAccess.notFound"
+        },
+        {
+          "message": "Undefined variable: $undefined",
+          "line": 11,
+          "ignorable": true,
+          "identifier": "variable.undefined"
+        },
+        {
+          "message": "Offset 0 does not exist on array{present: 1}.",
+          "line": 13,
+          "ignorable": true,
+          "identifier": "offsetAccess.notFound"
+        },
+        {
+          "message": "Dumped type: 2",
+          "line": 14,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Offset 'print-result' does not exist on array{present: 1}.",
+          "line": 15,
+          "ignorable": true,
+          "identifier": "offsetAccess.notFound"
+        },
+        {
+          "message": "Dumped type: 1",
+          "line": 16,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Offset 'missing-sibling' does not exist on array{present: 1}.",
+          "line": 17,
+          "ignorable": true,
+          "identifier": "offsetAccess.notFound"
+        },
+        {
+          "message": "Parameter #2 (array{}) of echo cannot be converted to string.",
+          "line": 17,
+          "ignorable": true,
+          "identifier": "echo.nonString"
+        },
+        {
+          "message": "Parameter array{} of print cannot be converted to string.",
+          "line": 18,
+          "ignorable": true,
+          "identifier": "print.nonString"
+        },
+        {
+          "message": "Offset 'exit-missing' does not exist on array{present: 1}.",
+          "line": 24,
+          "ignorable": true,
+          "identifier": "offsetAccess.notFound"
+        },
+        {
+          "message": "Offset 'die-missing' does not exist on array{present: 1}.",
+          "line": 30,
+          "ignorable": true,
+          "identifier": "offsetAccess.notFound"
+        },
+        {
+          "message": "Impure echo in pure function FailedReadConstructs\\purityControl().",
+          "line": 52,
+          "ignorable": true,
+          "identifier": "impure.echo"
+        },
+        {
+          "message": "Offset 'pure-missing' does not exist on array{present: 1}.",
+          "line": 52,
+          "ignorable": true,
+          "identifier": "offsetAccess.notFound"
+        },
+        {
+          "message": "Possibly impure call to method stdClass::__toString() in pure function FailedReadConstructs\\purityControl().",
+          "line": 52,
+          "ignorable": true,
+          "identifier": "possiblyImpure.methodCall"
+        }
+      ]
+    }
+  },
+  "errors": []
+}
