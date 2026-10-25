@@ -44,7 +44,7 @@ pub struct MagoRun {
 /// Runs Mago's analyser over `project.analysed` with Mago's default plugins, plus Pun's Laravel plugin for the given
 /// Laravel app (its migrations and models).
 pub fn run_mago(project: &Project, laravel: Option<Laravel>) -> Result<MagoRun, CouldNotReadFile> {
-    let codebase = codebase::build(project)?;
+    let codebase = codebase::build(project, laravel.as_ref().map(|app| app.root))?;
     let version = codebase::php_version(project.php_version);
     let mut registry = create_registry_with_plugins(&[], false);
     if let Some(app) = laravel {

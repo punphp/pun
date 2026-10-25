@@ -7,6 +7,21 @@ Pun's formatter is compared with Pint 1.29.3 and PHP-CS-Fixer 3.95.17. The resul
 
 PHPStan, Larastan, and Rector support is incomplete. A mapped rule is not necessarily implemented. The [rule reference](/docs/rules) marks unimplemented rules as Planned.
 
+## Laravel class aliases
+
+When Laravel analysis is enabled, Pun reads class aliases without running PHP. The alias sources are:
+
+- The installed framework's `Facade::defaultAliases()` and default application config.
+- A literal `aliases` array in `config/app.php`, or the standard `defaultAliases()->merge([...])->toArray()` expression. A replacement array does not retain the defaults.
+- `app.aliases` in `bootstrap/cache/config.php`, when that cache exists. The cache replaces the source config.
+- `bootstrap/cache/packages.php`, or package aliases in `vendor/composer/installed.json` when the manifest is absent. Package discovery respects the application's and packages' `dont-discover` lists.
+
+Package aliases override application aliases. An imported global `Blade` alias denotes `Illuminate\Support\Facades\Blade`, not the container's Blade compiler. Without an import, `Blade` inside `namespace App` refers to `App\Blade`. A global alias does not define that class.
+
+Alias identity does not add method forwarding to container services. Pun does not execute service providers, dynamic config expressions, or programmatic `AliasLoader` changes. Custom bootstrap, config, cache, and vendor paths, and real-time `Facades\...` classes are not supported by this alias reader.
+
+An exact-spelling reference activates its alias throughout Pun's order-independent symbol graph. Unlike PHPStan, Pun does not model a differently cased lookup before that reference. Known class declarations win. Runtime load-order collisions, including differently cased aliases with different targets, are not simulated.
+
 ## Speed
 
 The 2026-10-16 benchmark used a profiling build on a shared 2-core, 7 GB machine. These are median wall times from three runs on laravel/framework:

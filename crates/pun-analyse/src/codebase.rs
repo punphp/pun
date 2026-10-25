@@ -10,10 +10,10 @@ use mago_allocator::LocalArena;
 use mago_codex::metadata::CodebaseMetadata;
 use mago_codex::metadata::constant::ConstantMetadata;
 use mago_codex::metadata::flags::MetadataFlags;
-use mago_codex::ttype::get_literal_int;
 use mago_codex::populator::populate_codebase_parallel;
 use mago_codex::reference::SymbolReferences;
 use mago_codex::scanner::scan_program;
+use mago_codex::ttype::get_literal_int;
 use mago_database::file::{File, FileType};
 use mago_names::ResolvedNames;
 use mago_names::resolver::NameResolver;
@@ -92,10 +92,18 @@ pub(crate) fn parse<'arena>(
 }
 
 /// Scans `file`, then resets `arena`, so one arena serves many files.
-fn scan(arena: &mut LocalArena, file: &File, version: PHPVersion) -> CodebaseMetadata {
+fn scan(
+    arena: &mut LocalArena,
+    file: &File,
+    version: PHPVersion,
+    reachable: Option<(&autoload::Index, &mut Vec<usize>, &mut Vec<usize>)>,
+) -> CodebaseMetadata {
     let mut scanned = {
         let arena = &*arena;
         let (program, names) = parse(arena, file);
+        if let Some((index, wanted, declarations)) = reachable {
+            index.wanted(&file.contents, program, &names, wanted, declarations);
+        }
         // Mago's scanner trips a debug assertion (an empty TUnion::from_vec, debug builds only) on an intersection
         // type naming a non-class type, which PHP rejects; scanning again with those types read as `mixed` keeps
         // the file's symbols
@@ -204,7 +212,8 @@ fn build_prelude(php_version: u32) -> (CodebaseMetadata, SymbolReferences) {
         if let Ok(value) = value.parse::<i64>()
             && !metadata.constants.contains_key(&key)
         {
-            let mut constant = ConstantMetadata::new(mago_word::word(name), Span::zero(), MetadataFlags::BUILTIN);
+            let mut constant =
+                ConstantMetadata::new(mago_word::word(name), Span::zero(), MetadataFlags::BUILTIN);
             constant.inferred_type = Some(get_literal_int(value));
             metadata.constants.insert(key, constant);
         }
@@ -220,7 +229,7 @@ fn scan_api(version: PHPVersion) -> CodebaseMetadata {
         None,
         Cow::Borrowed(PHPSTAN_API),
     );
-    scan(&mut LocalArena::new(), &stub, version)
+    scan(&mut LocalArena::new(), &stub, version, None)
 }
 
 /// Files scanned by one task: small enough that the threads finish together.
@@ -229,15 +238,29 @@ const CHUNK: usize = 32;
 /// The analysed files as the scan read them, by path, for the rules to walk without reading them again.
 pub(crate) type Sources = HashMap<PathBuf, Arc<File>>;
 
-pub(crate) fn build(project: &Project) -> Result<CodebaseMetadata, CouldNotReadFile> {
-    Ok(build_with_sources(project)?.0)
+pub(crate) fn build(
+    project: &Project,
+    laravel_root: Option<&Path>,
+) -> Result<CodebaseMetadata, CouldNotReadFile> {
+    Ok(build_with_sources_at(project, laravel_root)?.0)
 }
 
 /// The codebase, and the analysed files' [`Sources`].
 pub(crate) fn build_with_sources(
     project: &Project,
 ) -> Result<(CodebaseMetadata, Sources), CouldNotReadFile> {
+    build_with_sources_at(project, None)
+}
+
+fn build_with_sources_at(
+    project: &Project,
+    laravel_root: Option<&Path>,
+) -> Result<(CodebaseMetadata, Sources), CouldNotReadFile> {
     let version = php_version(project.php_version);
+    let aliases = laravel_root
+        .or_else(|| project.larastan.as_ref().map(|l| l.root.as_path()))
+        .map(crate::larastan::aliases::load)
+        .unwrap_or_default();
     let mut seen = HashSet::new();
     let mut files: Vec<_> = project
         .analysed
@@ -262,7 +285,7 @@ pub(crate) fn build_with_sources(
         });
         classes.push((i, a));
     }
-    let index = autoload::Index::new(classes.into_iter());
+    let index = autoload::Index::new(classes.into_iter(), &aliases);
     // Scanning is most of the time (the vendored files): in rounds, each the psr-4 and psr-0 files the previous one
     // named, in chunks across the threads, merged in file order, while the prelude is built and PHPStan's reflection
     // of built-ins is loaded (at the project's PHP version, which the rules read, and 8.4's, which pun-phpstan's type
@@ -284,6 +307,7 @@ pub(crate) fn build_with_sources(
             let mut round: Vec<usize> = (0..eager).collect();
             let mut scanned = Vec::new();
             let mut sources = Sources::new();
+            let mut used_aliases = Vec::new();
             while !round.is_empty() {
                 let size = (round.len() / (rayon::current_num_threads() * 4)).clamp(1, CHUNK);
                 let chunks = round
@@ -292,13 +316,18 @@ pub(crate) fn build_with_sources(
                         let mut metadata = CodebaseMetadata::default();
                         let mut sources = Vec::new();
                         let mut wanted = Vec::new();
+                        let mut declarations = Vec::new();
                         for &i in chunk {
                             let (path, file_type) = files[i];
                             let Some(file) = read(path, file_type)? else {
                                 continue;
                             };
-                            metadata.extend(scan(arena, &file, version));
-                            index.wanted(&file.contents, &mut wanted);
+                            metadata.extend(scan(
+                                arena,
+                                &file,
+                                version,
+                                Some((&index, &mut wanted, &mut declarations)),
+                            ));
                             wanted.retain(|&w| !loaded[w]);
                             if file_type == FileType::Host {
                                 if names_phpstan(&file.contents) {
@@ -309,14 +338,15 @@ pub(crate) fn build_with_sources(
                                 sources.push((path.clone(), Arc::new(file)));
                             }
                         }
-                        Ok((metadata, sources, wanted))
+                        Ok((metadata, sources, wanted, declarations))
                     })
                     .collect::<Result<Vec<_>, CouldNotReadFile>>()?;
                 round.clear();
-                for (chunk, files, wanted) in chunks {
+                for (chunk, files, wanted, declarations) in chunks {
                     scanned.push(chunk);
                     sources.extend(files);
                     round.extend(wanted);
+                    used_aliases.extend(declarations);
                 }
                 round.sort_unstable();
                 round.dedup();
@@ -324,12 +354,35 @@ pub(crate) fn build_with_sources(
                     loaded[i] = true;
                 }
             }
-            Ok((scanned, sources))
+            Ok((scanned, sources, used_aliases))
         },
     );
-    let (scanned, sources) = scanned?;
+    let (scanned, sources, mut used_aliases) = scanned?;
     for chunk in scanned {
         metadata.extend(chunk);
+    }
+    if !used_aliases.is_empty() {
+        used_aliases.sort_unstable();
+        used_aliases.dedup();
+        // Feed declarations through Mago's class_alias scanner, before population resolves aliases, inheritance
+        // and signatures. Real declarations win and missing/cyclic targets stay unknown in its normal registry.
+        let quote = |s: &str| s.replace('\\', "\\\\").replace('\'', "\\'");
+        let mut declarations = String::from("<?php\n");
+        for i in used_aliases {
+            let (alias, target) = &aliases[i];
+            declarations.push_str(&format!(
+                "\\class_alias('{}', '{}');\n",
+                quote(target),
+                quote(alias)
+            ));
+        }
+        let file = File::new(
+            Cow::Borrowed(b"pun://laravel-aliases"),
+            FileType::Vendored,
+            None,
+            Cow::Owned(declarations.into_bytes()),
+        );
+        metadata.extend(scan(&mut LocalArena::new(), &file, version, None));
     }
     if let Some(api) = api.into_inner() {
         metadata.extend(api.join().expect("the API stub scan never panics"));

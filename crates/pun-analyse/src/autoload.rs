@@ -4,11 +4,15 @@
 //! The names a file holds are over-approximated from its bytes, so that a file any rule or type could reach is
 //! scanned: every name-like token in code, comments and strings (`\\` as in a string literal included), as written,
 //! relative to each namespace the file declares, and through each import (`use`, `as`, group use, and any qualified
-//! name's last segment). Case is ignored, as PHP's class lookup ignores it.
+//! name's last segment). Case is ignored for class files. Laravel's cold AliasLoader lookup is exact-case; a
+//! reachable exact alias activates its codex declaration, after which loaded alias identity is case-insensitive.
 
 use std::collections::{HashMap, HashSet};
 
 use foldhash::fast::FixedState;
+use mago_names::ResolvedNames;
+use mago_span::HasSpan;
+use mago_syntax::cst::{Program, Statement};
 
 use crate::project::Autoloaded;
 
@@ -18,6 +22,12 @@ type Map<K, V> = HashMap<K, V, FixedState>;
 pub(crate) struct Index {
     psr4: Map<Box<[u8]>, Vec<usize>>,
     psr0: Map<Box<[u8]>, Vec<usize>>,
+    aliases: Map<Box<[u8]>, Alias>,
+}
+
+struct Alias {
+    declarations: Vec<usize>,
+    files: Vec<usize>,
 }
 
 /// A token's bytes in the file: `\` or `\\` between segments, no leading `\`.
@@ -27,10 +37,14 @@ type Range = (usize, usize);
 type Full = (Option<Range>, Range);
 
 impl Index {
-    pub(crate) fn new<'a>(files: impl Iterator<Item = (usize, &'a Autoloaded)>) -> Index {
+    pub(crate) fn new<'a>(
+        files: impl Iterator<Item = (usize, &'a Autoloaded)>,
+        aliases: &[(String, String)],
+    ) -> Index {
         let mut index = Index {
             psr4: Map::default(),
             psr0: Map::default(),
+            aliases: Map::default(),
         };
         for (i, file) in files {
             let map = if file.psr0 {
@@ -42,13 +56,82 @@ impl Index {
                 .or_default()
                 .push(i);
         }
+        let by_name: Map<&str, usize> = aliases
+            .iter()
+            .enumerate()
+            .map(|(i, (a, _))| (a.as_str(), i))
+            .collect();
+        for (i, (name, target)) in aliases.iter().enumerate() {
+            let mut declarations = vec![i];
+            let mut files = Vec::new();
+            let mut target = target.as_str();
+            loop {
+                index.look_files(
+                    &mut target
+                        .trim_start_matches('\\')
+                        .as_bytes()
+                        .to_ascii_lowercase(),
+                    &mut files,
+                );
+                if !files.is_empty() {
+                    break;
+                }
+                let Some(&next) = by_name.get(target.trim_start_matches('\\')) else {
+                    break;
+                };
+                if declarations.contains(&next) {
+                    break;
+                }
+                declarations.push(next);
+                target = &aliases[next].1;
+            }
+            index.aliases.insert(
+                name.as_bytes().into(),
+                Alias {
+                    declarations,
+                    files,
+                },
+            );
+        }
         index
     }
 
-    /// Adds to `out` the files that may hold a class `code` names.
-    pub(crate) fn wanted(&self, code: &[u8], out: &mut Vec<usize>) {
-        if self.psr4.is_empty() && self.psr0.is_empty() {
+    /// Adds the files and alias declarations that a class `code` names can reach.
+    pub(crate) fn wanted(
+        &self,
+        code: &[u8],
+        program: &Program,
+        resolved: &ResolvedNames,
+        out: &mut Vec<usize>,
+        declarations: &mut Vec<usize>,
+    ) {
+        if self.psr4.is_empty() && self.psr0.is_empty() && self.aliases.is_empty() {
             return;
+        }
+        // Resolved spellings, not arbitrary strings/comments or an unqualified name in another namespace.
+        // In particular, scanning Facade::defaultAliases itself must not activate every alias in its array.
+        let namespaces: Vec<_> = if self.aliases.is_empty() {
+            Vec::new()
+        } else {
+            program
+                .statements
+                .iter()
+                .filter_map(|s| match s {
+                    Statement::Namespace(ns) => Some(ns),
+                    _ => None,
+                })
+                .collect()
+        };
+        if !self.aliases.is_empty() {
+            for (start, _, name, _) in resolved.iter() {
+                if !namespaces.iter().any(|ns| {
+                    ns.name
+                        .as_ref()
+                        .is_some_and(|n| n.span().start.offset == start)
+                }) {
+                    self.look_alias(name, out, declarations);
+                }
+            }
         }
         let names = Names::of(code);
         // by the alias lowercased, as PHP resolves an alias whatever its case
@@ -58,6 +141,43 @@ impl Index {
                 .entry(code[alias.0..alias.1].to_ascii_lowercase())
                 .or_default()
                 .push(full);
+        }
+        // PHPDoc has no ResolvedNames entries. Use its actual namespace and the file's import expansions, as
+        // the byte index does for target files; an unqualified local type must not become a global alias.
+        for doc in program
+            .trivia
+            .iter()
+            .filter(|t| !self.aliases.is_empty() && t.kind.is_docblock())
+        {
+            let namespace = namespaces
+                .iter()
+                .find(|ns| {
+                    ns.span().start.offset <= doc.span.start.offset
+                        && doc.span.end.offset <= ns.span().end.offset
+                })
+                .and_then(|ns| ns.name.as_ref());
+            for (range, fq) in Names::of(doc.value).tokens {
+                let token = &doc.value[range.0..range.1];
+                let mut name = Vec::new();
+                if !fq && let Some(ns) = namespace {
+                    push_name(&mut name, ns.value());
+                    name.push(b'\\');
+                }
+                push_name(&mut name, token);
+                self.look_alias(&name, out, declarations);
+                let first = token
+                    .iter()
+                    .position(|&b| b == b'\\')
+                    .unwrap_or(token.len());
+                if !fq && let Some(fulls) = aliases.get(&token[..first].to_ascii_lowercase()) {
+                    for &full in fulls {
+                        name.clear();
+                        push_full(&mut name, code, full);
+                        push_name(&mut name, &token[first..]);
+                        self.look_alias(&name, out, declarations);
+                    }
+                }
+            }
         }
         let mut first_segment = Vec::new();
         let mut seen: HashSet<(bool, &[u8]), FixedState> =
@@ -103,8 +223,20 @@ impl Index {
         }
     }
 
-    /// The files that may hold class `name` (lowercased); `name` is used as scratch.
+    fn look_alias(&self, name: &[u8], out: &mut Vec<usize>, declarations: &mut Vec<usize>) {
+        if let Some(alias) = self.aliases.get(name) {
+            out.extend(&alias.files);
+            declarations.extend(&alias.declarations);
+        }
+    }
+
     fn look(&self, name: &mut [u8], out: &mut Vec<usize>) {
+        name.make_ascii_lowercase();
+        self.look_files(name, out);
+    }
+
+    /// The files that may hold class `name` (lowercased); `name` is used as scratch.
+    fn look_files(&self, name: &mut [u8], out: &mut Vec<usize>) {
         if let Some(files) = self.psr4.get(&*name) {
             out.extend(files);
         }
@@ -121,18 +253,18 @@ impl Index {
     }
 }
 
-/// Appends `token` lowercased, with `\\` as `\`.
+/// Appends `token`, collapsing doubled namespace separators in string literals.
 fn push_name(name: &mut Vec<u8>, token: &[u8]) {
     let mut previous = 0;
     for &b in token {
         if !(b == b'\\' && previous == b'\\') {
-            name.push(b.to_ascii_lowercase());
+            name.push(b);
         }
         previous = b;
     }
 }
 
-/// Appends `full`, lowercased.
+/// Appends `full`.
 fn push_full(name: &mut Vec<u8>, code: &[u8], (prefix, token): Full) {
     if let Some(p) = prefix {
         push_name(name, &code[p.0..p.1]);
