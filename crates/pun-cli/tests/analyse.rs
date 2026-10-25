@@ -67,6 +67,10 @@ fn formats_match_phpstan() {
         ("errors", ERRORS),
         ("clean", CLEAN),
         ("non-ignorable", NON_IGNORABLE),
+        (
+            "dumps",
+            "<?php\n\\PHPStan\\dumpType(1, true); // @phpstan-ignore phpstan.dumpType\n\\PHPStan\\dumpPhpDocType(['value' => 2]);\n",
+        ),
     ] {
         let d = sample(name, source);
         for f in FORMATS {

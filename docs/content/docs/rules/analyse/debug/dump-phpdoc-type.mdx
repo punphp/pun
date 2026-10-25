@@ -7,7 +7,7 @@ pagination: false
 
 <RuleId id="analyse/debug/dump-phpdoc-type" />
 
-Enabled by the [`analyse-basic`](/docs/rules/presets/analyse-basic), [`analyse-essential`](/docs/rules/presets/analyse-essential), [`analyse-recommended`](/docs/rules/presets/analyse-recommended), [`analyse-strict`](/docs/rules/presets/analyse-strict), [`analyse-max`](/docs/rules/presets/analyse-max) presets. Fix: none (report only). **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`analyse-basic`](/docs/rules/presets/analyse-basic), [`analyse-essential`](/docs/rules/presets/analyse-essential), [`analyse-recommended`](/docs/rules/presets/analyse-recommended), [`analyse-strict`](/docs/rules/presets/analyse-strict), [`analyse-max`](/docs/rules/presets/analyse-max) presets. Fix: none (report only).
 
 ## Replaces
 
@@ -21,10 +21,11 @@ Enabled by the [`analyse-basic`](/docs/rules/presets/analyse-basic), [`analyse-e
 "debug/dump-phpdoc-type" = "on"
 ```
 
-```php
-// @pun-ignore analyse/debug/dump-phpdoc-type -- explain the exception
-```
+Findings from this rule cannot be suppressed with ignore comments or baseline entries.
 
+## What it does
+
+Reports each argument's inferred type as PHPDoc. Ignore comments and baselines cannot suppress these diagnostics.
 
 ## Options
 

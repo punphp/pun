@@ -22,6 +22,7 @@ def main() -> None:
     data["rules"]["analyse"]["undefined/method"]["examples"] = [
         {"code": "<?php $x->missing();", "message": "Call to an undefined method X::missing()."},
     ]
+    data["rules"]["analyse"]["undefined/method"]["ported"] = False
     output = docs.generate(data)
     lint = output[docs.CONTENT / "rules/lint/style/no-alias-function.mdx"]
     assert 'title: "lint/style/no-alias-function"' in lint
@@ -37,6 +38,11 @@ def main() -> None:
     assert "https://phpstan.org/error-identifiers/method.notFound" in analyse
     assert '"undefined/method" = "on"' in analyse
     assert "@pun-ignore analyse/undefined/method" in analyse
+    for name in ("dump-type", "dump-phpdoc-type"):
+        dump = output[docs.CONTENT / f"rules/analyse/debug/{name}.mdx"]
+        assert "cannot be suppressed with ignore comments or baseline entries" in dump
+        assert "@pun-ignore" not in dump
+        assert "Planned: not in Pun yet" not in dump
     ordered = output[docs.CONTENT / "rules/format/imports/ordered.mdx"]
     assert '`"alphabetical"` | `sort_algorithm`' in ordered
     assert "@pun-ignore-file format/imports/ordered" in ordered

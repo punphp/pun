@@ -39,6 +39,8 @@ Inline non-static closures and arrow functions use the class named by `@param-cl
 Pun resolves these tags on named functions and methods called through a class name or a single known object class, including nullable receivers.
 Bindings from multiple possible receiver classes remain unsupported.
 
+`PHPStan\dumpType()` reports inferred types in PHPStan's precise diagnostic notation. `PHPStan\dumpPhpDocType()` reports the same types as PHPDoc. Each argument produces one non-ignorable diagnostic on the call's line. Native type dumps, scope dumps, and the `PHPStan\Testing` assertion functions remain unported.
+
 An [ignore comment](/docs/configuration/ignore-comments) suppresses a matching ignorable finding:
 
 ```php

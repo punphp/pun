@@ -170,7 +170,8 @@ fn project(cfg: &Config, analysed: Vec<PathBuf>) -> Result<pun_analyse::Project>
     let on: std::collections::HashSet<String> =
         cfg.analyse.rules.iter().map(|r| r.id.clone()).collect();
     project.reported = Some(std::sync::Arc::new(move |id| {
-        rule_of_identifier(id).is_some_and(|r| on.contains(r))
+        // Unmatched/comment-policy errors come from ignore processing, not a configurable rule.
+        rule_of_identifier(id).map_or_else(|| id.starts_with("ignore."), |r| on.contains(r))
     }));
     Ok(project)
 }

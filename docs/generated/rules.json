@@ -5350,7 +5350,7 @@
         "RemoveDeadInstanceOf",
         "RemoveDeadInstanceOfRector"
       ],
-      "ported": true
+      "ported": false
     },
     {
       "id": "lint/dead-code/no-always-true-instanceof-assert",
@@ -5370,7 +5370,7 @@
         "RemoveDeadInstanceOfAssert",
         "RemoveDeadInstanceOfAssertRector"
       ],
-      "ported": true
+      "ported": false
     },
     {
       "id": "lint/dead-code/no-and-true",
@@ -20141,7 +20141,7 @@
         "RedundantNullCoalesce",
         "nullCoalesce.unnecessary"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/dead-code/sort-without-effect",
@@ -20166,7 +20166,7 @@
         "sortArray.list",
         "sortArray.noop"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/dead-code/strict-comparison-always-constant",
@@ -20211,7 +20211,7 @@
         "switch.alwaysTrue",
         "switch.duplicateCase"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/dead-code/ternary-always-constant",
@@ -20398,7 +20398,7 @@
         "PHPStan\\Rules\\DeadCode\\CallToFunctionStatementWithoutImpurePointsRule",
         "function.resultUnused"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/dead-code/unused-label",
@@ -20465,7 +20465,7 @@
         "PHPStan\\Rules\\DeadCode\\CallToMethodStatementWithoutImpurePointsRule",
         "method.resultUnused"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/dead-code/unused-new-result",
@@ -20487,7 +20487,7 @@
         "PHPStan\\Rules\\DeadCode\\CallToConstructorStatementWithoutImpurePointsRule",
         "new.resultUnused"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/dead-code/unused-private-constant",
@@ -20617,7 +20617,7 @@
         "PHPStan\\Rules\\DeadCode\\CallToStaticMethodStatementWithoutImpurePointsRule",
         "staticMethod.resultUnused"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/dead-code/unused-trait",
@@ -20831,7 +20831,7 @@
       "id": "analyse/debug/dump-phpdoc-type",
       "command": "analyse",
       "group": "debug",
-      "summary": "",
+      "summary": "Reports each argument's inferred type as PHPDoc. Ignore comments and baselines cannot suppress these diagnostics.",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -20849,7 +20849,7 @@
         "PHPStan\\Rules\\Debug\\DumpPhpDocTypeRule",
         "phpstan.dumpPhpDocType"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/debug/dump-scope",
@@ -20879,7 +20879,7 @@
       "id": "analyse/debug/dump-type",
       "command": "analyse",
       "group": "debug",
-      "summary": "",
+      "summary": "Reports each argument's inferred type in PHPStan's precise notation. Ignore comments and baselines cannot suppress these diagnostics.",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -20900,7 +20900,7 @@
         "TypeInspection",
         "phpstan.dumpType"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/deprecated/backtick",
@@ -24400,7 +24400,7 @@
         "preDec.type",
         "preInc.type"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/types/invalid-interface-generics",
@@ -25631,7 +25631,7 @@
         "RedundantNullsafeOperator",
         "nullsafe.neverNull"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/types/redundant-nullsafe-method-call",
@@ -25652,7 +25652,7 @@
         "NullsafeMethodCallRule",
         "PHPStan\\Rules\\Methods\\NullsafeMethodCallRule"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/types/renamed-parameter-in-subtype",
@@ -25874,7 +25874,7 @@
         "ThrowsVoidFunctionWithExplicitThrowPointRule",
         "throws.void"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/types/throws-void-hook",
@@ -25896,7 +25896,7 @@
         "PHPStan\\Rules\\Exceptions\\ThrowsVoidPropertyHookWithExplicitThrowPointRule",
         "ThrowsVoidPropertyHookWithExplicitThrowPointRule"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/types/throws-void-method",
@@ -25918,7 +25918,7 @@
         "PHPStan\\Rules\\Exceptions\\ThrowsVoidMethodWithExplicitThrowPointRule",
         "ThrowsVoidMethodWithExplicitThrowPointRule"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/types/too-wide-arrow-function-return",
@@ -25956,7 +25956,7 @@
         "return.tooWideBool",
         "return.unusedType"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/types/too-wide-closure-return",
@@ -25977,7 +25977,7 @@
         "PHPStan\\Rules\\TooWideTypehints\\TooWideClosureReturnTypehintRule",
         "TooWideClosureReturnTypehintRule"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/types/too-wide-function-param-out",
@@ -26019,7 +26019,7 @@
         "PHPStan\\Rules\\TooWideTypehints\\TooWideFunctionReturnTypehintRule",
         "TooWideFunctionReturnTypehintRule"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/types/too-wide-method-param-out",
@@ -26061,7 +26061,7 @@
         "PHPStan\\Rules\\TooWideTypehints\\TooWideMethodReturnTypehintRule",
         "TooWideMethodReturnTypehintRule"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/types/too-wide-property",
@@ -26082,7 +26082,7 @@
         "PHPStan\\Rules\\TooWideTypehints\\TooWidePropertyTypeRule",
         "TooWidePropertyTypeRule"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/types/unpack-non-iterable",

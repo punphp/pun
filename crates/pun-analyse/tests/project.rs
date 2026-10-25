@@ -50,7 +50,7 @@ fn check_in(fixture: &str, neon: &str) {
             )
         })
         .collect();
-    want.sort();
+    want.sort_by(|a, b| (&a.0, a.1, &a.3).cmp(&(&b.0, b.1, &b.3)));
     assert_eq!(got, want);
 }
 

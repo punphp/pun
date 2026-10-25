@@ -181,7 +181,10 @@ def rule_page(data: dict, rid: str, rule: dict, sources: list[dict], urls: dict,
     body += "\n\n## Configuration\n\n" + code(f'[{command}.rules]\n"{group}/{name}" = {value}', "toml title=\"pun.toml\"")
     file_only = command == "format" or any(s["tool"] in ("php-cs-fixer", "pint") for s in sources)
     ignore = "@pun-ignore-file" if file_only else "@pun-ignore"
-    body += "\n" + code(f"// {ignore} {rid} -- explain the exception")
+    if rule.get("ignorable", True):
+        body += "\n" + code(f"// {ignore} {rid} -- explain the exception")
+    else:
+        body += "\nFindings from this rule cannot be suppressed with ignore comments or baseline entries.\n"
     if rule.get("summary"):
         body += "\n## What it does\n\n" + prose(rule["summary"])
     if rule.get("why"):

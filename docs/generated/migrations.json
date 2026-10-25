@@ -8483,7 +8483,7 @@
         "rules": [
           "lint/dead-code/no-always-true-instanceof"
         ],
-        "note": "Same.",
+        "note": "Same. Planned: not ported yet.",
         "unsupported": false
       },
       {
@@ -8493,7 +8493,7 @@
         "rules": [
           "lint/dead-code/no-always-true-instanceof-assert"
         ],
-        "note": "Same.",
+        "note": "Same. Planned: not ported yet.",
         "unsupported": false
       },
       {
@@ -18245,7 +18245,7 @@
         "rules": [
           "analyse/dead-code/unused-function-result"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -19915,7 +19915,7 @@
         "rules": [
           "analyse/dead-code/unused-method-result"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -20335,7 +20335,7 @@
         "rules": [
           "analyse/dead-code/unused-new-result"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -20495,7 +20495,7 @@
         "rules": [
           "analyse/dead-code/redundant-null-coalesce"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -20565,7 +20565,7 @@
         "rules": [
           "analyse/types/redundant-nullsafe"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -20705,7 +20705,7 @@
         "rules": [
           "analyse/types/too-wide-arrow-function-return"
         ],
-        "note": "Merged with paramOut.tooWideBool, paramOut.unusedType, parameterByRef.nestedUnusedType and 8 others (see the rule's Replaces section). Expanded from %s.nestedUnusedType. Planned: not ported yet.",
+        "note": "Merged with paramOut.tooWideBool, paramOut.unusedType, parameterByRef.nestedUnusedType and 8 others (see the rule's Replaces section). Expanded from %s.nestedUnusedType.",
         "unsupported": false
       },
       {
@@ -20715,7 +20715,7 @@
         "rules": [
           "analyse/types/too-wide-arrow-function-return"
         ],
-        "note": "Merged with paramOut.nestedUnusedType, paramOut.unusedType, parameterByRef.nestedUnusedType and 8 others (see the rule's Replaces section). Expanded from %s.tooWideBool. Planned: not ported yet.",
+        "note": "Merged with paramOut.nestedUnusedType, paramOut.unusedType, parameterByRef.nestedUnusedType and 8 others (see the rule's Replaces section). Expanded from %s.tooWideBool.",
         "unsupported": false
       },
       {
@@ -20735,7 +20735,7 @@
         "rules": [
           "analyse/types/too-wide-arrow-function-return"
         ],
-        "note": "Merged with paramOut.nestedUnusedType, paramOut.tooWideBool, parameterByRef.nestedUnusedType and 8 others (see the rule's Replaces section). Expanded from %s.unusedType. Planned: not ported yet.",
+        "note": "Merged with paramOut.nestedUnusedType, paramOut.tooWideBool, parameterByRef.nestedUnusedType and 8 others (see the rule's Replaces section). Expanded from %s.unusedType.",
         "unsupported": false
       },
       {
@@ -20945,7 +20945,7 @@
         "rules": [
           "analyse/types/too-wide-arrow-function-return"
         ],
-        "note": "Merged with paramOut.nestedUnusedType, paramOut.tooWideBool, paramOut.unusedType and 8 others (see the rule's Replaces section). Expanded from %s.nestedUnusedType. Planned: not ported yet.",
+        "note": "Merged with paramOut.nestedUnusedType, paramOut.tooWideBool, paramOut.unusedType and 8 others (see the rule's Replaces section). Expanded from %s.nestedUnusedType.",
         "unsupported": false
       },
       {
@@ -20955,7 +20955,7 @@
         "rules": [
           "analyse/types/too-wide-arrow-function-return"
         ],
-        "note": "Merged with paramOut.nestedUnusedType, paramOut.tooWideBool, paramOut.unusedType and 8 others (see the rule's Replaces section). Expanded from %s.tooWideBool. Planned: not ported yet.",
+        "note": "Merged with paramOut.nestedUnusedType, paramOut.tooWideBool, paramOut.unusedType and 8 others (see the rule's Replaces section). Expanded from %s.tooWideBool.",
         "unsupported": false
       },
       {
@@ -20965,7 +20965,7 @@
         "rules": [
           "analyse/types/invalid-inc-dec"
         ],
-        "note": "Merged with postDec.type, postInc.type, preDec.type and 1 others (see the rule's Replaces section). Expanded from %s.type. Planned: not ported yet.",
+        "note": "Merged with postDec.type, postInc.type, preDec.type and 1 others (see the rule's Replaces section). Expanded from %s.type.",
         "unsupported": false
       },
       {
@@ -20975,7 +20975,7 @@
         "rules": [
           "analyse/types/too-wide-arrow-function-return"
         ],
-        "note": "Merged with paramOut.nestedUnusedType, paramOut.tooWideBool, paramOut.unusedType and 8 others (see the rule's Replaces section). Expanded from %s.unusedType. Planned: not ported yet.",
+        "note": "Merged with paramOut.nestedUnusedType, paramOut.tooWideBool, paramOut.unusedType and 8 others (see the rule's Replaces section). Expanded from %s.unusedType.",
         "unsupported": false
       },
       {
@@ -21041,7 +21041,7 @@
         "rules": [
           "analyse/debug/dump-phpdoc-type"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -21051,7 +21051,7 @@
         "rules": [
           "analyse/debug/dump-type"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -21521,7 +21521,7 @@
         "rules": [
           "analyse/types/invalid-inc-dec"
         ],
-        "note": "Merged with parameterByRef.type, postInc.type, preDec.type and 1 others (see the rule's Replaces section). Expanded from %s.type. Planned: not ported yet.",
+        "note": "Merged with parameterByRef.type, postInc.type, preDec.type and 1 others (see the rule's Replaces section). Expanded from %s.type.",
         "unsupported": false
       },
       {
@@ -21551,7 +21551,7 @@
         "rules": [
           "analyse/types/invalid-inc-dec"
         ],
-        "note": "Merged with parameterByRef.type, postDec.type, preDec.type and 1 others (see the rule's Replaces section). Expanded from %s.type. Planned: not ported yet.",
+        "note": "Merged with parameterByRef.type, postDec.type, preDec.type and 1 others (see the rule's Replaces section). Expanded from %s.type.",
         "unsupported": false
       },
       {
@@ -21601,7 +21601,7 @@
         "rules": [
           "analyse/types/invalid-inc-dec"
         ],
-        "note": "Merged with parameterByRef.type, postDec.type, postInc.type and 1 others (see the rule's Replaces section). Expanded from %s.type. Planned: not ported yet.",
+        "note": "Merged with parameterByRef.type, postDec.type, postInc.type and 1 others (see the rule's Replaces section). Expanded from %s.type.",
         "unsupported": false
       },
       {
@@ -21631,7 +21631,7 @@
         "rules": [
           "analyse/types/invalid-inc-dec"
         ],
-        "note": "Merged with parameterByRef.type, postDec.type, postInc.type and 1 others (see the rule's Replaces section). Expanded from %s.type. Planned: not ported yet.",
+        "note": "Merged with parameterByRef.type, postDec.type, postInc.type and 1 others (see the rule's Replaces section). Expanded from %s.type.",
         "unsupported": false
       },
       {
@@ -22031,7 +22031,7 @@
         "rules": [
           "analyse/types/too-wide-arrow-function-return"
         ],
-        "note": "Merged with paramOut.nestedUnusedType, paramOut.tooWideBool, paramOut.unusedType and 8 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with paramOut.nestedUnusedType, paramOut.tooWideBool, paramOut.unusedType and 8 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -22421,7 +22421,7 @@
         "rules": [
           "analyse/types/too-wide-arrow-function-return"
         ],
-        "note": "Merged with paramOut.nestedUnusedType, paramOut.tooWideBool, paramOut.unusedType and 8 others (see the rule's Replaces section). Expanded from %s.tooWideBool. Planned: not ported yet.",
+        "note": "Merged with paramOut.nestedUnusedType, paramOut.tooWideBool, paramOut.unusedType and 8 others (see the rule's Replaces section). Expanded from %s.tooWideBool.",
         "unsupported": false
       },
       {
@@ -22501,7 +22501,7 @@
         "rules": [
           "analyse/types/too-wide-arrow-function-return"
         ],
-        "note": "Merged with paramOut.nestedUnusedType, paramOut.tooWideBool, paramOut.unusedType and 8 others (see the rule's Replaces section). Expanded from %s.unusedType. Planned: not ported yet.",
+        "note": "Merged with paramOut.nestedUnusedType, paramOut.tooWideBool, paramOut.unusedType and 8 others (see the rule's Replaces section). Expanded from %s.unusedType.",
         "unsupported": false
       },
       {
@@ -23011,7 +23011,7 @@
         "rules": [
           "analyse/types/too-wide-arrow-function-return"
         ],
-        "note": "Merged with paramOut.nestedUnusedType, paramOut.tooWideBool, paramOut.unusedType and 8 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with paramOut.nestedUnusedType, paramOut.tooWideBool, paramOut.unusedType and 8 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -23061,7 +23061,7 @@
         "rules": [
           "analyse/types/too-wide-arrow-function-return"
         ],
-        "note": "Merged with paramOut.nestedUnusedType, paramOut.tooWideBool, paramOut.unusedType and 8 others (see the rule's Replaces section). Expanded from %s.tooWideBool. Planned: not ported yet.",
+        "note": "Merged with paramOut.nestedUnusedType, paramOut.tooWideBool, paramOut.unusedType and 8 others (see the rule's Replaces section). Expanded from %s.tooWideBool.",
         "unsupported": false
       },
       {
@@ -23121,7 +23121,7 @@
         "rules": [
           "analyse/types/too-wide-arrow-function-return"
         ],
-        "note": "Merged with paramOut.nestedUnusedType, paramOut.tooWideBool, paramOut.unusedType and 8 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with paramOut.nestedUnusedType, paramOut.tooWideBool, paramOut.unusedType and 8 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -23271,7 +23271,7 @@
         "rules": [
           "analyse/dead-code/sort-without-effect"
         ],
-        "note": "Merged with sortArray.list, sortArray.noop. Expanded from sortArray.%s. Planned: not ported yet.",
+        "note": "Merged with sortArray.list, sortArray.noop. Expanded from sortArray.%s.",
         "unsupported": false
       },
       {
@@ -23281,7 +23281,7 @@
         "rules": [
           "analyse/dead-code/sort-without-effect"
         ],
-        "note": "Merged with sortArray.empty, sortArray.noop. Expanded from sortArray.%s. Planned: not ported yet.",
+        "note": "Merged with sortArray.empty, sortArray.noop. Expanded from sortArray.%s.",
         "unsupported": false
       },
       {
@@ -23291,7 +23291,7 @@
         "rules": [
           "analyse/dead-code/sort-without-effect"
         ],
-        "note": "Merged with sortArray.empty, sortArray.list. Expanded from sortArray.%s. Planned: not ported yet.",
+        "note": "Merged with sortArray.empty, sortArray.list. Expanded from sortArray.%s.",
         "unsupported": false
       },
       {
@@ -23581,7 +23581,7 @@
         "rules": [
           "analyse/dead-code/unused-static-method-result"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -23781,7 +23781,7 @@
         "rules": [
           "analyse/dead-code/switch-always-constant"
         ],
-        "note": "Merged with switch.alwaysTrue, switch.duplicateCase. Planned: not ported yet.",
+        "note": "Merged with switch.alwaysTrue, switch.duplicateCase.",
         "unsupported": false
       },
       {
@@ -23791,7 +23791,7 @@
         "rules": [
           "analyse/dead-code/switch-always-constant"
         ],
-        "note": "Merged with switch.alwaysFalse, switch.duplicateCase. Planned: not ported yet.",
+        "note": "Merged with switch.alwaysFalse, switch.duplicateCase.",
         "unsupported": false
       },
       {
@@ -23801,7 +23801,7 @@
         "rules": [
           "analyse/dead-code/switch-always-constant"
         ],
-        "note": "Merged with switch.alwaysFalse, switch.alwaysTrue. Planned: not ported yet.",
+        "note": "Merged with switch.alwaysFalse, switch.alwaysTrue.",
         "unsupported": false
       },
       {
@@ -23941,7 +23941,7 @@
         "rules": [
           "analyse/types/throws-void-function"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -28765,7 +28765,7 @@
         "rules": [
           "analyse/types/too-wide-arrow-function-return"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -29088,7 +29088,7 @@
         "rules": [
           "analyse/debug/dump-type"
         ],
-        "note": "Merged with TypeInspection. Planned: not ported yet.",
+        "note": "Merged with TypeInspection.",
         "unsupported": false
       },
       {
@@ -29178,7 +29178,7 @@
         "rules": [
           "analyse/dead-code/redundant-null-coalesce"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -29188,7 +29188,7 @@
         "rules": [
           "analyse/types/redundant-nullsafe"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -29356,7 +29356,7 @@
         "rules": [
           "analyse/debug/dump-type"
         ],
-        "note": "Merged with PsalmTrace. Planned: not ported yet.",
+        "note": "Merged with PsalmTrace.",
         "unsupported": false
       },
       {

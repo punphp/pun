@@ -10,6 +10,7 @@ mod class_names;
 mod classes;
 mod constants;
 mod dead_code;
+mod debug;
 mod declarations;
 mod declared;
 mod deprecations;
@@ -114,6 +115,8 @@ pub fn reports(identifier: &str) -> bool {
 }
 
 pub const IDENTIFIERS: &[&str] = &[
+    "phpstan.dumpType",
+    "phpstan.dumpPhpDocType",
     "typeAlias.circular",
     "typeAlias.duplicate",
     "typeAlias.invalidName",
@@ -1905,6 +1908,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
     fn walk_in_function_call(&mut self, call: &'ast FunctionCall<'arena>, _: &mut ()) {
         self.bind_function_arguments(call);
         dead_code::function_check(self, call);
+        debug::function_call(self, call);
         larastan::function_call(self, call);
         types::function_call(self, call);
         types::castable_call(self, call);

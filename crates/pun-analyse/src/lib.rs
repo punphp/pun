@@ -108,7 +108,8 @@ pub fn analyse_project(project: &Project) -> Result<Analysis, CouldNotReadFile> 
             can_be_ignored: e.can_be_ignored,
         })
         .collect();
-    errors.sort();
+    // PHPStan's AnalysisResult orders diagnostics by file, line and message, not identifier.
+    errors.sort_by(|a, b| (&a.file, a.line, &a.message).cmp(&(&b.file, b.line, &b.message)));
     Ok(Analysis {
         errors,
         general: processed.string_errors,

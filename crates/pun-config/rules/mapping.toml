@@ -1103,9 +1103,9 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "dead-code/xor-always-constant" = { preset = "recommended", ported = true, status = "decided" }
 "debug/assert-type" = { preset = "basic", status = "decided" }
 "debug/dump-native-type" = { preset = "basic", status = "decided" }
-"debug/dump-phpdoc-type" = { preset = "basic", status = "decided" }
+"debug/dump-phpdoc-type" = { preset = "basic", ported = true, ignorable = false, summary = "Reports each argument's inferred type as PHPDoc. Ignore comments and baselines cannot suppress these diagnostics.", status = "decided" }
 "debug/dump-scope" = { preset = "basic", status = "decided" }
-"debug/dump-type" = { preset = "basic", status = "decided" }
+"debug/dump-type" = { preset = "basic", ported = true, ignorable = false, summary = "Reports each argument's inferred type in PHPStan's precise notation. Ignore comments and baselines cannot suppress these diagnostics.", status = "decided" }
 "deprecated/backtick" = { preset = "basic", fixed_by = ["format/functions/backtick-to-shell-exec"], ported = true, status = "decided" }
 "deprecated/cast" = { preset = "basic", fixed_by = ["format/casts/short-scalar"], ported = true, status = "decided" }
 "deprecated/class" = { preset = "recommended", ported = true, status = "decided" }
@@ -4089,8 +4089,8 @@ YieldTypeRule = { class = "PHPStan\\Rules\\Generators\\YieldTypeRule", pun = "an
 "phpParser.nodeConnectingAttribute" = { unsupported = "PHPStan extension-API checks; Pun has no PHP extension API", level = "0", status = "decided" }
 "phpstan.debugScope" = { pun = "analyse/debug/dump-scope", variant = "phpstan.debugScope", level = "opt-in", options = "none", status = "decided" }
 "phpstan.dumpNativeType" = { pun = "analyse/debug/dump-native-type", variant = "phpstan.dumpNativeType", level = "opt-in", options = "none", status = "decided" }
-"phpstan.dumpPhpDocType" = { pun = "analyse/debug/dump-phpdoc-type", variant = "phpstan.dumpPhpDocType", level = "opt-in", options = "none", status = "decided" }
-"phpstan.dumpType" = { pun = "analyse/debug/dump-type", variant = "phpstan.dumpType", level = "opt-in", options = "none", status = "decided" }
+"phpstan.dumpPhpDocType" = { pun = "analyse/debug/dump-phpdoc-type", variant = "phpstan.dumpPhpDocType", level = "0", options = "none", status = "decided" }
+"phpstan.dumpType" = { pun = "analyse/debug/dump-type", variant = "phpstan.dumpType", level = "0", options = "none", status = "decided" }
 "phpstan.nativeType" = { pun = "analyse/debug/assert-type", variant = "phpstan.nativeType", level = "opt-in", options = "none", status = "decided" }
 "phpstan.superType" = { pun = "analyse/debug/assert-type", variant = "phpstan.superType", level = "opt-in", options = "none", status = "decided" }
 "phpstan.type" = { pun = "analyse/debug/assert-type", variant = "phpstan.type", level = "opt-in", options = "none", status = "decided" }

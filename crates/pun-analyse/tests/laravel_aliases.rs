@@ -75,6 +75,8 @@ impl App {
         run(&self.project())
             .unwrap()
             .into_iter()
+            // Dump probes also feed `types()`; this assertion checks the other alias diagnostics.
+            .filter(|e| e.identifier != "phpstan.dumpType")
             .map(|e| e.message)
             .collect()
     }
@@ -254,7 +256,14 @@ fn unused_alias_targets_remain_lazy_and_no_context_means_no_laravel_aliases() {
         .find(|a| a.class == b"app\\other")
         .unwrap();
     unused.path = app.0.clone(); // A directory errors if read, even as root.
-    assert!(run(&project).unwrap().is_empty());
+    assert_eq!(
+        run(&project)
+            .unwrap()
+            .into_iter()
+            .map(|e| e.message)
+            .collect::<Vec<_>>(),
+        ["Dumped type: int"]
+    );
     assert_eq!(run_mago(&project, None).unwrap().dumped[0].type_id, "int");
     app.put("probe.php", "<?php new \\UnusedAlias;");
     assert_eq!(run(&project).unwrap_err().path, app.0);
