@@ -35,6 +35,26 @@ fn reflected_policies_preserve_groups_and_are_not_invented_for_unmapped_paramete
             ]
         );
         assert!(!result.bitmask_not_allowed);
+        let single = symbols.functions["array_unique"].variants[0].params[1]
+            .allowed_constants
+            .as_ref()
+            .unwrap();
+        assert!(!single.bitmask);
+        let constants: Vec<_> = ["SORT_REGULAR", "SORT_NUMERIC"]
+            .into_iter()
+            .map(|name| ConstantReflection {
+                name: name.into(),
+                builtin: true,
+            })
+            .collect();
+        let result = single.check(&constants[..1]);
+        assert!(result.disallowed.is_empty());
+        assert!(result.violated_groups.is_empty());
+        assert!(!result.bitmask_not_allowed);
+        let result = single.check(&constants);
+        assert!(result.disallowed.is_empty());
+        assert!(result.violated_groups.is_empty());
+        assert!(result.bitmask_not_allowed);
         let mut reordered = html.clone();
         reordered.constants.swap(0, 1);
         assert_ne!(*html, reordered);
