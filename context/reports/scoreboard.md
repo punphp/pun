@@ -120,6 +120,31 @@ file already formatted, content-hash cache hit).
   `ensure_prettier` launching Node four times (`node -v` + three package probes) before any file is read.
 - Stage timings: `PUN_PROFILE=1 pun format ...` prints time and call count per fixer, tokenize, lint and generate.
 
+### Blade probe recovery (Linux, 2026-10-25)
+
+Shared 8-core, 15 GiB orb, unoptimized dev binaries. Pinkary at
+`53529d53c71d1cfb85ca3e535cb3292be8baa7e6`, identical migrated Pint configuration, `--test --no-cache`.
+One warmup and three interleaved measured runs per variant. Memory is peak summed process-tree RSS sampled
+every 20 ms. These are local comparisons, not release-performance claims.
+
+| selection | threads | before wall | after wall | before RSS | after RSS |
+|---|---:|---:|---:|---:|---:|
+| all paths, including Blade | 4 | 16.132 s | 13.858 s | 793.5 MiB | 790.6 MiB |
+| all paths, including Blade | 1 | 36.864 s | 33.284 s | 389.0 MiB | 391.6 MiB |
+| PHP-only `app` control | 4 | 8.523 s | 8.889 s | 221.0 MiB | 220.9 MiB |
+
+The PHP-only control was slower. The change removes one Node start from runs that format Blade; it does not
+establish a speedup for every selection. Direct process traces counted two Node starts before and one after,
+for both stdin and Rayon file formatting, with bytes matching Pint's regular Blade-file output. Pint's own
+stdin path skips Blade formatting despite `--stdin-filename`, so the stdin comparison is not stdin parity.
+Blade-only and full-configuration harness runs each matched all 799 files. Those runs do not establish clean
+analysis without the corpus project's vendor dependencies.
+
+Rejected tuning, measured on 136 real Pinkary templates with five interleaved runs after warmups:
+one serialized Node worker took 3.473 s and 188.8 MiB, against four workers at 2.320 s and 550.5 MiB.
+Setting `--max-semi-space-size=4` reduced one-worker memory to 166.3 MiB but increased time to 3.812 s.
+At four workers it used 467.2 MiB and 2.305 s. Keep parallel, thread-local workers and Node's default heap settings.
+
 ## Analyse benchmark
 
 2026-10-17, `BENCH=analyse scripts/bench.py <project>`, one project per call with nothing else running

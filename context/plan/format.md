@@ -46,6 +46,13 @@ unported rule in pun.toml is a config error; `pun migrate` names it, skips it, a
 exactly as Pint does it (one long-lived Node worker per thread). It needs Node. Blade is about 2.9 s of Pinkary's 4.2 s
 cold run.
 
+The dependency probe starts a formatting worker and transfers it to the first formatting thread. Pun stops an
+unused probe worker on early exits, non-Blade stdin, PHP-only selections and fully cached Blade selections.
+The worker extraction and preload script were recovered from `salvage/stash-0b0ef5b`, including its untracked-file
+parent. The port preserves the newer marker parser, resource repair, timeouts and PHP preset forwarding.
+Formatting stays parallel: serializing the workers and setting a fixed 4 MiB Node semi-space both slowed the
+measured one-worker case. The measurements and PHP-only control are in [the scoreboard](../reports/scoreboard.md#blade-probe-recovery-linux-2026-10-25).
+
 ## 3. The config
 
 The schema is config.md §3: `[format] preset` (`laravel`, `psr12`, `empty`), `not-name` / `not-path`, and

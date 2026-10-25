@@ -2,6 +2,7 @@
 //! shared ports of PHP-CS-Fixer's Tokenizer\Analyzer, DocBlock, Preg etc. live in src/analyzers.
 
 pub mod analyzers;
+pub mod prettier;
 
 include!(concat!(env!("OUT_DIR"), "/fixers.rs"));
 

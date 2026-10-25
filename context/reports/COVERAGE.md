@@ -4,9 +4,9 @@
 | crate | lines | hit | line % | tests |
 |---|---:|---:|---:|---|
 | punphp | 5290 | 5290 | 100.00% | ok |
-| punphp-analyse | 31716 | 31715 | 100.00% | ok |
+| punphp-analyse | 33257 | 33257 | 100.00% | ok |
 | punphp-config | 2604 | 2604 | 100.00% | ok |
-| punphp-fixers | 34841 | 34841 | 100.00% | ok |
+| punphp-fixers | 34895 | 34895 | 100.00% | ok |
 | punphp-format | 1022 | 1022 | 100.00% | ok |
 | punphp-harness | 232 | 232 | 100.00% | ok |
 | punphp-lint | 21786 | 21786 | 100.00% | ok |

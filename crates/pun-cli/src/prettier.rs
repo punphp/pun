@@ -7,7 +7,6 @@ use std::path::Path;
 /// from the project at the required versions. Returns the abort (Pint's message and box) when it would abort.
 /// ponytail: Pint offers to install missing packages when interactive; Pun always takes the non-interactive "no".
 pub(crate) fn ensure(root: &Path, enabled: bool) -> Option<Abort> {
-    use std::process::{Command, Stdio};
     if !enabled {
         return None;
     }
@@ -16,28 +15,8 @@ pub(crate) fn ensure(root: &Path, enabled: bool) -> Option<Abort> {
         ("prettier-plugin-blade", "^3.2.2"),
         ("prettier-plugin-tailwindcss", "^0.8.0"),
     ];
-    // Pint's `node -v` plus resources/js/version-probe.cjs per package, in one Node start: a JSON list with, per
-    // package, null when it doesn't resolve, else its version ("" when no manifest names it).
-    const PROBE: &str = r#"const path = require('path'); const fs = require('fs');
-const probe = (pkg) => { let entry;
-  try { entry = require.resolve(pkg, { paths: [process.cwd()] }); } catch (e) { return null; }
-  let dir = path.dirname(entry);
-  while (dir !== path.dirname(dir)) { const manifest = path.join(dir, 'package.json');
-    if (fs.existsSync(manifest)) { try { const json = JSON.parse(fs.readFileSync(manifest, 'utf8'));
-      if (json.name === pkg && json.version) { return String(json.version).trim(); } } catch (e) {} }
-    dir = path.dirname(dir); }
-  return ''; };
-process.stdout.write(JSON.stringify(process.argv.slice(1).map(probe)));"#;
-    let out = Command::new("node")
-        .args(["-e", PROBE])
-        .args(REQUIRED.map(|r| r.0))
-        .current_dir(root)
-        .stderr(Stdio::null())
-        .output();
-    let probes = out
-        .ok()
-        .filter(|o| o.status.success())
-        .and_then(|o| serde_json::from_slice::<Vec<Option<String>>>(&o.stdout).ok());
+    // The preload prints the version probe before the same Node process starts loading Prettier.
+    let probes = pun_fixers::prettier::probe(&REQUIRED.map(|r| r.0));
     let Some(probes) = probes else {
         let mut abort = Abort::pint(
             "The rules enabled in your pint configuration require Node.js to be installed.",
@@ -66,6 +45,9 @@ process.stdout.write(JSON.stringify(process.argv.slice(1).map(probe)));"#;
             }
             Some(_) => {}
         }
+    }
+    if !missing.is_empty() || !outdated.is_empty() {
+        pun_fixers::prettier::stop();
     }
     if !missing.is_empty() {
         let warning = if crate::agent::enabled() {

@@ -193,6 +193,14 @@ pub(crate) fn format(a: FormatArgs, stage: Stage, lint: LintOpts) -> Result<u8> 
     // EnsurePrettierIsConfigured: `"Pint/laravel_blade": true` (or --blade) needs Node and prettier in the project.
     let blade_on = formats
         && (cfg.rules.iter()).any(|r| r.name == "Pint/laravel_blade" && r.options.is_null());
+    // Also clean up on discovery/configuration errors and early --bail exits, including repeated watch runs.
+    struct StopProbe;
+    impl Drop for StopProbe {
+        fn drop(&mut self) {
+            pun_fixers::prettier::stop();
+        }
+    }
+    let _probe = StopProbe;
     if let Some(abort) = crate::prettier::ensure(&root, blade_on) {
         return Err(abort.into());
     }
@@ -209,6 +217,9 @@ pub(crate) fn format(a: FormatArgs, stage: Stage, lint: LintOpts) -> Result<u8> 
 
     let stdin_path = a.paths.first().is_some_and(|p| p.as_os_str() == "-");
     if a.pun.stdin || stdin_path || a.stdin_filename.is_some() {
+        if !a.stdin_filename.as_ref().is_some_and(|f| is_blade(f)) || a.test || a.bail {
+            pun_fixers::prettier::stop();
+        }
         return stdin(&a, &cfg, &base);
     }
 
@@ -300,6 +311,19 @@ pub(crate) fn format(a: FormatArgs, stage: Stage, lint: LintOpts) -> Result<u8> 
                 cache::Cache::load(p, sig)
             })
     };
+    // The probe's worker is already loading Prettier. Stop it before the PHP pass if no selected Blade file is
+    // pending (none selected, or every selected template is clean in the cache).
+    if blade_on
+        && !files.iter().any(|f| {
+            is_blade(f)
+                && !cache.as_ref().is_some_and(|c| {
+                    let rel = f.strip_prefix(&root).unwrap_or(f).to_string_lossy();
+                    std::fs::read(f).is_ok_and(|code| c.is_clean(&rel, &cache::hash(&code)))
+                })
+        })
+    {
+        pun_fixers::prettier::stop();
+    }
     let look = Look::stdout(a.color());
     // The progress line, for humans on a terminal (output.md §1); dropped before anything is printed.
     let human = a.format.is_none() && !a.quiet && !crate::agent::enabled();
@@ -856,6 +880,10 @@ fn explain(cfg: &Config, p: &Pipeline) {
     for f in p.fixers() {
         let _ = writeln!(err, "  native      {:>4}  {}", f.priority(), f.name());
     }
+}
+
+fn is_blade(path: &Path) -> bool {
+    path.to_string_lossy().ends_with(".blade.php")
 }
 
 /// DefaultCommand::fixStdinInput: excluded paths echo the input; otherwise print the fixed code.

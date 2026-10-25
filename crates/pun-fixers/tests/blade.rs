@@ -121,6 +121,23 @@ fn oracle_blade_fixtures() {
     );
     assert_eq!(tokens.generate_code(), html);
     std::env::set_current_dir(&project).unwrap();
+    // Pinned package.json versions, plus the version probe's two distinct unresolved/unnamed results.
+    assert_eq!(
+        pun_fixers::prettier::probe(&[
+            "prettier",
+            "prettier-plugin-blade",
+            "prettier-plugin-tailwindcss",
+            "pun-missing-package",
+            "fs",
+        ]),
+        Some(vec![
+            Some("3.9.10".into()),
+            Some("3.3.3".into()),
+            Some("0.8.1".into()),
+            None,
+            Some(String::new()),
+        ])
+    );
     // Not a Blade file.
     assert_eq!(run(&pipeline, Path::new("a.php"), html), html);
     let mut all = Vec::new();
@@ -180,4 +197,47 @@ fn oracle_blade_fixtures() {
         all.len() * 2,
         fail.join("\n")
     );
+}
+
+#[test]
+fn failed_preload_rejects_the_probe() {
+    if std::env::var_os("PUN_BLADE_PROBE_CHILD").is_some() {
+        assert_eq!(pun_fixers::prettier::probe(&["prettier"]), None);
+        return;
+    }
+    for (name, script) in [
+        (
+            "closed",
+            "process.stderr.write('preload failed'); process.exit(1);",
+        ),
+        (
+            "invalid",
+            "process.stdout.write('not json\\n'); process.exit(0);",
+        ),
+        (
+            "silent",
+            "Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0);",
+        ),
+    ] {
+        let dir = std::env::temp_dir().join(format!("pun-probe-{name}-{}", std::process::id()));
+        std::fs::create_dir_all(&dir).unwrap();
+        let preload = dir.join("preload.cjs");
+        std::fs::write(
+            &preload,
+            format!("require('fs').writeFileSync('started', 'yes'); {script}"),
+        )
+        .unwrap();
+        // Child processes isolate NODE_OPTIONS from the formatting fixtures and exercise the public API's real
+        // timeout, EOF and stderr paths without changing the parent's environment or injecting a worker.
+        let result = Command::new(std::env::current_exe().unwrap())
+            .args(["--exact", "failed_preload_rejects_the_probe"])
+            .env("PUN_BLADE_PROBE_CHILD", "1")
+            .env("NODE_OPTIONS", format!("--require={}", preload.display()))
+            .current_dir(&dir)
+            .output()
+            .unwrap();
+        assert!(result.status.success(), "{name}: {result:?}");
+        assert_eq!(std::fs::read(dir.join("started")).unwrap(), b"yes");
+        std::fs::remove_dir_all(dir).unwrap();
+    }
 }
