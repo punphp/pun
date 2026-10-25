@@ -1,0 +1,5 @@
+parameters:
+    level: 10
+    phpVersion: 80000
+    checkFunctionNameCase: true
+    paths: [members.php]

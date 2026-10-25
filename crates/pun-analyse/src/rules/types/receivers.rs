@@ -4,7 +4,7 @@
 
 use mago_span::{HasSpan, Span};
 use mago_syntax::cst::*;
-use pun_phpstan::types::{Level, Tri, Type, intersect, is_super_type_of};
+use pun_phpstan::types::{Accessory, Level, Tri, Type, intersect, is_super_type_of};
 
 use super::super::reflection::Lookup;
 use super::super::{Checker, calls, declared, members, params};
@@ -29,9 +29,9 @@ impl<'a> Checker<'a, '_> {
         let Some(receiver) = super::super::scope::method_receiver(e, &|id| self.resolved(id)) else { return ty; };
         let prefix = format!("{receiver}::");
         let original = self.guards.iter().find_map(|g| match g {
-            super::super::scope::Guard::MethodSource(key, span) if key.starts_with(&prefix) => self.types.get(span),
+            super::super::scope::Guard::MethodSource(key, _) if key.starts_with(&prefix) => self.method_guard_source(key).map(|(ty, _)| ty),
             _ => None,
-        }).map(|t| self.to_phpstan(t));
+        });
         if let Some(original) = &original {
             // Undo only Mago's method_exists-specific promotions/erasures, not a later instanceof/is_string
             // refinement. In particular a named subclass must not be widened back to the pre-guard object.
@@ -48,6 +48,12 @@ impl<'a> Checker<'a, '_> {
         for guard in &self.guards {
             let super::super::scope::Guard::Method(key) = guard else { continue; };
             let Some(method) = key.strip_prefix(&prefix) else { continue; };
+            if !self.has_method_guard(key) {
+                // A definitely non-callable array receives only CallableType's object|string element constraint,
+                // not hasMethod(). A final object therefore keeps its missing-method error; an int becomes never.
+                ty = declared::with_classes(self, || intersect(vec![ty, pun_phpstan::types::union(vec![Type::ObjectWithoutClass, Type::String])]));
+                continue;
+            }
             // PHPStan does not narrow @method/mixin-only methods: the guard promises a native method.
             if classes.iter().any(|n| {
                 matches!(self.method_of(n, method.as_bytes()), Ok(Some(_)))
@@ -85,6 +91,7 @@ impl<'a> Checker<'a, '_> {
             Type::Union(ts) => all(ts.iter().map(|t| self.capable(t, strict, methods))),
             Type::Benevolent(ts) | Type::Intersection(ts) => any(ts.iter().map(|t| self.capable(t, strict, methods))),
             Type::Template(tt) => self.capable(&tt.bound, strict, methods),
+            Type::Accessory(Accessory::HasMethod(_)) if methods => Tri::Yes,
             Type::Mixed { .. } | Type::Callable(None) | Type::Iterable(..) | Type::Error => Tri::Maybe,
             _ => Tri::No,
         }
@@ -100,7 +107,7 @@ impl<'a> Checker<'a, '_> {
 
     /// The method `name` of class `n`, with `@method` tags; `Err` when PHPStan may find one Pun does not see
     /// (`@mixin`, `@phpstan-require-extends`, a built-in Mago lacks).
-    fn method_of(&self, n: &str, name: &[u8]) -> Result<Option<members::Method<'a>>, ()> {
+    pub(in super::super) fn method_of(&self, n: &str, name: &[u8]) -> Result<Option<members::Method<'a>>, ()> {
         let Lookup::Found(k) = self.class_like(n) else { return Err(()) };
         if let Some(m) = members::method(self, k, name).or_else(|| members::annotation_method(self, k, name)) {
             return Ok(Some(m));
@@ -130,6 +137,7 @@ impl<'a> Checker<'a, '_> {
             Type::Union(ts) => all(ts.iter().map(|t| self.has_method(t, name))),
             Type::Benevolent(ts) | Type::Intersection(ts) => any(ts.iter().map(|t| self.has_method(t, name))),
             Type::Template(tt) => self.has_method(&tt.bound, name),
+            Type::Accessory(Accessory::HasMethod(_)) => t.has_method(&String::from_utf8_lossy(name)),
             // (`Callable(None)` as a nested pattern leaves an uncovered region on the `match` line)
             t if matches!(t, Type::Mixed { .. } | Type::ObjectWithoutClass | Type::Iterable(..) | Type::Error)
                 || matches!(t, Type::Callable(None)) =>
@@ -209,7 +217,18 @@ pub(in super::super) fn method_call<'arena>(
     args: &ArgumentList<'arena>,
     nullsafe: bool,
 ) {
-    if c.level < 2 || is_this(object) {
+    check_method(c, object, selector, Some((span, args)), nullsafe);
+}
+
+/// MethodCallCheck without FunctionCallParametersCheck when the virtual node supplies no arguments.
+pub(in super::super) fn check_method<'arena>(
+    c: &mut Checker<'_, 'arena>,
+    object: &Expression<'arena>,
+    selector: &ClassLikeMemberSelector<'arena>,
+    arguments: Option<(Span, &ArgumentList<'arena>)>,
+    nullsafe: bool,
+) {
+    if c.level < 2 || arguments.is_some() && is_this(object) {
         return;
     }
     let ClassLikeMemberSelector::Identifier(name) = selector else {
@@ -221,7 +240,9 @@ pub(in super::super) fn method_call<'arena>(
         .get(&object.span())
         .map(|t| c.to_phpstan(t))
         .map(|t| if nullsafe || super::super::assign::contains_nullsafe(object) { non_null(t) } else { t });
-    let found = {
+    let found = if arguments.is_none() {
+        callable_receiver(c, object, name, false)
+    } else {
         let c = &*c;
         c.find_type_to_check_of(ty, &|t| {
             c.can_call_methods(t, false).yes() && c.has_method(t, name.value).yes()
@@ -231,7 +252,7 @@ pub(in super::super) fn method_call<'arena>(
         return;
     };
     let method_name = String::from_utf8_lossy(name.value).into_owned();
-    if !c.can_call_methods(&t, true).yes() || matches!(t, Type::ClassString(_)) {
+    if !c.can_call_methods(&t, true).yes() || t.is_string().yes() {
         let message = format!("Cannot call method {method_name}() on {}.", describe(c, &t));
         c.report(name, "method.nonObject", message, None);
         return;
@@ -240,7 +261,7 @@ pub(in super::super) fn method_call<'arena>(
         // a true `method_exists($var, 'name')`
         if let Expression::Variable(Variable::Direct(v)) = object {
             let key = format!("{}::{method_name}", String::from_utf8_lossy(v.name));
-            if c.guards.contains(&super::super::scope::Guard::Method(key)) {
+            if c.has_method_guard(&key) {
                 return;
             }
         }
@@ -260,6 +281,10 @@ pub(in super::super) fn method_call<'arena>(
         let message = format!("Call to {v} method {}() of class {declaring}.", method.name());
         c.report(name, identifier, message, None);
     }
+    let Some((span, args)) = arguments else {
+        calls::method_name_case(c, name, &method, &declaring, false);
+        return;
+    };
     // ponytail: a union's or intersection's method merges its members' variants in PHPStan; checked only when one
     // member has it
     if c.classes_with(&t, name.value) != 1 {
@@ -304,8 +329,17 @@ pub(super) fn typed_class(class: &Expression, spans: &mut Vec<Span>) {
 
 /// StaticMethodCallCheck::check() on a class expression (`$x::foo()`), then the parameters check.
 pub(in super::super) fn static_call<'arena>(c: &mut Checker<'_, 'arena>, call: &StaticMethodCall<'arena>) {
-    let class = call.class;
-    if c.level < 2
+    check_static(c, call.class, &call.method, Some(call));
+}
+
+/// The expression-class branch shared with StaticMethodCallableRule; names/keywords stay in calls.rs.
+pub(in super::super) fn check_static<'arena>(
+    c: &mut Checker<'_, 'arena>,
+    class: &Expression<'arena>,
+    selector: &ClassLikeMemberSelector<'arena>,
+    call: Option<&StaticMethodCall<'arena>>,
+) {
+    if c.level < 2 && !(call.is_none() && is_this(class))
         || matches!(
             class,
             Expression::Identifier(_) | Expression::Self_(_) | Expression::Static(_) | Expression::Parent(_)
@@ -313,7 +347,7 @@ pub(in super::super) fn static_call<'arena>(c: &mut Checker<'_, 'arena>, call: &
     {
         return;
     }
-    let ClassLikeMemberSelector::Identifier(name) = &call.method else {
+    let ClassLikeMemberSelector::Identifier(name) = selector else {
         return;
     };
     let ty = c
@@ -321,7 +355,9 @@ pub(in super::super) fn static_call<'arena>(c: &mut Checker<'_, 'arena>, call: &
         .get(&class.span())
         .map(|t| c.to_phpstan(t))
         .map(|t| if super::super::assign::contains_nullsafe(class) { t.remove_null() } else { t });
-    let found = {
+    let found = if call.is_none() {
+        callable_receiver(c, class, name, true)
+    } else {
         let c = &*c;
         c.find_type_to_check_of(ty, &|t| {
             c.can_call_methods(t, false).yes() && c.has_method(t, name.value).yes()
@@ -350,6 +386,12 @@ pub(in super::super) fn static_call<'arena>(c: &mut Checker<'_, 'arena>, call: &
         return;
     }
     if !c.has_method(&t, name.value).yes() {
+        // The only expression checked below level 2 is `$this` (checkThisOnly). Magic reporting is off at 0.
+        if call.is_none() && c.level == 0 && t.object_class_names().iter().any(|n| {
+            c.class_like(n).found().is_some_and(|k| members::method(c, k, b"__callStatic").is_some())
+        }) {
+            return;
+        }
         let message = format!("Call to an undefined static method {described}::{method_name}().");
         c.report(name, "staticMethod.notFound", message, None);
         return;
@@ -386,6 +428,10 @@ pub(in super::super) fn static_call<'arena>(c: &mut Checker<'_, 'arena>, call: &
         let message = format!("Call to {v} {kind} {declared}() of class {declaring}.");
         c.report(name, identifier, message, None);
     }
+    let Some(call) = call else {
+        calls::method_name_case(c, name, &method, &declaring, true);
+        return;
+    };
     if c.classes_with(&t, name.value) != 1 {
         return;
     }
@@ -405,4 +451,22 @@ pub(in super::super) fn static_call<'arena>(c: &mut Checker<'_, 'arena>, call: &
         },
         first_level,
     );
+}
+
+/// RuleLevelHelper retains unknown-class errors, and only the null introduced by a nullsafe chain disappears.
+fn callable_receiver(c: &mut Checker, e: &Expression, name: &LocalIdentifier, static_call: bool) -> Option<Type> {
+    let mut ty = c.phpstan_type(e)?;
+    if super::super::assign::contains_nullsafe(e) && c.type_of(e).is_some_and(|t| t.has_nullsafe_null()) {
+        ty = ty.remove_null();
+    }
+    let mut unknown = Vec::new();
+    let found = c.find_in(c.levels(), ty, &|t| {
+        c.can_call_methods(t, false).yes() && c.has_method(t, name.value).yes()
+    }, Some(&mut unknown));
+    for class in unknown {
+        let method = String::from_utf8_lossy(name.value);
+        let kind = if static_call { "static method" } else { "method" };
+        c.report(name, "class.notFound", format!("Call to {kind} {method}() on an unknown class {class}."), Some(super::super::DISCOVERING_SYMBOLS_TIP));
+    }
+    found
 }

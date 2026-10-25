@@ -105,10 +105,20 @@ pub fn is_class_exists_family(c: &Checker, call: &FunctionCall) -> bool {
 
 /// CallMethodsRule with level 0's `checkThisOnly`: calls on `$this` only.
 pub fn method_call<'arena>(c: &mut Checker<'_, 'arena>, call: &MethodCall<'arena>) {
-    let Expression::Variable(Variable::Direct(v)) = call.object else {
+    check_this_method(c, call.object, &call.method, Some(call));
+}
+
+/// MethodCallCheck shared with MethodCallableRule. A virtual callable supplies no argument check.
+pub(super) fn check_this_method<'arena>(
+    c: &mut Checker<'_, 'arena>,
+    object: &Expression<'arena>,
+    selector: &ClassLikeMemberSelector<'arena>,
+    call: Option<&MethodCall<'arena>>,
+) {
+    let Expression::Variable(Variable::Direct(v)) = object else {
         return;
     };
-    let ClassLikeMemberSelector::Identifier(name) = &call.method else {
+    let ClassLikeMemberSelector::Identifier(name) = selector else {
         return;
     };
     if v.name != b"$this" {
@@ -128,7 +138,7 @@ pub fn method_call<'arena>(c: &mut Checker<'_, 'arena>, call: &MethodCall<'arena
             return false;
         };
         key.strip_prefix("$this::").is_some_and(|method| {
-            members::method(c, class, method.as_bytes()).is_none()
+            c.has_method_guard(key) && members::method(c, class, method.as_bytes()).is_none()
                 && members::annotation_method(c, class, method.as_bytes()).is_none()
         })
     });
@@ -136,17 +146,19 @@ pub fn method_call<'arena>(c: &mut Checker<'_, 'arena>, call: &MethodCall<'arena
         return;
     }
     let method_name = String::from_utf8_lossy(name.value).into_owned();
-    let Some(method) = members::method(c, class, name.value) else {
-        if let Some(method) = members::annotation_method(c, class, name.value) {
-            // an annotation method is public: only its arguments are checked
-            arguments(c, call, name, &method);
-            return;
+    let method = if call.is_none() {
+        match c.method_of(&String::from_utf8_lossy(class.name.as_bytes()), name.value) {
+            Ok(method) => method,
+            Err(()) => return,
         }
+    } else {
+        members::method(c, class, name.value).or_else(|| members::annotation_method(c, class, name.value))
+    };
+    let Some(method) = method else {
         // reportMagicMethods is off at level 0: a native __call() answers every name
-        let guard =
-            super::scope::Guard::Method(format!("$this::{method_name}").to_ascii_lowercase());
-        if c.guards.contains(&guard)
-            || members::method(c, class, b"__call").is_some()
+        let key = format!("$this::{method_name}");
+        if c.has_method_guard(&key)
+            || (call.is_some() || c.level == 0) && members::method(c, class, b"__call").is_some()
             || class
                 .pseudo_methods
                 .iter()
@@ -184,7 +196,30 @@ pub fn method_call<'arena>(c: &mut Checker<'_, 'arena>, call: &MethodCall<'arena
             None,
         );
     }
-    arguments(c, call, name, &method);
+    if let Some(call) = call {
+        arguments(c, call, name, &method);
+    } else {
+        method_name_case(c, name, &method, &declaring, false);
+    }
+}
+
+/// MethodCallCheck/StaticMethodCallCheck's independent `checkFunctionNameCase` switch.
+pub(super) fn method_name_case(
+    c: &mut Checker,
+    name: &LocalIdentifier,
+    method: &members::Method,
+    declaring: &str,
+    static_call: bool,
+) {
+    let declared = method.name();
+    if c.check_function_name_case && declared.as_bytes() != name.value
+        && (static_call || declared.as_bytes().eq_ignore_ascii_case(name.value))
+    {
+        let kind = if static_call && method.is_static() { "static method" } else { "method" };
+        let identifier = if static_call { "staticMethod.nameCase" } else { "method.nameCase" };
+        let written = String::from_utf8_lossy(name.value);
+        c.report(name, identifier, format!("Call to {kind} {declaring}::{declared}() with incorrect case: {written}"), None);
+    }
 }
 
 /// CallMethodsRule's FunctionCallParametersCheck.
@@ -240,18 +275,28 @@ fn written<'arena>(c: &Checker<'_, 'arena>, e: &Expression<'arena>) -> String {
 
 /// CallStaticMethodsRule (StaticMethodCallCheck, then the parameters check).
 pub fn static_method_call<'arena>(c: &mut Checker<'_, 'arena>, call: &StaticMethodCall<'arena>) {
-    let ClassLikeMemberSelector::Identifier(name) = &call.method else {
+    check_static_method(c, call.class, &call.method, Some(call));
+}
+
+/// StaticMethodCallCheck shared with StaticMethodCallableRule, without synthetic empty arguments.
+pub(super) fn check_static_method<'arena>(
+    c: &mut Checker<'_, 'arena>,
+    class_expr: &Expression<'arena>,
+    selector: &ClassLikeMemberSelector<'arena>,
+    call: Option<&StaticMethodCall<'arena>>,
+) {
+    let ClassLikeMemberSelector::Identifier(name) = selector else {
         return;
     };
     let method_name = String::from_utf8_lossy(name.value).into_owned();
     let scope_class = c.class_scope();
-    let is_static_keyword = matches!(call.class, Expression::Static(_));
+    let is_static_keyword = matches!(class_expr, Expression::Static(_));
     // ClassNameCheck's errors on a written class, dropped where PHPStan returns none (`__callStatic()`)
     let mut pair = None;
-    let class = match (call.class, scope_class) {
+    let class = match (class_expr, scope_class) {
         (Expression::Self_(_) | Expression::Static(_) | Expression::Parent(_), None) => {
-            let identifier = super::out_of_class(call.class);
-            let written = written(c, call.class);
+            let identifier = super::out_of_class(class_expr);
+            let written = written(c, class_expr);
             c.report(
                 name,
                 identifier,
@@ -302,17 +347,23 @@ pub fn static_method_call<'arena>(c: &mut Checker<'_, 'arena>, call: &StaticMeth
         _ => return,
     };
     let display = c.display(class);
-    let Some(method) = members::method(c, class, name.value)
-        .or_else(|| members::annotation_method(c, class, name.value))
-    else {
-        let guarded = match call.class {
+    let method = if call.is_none() {
+        match c.method_of(&String::from_utf8_lossy(class.name.as_bytes()), name.value) {
+            Ok(method) => method,
+            Err(()) => return,
+        }
+    } else {
+        members::method(c, class, name.value).or_else(|| members::annotation_method(c, class, name.value))
+    };
+    let Some(method) = method else {
+        let guarded = match class_expr {
             Expression::Static(_) => "static".to_string(),
             Expression::Self_(_) => "self".to_string(),
             _ => String::from_utf8_lossy(class.name.as_bytes()).into_owned(),
         };
         let key = format!("{guarded}::{method_name}").to_ascii_lowercase();
-        let known = c.guards.contains(&super::scope::Guard::Method(key));
-        if !known && members::method(c, class, b"__callStatic").is_some() {
+        let known = c.has_method_guard(&key);
+        if !known && (call.is_some() || c.level == 0) && members::method(c, class, b"__callStatic").is_some() {
             return;
         }
         class_names::check_at(c, pair.as_slice(), Some(&class_names::Location::StaticMethodCall(None)), true);
@@ -327,6 +378,7 @@ pub fn static_method_call<'arena>(c: &mut Checker<'_, 'arena>, call: &StaticMeth
         );
         return;
     };
+    let errors_before = c.errors.len();
     let location = class_names::Location::StaticMethodCall(Some(super::internal::method_member(c, &method)));
     class_names::check_at(c, pair.as_slice(), Some(&location), true);
     let declaring = method.declaring_display(c);
@@ -374,6 +426,10 @@ pub fn static_method_call<'arena>(c: &mut Checker<'_, 'arena>, call: &StaticMeth
         );
     }
     if !checked && method.is_abstract() && !is_static_keyword {
+        // StaticMethodCallCheck replaces earlier class-name/visibility errors with its abstract-call error.
+        if call.is_none() {
+            c.errors.truncate(errors_before);
+        }
         let s = if is_static { " static" } else { "" };
         c.report(
             name,
@@ -387,6 +443,12 @@ pub fn static_method_call<'arena>(c: &mut Checker<'_, 'arena>, call: &StaticMeth
         );
         return;
     }
+    let Some(call) = call else {
+        if !checked {
+            method_name_case(c, name, &method, &declaring, true);
+        }
+        return;
+    };
     let subject = format!("{}::{declared}()", declaring_display(c, &method));
     let display_kind = if is_static { "Static method" } else { "Method" };
     let first_level = c.is_top_level(call.span());

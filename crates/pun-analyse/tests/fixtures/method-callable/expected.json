@@ -1,0 +1,4124 @@
+{
+  "case": [
+    [
+      "members.php",
+      23,
+      "method.nameCase",
+      "Call to method MethodCallable\\Ancestor::Required() with incorrect case: required",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      24,
+      "method.notFound",
+      "Call to an undefined method MethodCallable\\Subject::Missing().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      25,
+      "method.private",
+      "Call to private method Hidden() of class MethodCallable\\Ancestor.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      26,
+      "method.nameCase",
+      "Call to method MethodCallable\\Ancestor::Hidden() with incorrect case: hidden",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      26,
+      "method.private",
+      "Call to private method Hidden() of class MethodCallable\\Ancestor.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      30,
+      "staticMethod.nameCase",
+      "Call to method MethodCallable\\Ancestor::Required() with incorrect case: required",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      32,
+      "staticMethod.nameCase",
+      "Call to static method MethodCallable\\Ancestor::RequiredStatic() with incorrect case: requiredstatic",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      33,
+      "staticMethod.notFound",
+      "Call to an undefined static method MethodCallable\\Subject::Missing().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      35,
+      "staticMethod.callToAbstract",
+      "Cannot call abstract static method MethodCallable\\Subject::AbstractStatic().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      37,
+      "method.callToAbstract",
+      "Cannot call abstract method MethodCallable\\Subject::AbstractInstance().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      41,
+      "staticMethod.notFound",
+      "Call to an undefined static method MethodCallable\\Subject::Missing().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      48,
+      "method.notFound",
+      "Call to an undefined method MethodCallable\\Subject::Guarded().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      49,
+      "staticMethod.notFound",
+      "Call to an undefined static method MethodCallable\\Subject::Guarded().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      53,
+      "method.nonObject",
+      "Cannot call method Missing() on mixed.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      63,
+      "method.notFound",
+      "Call to an undefined method MethodCallable\\Magic::Missing().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      64,
+      "staticMethod.notFound",
+      "Call to an undefined static method MethodCallable\\Magic::Missing().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      65,
+      "staticMethod.notFound",
+      "Call to an undefined static method MethodCallable\\Magic::Missing().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      99,
+      "staticMethod.nameCase",
+      "Call to static method MethodCallable\\Ancestor::RequiredStatic() with incorrect case: requiredstatic",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      100,
+      "staticMethod.notFound",
+      "Call to an undefined static method MethodCallable\\Subject::Missing().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      101,
+      "method.staticCall",
+      "Static call to instance method MethodCallable\\Ancestor::Required().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      102,
+      "method.staticCall",
+      "Static call to instance method MethodCallable\\Subject::PrivateMethod().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      103,
+      "staticMethod.private",
+      "Call to private static method PrivateStatic() of class MethodCallable\\Subject.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      104,
+      "staticMethod.private",
+      "Call to private static method PrivateStatic() of class MethodCallable\\Subject.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      104,
+      "staticMethod.nameCase",
+      "Call to static method MethodCallable\\Subject::PrivateStatic() with incorrect case: privatestatic",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      105,
+      "staticMethod.protected",
+      "Call to protected static method ProtectedStatic() of class MethodCallable\\Subject.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      106,
+      "staticMethod.callToAbstract",
+      "Cannot call abstract static method MethodCallable\\Subject::AbstractStatic().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      107,
+      "class.notFound",
+      "Call to static method Missing() on an unknown class MethodCallable\\Absent.",
+      "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+      true
+    ],
+    [
+      "members.php",
+      109,
+      "outOfClass.self",
+      "Calling self::Missing() outside of class scope.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      110,
+      "outOfClass.parent",
+      "Calling parent::Missing() outside of class scope.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      111,
+      "outOfClass.static",
+      "Calling static::Missing() outside of class scope.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      116,
+      "class.noParent",
+      "MethodCallable\\NoParent::create() calls parent::Missing() but MethodCallable\\NoParent does not extend any class.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      144,
+      "method.nameCase",
+      "Call to method MethodCallable\\Ancestor::Required() with incorrect case: required",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      145,
+      "method.notFound",
+      "Call to an undefined method MethodCallable\\Subject::Missing().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      146,
+      "method.private",
+      "Call to private method PrivateMethod() of class MethodCallable\\Subject.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      147,
+      "method.nameCase",
+      "Call to method MethodCallable\\Subject::PrivateMethod() with incorrect case: privatemethod",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      147,
+      "method.private",
+      "Call to private method PrivateMethod() of class MethodCallable\\Subject.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      148,
+      "method.protected",
+      "Call to protected method ProtectedMethod() of class MethodCallable\\Ancestor.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      149,
+      "method.private",
+      "Call to private method Hidden() of class MethodCallable\\Ancestor.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      150,
+      "class.notFound",
+      "Call to method Missing() on an unknown class MethodCallable\\Absent.",
+      "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+      true
+    ],
+    [
+      "members.php",
+      151,
+      "method.nonObject",
+      "Cannot call method Missing() on int.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      152,
+      "method.nonObject",
+      "Cannot call method Required() on MethodCallable\\Subject|null.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      153,
+      "method.nonObject",
+      "Cannot call method Required() on class-string<MethodCallable\\Subject>.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      154,
+      "method.nonObject",
+      "Cannot call method Required() on string.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      155,
+      "method.nonObject",
+      "Cannot call method Required() on int|MethodCallable\\Subject.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      156,
+      "method.nonObject",
+      "Cannot call method Required() on mixed.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      157,
+      "method.nonObject",
+      "Cannot call method Required() on mixed.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      158,
+      "method.notFound",
+      "Call to an undefined method MethodCallable\\Magic::Missing().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      163,
+      "staticMethod.nameCase",
+      "Call to static method MethodCallable\\Ancestor::RequiredStatic() with incorrect case: requiredstatic",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      164,
+      "method.staticCall",
+      "Static call to instance method MethodCallable\\Ancestor::Required().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      165,
+      "staticMethod.private",
+      "Call to private static method PrivateStatic() of class MethodCallable\\Subject.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      166,
+      "staticMethod.protected",
+      "Call to protected static method ProtectedStatic() of class MethodCallable\\Subject.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      167,
+      "staticMethod.notFound",
+      "Call to an undefined static method MethodCallable\\Subject::Missing().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      168,
+      "staticMethod.protected",
+      "Call to protected static method AbstractStatic() of class MethodCallable\\Subject.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      169,
+      "class.notFound",
+      "Call to static method Missing() on an unknown class MethodCallable\\Absent.",
+      "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+      true
+    ],
+    [
+      "members.php",
+      170,
+      "staticMethod.nonObject",
+      "Cannot call static method Missing() on int.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      171,
+      "staticMethod.nonObject",
+      "Cannot call static method RequiredStatic() on MethodCallable\\Subject|null.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      173,
+      "staticMethod.notFound",
+      "Call to an undefined static method MethodCallable\\Subject::Missing().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      176,
+      "staticMethod.nonObject",
+      "Cannot call static method RequiredStatic() on int|MethodCallable\\Subject.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      177,
+      "staticMethod.nonObject",
+      "Cannot call static method RequiredStatic() on mixed.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      178,
+      "staticMethod.nonObject",
+      "Cannot call static method RequiredStatic() on mixed.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      179,
+      "staticMethod.notFound",
+      "Call to an undefined static method MethodCallable\\Magic::Missing().",
+      null,
+      true
+    ]
+  ],
+  "guards": [
+    [
+      "guards.php",
+      8,
+      "method.notFound",
+      "Call to an undefined method MethodCallableGuards\\Open::Maybe().",
+      null,
+      true
+    ],
+    [
+      "guards.php",
+      9,
+      "method.notFound",
+      "Call to an undefined method MethodCallableGuards\\Open::Other().",
+      null,
+      true
+    ],
+    [
+      "guards.php",
+      10,
+      "method.notFound",
+      "Call to an undefined method $this(MethodCallableGuards\\Open)::Different().",
+      null,
+      true
+    ],
+    [
+      "guards.php",
+      12,
+      "method.notFound",
+      "Call to an undefined method MethodCallableGuards\\Open::NotAnArray().",
+      null,
+      true
+    ],
+    [
+      "guards.php",
+      13,
+      "method.notFound",
+      "Call to an undefined method MethodCallableGuards\\Open::NotAPair().",
+      null,
+      true
+    ],
+    [
+      "guards.php",
+      15,
+      "method.notFound",
+      "Call to an undefined method MethodCallableGuards\\Open::Unrelated().",
+      null,
+      true
+    ],
+    [
+      "guards.php",
+      24,
+      "method.notFound",
+      "Call to an undefined method MethodCallableGuards\\Closed::Missing().",
+      null,
+      true
+    ],
+    [
+      "guards.php",
+      25,
+      "method.notFound",
+      "Call to an undefined method MethodCallableGuards\\Closed::missing().",
+      null,
+      true
+    ],
+    [
+      "guards.php",
+      35,
+      "method.notFound",
+      "Call to an undefined method MethodCallableGuards\\ClosedMagic::Missing().",
+      null,
+      true
+    ],
+    [
+      "guards.php",
+      36,
+      "staticMethod.notFound",
+      "Call to an undefined static method MethodCallableGuards\\ClosedMagic::Missing().",
+      null,
+      true
+    ],
+    [
+      "guards.php",
+      42,
+      "method.notFound",
+      "Call to an undefined method MethodCallableGuards\\Closed::Missing().",
+      null,
+      true
+    ],
+    [
+      "guards.php",
+      44,
+      "staticMethod.notFound",
+      "Call to an undefined static method MethodCallableGuards\\Closed::missing().",
+      null,
+      true
+    ]
+  ],
+  "level0": [
+    [
+      "members.php",
+      24,
+      "method.notFound",
+      "Call to an undefined method MethodCallable\\Subject::Missing().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      25,
+      "method.private",
+      "Call to private method Hidden() of class MethodCallable\\Ancestor.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      26,
+      "method.private",
+      "Call to private method Hidden() of class MethodCallable\\Ancestor.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      33,
+      "staticMethod.notFound",
+      "Call to an undefined static method MethodCallable\\Subject::Missing().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      35,
+      "staticMethod.callToAbstract",
+      "Cannot call abstract static method MethodCallable\\Subject::AbstractStatic().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      37,
+      "method.callToAbstract",
+      "Cannot call abstract method MethodCallable\\Subject::AbstractInstance().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      41,
+      "staticMethod.notFound",
+      "Call to an undefined static method MethodCallable\\Subject::Missing().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      48,
+      "method.notFound",
+      "Call to an undefined method MethodCallable\\Subject::Guarded().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      49,
+      "staticMethod.notFound",
+      "Call to an undefined static method MethodCallable\\Subject::Guarded().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      100,
+      "staticMethod.notFound",
+      "Call to an undefined static method MethodCallable\\Subject::Missing().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      101,
+      "method.staticCall",
+      "Static call to instance method MethodCallable\\Ancestor::Required().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      102,
+      "method.staticCall",
+      "Static call to instance method MethodCallable\\Subject::PrivateMethod().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      103,
+      "staticMethod.private",
+      "Call to private static method PrivateStatic() of class MethodCallable\\Subject.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      104,
+      "staticMethod.private",
+      "Call to private static method PrivateStatic() of class MethodCallable\\Subject.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      105,
+      "staticMethod.protected",
+      "Call to protected static method ProtectedStatic() of class MethodCallable\\Subject.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      106,
+      "staticMethod.callToAbstract",
+      "Cannot call abstract static method MethodCallable\\Subject::AbstractStatic().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      107,
+      "class.notFound",
+      "Call to static method Missing() on an unknown class MethodCallable\\Absent.",
+      "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+      true
+    ],
+    [
+      "members.php",
+      109,
+      "outOfClass.self",
+      "Calling self::Missing() outside of class scope.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      110,
+      "outOfClass.parent",
+      "Calling parent::Missing() outside of class scope.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      111,
+      "outOfClass.static",
+      "Calling static::Missing() outside of class scope.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      116,
+      "class.noParent",
+      "MethodCallable\\NoParent::create() calls parent::Missing() but MethodCallable\\NoParent does not extend any class.",
+      null,
+      true
+    ]
+  ],
+  "level1": [
+    [
+      "members.php",
+      24,
+      "method.notFound",
+      "Call to an undefined method MethodCallable\\Subject::Missing().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      25,
+      "method.private",
+      "Call to private method Hidden() of class MethodCallable\\Ancestor.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      26,
+      "method.private",
+      "Call to private method Hidden() of class MethodCallable\\Ancestor.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      33,
+      "staticMethod.notFound",
+      "Call to an undefined static method MethodCallable\\Subject::Missing().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      35,
+      "staticMethod.callToAbstract",
+      "Cannot call abstract static method MethodCallable\\Subject::AbstractStatic().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      37,
+      "method.callToAbstract",
+      "Cannot call abstract method MethodCallable\\Subject::AbstractInstance().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      41,
+      "staticMethod.notFound",
+      "Call to an undefined static method MethodCallable\\Subject::Missing().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      48,
+      "method.notFound",
+      "Call to an undefined method MethodCallable\\Subject::Guarded().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      49,
+      "staticMethod.notFound",
+      "Call to an undefined static method MethodCallable\\Subject::Guarded().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      63,
+      "method.notFound",
+      "Call to an undefined method MethodCallable\\Magic::Missing().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      64,
+      "staticMethod.notFound",
+      "Call to an undefined static method MethodCallable\\Magic::Missing().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      65,
+      "staticMethod.notFound",
+      "Call to an undefined static method MethodCallable\\Magic::Missing().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      100,
+      "staticMethod.notFound",
+      "Call to an undefined static method MethodCallable\\Subject::Missing().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      101,
+      "method.staticCall",
+      "Static call to instance method MethodCallable\\Ancestor::Required().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      102,
+      "method.staticCall",
+      "Static call to instance method MethodCallable\\Subject::PrivateMethod().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      103,
+      "staticMethod.private",
+      "Call to private static method PrivateStatic() of class MethodCallable\\Subject.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      104,
+      "staticMethod.private",
+      "Call to private static method PrivateStatic() of class MethodCallable\\Subject.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      105,
+      "staticMethod.protected",
+      "Call to protected static method ProtectedStatic() of class MethodCallable\\Subject.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      106,
+      "staticMethod.callToAbstract",
+      "Cannot call abstract static method MethodCallable\\Subject::AbstractStatic().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      107,
+      "class.notFound",
+      "Call to static method Missing() on an unknown class MethodCallable\\Absent.",
+      "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+      true
+    ],
+    [
+      "members.php",
+      109,
+      "outOfClass.self",
+      "Calling self::Missing() outside of class scope.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      110,
+      "outOfClass.parent",
+      "Calling parent::Missing() outside of class scope.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      111,
+      "outOfClass.static",
+      "Calling static::Missing() outside of class scope.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      116,
+      "class.noParent",
+      "MethodCallable\\NoParent::create() calls parent::Missing() but MethodCallable\\NoParent does not extend any class.",
+      null,
+      true
+    ]
+  ],
+  "level10": [
+    [
+      "members.php",
+      24,
+      "method.notFound",
+      "Call to an undefined method MethodCallable\\Subject::Missing().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      25,
+      "method.private",
+      "Call to private method Hidden() of class MethodCallable\\Ancestor.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      26,
+      "method.private",
+      "Call to private method Hidden() of class MethodCallable\\Ancestor.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      33,
+      "staticMethod.notFound",
+      "Call to an undefined static method MethodCallable\\Subject::Missing().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      35,
+      "staticMethod.callToAbstract",
+      "Cannot call abstract static method MethodCallable\\Subject::AbstractStatic().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      37,
+      "method.callToAbstract",
+      "Cannot call abstract method MethodCallable\\Subject::AbstractInstance().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      41,
+      "staticMethod.notFound",
+      "Call to an undefined static method MethodCallable\\Subject::Missing().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      48,
+      "method.notFound",
+      "Call to an undefined method MethodCallable\\Subject::Guarded().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      49,
+      "staticMethod.notFound",
+      "Call to an undefined static method MethodCallable\\Subject::Guarded().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      53,
+      "method.nonObject",
+      "Cannot call method Missing() on mixed.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      63,
+      "method.notFound",
+      "Call to an undefined method MethodCallable\\Magic::Missing().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      64,
+      "staticMethod.notFound",
+      "Call to an undefined static method MethodCallable\\Magic::Missing().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      65,
+      "staticMethod.notFound",
+      "Call to an undefined static method MethodCallable\\Magic::Missing().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      100,
+      "staticMethod.notFound",
+      "Call to an undefined static method MethodCallable\\Subject::Missing().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      101,
+      "method.staticCall",
+      "Static call to instance method MethodCallable\\Ancestor::Required().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      102,
+      "method.staticCall",
+      "Static call to instance method MethodCallable\\Subject::PrivateMethod().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      103,
+      "staticMethod.private",
+      "Call to private static method PrivateStatic() of class MethodCallable\\Subject.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      104,
+      "staticMethod.private",
+      "Call to private static method PrivateStatic() of class MethodCallable\\Subject.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      105,
+      "staticMethod.protected",
+      "Call to protected static method ProtectedStatic() of class MethodCallable\\Subject.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      106,
+      "staticMethod.callToAbstract",
+      "Cannot call abstract static method MethodCallable\\Subject::AbstractStatic().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      107,
+      "class.notFound",
+      "Call to static method Missing() on an unknown class MethodCallable\\Absent.",
+      "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+      true
+    ],
+    [
+      "members.php",
+      109,
+      "outOfClass.self",
+      "Calling self::Missing() outside of class scope.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      110,
+      "outOfClass.parent",
+      "Calling parent::Missing() outside of class scope.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      111,
+      "outOfClass.static",
+      "Calling static::Missing() outside of class scope.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      116,
+      "class.noParent",
+      "MethodCallable\\NoParent::create() calls parent::Missing() but MethodCallable\\NoParent does not extend any class.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      145,
+      "method.notFound",
+      "Call to an undefined method MethodCallable\\Subject::Missing().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      146,
+      "method.private",
+      "Call to private method PrivateMethod() of class MethodCallable\\Subject.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      147,
+      "method.private",
+      "Call to private method PrivateMethod() of class MethodCallable\\Subject.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      148,
+      "method.protected",
+      "Call to protected method ProtectedMethod() of class MethodCallable\\Ancestor.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      149,
+      "method.private",
+      "Call to private method Hidden() of class MethodCallable\\Ancestor.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      150,
+      "class.notFound",
+      "Call to method Missing() on an unknown class MethodCallable\\Absent.",
+      "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+      true
+    ],
+    [
+      "members.php",
+      151,
+      "method.nonObject",
+      "Cannot call method Missing() on int.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      152,
+      "method.nonObject",
+      "Cannot call method Required() on MethodCallable\\Subject|null.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      153,
+      "method.nonObject",
+      "Cannot call method Required() on class-string<MethodCallable\\Subject>.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      154,
+      "method.nonObject",
+      "Cannot call method Required() on string.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      155,
+      "method.nonObject",
+      "Cannot call method Required() on int|MethodCallable\\Subject.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      156,
+      "method.nonObject",
+      "Cannot call method Required() on mixed.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      157,
+      "method.nonObject",
+      "Cannot call method Required() on mixed.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      158,
+      "method.notFound",
+      "Call to an undefined method MethodCallable\\Magic::Missing().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      164,
+      "method.staticCall",
+      "Static call to instance method MethodCallable\\Ancestor::Required().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      165,
+      "staticMethod.private",
+      "Call to private static method PrivateStatic() of class MethodCallable\\Subject.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      166,
+      "staticMethod.protected",
+      "Call to protected static method ProtectedStatic() of class MethodCallable\\Subject.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      167,
+      "staticMethod.notFound",
+      "Call to an undefined static method MethodCallable\\Subject::Missing().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      168,
+      "staticMethod.protected",
+      "Call to protected static method AbstractStatic() of class MethodCallable\\Subject.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      169,
+      "class.notFound",
+      "Call to static method Missing() on an unknown class MethodCallable\\Absent.",
+      "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+      true
+    ],
+    [
+      "members.php",
+      170,
+      "staticMethod.nonObject",
+      "Cannot call static method Missing() on int.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      171,
+      "staticMethod.nonObject",
+      "Cannot call static method RequiredStatic() on MethodCallable\\Subject|null.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      173,
+      "staticMethod.notFound",
+      "Call to an undefined static method MethodCallable\\Subject::Missing().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      176,
+      "staticMethod.nonObject",
+      "Cannot call static method RequiredStatic() on int|MethodCallable\\Subject.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      177,
+      "staticMethod.nonObject",
+      "Cannot call static method RequiredStatic() on mixed.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      178,
+      "staticMethod.nonObject",
+      "Cannot call static method RequiredStatic() on mixed.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      179,
+      "staticMethod.notFound",
+      "Call to an undefined static method MethodCallable\\Magic::Missing().",
+      null,
+      true
+    ]
+  ],
+  "level2": [
+    [
+      "members.php",
+      24,
+      "method.notFound",
+      "Call to an undefined method MethodCallable\\Subject::Missing().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      25,
+      "method.private",
+      "Call to private method Hidden() of class MethodCallable\\Ancestor.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      26,
+      "method.private",
+      "Call to private method Hidden() of class MethodCallable\\Ancestor.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      33,
+      "staticMethod.notFound",
+      "Call to an undefined static method MethodCallable\\Subject::Missing().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      35,
+      "staticMethod.callToAbstract",
+      "Cannot call abstract static method MethodCallable\\Subject::AbstractStatic().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      37,
+      "method.callToAbstract",
+      "Cannot call abstract method MethodCallable\\Subject::AbstractInstance().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      41,
+      "staticMethod.notFound",
+      "Call to an undefined static method MethodCallable\\Subject::Missing().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      48,
+      "method.notFound",
+      "Call to an undefined method MethodCallable\\Subject::Guarded().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      49,
+      "staticMethod.notFound",
+      "Call to an undefined static method MethodCallable\\Subject::Guarded().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      63,
+      "method.notFound",
+      "Call to an undefined method MethodCallable\\Magic::Missing().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      64,
+      "staticMethod.notFound",
+      "Call to an undefined static method MethodCallable\\Magic::Missing().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      65,
+      "staticMethod.notFound",
+      "Call to an undefined static method MethodCallable\\Magic::Missing().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      100,
+      "staticMethod.notFound",
+      "Call to an undefined static method MethodCallable\\Subject::Missing().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      101,
+      "method.staticCall",
+      "Static call to instance method MethodCallable\\Ancestor::Required().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      102,
+      "method.staticCall",
+      "Static call to instance method MethodCallable\\Subject::PrivateMethod().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      103,
+      "staticMethod.private",
+      "Call to private static method PrivateStatic() of class MethodCallable\\Subject.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      104,
+      "staticMethod.private",
+      "Call to private static method PrivateStatic() of class MethodCallable\\Subject.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      105,
+      "staticMethod.protected",
+      "Call to protected static method ProtectedStatic() of class MethodCallable\\Subject.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      106,
+      "staticMethod.callToAbstract",
+      "Cannot call abstract static method MethodCallable\\Subject::AbstractStatic().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      107,
+      "class.notFound",
+      "Call to static method Missing() on an unknown class MethodCallable\\Absent.",
+      "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+      true
+    ],
+    [
+      "members.php",
+      109,
+      "outOfClass.self",
+      "Calling self::Missing() outside of class scope.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      110,
+      "outOfClass.parent",
+      "Calling parent::Missing() outside of class scope.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      111,
+      "outOfClass.static",
+      "Calling static::Missing() outside of class scope.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      116,
+      "class.noParent",
+      "MethodCallable\\NoParent::create() calls parent::Missing() but MethodCallable\\NoParent does not extend any class.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      145,
+      "method.notFound",
+      "Call to an undefined method MethodCallable\\Subject::Missing().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      146,
+      "method.private",
+      "Call to private method PrivateMethod() of class MethodCallable\\Subject.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      147,
+      "method.private",
+      "Call to private method PrivateMethod() of class MethodCallable\\Subject.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      148,
+      "method.protected",
+      "Call to protected method ProtectedMethod() of class MethodCallable\\Ancestor.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      149,
+      "method.private",
+      "Call to private method Hidden() of class MethodCallable\\Ancestor.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      150,
+      "class.notFound",
+      "Call to method Missing() on an unknown class MethodCallable\\Absent.",
+      "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+      true
+    ],
+    [
+      "members.php",
+      151,
+      "method.nonObject",
+      "Cannot call method Missing() on int.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      153,
+      "method.nonObject",
+      "Cannot call method Required() on class-string<MethodCallable\\Subject>.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      154,
+      "method.nonObject",
+      "Cannot call method Required() on string.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      158,
+      "method.notFound",
+      "Call to an undefined method MethodCallable\\Magic::Missing().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      164,
+      "method.staticCall",
+      "Static call to instance method MethodCallable\\Ancestor::Required().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      165,
+      "staticMethod.private",
+      "Call to private static method PrivateStatic() of class MethodCallable\\Subject.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      166,
+      "staticMethod.protected",
+      "Call to protected static method ProtectedStatic() of class MethodCallable\\Subject.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      167,
+      "staticMethod.notFound",
+      "Call to an undefined static method MethodCallable\\Subject::Missing().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      168,
+      "staticMethod.protected",
+      "Call to protected static method AbstractStatic() of class MethodCallable\\Subject.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      169,
+      "class.notFound",
+      "Call to static method Missing() on an unknown class MethodCallable\\Absent.",
+      "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+      true
+    ],
+    [
+      "members.php",
+      170,
+      "staticMethod.nonObject",
+      "Cannot call static method Missing() on int.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      173,
+      "staticMethod.notFound",
+      "Call to an undefined static method MethodCallable\\Subject::Missing().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      179,
+      "staticMethod.notFound",
+      "Call to an undefined static method MethodCallable\\Magic::Missing().",
+      null,
+      true
+    ]
+  ],
+  "level6": [
+    [
+      "members.php",
+      24,
+      "method.notFound",
+      "Call to an undefined method MethodCallable\\Subject::Missing().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      25,
+      "method.private",
+      "Call to private method Hidden() of class MethodCallable\\Ancestor.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      26,
+      "method.private",
+      "Call to private method Hidden() of class MethodCallable\\Ancestor.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      33,
+      "staticMethod.notFound",
+      "Call to an undefined static method MethodCallable\\Subject::Missing().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      35,
+      "staticMethod.callToAbstract",
+      "Cannot call abstract static method MethodCallable\\Subject::AbstractStatic().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      37,
+      "method.callToAbstract",
+      "Cannot call abstract method MethodCallable\\Subject::AbstractInstance().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      41,
+      "staticMethod.notFound",
+      "Call to an undefined static method MethodCallable\\Subject::Missing().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      48,
+      "method.notFound",
+      "Call to an undefined method MethodCallable\\Subject::Guarded().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      49,
+      "staticMethod.notFound",
+      "Call to an undefined static method MethodCallable\\Subject::Guarded().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      63,
+      "method.notFound",
+      "Call to an undefined method MethodCallable\\Magic::Missing().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      64,
+      "staticMethod.notFound",
+      "Call to an undefined static method MethodCallable\\Magic::Missing().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      65,
+      "staticMethod.notFound",
+      "Call to an undefined static method MethodCallable\\Magic::Missing().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      100,
+      "staticMethod.notFound",
+      "Call to an undefined static method MethodCallable\\Subject::Missing().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      101,
+      "method.staticCall",
+      "Static call to instance method MethodCallable\\Ancestor::Required().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      102,
+      "method.staticCall",
+      "Static call to instance method MethodCallable\\Subject::PrivateMethod().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      103,
+      "staticMethod.private",
+      "Call to private static method PrivateStatic() of class MethodCallable\\Subject.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      104,
+      "staticMethod.private",
+      "Call to private static method PrivateStatic() of class MethodCallable\\Subject.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      105,
+      "staticMethod.protected",
+      "Call to protected static method ProtectedStatic() of class MethodCallable\\Subject.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      106,
+      "staticMethod.callToAbstract",
+      "Cannot call abstract static method MethodCallable\\Subject::AbstractStatic().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      107,
+      "class.notFound",
+      "Call to static method Missing() on an unknown class MethodCallable\\Absent.",
+      "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+      true
+    ],
+    [
+      "members.php",
+      109,
+      "outOfClass.self",
+      "Calling self::Missing() outside of class scope.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      110,
+      "outOfClass.parent",
+      "Calling parent::Missing() outside of class scope.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      111,
+      "outOfClass.static",
+      "Calling static::Missing() outside of class scope.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      116,
+      "class.noParent",
+      "MethodCallable\\NoParent::create() calls parent::Missing() but MethodCallable\\NoParent does not extend any class.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      145,
+      "method.notFound",
+      "Call to an undefined method MethodCallable\\Subject::Missing().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      146,
+      "method.private",
+      "Call to private method PrivateMethod() of class MethodCallable\\Subject.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      147,
+      "method.private",
+      "Call to private method PrivateMethod() of class MethodCallable\\Subject.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      148,
+      "method.protected",
+      "Call to protected method ProtectedMethod() of class MethodCallable\\Ancestor.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      149,
+      "method.private",
+      "Call to private method Hidden() of class MethodCallable\\Ancestor.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      150,
+      "class.notFound",
+      "Call to method Missing() on an unknown class MethodCallable\\Absent.",
+      "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+      true
+    ],
+    [
+      "members.php",
+      151,
+      "method.nonObject",
+      "Cannot call method Missing() on int.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      153,
+      "method.nonObject",
+      "Cannot call method Required() on class-string<MethodCallable\\Subject>.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      154,
+      "method.nonObject",
+      "Cannot call method Required() on string.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      158,
+      "method.notFound",
+      "Call to an undefined method MethodCallable\\Magic::Missing().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      164,
+      "method.staticCall",
+      "Static call to instance method MethodCallable\\Ancestor::Required().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      165,
+      "staticMethod.private",
+      "Call to private static method PrivateStatic() of class MethodCallable\\Subject.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      166,
+      "staticMethod.protected",
+      "Call to protected static method ProtectedStatic() of class MethodCallable\\Subject.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      167,
+      "staticMethod.notFound",
+      "Call to an undefined static method MethodCallable\\Subject::Missing().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      168,
+      "staticMethod.protected",
+      "Call to protected static method AbstractStatic() of class MethodCallable\\Subject.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      169,
+      "class.notFound",
+      "Call to static method Missing() on an unknown class MethodCallable\\Absent.",
+      "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+      true
+    ],
+    [
+      "members.php",
+      170,
+      "staticMethod.nonObject",
+      "Cannot call static method Missing() on int.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      173,
+      "staticMethod.notFound",
+      "Call to an undefined static method MethodCallable\\Subject::Missing().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      179,
+      "staticMethod.notFound",
+      "Call to an undefined static method MethodCallable\\Magic::Missing().",
+      null,
+      true
+    ]
+  ],
+  "level7": [
+    [
+      "members.php",
+      24,
+      "method.notFound",
+      "Call to an undefined method MethodCallable\\Subject::Missing().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      25,
+      "method.private",
+      "Call to private method Hidden() of class MethodCallable\\Ancestor.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      26,
+      "method.private",
+      "Call to private method Hidden() of class MethodCallable\\Ancestor.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      33,
+      "staticMethod.notFound",
+      "Call to an undefined static method MethodCallable\\Subject::Missing().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      35,
+      "staticMethod.callToAbstract",
+      "Cannot call abstract static method MethodCallable\\Subject::AbstractStatic().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      37,
+      "method.callToAbstract",
+      "Cannot call abstract method MethodCallable\\Subject::AbstractInstance().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      41,
+      "staticMethod.notFound",
+      "Call to an undefined static method MethodCallable\\Subject::Missing().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      48,
+      "method.notFound",
+      "Call to an undefined method MethodCallable\\Subject::Guarded().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      49,
+      "staticMethod.notFound",
+      "Call to an undefined static method MethodCallable\\Subject::Guarded().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      63,
+      "method.notFound",
+      "Call to an undefined method MethodCallable\\Magic::Missing().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      64,
+      "staticMethod.notFound",
+      "Call to an undefined static method MethodCallable\\Magic::Missing().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      65,
+      "staticMethod.notFound",
+      "Call to an undefined static method MethodCallable\\Magic::Missing().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      100,
+      "staticMethod.notFound",
+      "Call to an undefined static method MethodCallable\\Subject::Missing().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      101,
+      "method.staticCall",
+      "Static call to instance method MethodCallable\\Ancestor::Required().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      102,
+      "method.staticCall",
+      "Static call to instance method MethodCallable\\Subject::PrivateMethod().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      103,
+      "staticMethod.private",
+      "Call to private static method PrivateStatic() of class MethodCallable\\Subject.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      104,
+      "staticMethod.private",
+      "Call to private static method PrivateStatic() of class MethodCallable\\Subject.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      105,
+      "staticMethod.protected",
+      "Call to protected static method ProtectedStatic() of class MethodCallable\\Subject.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      106,
+      "staticMethod.callToAbstract",
+      "Cannot call abstract static method MethodCallable\\Subject::AbstractStatic().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      107,
+      "class.notFound",
+      "Call to static method Missing() on an unknown class MethodCallable\\Absent.",
+      "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+      true
+    ],
+    [
+      "members.php",
+      109,
+      "outOfClass.self",
+      "Calling self::Missing() outside of class scope.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      110,
+      "outOfClass.parent",
+      "Calling parent::Missing() outside of class scope.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      111,
+      "outOfClass.static",
+      "Calling static::Missing() outside of class scope.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      116,
+      "class.noParent",
+      "MethodCallable\\NoParent::create() calls parent::Missing() but MethodCallable\\NoParent does not extend any class.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      145,
+      "method.notFound",
+      "Call to an undefined method MethodCallable\\Subject::Missing().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      146,
+      "method.private",
+      "Call to private method PrivateMethod() of class MethodCallable\\Subject.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      147,
+      "method.private",
+      "Call to private method PrivateMethod() of class MethodCallable\\Subject.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      148,
+      "method.protected",
+      "Call to protected method ProtectedMethod() of class MethodCallable\\Ancestor.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      149,
+      "method.private",
+      "Call to private method Hidden() of class MethodCallable\\Ancestor.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      150,
+      "class.notFound",
+      "Call to method Missing() on an unknown class MethodCallable\\Absent.",
+      "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+      true
+    ],
+    [
+      "members.php",
+      151,
+      "method.nonObject",
+      "Cannot call method Missing() on int.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      153,
+      "method.nonObject",
+      "Cannot call method Required() on class-string<MethodCallable\\Subject>.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      154,
+      "method.nonObject",
+      "Cannot call method Required() on string.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      155,
+      "method.nonObject",
+      "Cannot call method Required() on int|MethodCallable\\Subject.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      158,
+      "method.notFound",
+      "Call to an undefined method MethodCallable\\Magic::Missing().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      164,
+      "method.staticCall",
+      "Static call to instance method MethodCallable\\Ancestor::Required().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      165,
+      "staticMethod.private",
+      "Call to private static method PrivateStatic() of class MethodCallable\\Subject.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      166,
+      "staticMethod.protected",
+      "Call to protected static method ProtectedStatic() of class MethodCallable\\Subject.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      167,
+      "staticMethod.notFound",
+      "Call to an undefined static method MethodCallable\\Subject::Missing().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      168,
+      "staticMethod.protected",
+      "Call to protected static method AbstractStatic() of class MethodCallable\\Subject.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      169,
+      "class.notFound",
+      "Call to static method Missing() on an unknown class MethodCallable\\Absent.",
+      "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+      true
+    ],
+    [
+      "members.php",
+      170,
+      "staticMethod.nonObject",
+      "Cannot call static method Missing() on int.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      173,
+      "staticMethod.notFound",
+      "Call to an undefined static method MethodCallable\\Subject::Missing().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      176,
+      "staticMethod.nonObject",
+      "Cannot call static method RequiredStatic() on int|MethodCallable\\Subject.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      179,
+      "staticMethod.notFound",
+      "Call to an undefined static method MethodCallable\\Magic::Missing().",
+      null,
+      true
+    ]
+  ],
+  "level8": [
+    [
+      "members.php",
+      24,
+      "method.notFound",
+      "Call to an undefined method MethodCallable\\Subject::Missing().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      25,
+      "method.private",
+      "Call to private method Hidden() of class MethodCallable\\Ancestor.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      26,
+      "method.private",
+      "Call to private method Hidden() of class MethodCallable\\Ancestor.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      33,
+      "staticMethod.notFound",
+      "Call to an undefined static method MethodCallable\\Subject::Missing().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      35,
+      "staticMethod.callToAbstract",
+      "Cannot call abstract static method MethodCallable\\Subject::AbstractStatic().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      37,
+      "method.callToAbstract",
+      "Cannot call abstract method MethodCallable\\Subject::AbstractInstance().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      41,
+      "staticMethod.notFound",
+      "Call to an undefined static method MethodCallable\\Subject::Missing().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      48,
+      "method.notFound",
+      "Call to an undefined method MethodCallable\\Subject::Guarded().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      49,
+      "staticMethod.notFound",
+      "Call to an undefined static method MethodCallable\\Subject::Guarded().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      63,
+      "method.notFound",
+      "Call to an undefined method MethodCallable\\Magic::Missing().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      64,
+      "staticMethod.notFound",
+      "Call to an undefined static method MethodCallable\\Magic::Missing().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      65,
+      "staticMethod.notFound",
+      "Call to an undefined static method MethodCallable\\Magic::Missing().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      100,
+      "staticMethod.notFound",
+      "Call to an undefined static method MethodCallable\\Subject::Missing().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      101,
+      "method.staticCall",
+      "Static call to instance method MethodCallable\\Ancestor::Required().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      102,
+      "method.staticCall",
+      "Static call to instance method MethodCallable\\Subject::PrivateMethod().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      103,
+      "staticMethod.private",
+      "Call to private static method PrivateStatic() of class MethodCallable\\Subject.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      104,
+      "staticMethod.private",
+      "Call to private static method PrivateStatic() of class MethodCallable\\Subject.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      105,
+      "staticMethod.protected",
+      "Call to protected static method ProtectedStatic() of class MethodCallable\\Subject.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      106,
+      "staticMethod.callToAbstract",
+      "Cannot call abstract static method MethodCallable\\Subject::AbstractStatic().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      107,
+      "class.notFound",
+      "Call to static method Missing() on an unknown class MethodCallable\\Absent.",
+      "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+      true
+    ],
+    [
+      "members.php",
+      109,
+      "outOfClass.self",
+      "Calling self::Missing() outside of class scope.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      110,
+      "outOfClass.parent",
+      "Calling parent::Missing() outside of class scope.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      111,
+      "outOfClass.static",
+      "Calling static::Missing() outside of class scope.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      116,
+      "class.noParent",
+      "MethodCallable\\NoParent::create() calls parent::Missing() but MethodCallable\\NoParent does not extend any class.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      145,
+      "method.notFound",
+      "Call to an undefined method MethodCallable\\Subject::Missing().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      146,
+      "method.private",
+      "Call to private method PrivateMethod() of class MethodCallable\\Subject.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      147,
+      "method.private",
+      "Call to private method PrivateMethod() of class MethodCallable\\Subject.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      148,
+      "method.protected",
+      "Call to protected method ProtectedMethod() of class MethodCallable\\Ancestor.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      149,
+      "method.private",
+      "Call to private method Hidden() of class MethodCallable\\Ancestor.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      150,
+      "class.notFound",
+      "Call to method Missing() on an unknown class MethodCallable\\Absent.",
+      "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+      true
+    ],
+    [
+      "members.php",
+      151,
+      "method.nonObject",
+      "Cannot call method Missing() on int.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      152,
+      "method.nonObject",
+      "Cannot call method Required() on MethodCallable\\Subject|null.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      153,
+      "method.nonObject",
+      "Cannot call method Required() on class-string<MethodCallable\\Subject>.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      154,
+      "method.nonObject",
+      "Cannot call method Required() on string.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      155,
+      "method.nonObject",
+      "Cannot call method Required() on int|MethodCallable\\Subject.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      158,
+      "method.notFound",
+      "Call to an undefined method MethodCallable\\Magic::Missing().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      164,
+      "method.staticCall",
+      "Static call to instance method MethodCallable\\Ancestor::Required().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      165,
+      "staticMethod.private",
+      "Call to private static method PrivateStatic() of class MethodCallable\\Subject.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      166,
+      "staticMethod.protected",
+      "Call to protected static method ProtectedStatic() of class MethodCallable\\Subject.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      167,
+      "staticMethod.notFound",
+      "Call to an undefined static method MethodCallable\\Subject::Missing().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      168,
+      "staticMethod.protected",
+      "Call to protected static method AbstractStatic() of class MethodCallable\\Subject.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      169,
+      "class.notFound",
+      "Call to static method Missing() on an unknown class MethodCallable\\Absent.",
+      "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+      true
+    ],
+    [
+      "members.php",
+      170,
+      "staticMethod.nonObject",
+      "Cannot call static method Missing() on int.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      171,
+      "staticMethod.nonObject",
+      "Cannot call static method RequiredStatic() on MethodCallable\\Subject|null.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      173,
+      "staticMethod.notFound",
+      "Call to an undefined static method MethodCallable\\Subject::Missing().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      176,
+      "staticMethod.nonObject",
+      "Cannot call static method RequiredStatic() on int|MethodCallable\\Subject.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      179,
+      "staticMethod.notFound",
+      "Call to an undefined static method MethodCallable\\Magic::Missing().",
+      null,
+      true
+    ]
+  ],
+  "level9": [
+    [
+      "members.php",
+      24,
+      "method.notFound",
+      "Call to an undefined method MethodCallable\\Subject::Missing().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      25,
+      "method.private",
+      "Call to private method Hidden() of class MethodCallable\\Ancestor.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      26,
+      "method.private",
+      "Call to private method Hidden() of class MethodCallable\\Ancestor.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      33,
+      "staticMethod.notFound",
+      "Call to an undefined static method MethodCallable\\Subject::Missing().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      35,
+      "staticMethod.callToAbstract",
+      "Cannot call abstract static method MethodCallable\\Subject::AbstractStatic().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      37,
+      "method.callToAbstract",
+      "Cannot call abstract method MethodCallable\\Subject::AbstractInstance().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      41,
+      "staticMethod.notFound",
+      "Call to an undefined static method MethodCallable\\Subject::Missing().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      48,
+      "method.notFound",
+      "Call to an undefined method MethodCallable\\Subject::Guarded().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      49,
+      "staticMethod.notFound",
+      "Call to an undefined static method MethodCallable\\Subject::Guarded().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      63,
+      "method.notFound",
+      "Call to an undefined method MethodCallable\\Magic::Missing().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      64,
+      "staticMethod.notFound",
+      "Call to an undefined static method MethodCallable\\Magic::Missing().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      65,
+      "staticMethod.notFound",
+      "Call to an undefined static method MethodCallable\\Magic::Missing().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      100,
+      "staticMethod.notFound",
+      "Call to an undefined static method MethodCallable\\Subject::Missing().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      101,
+      "method.staticCall",
+      "Static call to instance method MethodCallable\\Ancestor::Required().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      102,
+      "method.staticCall",
+      "Static call to instance method MethodCallable\\Subject::PrivateMethod().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      103,
+      "staticMethod.private",
+      "Call to private static method PrivateStatic() of class MethodCallable\\Subject.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      104,
+      "staticMethod.private",
+      "Call to private static method PrivateStatic() of class MethodCallable\\Subject.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      105,
+      "staticMethod.protected",
+      "Call to protected static method ProtectedStatic() of class MethodCallable\\Subject.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      106,
+      "staticMethod.callToAbstract",
+      "Cannot call abstract static method MethodCallable\\Subject::AbstractStatic().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      107,
+      "class.notFound",
+      "Call to static method Missing() on an unknown class MethodCallable\\Absent.",
+      "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+      true
+    ],
+    [
+      "members.php",
+      109,
+      "outOfClass.self",
+      "Calling self::Missing() outside of class scope.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      110,
+      "outOfClass.parent",
+      "Calling parent::Missing() outside of class scope.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      111,
+      "outOfClass.static",
+      "Calling static::Missing() outside of class scope.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      116,
+      "class.noParent",
+      "MethodCallable\\NoParent::create() calls parent::Missing() but MethodCallable\\NoParent does not extend any class.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      145,
+      "method.notFound",
+      "Call to an undefined method MethodCallable\\Subject::Missing().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      146,
+      "method.private",
+      "Call to private method PrivateMethod() of class MethodCallable\\Subject.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      147,
+      "method.private",
+      "Call to private method PrivateMethod() of class MethodCallable\\Subject.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      148,
+      "method.protected",
+      "Call to protected method ProtectedMethod() of class MethodCallable\\Ancestor.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      149,
+      "method.private",
+      "Call to private method Hidden() of class MethodCallable\\Ancestor.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      150,
+      "class.notFound",
+      "Call to method Missing() on an unknown class MethodCallable\\Absent.",
+      "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+      true
+    ],
+    [
+      "members.php",
+      151,
+      "method.nonObject",
+      "Cannot call method Missing() on int.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      152,
+      "method.nonObject",
+      "Cannot call method Required() on MethodCallable\\Subject|null.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      153,
+      "method.nonObject",
+      "Cannot call method Required() on class-string<MethodCallable\\Subject>.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      154,
+      "method.nonObject",
+      "Cannot call method Required() on string.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      155,
+      "method.nonObject",
+      "Cannot call method Required() on int|MethodCallable\\Subject.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      156,
+      "method.nonObject",
+      "Cannot call method Required() on mixed.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      158,
+      "method.notFound",
+      "Call to an undefined method MethodCallable\\Magic::Missing().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      164,
+      "method.staticCall",
+      "Static call to instance method MethodCallable\\Ancestor::Required().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      165,
+      "staticMethod.private",
+      "Call to private static method PrivateStatic() of class MethodCallable\\Subject.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      166,
+      "staticMethod.protected",
+      "Call to protected static method ProtectedStatic() of class MethodCallable\\Subject.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      167,
+      "staticMethod.notFound",
+      "Call to an undefined static method MethodCallable\\Subject::Missing().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      168,
+      "staticMethod.protected",
+      "Call to protected static method AbstractStatic() of class MethodCallable\\Subject.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      169,
+      "class.notFound",
+      "Call to static method Missing() on an unknown class MethodCallable\\Absent.",
+      "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+      true
+    ],
+    [
+      "members.php",
+      170,
+      "staticMethod.nonObject",
+      "Cannot call static method Missing() on int.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      171,
+      "staticMethod.nonObject",
+      "Cannot call static method RequiredStatic() on MethodCallable\\Subject|null.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      173,
+      "staticMethod.notFound",
+      "Call to an undefined static method MethodCallable\\Subject::Missing().",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      176,
+      "staticMethod.nonObject",
+      "Cannot call static method RequiredStatic() on int|MethodCallable\\Subject.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      177,
+      "staticMethod.nonObject",
+      "Cannot call static method RequiredStatic() on mixed.",
+      null,
+      true
+    ],
+    [
+      "members.php",
+      179,
+      "staticMethod.notFound",
+      "Call to an undefined static method MethodCallable\\Magic::Missing().",
+      null,
+      true
+    ]
+  ],
+  "nullsafe": [
+    [
+      "nullsafe.php",
+      18,
+      "method.nonObject",
+      "Cannot call method Required() on MethodCallableNullsafe\\Target|null.",
+      null,
+      true
+    ],
+    [
+      "nullsafe.php",
+      20,
+      "method.nonObject",
+      "Cannot call method Required() on MethodCallableNullsafe\\Target|null.",
+      null,
+      true
+    ],
+    [
+      "nullsafe.php",
+      22,
+      "staticMethod.nonObject",
+      "Cannot call static method RequiredStatic() on MethodCallableNullsafe\\Target|null.",
+      null,
+      true
+    ],
+    [
+      "nullsafe.php",
+      23,
+      "method.notFound",
+      "Call to an undefined method MethodCallableNullsafe\\Target::Missing().",
+      null,
+      true
+    ],
+    [
+      "nullsafe.php",
+      24,
+      "method.nonObject",
+      "Cannot call method Required() on MethodCallableNullsafe\\Target|null.",
+      null,
+      true
+    ],
+    [
+      "nullsafe.php",
+      26,
+      "method.nonObject",
+      "Cannot call method Required() on MethodCallableNullsafe\\Target|null.",
+      null,
+      true
+    ],
+    [
+      "nullsafe.php",
+      27,
+      "staticMethod.nonObject",
+      "Cannot call static method RequiredStatic() on MethodCallableNullsafe\\Target|null.",
+      null,
+      true
+    ]
+  ],
+  "php80": [
+    [
+      "members.php",
+      22,
+      "callable.notSupported",
+      "First-class callables are supported only on PHP 8.1 and later.",
+      null,
+      false
+    ],
+    [
+      "members.php",
+      23,
+      "callable.notSupported",
+      "First-class callables are supported only on PHP 8.1 and later.",
+      null,
+      false
+    ],
+    [
+      "members.php",
+      24,
+      "callable.notSupported",
+      "First-class callables are supported only on PHP 8.1 and later.",
+      null,
+      false
+    ],
+    [
+      "members.php",
+      25,
+      "callable.notSupported",
+      "First-class callables are supported only on PHP 8.1 and later.",
+      null,
+      false
+    ],
+    [
+      "members.php",
+      26,
+      "callable.notSupported",
+      "First-class callables are supported only on PHP 8.1 and later.",
+      null,
+      false
+    ],
+    [
+      "members.php",
+      27,
+      "callable.notSupported",
+      "First-class callables are supported only on PHP 8.1 and later.",
+      null,
+      false
+    ],
+    [
+      "members.php",
+      28,
+      "callable.notSupported",
+      "First-class callables are supported only on PHP 8.1 and later.",
+      null,
+      false
+    ],
+    [
+      "members.php",
+      29,
+      "callable.notSupported",
+      "First-class callables are supported only on PHP 8.1 and later.",
+      null,
+      false
+    ],
+    [
+      "members.php",
+      30,
+      "callable.notSupported",
+      "First-class callables are supported only on PHP 8.1 and later.",
+      null,
+      false
+    ],
+    [
+      "members.php",
+      31,
+      "callable.notSupported",
+      "First-class callables are supported only on PHP 8.1 and later.",
+      null,
+      false
+    ],
+    [
+      "members.php",
+      32,
+      "callable.notSupported",
+      "First-class callables are supported only on PHP 8.1 and later.",
+      null,
+      false
+    ],
+    [
+      "members.php",
+      33,
+      "callable.notSupported",
+      "First-class callables are supported only on PHP 8.1 and later.",
+      null,
+      false
+    ],
+    [
+      "members.php",
+      34,
+      "callable.notSupported",
+      "First-class callables are supported only on PHP 8.1 and later.",
+      null,
+      false
+    ],
+    [
+      "members.php",
+      35,
+      "callable.notSupported",
+      "First-class callables are supported only on PHP 8.1 and later.",
+      null,
+      false
+    ],
+    [
+      "members.php",
+      36,
+      "callable.notSupported",
+      "First-class callables are supported only on PHP 8.1 and later.",
+      null,
+      false
+    ],
+    [
+      "members.php",
+      37,
+      "callable.notSupported",
+      "First-class callables are supported only on PHP 8.1 and later.",
+      null,
+      false
+    ],
+    [
+      "members.php",
+      38,
+      "callable.notSupported",
+      "First-class callables are supported only on PHP 8.1 and later.",
+      null,
+      false
+    ],
+    [
+      "members.php",
+      39,
+      "callable.notSupported",
+      "First-class callables are supported only on PHP 8.1 and later.",
+      null,
+      false
+    ],
+    [
+      "members.php",
+      40,
+      "callable.notSupported",
+      "First-class callables are supported only on PHP 8.1 and later.",
+      null,
+      false
+    ],
+    [
+      "members.php",
+      41,
+      "callable.notSupported",
+      "First-class callables are supported only on PHP 8.1 and later.",
+      null,
+      false
+    ],
+    [
+      "members.php",
+      43,
+      "callable.notSupported",
+      "First-class callables are supported only on PHP 8.1 and later.",
+      null,
+      false
+    ],
+    [
+      "members.php",
+      46,
+      "callable.notSupported",
+      "First-class callables are supported only on PHP 8.1 and later.",
+      null,
+      false
+    ],
+    [
+      "members.php",
+      48,
+      "callable.notSupported",
+      "First-class callables are supported only on PHP 8.1 and later.",
+      null,
+      false
+    ],
+    [
+      "members.php",
+      49,
+      "callable.notSupported",
+      "First-class callables are supported only on PHP 8.1 and later.",
+      null,
+      false
+    ],
+    [
+      "members.php",
+      51,
+      "callable.notSupported",
+      "First-class callables are supported only on PHP 8.1 and later.",
+      null,
+      false
+    ],
+    [
+      "members.php",
+      52,
+      "callable.notSupported",
+      "First-class callables are supported only on PHP 8.1 and later.",
+      null,
+      false
+    ],
+    [
+      "members.php",
+      53,
+      "callable.notSupported",
+      "First-class callables are supported only on PHP 8.1 and later.",
+      null,
+      false
+    ],
+    [
+      "members.php",
+      63,
+      "callable.notSupported",
+      "First-class callables are supported only on PHP 8.1 and later.",
+      null,
+      false
+    ],
+    [
+      "members.php",
+      64,
+      "callable.notSupported",
+      "First-class callables are supported only on PHP 8.1 and later.",
+      null,
+      false
+    ],
+    [
+      "members.php",
+      65,
+      "callable.notSupported",
+      "First-class callables are supported only on PHP 8.1 and later.",
+      null,
+      false
+    ],
+    [
+      "members.php",
+      72,
+      "callable.notSupported",
+      "First-class callables are supported only on PHP 8.1 and later.",
+      null,
+      false
+    ],
+    [
+      "members.php",
+      78,
+      "callable.notSupported",
+      "First-class callables are supported only on PHP 8.1 and later.",
+      null,
+      false
+    ],
+    [
+      "members.php",
+      78,
+      "callable.notSupported",
+      "First-class callables are supported only on PHP 8.1 and later.",
+      null,
+      false
+    ],
+    [
+      "members.php",
+      87,
+      "callable.notSupported",
+      "First-class callables are supported only on PHP 8.1 and later.",
+      null,
+      false
+    ],
+    [
+      "members.php",
+      87,
+      "callable.notSupported",
+      "First-class callables are supported only on PHP 8.1 and later.",
+      null,
+      false
+    ],
+    [
+      "members.php",
+      98,
+      "callable.notSupported",
+      "First-class callables are supported only on PHP 8.1 and later.",
+      null,
+      false
+    ],
+    [
+      "members.php",
+      99,
+      "callable.notSupported",
+      "First-class callables are supported only on PHP 8.1 and later.",
+      null,
+      false
+    ],
+    [
+      "members.php",
+      100,
+      "callable.notSupported",
+      "First-class callables are supported only on PHP 8.1 and later.",
+      null,
+      false
+    ],
+    [
+      "members.php",
+      101,
+      "callable.notSupported",
+      "First-class callables are supported only on PHP 8.1 and later.",
+      null,
+      false
+    ],
+    [
+      "members.php",
+      102,
+      "callable.notSupported",
+      "First-class callables are supported only on PHP 8.1 and later.",
+      null,
+      false
+    ],
+    [
+      "members.php",
+      103,
+      "callable.notSupported",
+      "First-class callables are supported only on PHP 8.1 and later.",
+      null,
+      false
+    ],
+    [
+      "members.php",
+      104,
+      "callable.notSupported",
+      "First-class callables are supported only on PHP 8.1 and later.",
+      null,
+      false
+    ],
+    [
+      "members.php",
+      105,
+      "callable.notSupported",
+      "First-class callables are supported only on PHP 8.1 and later.",
+      null,
+      false
+    ],
+    [
+      "members.php",
+      106,
+      "callable.notSupported",
+      "First-class callables are supported only on PHP 8.1 and later.",
+      null,
+      false
+    ],
+    [
+      "members.php",
+      107,
+      "callable.notSupported",
+      "First-class callables are supported only on PHP 8.1 and later.",
+      null,
+      false
+    ],
+    [
+      "members.php",
+      108,
+      "callable.notSupported",
+      "First-class callables are supported only on PHP 8.1 and later.",
+      null,
+      false
+    ],
+    [
+      "members.php",
+      109,
+      "callable.notSupported",
+      "First-class callables are supported only on PHP 8.1 and later.",
+      null,
+      false
+    ],
+    [
+      "members.php",
+      110,
+      "callable.notSupported",
+      "First-class callables are supported only on PHP 8.1 and later.",
+      null,
+      false
+    ],
+    [
+      "members.php",
+      111,
+      "callable.notSupported",
+      "First-class callables are supported only on PHP 8.1 and later.",
+      null,
+      false
+    ],
+    [
+      "members.php",
+      116,
+      "callable.notSupported",
+      "First-class callables are supported only on PHP 8.1 and later.",
+      null,
+      false
+    ],
+    [
+      "members.php",
+      143,
+      "callable.notSupported",
+      "First-class callables are supported only on PHP 8.1 and later.",
+      null,
+      false
+    ],
+    [
+      "members.php",
+      144,
+      "callable.notSupported",
+      "First-class callables are supported only on PHP 8.1 and later.",
+      null,
+      false
+    ],
+    [
+      "members.php",
+      145,
+      "callable.notSupported",
+      "First-class callables are supported only on PHP 8.1 and later.",
+      null,
+      false
+    ],
+    [
+      "members.php",
+      146,
+      "callable.notSupported",
+      "First-class callables are supported only on PHP 8.1 and later.",
+      null,
+      false
+    ],
+    [
+      "members.php",
+      147,
+      "callable.notSupported",
+      "First-class callables are supported only on PHP 8.1 and later.",
+      null,
+      false
+    ],
+    [
+      "members.php",
+      148,
+      "callable.notSupported",
+      "First-class callables are supported only on PHP 8.1 and later.",
+      null,
+      false
+    ],
+    [
+      "members.php",
+      149,
+      "callable.notSupported",
+      "First-class callables are supported only on PHP 8.1 and later.",
+      null,
+      false
+    ],
+    [
+      "members.php",
+      150,
+      "callable.notSupported",
+      "First-class callables are supported only on PHP 8.1 and later.",
+      null,
+      false
+    ],
+    [
+      "members.php",
+      151,
+      "callable.notSupported",
+      "First-class callables are supported only on PHP 8.1 and later.",
+      null,
+      false
+    ],
+    [
+      "members.php",
+      152,
+      "callable.notSupported",
+      "First-class callables are supported only on PHP 8.1 and later.",
+      null,
+      false
+    ],
+    [
+      "members.php",
+      153,
+      "callable.notSupported",
+      "First-class callables are supported only on PHP 8.1 and later.",
+      null,
+      false
+    ],
+    [
+      "members.php",
+      154,
+      "callable.notSupported",
+      "First-class callables are supported only on PHP 8.1 and later.",
+      null,
+      false
+    ],
+    [
+      "members.php",
+      155,
+      "callable.notSupported",
+      "First-class callables are supported only on PHP 8.1 and later.",
+      null,
+      false
+    ],
+    [
+      "members.php",
+      156,
+      "callable.notSupported",
+      "First-class callables are supported only on PHP 8.1 and later.",
+      null,
+      false
+    ],
+    [
+      "members.php",
+      157,
+      "callable.notSupported",
+      "First-class callables are supported only on PHP 8.1 and later.",
+      null,
+      false
+    ],
+    [
+      "members.php",
+      158,
+      "callable.notSupported",
+      "First-class callables are supported only on PHP 8.1 and later.",
+      null,
+      false
+    ],
+    [
+      "members.php",
+      159,
+      "callable.notSupported",
+      "First-class callables are supported only on PHP 8.1 and later.",
+      null,
+      false
+    ],
+    [
+      "members.php",
+      160,
+      "callable.notSupported",
+      "First-class callables are supported only on PHP 8.1 and later.",
+      null,
+      false
+    ],
+    [
+      "members.php",
+      161,
+      "callable.notSupported",
+      "First-class callables are supported only on PHP 8.1 and later.",
+      null,
+      false
+    ],
+    [
+      "members.php",
+      162,
+      "callable.notSupported",
+      "First-class callables are supported only on PHP 8.1 and later.",
+      null,
+      false
+    ],
+    [
+      "members.php",
+      163,
+      "callable.notSupported",
+      "First-class callables are supported only on PHP 8.1 and later.",
+      null,
+      false
+    ],
+    [
+      "members.php",
+      164,
+      "callable.notSupported",
+      "First-class callables are supported only on PHP 8.1 and later.",
+      null,
+      false
+    ],
+    [
+      "members.php",
+      165,
+      "callable.notSupported",
+      "First-class callables are supported only on PHP 8.1 and later.",
+      null,
+      false
+    ],
+    [
+      "members.php",
+      166,
+      "callable.notSupported",
+      "First-class callables are supported only on PHP 8.1 and later.",
+      null,
+      false
+    ],
+    [
+      "members.php",
+      167,
+      "callable.notSupported",
+      "First-class callables are supported only on PHP 8.1 and later.",
+      null,
+      false
+    ],
+    [
+      "members.php",
+      168,
+      "callable.notSupported",
+      "First-class callables are supported only on PHP 8.1 and later.",
+      null,
+      false
+    ],
+    [
+      "members.php",
+      169,
+      "callable.notSupported",
+      "First-class callables are supported only on PHP 8.1 and later.",
+      null,
+      false
+    ],
+    [
+      "members.php",
+      170,
+      "callable.notSupported",
+      "First-class callables are supported only on PHP 8.1 and later.",
+      null,
+      false
+    ],
+    [
+      "members.php",
+      171,
+      "callable.notSupported",
+      "First-class callables are supported only on PHP 8.1 and later.",
+      null,
+      false
+    ],
+    [
+      "members.php",
+      172,
+      "callable.notSupported",
+      "First-class callables are supported only on PHP 8.1 and later.",
+      null,
+      false
+    ],
+    [
+      "members.php",
+      173,
+      "callable.notSupported",
+      "First-class callables are supported only on PHP 8.1 and later.",
+      null,
+      false
+    ],
+    [
+      "members.php",
+      174,
+      "callable.notSupported",
+      "First-class callables are supported only on PHP 8.1 and later.",
+      null,
+      false
+    ],
+    [
+      "members.php",
+      175,
+      "callable.notSupported",
+      "First-class callables are supported only on PHP 8.1 and later.",
+      null,
+      false
+    ],
+    [
+      "members.php",
+      176,
+      "callable.notSupported",
+      "First-class callables are supported only on PHP 8.1 and later.",
+      null,
+      false
+    ],
+    [
+      "members.php",
+      177,
+      "callable.notSupported",
+      "First-class callables are supported only on PHP 8.1 and later.",
+      null,
+      false
+    ],
+    [
+      "members.php",
+      178,
+      "callable.notSupported",
+      "First-class callables are supported only on PHP 8.1 and later.",
+      null,
+      false
+    ],
+    [
+      "members.php",
+      179,
+      "callable.notSupported",
+      "First-class callables are supported only on PHP 8.1 and later.",
+      null,
+      false
+    ],
+    [
+      "members.php",
+      180,
+      "callable.notSupported",
+      "First-class callables are supported only on PHP 8.1 and later.",
+      null,
+      false
+    ],
+    [
+      "members.php",
+      181,
+      "callable.notSupported",
+      "First-class callables are supported only on PHP 8.1 and later.",
+      null,
+      false
+    ],
+    [
+      "members.php",
+      182,
+      "callable.notSupported",
+      "First-class callables are supported only on PHP 8.1 and later.",
+      null,
+      false
+    ],
+    [
+      "members.php",
+      184,
+      "callable.notSupported",
+      "First-class callables are supported only on PHP 8.1 and later.",
+      null,
+      false
+    ],
+    [
+      "members.php",
+      185,
+      "callable.notSupported",
+      "First-class callables are supported only on PHP 8.1 and later.",
+      null,
+      false
+    ]
+  ],
+  "upstream": [
+    [
+      "method-callable-php-versions.php",
+      19,
+      "callable.notSupported",
+      "First-class callables are supported only on PHP 8.1 and later.",
+      null,
+      false
+    ],
+    [
+      "method-callable.php",
+      11,
+      "method.nameCase",
+      "Call to method MethodCallable\\Foo::doFoo() with incorrect case: dofoo",
+      null,
+      true
+    ],
+    [
+      "method-callable.php",
+      12,
+      "method.notFound",
+      "Call to an undefined method MethodCallable\\Foo::doNonexistent().",
+      null,
+      true
+    ],
+    [
+      "method-callable.php",
+      13,
+      "method.nonObject",
+      "Cannot call method doFoo() on int.",
+      null,
+      true
+    ],
+    [
+      "method-callable.php",
+      18,
+      "method.private",
+      "Call to private method doBar() of class MethodCallable\\Bar.",
+      null,
+      true
+    ],
+    [
+      "method-callable.php",
+      23,
+      "class.notFound",
+      "Call to method doFoo() on an unknown class MethodCallable\\Nonexistent.",
+      "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+      true
+    ],
+    [
+      "method-callable.php",
+      53,
+      "method.private",
+      "Call to private method doFoo() of class MethodCallable\\ParentClass.",
+      null,
+      true
+    ],
+    [
+      "static-method-callable-php-versions.php",
+      19,
+      "callable.notSupported",
+      "First-class callables are supported only on PHP 8.1 and later.",
+      null,
+      false
+    ],
+    [
+      "static-method-callable.php",
+      11,
+      "staticMethod.nameCase",
+      "Call to static method StaticMethodCallable\\Foo::doFoo() with incorrect case: dofoo",
+      null,
+      true
+    ],
+    [
+      "static-method-callable.php",
+      12,
+      "class.notFound",
+      "Call to static method doFoo() on an unknown class StaticMethodCallable\\Nonexistent.",
+      "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+      true
+    ],
+    [
+      "static-method-callable.php",
+      13,
+      "staticMethod.notFound",
+      "Call to an undefined static method StaticMethodCallable\\Foo::nonexistent().",
+      null,
+      true
+    ],
+    [
+      "static-method-callable.php",
+      14,
+      "method.staticCall",
+      "Static call to instance method StaticMethodCallable\\Foo::doBar().",
+      null,
+      true
+    ],
+    [
+      "static-method-callable.php",
+      15,
+      "staticMethod.private",
+      "Call to private static method doBar() of class StaticMethodCallable\\Bar.",
+      null,
+      true
+    ],
+    [
+      "static-method-callable.php",
+      16,
+      "staticMethod.callToAbstract",
+      "Cannot call abstract static method StaticMethodCallable\\Bar::doBaz().",
+      null,
+      true
+    ],
+    [
+      "static-method-callable.php",
+      21,
+      "class.notFound",
+      "Call to static method doFoo() on an unknown class StaticMethodCallable\\Nonexistent.",
+      "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+      true
+    ],
+    [
+      "static-method-callable.php",
+      22,
+      "staticMethod.nonObject",
+      "Cannot call static method doFoo() on int.",
+      null,
+      true
+    ]
+  ]
+}

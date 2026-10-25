@@ -25,7 +25,7 @@ pub enum Guard {
     Constant(String),
     /// `method_exists(Foo::class, 'bar')`: receiver key and the method's original spelling.
     Method(String),
-    /// The receiver before Mago's `method_exists()` narrowing (which also changes plain strings and mixed).
+    /// The precondition's source: method_exists's receiver, or is_callable's literal array.
     MethodSource(String, Span),
     /// `!($this instanceof Foo)`: in a class that is a Foo, the code here is unreachable.
     ThisNotInstanceOf(String),
@@ -299,6 +299,9 @@ fn exists_call(call: &FunctionCall, resolve: &dyn Fn(&Identifier) -> String) -> 
         let method = call.argument_list.arguments.get(1)?.value();
         let method = constant_string(method, resolve)?;
         return Some(Guard::Method(format!("{class}::{method}")));
+    }
+    if name.trim_start_matches('\\') == "is_callable" {
+        return super::method_callable::literal_guard(arg, resolve).map(Guard::Method);
     }
     let value = constant_string(arg, resolve)?;
     let value = value.trim_start_matches('\\').to_string();

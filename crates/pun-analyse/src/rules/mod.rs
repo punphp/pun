@@ -29,6 +29,7 @@ mod internal_usage;
 mod invalid_throws;
 mod larastan;
 mod members;
+mod method_callable;
 mod missing_types;
 mod names;
 mod new_static_abstract;
@@ -167,6 +168,7 @@ pub const IDENTIFIERS: &[&str] = &[
     "method.private",
     "method.protected",
     "staticMethod.notFound",
+    "staticMethod.nameCase",
     "method.staticCall",
     "staticMethod.private",
     "staticMethod.protected",
@@ -2016,7 +2018,9 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         m: &'ast MethodPartialApplication<'arena>,
         _: &mut (),
     ) {
-        statements::first_class_callable(self, m.span(), &m.argument_list);
+        if !statements::first_class_callable(self, m.span(), &m.argument_list) {
+            method_callable::method(self, m);
+        }
         internal::method_callable(self, m);
         if internal::is_callable(&m.argument_list) {
             strict::dynamic_call(self, m.span(), m.object, &m.method);
@@ -2027,7 +2031,9 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         m: &'ast StaticMethodPartialApplication<'arena>,
         _: &mut (),
     ) {
-        statements::first_class_callable(self, m.span(), &m.argument_list);
+        if !statements::first_class_callable(self, m.span(), &m.argument_list) {
+            method_callable::static_method(self, m);
+        }
         internal::static_method_callable(self, m);
     }
     fn walk_in_static_method_call(&mut self, call: &'ast StaticMethodCall<'arena>, _: &mut ()) {

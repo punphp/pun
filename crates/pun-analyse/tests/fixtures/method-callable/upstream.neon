@@ -1,0 +1,10 @@
+parameters:
+    level: 2
+    phpVersion: 80400
+    checkFunctionNameCase: true
+    paths:
+        - ../rules/data/Methods/data/method-callable.php
+        - ../rules/data/Methods/data/static-method-callable.php
+        - ../rules/data/Methods/data/method-callable-php-versions.php
+        - ../rules/data/Methods/data/static-method-callable-php-versions.php
+        - ../rules/data/Methods/data/bug-13596.php
