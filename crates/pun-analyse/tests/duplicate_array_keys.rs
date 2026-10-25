@@ -97,6 +97,20 @@ fn platform_integer_copies_preserve_bitness_and_actual_narrowing() {
     check(project, &expected["files"]["platform.php"]["messages"]);
 }
 
+#[test]
+fn full_arithmetic_and_constant_resolution_match_phpstan() {
+    let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/duplicate-array-keys");
+    let expected: Value =
+        serde_json::from_slice(&std::fs::read(root.join("expected-full-constants.json")).unwrap())
+            .unwrap();
+    let mut project = Project::new(vec![root.join("full-constants.php")], Vec::new());
+    project.php_version = 80400;
+    check(
+        project,
+        &expected["files"]["full-constants.php"]["messages"],
+    );
+}
+
 fn unpacking(config: &str, php_version: u32, bleeding_edge: bool) {
     let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/duplicate-array-keys");
     let expected: Value = serde_json::from_slice(

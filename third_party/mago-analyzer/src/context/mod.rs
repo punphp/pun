@@ -65,6 +65,8 @@ where
     pub(super) additional_symbol_references: Option<&'ctx SymbolReferences>,
     pub(super) property_types: HashMap<(Word, bool), PropertyTypes>,
     class_initializers: WordMap<WordSet>,
+    /// Initializer values from the full expression analyzer, keyed by declaration identity.
+    pub(super) constant_types: HashMap<Span, TUnion>,
     /// PHPStan's speculative closure-return walk must not publish observer events.
     pub(super) raw_callback_gather_depth: u8,
 }
@@ -102,6 +104,7 @@ where
             additional_symbol_references,
             property_types: HashMap::default(),
             class_initializers: WordMap::default(),
+            constant_types: HashMap::default(),
             raw_callback_gather_depth: 0,
         }
     }

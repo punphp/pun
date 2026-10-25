@@ -746,17 +746,14 @@ fn determine_numeric_result(op: &BinaryOperator<'_>, left: &TAtomic, right: &TAt
         }
         (TAtomic::Scalar(TScalar::Float(_)), _) | (_, TAtomic::Scalar(TScalar::Float(_))) => match op {
             BinaryOperator::Modulo(_) => {
-                let right_f = match right {
-                    TAtomic::Scalar(TScalar::Float(TFloat::Literal(v))) => Some(v.into_inner()),
-                    TAtomic::Scalar(TScalar::Integer(i)) => i.get_literal_value().map(|v| v as f64),
-                    _ => None,
-                };
-
-                if matches!(right_f, Some(v) if v == 0.0) {
-                    vec![TAtomic::Never]
-                } else {
-                    vec![TAtomic::Scalar(TScalar::int())]
-                }
+                // PHPStan's getModType casts each operand before computing the remainder.
+                // Keep integer operands exact: converting them through f64 loses bits above 2^53.
+                // A zero divisor has already been rejected by definite_arithmetic_runtime_error.
+                let result = modulo_integer(left)
+                    .zip(modulo_integer(right))
+                    .map(|(left, right)| TInteger::Literal(left.checked_rem(right).unwrap_or(0)))
+                    .unwrap_or(TInteger::Unspecified);
+                vec![TAtomic::Scalar(TScalar::Integer(result))]
             }
             _ => {
                 let left_f = match left {
@@ -785,9 +782,7 @@ fn determine_numeric_result(op: &BinaryOperator<'_>, left: &TAtomic, right: &TAt
                         _ => None,
                     };
 
-                    if let Some(v) = result
-                        && v.is_finite()
-                    {
+                    if let Some(v) = result {
                         return vec![TAtomic::Scalar(TScalar::literal_float(v))];
                     }
                 }
@@ -801,6 +796,30 @@ fn determine_numeric_result(op: &BinaryOperator<'_>, left: &TAtomic, right: &TAt
                 vec![TAtomic::Scalar(TScalar::int()), TAtomic::Scalar(TScalar::float())]
             }
         },
+    }
+}
+
+/// PHP's zend_dval_to_lval truncates and wraps modulo 2^64, rather than saturating.
+/// Non-finite floats become zero. This is the cast used by the `%` operator.
+fn modulo_integer(atomic: &TAtomic) -> Option<i64> {
+    match atomic {
+        TAtomic::Scalar(TScalar::Integer(i)) => i.get_literal_value(),
+        TAtomic::Scalar(TScalar::Float(TFloat::Literal(v))) => {
+            let value = v.into_inner();
+            if !value.is_finite() {
+                return Some(0);
+            }
+            let wrapped = value.trunc() % 18446744073709551616.0;
+            let signed = if wrapped >= 9223372036854775808.0 {
+                wrapped - 18446744073709551616.0
+            } else if wrapped < -9223372036854775808.0 {
+                wrapped + 18446744073709551616.0
+            } else {
+                wrapped
+            };
+            Some(signed as i64)
+        }
+        _ => None,
     }
 }
 
@@ -1047,8 +1066,7 @@ fn is_exponent_or_shift(operator: &BinaryOperator<'_>) -> bool {
 fn definite_arithmetic_runtime_error(op: &BinaryOperator<'_>, right: &TAtomic) -> Option<String> {
     match op {
         BinaryOperator::Modulo(_) => {
-            let zero = matches!(right.get_literal_int_value(), Some(0))
-                || matches!(right.get_literal_float_value(), Some(0.0));
+            let zero = modulo_integer(right) == Some(0);
 
             if zero { Some("Modulo by zero".to_string()) } else { None }
         }

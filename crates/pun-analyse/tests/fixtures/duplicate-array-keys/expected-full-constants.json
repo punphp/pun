@@ -1,0 +1,273 @@
+{
+  "totals": {
+    "errors": 0,
+    "file_errors": 43
+  },
+  "files": {
+    "full-constants.php": {
+      "errors": 43,
+      "messages": [
+        {
+          "message": "Array has 2 duplicate keys with value 0 (OVERFLOW, 0).",
+          "line": 13,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value 0 (NONFINITE, 0).",
+          "line": 14,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value 1 (MODULO, 1).",
+          "line": 15,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value 5 (5, QUALIFIED_SIZE).",
+          "line": 16,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value 9 (9, QUALIFIED_SIZE).",
+          "line": 16,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Dumped type: INF",
+          "line": 22,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value 0 ($overflow, 0).",
+          "line": 23,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Dumped type: NAN",
+          "line": 25,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value 0 ($nonfinite, 0).",
+          "line": 26,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Dumped type: INF",
+          "line": 27,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: NAN",
+          "line": 28,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: INF",
+          "line": 29,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: NAN",
+          "line": 30,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: 4|8",
+          "line": 31,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: 4|8",
+          "line": 32,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: 4|8",
+          "line": 33,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: 1",
+          "line": 34,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: -1",
+          "line": 35,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: 1",
+          "line": 36,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: 1",
+          "line": 37,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: 1",
+          "line": 38,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: -2",
+          "line": 39,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: 1",
+          "line": 40,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: 0",
+          "line": 41,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: 0",
+          "line": 42,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: 0",
+          "line": 43,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: 0",
+          "line": 44,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: 0",
+          "line": 45,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: 2",
+          "line": 46,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: 0",
+          "line": 48,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: 9.223372036854776E+18",
+          "line": 49,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: 1",
+          "line": 55,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value 1 ($key, 1).",
+          "line": 56,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Dumped type: 4",
+          "line": 61,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value 4 (4, $size).",
+          "line": 62,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Dumped type: float",
+          "line": 68,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Used constant MissingConstants\\PHP_INT_SIZE not found.",
+          "line": 93,
+          "ignorable": true,
+          "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+          "identifier": "constant.notFound"
+        },
+        {
+          "message": "Dumped type: 16",
+          "line": 114,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: 3",
+          "line": 115,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: 5",
+          "line": 116,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: 1",
+          "line": 117,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value 17 (PHP_INT_SIZE + 1, 17).",
+          "line": 118,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value 8 (INF + NAN, 8).",
+          "line": 119,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        }
+      ]
+    }
+  },
+  "errors": []
+}

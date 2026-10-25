@@ -10,6 +10,7 @@ use mago_allocator::LocalArena;
 use mago_codex::metadata::CodebaseMetadata;
 use mago_codex::metadata::constant::ConstantMetadata;
 use mago_codex::metadata::flags::MetadataFlags;
+use mago_codex::metadata::ttype::TypeMetadata;
 use mago_codex::populator::populate_codebase_parallel;
 use mago_codex::reference::SymbolReferences;
 use mago_codex::scanner::scan_program;
@@ -210,11 +211,13 @@ fn build_prelude(php_version: u32) -> (CodebaseMetadata, SymbolReferences) {
     });
     // ConstantResolver::resolvePredefinedConstant keeps both 32- and 64-bit values, not the host's
     // stub initializer. Namespace fallback in Mago reads this metadata instead of its platform helper.
-    // Also retain integer constants absent from the prelude (PHP 8.5's FILTER_THROW_ON_FAILURE).
+    // Also retain numeric constants absent from the prelude (PHP 8.5's FILTER_THROW_ON_FAILURE)
+    // and non-finite float literals, which the scanner's PHPDoc types otherwise generalize.
     for (name, value) in &builtins.constants {
         use pun_phpstan::types::Type;
         let values = match pun_phpstan::resolve::resolve_str(value, None) {
             Type::ConstInt(i) => vec![Type::ConstInt(i)],
+            Type::ConstFloat(f) => vec![Type::ConstFloat(f)],
             Type::Union(parts) => parts,
             _ => continue,
         };
@@ -222,6 +225,7 @@ fn build_prelude(php_version: u32) -> (CodebaseMetadata, SymbolReferences) {
             .into_iter()
             .map(|t| match t {
                 Type::ConstInt(i) => Some(TAtomic::Scalar(TScalar::literal_int(i))),
+                Type::ConstFloat(f) => Some(TAtomic::Scalar(TScalar::literal_float(f))),
                 _ => None,
             })
             .collect::<Option<Vec<_>>>()
@@ -233,9 +237,7 @@ fn build_prelude(php_version: u32) -> (CodebaseMetadata, SymbolReferences) {
             ConstantMetadata::new(mago_word::word(name), Span::zero(), MetadataFlags::BUILTIN)
         });
         let value = TUnion::new(Cow::Owned(values));
-        if let Some(declared) = &mut constant.type_metadata {
-            declared.type_union = value.clone();
-        }
+        constant.type_metadata = Some(TypeMetadata::new(value.clone(), constant.span));
         constant.inferred_type = Some(value);
     }
     (metadata, symbol_references)

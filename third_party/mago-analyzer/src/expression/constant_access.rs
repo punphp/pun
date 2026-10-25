@@ -32,8 +32,14 @@ impl<'arena> Analyzable<'_, 'arena> for ConstantAccess<'arena> {
         let name = BytesDisplay(name_bytes);
         let unqualified_name = self.name.value();
 
-        let constant_metadata =
-            context.codebase.get_constant(name_bytes).or_else(|| context.codebase.get_constant(unqualified_name));
+        let constant_metadata = context.codebase.get_constant(name_bytes).or_else(|| {
+            // Only an unimported, unqualified name can fall back to the global namespace.
+            if !unqualified_name.contains(&b'\\') && !context.resolved_names.is_imported(&self.name) {
+                context.codebase.get_constant(unqualified_name)
+            } else {
+                None
+            }
+        });
 
         let Some(constant_metadata) = constant_metadata else {
             if let Some(literal_type) = get_literal_constant_type(name_bytes) {
@@ -89,15 +95,25 @@ impl<'arena> Analyzable<'_, 'arena> for ConstantAccess<'arena> {
 
         crate::utils::availability::check_constant_availability(context, constant_metadata, &name, self.span());
 
-        let mut constant_type = if let Some(t) = get_platform_constant_type(name_bytes) {
+        let mut constant_type = if let Some(t) = &constant_metadata.type_metadata
+            && !t.from_docblock
+        {
+            // Explicit authoritative metadata (including configured platform unions) wins over
+            // the prelude's platform approximation. Imported aliases use the selected symbol.
+            t.type_union.clone()
+        } else if constant_metadata.flags.is_built_in()
+            && let Some(t) = get_platform_constant_type(constant_metadata.name.as_bytes())
+        {
             t
         } else {
             match &constant_metadata.type_metadata {
                 Some(t) => t.type_union.clone(),
-                None => match &constant_metadata.inferred_type {
-                    Some(t) => t.clone(),
-                    _ => get_mixed(),
-                },
+                None => context
+                    .constant_types
+                    .get(&constant_metadata.span)
+                    .or(constant_metadata.inferred_type.as_ref())
+                    .cloned()
+                    .unwrap_or_else(get_mixed),
             }
         };
 

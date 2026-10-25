@@ -44,6 +44,11 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Constant<'arena> {
             };
 
             item.value.analyze(context, block_context, artifacts)?;
+            if let Some(value) = artifacts.get_expression_type(&item.value) {
+                // Function bodies have fresh artifacts. Retain declaration values on the file
+                // context so their constant fetches need not use the scanner's approximation.
+                context.constant_types.insert(constant_metadata.span, value.clone());
+            }
 
             if constant_metadata.inferred_type.is_none() && constant_metadata.type_metadata.is_none() {
                 if let Some(analysis_type) = artifacts.get_expression_type(&item.value) {

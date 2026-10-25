@@ -532,3 +532,89 @@ LCOV export from these five executables and the merged fresh profile, intersecte
 replaced source lines against `3d85e90f`, reports **9/9 changed analyzer executable lines** and
 **104/104 changed test executable lines**. No coverage exclusions, gap entries, or private-helper tests
 are used. This measures changed executable lines, not branch coverage or the whole analyzer.
+
+## Full expression arithmetic and global constants
+
+These changes use the same Mago 1.57.0 package and PHPStan 2.3.1 revisions listed above.
+They preserve the separate signed-division overflow correction documented above.
+No dependency versions change.
+
+| File | Patched lines | Change |
+| --- | --- | --- |
+| `src/expression/binary/arithmetic.rs` | 749–756, 785, 802–824, 1069 | Keep non-finite float results and evaluate literal float remainders after PHP integer conversion. |
+| `src/expression/constant_access.rs` | 35–42, 98–116 | Restrict namespace fallback, honor authoritative metadata, and reuse evaluated declaration values. |
+| `src/context/mod.rs` | 68–69, 107 | Retain evaluated global constant values across function-local artifacts in one file analysis. |
+| `src/statement/constant.rs` | 47–51 | Save initializer values produced by the full expression analyzer. |
+
+Pun's `crates/pun-analyse/src/codebase.rs:213–240` supplies exact numeric builtin metadata from
+PHPStan's exported symbols. The metadata includes `INF`, `NAN`, and the platform unions for
+`PHP_INT_SIZE`, `PHP_INT_MAX`, and `PHP_INT_MIN`. Explicit metadata takes precedence over Mago's
+platform approximation. That approximation remains the fallback for builtin PHPDoc types.
+Platform handling uses the selected symbol's name and builtin flag, not the alias at its use site.
+
+The arithmetic reference is PHPStan's
+[`InitializerExprTypeResolver::getModType()`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Reflection/InitializerExprTypeResolver.php#L1397-L1455).
+Both scalar operands become integers before `%`. Integer operands remain integers throughout,
+including values above `2^53`. Float conversion follows PHP's `zend_dval_to_lval`: truncate,
+wrap modulo `2^64`, and convert non-finite values to zero. Divisor checks use the converted value,
+so `0.9`, `INF`, and `NAN` are zero divisors. The signed minimum modulo `-1` is zero, not a Rust panic.
+Float arithmetic retains `INF` and `NAN` instead of discarding them as general `float`.
+
+The constant reference is
+[`ConstantResolver::resolveConstant()`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Analyser/ConstantResolver.php#L66-L95)
+and its `resolvePredefinedConstant()` implementation. A qualified or imported missing constant
+cannot fall back to a global constant with the same short name. Evaluated initializer values are
+keyed by the selected declaration's span, including its file identity. Explicit declared types
+retain their precedence. No variable type is replaced with a declaration: reassignment and assertion
+narrowing still use the actual inferred value.
+
+### Arithmetic and constant verification
+
+The new public `duplicate_array_keys::full_arithmetic_and_constant_resolution_match_phpstan` test
+compares all 43 diagnostics in `fixtures/duplicate-array-keys/expected-full-constants.json`.
+The capture command, from that fixture directory, is:
+
+```sh
+php /home/user/workspace/repo/.oracle/phpstan/vendor/bin/phpstan analyse \
+	-c full-constants.neon --no-progress --error-format=json |
+	jq '.files |= with_entries(.key |= split("/")[-1])' > expected-full-constants.json
+```
+
+Before the patch, the five duplicate diagnostics for `OVERFLOW`, `NONFINITE`, `MODULO`, and
+`QUALIFIED_SIZE` are absent. Runtime overflow and non-finite subtraction produce general `float`.
+After the patch, all nine duplicate-array-key public tests pass. The new fixture also checks
+runtime expressions, both float wrap directions, integer precision, builtin aliases, source
+shadowing, missing qualified constants, zero divisors, unknown operands, reassignment, and assertion
+narrowing. The retained division control still produces `9.223372036854776E+18`.
+
+The combined suites pass **36 public tests and three unit tests**: duplicate array keys, array
+slicing, callable origins, debug shape metadata, and callback gathers. The exported Arrays fixtures
+match **5/5 duplicate-key cases and 1/1 offset case**, with no new failures. The old worktree's
+runner still exits 101 because its gap list contains the now-passing `testDuplicateKeys` case.
+Main already removed that stale gap. This patch does not edit the list.
+
+Fresh changed executable-line coverage against this slice's parent is **49/49**, without exclusions:
+arithmetic 24/24, constant access 16/16, declaration recording 5/5, context initialization 1/1,
+and Pun's builtin metadata 3/3. Coverage comes from the nine public duplicate-key tests alone.
+The instrumented command is:
+
+```sh
+CARGO_BUILD_JOBS=1 RAYON_NUM_THREADS=2 CARGO_TARGET_DIR=target-array-duplicate-keys \
+	CARGO_LLVM_COV_TARGET_DIR="$PWD/target-array-duplicate-keys/coverage" \
+	timeout 900 nice cargo llvm-cov test --dep-coverage mago-analyzer \
+	-p punphp-analyse --test duplicate_array_keys --no-report
+```
+
+The measurement merges that executable's fresh raw profile with `llvm-profdata merge -sparse`,
+then uses `llvm-cov export -format=lcov` directly. The intersection with added production lines
+includes `codebase.rs` and the four analyzer files in the table. Cargo's dependency-name report
+filter excludes this local patched path, so its empty report is not the measurement.
+
+### Remaining initializer precision boundary
+
+The file context retains only initializer values already analyzed in that context. It does not
+evaluate every declaration lazily across files. A public probe with `const KEY = 5.9 % 2.0` after
+the consuming function, or in a scanned-only file, still dumps a copied variable as `float|int`
+instead of PHPStan's `1`. Both duplicate-key diagnostics nevertheless match PHPStan through the
+existing source initializer evaluation. The probe did not alter expectations or gap lists.
+This patch does not claim complete global-constant inference parity or activate a rule mapping.
