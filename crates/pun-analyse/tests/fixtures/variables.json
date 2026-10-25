@@ -1,0 +1,770 @@
+{
+  "level0": [
+    [
+      9,
+      "variable.undefined",
+      "Undefined variable: $missing"
+    ],
+    [
+      10,
+      "variable.undefined",
+      "Undefined variable: $read"
+    ],
+    [
+      13,
+      "variable.undefined",
+      "Undefined variable: $compound"
+    ],
+    [
+      18,
+      "variable.undefined",
+      "Call to function compact() contains undefined variable $missingCompact."
+    ],
+    [
+      18,
+      "variable.undefined",
+      "Call to function compact() contains undefined variable $nestedMissing."
+    ],
+    [
+      19,
+      "variable.undefined",
+      "Call to function compact() contains undefined variable $created."
+    ],
+    [
+      19,
+      "variable.undefined",
+      "Call to function compact() contains undefined variable $created."
+    ],
+    [
+      20,
+      "variable.undefined",
+      "Call to function compact() contains undefined variable $later."
+    ],
+    [
+      20,
+      "variable.undefined",
+      "Call to function compact() contains undefined variable $later."
+    ],
+    [
+      21,
+      "variable.undefined",
+      "Undefined variable: $indexRead"
+    ],
+    [
+      30,
+      "variable.undefined",
+      "Undefined variable: $referenceAllowed"
+    ],
+    [
+      33,
+      "variable.undefined",
+      "Undefined variable: $sortRead"
+    ],
+    [
+      34,
+      "variable.undefined",
+      "Undefined variable: $nativeRead"
+    ],
+    [
+      37,
+      "variable.undefined",
+      "Undefined variable: $captureRead"
+    ],
+    [
+      38,
+      "variable.undefined",
+      "Undefined variable: $argc"
+    ],
+    [
+      38,
+      "variable.undefined",
+      "Undefined variable: $insideMissing"
+    ],
+    [
+      40,
+      "variable.undefined",
+      "Undefined variable: $arrowMissing"
+    ],
+    [
+      42,
+      "variable.undefined",
+      "Undefined variable: $dynamicMissing"
+    ],
+    [
+      43,
+      "variable.undefined",
+      "Undefined variable: $indirectMissing"
+    ],
+    [
+      44,
+      "variable.undefined",
+      "Undefined variable: $nameRead"
+    ],
+    [
+      45,
+      "variable.undefined",
+      "Undefined variable: $issetNameRead"
+    ],
+    [
+      46,
+      "variable.undefined",
+      "Undefined variable: $emptyNameRead"
+    ],
+    [
+      47,
+      "variable.undefined",
+      "Undefined variable: $coalesceNameRead"
+    ],
+    [
+      49,
+      "variable.undefined",
+      "Undefined variable: $otherMissing"
+    ],
+    [
+      51,
+      "variable.undefined",
+      "Call to function compact() contains undefined variable $arrayNameMissing."
+    ],
+    [
+      56,
+      "variable.undefined",
+      "Call to function compact() contains undefined variable $upperMissing."
+    ],
+    [
+      66,
+      "variable.undefined",
+      "Undefined variable: $argc"
+    ],
+    [
+      66,
+      "variable.undefined",
+      "Undefined variable: $argv"
+    ],
+    [
+      98,
+      "variable.undefined",
+      "Undefined variable: $staticRead"
+    ],
+    [
+      109,
+      "variable.undefined",
+      "Undefined variable: $methodRead"
+    ],
+    [
+      119,
+      "variable.undefined",
+      "Undefined variable: $unaryRead"
+    ],
+    [
+      129,
+      "variable.undefined",
+      "Call to function compact() contains undefined variable $firstMissing."
+    ],
+    [
+      129,
+      "variable.undefined",
+      "Call to function compact() contains undefined variable $secondMissing."
+    ],
+    [
+      142,
+      "variable.undefined",
+      "Undefined variable: $globalCaptureMissing"
+    ]
+  ],
+  "edge": [
+    [
+      5,
+      "variable.undefined",
+      "Variable $argc might not be defined."
+    ],
+    [
+      5,
+      "variable.undefined",
+      "Variable $argv might not be defined."
+    ],
+    [
+      5,
+      "variable.undefined",
+      "Variable $mainUnknown might not be defined."
+    ],
+    [
+      9,
+      "variable.undefined",
+      "Undefined variable: $missing"
+    ],
+    [
+      10,
+      "variable.undefined",
+      "Undefined variable: $read"
+    ],
+    [
+      13,
+      "variable.undefined",
+      "Undefined variable: $compound"
+    ],
+    [
+      17,
+      "variable.undefined",
+      "Variable $maybe might not be defined."
+    ],
+    [
+      18,
+      "variable.undefined",
+      "Call to function compact() contains possibly undefined variable $maybe."
+    ],
+    [
+      18,
+      "variable.undefined",
+      "Call to function compact() contains undefined variable $missingCompact."
+    ],
+    [
+      18,
+      "variable.undefined",
+      "Call to function compact() contains undefined variable $nestedMissing."
+    ],
+    [
+      19,
+      "variable.undefined",
+      "Call to function compact() contains undefined variable $created."
+    ],
+    [
+      19,
+      "variable.undefined",
+      "Call to function compact() contains undefined variable $created."
+    ],
+    [
+      20,
+      "variable.undefined",
+      "Call to function compact() contains undefined variable $later."
+    ],
+    [
+      20,
+      "variable.undefined",
+      "Call to function compact() contains undefined variable $later."
+    ],
+    [
+      21,
+      "variable.undefined",
+      "Undefined variable: $indexRead"
+    ],
+    [
+      30,
+      "variable.undefined",
+      "Undefined variable: $referenceAllowed"
+    ],
+    [
+      33,
+      "variable.undefined",
+      "Undefined variable: $sortRead"
+    ],
+    [
+      34,
+      "variable.undefined",
+      "Undefined variable: $nativeRead"
+    ],
+    [
+      37,
+      "variable.undefined",
+      "Undefined variable: $captureRead"
+    ],
+    [
+      38,
+      "variable.undefined",
+      "Undefined variable: $argc"
+    ],
+    [
+      38,
+      "variable.undefined",
+      "Undefined variable: $insideMissing"
+    ],
+    [
+      40,
+      "variable.undefined",
+      "Undefined variable: $arrowMissing"
+    ],
+    [
+      42,
+      "variable.undefined",
+      "Undefined variable: $dynamicMissing"
+    ],
+    [
+      43,
+      "variable.undefined",
+      "Undefined variable: $indirectMissing"
+    ],
+    [
+      44,
+      "variable.undefined",
+      "Undefined variable: $nameRead"
+    ],
+    [
+      45,
+      "variable.undefined",
+      "Undefined variable: $issetNameRead"
+    ],
+    [
+      46,
+      "variable.undefined",
+      "Undefined variable: $emptyNameRead"
+    ],
+    [
+      47,
+      "variable.undefined",
+      "Undefined variable: $coalesceNameRead"
+    ],
+    [
+      49,
+      "variable.undefined",
+      "Undefined variable: $otherMissing"
+    ],
+    [
+      51,
+      "variable.undefined",
+      "Call to function compact() contains undefined variable $arrayNameMissing."
+    ],
+    [
+      56,
+      "variable.undefined",
+      "Call to function compact() contains undefined variable $upperMissing."
+    ],
+    [
+      66,
+      "variable.undefined",
+      "Undefined variable: $argc"
+    ],
+    [
+      66,
+      "variable.undefined",
+      "Undefined variable: $argv"
+    ],
+    [
+      81,
+      "variable.nameNotString",
+      "Variable variable name must be a string, but $this(VariableCertainty\\Names) was given."
+    ],
+    [
+      81,
+      "variable.nameNotString",
+      "Variable variable name must be a string, but array was given."
+    ],
+    [
+      82,
+      "variable.nameNotString",
+      "Variable variable name must be a string, but array was given."
+    ],
+    [
+      98,
+      "variable.undefined",
+      "Undefined variable: $staticRead"
+    ],
+    [
+      109,
+      "variable.undefined",
+      "Undefined variable: $methodRead"
+    ],
+    [
+      119,
+      "variable.undefined",
+      "Undefined variable: $unaryRead"
+    ],
+    [
+      127,
+      "variable.undefined",
+      "Variable $maybeReference might not be defined."
+    ],
+    [
+      129,
+      "variable.undefined",
+      "Call to function compact() contains undefined variable $firstMissing."
+    ],
+    [
+      129,
+      "variable.undefined",
+      "Call to function compact() contains undefined variable $secondMissing."
+    ],
+    [
+      142,
+      "variable.undefined",
+      "Undefined variable: $globalCaptureMissing"
+    ]
+  ],
+  "maybe": [
+    [
+      5,
+      "variable.undefined",
+      "Variable $mainUnknown might not be defined."
+    ],
+    [
+      9,
+      "variable.undefined",
+      "Undefined variable: $missing"
+    ],
+    [
+      10,
+      "variable.undefined",
+      "Undefined variable: $read"
+    ],
+    [
+      13,
+      "variable.undefined",
+      "Undefined variable: $compound"
+    ],
+    [
+      17,
+      "variable.undefined",
+      "Variable $maybe might not be defined."
+    ],
+    [
+      18,
+      "variable.undefined",
+      "Call to function compact() contains possibly undefined variable $maybe."
+    ],
+    [
+      18,
+      "variable.undefined",
+      "Call to function compact() contains undefined variable $missingCompact."
+    ],
+    [
+      18,
+      "variable.undefined",
+      "Call to function compact() contains undefined variable $nestedMissing."
+    ],
+    [
+      19,
+      "variable.undefined",
+      "Call to function compact() contains undefined variable $created."
+    ],
+    [
+      19,
+      "variable.undefined",
+      "Call to function compact() contains undefined variable $created."
+    ],
+    [
+      20,
+      "variable.undefined",
+      "Call to function compact() contains undefined variable $later."
+    ],
+    [
+      20,
+      "variable.undefined",
+      "Call to function compact() contains undefined variable $later."
+    ],
+    [
+      21,
+      "variable.undefined",
+      "Undefined variable: $indexRead"
+    ],
+    [
+      30,
+      "variable.undefined",
+      "Undefined variable: $referenceAllowed"
+    ],
+    [
+      33,
+      "variable.undefined",
+      "Undefined variable: $sortRead"
+    ],
+    [
+      34,
+      "variable.undefined",
+      "Undefined variable: $nativeRead"
+    ],
+    [
+      37,
+      "variable.undefined",
+      "Undefined variable: $captureRead"
+    ],
+    [
+      38,
+      "variable.undefined",
+      "Undefined variable: $argc"
+    ],
+    [
+      38,
+      "variable.undefined",
+      "Undefined variable: $insideMissing"
+    ],
+    [
+      40,
+      "variable.undefined",
+      "Undefined variable: $arrowMissing"
+    ],
+    [
+      42,
+      "variable.undefined",
+      "Undefined variable: $dynamicMissing"
+    ],
+    [
+      43,
+      "variable.undefined",
+      "Undefined variable: $indirectMissing"
+    ],
+    [
+      44,
+      "variable.undefined",
+      "Undefined variable: $nameRead"
+    ],
+    [
+      45,
+      "variable.undefined",
+      "Undefined variable: $issetNameRead"
+    ],
+    [
+      46,
+      "variable.undefined",
+      "Undefined variable: $emptyNameRead"
+    ],
+    [
+      47,
+      "variable.undefined",
+      "Undefined variable: $coalesceNameRead"
+    ],
+    [
+      49,
+      "variable.undefined",
+      "Undefined variable: $otherMissing"
+    ],
+    [
+      51,
+      "variable.undefined",
+      "Call to function compact() contains undefined variable $arrayNameMissing."
+    ],
+    [
+      56,
+      "variable.undefined",
+      "Call to function compact() contains undefined variable $upperMissing."
+    ],
+    [
+      66,
+      "variable.undefined",
+      "Undefined variable: $argc"
+    ],
+    [
+      66,
+      "variable.undefined",
+      "Undefined variable: $argv"
+    ],
+    [
+      98,
+      "variable.undefined",
+      "Undefined variable: $staticRead"
+    ],
+    [
+      109,
+      "variable.undefined",
+      "Undefined variable: $methodRead"
+    ],
+    [
+      119,
+      "variable.undefined",
+      "Undefined variable: $unaryRead"
+    ],
+    [
+      127,
+      "variable.undefined",
+      "Variable $maybeReference might not be defined."
+    ],
+    [
+      129,
+      "variable.undefined",
+      "Call to function compact() contains undefined variable $firstMissing."
+    ],
+    [
+      129,
+      "variable.undefined",
+      "Call to function compact() contains undefined variable $secondMissing."
+    ],
+    [
+      142,
+      "variable.undefined",
+      "Undefined variable: $globalCaptureMissing"
+    ]
+  ],
+  "quiet": [
+    [
+      9,
+      "variable.undefined",
+      "Undefined variable: $missing"
+    ],
+    [
+      10,
+      "variable.undefined",
+      "Undefined variable: $read"
+    ],
+    [
+      13,
+      "variable.undefined",
+      "Undefined variable: $compound"
+    ],
+    [
+      18,
+      "variable.undefined",
+      "Call to function compact() contains undefined variable $missingCompact."
+    ],
+    [
+      18,
+      "variable.undefined",
+      "Call to function compact() contains undefined variable $nestedMissing."
+    ],
+    [
+      19,
+      "variable.undefined",
+      "Call to function compact() contains undefined variable $created."
+    ],
+    [
+      19,
+      "variable.undefined",
+      "Call to function compact() contains undefined variable $created."
+    ],
+    [
+      20,
+      "variable.undefined",
+      "Call to function compact() contains undefined variable $later."
+    ],
+    [
+      20,
+      "variable.undefined",
+      "Call to function compact() contains undefined variable $later."
+    ],
+    [
+      21,
+      "variable.undefined",
+      "Undefined variable: $indexRead"
+    ],
+    [
+      30,
+      "variable.undefined",
+      "Undefined variable: $referenceAllowed"
+    ],
+    [
+      33,
+      "variable.undefined",
+      "Undefined variable: $sortRead"
+    ],
+    [
+      34,
+      "variable.undefined",
+      "Undefined variable: $nativeRead"
+    ],
+    [
+      37,
+      "variable.undefined",
+      "Undefined variable: $captureRead"
+    ],
+    [
+      38,
+      "variable.undefined",
+      "Undefined variable: $argc"
+    ],
+    [
+      38,
+      "variable.undefined",
+      "Undefined variable: $insideMissing"
+    ],
+    [
+      40,
+      "variable.undefined",
+      "Undefined variable: $arrowMissing"
+    ],
+    [
+      42,
+      "variable.undefined",
+      "Undefined variable: $dynamicMissing"
+    ],
+    [
+      43,
+      "variable.undefined",
+      "Undefined variable: $indirectMissing"
+    ],
+    [
+      44,
+      "variable.undefined",
+      "Undefined variable: $nameRead"
+    ],
+    [
+      45,
+      "variable.undefined",
+      "Undefined variable: $issetNameRead"
+    ],
+    [
+      46,
+      "variable.undefined",
+      "Undefined variable: $emptyNameRead"
+    ],
+    [
+      47,
+      "variable.undefined",
+      "Undefined variable: $coalesceNameRead"
+    ],
+    [
+      49,
+      "variable.undefined",
+      "Undefined variable: $otherMissing"
+    ],
+    [
+      51,
+      "variable.undefined",
+      "Call to function compact() contains undefined variable $arrayNameMissing."
+    ],
+    [
+      56,
+      "variable.undefined",
+      "Call to function compact() contains undefined variable $upperMissing."
+    ],
+    [
+      66,
+      "variable.undefined",
+      "Undefined variable: $argc"
+    ],
+    [
+      66,
+      "variable.undefined",
+      "Undefined variable: $argv"
+    ],
+    [
+      81,
+      "variable.nameNotString",
+      "Variable variable name must be a string, but $this(VariableCertainty\\Names) was given."
+    ],
+    [
+      81,
+      "variable.nameNotString",
+      "Variable variable name must be a string, but array was given."
+    ],
+    [
+      82,
+      "variable.nameNotString",
+      "Variable variable name must be a string, but array was given."
+    ],
+    [
+      98,
+      "variable.undefined",
+      "Undefined variable: $staticRead"
+    ],
+    [
+      109,
+      "variable.undefined",
+      "Undefined variable: $methodRead"
+    ],
+    [
+      119,
+      "variable.undefined",
+      "Undefined variable: $unaryRead"
+    ],
+    [
+      129,
+      "variable.undefined",
+      "Call to function compact() contains undefined variable $firstMissing."
+    ],
+    [
+      129,
+      "variable.undefined",
+      "Call to function compact() contains undefined variable $secondMissing."
+    ],
+    [
+      142,
+      "variable.undefined",
+      "Undefined variable: $globalCaptureMissing"
+    ]
+  ]
+}

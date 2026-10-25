@@ -68,6 +68,8 @@ pub(crate) struct Checks {
     sort_without_effect: bool,
     /// [`Project::check_non_stringable_dynamic_access`].
     non_stringable_names: bool,
+    cli_arguments_variables_registered: bool,
+    check_maybe_undefined_variables: bool,
     /// [`Project::report_method_purity_override`].
     method_purity_override: bool,
     /// [`Project::check_uninitialized_properties`].
@@ -120,6 +122,8 @@ impl Checks {
             switch_condition: project.switch_condition,
             sort_without_effect: project.sort_without_effect,
             non_stringable_names: project.check_non_stringable_dynamic_access,
+            cli_arguments_variables_registered: project.cli_arguments_variables_registered,
+            check_maybe_undefined_variables: project.check_maybe_undefined_variables,
             method_purity_override: project.report_method_purity_override,
             uninitialized_properties: project.check_uninitialized_properties,
             missing_callable_signature: project.check_missing_callable_signature,
@@ -174,7 +178,8 @@ fn checker<'a, 'arena>(
     typed.extend(super::operators::typed_expressions(project.strict, program));
     let (include_typed, include_state) = super::include_file::prepare(arena, file, program, names, codebase, php_version, &project.include_file);
     typed.extend(include_typed);
-    let (mut types, defined, origins) = infer(arena, file, program, names, codebase, php_version, project.level, typed);
+    let mut variables = super::variables::Observations::default();
+    let (mut types, defined, origins) = infer(arena, file, program, names, codebase, php_version, project.level, typed, &mut variables);
     if project.level >= 4 {
         let (subjects, unknown) = super::dead_code::match_subject_types(file, program, codebase, php_version);
         types.extend(subjects);
@@ -189,6 +194,7 @@ fn checker<'a, 'arena>(
         file,
         types,
         defined,
+        variables,
         origins,
         names,
         codebase,
@@ -245,6 +251,8 @@ fn checker<'a, 'arena>(
         switch_condition: project.switch_condition,
         sort_without_effect: project.sort_without_effect,
         non_stringable_names: project.non_stringable_names,
+        cli_arguments_variables_registered: project.cli_arguments_variables_registered,
+        check_maybe_undefined_variables: project.check_maybe_undefined_variables,
         method_purity_override: project.method_purity_override,
         uninitialized_properties: project.uninitialized_properties,
         missing_callable_signature: project.missing_callable_signature,

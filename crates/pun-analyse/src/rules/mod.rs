@@ -57,6 +57,7 @@ mod type_aliases;
 mod types;
 mod unused_trait;
 mod write_only;
+mod variables;
 mod phpdoc_tags;
 mod require_tags;
 mod var_tags;
@@ -124,6 +125,8 @@ pub const IDENTIFIERS: &[&str] = &[
     "includeOnce.fileNotFound",
     "require.fileNotFound",
     "requireOnce.fileNotFound",
+    "variable.undefined",
+    "variable.nameNotString",
     "phpstan.dumpType",
     "phpstan.dumpPhpDocType",
     "pipe.byRef",
@@ -769,6 +772,8 @@ pub struct Checker<'a, 'arena> {
     types: HashMap<Span, TUnion>,
     /// `$scope->hasVariableType()` where the wanted direct variables are read (see [`infer::analyse()`]).
     defined: HashMap<Span, pun_phpstan::types::Tri>,
+    /// The running inference blocks observed by DefinedVariableRule and CompactVariablesRule.
+    variables: variables::Observations,
     /// This inference run's source provenance for PHPDoc metadata Mago's types cannot retain.
     origins: infer::Origins,
     names: &'a ResolvedNames<'arena>,
@@ -866,6 +871,8 @@ pub struct Checker<'a, 'arena> {
     sort_without_effect: bool,
     /// NonStringableDynamicAccessCheck: `featureToggles.checkNonStringableDynamicAccess`.
     non_stringable_names: bool,
+    cli_arguments_variables_registered: bool,
+    check_maybe_undefined_variables: bool,
     /// MethodSignatureRule's purity checks: `featureToggles.reportMethodPurityOverride`.
     method_purity_override: bool,
     /// UninitializedPropertyRule: `checkUninitializedProperties`.
@@ -1935,7 +1942,16 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         self.decls.pop();
     }
 
+    fn walk_in_variable(&mut self, variable: &'ast Variable<'arena>, _: &mut ()) {
+        variables::variable(self, variable);
+    }
+
+    fn walk_in_closure_use_clause_variable(&mut self, capture: &'ast ClosureUseClauseVariable<'arena>, _: &mut ()) {
+        variables::capture(self, capture);
+    }
+
     fn walk_in_function_call(&mut self, call: &'ast FunctionCall<'arena>, _: &mut ()) {
+        variables::compact(self, call);
         self.bind_function_arguments(call);
         dead_code::function_check(self, call);
         debug::function_call(self, call);

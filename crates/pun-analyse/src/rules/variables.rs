@@ -1,0 +1,585 @@
+//! PHPStan's DefinedVariableRule and CompactVariablesRule. Certainty comes from the running inference block,
+//! not the checker's syntax walk; a missing observation is unknown, never an undefined variable.
+
+use std::collections::{HashMap, HashSet};
+
+use mago_analyzer::plugin::HookContext;
+use mago_codex::ttype::union::TUnion;
+use mago_span::{HasSpan, Span};
+use mago_syntax::cst::*;
+use mago_syntax::walker::MutWalker;
+use pun_phpstan::types::{Level, Tri, Type};
+
+use super::{Checker, declared};
+
+/// Only genuinely observed reads occur here. The larger scope snapshots are needed for dynamic names and
+/// compact(), whose names come from the arguments' inferred types.
+#[derive(Default)]
+pub(super) struct Observations {
+    pub reads: HashMap<Span, (String, Tri, bool)>,
+    pub scopes: HashMap<Span, Certainty>,
+}
+
+pub(super) struct Certainty {
+    variables: HashMap<String, Tri>,
+    otherwise: Tri,
+    main: bool,
+}
+
+/// A reference read permits an undefined variable, but PHPStan does not define its source. Keep the source's
+/// running-block state across Mago's synthetic null assignment, without reconstructing assignment flow.
+pub(super) struct ReferenceSource {
+    name: mago_word::Word,
+    local: Option<TUnion>,
+    possible: bool,
+    assigned: Option<u32>,
+    possibly_assigned: bool,
+}
+
+impl ReferenceSource {
+    pub fn of(a: &Assignment, context: &HookContext<'_, '_>) -> Option<Self> {
+        let Expression::UnaryPrefix(u) = a.rhs else {
+            return None;
+        };
+        let Expression::Variable(Variable::Direct(v)) = u.operand else {
+            return None;
+        };
+        if !u.operator.is_reference()
+            || defined(context, &String::from_utf8_lossy(v.name)).yes()
+            || matches!(a.lhs, Expression::Variable(Variable::Direct(lhs)) if lhs.name == v.name)
+        {
+            return None;
+        }
+        let block = context.block_context();
+        let name = mago_word::word(v.name);
+        Some(Self {
+            name,
+            local: block.locals.get(&name).map(|t| (**t).clone()),
+            possible: block.variables_possibly_in_scope.contains(&name),
+            assigned: block.assigned_variable_ids.get(&name).copied(),
+            possibly_assigned: block.possibly_assigned_variable_ids.contains(&name),
+        })
+    }
+
+    pub fn restore(self, context: &mut HookContext<'_, '_>) {
+        let block = context.block_context_mut();
+        match self.local {
+            Some(ty) => {
+                block.locals.insert(self.name, std::rc::Rc::new(ty));
+            }
+            None => {
+                block.locals.remove(&self.name);
+            }
+        }
+        if self.possible {
+            block.variables_possibly_in_scope.insert(self.name);
+        } else {
+            block.variables_possibly_in_scope.remove(&self.name);
+        }
+        match self.assigned {
+            Some(offset) => {
+                block.assigned_variable_ids.insert(self.name, offset);
+            }
+            None => {
+                block.assigned_variable_ids.remove(&self.name);
+            }
+        }
+        if self.possibly_assigned {
+            block.possibly_assigned_variable_ids.insert(self.name);
+        } else {
+            block.possibly_assigned_variable_ids.remove(&self.name);
+        }
+    }
+}
+
+impl Certainty {
+    pub fn of(context: &HookContext<'_, '_>) -> Self {
+        let block = context.block_context();
+        let variables = block
+            .locals
+            .keys()
+            .chain(block.variables_possibly_in_scope.iter())
+            .map(|name| {
+                let name = String::from_utf8_lossy(name.as_bytes()).into_owned();
+                let certainty = defined(context, &name);
+                (name, certainty)
+            })
+            .collect();
+        Self {
+            variables,
+            otherwise: default_certainty(context),
+            main: is_main(context),
+        }
+    }
+
+    pub fn get(&self, name: &str) -> Tri {
+        self.variables
+            .get(&format!("${name}"))
+            .copied()
+            .unwrap_or(self.otherwise)
+    }
+
+    pub fn captured(&self, name: &str) -> Tri {
+        // An arrow's function scope does not inherit main's canAnyVariableExist().
+        self.variables
+            .get(&format!("${name}"))
+            .copied()
+            .unwrap_or(Tri::No)
+    }
+}
+
+fn default_certainty(context: &HookContext<'_, '_>) -> Tri {
+    if context.scope().get_function_like().is_none()
+        && context.scope().get_property_hook().is_none()
+    {
+        Tri::Maybe
+    } else {
+        Tri::No
+    }
+}
+
+pub(super) fn is_main(context: &HookContext<'_, '_>) -> bool {
+    context.scope().get_function_like().is_none() && context.scope().get_class_like().is_none()
+}
+
+/// Scope::hasVariableType(). Mago registers argc/argv as superglobals even inside functions; PHPStan doesn't.
+pub(super) fn defined(context: &HookContext<'_, '_>, name: &str) -> Tri {
+    let block = context.block_context();
+    let id = mago_word::word(name);
+    if matches!(name, "$argc" | "$argv")
+        && !block.assigned_variable_ids.contains_key(&id)
+        && !block.references_to_external_scope.contains(&id)
+        && !block
+            .scope
+            .get_function_like()
+            .is_some_and(|f| f.parameters.iter().any(|p| p.get_name().0 == id))
+    {
+        return default_certainty(context);
+    }
+    match block.locals.get(&id) {
+        Some(t) if t.possibly_undefined() || t.possibly_undefined_from_try() => Tri::Maybe,
+        Some(_) => Tri::Yes,
+        None if block.variables_possibly_in_scope.contains(&id) => Tri::Maybe,
+        None => default_certainty(context),
+    }
+}
+
+/// This walk only selects expressions for the inference run; it never guesses their control-flow state.
+pub(super) fn typed_expressions(program: &Program) -> Vec<Span> {
+    struct Wanted(Vec<Span>);
+    impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Wanted {
+        fn walk_in_variable(&mut self, v: &'ast Variable<'arena>, _: &mut ()) {
+            self.0.push(v.span());
+            self.0
+                .extend(super::types::dynamic_names::static_property(v));
+        }
+        fn walk_in_closure(&mut self, c: &'ast Closure<'arena>, _: &mut ()) {
+            self.0.push(c.span());
+        }
+        fn walk_in_function_call(&mut self, f: &'ast FunctionCall<'arena>, _: &mut ()) {
+            if is_compact(f) {
+                self.0.push(f.span());
+                self.0
+                    .extend(f.argument_list.arguments.iter().map(|a| a.value().span()));
+            }
+        }
+    }
+    let mut wanted = Wanted(Vec::new());
+    wanted.walk_program(program, &mut ());
+    wanted.0
+}
+
+/// NodeScopeResolver::lookForExpressionCallback() selects only the target chain, not name/index expressions.
+pub(super) fn allow_target(expr: &Expression, out: &mut HashSet<Span>) {
+    out.insert(expr.span());
+    match expr {
+        Expression::Parenthesized(p) => allow_target(p.expression, out),
+        Expression::ArrayAccess(a) => allow_target(a.array, out),
+        Expression::ArrayAppend(a) => allow_target(a.array, out),
+        Expression::Access(Access::Property(p)) => allow_target(p.object, out),
+        Expression::Access(Access::NullSafeProperty(p)) => allow_target(p.object, out),
+        Expression::Access(Access::StaticProperty(p)) => allow_target(p.class, out),
+        Expression::Call(Call::NullSafeMethod(m)) => allow_target(m.object, out),
+        _ => {}
+    }
+}
+
+pub(super) fn allowed_expressions(program: &Program) -> HashSet<Span> {
+    struct Allowed(HashSet<Span>);
+    impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Allowed {
+        fn walk_in_expression(&mut self, e: &'ast Expression<'arena>, _: &mut ()) {
+            match e {
+                Expression::Construct(Construct::Isset(i)) => {
+                    for value in &i.values {
+                        allow_target(value, &mut self.0);
+                    }
+                }
+                Expression::Construct(Construct::Empty(e)) => allow_target(e.value, &mut self.0),
+                Expression::Binary(b) if matches!(b.operator, BinaryOperator::NullCoalesce(_)) => {
+                    allow_target(b.lhs, &mut self.0)
+                }
+                Expression::Assignment(a)
+                    if matches!(a.operator, AssignmentOperator::Coalesce(_)) =>
+                {
+                    allow_target(a.lhs, &mut self.0)
+                }
+                Expression::UnaryPrefix(u) if u.operator.is_reference() => {
+                    allow_target(u.operand, &mut self.0)
+                }
+                _ => {}
+            }
+        }
+        fn walk_in_unset(&mut self, u: &'ast Unset<'arena>, _: &mut ()) {
+            for value in &u.values {
+                allow_target(value, &mut self.0);
+            }
+        }
+    }
+    let mut allowed = Allowed(HashSet::new());
+    allowed.walk_program(program, &mut ());
+    allowed.0
+}
+
+/// ArgumentsHandler::processArgs(): output parameters allow undefined target chains, but a user parameter
+/// with a non-nullable native type and a built-in's read-reference parameter do not. The engine's
+/// inside_variable_reference flag cannot distinguish these cases.
+pub(super) fn allow_arguments<'s, 'arena>(
+    expr: &'s Expression<'arena>,
+    context: &HookContext<'_, '_>,
+    resolved: &'s HashMap<u32, (Vec<u8>, bool)>,
+    builtins: &pun_phpstan::symbols::Symbols,
+    allowed: &mut HashSet<Span>,
+) {
+    let resolve = |id: &'s Identifier<'arena>| -> &'s [u8] {
+        resolved
+            .get(&id.span().start.offset)
+            .map_or(id.value(), |(name, _)| name.as_slice())
+    };
+    let object_class = |object: &Expression| {
+        let ty = match object {
+            Expression::Variable(Variable::Direct(v)) => {
+                context.get_variable_type(v.name).map(|t| &**t)
+            }
+            _ => context.get_expression_type(object),
+        };
+        ty.and_then(|ty| ty.get_single_named_object())
+            .map(|o| o.get_name())
+    };
+    let (args, metadata, builtin) = match expr {
+        Expression::Call(Call::Function(f)) => {
+            let Expression::Identifier(id) = f.function else {
+                return;
+            };
+            let name = resolve(id);
+            let fallback = matches!(id, Identifier::Local(_))
+                && !resolved
+                    .get(&id.span().start.offset)
+                    .is_some_and(|(_, imported)| *imported);
+            let metadata = context.codebase().get_function(name).or_else(|| {
+                fallback
+                    .then(|| context.codebase().get_function(id.value()))
+                    .flatten()
+            });
+            let builtin = builtins
+                .functions
+                .get(&String::from_utf8_lossy(name).to_ascii_lowercase())
+                .or_else(|| {
+                    fallback
+                        .then(|| {
+                            builtins
+                                .functions
+                                .get(&String::from_utf8_lossy(id.value()).to_ascii_lowercase())
+                        })
+                        .flatten()
+                });
+            (&f.argument_list, metadata, builtin)
+        }
+        Expression::Call(Call::Method(m)) => {
+            let ClassLikeMemberSelector::Identifier(name) = &m.method else {
+                return;
+            };
+            let Some(class) = object_class(m.object) else {
+                return;
+            };
+            let metadata = context.codebase().get_method(class.as_bytes(), name.value);
+            let builtin = builtins
+                .classes
+                .get(&class.to_string().to_ascii_lowercase())
+                .and_then(|c| {
+                    c.methods
+                        .get(&String::from_utf8_lossy(name.value).to_ascii_lowercase())
+                });
+            (&m.argument_list, metadata, builtin)
+        }
+        Expression::Call(Call::StaticMethod(m)) => {
+            let ClassLikeMemberSelector::Identifier(name) = &m.method else {
+                return;
+            };
+            let class = match m.class {
+                Expression::Identifier(id) => Some(mago_word::word(resolve(id))),
+                Expression::Self_(_) | Expression::Static(_) => {
+                    context.scope().get_class_like_name()
+                }
+                object => object_class(object).or_else(|| {
+                    let ty = match object {
+                        Expression::Variable(Variable::Direct(v)) => {
+                            context.get_variable_type(v.name).map(|t| &**t)
+                        }
+                        _ => context.get_expression_type(object),
+                    };
+                    ty.and_then(|t| {
+                        t.get_single_class_string_value()
+                            .or_else(|| t.get_single_literal_string_value().map(mago_word::word))
+                    })
+                }),
+            };
+            let Some(class) = class else { return };
+            let metadata = context.codebase().get_method(class.as_bytes(), name.value);
+            let builtin = builtins
+                .classes
+                .get(&class.to_string().to_ascii_lowercase())
+                .and_then(|c| {
+                    c.methods
+                        .get(&String::from_utf8_lossy(name.value).to_ascii_lowercase())
+                });
+            (&m.argument_list, metadata, builtin)
+        }
+        Expression::Instantiation(n) => {
+            let (Expression::Identifier(id), Some(args)) = (n.class, &n.argument_list) else {
+                return;
+            };
+            let class = resolve(id);
+            let metadata = context.codebase().get_method(class, b"__construct");
+            let builtin = builtins
+                .classes
+                .get(&String::from_utf8_lossy(class).to_ascii_lowercase())
+                .and_then(|c| c.methods.get("__construct"));
+            (args, metadata, builtin)
+        }
+        _ => return,
+    };
+    let builtin = builtin.filter(|_| metadata.is_none_or(|m| m.flags.is_built_in()));
+    for (i, arg) in args.arguments.iter().enumerate() {
+        let permits = if let Some(builtin) = builtin {
+            let variant = builtin
+                .variants
+                .iter()
+                .find(|v| {
+                    v.params
+                        .iter()
+                        .filter(|p| !p.optional && !p.variadic)
+                        .count()
+                        <= args.arguments.len()
+                        && (v.params.iter().any(|p| p.variadic)
+                            || args.arguments.len() <= v.params.len())
+                })
+                .or(builtin.variants.first());
+            variant
+                .and_then(|v| match arg {
+                    Argument::Named(a) => v
+                        .params
+                        .iter()
+                        .find(|p| p.name.as_bytes() == a.name.value)
+                        .or_else(|| v.params.last().filter(|p| p.variadic)),
+                    _ => v
+                        .params
+                        .get(i)
+                        .or_else(|| v.params.last().filter(|p| p.variadic)),
+                })
+                .is_some_and(|p| p.by_ref == pun_phpstan::symbols::ByRef::CreatesNewVariable)
+        } else {
+            metadata
+                .and_then(|m| match arg {
+                    Argument::Named(a) => m
+                        .parameters
+                        .iter()
+                        .find(|p| &p.get_name().0.as_bytes()[1..] == a.name.value)
+                        .or_else(|| m.parameters.last().filter(|p| p.flags.is_variadic())),
+                    _ => m
+                        .parameters
+                        .get(i)
+                        .or_else(|| m.parameters.last().filter(|p| p.flags.is_variadic())),
+                })
+                .is_some_and(|p| {
+                    p.flags.is_by_reference()
+                        && p.type_declaration_metadata
+                            .as_ref()
+                            .is_none_or(|t| t.type_union.has_null() || t.type_union.is_mixed())
+                })
+        };
+        if permits {
+            allow_target(arg.value(), allowed);
+        }
+    }
+}
+
+pub(super) fn is_compact(call: &FunctionCall) -> bool {
+    matches!(call.function, Expression::Identifier(id) if id.value().eq_ignore_ascii_case(b"compact") || id.value().eq_ignore_ascii_case(b"\\compact"))
+}
+
+/// DefinedVariableRule::processNode(). Name castability is checked even in assignment/undefined-allowed contexts.
+pub(super) fn variable(c: &mut Checker, variable: &Variable) {
+    let span = variable.span();
+    if let Some(name) = super::types::dynamic_names::static_property(variable) {
+        if c.non_stringable_names
+            && let Some((ty, _)) = super::types::dynamic_names::not_string(c, name, true)
+        {
+            let given = declared::with_classes(c, || ty.describe(Level::Precise));
+            c.report(
+                variable,
+                "variable.nameNotString",
+                format!("Variable variable name must be a string, but {given} was given."),
+                None,
+            );
+        }
+        let Some(scope) = c.variables.scopes.get(&span) else {
+            return;
+        };
+        let Some(ty) = c.types.get(&name).map(|t| c.to_phpstan(t)) else {
+            return;
+        };
+        let mut names = Vec::new();
+        constant_strings(&ty, &mut names);
+        let main = scope.main;
+        let names: Vec<_> = names
+            .into_iter()
+            .map(|name| {
+                let certainty = scope.get(&name);
+                (name, certainty)
+            })
+            .collect();
+        for (name, certainty) in names {
+            single_variable(c, variable, &name, certainty, main);
+        }
+    } else if let Some((name, certainty, main)) = c.variables.reads.get(&span).cloned() {
+        single_variable(c, variable, &name, certainty, main);
+    }
+}
+
+pub(super) fn capture(c: &mut Checker, capture: &ClosureUseClauseVariable) {
+    if let Some((name, certainty, main)) = c.variables.reads.get(&capture.variable.span()).cloned()
+    {
+        single_variable(c, &capture.variable, &name, certainty, main);
+    }
+}
+
+/// DefinedVariableRule::processSingleVariable(). Suppressed reads have no observation.
+fn single_variable(
+    c: &mut Checker,
+    variable: &impl HasSpan,
+    name: &str,
+    certainty: Tri,
+    main: bool,
+) {
+    // Explicit Closure::bind() keeps PHPStan's inherited $this even when Mago removes its null-bound local.
+    if name == "this" && c.this_defined() {
+        return;
+    }
+    if c.cli_arguments_variables_registered && matches!(name, "argc" | "argv") && main {
+        return;
+    }
+    let message = match certainty {
+        Tri::No => format!("Undefined variable: ${name}"),
+        Tri::Maybe if c.check_maybe_undefined_variables => {
+            format!("Variable ${name} might not be defined.")
+        }
+        _ => return,
+    };
+    c.report(variable, "variable.undefined", message, None);
+}
+
+/// CompactVariablesRule::processNode(). Its scope precedes argument evaluation, even though argument types can
+/// describe assignments made by their evaluation.
+pub(super) fn compact(c: &mut Checker, call: &FunctionCall) {
+    if !is_compact(call) {
+        return;
+    }
+    let Some(scope) = c.variables.scopes.get(&call.span()) else {
+        return;
+    };
+    let mut errors = Vec::new();
+    for arg in &call.argument_list.arguments {
+        let Some(ty) = c.type_of(arg.value()).map(|t| c.to_phpstan(t)) else {
+            continue;
+        };
+        let mut names = Vec::new();
+        find_constant_strings(&ty, &mut names);
+        for name in names {
+            let adjective = match scope.get(&name) {
+                Tri::No => "undefined",
+                Tri::Maybe if c.check_maybe_undefined_variables => "possibly undefined",
+                _ => continue,
+            };
+            errors.push((
+                arg.span(),
+                format!("Call to function compact() contains {adjective} variable ${name}."),
+            ));
+        }
+    }
+    for (span, message) in errors {
+        c.report_at_line(c.line_of(span), "variable.undefined", message, None);
+    }
+}
+
+/// Type::getConstantStrings(), including constant members of union types.
+fn constant_strings(ty: &Type, out: &mut Vec<String>) {
+    match ty {
+        Type::ConstString(s) => {
+            if !out.contains(s) {
+                out.push(s.clone());
+            }
+        }
+        Type::Union(types) | Type::Benevolent(types) => {
+            let mut strings = Vec::new();
+            for ty in types {
+                let mut inner = Vec::new();
+                constant_strings(ty, &mut inner);
+                if inner.is_empty() {
+                    return;
+                }
+                strings.extend(inner);
+            }
+            out.extend(strings);
+        }
+        Type::Intersection(types) => {
+            for ty in types {
+                constant_strings(ty, out);
+            }
+        }
+        _ => {}
+    }
+}
+
+/// CompactVariablesRule::findConstantStrings(): constant strings first, otherwise recurse through constant arrays.
+fn find_constant_strings(ty: &Type, out: &mut Vec<String>) {
+    let mut strings = Vec::new();
+    constant_strings(ty, &mut strings);
+    if !strings.is_empty() {
+        out.extend(strings);
+        return;
+    }
+    for array in constant_arrays(ty) {
+        for value in &array.values {
+            find_constant_strings(value, out);
+        }
+    }
+}
+
+fn constant_arrays(ty: &Type) -> Vec<&pun_phpstan::types::ConstArray> {
+    match ty {
+        Type::ConstArray(a) => vec![a],
+        Type::Union(types) | Type::Benevolent(types) => {
+            let mut arrays = Vec::new();
+            for ty in types {
+                let inner = constant_arrays(ty);
+                if inner.is_empty() {
+                    return Vec::new();
+                }
+                arrays.extend(inner);
+            }
+            arrays
+        }
+        Type::Intersection(types) => types.iter().flat_map(constant_arrays).collect(),
+        _ => Vec::new(),
+    }
+}

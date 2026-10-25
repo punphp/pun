@@ -1,7 +1,7 @@
 //! Mago's inferred types of the expressions the rules ask about (`$scope->getType()`), from one analyser run per
 //! file, only over the declarations that hold such an expression.
 
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 use std::sync::{Arc, Mutex};
 
 use mago_allocator::{Arena, LocalArena};
@@ -22,7 +22,7 @@ use mago_syntax::cst::*;
 use mago_syntax::walker::MutWalker;
 use pun_phpstan::types::Tri;
 
-use super::{Checker, assign, dead_code};
+use super::{Checker, assign, dead_code, variables};
 
 #[path = "type_origins.rs"]
 mod origins;
@@ -105,6 +105,7 @@ pub(super) fn infer<'arena>(
     php_version: u32,
     level: u8,
     extra: Vec<Span>,
+    variables: &mut variables::Observations,
 ) -> (HashMap<Span, TUnion>, HashMap<Span, Tri>, Origins) {
     let mut wanted = TypedExpressions {
         spans: Vec::new(),
@@ -116,10 +117,11 @@ pub(super) fn infer<'arena>(
     wanted.walk_program(program, &mut ());
     let mut wanted = wanted.spans;
     wanted.extend(extra);
+    wanted.extend(variables::typed_expressions(program));
     wanted.extend(dead_code::flow_types(program, level));
     let (typed, watched) = dead_code::coalesce_types(program, level);
     wanted.extend(typed);
-    analyse(arena, file, program, names, codebase, php_version, wanted, watched)
+    analyse_observed(arena, file, program, names, codebase, php_version, wanted, watched, Some(variables))
 }
 
 /// Mago's types of the `wanted` expressions, analysing only the declarations that hold them.
@@ -132,6 +134,21 @@ pub(super) fn analyse<'arena>(
     php_version: u32,
     wanted: Vec<Span>,
     watched: Vec<Span>,
+) -> (HashMap<Span, TUnion>, HashMap<Span, Tri>, Origins) {
+    analyse_observed(arena, file, program, names, codebase, php_version, wanted, watched, None)
+}
+
+#[allow(clippy::too_many_arguments)]
+fn analyse_observed<'arena>(
+    arena: &'arena LocalArena,
+    file: &File,
+    program: &'arena Program<'arena>,
+    names: &ResolvedNames<'arena>,
+    codebase: &CodebaseMetadata,
+    php_version: u32,
+    wanted: Vec<Span>,
+    watched: Vec<Span>,
+    variables: Option<&mut variables::Observations>,
 ) -> (HashMap<Span, TUnion>, HashMap<Span, Tri>, Origins) {
     if wanted.is_empty() {
         return Default::default();
@@ -147,8 +164,11 @@ pub(super) fn analyse<'arena>(
     wanted.extend(children);
     wanted.extend(origins::dependencies(&origins, &wanted));
     let mut registry = super::return_types::registry(&file.contents);
-    let found = Arc::<Mutex<Found>>::default();
-    if !watched.is_empty() {
+    let found = Arc::new(Mutex::new(Found {
+        allowed: variables.as_ref().map(|_| variables::allowed_expressions(program)).unwrap_or_default(),
+        ..Found::default()
+    }));
+    if !watched.is_empty() || variables.is_some() {
         let ids = watched
             .into_iter()
             .map(|s| {
@@ -156,7 +176,13 @@ pub(super) fn analyse<'arena>(
                 (s, text.iter().filter(|b| !b.is_ascii_whitespace()).copied().collect())
             })
             .collect();
-        registry.register_expression_hook(Definedness { ids, found: Arc::clone(&found) });
+        registry.register_expression_hook(Definedness {
+            ids,
+            variables: variables.is_some(),
+            resolved: names.iter().map(|(start, _, name, imported)| (start, (name.to_vec(), imported))).collect(),
+            builtins: super::reflection::builtins(php_version),
+            found: Arc::clone(&found),
+        });
     }
     let settings = Settings::new(crate::codebase::php_version(php_version));
     let analyzer = Analyzer::new(arena, file, names, codebase, &registry, settings);
@@ -180,8 +206,11 @@ pub(super) fn analyse<'arena>(
         .into_iter()
         .filter_map(|span| Some((span, artifacts.get_expression_type(&span)?.clone())))
         .collect();
-    let found = std::mem::take(&mut *found.lock().expect("no hook panics while holding the lock"));
+    let mut found = std::mem::take(&mut *found.lock().expect("no hook panics while holding the lock"));
     types.extend(found.read);
+    if let Some(variables) = variables {
+        *variables = std::mem::take(&mut found.variables);
+    }
     (types, found.defined, origins)
 }
 
@@ -216,6 +245,9 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for ArrayChildren<'_> {
 /// them. A loop body is analysed more than once: answers that differ are a maybe.
 struct Definedness {
     ids: HashMap<Span, Vec<u8>>,
+    variables: bool,
+    resolved: HashMap<u32, (Vec<u8>, bool)>,
+    builtins: &'static pun_phpstan::symbols::Symbols,
     found: Arc<Mutex<Found>>,
 }
 
@@ -225,6 +257,10 @@ struct Definedness {
 struct Found {
     defined: HashMap<Span, Tri>,
     read: HashMap<Span, TUnion>,
+    variables: variables::Observations,
+    allowed: HashSet<Span>,
+    arrows: HashMap<Span, variables::Certainty>,
+    reference_sources: HashMap<Span, variables::ReferenceSource>,
 }
 
 impl Provider for Definedness {
@@ -241,6 +277,39 @@ impl ExpressionHook for Definedness {
 
     fn before_expression(&self, expr: &Expression<'_>, context: &mut HookContext<'_, '_>) -> HookResult<ExpressionHookResult> {
         let span = expr.span();
+        if self.variables {
+            let mut found = self.found.lock().expect("no hook panics while holding the lock");
+            variables::allow_arguments(expr, context, &self.resolved, self.builtins, &mut found.allowed);
+            match expr {
+                Expression::Variable(v) => observe_variable(v, context, &mut found),
+                Expression::Access(Access::StaticProperty(p)) => {
+                    if let Variable::Nested(v) = &p.property {
+                        observe_variable(v.variable, context, &mut found);
+                    }
+                }
+                Expression::Call(Call::Function(f)) if variables::is_compact(f) => {
+                    found.variables.scopes.insert(span, variables::Certainty::of(context));
+                }
+                Expression::Closure(c) => {
+                    if let Some(uses) = &c.use_clause {
+                        for capture in &uses.variables {
+                            if capture.ampersand.is_none() {
+                                observe_direct(&capture.variable, context, &mut found);
+                            }
+                        }
+                    }
+                }
+                Expression::ArrowFunction(f) => {
+                    found.arrows.insert(f.span(), variables::Certainty::of(context));
+                }
+                Expression::Assignment(a) => {
+                    if let Some(source) = variables::ReferenceSource::of(a, context) {
+                        found.reference_sources.insert(span, source);
+                    }
+                }
+                _ => {}
+            }
+        }
         if let Some(id) = self.ids.get(&span) {
             let block = context.block_context();
             let name = mago_word::word(id);
@@ -269,6 +338,51 @@ impl ExpressionHook for Definedness {
         }
         Ok(ExpressionHookResult::Continue)
     }
+
+    fn after_expression(&self, expr: &Expression<'_>, context: &mut HookContext<'_, '_>) -> HookResult<()> {
+        if self.variables {
+            if let Some(source) = self.found.lock().expect("no hook panics while holding the lock").reference_sources.remove(&expr.span()) {
+                source.restore(context);
+            }
+            let dynamic = matches!(expr, Expression::Variable(Variable::Indirect(_) | Variable::Nested(_)));
+            if dynamic {
+                let mut found = self.found.lock().expect("no hook panics while holding the lock");
+                if !found.allowed.contains(&expr.span()) {
+                    found.variables.scopes.insert(expr.span(), variables::Certainty::of(context));
+                }
+            }
+        }
+        Ok(())
+    }
+}
+
+fn observe_variable(v: &Variable<'_>, context: &HookContext<'_, '_>, found: &mut Found) {
+    match v {
+        Variable::Direct(v) => observe_direct(v, context, found),
+        // NestedVariable::analyze() calls Variable::analyze(), bypassing the expression hook for the name.
+        Variable::Nested(v) => {
+            if let Variable::Direct(name) = v.variable
+                && let Some(ty) = context.get_variable_type(name.name)
+            {
+                found.read.insert(name.span(), (**ty).clone());
+            }
+            observe_variable(v.variable, context, found);
+        }
+        Variable::Indirect(_) => {}
+    }
+}
+
+fn observe_direct(v: &DirectVariable<'_>, context: &HookContext<'_, '_>, found: &mut Found) {
+    if found.allowed.contains(&v.span()) { return; }
+    let name = String::from_utf8_lossy(v.name);
+    // Mago places every implicit arrow capture in possibly_in_scope, even one absent in its parent. Read the
+    // parent's real block observation for those names, not a syntactically reconstructed parent scope.
+    let certainty = context.scope().get_function_like()
+        .filter(|_| context.get_variable_type(v.name).is_none())
+        .and_then(|f| found.arrows.get(&f.span))
+        .map_or_else(|| variables::defined(context, &name), |parent| parent.captured(&name[1..]));
+    let entry = found.variables.reads.entry(v.span()).or_insert_with(|| (name[1..].to_string(), certainty, variables::is_main(context)));
+    if entry.1 != certainty { entry.1 = Tri::Maybe; }
 }
 
 /// A copy of a program's statements without the functions, class-likes and methods that hold none of `wanted`. Every
