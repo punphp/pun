@@ -948,8 +948,107 @@ The failing tests keep these oracle expectations active:
 - `generic-keys.php:137–138`: PHPStan seals a template constant-array mutation because the
   `TemplateConstantArrayType` constructor omits its bound's unsealed metadata from the parent.
   The current template-bound representation does not preserve that distinction.
-- Upstream `Variables/data/unset.php:18`: the nested invalid access needs PHPStan's `ErrorType`
-  transfer. Pun still emits the extra `Cannot unset offset 'b' on 1.` diagnostic.
 
 Generic non-key offsets still need shared PHP scalar-to-key conversion. This patch does not add
 an engine-wide error type, widen incoming declarations, change a gap list, or activate a rule mapping.
+
+## Virtual offset-unset write-back
+
+`src/statement/unset.rs:89–97,125,309–314,326–501` ports the virtual assignment from PHPStan
+2.3.1, revision `cb3b7e99489b2e3789ee2eec10501cb7a72580ea`. Its sources are
+`Analyser/StmtHandler/UnsetHandler.php:110–151`, `Analyser/ExprHandler/AssignHandler.php:1803–1850`,
+`Type/ArrayType.php:460–517`, `NullType::setExistingOffsetValueType()`, and
+`ConstantArrayTypeBuilder::setOffsetValueType()`.
+
+The unset receiver comes from its stored expression result, not just a cached local. A scalar
+receiver becomes `get_error()`. The write-back walks already-evaluated containing offsets from
+the inside out and updates their mutable root. It never evaluates an index again, dispatches an
+expression observer, or replaces an incoming expression artifact. Each union keeps its source flags.
+Null remains null, including a null containing receiver.
+
+Finite union keys join single-key write alternatives instead of overwriting every key strongly.
+`src/expression/assignment/mod.rs:64` exposes the existing array updater within the crate for this
+transfer. No second expression evaluator is added. Root writes invalidate descendants and variable
+certainty through the existing `BlockContext` APIs, then record the virtual assignment.
+
+Generic containing arrays use `ArrayType::setExistingOffsetValueType()` rather than ordinary assignment.
+They keep their key type, listness, and existing non-empty guarantee. A write does not assert that an
+offset exists. Written shapes update their present keys in each original shape, retaining required keys.
+Optional writes combine their values without making an existing required key optional.
+The constant-array extractor recognizes sealed keyed arrays, fixed lists, and template bounds.
+Shape alternatives stay separate inside Mago so its array combiner does not discard their non-empty
+guarantee. Pun's PHPStan type combinator performs the final union reduction.
+
+This patch requires the maintained codex error marker and Pun's conversion of `TMixed::is_error()`
+to `Type::Error`. Validation imports the codex parent-default and error-marker commits as dependencies.
+A disposable workspace copies only the converter's error-marker clause into the older Pun source.
+Neither the validation dependencies nor that converter change belong to this patch.
+
+### Virtual unset verification
+
+The unchanged analyzer leaves the scalar root as `3`, preserves invalid nested leaves as `1`,
+fails to propagate valid nested removals, and emits the extra `unset.php:18` diagnostic.
+The patch makes all ten exported `Variables/UnsetRuleTest` cases pass, including that regression.
+Public oracle controls also prove copy isolation, sibling preservation, reassignment, cached-offset
+invalidation, one index increment, weak union writes, nullable parents, and property roots.
+
+`unset/write-back.json` contains all 63 diagnostics from the actual PHPStan 2.3.1 oracle, at
+level 0 and PHP version 80400. The public test retains every diagnostic and its flags.
+It currently matches 55 of 63 diagnostics and fails on the boundaries listed below.
+No gap, ignore, expectation filter, or rule-local suppression is added.
+
+`unset/generic-parents.json` records 12 fresh oracle diagnostics, all matching the public analyzer.
+Its asymmetric controls cover preserved required child keys, scalar errors, empty written shapes,
+list parents, optional union writes, fixed-list values, template bounds, and copies.
+The ordinary assignment updater previously made generic parents non-empty and optionalized a required
+surviving child key. The dedicated existing-offset transfer fixes both differences.
+
+The combined public run passes 37 tests and retains three failing tests. Array metadata (1),
+array slicing (5), callable origins (2), debug types (10), duplicate keys (9), and the scoped
+UnsetRule harness (1) pass. The unset suite passes 9 of 12 tests. Exported Arrays, DefinedVariable,
+CompactVariables, ReadOnlyProperty, and OffsetAccessWithoutDimForReading fixtures also pass.
+The existing generic-key oracle failures remain unchanged.
+
+The third retained public failure checks the existing `Properties/data/bug-13856.php` fixture.
+A fresh PHPStan run confirms its two exported diagnostics, including `unset.offset` at line 73 on
+`ArrayObject<*NEVER*, *NEVER*>`. The scoped MissingReadOnlyPropertyAssignRule harness reproduces
+only that missing diagnostic. Shared constructor, property, and offset inference is a separate patch.
+
+Fresh changed executable-line coverage is **162/162** for this write-back patch and **213/213**
+for generic key subtraction plus write-back against `712ce49a`. No exclusion is used.
+The visibility-only module change adds no executable line. The measurement uses fresh profiles
+from these public tests and exports LCOV from their seven current executables:
+
+```sh
+CARGO_BUILD_JOBS=1 RAYON_NUM_THREADS=2 CARGO_TARGET_DIR=target-unset-rule \
+	CARGO_LLVM_COV_TARGET_DIR="$PWD/target-unset-rule/coverage" \
+	PUN_RULES_FILTER=Variables/UnsetRuleTest \
+	timeout 900 nice cargo llvm-cov test --dep-coverage mago-analyzer \
+	-p punphp-analyse --test unset --test array_metadata --test array_slice \
+	--test duplicate_array_keys --test debug --test callable_origins --test rules \
+	--no-report --no-fail-fast -- --test-threads=2
+```
+
+Validation uses the disposable workspace's manifest for the converter clause described above.
+Profiles are merged with `llvm-profdata merge -sparse`. `llvm-cov export -format=lcov` reads
+those profiles and the exact executables from that run, without older binaries or profiles.
+
+### Remaining write-back boundaries
+
+- `write-back.php:81–83`: the weak-write values and optionality match, but shape key order does not.
+  Mago stores keyed items in a `BTreeMap`. Pun restores source order only for identical key sets,
+  so mutated union shapes lose their original order.
+- `write-back.php:98`: PHPStan's UnsetRule reads the statement-entry scope for both targets.
+  Pun observes the second target after the first virtual mutation and misses its original scalar error.
+  The rule needs an entry-scope type-read contract. Deferring mutation or evaluating targets again
+  would break the stored-result transfer.
+- `write-back.php:127,165,185,194`: the shared offset and variable readers still supply synthetic
+  null for missing accesses, absent variables, and the null arm of nullable offset reads.
+  PHPStan supplies ErrorType and discards error-valued arms when another offset-read arm succeeds.
+  The write-back preserves the received types instead of guessing whether a null is synthetic.
+  The independent real-null controls prevent replacing every null with ErrorType.
+
+Unsealed constant-array-valued generic parents remain outside the sealed-shape extraction contract.
+The existing `generic-keys.php:98–99,108,116,137–138` failures retain their original oracle expectations.
+These boundaries and the retained generic-key failures still prevent whole-rule parity.
+This patch does not activate a rule mapping or change the shared readers, converter, or observation API.

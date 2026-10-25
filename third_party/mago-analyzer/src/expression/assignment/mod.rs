@@ -61,7 +61,7 @@ use crate::utils::expression::get_nullsafe_base_expressions;
 use crate::utils::expression::get_root_expression_id;
 use crate::utils::misc::unwrap_expression;
 
-mod array_assignment;
+pub(crate) mod array_assignment;
 mod property_assignment;
 mod static_property_assignment;
 

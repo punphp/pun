@@ -12,8 +12,12 @@ use mago_codex::ttype::atomic::array::TArray;
 use mago_codex::ttype::atomic::array::key::ArrayKey;
 use mago_codex::ttype::atomic::array::keyed::TKeyedArray;
 use mago_codex::ttype::atomic::array::list::TList;
+use mago_codex::ttype::combine_union_types;
+use mago_codex::ttype::combine_union_types_preserving_array_shapes;
+use mago_codex::ttype::combiner;
 use mago_codex::ttype::comparator::ComparisonResult;
 use mago_codex::ttype::comparator::union_comparator::{can_expression_types_be_identical, is_contained_by};
+use mago_codex::ttype::get_error;
 use mago_codex::ttype::get_int;
 use mago_codex::ttype::union::TUnion;
 use mago_reporting::Annotation;
@@ -31,8 +35,10 @@ use crate::code::IssueCode;
 use crate::context::Context;
 use crate::context::block::BlockContext;
 use crate::error::AnalysisError;
+use crate::expression::assignment::array_assignment::update_type_with_key_values;
 use crate::reconciler::negated_assertion_reconciler;
 use crate::utils::expression::get_block_expression_id;
+use crate::utils::misc::unwrap_expression;
 use mago_word::concat_word;
 
 impl<'ast, 'arena> Analyzable<'ast, 'arena> for Unset<'arena> {
@@ -76,22 +82,19 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Unset<'arena> {
                     break 'array_access;
                 };
 
-                let Some(array_id) = get_block_expression_id(array_access.array, context, block_context) else {
-                    break 'array_access;
-                };
-
                 let Some(key_type) = artifacts.get_expression_type(array_access.index) else {
                     break 'array_access;
                 };
 
-                let Some(array_variable) = block_context.locals.remove(&array_id) else {
+                let Some(array_variable) = artifacts.get_rc_expression_type(array_access.array).cloned() else {
                     break 'array_access;
                 };
 
+                let mut array_variable = Rc::unwrap_or_clone(array_variable);
                 let mut atomics = vec![];
 
                 let array_key = key_type.get_single_array_key();
-                for mut atomic in Rc::unwrap_or_clone(array_variable).types.into_owned() {
+                for mut atomic in array_variable.types.iter().cloned() {
                     if let TAtomic::Scalar(scalar) = &atomic {
                         let scalar_str = scalar.get_id();
 
@@ -119,7 +122,7 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Unset<'arena> {
                             ),
                         );
 
-                        atomics.push(atomic);
+                        atomics.extend(get_error().types.into_owned());
                         continue;
                     }
 
@@ -303,16 +306,197 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Unset<'arena> {
                     }
                 }
 
-                let rc = Rc::new(TUnion::from_vec(atomics));
-
-                block_context.locals.insert(array_id, Rc::clone(&rc));
-                block_context.remove_variable_from_conflicting_clauses(context, array_id, Some(rc.as_ref()));
+                array_variable.types = Cow::Owned(combiner::combine_preserving_array_shapes(
+                    atomics,
+                    context.codebase,
+                    context.settings.combiner_options(),
+                ));
+                write_back(context, block_context, artifacts, array_access.array, array_variable);
             };
         }
 
         block_context.flags.set_inside_unset(was_inside_unset);
 
         Ok(())
+    }
+}
+
+/// UnsetHandler's ExistingArrayDimFetch virtual assignment: consume only stored input results,
+/// replace each containing value from the inside out, and leave those input observations intact.
+fn write_back<'ctx, 'arena, A: Arena>(
+    context: &mut Context<'ctx, 'arena, A>,
+    block_context: &mut BlockContext<'ctx>,
+    artifacts: &AnalysisArtifacts,
+    mut receiver: &Expression<'arena>,
+    mut value: TUnion,
+) {
+    receiver = unwrap_expression(receiver);
+    while let Expression::ArrayAccess(access) = receiver
+        && let Some(parent) = artifacts.get_expression_type(access.array)
+        && let Some(index) = artifacts.get_rc_expression_type(access.index)
+    {
+        value = set_existing(context, parent, index, &value);
+        receiver = unwrap_expression(access.array);
+    }
+    // A missing stored link cannot be re-evaluated as part of a virtual assignment.
+    if !matches!(receiver, Expression::ArrayAccess(_))
+        && let Some(root) = get_block_expression_id(receiver, context, block_context)
+    {
+        let previous = block_context.locals.get(&root).cloned();
+        block_context.remove_descendants(context, root, previous.as_deref().unwrap_or(&value), Some(&value));
+        block_context.invalidate_variable_certainty(root);
+        block_context.locals.insert(root, Rc::new(value));
+        block_context.assigned_variable_ids.insert(root, receiver.span().start.offset);
+        block_context.possibly_assigned_variable_ids.insert(root);
+    }
+}
+
+/// ConstantArrayTypeBuilder's finite union offsets are weak writes: join the single-key alternatives
+/// instead of assigning every possible offset. Reuse the full assignment analyzer's array updater.
+fn set_existing<A: Arena>(
+    context: &mut Context<'_, '_, A>,
+    parent: &TUnion,
+    index: &Rc<TUnion>,
+    value: &TUnion,
+) -> TUnion {
+    let keys: Vec<_> = index.types.iter().filter_map(TAtomic::to_array_key).map(|key| key.to_atomic()).collect();
+    let mut result = parent.clone();
+    let mut atomics = Vec::new();
+    for mut atomic in parent.types.iter().cloned() {
+        if atomic.is_null() {
+            atomics.push(atomic);
+        } else if matches!(atomic, TAtomic::Scalar(_)) {
+            atomics.extend(get_error().types.into_owned());
+        } else if let TAtomic::Array(TArray::Keyed(array)) = &mut atomic
+            && array.known_items.is_none()
+            && let Some((_, items)) = &mut array.parameters
+        {
+            *items = Arc::new(set_existing_items(context, items, value));
+            atomics.push(atomic);
+        } else if let TAtomic::Array(TArray::List(array)) = &mut atomic
+            && array.known_elements.is_none()
+            && !array.element_type.is_never()
+        {
+            array.element_type = Arc::new(set_existing_items(context, &array.element_type, value));
+            atomics.push(atomic);
+        } else {
+            let parent = TUnion::from_atomic(atomic);
+            let written = if !keys.is_empty() && keys.len() == index.types.len() {
+                keys.iter()
+                    .map(|key| {
+                        update_type_with_key_values(context, parent.clone(), value, &vec![key.clone()], Some(index))
+                    })
+                    .reduce(|left, right| {
+                        combine_union_types(&left, &right, context.codebase, context.settings.combiner_options())
+                    })
+                    .unwrap()
+            } else {
+                update_type_with_key_values(context, parent, value, &vec![], Some(index))
+            };
+            atomics.extend(written.types.into_owned());
+        }
+    }
+    result.types = Cow::Owned(combiner::combine_preserving_array_shapes(
+        atomics,
+        context.codebase,
+        context.settings.combiner_options(),
+    ));
+    result
+}
+
+/// ArrayType::setExistingOffsetValueType updates values without asserting an offset exists.
+/// Written shapes update their present keys in each original shape; they are not replacements.
+fn set_existing_items<A: Arena>(context: &mut Context<'_, '_, A>, previous: &TUnion, value: &TUnion) -> TUnion {
+    let previous_arrays: Option<Vec<_>> = previous.types.iter().map(constant_array).collect();
+    let written_arrays: Option<Vec<_>> = value.types.iter().map(constant_array).collect();
+    if let (Some(previous_arrays), Some(written_arrays)) = (previous_arrays, written_arrays) {
+        let mut variants = Vec::new();
+        let mut changed = false;
+        for written in written_arrays {
+            let entries = written.known_items.as_deref().cloned().unwrap_or_default();
+            if entries.values().any(|(optional, _)| *optional) && previous_arrays.len() == 1 {
+                let mut array = previous_arrays[0].clone();
+                let items = Arc::make_mut(array.known_items.get_or_insert_default());
+                for (key, (optional, value)) in entries {
+                    if optional && let Some((_, old)) = items.get_mut(&key) {
+                        *old = combine_union_types(old, &value, context.codebase, context.settings.combiner_options());
+                    } else {
+                        items.insert(key, (optional, value));
+                    }
+                }
+                array.non_empty |= items.values().any(|(optional, _)| !optional);
+                let mut updated = previous.clone();
+                updated.types = Cow::Owned(vec![TAtomic::Array(TArray::Keyed(array))]);
+                variants.push(updated);
+                changed = true;
+                continue;
+            }
+            let mut updated = previous.clone();
+            let mut optional_keys = Vec::new();
+            for (key, (optional, value)) in entries {
+                let index = Rc::new(key.to_union());
+                updated = set_existing(context, &updated, &index, &value);
+                changed = true;
+                if optional {
+                    optional_keys.push(index);
+                }
+            }
+            variants.push(updated.clone());
+            if !optional_keys.is_empty() {
+                for index in optional_keys {
+                    updated.types = Cow::Owned(
+                        updated
+                            .types
+                            .iter()
+                            .map(|atomic| {
+                                let array = constant_array(atomic).unwrap();
+                                TAtomic::Array(TArray::Keyed(unset_keyed(context, array, &index)))
+                            })
+                            .collect(),
+                    );
+                }
+                variants.push(updated);
+            }
+        }
+        if changed {
+            return variants
+                .into_iter()
+                .reduce(|left, right| {
+                    combine_union_types_preserving_array_shapes(
+                        &left,
+                        &right,
+                        context.codebase,
+                        context.settings.combiner_options(),
+                    )
+                })
+                .unwrap();
+        }
+        return combine_union_types_preserving_array_shapes(
+            previous,
+            value,
+            context.codebase,
+            context.settings.combiner_options(),
+        );
+    }
+    combine_union_types(previous, value, context.codebase, context.settings.combiner_options())
+}
+
+/// Constant-array extraction also recognizes TemplateConstantArrayType's bound.
+fn constant_array(atomic: &TAtomic) -> Option<TKeyedArray> {
+    match atomic {
+        TAtomic::Array(TArray::Keyed(array)) if array.parameters.is_none() => Some(array.clone()),
+        TAtomic::Array(TArray::List(array)) if array.element_type.is_never() => Some(TKeyedArray {
+            known_items: array.known_elements.as_ref().map(|items| {
+                Arc::new(items.iter().map(|(key, value)| (ArrayKey::Integer(*key as i64), value.clone())).collect())
+            }),
+            parameters: None,
+            non_empty: array.non_empty,
+            known_non_list: false,
+        }),
+        TAtomic::GenericParameter(parameter) if parameter.constraint.is_single() => {
+            constant_array(parameter.constraint.get_single())
+        }
+        _ => None,
     }
 }
 

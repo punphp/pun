@@ -59,6 +59,25 @@ fn upstream_unset_rule() {
     assert!(failures.is_empty(), "{}", failures.join("\n\n"));
 }
 
+#[test]
+fn readonly_array_access_offset_keeps_constructor_arguments() {
+    let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/rules");
+    let expected: Value = serde_json::from_slice(
+        &std::fs::read(root.join("Properties/MissingReadOnlyPropertyAssignRuleTest.json")).unwrap(),
+    )
+    .unwrap();
+    let case = expected["cases"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|case| case["method"] == "testBug13856")
+        .unwrap();
+    let file = root.join("data").join(case["files"][0].as_str().unwrap());
+    let mut project = Project::new(vec![file], Vec::new());
+    project.php_version = 80400;
+    check(project, &case["errors"]).unwrap();
+}
+
 fn oracle(name: &str, expected_name: &str, php_version: u32) {
     let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/unset");
     let expected: Value =
@@ -112,6 +131,16 @@ fn generic_key_and_value_identities_match_phpstan() {
         "generic-key-identities.json",
         80400,
     );
+}
+
+#[test]
+fn virtual_unset_write_back_matches_phpstan() {
+    oracle("write-back.php", "write-back.json", 80400);
+}
+
+#[test]
+fn generic_parent_write_back_matches_phpstan() {
+    oracle("generic-parents.php", "generic-parents.json", 80400);
 }
 
 #[test]
