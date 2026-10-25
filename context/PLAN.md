@@ -14,16 +14,20 @@ Pushpak resumed all commands on 2026-10-25. CI stays disabled.
 - **Rule docs:** steps 1–5 built locally: all 1,256 rule pages, 67 command/group pages, 8 presets, 8 sets, six
   migration mappings and the URL-filtered directory. CLI links need the public docs origin; none is configured.
   The docs build passes on Linux (1,446 pages); public deployment has not been verified.
-- **Last full batch:** all 165 analyser tests pass on Rust 1.99/Linux: 163 public tests, the full rule harness
-  (563 seconds), and all 2,787 level-fixture cases run in 19 filtered groups. The fixture checks compare ported
+- **Last full batch:** all 167 analyser tests pass on Rust 1.99/Linux: 165 public tests, the full rule harness
+  (741 seconds), and all 2,787 level-fixture cases run in 19 filtered groups. The fixture checks compare ported
   identifiers against PHPStan with the remaining explicit gaps; they are not full level parity. Fresh profiles
-  cover 36,205/36,205 production lines. Coverage cleanup now removes stale example executables as well as tests
+  cover 36,208/36,208 production lines. Coverage cleanup now removes stale example executables as well as tests
   and binaries, so old source mappings cannot contribute phantom lines. Harness coverage remains 235/235 lines,
   with all five tests passing in its last full measurement.
 - **Native scalar casts:** the subsequent default-off slice passes 37 combined native, callback, slice, debug
   and arithmetic tests, including 133 actual PHPStan native dumps. Its changed engine lines are 152/152 covered.
   It models 64-bit PHP with default `precision=14`; unsupported transfers stay unavailable and native-dependent
   rules remain unported. This slice changes no Pun production lines.
+- **Numeric constants:** full inference retains non-finite arithmetic, PHP float-modulo semantics, platform
+  unions and evaluated declaration values across function-local artifacts. The new public fixture matches all
+  43 PHPStan diagnostics; the full batch above includes it and a byte-exact literal-key regression. All 12
+  analyse CLI tests pass. Copied compound constants declared later or in scanned-only files still lose precision.
 - **CLI coverage:** fresh full-registry measurement is 5,397/5,397 lines, with 147 tests passing. Non-ignorable
   errors retain their rule's flag in reports and cannot be hidden by ignore comments or baselines.
 - **Lint coverage:** Linux full-registry measurement is 21,786/21,786 lines, with 243 tests passing on main.
@@ -338,8 +342,10 @@ Gate passed ea7a84bc2d4c4f4b90ad177d911e6ade3accf253
 | --- | --- |
 | analyse 3: finish level 0 and the level-2 class rules; the current rule counts are in §0. Not yet: DebugScopeRule, DumpNativeTypeRule and FileAssertRule | todo |
 | analyse level 0 named arguments: port MethodCallWithPossiblyRenamedNamedArgumentRule's analysed call/override collectors and cross-file join, preserving named-argument acceptance and private/final controls | doing (independent worktree) |
-| analyse level 0 arrays: finish DuplicateKeysInLiteralArraysRule's float-key casts and builtin/inherited/final-or-late-static constant resolution; inferred keys, sealed unpacking and shared shape metadata are integrated | doing (independent worktree; whole rule remains unported) |
-| analyse level 0 variables: port DefinedVariableRule and CompactVariablesRule on shared variable-certainty observations, including assign/undefined-allowed contexts, dynamic names and the CLI/maybe-undefined switches | doing (independent worktree; 33/35 exported cases match and dead-code controls pass; include/annotation state and correlated absence still block two exported cases and the fresh flow regression) |
+| analyse level 0 arrays: complete DuplicateKeysInLiteralArraysRule beyond the verified scalar/constant keys, sealed unpacking and byte-exact literal keys; inferred binary-string metadata still uses UTF-8 strings | doing (numeric and literal-byte corrections verified on main; whole rule remains unported) |
+| analyse constant inference: retain compound initializer precision when the constant follows its consuming function or lives in a scanned-only file; duplicate-key checks already recover these values, but copied-variable type dumps remain too broad | todo |
+| analyse level 0 variables: port DefinedVariableRule and CompactVariablesRule on shared variable-certainty observations, including assign/undefined-allowed contexts, dynamic names and the CLI/maybe-undefined switches | doing (independent worktree passes 35/35 exported cases, the full rule harness and native-overlay controls; pending integration and combined verification on current main) |
+| analyse level 0 unset: port UnsetRule's readonly and hooked-property checks, recursive offset checks and definitely-undefined local checks through shared reflection, types and certainty | doing (independent worktree; mapping remains unported until verified) |
 | analyse level 0 attributes: complete the twelve existing attribute-rule contracts against AttributesCheck, including constructor types and version/named-argument controls, before activating their mappings | doing (flag and group normalization verified on main, including level-1/5 oracle controls; shared no-named-argument handling still blocks mapping activation) |
 | analyse class constants: extend ClassConstantRule's receiver checks beyond named classes and self/static/parent to inferred expression receivers at higher levels | todo |
 | analyse level 0 includes: extend integrated RequireFileExistsRule and IncludedFilePathResolver beyond local files to supported stream paths before whole-rule activation | todo |
