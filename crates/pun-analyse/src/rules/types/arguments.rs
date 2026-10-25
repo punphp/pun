@@ -26,8 +26,12 @@ fn describe(acceptor: &Acceptor, p: usize, position_or_name: Option<Result<usize
         Some(Err(name)) if variadic => format!("Named argument {name} for variadic parameter"),
         _ => "Parameter".to_string(),
     };
+    let name = &acceptor.names[p];
+    if name.is_empty() {
+        return head;
+    }
     let dots = if variadic { "..." } else { "" };
-    format!("{head} {dots}${}", acceptor.names[p])
+    format!("{head} {dots}${name}")
 }
 
 /// The parameter's declared type, `None` without one (an implicit `mixed`) or for variants combined with types Pun

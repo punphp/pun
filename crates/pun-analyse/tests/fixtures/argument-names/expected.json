@@ -1,0 +1,162 @@
+{
+  "references.php": [
+    {
+      "message": "Parameter #1 of callable callable(string): string is passed by reference, so it expects variables only.",
+      "line": 13,
+      "ignorable": true,
+      "identifier": "argument.byRef"
+    },
+    {
+      "message": "Parameter #1 $value of callable callable(string): string is passed by reference, so it expects variables only.",
+      "line": 14,
+      "ignorable": true,
+      "identifier": "argument.byRef"
+    },
+    {
+      "message": "Parameter $value of callable callable(string): string is passed by reference, so it expects variables only.",
+      "line": 15,
+      "ignorable": true,
+      "identifier": "argument.byRef"
+    },
+    {
+      "message": "Parameter #1 of callable callable(string ...): string is passed by reference, so it expects variables only.",
+      "line": 16,
+      "ignorable": true,
+      "identifier": "argument.byRef"
+    },
+    {
+      "message": "Parameter #2 of callable callable(string ...): string is passed by reference, so it expects variables only.",
+      "line": 16,
+      "ignorable": true,
+      "identifier": "argument.byRef"
+    },
+    {
+      "message": "Parameter #1 ...$values of callable callable(string ...): string is passed by reference, so it expects variables only.",
+      "line": 17,
+      "ignorable": true,
+      "identifier": "argument.byRef"
+    },
+    {
+      "message": "Parameter #2 ...$values of callable callable(string ...): string is passed by reference, so it expects variables only.",
+      "line": 17,
+      "ignorable": true,
+      "identifier": "argument.byRef"
+    },
+    {
+      "message": "Parameter of callable callable(string ...): string is passed by reference, so it expects variables only.",
+      "line": 18,
+      "ignorable": true,
+      "identifier": "argument.byRef"
+    },
+    {
+      "message": "Parameter ...$values of callable callable(string ...): string is passed by reference, so it expects variables only.",
+      "line": 19,
+      "ignorable": true,
+      "identifier": "argument.byRef"
+    },
+    {
+      "message": "Parameter #1 of callable callable(string): string is passed by reference, so it expects variables only.",
+      "line": 40,
+      "ignorable": true,
+      "identifier": "argument.byRef"
+    },
+    {
+      "message": "Parameter #1 of callable on the right side of pipe operator is passed by reference.",
+      "line": 40,
+      "ignorable": true,
+      "identifier": "pipe.byRef"
+    },
+    {
+      "message": "Parameter #1 $value of callable callable(string): string is passed by reference, so it expects variables only.",
+      "line": 41,
+      "ignorable": true,
+      "identifier": "argument.byRef"
+    },
+    {
+      "message": "Parameter #1 $value of callable on the right side of pipe operator is passed by reference.",
+      "line": 41,
+      "ignorable": true,
+      "identifier": "pipe.byRef"
+    },
+    {
+      "message": "Parameter #1 of callable callable(string ...): string is passed by reference, so it expects variables only.",
+      "line": 42,
+      "ignorable": true,
+      "identifier": "argument.byRef"
+    },
+    {
+      "message": "Parameter #1 of callable on the right side of pipe operator is passed by reference.",
+      "line": 42,
+      "ignorable": true,
+      "identifier": "pipe.byRef"
+    },
+    {
+      "message": "Parameter #1 $values of callable on the right side of pipe operator is passed by reference.",
+      "line": 43,
+      "ignorable": true,
+      "identifier": "pipe.byRef"
+    },
+    {
+      "message": "Parameter #1 ...$values of callable callable(string ...): string is passed by reference, so it expects variables only.",
+      "line": 43,
+      "ignorable": true,
+      "identifier": "argument.byRef"
+    }
+  ],
+  "values.php": [
+    {
+      "message": "Parameter #1 of callable callable(int): int expects int, string given.",
+      "line": 13,
+      "ignorable": true,
+      "identifier": "argument.type"
+    },
+    {
+      "message": "Parameter #1 $value of callable callable(int): int expects int, string given.",
+      "line": 14,
+      "ignorable": true,
+      "identifier": "argument.type"
+    },
+    {
+      "message": "Parameter $value of callable callable(int): int expects int, string given.",
+      "line": 15,
+      "ignorable": true,
+      "identifier": "argument.type"
+    },
+    {
+      "message": "Parameter #1 of callable callable(int ...): int expects int, string given.",
+      "line": 16,
+      "ignorable": true,
+      "identifier": "argument.type"
+    },
+    {
+      "message": "Parameter #3 of callable callable(int ...): int expects int, string given.",
+      "line": 16,
+      "ignorable": true,
+      "identifier": "argument.type"
+    },
+    {
+      "message": "Parameter #1 ...$values of callable callable(int ...): int expects int, string given.",
+      "line": 17,
+      "ignorable": true,
+      "identifier": "argument.type"
+    },
+    {
+      "message": "Parameter #3 ...$values of callable callable(int ...): int expects int, string given.",
+      "line": 17,
+      "ignorable": true,
+      "identifier": "argument.type"
+    },
+    {
+      "message": "Named argument extra for variadic parameter of callable callable(int ...): int expects int, string given.",
+      "line": 18,
+      "ignorable": true,
+      "identifier": "argument.type"
+    },
+    {
+      "message": "Named argument extra for variadic parameter ...$values of callable callable(int ...): int expects int, string given.",
+      "line": 19,
+      "ignorable": true,
+      "identifier": "argument.type"
+    }
+  ]
+}
