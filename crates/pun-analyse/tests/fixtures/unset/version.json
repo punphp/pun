@@ -1,0 +1,44 @@
+{
+  "totals": {
+    "errors": 0,
+    "file_errors": 5
+  },
+  "files": {
+    "version.php": {
+      "errors": 5,
+      "messages": [
+        {
+          "message": "Class UnsetVersion\\Properties has an uninitialized @readonly property $documented. Assign it in the constructor.",
+          "line": 12,
+          "ignorable": true,
+          "identifier": "property.uninitializedReadonlyByPhpDoc"
+        },
+        {
+          "message": "Class UnsetVersion\\Properties has an uninitialized readonly property $native. Assign it in the constructor.",
+          "line": 13,
+          "ignorable": true,
+          "identifier": "property.uninitializedReadonly"
+        },
+        {
+          "message": "Cannot unset property UnsetVersion\\Properties::$ordinary because it might have hooks in a subclass.",
+          "line": 17,
+          "ignorable": true,
+          "identifier": "unset.possiblyHookedProperty"
+        },
+        {
+          "message": "Cannot unset @readonly UnsetVersion\\Properties::$documented property.",
+          "line": 20,
+          "ignorable": true,
+          "identifier": "unset.readOnlyPropertyByPhpDoc"
+        },
+        {
+          "message": "Cannot unset readonly UnsetVersion\\Properties::$native property.",
+          "line": 21,
+          "ignorable": true,
+          "identifier": "unset.readOnlyProperty"
+        }
+      ]
+    }
+  },
+  "errors": []
+}

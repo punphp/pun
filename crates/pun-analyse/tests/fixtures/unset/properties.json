@@ -1,0 +1,146 @@
+{
+  "totals": {
+    "errors": 0,
+    "file_errors": 22
+  },
+  "files": {
+    "properties.php": {
+      "errors": 22,
+      "messages": [
+        {
+          "message": "Class UnsetProperties\\ParentProperties has an uninitialized readonly property $native. Assign it in the constructor.",
+          "line": 7,
+          "ignorable": true,
+          "identifier": "property.uninitializedReadonly"
+        },
+        {
+          "message": "Class UnsetProperties\\ParentProperties has an uninitialized @readonly property $documented. Assign it in the constructor.",
+          "line": 9,
+          "ignorable": true,
+          "identifier": "property.uninitializedReadonlyByPhpDoc"
+        },
+        {
+          "message": "Cannot unset readonly UnsetProperties\\ParentProperties::$native property.",
+          "line": 23,
+          "ignorable": true,
+          "identifier": "unset.readOnlyProperty"
+        },
+        {
+          "message": "Cannot unset @readonly UnsetProperties\\ParentProperties::$documented property.",
+          "line": 24,
+          "ignorable": true,
+          "identifier": "unset.readOnlyPropertyByPhpDoc"
+        },
+        {
+          "message": "Cannot unset property UnsetProperties\\ParentProperties::$ordinary because it might have hooks in a subclass.",
+          "line": 25,
+          "ignorable": true,
+          "identifier": "unset.possiblyHookedProperty"
+        },
+        {
+          "message": "Cannot unset hooked UnsetProperties\\ParentProperties::$hooked property.",
+          "line": 30,
+          "ignorable": true,
+          "identifier": "unset.hookedProperty"
+        },
+        {
+          "message": "Cannot unset @readonly UnsetProperties\\ParentProperties::$readonlyHooked property.",
+          "line": 31,
+          "ignorable": true,
+          "identifier": "unset.readOnlyPropertyByPhpDoc"
+        },
+        {
+          "message": "Cannot unset property UnsetProperties\\ParentProperties::$ordinary because it might have hooks in a subclass.",
+          "line": 53,
+          "ignorable": true,
+          "identifier": "unset.possiblyHookedProperty"
+        },
+        {
+          "message": "Cannot unset readonly UnsetProperties\\ParentProperties::$native property.",
+          "line": 54,
+          "ignorable": true,
+          "identifier": "unset.readOnlyProperty"
+        },
+        {
+          "message": "Cannot unset property UnsetProperties\\ParentProperties::$ordinary because it might have hooks in a subclass.",
+          "line": 55,
+          "ignorable": true,
+          "identifier": "unset.possiblyHookedProperty"
+        },
+        {
+          "message": "Class UnsetProperties\\Other has an uninitialized readonly property $native. Assign it in the constructor.",
+          "line": 64,
+          "ignorable": true,
+          "identifier": "property.uninitializedReadonly"
+        },
+        {
+          "message": "Cannot unset readonly UnsetProperties\\ParentProperties::$native property.",
+          "line": 78,
+          "ignorable": true,
+          "identifier": "unset.readOnlyProperty"
+        },
+        {
+          "message": "Class UnsetProperties\\WithNestedTrait has an uninitialized readonly property $native. Assign it in the constructor.",
+          "line": 83,
+          "ignorable": true,
+          "identifier": "property.uninitializedReadonly"
+        },
+        {
+          "message": "Class UnsetProperties\\WithTrait has an uninitialized readonly property $native. Assign it in the constructor.",
+          "line": 83,
+          "ignorable": true,
+          "identifier": "property.uninitializedReadonly"
+        },
+        {
+          "message": "Cannot unset readonly UnsetProperties\\WithTrait::$native property.",
+          "line": 93,
+          "ignorable": true,
+          "identifier": "unset.readOnlyProperty"
+        },
+        {
+          "message": "Cannot unset readonly UnsetProperties\\WithTrait::$native property.",
+          "line": 104,
+          "ignorable": true,
+          "identifier": "unset.readOnlyProperty"
+        },
+        {
+          "message": "Cannot unset readonly UnsetProperties\\WithNestedTrait::$native property.",
+          "line": 105,
+          "ignorable": true,
+          "identifier": "unset.readOnlyProperty"
+        },
+        {
+          "message": "Cannot unset readonly UnsetProperties\\ParentProperties::$native property.",
+          "line": 113,
+          "ignorable": true,
+          "identifier": "unset.readOnlyProperty"
+        },
+        {
+          "message": "Cannot unset property DatePeriod::$start because it might have hooks in a subclass.",
+          "line": 118,
+          "ignorable": true,
+          "identifier": "unset.possiblyHookedProperty"
+        },
+        {
+          "message": "Cannot unset property DatePeriod::$recurrences because it might have hooks in a subclass.",
+          "line": 119,
+          "ignorable": true,
+          "identifier": "unset.possiblyHookedProperty"
+        },
+        {
+          "message": "Cannot unset readonly class@anonymous/properties.php:124::$native property.",
+          "line": 131,
+          "ignorable": true,
+          "identifier": "unset.readOnlyProperty"
+        },
+        {
+          "message": "Cannot unset readonly UnsetProperties\\ParentProperties::$native property.",
+          "line": 139,
+          "ignorable": true,
+          "identifier": "unset.readOnlyProperty"
+        }
+      ]
+    }
+  },
+  "errors": []
+}

@@ -59,6 +59,7 @@ mod types;
 mod unused_trait;
 mod write_only;
 mod variables;
+mod unset;
 mod phpdoc_tags;
 mod require_tags;
 mod var_tags;
@@ -130,6 +131,12 @@ pub const IDENTIFIERS: &[&str] = &[
     "requireOnce.fileNotFound",
     "variable.undefined",
     "variable.nameNotString",
+    "unset.variable",
+    "unset.offset",
+    "unset.readOnlyProperty",
+    "unset.readOnlyPropertyByPhpDoc",
+    "unset.hookedProperty",
+    "unset.possiblyHookedProperty",
     "phpstan.dumpType",
     "phpstan.dumpPhpDocType",
     "pipe.byRef",
@@ -2557,6 +2564,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
     fn walk_in_unset(&mut self, u: &'ast Unset<'arena>, _: &mut ()) {
         assign::unset(self, u);
         types::property_unset(self, u);
+        unset::check(self, u);
     }
     fn walk_in_array_append(&mut self, a: &'ast ArrayAppend<'arena>, _: &mut ()) {
         assign::array_append(self, a);

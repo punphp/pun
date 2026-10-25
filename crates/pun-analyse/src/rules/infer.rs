@@ -119,6 +119,7 @@ pub(super) fn infer<'arena>(
     let mut wanted = wanted.spans;
     wanted.extend(extra);
     wanted.extend(variables::typed_expressions(program));
+    wanted.extend(super::unset::expressions(program).0);
     wanted.extend(dead_code::flow_types(program, level));
     let (typed, watched) = dead_code::coalesce_types(program, level);
     wanted.extend(typed);
@@ -180,6 +181,7 @@ fn analyse_observed<'arena>(
         registry.register_expression_hook(Definedness {
             ids,
             builtins: super::reflection::builtins(php_version),
+            unset_scopes: super::unset::expressions(program).1,
             found: Arc::clone(&found),
         });
     }
@@ -245,6 +247,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for ArrayChildren<'_> {
 struct Definedness {
     ids: HashMap<Span, Vec<u8>>,
     builtins: &'static pun_phpstan::symbols::Symbols,
+    unset_scopes: HashSet<Span>,
     found: Arc<Mutex<Found>>,
 }
 
@@ -288,6 +291,10 @@ impl ExpressionHook for Definedness {
         let span = expr.span();
         {
             let mut found = self.found.lock().expect("no hook panics while holding the lock");
+            if self.unset_scopes.contains(&span) {
+                found.variables.scopes.insert(span, variables::Certainty::of(context));
+                super::unset::observe(expr, context, &mut found.read);
+            }
             match expr {
                 Expression::Variable(v) => observe_variable(v, context, &mut found),
                 Expression::Access(Access::StaticProperty(p)) => {

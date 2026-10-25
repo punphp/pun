@@ -1,0 +1,152 @@
+{
+  "totals": {
+    "errors": 0,
+    "file_errors": 23
+  },
+  "files": {
+    "keys.php": {
+      "errors": 23,
+      "messages": [
+        {
+          "message": "Cannot unset offset bool on array{2: int}.",
+          "line": 8,
+          "ignorable": true,
+          "identifier": "unset.offset"
+        },
+        {
+          "message": "Cannot unset offset 1.0E+19 on array{2?: int}.",
+          "line": 10,
+          "ignorable": true,
+          "identifier": "unset.offset"
+        },
+        {
+          "message": "Cannot unset offset -1.0E+19 on array{2?: int}.",
+          "line": 11,
+          "ignorable": true,
+          "identifier": "unset.offset"
+        },
+        {
+          "message": "Cannot unset offset INF on array{2?: int}.",
+          "line": 12,
+          "ignorable": true,
+          "identifier": "unset.offset"
+        },
+        {
+          "message": "Cannot unset offset -INF on array{2?: int}.",
+          "line": 13,
+          "ignorable": true,
+          "identifier": "unset.offset"
+        },
+        {
+          "message": "Cannot unset offset NAN on array{2?: int}.",
+          "line": 14,
+          "ignorable": true,
+          "identifier": "unset.offset"
+        },
+        {
+          "message": "Cannot unset offset '02' on array{2?: int}.",
+          "line": 15,
+          "ignorable": true,
+          "identifier": "unset.offset"
+        },
+        {
+          "message": "Cannot unset offset array{} on array{2?: int}.",
+          "line": 16,
+          "ignorable": true,
+          "identifier": "unset.offset"
+        },
+        {
+          "message": "Cannot unset offset 10 on array{a: int, ...<string, int>}.",
+          "line": 31,
+          "ignorable": true,
+          "identifier": "unset.offset"
+        },
+        {
+          "message": "Cannot unset offset int on array<string, int>.",
+          "line": 41,
+          "ignorable": true,
+          "identifier": "unset.offset"
+        },
+        {
+          "message": "Cannot unset offset string on string.",
+          "line": 47,
+          "ignorable": true,
+          "identifier": "unset.offset"
+        },
+        {
+          "message": "Cannot unset offset 2 on non-empty-list&callable(): mixed.",
+          "line": 54,
+          "ignorable": true,
+          "identifier": "unset.offset"
+        },
+        {
+          "message": "Cannot unset offset 'other' on non-empty-list&callable(): mixed.",
+          "line": 55,
+          "ignorable": true,
+          "identifier": "unset.offset"
+        },
+        {
+          "message": "Undefined variable: $missingIndex",
+          "line": 67,
+          "ignorable": true,
+          "identifier": "variable.undefined"
+        },
+        {
+          "message": "Cannot unset offset 'first' on 7.",
+          "line": 73,
+          "ignorable": true,
+          "identifier": "unset.offset"
+        },
+        {
+          "message": "Call to function unset() contains undefined variable $absent.",
+          "line": 74,
+          "ignorable": true,
+          "identifier": "unset.variable"
+        },
+        {
+          "message": "Cannot unset offset 2 on non-empty-list&callable(): mixed.",
+          "line": 88,
+          "ignorable": true,
+          "identifier": "unset.offset"
+        },
+        {
+          "message": "Cannot unset offset 'other' on non-empty-list&callable(): mixed.",
+          "line": 89,
+          "ignorable": true,
+          "identifier": "unset.offset"
+        },
+        {
+          "message": "Cannot unset offset -1 on non-empty-list<int>.",
+          "line": 92,
+          "ignorable": true,
+          "identifier": "unset.offset"
+        },
+        {
+          "message": "Cannot unset offset 'other' on non-empty-list<int>.",
+          "line": 93,
+          "ignorable": true,
+          "identifier": "unset.offset"
+        },
+        {
+          "message": "Cannot unset offset 10 on array{a: int, ...<string, int>}.",
+          "line": 95,
+          "ignorable": true,
+          "identifier": "unset.offset"
+        },
+        {
+          "message": "Cannot unset offset 'missing' on T of array{}.",
+          "line": 106,
+          "ignorable": true,
+          "identifier": "unset.offset"
+        },
+        {
+          "message": "Cannot unset offset 'missing' on array{a: int}.",
+          "line": 116,
+          "ignorable": true,
+          "identifier": "unset.offset"
+        }
+      ]
+    }
+  },
+  "errors": []
+}

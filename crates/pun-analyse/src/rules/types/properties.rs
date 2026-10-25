@@ -178,7 +178,33 @@ pub(super) fn with_args(t: &Type, scope: &str, names: &[String], args: &[Type]) 
 
 /// `findPropertyReflectionsFromNode()`: the property when every class of the holder has it.
 fn find<'a>(c: &Checker<'a, '_>, f: &Fetch) -> Option<Prop<'a>> {
-    let holder = holder_type(c, f)?;
+    find_on(c, f, holder_type(c, f)?, false)
+}
+
+/// FoundPropertyReflection::getNativeReflection() unwraps a single native reflection, not a union/intersection
+/// of properties or a magic/enum reflection. An intersection with just one declared property keeps that one.
+pub(in super::super) fn native_unset_property<'a>(
+    c: &Checker<'a, '_>,
+    e: &Expression,
+) -> Option<(&'a ClassLikeMetadata, &'a PropertyMetadata, bool, bool)> {
+    let f = fetch(e)?;
+    let holder = holder_type(c, &f)?.resolve_to_bounds();
+    if matches!(holder, Type::Union(_) | Type::Benevolent(_)) {
+        return None;
+    }
+    let classes: Vec<_> = holder.object_class_names().into_iter()
+        .filter_map(|name| c.codebase.get_class_like(name.as_bytes()).or_else(|| {
+            // As for dynamic class receivers: conversion uses the anonymous display name, codex its key.
+            c.codebase.class_likes.values().find(|k| k.name.as_bytes().starts_with(b"{anonymous-class:") && c.display(k) == name).map(Box::as_ref)
+        }))
+        .filter(|k| has_instance_property(c, k, &f.name))
+        .collect();
+    let [class] = classes.as_slice() else { return None };
+    let p = find_on(c, &f, Type::Object(class.name.to_string(), vec![]), true)?;
+    Some((p.declaring, p.meta, p.native_readonly, p.phpdoc_readonly))
+}
+
+fn find_on<'a>(c: &Checker<'a, '_>, f: &Fetch, holder: Type, native_only: bool) -> Option<Prop<'a>> {
     let names = holder.object_class_names();
     let classes: Vec<&'a ClassLikeMetadata> =
         names.iter().map(|n| c.codebase.get_class_like(n.as_bytes())).collect::<Option<_>>()?;
@@ -212,6 +238,18 @@ fn find<'a>(c: &Checker<'a, '_>, f: &Fetch) -> Option<Prop<'a>> {
             _ => (declaring, meta, false),
         },
         None => magic_property()?,
+    };
+    if native_only && (magic || declaring.kind == mago_codex::symbol::SymbolKind::Enum) {
+        return None;
+    }
+    let declaring = if native_only && declaring.kind == mago_codex::symbol::SymbolKind::Trait {
+        // Mago's appearing id still names the trait. PHP reflects its property on the class that directly
+        // imports it (possibly through another trait), not on a later inheriting class.
+        std::iter::successors(Some(class), |k| k.direct_parent_class.and_then(|p| c.codebase.get_class_like(p.as_bytes())))
+            .take(super::super::overriding::ANCESTRY)
+            .find(|k| k.direct_trait_names().any(|t| t == declaring.name))?
+    } else {
+        declaring
     };
     // an `@property-read` over a writable native property writes the native type
     let native_write = shadowed.filter(|_| meta.flags.is_readonly());
