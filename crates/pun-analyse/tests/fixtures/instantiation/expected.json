@@ -1,0 +1,194 @@
+{
+  "general": [],
+  "errors": [
+    {
+      "file": "dynamic.php",
+      "line": 17,
+      "identifier": "arguments.count",
+      "message": "Class InstantiationReflection\\Concrete constructor invoked with 0 parameters, 1 required.",
+      "tip": null
+    },
+    {
+      "file": "dynamic.php",
+      "line": 28,
+      "identifier": "arguments.count",
+      "message": "Class InstantiationReflection\\Concrete constructor invoked with 0 parameters, 1 required.",
+      "tip": null
+    },
+    {
+      "file": "dynamic.php",
+      "line": 34,
+      "identifier": "arguments.count",
+      "message": "Class InstantiationReflection\\Concrete constructor invoked with 0 parameters, 1 required.",
+      "tip": null
+    },
+    {
+      "file": "dynamic.php",
+      "line": 37,
+      "identifier": "arguments.count",
+      "message": "Class InstantiationReflection\\Concrete constructor invoked with 0 parameters, 1 required.",
+      "tip": null
+    },
+    {
+      "file": "dynamic.php",
+      "line": 52,
+      "identifier": "class.notFound",
+      "message": "Parameter $object of function InstantiationReflection\\missingObject() has invalid type InstantiationReflection\\Missing.",
+      "tip": null
+    },
+    {
+      "file": "dynamic.php",
+      "line": 53,
+      "identifier": "class.notFound",
+      "message": "Instantiated class InstantiationReflection\\Missing not found.",
+      "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+    },
+    {
+      "file": "dynamic.php",
+      "line": 55,
+      "identifier": "class.notFound",
+      "message": "Instantiated class InstantiationReflection\\Missing not found.",
+      "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+    },
+    {
+      "file": "dynamic.php",
+      "line": 61,
+      "identifier": "class.notFound",
+      "message": "Instantiated class InstantiationReflection\\Missing not found.",
+      "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+    },
+    {
+      "file": "dynamic.php",
+      "line": 63,
+      "identifier": "class.notFound",
+      "message": "Instantiated class InstantiationReflection\\Missing not found.",
+      "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+    },
+    {
+      "file": "dynamic.php",
+      "line": 67,
+      "identifier": "class.notFound",
+      "message": "Instantiated class InstantiationReflection\\Missing not found.",
+      "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+    },
+    {
+      "file": "dynamic.php",
+      "line": 76,
+      "identifier": "arguments.count",
+      "message": "Class InstantiationReflection\\Concrete constructor invoked with 0 parameters, 1 required.",
+      "tip": null
+    },
+    {
+      "file": "dynamic.php",
+      "line": 76,
+      "identifier": "class.notFound",
+      "message": "Instantiated class InstantiationReflection\\Missing not found.",
+      "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+    },
+    {
+      "file": "dynamic.php",
+      "line": 80,
+      "identifier": "new.abstract",
+      "message": "Instantiated class InstantiationReflection\\AbstractClass is abstract.",
+      "tip": null
+    },
+    {
+      "file": "dynamic.php",
+      "line": 82,
+      "identifier": "new.interface",
+      "message": "Cannot instantiate interface InstantiationReflection\\Contract.",
+      "tip": null
+    },
+    {
+      "file": "dynamic.php",
+      "line": 84,
+      "identifier": "new.trait",
+      "message": "Cannot instantiate trait InstantiationReflection\\SharedTrait.",
+      "tip": null
+    },
+    {
+      "file": "dynamic.php",
+      "line": 86,
+      "identifier": "new.enum",
+      "message": "Cannot instantiate enum InstantiationReflection\\Choice.",
+      "tip": null
+    },
+    {
+      "file": "dynamic.php",
+      "line": 88,
+      "identifier": "new.privateConstructor",
+      "message": "Cannot instantiate class InstantiationReflection\\PrivateChild via private constructor InstantiationReflection\\PrivateParent::__construct().",
+      "tip": null
+    },
+    {
+      "file": "dynamic.php",
+      "line": 88,
+      "identifier": "arguments.count",
+      "message": "Class InstantiationReflection\\PrivateChild constructor invoked with 0 parameters, 1 required.",
+      "tip": null
+    },
+    {
+      "file": "dynamic.php",
+      "line": 90,
+      "identifier": "arguments.count",
+      "message": "Class InstantiationReflection\\Concrete constructor invoked with 0 parameters, 1 required.",
+      "tip": null
+    },
+    {
+      "file": "dynamic.php",
+      "line": 101,
+      "identifier": "arguments.count",
+      "message": "Class InstantiationReflection\\KeywordChild constructor invoked with 0 parameters, 1 required.",
+      "tip": null
+    },
+    {
+      "file": "dynamic.php",
+      "line": 103,
+      "identifier": "arguments.count",
+      "message": "Class InstantiationReflection\\KeywordParent constructor invoked with 0 parameters, 1 required.",
+      "tip": null
+    },
+    {
+      "file": "dynamic.php",
+      "line": 105,
+      "identifier": "arguments.count",
+      "message": "Class InstantiationReflection\\KeywordChild constructor invoked with 0 parameters, 1 required.",
+      "tip": null
+    },
+    {
+      "file": "dynamic.php",
+      "line": 111,
+      "identifier": "outOfClass.self",
+      "message": "Using self outside of class scope.",
+      "tip": null
+    },
+    {
+      "file": "dynamic.php",
+      "line": 113,
+      "identifier": "outOfClass.static",
+      "message": "Using static outside of class scope.",
+      "tip": null
+    },
+    {
+      "file": "dynamic.php",
+      "line": 115,
+      "identifier": "outOfClass.parent",
+      "message": "Using parent outside of class scope.",
+      "tip": null
+    },
+    {
+      "file": "dynamic.php",
+      "line": 127,
+      "identifier": "arguments.count",
+      "message": "Class InstantiationReflection\\Concrete constructor invoked with 0 parameters, 1 required.",
+      "tip": null
+    },
+    {
+      "file": "dynamic.php",
+      "line": 149,
+      "identifier": "arguments.count",
+      "message": "Class InstantiationReflection\\Concrete constructor invoked with 0 parameters, 1 required.",
+      "tip": null
+    }
+  ]
+}

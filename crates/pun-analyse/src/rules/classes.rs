@@ -1,46 +1,213 @@
 //! Class instantiation and class-name checks.
 
+use mago_allocator::LocalArena;
 use mago_codex::metadata::class_like::ClassLikeMetadata;
 use mago_codex::symbol::SymbolKind;
-use mago_codex::ttype::atomic::TAtomic;
-use mago_codex::ttype::atomic::object::TObject;
-use mago_codex::ttype::atomic::scalar::TScalar;
-use mago_codex::ttype::atomic::scalar::class_like_string::TClassLikeString;
 use mago_syntax::cst::*;
+use mago_syntax::walker::MutWalker;
+use pun_phpstan::types::{Type, intersect, union};
 
 use mago_span::{HasSpan, Span};
 
 use super::class_names::{self, Pair};
 use super::reflection::Lookup;
-use super::{Checker, DISCOVERING_SYMBOLS_TIP, members, params};
+use super::{Checker, DISCOVERING_SYMBOLS_TIP, declared, infer, members, params};
 
 /// NewStaticRule, then InstantiationRule (level 0: no argument types).
 pub fn instantiation<'arena>(c: &mut Checker<'_, 'arena>, new: &Instantiation<'arena>) {
     if matches!(new.class, Expression::Static(_)) {
         new_static(c, new);
     }
-    let args = new.argument_list.as_ref();
-    let keyword = |c: &Checker| {
-        String::from_utf8_lossy(&c.file.contents[new.class.span().to_range_usize()]).into_owned()
-    };
-    let (class, is_static) = match (new.class, c.class_scope()) {
-        (Expression::Identifier(id), _) => {
+    match new.class {
+        Expression::Identifier(id) => {
             let name = c.resolved(id);
             named(c, new, &name, true, Pair::name(name.clone(), id.span()));
-            return;
         }
-        (Expression::Static(_) | Expression::Self_(_) | Expression::Parent(_), None) => {
-            let written = keyword(c);
-            let identifier = super::out_of_class(new.class);
+        Expression::Static(_) | Expression::Self_(_) | Expression::Parent(_) => {
+            let name = c.written(new.class.span()).to_string();
+            named(
+                c,
+                new,
+                &name,
+                true,
+                Pair::node(name.clone(), new.class.span()),
+            );
+        }
+        expr => {
+            for (name, is_name) in class_names(c, expr) {
+                let pair = Pair::node(name.clone(), expr.span());
+                named(c, new, &name, is_name, pair);
+            }
+        }
+    }
+}
+
+/// `getClassNames()` for `new $expr`: the class-strings' concrete classes, else the constant strings (as names)
+/// and the object types' classes (not as names).
+fn class_names(c: &Checker, expr: &Expression) -> Vec<(String, bool)> {
+    let Some(mut ty) = c.phpstan_type(expr) else {
+        return Vec::new();
+    };
+    // Mago erases unknown objects to mixed/never. Restore only this expression's own source edge, and only
+    // an object naming an unknown class; a concrete inferred narrowing must never regain a broader declaration.
+    if matches!(ty, Type::Mixed { .. } | Type::Never(_))
+        && let Some(source) = object_source(c, expr.span())
+        && names(&source, false)
+            .iter()
+            .any(|n| matches!(class_like(c, n), Lookup::NotFound))
+    {
+        ty = source;
+    }
+    if let Some(object) = class_string_object(c, &ty)
+        // UnionType::getObjectClassReflections(): no reflections if any alternative cannot be reflected.
+        && let Some(classes) = names(&object, false).iter().map(|n| class_like(c, n).found()).collect::<Option<Vec<_>>>()
+    {
+        let concretes: Vec<(String, bool)> = classes
+            .into_iter()
+            .filter(|k| !k.flags.is_abstract() && !k.kind.is_interface())
+            // Mago's anonymous reflection key, just as getName() supplies PHPStan's internal key.
+            .map(|k| (k.original_name.to_string(), true))
+            .collect();
+        if !concretes.is_empty() {
+            return concretes;
+        }
+    }
+    names(&ty, true)
+        .into_iter()
+        .map(|n| (n, true))
+        .chain(names(&ty, false).into_iter().map(|n| (n, false)))
+        .collect()
+}
+
+/// `getConstantStrings()` or `getObjectClassNames()`: unions require names in every alternative, intersections
+/// collect their members, and a template delegates to its bound. In particular `Object|'Name'` has neither.
+fn names(ty: &Type, strings: bool) -> Vec<String> {
+    match ty {
+        Type::ConstString(s) if strings => vec![s.clone()],
+        Type::Template(t) => names(&t.bound, strings),
+        Type::Union(parts) | Type::Benevolent(parts) | Type::Intersection(parts) => {
+            let mut out = Vec::new();
+            for part in parts {
+                let inner = names(part, strings);
+                if inner.is_empty() && !matches!(ty, Type::Intersection(_)) {
+                    return Vec::new();
+                }
+                for n in inner {
+                    if !out.contains(&n) {
+                        out.push(n);
+                    }
+                }
+            }
+            out
+        }
+        _ if !strings => ty.object_class_names(),
+        _ => Vec::new(),
+    }
+}
+
+/// `isClassString()->yes()` followed by `getClassStringObjectType()`, including templates and compound bounds.
+fn class_string_object(c: &Checker, ty: &Type) -> Option<Type> {
+    match ty {
+        Type::ClassString(object) => Some(
+            object
+                .as_deref()
+                .cloned()
+                .unwrap_or(Type::ObjectWithoutClass),
+        ),
+        Type::ConstString(n) if class_like(c, n).found().is_some() => {
+            Some(Type::Object(n.clone(), vec![]))
+        }
+        // TemplateTypeFactory has no TemplateGenericClassStringType: a direct class-string bound falls back
+        // to TemplateMixedType. Its union/intersection and ordinary string template subclasses retain bounds.
+        Type::Template(t) if !matches!(t.bound, Type::ClassString(_)) => {
+            class_string_object(c, &t.bound)
+        }
+        Type::Union(parts) | Type::Benevolent(parts) => {
+            let objects = parts
+                .iter()
+                .map(|t| class_string_object(c, t))
+                .collect::<Option<Vec<_>>>()?;
+            Some(declared::with_classes(c, || union(objects)))
+        }
+        Type::Intersection(parts) => {
+            let objects: Vec<_> = parts
+                .iter()
+                .filter_map(|t| class_string_object(c, t))
+                .collect();
+            (!objects.is_empty()).then(|| declared::with_classes(c, || intersect(objects)))
+        }
+        _ => None,
+    }
+}
+
+/// Converted anonymous objects use getDisplayName(); reflection still needs Mago's internal declaration key.
+fn class_like<'a>(c: &Checker<'a, '_>, name: &str) -> Lookup<'a> {
+    if name.starts_with("class@anonymous/") {
+        return c
+            .codebase
+            .class_likes
+            .values()
+            .find(|k| k.name.as_bytes().starts_with(b"{anonymous-class:") && c.display(k) == name)
+            .map_or(Lookup::NotFound, |k| Lookup::Found(k));
+    }
+    c.class_like(name)
+}
+
+/// The bounded erased-object fallback: existing provenance already forgets writes, reference escapes and joins.
+fn object_source(c: &Checker, at: Span) -> Option<Type> {
+    match c.origins.get(&at)? {
+        infer::Origin::Copy(from) => object_source(c, *from).or_else(|| {
+            // A copied `new Unknown` has no declaration edge. Its own AST and inferred never establish the
+            // name; reuse conversion's existing unknown-instantiation contract, not a textual name guess.
+            if !c.types.get(from)?.is_never() {
+                return None;
+            }
+            struct Find<'a, 'c, 'arena> {
+                c: &'a Checker<'c, 'arena>,
+                at: Span,
+                ty: Option<Type>,
+            }
+            impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Find<'_, '_, 'arena> {
+                fn walk_in_expression(&mut self, e: &'ast Expression<'arena>, _: &mut ()) {
+                    if e.span() == self.at {
+                        self.ty = self.c.phpstan_type(e);
+                    }
+                }
+            }
+            let arena = LocalArena::new();
+            let (program, _) = crate::codebase::parse(&arena, c.file);
+            let mut find = Find {
+                c,
+                at: *from,
+                ty: None,
+            };
+            find.walk_program(program, &mut ());
+            find.ty
+        }),
+        _ => None,
+    }
+}
+
+/// `checkClassName()` for a class given by name, `pair` the name and the node `new` names it with.
+fn named<'arena>(
+    c: &mut Checker<'_, 'arena>,
+    new: &Instantiation<'arena>,
+    name: &str,
+    is_name: bool,
+    pair: Pair,
+) {
+    let lower = name.to_ascii_lowercase();
+    let (class, is_static) = match (lower.as_str(), c.class_scope()) {
+        ("static" | "self" | "parent", None) => {
             c.report(
                 new,
-                identifier,
-                format!("Using {written} outside of class scope."),
+                &format!("outOfClass.{lower}"),
+                format!("Using {name} outside of class scope."),
                 None,
             );
             return;
         }
-        (Expression::Static(_), Some(class)) => {
+        ("static", Some(class)) => {
             if !class.flags.is_final()
                 && (!has_constructor(c, class) || !consistent_constructor(c, class))
             {
@@ -48,13 +215,13 @@ pub fn instantiation<'arena>(c: &mut Checker<'_, 'arena>, new: &Instantiation<'a
             }
             (class, true)
         }
-        (Expression::Self_(_), Some(class)) => (class, false),
-        (Expression::Parent(_), Some(scope)) => {
-            let parent = scope
+        ("self", Some(class)) => (class, false),
+        ("parent", Some(scope)) => {
+            match scope
                 .direct_parent_class
-                .map(|p| c.class_like(&String::from_utf8_lossy(p.as_bytes())));
-            match parent {
-                Some(Lookup::Found(p)) => (p, false),
+                .map(|p| c.class_like(&String::from_utf8_lossy(p.as_bytes())))
+            {
+                Some(Lookup::Found(parent)) => (parent, false),
                 Some(Lookup::Opaque) => return,
                 None | Some(Lookup::NotFound) => {
                     let action = format!(
@@ -67,101 +234,40 @@ pub fn instantiation<'arena>(c: &mut Checker<'_, 'arena>, new: &Instantiation<'a
                 }
             }
         }
-        (expr, _) => {
-            for (name, is_name) in class_names(c, expr) {
-                let pair = Pair::node(name.clone(), expr.span());
-                named(c, new, &name, is_name, pair);
+        _ => match class_like(c, name) {
+            Lookup::Found(class) => {
+                class_names::check_at(
+                    c,
+                    &[pair],
+                    Some(&class_names::Location::Instantiation),
+                    true,
+                );
+                (class, false)
             }
-            return;
-        }
+            Lookup::Opaque => {
+                class_names::check(c, &[pair], true);
+                return;
+            }
+            Lookup::NotFound if c.in_class_exists(name) => return,
+            Lookup::NotFound => {
+                c.report(
+                    new,
+                    "class.notFound",
+                    format!("Instantiated class {name} not found."),
+                    Some(DISCOVERING_SYMBOLS_TIP),
+                );
+                return;
+            }
+        },
     };
     check_class(
         c,
         new.span(),
-        args.map(params::count),
+        new.argument_list.as_ref().map(params::count),
         class,
         is_static,
-        true,
+        is_name,
     );
-}
-
-/// `getClassNames()` for `new $expr`: the class-strings' concrete classes, else the constant strings (as names)
-/// and the object types' classes (not as names).
-fn class_names(c: &Checker, expr: &Expression) -> Vec<(String, bool)> {
-    let Some(t) = c.type_of(expr) else {
-        return Vec::new();
-    };
-    let mut strings = Vec::new();
-    let mut objects = Vec::new();
-    let mut class_strings = true;
-    for atomic in t.types.iter() {
-        match atomic {
-            TAtomic::Scalar(TScalar::ClassLikeString(TClassLikeString::Literal { value })) => {
-                strings.push(String::from_utf8_lossy(value.as_bytes()).into_owned());
-            }
-            TAtomic::Scalar(s) if s.get_known_literal_string_value().is_some() => {
-                strings.push(
-                    String::from_utf8_lossy(s.get_known_literal_string_value().unwrap_or_default())
-                        .into_owned(),
-                );
-            }
-            TAtomic::Object(TObject::Named(o)) => {
-                class_strings = false;
-                objects.push(String::from_utf8_lossy(o.name.as_bytes()).into_owned());
-            }
-            _ => class_strings = false,
-        }
-    }
-    // UnionType::getObjectClassReflections() returns none if any alternative cannot be reflected.
-    if class_strings
-        && !strings.is_empty()
-        && let Some(classes) = strings.iter().map(|n| c.class_like(n).found()).collect::<Option<Vec<_>>>()
-    {
-        let concretes: Vec<(String, bool)> = classes
-            .into_iter()
-            .filter(|k| !k.flags.is_abstract() && !k.kind.is_interface())
-            .map(|k| (c.display(k), true))
-            .collect();
-        if !concretes.is_empty() {
-            return concretes;
-        }
-    }
-    strings
-        .into_iter()
-        .map(|n| (n, true))
-        .chain(objects.into_iter().map(|n| (n, false)))
-        .collect()
-}
-
-/// `checkClassName()` for a class given by name, `pair` the name and the node `new` names it with.
-fn named<'arena>(
-    c: &mut Checker<'_, 'arena>,
-    new: &Instantiation<'arena>,
-    name: &str,
-    is_name: bool,
-    pair: Pair,
-) {
-    match c.class_like(name) {
-        Lookup::Found(class) => {
-            class_names::check_at(c, &[pair], Some(&class_names::Location::Instantiation), true);
-            check_class(
-                c,
-                new.span(),
-                new.argument_list.as_ref().map(params::count),
-                class,
-                false,
-                is_name,
-            );
-        }
-        Lookup::Opaque => class_names::check(c, &[pair], true),
-        Lookup::NotFound if c.in_class_exists(name) => {}
-        Lookup::NotFound => c.report(
-            new,
-            "class.notFound",
-            format!("Instantiated class {name} not found."),
-            Some(DISCOVERING_SYMBOLS_TIP),
-        ),
-    }
 }
 
 /// InstantiationRule on `new class(...) { ... }`: the class is the anonymous class itself.
