@@ -18,6 +18,7 @@ use super::{Checker, declared};
 pub(super) struct Observations {
     pub reads: HashMap<Span, (String, Tri, bool)>,
     pub scopes: HashMap<Span, Certainty>,
+    pub property_selectors: HashSet<Span>,
 }
 
 pub(super) struct Certainty {
@@ -260,6 +261,21 @@ pub(super) fn allowed_expressions(program: &Program) -> HashSet<Span> {
                 {
                     allow_target(a.lhs, &mut self.0)
                 }
+                Expression::Assignment(a)
+                    if matches!(a.operator, AssignmentOperator::Assign(_)) =>
+                {
+                    let mut root = super::types::flow::unparen(a.lhs);
+                    loop {
+                        root = match root {
+                            Expression::ArrayAccess(a) => super::types::flow::unparen(a.array),
+                            Expression::ArrayAppend(a) => super::types::flow::unparen(a.array),
+                            _ => break,
+                        };
+                    }
+                    if matches!(root, Expression::Variable(_)) {
+                        self.0.insert(root.span());
+                    }
+                }
                 Expression::UnaryPrefix(u) if u.operator.is_reference() => {
                     allow_target(u.operand, &mut self.0)
                 }
@@ -466,6 +482,10 @@ pub(super) fn is_compact(call: &FunctionCall) -> bool {
 /// DefinedVariableRule::processNode(). Name castability is checked even in assignment/undefined-allowed contexts.
 pub(super) fn variable(c: &mut Checker, variable: &Variable) {
     let span = variable.span();
+    // A static-property selector shares this CST shape, but is not a variable expression.
+    if c.variables.property_selectors.contains(&span) {
+        return;
+    }
     if let Some(name) = super::types::dynamic_names::static_property(variable) {
         if c.non_stringable_names
             && let Some((ty, _)) = super::types::dynamic_names::not_string(c, name, true)

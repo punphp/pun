@@ -385,7 +385,7 @@ fn observe_direct(v: &DirectVariable<'_>, context: &HookContext<'_, '_>, found: 
     // Mago places every implicit arrow capture in possibly_in_scope, even one absent in its parent. Read the
     // parent's real block observation for those names, not a syntactically reconstructed parent scope.
     let certainty = context.scope().get_function_like()
-        .filter(|_| context.get_variable_type(v.name).is_none())
+        .filter(|_| v.name != b"$this" && context.get_variable_type(v.name).is_none())
         .and_then(|f| found.arrows.get(&f.span))
         .map_or_else(|| variables::defined(context, &name), |parent| parent.captured(&name[1..]));
     let entry = found.variables.reads.entry(v.span()).or_insert_with(|| (name[1..].to_string(), certainty, variables::is_main(context)));

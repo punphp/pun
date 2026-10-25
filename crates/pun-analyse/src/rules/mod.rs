@@ -1934,6 +1934,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         p: &'ast StaticPropertyAccess<'arena>,
         _: &mut (),
     ) {
+        self.variables.property_selectors.insert(p.property.span());
         property_access::static_read(self, p);
         through_static::property(self, p);
         internal::static_property_fetch(self, p);
