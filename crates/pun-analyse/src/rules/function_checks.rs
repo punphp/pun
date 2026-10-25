@@ -143,9 +143,9 @@ fn filter_var(c: &mut Checker, call: &FunctionCall, position: usize, per_key: bo
     }
 }
 
-/// The constant integer values of `getFlagsValue()` of a flags argument: Mago's inferred integers, else (for the
-/// constants Mago's prelude lacks) the built-in constants and `|` written, or an array's `flags` item (0 without
-/// one).
+/// The constant integer values of `getFlagsValue()` of a flags argument: inferred integers, a built-in constant,
+/// or an array's `flags` item (0 without one). The codebase supplies missing integer constants before inference,
+/// so bitwise expressions use the inferred result rather than a separate syntax evaluator.
 fn flag_values(c: &Checker, e: &Expression) -> Option<Vec<i64>> {
     let inferred = c.type_of(e).and_then(|t| {
         t.types
@@ -163,10 +163,6 @@ fn flag_values(c: &Checker, e: &Expression) -> Option<Vec<i64>> {
         Expression::ConstantAccess(a) => {
             let name = String::from_utf8_lossy(a.name.value()).trim_start_matches('\\').to_string();
             Some(vec![c.builtins.constants.get(&name)?.parse().ok()?])
-        }
-        Expression::Binary(b) if matches!(b.operator, BinaryOperator::BitwiseOr(_)) => {
-            let (l, r) = (flag_values(c, b.lhs)?, flag_values(c, b.rhs)?);
-            Some(l.iter().flat_map(|a| r.iter().map(move |b| a | b)).collect())
         }
         Expression::Array(a) => {
             let flags = a.elements.iter().find_map(|e| match e {

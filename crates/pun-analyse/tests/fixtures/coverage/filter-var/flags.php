@@ -18,3 +18,12 @@ function check(mixed $value, int $unknown, string $text): void
 	filter_var($value, FILTER_VALIDATE_INT, 0x7fffffffffffffff);
 	filter_var($value, FILTER_VALIDATE_INT, FILTER_THROW_ON_FAILURE | 134217728);
 }
+
+function excludedElse(mixed $value): void
+{
+	if (true) {
+	} else {
+		filter_var($value, FILTER_VALIDATE_INT, FILTER_NULL_ON_FAILURE | FILTER_THROW_ON_FAILURE);
+		filter_var($value, FILTER_VALIDATE_INT, FILTER_NULL_ON_FAILURE);
+	}
+}
