@@ -1,0 +1,146 @@
+{
+  "totals": {
+    "errors": 0,
+    "file_errors": 22
+  },
+  "files": {
+    "types.php": {
+      "errors": 22,
+      "messages": [
+        {
+          "message": "Dumped type #1: array{z: int, a: string, ...<string, int|string>}",
+          "line": 16,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type #2: array{int, int}",
+          "line": 16,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type #3: non-empty-list&callable(): mixed",
+          "line": 16,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type #4: array{string, string}",
+          "line": 16,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type #1: array{z: int, a: string, ...<string, int|string>}",
+          "line": 17,
+          "ignorable": false,
+          "identifier": "phpstan.dumpPhpDocType"
+        },
+        {
+          "message": "Dumped type #2: array{int, int}",
+          "line": 17,
+          "ignorable": false,
+          "identifier": "phpstan.dumpPhpDocType"
+        },
+        {
+          "message": "Dumped type: array{z: int, a: string, ...<string, int|string>}",
+          "line": 19,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: array{a: 7}",
+          "line": 21,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: array{string, string}",
+          "line": 23,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: T of non-empty-list&callable(): mixed (function ArrayMetadata\\templateBound(), argument)",
+          "line": 32,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: T of non-empty-list&callable(): mixed (function ArrayMetadata\\templateBound(), argument)",
+          "line": 34,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type #1: array{a: int, z: bool}",
+          "line": 43,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type #2: int",
+          "line": 43,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: non-empty-array<string, int|string>",
+          "line": 50,
+          "ignorable": false,
+          "identifier": "phpstan.dumpPhpDocType"
+        },
+        {
+          "message": "Dumped type: int",
+          "line": 51,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: array{value: int}",
+          "line": 58,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: array{string, string}",
+          "line": 68,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: array{different: false}",
+          "line": 70,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: array{z: int, a: string, ...<string, int|string>}",
+          "line": 78,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: array{z: int, a: string, ...<string, int|string>}",
+          "line": 86,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Template type T of function ArrayMetadata\\annotatedTemplate() is not referenced in a parameter.",
+          "line": 90,
+          "ignorable": true,
+          "identifier": "method.templateTypeNotInParameter"
+        },
+        {
+          "message": "Dumped type: T of non-empty-list&callable(): mixed (function ArrayMetadata\\annotatedTemplate(), parameter)",
+          "line": 94,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        }
+      ]
+    }
+  },
+  "errors": []
+}

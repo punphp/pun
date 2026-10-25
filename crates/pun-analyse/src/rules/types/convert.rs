@@ -40,17 +40,58 @@ impl<'a, 'arena> Checker<'a, 'arena> {
             return Some(Type::Object(text(self.names.get(id)), vec![]));
         }
         let ty = declared::with_classes(self, || {
+            let source = self.source_type(e.span(), &self.origins);
             // Mago's keyed arrays are BTreeMaps: only the literal still knows PHP's insertion order. Unknown
             // keys/unpacks keep the inferred fallback, rather than inventing an order for a nonliteral shape.
-            let ty = self.literal_array(e).unwrap_or_else(|| self.to_phpstan(t));
+            let ty = self.literal_array(e).unwrap_or_else(|| {
+                source.as_ref().and_then(|s| self.source_array(t, s))
+                    .unwrap_or_else(|| self.to_phpstan(t))
+            });
+            let ty = source.as_ref().and_then(|s| self.source_template(e.span(), &ty, s))
+                .unwrap_or(ty);
             let ty = self.refine_method_guards(e, ty);
             // MutatingScope::enterFunction/enterClassMethod converts PHPDoc parameter/return values to arguments.
             // An inline @var annotation does not: its source metadata can restore that distinct template strategy.
             let ty = inferred_argument(&ty);
-            self.source_type(e.span(), &self.origins)
-                .map_or(ty.clone(), |source| restore(ty, &source))
+            source.map_or(ty.clone(), |source| restore(ty, &source))
         });
         Some(ty)
+    }
+
+    /// A PHPDoc open shape and a general array narrowed by an offset share Mago's representation. Preserve its
+    /// per-key inferred values only when this expression's own source edge establishes a declared shape.
+    fn source_array(&self, actual: &TUnion, source: &Type) -> Option<Type> {
+        match source {
+            Type::ConstArray(_) => match actual.types.as_ref() {
+                [TAtomic::Array(a)] => Some(self.array(a, true)),
+                _ => None,
+            },
+            Type::Template(t) => self.source_array(actual, &t.bound),
+            Type::Intersection(parts) => parts.iter().find_map(|s| self.source_array(actual, s)),
+            _ => None,
+        }
+    }
+
+    /// Mago rejects a parenthesized intersection template bound, then reads its uses as a class name. Recover
+    /// only a parameter/annotation's own array template, resolved in that declaration's exact namespace scope.
+    fn source_template(&self, mut at: Span, actual: &Type, source: &Type) -> Option<Type> {
+        let key = loop {
+            match self.origins.get(&at)? {
+                infer::Origin::Copy(from) => at = *from,
+                infer::Origin::Parameter(key, _) | infer::Origin::Annotation(_, _, Some(key)) => break key,
+                _ => return None,
+            }
+        };
+        let (Type::Object(name, args), Type::Template(template)) = (actual, source) else {
+            return None;
+        };
+        let function = self.codebase.function_likes.get(key)?;
+        let scope = declared::value_scope(self, function, self.codebase.get_class_like(key.0.as_bytes()));
+        let expected = scope.names.resolve(mago_names::kind::NameKind::Default, template.name.as_bytes()).0;
+        (args.is_empty() && template.bound.is_array().yes()
+            && name.as_bytes().eq_ignore_ascii_case(&expected)
+            && matches!(scope.templates.get(&template.name), Some(Type::Template(t)) if t.scope == template.scope))
+        .then(|| source.clone())
     }
 
     /// Only recover metadata from the expression's source edges. In particular, a structurally equal but
@@ -308,7 +349,7 @@ impl<'a, 'arena> Checker<'a, 'arena> {
             TAtomic::Mixed(_) => mixed(),
             TAtomic::Resource(_) => Type::Resource,
             TAtomic::Object(o) => self.object(o),
-            TAtomic::Array(a) => self.array(a),
+            TAtomic::Array(a) => self.array(a, false),
             TAtomic::Iterable(i) => {
                 let it = Type::Iterable(
                     Box::new(self.to_phpstan(&i.key_type)),
@@ -508,7 +549,7 @@ impl<'a, 'arena> Checker<'a, 'arena> {
         }
     }
 
-    fn array(&self, a: &TArray) -> Type {
+    fn array(&self, a: &TArray, declared_shape: bool) -> Type {
         match a {
             TArray::List(l) => {
                 if l.element_type.is_never() {
@@ -540,18 +581,9 @@ impl<'a, 'arena> Checker<'a, 'arena> {
             }
             TArray::Keyed(k) => {
                 match &k.parameters {
-                    None => {
-                        let mut shape = ConstArray::empty();
-                        for (key, (optional, v)) in k.known_items.iter().flat_map(|k| k.iter()) {
-                            if *optional {
-                                shape.optional.push(shape.keys.len());
-                            }
-                            shape.keys.push(self.key(key));
-                            shape.values.push(self.to_phpstan(v));
-                        }
-                        finish_shape(shape)
-                    }
-                    Some((key, value)) => {
+                    Some((key, value)) if !key.is_never()
+                        && !(declared_shape && k.known_items.as_ref().is_some_and(|i| !i.is_empty())) =>
+                    {
                         let mut keys = vec![self.to_phpstan(key)];
                         let mut values = vec![self.to_phpstan(value)];
                         for (k, (_, v)) in k.known_items.iter().flat_map(|k| k.iter()) {
@@ -567,6 +599,22 @@ impl<'a, 'arena> Checker<'a, 'arena> {
                             array
                         }
                     }
+                    parameters => {
+                        let mut shape = ConstArray::empty();
+                        for (key, (optional, v)) in k.known_items.iter().flat_map(|k| k.iter()) {
+                            if *optional {
+                                shape.optional.push(shape.keys.len());
+                            }
+                            shape.keys.push(self.key(key));
+                            shape.values.push(self.to_phpstan(v));
+                        }
+                        if let Some((key, value)) = parameters
+                            && !key.is_never()
+                        {
+                            shape.unsealed = Some((self.to_phpstan(key), self.to_phpstan(value)));
+                        }
+                        finish_shape(shape)
+                    }
                 }
             }
         }
@@ -580,7 +628,13 @@ fn restore(actual: Type, source: &Type) -> Type {
             if actual.name == source.name && actual.scope == source.scope =>
         {
             actual.argument = source.argument;
-            actual.bound = restore(actual.bound, &source.bound);
+            // A matching template identity proves which bound was erased. A concrete narrowed bound still
+            // wins; only Mago's unconstrained fallback can regain the source's callable-array intersection.
+            actual.bound = if matches!(actual.bound, Type::Mixed { .. }) {
+                source.bound.clone()
+            } else {
+                restore(actual.bound, &source.bound)
+            };
             Type::Template(actual)
         }
         (actual, Type::Template(source)) => restore(actual, &source.bound),
@@ -631,6 +685,15 @@ fn restore(actual: Type, source: &Type) -> Type {
                 .collect();
             actual.keys = source.keys.clone();
             actual.is_list = source.is_list;
+            actual.unsealed = match (&actual.unsealed, &source.unsealed) {
+                (Some((k, v)), Some((sk, sv))) => Some((restore(k.clone(), sk), restore(v.clone(), sv))),
+                (None, Some((Type::Never(NeverKind::Explicit | NeverKind::NonAccepting), _))) => {
+                    // ConstantArrayType's constructor treats every explicit never subclass as a sealed key
+                    // and normalizes its value to explicit never. The shared model stores that base kind.
+                    Some((Type::Never(NeverKind::Explicit), Type::Never(NeverKind::Explicit)))
+                }
+                _ => actual.unsealed,
+            };
             Type::ConstArray(actual)
         }
         (Type::Array(k, v), Type::Array(sk, sv) | Type::Iterable(sk, sv)) => {
@@ -641,6 +704,13 @@ fn restore(actual: Type, source: &Type) -> Type {
         }
         (Type::Intersection(parts), source) => {
             intersect(parts.into_iter().map(|t| restore(t, source)).collect())
+        }
+        (actual @ Type::Array(..), source @ Type::Intersection(_))
+            if source.is_array().yes() && source.is_callable().yes() =>
+        {
+            // Unlike a union's unrelated callable member, this source guarantees both properties. An
+            // intersection retains actual key/value narrowing instead of replacing it with the declaration.
+            intersect(vec![actual, source.clone()])
         }
         (actual, Type::Intersection(parts)) => parts.iter().fold(actual, restore),
         (actual, _) => actual,
@@ -708,11 +778,14 @@ fn array_key(t: Type) -> Option<Type> {
     })
 }
 
-/// A sealed shape through PHPStan's ConstantArrayTypeBuilder (`array{}` for no items).
+/// A shape through PHPStan's ConstantArrayTypeBuilder (`array{}` for no items).
 fn finish_shape(shape: ConstArray) -> Type {
     let mut builder = pun_phpstan::types::ShapeBuilder::new();
     for (i, (k, v)) in shape.keys.iter().zip(&shape.values).enumerate() {
         builder.set(Some(k.clone()), v.clone(), shape.optional.contains(&i));
+    }
+    if let Some((k, v)) = shape.unsealed {
+        builder.make_unsealed(k, v);
     }
     builder.get()
 }

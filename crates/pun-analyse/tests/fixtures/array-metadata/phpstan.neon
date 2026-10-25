@@ -1,0 +1,4 @@
+parameters:
+    level: 0
+    paths: [types.php]
+    phpVersion: 80400
