@@ -83,13 +83,8 @@
 # NoDiscard and purity, return types, casts, dead code)
 5 Classes/InstantiationRuleTest::testBug7574
 5 Classes/InstantiationRuleTest::testFirstClassCallable
-5 Functions/CallToFunctionParametersRuleTest::testBug2343
-5 Functions/CallToFunctionParametersRuleTest::testBug2846
-5 Functions/CallToFunctionParametersRuleTest::testBug3608
 5 Functions/CallToFunctionParametersRuleTest::testBug3920
-5 Functions/CallToFunctionParametersRuleTest::testBug4608
 5 Functions/CallToFunctionParametersRuleTest::testBug9697
-5 Functions/CallToFunctionParametersRuleTest::testCallUserFuncArray
 5 Functions/CallToFunctionParametersRuleTest::testConstantParameterCheck
 5 Functions/ParameterCastableToStringRuleTest::testNamedArguments
 5 Functions/SortParameterCastableToStringRuleTest::testRule
@@ -111,7 +106,6 @@
 9 Functions/CallToFunctionParametersRuleTest::testBug11386
 9 Functions/CallToFunctionParametersRuleTest::testBug9580
 9 Functions/CallToFunctionParametersRuleTest::testBug9697
-9 Functions/CallToFunctionParametersRuleTest::testCallUserFuncArray
 9 Functions/CallToFunctionParametersRuleTest::testConstantParameterCheck
 9 Methods/CallMethodsRuleTest::testBug12544
 9 Methods/CallMethodsRuleTest::testBug2837
@@ -171,7 +165,6 @@
 9 Functions/CallToFunctionParametersRuleTest::testArrayUintersectAssoc
 9 Functions/CallToFunctionParametersRuleTest::testArrayUintersectUassoc
 9 Functions/CallToFunctionParametersRuleTest::testBug12317
-9 Functions/CallToFunctionParametersRuleTest::testBug2343
 9 Functions/CallToFunctionParametersRuleTest::testBug2846
 9 Functions/CallToFunctionParametersRuleTest::testBug3506
 9 Functions/CallToFunctionParametersRuleTest::testBug3608
@@ -202,7 +195,6 @@
 5 Properties/AccessPropertiesRuleTest::testAccessProperties
 5 Properties/AccessPropertiesRuleTest::testAccessPropertiesOnThisOnly
 5 Properties/AccessPropertiesRuleTest::testAccessPropertiesWithoutUnionTypes
-9 Functions/CallToFunctionParametersRuleTest::testBug4608
 9 Functions/CallToFunctionParametersRuleTest::testBug6560#0
 9 Functions/CallToFunctionParametersRuleTest::testBug6560#1
 9 Functions/CallToFunctionParametersRuleTest::testNamedParametersForMultiVariantFunctions
@@ -820,6 +812,5 @@
 9 Operators/InvalidIncDecOperationRuleTest::testMixed
 9 Operators/InvalidIncDecOperationRuleTest::testUnion
 # cross-branch after the nullsafe + NullCoalesce + templateType merges (owners notified)
-4 Variables/NullCoalesceRuleTest::testBug5009
 4 Variables/NullCoalesceRuleTest::testBug7109
 9 Functions/CallToFunctionParametersRuleTest::testBug10297
