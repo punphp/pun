@@ -148,3 +148,39 @@ fn upstream_dynamic_access() {
         expected(&case["errors"])
     );
 }
+
+#[test]
+fn expression_type_guards_and_invalidation_at_each_rule_level() {
+    let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/class_constants");
+    let mut differences = Vec::new();
+    for level in [0, 1, 2, 7, 8, 9, 10] {
+        let config = resolve(&Options {
+            config: Some(root.join("expression-guards.neon").to_string_lossy().into_owned()),
+            level: Some(level.to_string()),
+            ..Options::for_project(&root.to_string_lossy())
+        })
+        .unwrap();
+        let want: Value = serde_json::from_slice(
+            &std::fs::read(root.join(format!("expected-expression-guards-{level}.json"))).unwrap(),
+        )
+        .unwrap();
+        let relevant = |e: &Key| e.2.starts_with("classConstant.") || e.2 == "class.notFound";
+        let mut project = Project::from_config(&root, &config.parameters);
+        project.level = level;
+        let got: Vec<_> = keys(run(&project).unwrap(), &root).into_iter().filter(relevant).collect();
+        let want: Vec<_> = expected(&want["errors"]).into_iter().filter(relevant).collect();
+        if got != want {
+            let mut missing = want;
+            let mut extra = Vec::new();
+            for error in got {
+                if let Some(i) = missing.iter().position(|e| *e == error) {
+                    missing.remove(i);
+                } else {
+                    extra.push(error);
+                }
+            }
+            differences.push(format!("level {level}: extra {extra:#?}, missing {missing:#?}"));
+        }
+    }
+    assert!(differences.is_empty(), "{}", differences.join("\n"));
+}

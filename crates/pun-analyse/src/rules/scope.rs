@@ -33,6 +33,10 @@ pub enum Guard {
     PhpVersion(Option<i64>, Option<i64>),
     /// An expression with a type in the scope (`hasExpressionType()`), by its key (`$this->name`).
     Expr(String),
+    /// A selector's finite string type in a branch, used by conditional expression holders at joins.
+    ExprStrings(String, Vec<String>),
+    /// A holder missing on these paths. Selecting a constant name can rule every missing path out.
+    ExprWhen(String, Vec<Vec<(String, Vec<String>)>>),
     /// A remembered true file-existence call, read by RequireFileExistsRule.
     File(super::include_file::FileGuard),
 }
@@ -51,11 +55,23 @@ impl PartialEq for Guard {
             | (Self::Constant(a), Self::Constant(b))
             | (Self::ThisNotInstanceOf(a), Self::ThisNotInstanceOf(b))
             | (Self::Expr(a), Self::Expr(b)) => a == b,
+            (Self::ExprStrings(a, av), Self::ExprStrings(b, bv)) => a == b && av == bv,
+            (Self::ExprWhen(a, av), Self::ExprWhen(b, bv)) => a == b && av == bv,
             (Self::PhpVersion(a, b), Self::PhpVersion(c, d)) => (a, b) == (c, d),
             (Self::File(a), Self::File(b)) => a == b,
             _ => false,
         }
     }
+}
+
+fn expression_guard(g: &Guard) -> bool {
+    matches!(g, Guard::Expr(_) | Guard::ExprStrings(..) | Guard::ExprWhen(..))
+}
+
+/// Remember existence predicates in a boolean variable, not the source expression's type holder. Merely
+/// assigning `$value = $receiver::NAME` does not give the fetch an expression type when `$value` is tested.
+pub(super) fn remembered_guard(g: &Guard) -> bool {
+    !expression_guard(g) && !matches!(g, Guard::File(_))
 }
 
 /// Guards from `expr` being true. `var` looks a variable's remembered guards up.
@@ -67,6 +83,7 @@ pub fn truthy(
     let mut guards = truthy_of(expr, var, resolve);
     if !compound(expr) {
         super::property_access::narrowed(expr, true, resolve, &mut guards);
+        constant_narrowed(expr, true, resolve, &mut guards);
     }
     guards
 }
@@ -150,8 +167,83 @@ pub fn falsy(
     let mut guards = falsy_of(expr, var, resolve);
     if !compound(expr) {
         super::property_access::narrowed(expr, false, resolve, &mut guards);
+        constant_narrowed(expr, false, resolve, &mut guards);
     }
     guards
+}
+
+/// ExprPrinter identities for the value expressions used as class-constant receivers/selectors. Unlike
+/// inferred types, these identities distinguish two variables holding the same class and a dynamic selector
+/// from its current finite values. Parentheses and imported names do not change the identity.
+fn expression_key(e: &Expression, resolve: &dyn Fn(&Identifier) -> String) -> Option<String> {
+    let key = |e| expression_key(e, resolve);
+    Some(match super::types::flow::unparen(e) {
+        Expression::Variable(Variable::Direct(v)) => String::from_utf8_lossy(v.name).into_owned(),
+        Expression::Identifier(id) => format!("\\{}", resolve(id)),
+        Expression::Self_(_) => "self".into(),
+        Expression::Static(_) => "static".into(),
+        Expression::Parent(_) => "parent".into(),
+        Expression::Literal(Literal::Integer(i)) => format!("int({})", i.value?),
+        Expression::Literal(Literal::String(s)) => format!("string({:?})", s.value?),
+        Expression::ArrayAccess(a) => format!("{}[{}]", key(a.array)?, key(a.index)?),
+        Expression::Access(Access::Property(p)) => {
+            let ClassLikeMemberSelector::Identifier(id) = &p.property else { return None };
+            format!("{}->{}", key(p.object)?, String::from_utf8_lossy(id.value))
+        }
+        Expression::Access(Access::StaticProperty(p)) => {
+            let Variable::Direct(v) = &p.property else { return None };
+            format!("{}::{}", key(p.class)?, String::from_utf8_lossy(v.name))
+        }
+        Expression::Access(Access::ClassConstant(a)) => constant_key(a, resolve)?,
+        _ => return None,
+    })
+}
+
+fn constant_key(a: &ClassConstantAccess, resolve: &dyn Fn(&Identifier) -> String) -> Option<String> {
+    let name = match &a.constant {
+        ClassLikeConstantSelector::Identifier(id) => String::from_utf8_lossy(id.value).into_owned(),
+        ClassLikeConstantSelector::Expression(e) => {
+            // PHPStan's Printer::pObjectProperty() normalizes only identifier-shaped literal strings, not a
+            // variable or a class constant which happens to have that same inferred value.
+            static IDENTIFIER: std::sync::LazyLock<pcre2::bytes::Regex> = std::sync::LazyLock::new(|| {
+                pcre2::bytes::Regex::new(r"^[a-zA-Z_\x80-\xff][a-zA-Z0-9_\x80-\xff]*$").expect("identifier regexp")
+            });
+            match super::types::flow::unparen(e.expression) {
+                Expression::Literal(Literal::String(s)) if IDENTIFIER.is_match(s.value?).expect("byte regexp") => {
+                    String::from_utf8_lossy(s.value?).into_owned()
+                }
+                _ => format!("{{{}}}", expression_key(e.expression, resolve)?),
+            }
+        }
+        ClassLikeConstantSelector::Missing(_) => return None,
+    };
+    Some(format!("{}::{name}", expression_key(a.class, resolve)?))
+}
+
+/// TypeSpecifier's subject entries, not every fetch evaluated by the condition. In particular a loose
+/// comparison with a nonzero number does not specify the subject in its unequal branch.
+fn constant_narrowed(e: &Expression, truthy: bool, resolve: &dyn Fn(&Identifier) -> String, out: &mut Vec<Guard>) {
+    match super::types::flow::unparen(e) {
+        Expression::Access(Access::ClassConstant(a)) => {
+            if let Some(key) = constant_key(a, resolve) {
+                out.push(Guard::Expr(key));
+            }
+        }
+        Expression::Binary(b) if b.operator.is_comparison() && !matches!(b.operator, BinaryOperator::Spaceship(_)) => {
+            if matches!(b.operator, BinaryOperator::Equal(_) | BinaryOperator::NotEqual(_) | BinaryOperator::AngledNotEqual(_)) {
+                let equal = truthy == matches!(b.operator, BinaryOperator::Equal(_));
+                let sentinel = |e: &Expression| matches!(e, Expression::Literal(Literal::Null(_) | Literal::True(_) | Literal::False(_)))
+                    || matches!(e, Expression::Literal(Literal::Integer(i)) if i.value == Some(0))
+                    || matches!(e, Expression::Literal(Literal::String(s)) if s.value == Some(b""));
+                if !equal && !sentinel(b.lhs) && !sentinel(b.rhs) {
+                    return;
+                }
+            }
+            constant_narrowed(b.lhs, truthy, resolve, out);
+            constant_narrowed(b.rhs, truthy, resolve, out);
+        }
+        _ => {}
+    }
 }
 
 fn falsy_of(
@@ -434,11 +526,11 @@ impl<'a, 'arena> Checker<'a, 'arena> {
                 && b.else_clause.is_none()
                 && terminates(b.statement)
             {
-                // `$this` and file-existence expression types hold in the constructor alone.
+                // Receiver identities and file-existence expression types hold in the constructor alone.
                 guards.extend(
                     self.falsy(i.condition)
                         .into_iter()
-                        .filter(|g| !matches!(g, Guard::ThisNotInstanceOf(_) | Guard::File(_))),
+                        .filter(|g| !matches!(g, Guard::ThisNotInstanceOf(_) | Guard::File(_)) && !expression_guard(g)),
                 );
             }
         }
@@ -493,10 +585,149 @@ impl<'a, 'arena> Checker<'a, 'arena> {
 
     /// Walks `body` with `extra` guards on top of the current ones.
     pub(super) fn with_guards(&mut self, extra: Vec<Guard>, body: impl FnOnce(&mut Self)) {
-        let mark = self.guards.len();
+        let saved = self.guards.clone();
+        let marks = self.marks.clone();
         self.guards.extend(extra);
         body(self);
-        self.guards.truncate(mark);
+        self.guards = saved;
+        self.marks = marks;
+    }
+
+    /// Removing a holder must also translate the enclosing blocks' guard boundaries.
+    fn retain_guards(&mut self, mut keep: impl FnMut(&Guard) -> bool) {
+        let mut removed = Vec::new();
+        let mut index = 0;
+        self.guards.retain(|guard| {
+            let retained = keep(guard);
+            if !retained {
+                removed.push(index);
+            }
+            index += 1;
+            retained
+        });
+        for mark in &mut self.marks {
+            *mark -= removed.partition_point(|index| *index < *mark);
+        }
+    }
+
+    /// Braces do not end an expression holder's lifetime. Conditional walks merge their outgoing holders.
+    pub(super) fn end_guard_block(&mut self) {
+        let mark = self.marks.pop().expect("pushed");
+        let outgoing = self.guards.split_off(mark);
+        self.guards.extend(outgoing.into_iter().filter(expression_guard));
+    }
+
+    pub(super) fn has_class_constant_type(&self, a: &ClassConstantAccess, name: &str) -> bool {
+        let Some(key) = constant_key(a, &|id| self.resolved(id)) else { return false };
+        self.guards.iter().any(|g| match g {
+            Guard::Expr(k) => *k == key,
+            Guard::ExprWhen(k, missing) if *k == key => {
+                let ClassLikeConstantSelector::Expression(selector) = &a.constant else { return false };
+                let selector = expression_key(selector.expression, &|id| self.resolved(id));
+                missing.iter().all(|path| path.iter().any(|(k, values)| selector.as_ref() == Some(k) && !values.iter().any(|v| v == name)))
+            }
+            _ => false,
+        })
+    }
+
+    pub(super) fn assigned_expression(&mut self, a: &Assignment) {
+        self.invalidate_expression(a.lhs);
+        if matches!(a.operator, AssignmentOperator::Assign(_))
+            && let Some(key) = expression_key(a.lhs, &|id| self.resolved(id))
+            && let Some(ty) = self.phpstan_type(a.rhs)
+        {
+            let values = super::names::constant_strings(&ty);
+            if !values.is_empty() {
+                self.guards.push(Guard::ExprStrings(key, values));
+            }
+        }
+    }
+
+    pub(super) fn guarded_expression(&mut self, extra: Vec<Guard>, e: &Expression<'arena>) -> Vec<Guard> {
+        let mut outgoing = Vec::new();
+        self.with_guards(extra, |c| {
+            c.walk_expression(e, &mut ());
+            outgoing = c.expression_guards();
+        });
+        outgoing
+    }
+
+    pub(super) fn expression_guards(&self) -> Vec<Guard> {
+        self.guards.iter().filter(|g| expression_guard(g)).cloned().collect()
+    }
+
+    /// ScopeOps::mergeWith: an expression holder is definite only if every surviving path has it.
+    pub(super) fn join_expression_guards(&mut self, paths: &[Vec<Guard>]) {
+        self.retain_guards(|guard| !expression_guard(guard) || paths.iter().all(|p| p.contains(guard)));
+        if let Some((first, rest)) = paths.split_first() {
+            for guard in first.iter().filter(|g| rest.iter().all(|p| p.contains(g))) {
+                if !self.guards.contains(guard) {
+                    self.guards.push(guard.clone());
+                }
+            }
+        }
+        // ConditionalExpressionHolder: preserve the branch constraints where a holder is absent. A later
+        // filterByTruthyValue($selector === 'NAME') may make that holder definite again.
+        for guard in paths.iter().flatten() {
+            let Guard::Expr(key) = guard else { continue };
+            let missing: Vec<_> = paths.iter().filter(|p| !p.contains(guard)).map(|path| {
+                path.iter().filter_map(|g| match g {
+                    Guard::ExprStrings(key, values) => Some((key.clone(), values.clone())),
+                    _ => None,
+                }).collect::<Vec<_>>()
+            }).collect();
+            if !missing.is_empty() && missing.iter().all(|p| !p.is_empty()) {
+                let guard = Guard::ExprWhen(key.clone(), missing);
+                if !self.guards.contains(&guard) {
+                    self.guards.push(guard);
+                }
+            }
+        }
+    }
+
+    /// MutatingScope::invalidateExpression(): invalidate a holder containing the written receiver/selector,
+    /// not another expression with an equal inferred type. Array writes invalidate the base array as well.
+    pub(super) fn invalidate_expression(&mut self, e: &Expression) {
+        let e = super::types::flow::unparen(e);
+        match e {
+            Expression::ArrayAccess(a) => return self.invalidate_expression(a.array),
+            Expression::ArrayAppend(a) => return self.invalidate_expression(a.array),
+            Expression::List(l) => {
+                for item in l.elements.iter() {
+                    self.invalidate_element(item);
+                }
+                return;
+            }
+            Expression::Array(a) => {
+                for item in a.elements.iter() {
+                    self.invalidate_element(item);
+                }
+                return;
+            }
+            _ => {}
+        }
+        let Some(key) = expression_key(e, &|id| self.resolved(id)) else { return };
+        let contains_key = |expr: &str| expr.match_indices(&key).any(|(start, _)| {
+            // `$receiverLong` and `$this->receiverLong` are not subexpressions of `$receiver`/`$this->receiver`.
+            expr.as_bytes().get(start + key.len()).is_none_or(|b| !b.is_ascii_alphanumeric() && *b != b'_' && *b < 0x80)
+        });
+        let contains = |guard: &Guard| match guard {
+            Guard::Expr(expr) | Guard::ExprStrings(expr, _) => contains_key(expr),
+            Guard::ExprWhen(expr, missing) => contains_key(expr) || missing.iter().flatten().any(|(key, _)| contains_key(key)),
+            _ => false,
+        };
+        self.retain_guards(|guard| !contains(guard));
+        for guards in self.vars.values_mut() {
+            guards.retain(|g| !contains(g));
+        }
+    }
+
+    fn invalidate_element(&mut self, item: &ArrayElement) {
+        match item {
+            ArrayElement::KeyValue(kv) => self.invalidate_expression(kv.value),
+            ArrayElement::Value(v) => self.invalidate_expression(v.value),
+            _ => {}
+        }
     }
 
     /// A function or method body: a fresh scope (the constructor's remembered guards in a method).
@@ -557,15 +788,17 @@ impl<'a, 'arena> Checker<'a, 'arena> {
         &mut self,
         extra: Vec<Guard>,
         statements: &[&Statement<'arena>],
-    ) -> bool {
+    ) -> (bool, Vec<Guard>) {
+        let mut outgoing = Vec::new();
         self.with_guards(extra, |c| {
             c.marks.push(c.guards.len());
             for s in statements {
                 c.walk_statement(s, &mut ());
             }
+            outgoing = c.expression_guards();
             let mark = c.marks.pop().expect("pushed");
             c.guards.truncate(mark);
         });
-        statements_terminate(statements.iter().copied())
+        (statements_terminate(statements.iter().copied()), outgoing)
     }
 }

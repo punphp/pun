@@ -1762,8 +1762,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
     }
     fn walk_out_block(&mut self, b: &'ast Block<'arena>, _: &mut ()) {
         phpdoc_tags::nop(self, b.right_brace);
-        let mark = self.marks.pop().expect("pushed");
-        self.guards.truncate(mark);
+        self.end_guard_block();
     }
 
     fn walk_if(&mut self, r#if: &'ast If<'arena>, c: &mut ()) {
@@ -1811,6 +1810,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         };
         let mut previous_false = Vec::new();
         let mut survivors: Vec<Vec<Guard>> = Vec::new();
+        let mut expressions = Vec::new();
         for (i, (cond, statements)) in branches.into_iter().enumerate() {
             let mut entry = previous_false.clone();
             if let Some(cond) = cond {
@@ -1820,33 +1820,42 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
                 entry.extend(self.truthy(cond));
                 previous_false.extend(self.falsy(cond));
             }
-            if !self.walk_branch(entry.clone(), &statements) {
+            let (terminates, outgoing) = self.walk_branch(entry.clone(), &statements);
+            if !terminates {
+                expressions.push(outgoing);
                 survivors.push(entry);
             }
         }
         if !has_else {
+            let mut outgoing = self.expression_guards();
+            outgoing.extend(previous_false.iter().filter(|g| matches!(g, Guard::Expr(_))).cloned());
+            expressions.push(outgoing);
             survivors.push(previous_false);
         }
         // after the `if`: what holds in every branch that falls through
         if let Some((first, rest)) = survivors.split_first() {
             let after: Vec<Guard> = first
                 .iter()
-                .filter(|g| rest.iter().all(|r| r.contains(g)))
+                .filter(|g| !matches!(g, Guard::Expr(_)) && rest.iter().all(|r| r.contains(g)))
                 .cloned()
                 .collect();
             self.guards.extend(after);
         }
+        self.join_expression_guards(&expressions);
     }
 
     fn walk_conditional(&mut self, cond: &'ast Conditional<'arena>, c: &mut ()) {
         dead_code::ternary(self, cond);
         self.walk_expression(cond.condition, c);
-        if let Some(then) = cond.then {
-            let t = self.truthy(cond.condition);
-            self.with_guards(t, |s| s.walk_expression(then, &mut ()));
-        }
+        let t = self.truthy(cond.condition);
+        let yes = if let Some(then) = cond.then {
+            self.guarded_expression(t, then)
+        } else {
+            self.expression_guards().into_iter().chain(t.into_iter().filter(|g| matches!(g, Guard::Expr(_)))).collect()
+        };
         let f = self.falsy(cond.condition);
-        self.with_guards(f, |s| s.walk_expression(cond.r#else, &mut ()));
+        let no = self.guarded_expression(f, cond.r#else);
+        self.join_expression_guards(&[yes, no]);
     }
 
     fn walk_binary(&mut self, b: &'ast Binary<'arena>, c: &mut ()) {
@@ -1862,11 +1871,17 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         }
         self.walk_expression(b.lhs, c);
         let extra = match b.operator {
-            BinaryOperator::And(_) | BinaryOperator::LowAnd(_) => self.truthy(b.lhs),
-            BinaryOperator::Or(_) | BinaryOperator::LowOr(_) => self.falsy(b.lhs),
-            _ => Vec::new(),
+            BinaryOperator::And(_) | BinaryOperator::LowAnd(_) => Some(self.truthy(b.lhs)),
+            BinaryOperator::Or(_) | BinaryOperator::LowOr(_) => Some(self.falsy(b.lhs)),
+            _ => None,
         };
-        self.with_guards(extra, |s| s.walk_expression(b.rhs, &mut ()));
+        if let Some(extra) = extra {
+            let skipped = self.expression_guards();
+            let evaluated = self.guarded_expression(extra, b.rhs);
+            self.join_expression_guards(&[skipped, evaluated]);
+        } else {
+            self.walk_expression(b.rhs, c);
+        }
     }
 
     fn walk_match(&mut self, m: &'ast Match<'arena>, c: &mut ()) {
@@ -1914,7 +1929,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
             arrays::destructuring(self, a.lhs, true);
         }
         if let Expression::Variable(Variable::Direct(v)) = a.lhs {
-            let guards = self.truthy(a.rhs).into_iter().filter(|g| !matches!(g, Guard::File(_))).collect::<Vec<_>>();
+            let guards = self.truthy(a.rhs).into_iter().filter(scope::remembered_guard).collect::<Vec<_>>();
             if guards.is_empty() {
                 self.vars.remove(v.name);
             } else {
@@ -1923,6 +1938,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         }
     }
     fn walk_out_assignment(&mut self, a: &'ast Assignment<'arena>, _: &mut ()) {
+        self.assigned_expression(a);
         property_access::assigned(self, a);
         include_file::assigned(self, a.lhs);
     }
@@ -2492,6 +2508,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         ) {
             assign::increment(self, u.operand);
             self.incremented(u.operand);
+            self.invalidate_expression(u.operand);
         }
         if u.operator.is_increment_or_decrement() {
             types::property_increment(self, u.operand);
@@ -2502,6 +2519,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         operators::unary_postfix(self, u);
         assign::increment(self, u.operand);
         self.incremented(u.operand);
+        self.invalidate_expression(u.operand);
         types::property_increment(self, u.operand);
     }
     fn walk_out_for(&mut self, _: &'ast For<'arena>, _: &mut ()) {
@@ -2516,6 +2534,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
             ForeachTarget::KeyValue(t) => (Some(t.key), t.value),
         };
         for target in key.into_iter().chain([value]) {
+            self.invalidate_expression(target);
             arrays::destructuring(self, target, true);
         }
     }
@@ -2568,6 +2587,9 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         assign::unset(self, u);
         types::property_unset(self, u);
         unset::check(self, u);
+        for value in u.values.iter() {
+            self.invalidate_expression(value);
+        }
     }
     fn walk_in_array_append(&mut self, a: &'ast ArrayAppend<'arena>, _: &mut ()) {
         assign::array_append(self, a);

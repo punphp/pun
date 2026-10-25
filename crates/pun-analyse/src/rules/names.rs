@@ -37,6 +37,9 @@ pub(super) fn typed_class_constants(program: &Program, level: u8) -> Vec<Span> {
                 || matches!(class, Expression::Variable(Variable::Direct(v)) if v.name == b"$this")
             {
                 self.spans.push(class.span());
+                if let Expression::ArrayAccess(a) = class {
+                    self.spans.extend([a.array.span(), a.index.span()]);
+                }
             }
         }
     }
@@ -71,7 +74,7 @@ pub fn class_constant<'arena>(c: &mut Checker<'_, 'arena>, access: &ClassConstan
 
 /// `getConstantStrings()`: UnionType requires strings in every member, while IntersectionType collects them
 /// from each member (an accessory contributes none). TemplateConstantStringType retains its bound's value.
-fn constant_strings(ty: &Type) -> Vec<String> {
+pub(super) fn constant_strings(ty: &Type) -> Vec<String> {
     match ty {
         Type::ConstString(s) => vec![s.clone()],
         Type::Template(t) => constant_strings(&t.bound),
@@ -170,7 +173,7 @@ fn class_constant_named(c: &mut Checker, access: &ClassConstantAccess, constant_
             return;
         }
     };
-    if is_class {
+    if is_class || c.has_class_constant_type(access, constant_name) {
         return;
     }
     // DefinedConstantTypeSpecifyingExtension specifies a written fetch (`X::NAME`), not the original dynamic
@@ -270,6 +273,16 @@ fn class_constant_expression(c: &mut Checker, access: &ClassConstantAccess, name
         constant_capable(c, t, false).yes() && has_class_constant(c, t, name, false).yes()
     };
     let mut found = c.find_type_to_check(class, &criteria);
+    // ConstantArrayType::getOffsetValueType() returns ErrorType for an absent sealed-shape key, not Mago's
+    // null recovery value. Feed that through RuleLevelHelper as well (strict implicit mixed at level 10).
+    if let Expression::ArrayAccess(a) = class
+        && let Some(Type::ConstArray(array)) = c.phpstan_type(a.array)
+        && array.unsealed.is_none()
+        && let Some(index) = c.phpstan_type(a.index)
+        && array.keys.iter().all(|key| pun_phpstan::types::is_super_type_of(key, &index).no())
+    {
+        found.ty = c.find_type_to_check_of(Some(Type::Error), &criteria);
+    }
     // NullsafeOperatorHelper runs before RuleLevelHelper's unknown-class and union checks. Remove only
     // short-circuit null, not a nullable member's own result.
     if super::assign::contains_nullsafe(class)
@@ -364,7 +377,7 @@ fn class_constant_expression(c: &mut Checker, access: &ClassConstantAccess, name
         );
         return;
     }
-    if is_class {
+    if is_class || c.has_class_constant_type(access, name) {
         return;
     }
     if !has_class_constant(c, &ty, name, true).yes() {

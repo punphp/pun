@@ -1,0 +1,61 @@
+{
+  "general": [],
+  "errors": [
+    {
+      "file": "expression-guards.php",
+      "message": "Access to undefined constant ConstantExpressionGuards\\Receiver::MISSING.",
+      "line": 13,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "expression-guards.php",
+      "message": "Access to undefined constant ConstantExpressionGuards\\Receiver::SECOND.",
+      "line": 15,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "expression-guards.php",
+      "message": "Access to undefined constant ConstantExpressionGuards\\Receiver::MISSING.",
+      "line": 133,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "expression-guards.php",
+      "message": "Access to private constant PRIVATE_NAME of class ConstantExpressionGuards\\Receiver.",
+      "line": 135,
+      "ignorable": true,
+      "identifier": "classConstant.private"
+    },
+    {
+      "file": "expression-guards.php",
+      "message": "Undefined variable: $receiver",
+      "line": 218,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "file": "expression-guards.php",
+      "message": "Access to undefined constant ConstantExpressionGuards\\StaticHolder::MISSING.",
+      "line": 225,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "expression-guards.php",
+      "message": "Access to undefined constant static(ConstantExpressionGuards\\StaticHolder)::MISSING.",
+      "line": 226,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "expression-guards.php",
+      "message": "Access to undefined constant ConstantExpressionGuards\\Receiver::MISSING.",
+      "line": 227,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    }
+  ]
+}
