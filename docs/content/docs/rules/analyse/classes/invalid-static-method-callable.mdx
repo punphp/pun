@@ -7,7 +7,7 @@ pagination: false
 
 <RuleId id="analyse/classes/invalid-static-method-callable" />
 
-Enabled by the [`analyse-basic`](/docs/rules/presets/analyse-basic), [`analyse-essential`](/docs/rules/presets/analyse-essential), [`analyse-recommended`](/docs/rules/presets/analyse-recommended), [`analyse-strict`](/docs/rules/presets/analyse-strict), [`analyse-max`](/docs/rules/presets/analyse-max) presets. Fix: none (report only). **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`analyse-basic`](/docs/rules/presets/analyse-basic), [`analyse-essential`](/docs/rules/presets/analyse-essential), [`analyse-recommended`](/docs/rules/presets/analyse-recommended), [`analyse-strict`](/docs/rules/presets/analyse-strict), [`analyse-max`](/docs/rules/presets/analyse-max) presets. Fix: none (report only).
 
 ## Replaces
 
@@ -29,6 +29,9 @@ Enabled by the [`analyse-basic`](/docs/rules/presets/analyse-basic), [`analyse-e
 // @pun-ignore analyse/classes/invalid-static-method-callable -- explain the exception
 ```
 
+## What it does
+
+Checks class and method existence, visibility, static-call rules and abstract methods when creating a first-class static method callable. Callable creation does not pass arguments. The check-function-name-case option also checks method spelling.
 
 ## Options
 

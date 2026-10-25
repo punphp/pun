@@ -15,6 +15,12 @@ type Key = (String, i64, String, String, Option<String>);
 const PORTED: &[&str] = &[
     "phpstan.dumpType",
     "phpstan.dumpPhpDocType",
+    "pipe.byRef",
+    "classConstant.nativeType",
+    "classConstant.missingNativeType",
+    "classConstant.type",
+    "method.nameCase",
+    "staticMethod.nameCase",
     "catch.alreadyCaught",
     "postDec.type",
     "preDec.type",

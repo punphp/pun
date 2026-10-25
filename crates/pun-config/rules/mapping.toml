@@ -1000,7 +1000,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "classes/inaccessible-class-constant" = { preset = "essential", ported = true, status = "decided" }
 "classes/inaccessible-method" = { preset = "essential", ported = true, status = "decided" }
 "classes/inaccessible-property" = { preset = "essential", ported = true, status = "decided" }
-"classes/incompatible-constant-override" = { preset = "basic", status = "decided" }
+"classes/incompatible-constant-override" = { preset = "basic", ported = true, status = "decided", summary = "Reports overrides of final constants, reduced constant visibility, and incompatible native or PHPDoc constant types. Native and PHPDoc covariance checks run with the essential preset and stricter presets." }
 "classes/incompatible-override" = { preset = "basic", fixed_by = ["lint/refactor/add-override-attribute"], ported = true, status = "decided" }
 "classes/incompatible-property-override" = { preset = "basic", fixed_by = ["lint/refactor/add-override-attribute"], ported = true, status = "decided" }
 "classes/inconsistent-constructor" = { preset = "basic", ported = true, status = "decided" }
@@ -1018,14 +1018,14 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "classes/invalid-implements" = { preset = "basic", ported = true, status = "decided" }
 "classes/invalid-interface-extends" = { preset = "basic", ported = true, status = "decided" }
 "classes/invalid-interface-property" = { preset = "basic", ported = true, status = "decided" }
-"classes/invalid-method-callable" = { preset = "basic", status = "decided" }
+"classes/invalid-method-callable" = { preset = "basic", ported = true, status = "decided", summary = "Checks the receiver, method existence and visibility when creating a first-class instance method callable. Callable creation does not pass arguments to the method. The check-function-name-case option also checks method spelling." }
 "classes/invalid-new" = { preset = "basic", status = "decided" }
 "classes/invalid-phpdoc-readonly" = { preset = "basic", ported = true, status = "decided" }
 "classes/invalid-promoted-property" = { preset = "basic", ported = true, status = "decided" }
 "classes/invalid-property-declaration" = { preset = "basic", ported = true, status = "decided" }
 "classes/invalid-property-hook" = { preset = "basic", ported = true, status = "decided" }
 "classes/invalid-readonly-property" = { preset = "basic", ported = true, status = "decided" }
-"classes/invalid-static-method-callable" = { preset = "basic", status = "decided" }
+"classes/invalid-static-method-callable" = { preset = "basic", ported = true, status = "decided", summary = "Checks class and method existence, visibility, static-call rules and abstract methods when creating a first-class static method callable. Callable creation does not pass arguments. The check-function-name-case option also checks method spelling." }
 "classes/missing-method-implementation" = { preset = "basic", ported = true, status = "decided" }
 "classes/missing-parent-constructor-call" = { preset = "strict", ported = true, status = "decided" }
 "classes/missing-required-interface" = { preset = "essential", ported = true, status = "decided" }
@@ -1251,7 +1251,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "types/invalid-method-tag-template" = { preset = "essential", ported = true, status = "decided" }
 "types/invalid-method-template" = { preset = "essential", ported = true, status = "decided" }
 "types/invalid-offset" = { preset = "essential", ported = true, status = "decided" }
-"types/invalid-pipe" = { preset = "basic", status = "decided" }
+"types/invalid-pipe" = { preset = "basic", ported = true, status = "decided", summary = "Reports a pipe callable whose first parameter is passed by reference. A pipe supplies a value, not a reference. The basic preset checks invokable $this receivers; essential and stricter presets check other callable expressions too." }
 "types/invalid-property-assignment" = { preset = "basic", ported = true, status = "decided" }
 "types/invalid-property-type" = { preset = "basic", ported = true, status = "decided" }
 "types/invalid-regex" = { preset = "basic", ported = true, status = "decided" }

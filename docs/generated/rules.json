@@ -18145,7 +18145,7 @@
       "id": "analyse/classes/incompatible-constant-override",
       "command": "analyse",
       "group": "classes",
-      "summary": "",
+      "summary": "Reports overrides of final constants, reduced constant visibility, and incompatible native or PHPDoc constant types. Native and PHPDoc covariance checks run with the essential preset and stricter presets.",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -18169,7 +18169,7 @@
         "classConstant.type",
         "classConstant.visibility"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/classes/incompatible-override",
@@ -18714,7 +18714,7 @@
       "id": "analyse/classes/invalid-method-callable",
       "command": "analyse",
       "group": "classes",
-      "summary": "",
+      "summary": "Checks the receiver, method existence and visibility when creating a first-class instance method callable. Callable creation does not pass arguments to the method. The check-function-name-case option also checks method spelling.",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -18738,7 +18738,7 @@
         "method.nonObject",
         "method.private"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/classes/invalid-new",
@@ -18925,7 +18925,7 @@
       "id": "analyse/classes/invalid-static-method-callable",
       "command": "analyse",
       "group": "classes",
-      "summary": "",
+      "summary": "Checks class and method existence, visibility, static-call rules and abstract methods when creating a first-class static method callable. Callable creation does not pass arguments. The check-function-name-case option also checks method spelling.",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -18948,7 +18948,7 @@
         "staticMethod.nameCase",
         "staticMethod.nonObject"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/classes/missing-method-implementation",
@@ -24548,7 +24548,7 @@
       "id": "analyse/types/invalid-pipe",
       "command": "analyse",
       "group": "types",
-      "summary": "",
+      "summary": "Reports a pipe callable whose first parameter is passed by reference. A pipe supplies a value, not a reference. The basic preset checks invokable $this receivers; essential and stricter presets check other callable expressions too.",
       "enabled": [
         "analyse-basic",
         "analyse-essential",
@@ -24570,7 +24570,7 @@
         "PipeOperatorRule",
         "pipe.byRef"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/types/invalid-property-assignment",

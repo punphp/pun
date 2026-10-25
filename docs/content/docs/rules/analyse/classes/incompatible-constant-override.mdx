@@ -7,7 +7,7 @@ pagination: false
 
 <RuleId id="analyse/classes/incompatible-constant-override" />
 
-Enabled by the [`analyse-basic`](/docs/rules/presets/analyse-basic), [`analyse-essential`](/docs/rules/presets/analyse-essential), [`analyse-recommended`](/docs/rules/presets/analyse-recommended), [`analyse-strict`](/docs/rules/presets/analyse-strict), [`analyse-max`](/docs/rules/presets/analyse-max) presets. Fix: none (report only). **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`analyse-basic`](/docs/rules/presets/analyse-basic), [`analyse-essential`](/docs/rules/presets/analyse-essential), [`analyse-recommended`](/docs/rules/presets/analyse-recommended), [`analyse-strict`](/docs/rules/presets/analyse-strict), [`analyse-max`](/docs/rules/presets/analyse-max) presets. Fix: none (report only).
 
 ## Replaces
 
@@ -30,6 +30,9 @@ Enabled by the [`analyse-basic`](/docs/rules/presets/analyse-basic), [`analyse-e
 // @pun-ignore analyse/classes/incompatible-constant-override -- explain the exception
 ```
 
+## What it does
+
+Reports overrides of final constants, reduced constant visibility, and incompatible native or PHPDoc constant types. Native and PHPDoc covariance checks run with the essential preset and stricter presets.
 
 ## Options
 

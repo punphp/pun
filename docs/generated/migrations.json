@@ -17045,7 +17045,7 @@
         "rules": [
           "analyse/classes/incompatible-constant-override"
         ],
-        "note": "Merged with classConstant.missingNativeType, classConstant.nativeType, classConstant.type and 1 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with classConstant.missingNativeType, classConstant.nativeType, classConstant.type and 1 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -17135,7 +17135,7 @@
         "rules": [
           "analyse/classes/incompatible-constant-override"
         ],
-        "note": "Merged with classConstant.final, classConstant.nativeType, classConstant.type and 1 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with classConstant.final, classConstant.nativeType, classConstant.type and 1 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -17165,7 +17165,7 @@
         "rules": [
           "analyse/classes/incompatible-constant-override"
         ],
-        "note": "Merged with classConstant.final, classConstant.missingNativeType, classConstant.type and 1 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with classConstant.final, classConstant.missingNativeType, classConstant.type and 1 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -17265,7 +17265,7 @@
         "rules": [
           "analyse/classes/incompatible-constant-override"
         ],
-        "note": "Merged with classConstant.final, classConstant.missingNativeType, classConstant.nativeType and 1 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with classConstant.final, classConstant.missingNativeType, classConstant.nativeType and 1 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -17305,7 +17305,7 @@
         "rules": [
           "analyse/classes/incompatible-constant-override"
         ],
-        "note": "Merged with classConstant.final, classConstant.missingNativeType, classConstant.nativeType and 1 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with classConstant.final, classConstant.missingNativeType, classConstant.nativeType and 1 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -19585,7 +19585,7 @@
         "rules": [
           "analyse/classes/invalid-static-method-callable"
         ],
-        "note": "Merged with method.staticCall, staticMethod.callToAbstract, staticMethod.nameCase and 1 others (see the rule's Replaces section). Expanded from %s.callToAbstract. Planned: not ported yet.",
+        "note": "Merged with method.staticCall, staticMethod.callToAbstract, staticMethod.nameCase and 1 others (see the rule's Replaces section). Expanded from %s.callToAbstract.",
         "unsupported": false
       },
       {
@@ -19795,7 +19795,7 @@
         "rules": [
           "analyse/classes/invalid-method-callable"
         ],
-        "note": "Merged with method.nonObject, method.private. Planned: not ported yet.",
+        "note": "Merged with method.nonObject, method.private.",
         "unsupported": false
       },
       {
@@ -19825,7 +19825,7 @@
         "rules": [
           "analyse/classes/invalid-method-callable"
         ],
-        "note": "Merged with method.nameCase, method.private. Planned: not ported yet.",
+        "note": "Merged with method.nameCase, method.private.",
         "unsupported": false
       },
       {
@@ -19885,7 +19885,7 @@
         "rules": [
           "analyse/classes/invalid-method-callable"
         ],
-        "note": "Merged with method.nameCase, method.nonObject. Planned: not ported yet.",
+        "note": "Merged with method.nameCase, method.nonObject.",
         "unsupported": false
       },
       {
@@ -19945,7 +19945,7 @@
         "rules": [
           "analyse/classes/invalid-static-method-callable"
         ],
-        "note": "Merged with method.callToAbstract, staticMethod.callToAbstract, staticMethod.nameCase and 1 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with method.callToAbstract, staticMethod.callToAbstract, staticMethod.nameCase and 1 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -21271,7 +21271,7 @@
         "rules": [
           "analyse/types/invalid-pipe"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -23361,7 +23361,7 @@
         "rules": [
           "analyse/classes/invalid-static-method-callable"
         ],
-        "note": "Merged with method.callToAbstract, method.staticCall, staticMethod.nameCase and 1 others (see the rule's Replaces section). Expanded from %s.callToAbstract. Planned: not ported yet.",
+        "note": "Merged with method.callToAbstract, method.staticCall, staticMethod.nameCase and 1 others (see the rule's Replaces section). Expanded from %s.callToAbstract.",
         "unsupported": false
       },
       {
@@ -23511,7 +23511,7 @@
         "rules": [
           "analyse/classes/invalid-static-method-callable"
         ],
-        "note": "Merged with method.callToAbstract, method.staticCall, staticMethod.callToAbstract and 1 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with method.callToAbstract, method.staticCall, staticMethod.callToAbstract and 1 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -23531,7 +23531,7 @@
         "rules": [
           "analyse/classes/invalid-static-method-callable"
         ],
-        "note": "Merged with method.callToAbstract, method.staticCall, staticMethod.callToAbstract and 1 others (see the rule's Replaces section). Planned: not ported yet.",
+        "note": "Merged with method.callToAbstract, method.staticCall, staticMethod.callToAbstract and 1 others (see the rule's Replaces section).",
         "unsupported": false
       },
       {
@@ -28223,7 +28223,7 @@
         "rules": [
           "analyse/classes/invalid-method-callable"
         ],
-        "note": "Merged with MixedMethodAccess, PossibleMethodAccessOnNull. Planned: not ported yet.",
+        "note": "Merged with MixedMethodAccess, PossibleMethodAccessOnNull.",
         "unsupported": false
       },
       {
@@ -28415,7 +28415,7 @@
         "rules": [
           "analyse/classes/invalid-method-callable"
         ],
-        "note": "Merged with MethodAccessOnNull, PossibleMethodAccessOnNull. Planned: not ported yet.",
+        "note": "Merged with MethodAccessOnNull, PossibleMethodAccessOnNull.",
         "unsupported": false
       },
       {
@@ -28579,7 +28579,7 @@
         "rules": [
           "analyse/types/invalid-pipe"
         ],
-        "note": "Merged with NonExistentClass, NonExistentClassLike. Planned: not ported yet.",
+        "note": "Merged with NonExistentClass, NonExistentClassLike.",
         "unsupported": false
       },
       {
@@ -28589,7 +28589,7 @@
         "rules": [
           "analyse/types/invalid-pipe"
         ],
-        "note": "Merged with NonExistentCatchType, NonExistentClassLike. Planned: not ported yet.",
+        "note": "Merged with NonExistentCatchType, NonExistentClassLike.",
         "unsupported": false
       },
       {
@@ -28610,7 +28610,7 @@
           "analyse/types/invalid-pipe",
           "analyse/undefined/trait"
         ],
-        "note": "Merged with NonExistentCatchType, NonExistentClass. Planned: not ported yet.",
+        "note": "Merged with NonExistentCatchType, NonExistentClass.",
         "unsupported": false
       },
       {
@@ -28832,7 +28832,7 @@
         "rules": [
           "analyse/classes/invalid-method-callable"
         ],
-        "note": "Merged with MethodAccessOnNull, MixedMethodAccess. Planned: not ported yet.",
+        "note": "Merged with MethodAccessOnNull, MixedMethodAccess.",
         "unsupported": false
       },
       {
