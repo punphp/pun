@@ -256,7 +256,7 @@ fn instanceof_trait<'arena>(c: &mut Checker<'_, 'arena>, expr: &Expression<'aren
 /// CaughtExceptionExistenceRule.
 pub fn catch<'arena>(c: &mut Checker<'_, 'arena>, clause: &TryCatchClause<'arena>) {
     let mut names = Vec::new();
-    hint_classes(c, &clause.hint, &mut names);
+    hint_classes(c, &clause.hint, None, &mut names);
     for (name, at) in names {
         match known(c, &name) {
             None if c.in_class_exists(&name) => {}
@@ -295,24 +295,42 @@ fn implements_throwable(c: &Checker, k: Known) -> bool {
 fn hint_classes<'arena>(
     c: &Checker<'_, 'arena>,
     hint: &Hint<'arena>,
+    compound: Option<&Hint<'arena>>,
     out: &mut Vec<(String, Span)>,
 ) {
+    let root = compound.or(Some(hint));
     match hint {
         Hint::Identifier(id) => out.push((c.resolved(id), id.span())),
         // outside a class `self` and `static` are classes of that name (ParserNodeTypeToPHPStanType)
         Hint::Self_(k) if c.class_scope().is_none() => out.push(("self".to_string(), k.span())),
         Hint::Static(k) if c.class_scope().is_none() => out.push(("static".to_string(), k.span())),
-        Hint::Parenthesized(p) => hint_classes(c, p.hint, out),
-        Hint::Nullable(n) => hint_classes(c, n.hint, out),
+        Hint::Parent(k) => {
+            // InitializerExprTypeResolver makes a bare missing parent NonexistentParentClassType (no referenced
+            // classes; signatures.rs handles noParent). A compound uses ParserNodeTypeToPHPStanType instead.
+            let parent = c
+                .class_scope()
+                .and_then(|k| k.direct_parent_class)
+                .map(|p| String::from_utf8_lossy(p.as_bytes()).into_owned());
+            if let Some(compound) = compound
+                && parent.as_deref().is_none_or(|p| known(c, p).is_none())
+                // TypeCombinator removes parent from e.g. parent|object and parent|mixed.
+                && super::generics::referenced_classes(&super::declared::native(c, compound, c.class_scope()))
+                    .iter().any(|name| name.eq_ignore_ascii_case(parent.as_deref().unwrap_or("parent")))
+            {
+                out.push((c.written(k.span()), k.span()));
+            }
+        }
+        Hint::Parenthesized(p) => hint_classes(c, p.hint, root, out),
+        Hint::Nullable(n) => hint_classes(c, n.hint, root, out),
         Hint::Union(u) => {
-            hint_classes(c, u.left, out);
-            hint_classes(c, u.right, out);
+            hint_classes(c, u.left, root, out);
+            hint_classes(c, u.right, root, out);
         }
         // an intersection that cannot be inhabited is `never`, with no classes
         Hint::Intersection(_) if super::signatures::unresolvable(c, hint) => {}
         Hint::Intersection(i) => {
-            hint_classes(c, i.left, out);
-            hint_classes(c, i.right, out);
+            hint_classes(c, i.left, root, out);
+            hint_classes(c, i.right, root, out);
         }
         _ => {}
     }
@@ -343,7 +361,7 @@ pub fn typehints<'arena>(
             continue;
         };
         let mut names = Vec::new();
-        hint_classes(c, hint, &mut names);
+        hint_classes(c, hint, None, &mut names);
         let name = String::from_utf8_lossy(p.variable.name).into_owned();
         // the parameter's line for functions and methods, the type's for closures
         let at = if anonymous { hint.span() } else { p.span() };
@@ -378,7 +396,7 @@ pub fn typehints<'arena>(
         return;
     };
     let mut names = Vec::new();
-    hint_classes(c, &r.hint, &mut names);
+    hint_classes(c, &r.hint, None, &mut names);
     for (class, _) in &names {
         let identifier = match known(c, class) {
             None => "class.notFound",
@@ -427,9 +445,10 @@ fn typehint_pairs(c: &Checker, names: &[(String, Span)], at: Span, at_is_name: b
     names
         .iter()
         .map(|(class, span)| {
-            // (`self` and `static` outside a class are keywords, not names)
+            // Unresolved `self`, `static` and `parent` are keywords, not names.
             let original = match class.as_str() {
                 "self" | "static" => class.clone(),
+                _ if class.eq_ignore_ascii_case("parent") => class.clone(),
                 _ => class_names::original_case(c, *span),
             };
             if original != *class {
@@ -638,7 +657,7 @@ pub fn property_type<'arena>(
     let display = c.display(class);
     let mut native = Vec::new();
     if let Some(hint) = hint {
-        hint_classes(c, hint, &mut native);
+        hint_classes(c, hint, None, &mut native);
     }
     for name in names {
         let property =

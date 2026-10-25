@@ -1,0 +1,327 @@
+{
+ "general": [],
+ "errors": [
+  {
+   "file": "parents.php",
+   "line": 5,
+   "identifier": "return.noParent",
+   "message": "Function ParentHints\\bare() has invalid return type parent.",
+   "tip": null
+  },
+  {
+   "file": "parents.php",
+   "line": 5,
+   "identifier": "parameter.noParent",
+   "message": "Parameter $value of function ParentHints\\bare() has invalid type parent.",
+   "tip": null
+  },
+  {
+   "file": "parents.php",
+   "line": 6,
+   "identifier": "class.notFound",
+   "message": "Function ParentHints\\nullable() has invalid return type parent.",
+   "tip": null
+  },
+  {
+   "file": "parents.php",
+   "line": 6,
+   "identifier": "class.notFound",
+   "message": "Parameter $value of function ParentHints\\nullable() has invalid type parent.",
+   "tip": null
+  },
+  {
+   "file": "parents.php",
+   "line": 7,
+   "identifier": "class.notFound",
+   "message": "Function ParentHints\\union() has invalid return type parent.",
+   "tip": null
+  },
+  {
+   "file": "parents.php",
+   "line": 7,
+   "identifier": "class.notFound",
+   "message": "Parameter $value of function ParentHints\\union() has invalid type parent.",
+   "tip": null
+  },
+  {
+   "file": "parents.php",
+   "line": 8,
+   "identifier": "class.notFound",
+   "message": "Function ParentHints\\wideUnion() has invalid return type parent.",
+   "tip": null
+  },
+  {
+   "file": "parents.php",
+   "line": 8,
+   "identifier": "class.notFound",
+   "message": "Parameter $value of function ParentHints\\wideUnion() has invalid type parent.",
+   "tip": null
+  },
+  {
+   "file": "parents.php",
+   "line": 9,
+   "identifier": "parameter.implicitlyNullable",
+   "message": "Deprecated in PHP 8.4: Parameter #1 $value (parent) is implicitly nullable via default value null.",
+   "tip": null
+  },
+  {
+   "file": "parents.php",
+   "line": 12,
+   "identifier": "unionType.mixed",
+   "message": "Type mixed cannot be part of a union type declaration.",
+   "tip": null
+  },
+  {
+   "file": "parents.php",
+   "line": 12,
+   "identifier": "unionType.mixed",
+   "message": "Type mixed cannot be part of a union type declaration.",
+   "tip": null
+  },
+  {
+   "file": "parents.php",
+   "line": 15,
+   "identifier": "class.notFound",
+   "message": "Anonymous function has invalid return type parent.",
+   "tip": null
+  },
+  {
+   "file": "parents.php",
+   "line": 15,
+   "identifier": "class.notFound",
+   "message": "Parameter $value of anonymous function has invalid type parent.",
+   "tip": null
+  },
+  {
+   "file": "parents.php",
+   "line": 16,
+   "identifier": "class.notFound",
+   "message": "Anonymous function has invalid return type parent.",
+   "tip": null
+  },
+  {
+   "file": "parents.php",
+   "line": 16,
+   "identifier": "class.notFound",
+   "message": "Parameter $value of anonymous function has invalid type parent.",
+   "tip": null
+  },
+  {
+   "file": "parents.php",
+   "line": 17,
+   "identifier": "class.notFound",
+   "message": "Anonymous function has invalid return type parent.",
+   "tip": null
+  },
+  {
+   "file": "parents.php",
+   "line": 17,
+   "identifier": "class.notFound",
+   "message": "Parameter $value of anonymous function has invalid type parent.",
+   "tip": null
+  },
+  {
+   "file": "parents.php",
+   "line": 19,
+   "identifier": "class.notFound",
+   "message": "Anonymous function has invalid return type parent.",
+   "tip": null
+  },
+  {
+   "file": "parents.php",
+   "line": 19,
+   "identifier": "class.notFound",
+   "message": "Parameter $value of anonymous function has invalid type parent.",
+   "tip": null
+  },
+  {
+   "file": "parents.php",
+   "line": 20,
+   "identifier": "class.notFound",
+   "message": "Anonymous function has invalid return type parent.",
+   "tip": null
+  },
+  {
+   "file": "parents.php",
+   "line": 20,
+   "identifier": "class.notFound",
+   "message": "Parameter $value of anonymous function has invalid type parent.",
+   "tip": null
+  },
+  {
+   "file": "parents.php",
+   "line": 24,
+   "identifier": "return.noParent",
+   "message": "Method ParentHints\\NoParent::bare() has invalid return type parent.",
+   "tip": null
+  },
+  {
+   "file": "parents.php",
+   "line": 24,
+   "identifier": "parameter.noParent",
+   "message": "Parameter $value of method ParentHints\\NoParent::bare() has invalid type parent.",
+   "tip": null
+  },
+  {
+   "file": "parents.php",
+   "line": 25,
+   "identifier": "class.notFound",
+   "message": "Method ParentHints\\NoParent::nullable() has invalid return type parent.",
+   "tip": null
+  },
+  {
+   "file": "parents.php",
+   "line": 25,
+   "identifier": "class.notFound",
+   "message": "Parameter $value of method ParentHints\\NoParent::nullable() has invalid type parent.",
+   "tip": null
+  },
+  {
+   "file": "parents.php",
+   "line": 26,
+   "identifier": "class.notFound",
+   "message": "Method ParentHints\\NoParent::union() has invalid return type parent.",
+   "tip": null
+  },
+  {
+   "file": "parents.php",
+   "line": 26,
+   "identifier": "class.notFound",
+   "message": "Parameter $value of method ParentHints\\NoParent::union() has invalid type parent.",
+   "tip": null
+  },
+  {
+   "file": "parents.php",
+   "line": 27,
+   "identifier": "class.notFound",
+   "message": "Method ParentHints\\NoParent::wideUnion() has invalid return type parent.",
+   "tip": null
+  },
+  {
+   "file": "parents.php",
+   "line": 27,
+   "identifier": "class.notFound",
+   "message": "Parameter $value of method ParentHints\\NoParent::wideUnion() has invalid type parent.",
+   "tip": null
+  },
+  {
+   "file": "parents.php",
+   "line": 28,
+   "identifier": "parameter.implicitlyNullable",
+   "message": "Deprecated in PHP 8.4: Parameter #1 $value (parent) is implicitly nullable via default value null.",
+   "tip": null
+  },
+  {
+   "file": "parents.php",
+   "line": 33,
+   "identifier": "class.notFound",
+   "message": "Anonymous function has invalid return type parent.",
+   "tip": null
+  },
+  {
+   "file": "parents.php",
+   "line": 33,
+   "identifier": "class.notFound",
+   "message": "Parameter $value of anonymous function has invalid type parent.",
+   "tip": null
+  },
+  {
+   "file": "parents.php",
+   "line": 34,
+   "identifier": "class.notFound",
+   "message": "Anonymous function has invalid return type parent.",
+   "tip": null
+  },
+  {
+   "file": "parents.php",
+   "line": 34,
+   "identifier": "class.notFound",
+   "message": "Parameter $value of anonymous function has invalid type parent.",
+   "tip": null
+  },
+  {
+   "file": "parents.php",
+   "line": 35,
+   "identifier": "class.notFound",
+   "message": "Anonymous function has invalid return type parent.",
+   "tip": null
+  },
+  {
+   "file": "parents.php",
+   "line": 35,
+   "identifier": "class.notFound",
+   "message": "Parameter $value of anonymous function has invalid type parent.",
+   "tip": null
+  },
+  {
+   "file": "parents.php",
+   "line": 37,
+   "identifier": "class.notFound",
+   "message": "Anonymous function has invalid return type parent.",
+   "tip": null
+  },
+  {
+   "file": "parents.php",
+   "line": 37,
+   "identifier": "class.notFound",
+   "message": "Parameter $value of anonymous function has invalid type parent.",
+   "tip": null
+  },
+  {
+   "file": "parents.php",
+   "line": 38,
+   "identifier": "class.notFound",
+   "message": "Anonymous function has invalid return type parent.",
+   "tip": null
+  },
+  {
+   "file": "parents.php",
+   "line": 38,
+   "identifier": "class.notFound",
+   "message": "Parameter $value of anonymous function has invalid type parent.",
+   "tip": null
+  },
+  {
+   "file": "parents.php",
+   "line": 42,
+   "identifier": "class.notFound",
+   "message": "Class ParentHints\\HasMissingParent extends unknown class ParentHints\\Missing.",
+   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+  },
+  {
+   "file": "parents.php",
+   "line": 44,
+   "identifier": "return.noParent",
+   "message": "Method ParentHints\\HasMissingParent::bare() has invalid return type parent.",
+   "tip": null
+  },
+  {
+   "file": "parents.php",
+   "line": 44,
+   "identifier": "parameter.noParent",
+   "message": "Parameter $value of method ParentHints\\HasMissingParent::bare() has invalid type parent.",
+   "tip": null
+  },
+  {
+   "file": "parents.php",
+   "line": 46,
+   "identifier": "class.notFound",
+   "message": "Parameter $value of method ParentHints\\HasMissingParent::compound() has invalid type PaReNt.",
+   "tip": null
+  },
+  {
+   "file": "parents.php",
+   "line": 49,
+   "identifier": "class.notFound",
+   "message": "Method ParentHints\\HasMissingParent::compound() has invalid return type PaReNt.",
+   "tip": null
+  },
+  {
+   "file": "parents.php",
+   "line": 63,
+   "identifier": "parameter.implicitlyNullable",
+   "message": "Deprecated in PHP 8.4: Parameter #1 $value (parent) is implicitly nullable via default value null.",
+   "tip": null
+  }
+ ]
+}
