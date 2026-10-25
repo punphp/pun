@@ -147,6 +147,12 @@ fn native(c: &Checker, hint: &Hint) -> Native {
                 .map(|k| String::from_utf8_lossy(k.name.as_bytes()).into_owned())
                 .unwrap_or_default(),
         ),
+        Hint::Parent(_) => Native::Class(
+            c.class_scope()
+                .and_then(|k| k.direct_parent_class)
+                .and_then(|p| known(c, &String::from_utf8_lossy(p.as_bytes())))
+                .map_or_else(|| c.written(hint.span()), |p| p.display()),
+        ),
         Hint::Object(_) => Native::Object,
         Hint::Parenthesized(p) => native(c, p.hint),
         Hint::Union(_) => {

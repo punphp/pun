@@ -2,6 +2,335 @@
  "general": [],
  "errors": [
   {
+   "file": "intersections.php",
+   "line": 11,
+   "identifier": "class.notFound",
+   "message": "Function ParentIntersections\\outside() has invalid return type parent.",
+   "tip": null
+  },
+  {
+   "file": "intersections.php",
+   "line": 11,
+   "identifier": "class.notFound",
+   "message": "Parameter $value of function ParentIntersections\\outside() has invalid type parent.",
+   "tip": null
+  },
+  {
+   "file": "intersections.php",
+   "line": 12,
+   "identifier": "class.notFound",
+   "message": "Function ParentIntersections\\outsideClass() has invalid return type parent.",
+   "tip": null
+  },
+  {
+   "file": "intersections.php",
+   "line": 12,
+   "identifier": "class.notFound",
+   "message": "Parameter $value of function ParentIntersections\\outsideClass() has invalid type parent.",
+   "tip": null
+  },
+  {
+   "file": "intersections.php",
+   "line": 13,
+   "identifier": "class.notFound",
+   "message": "Function ParentIntersections\\outsideDnf() has invalid return type parent.",
+   "tip": null
+  },
+  {
+   "file": "intersections.php",
+   "line": 13,
+   "identifier": "class.notFound",
+   "message": "Parameter $value of function ParentIntersections\\outsideDnf() has invalid type parent.",
+   "tip": null
+  },
+  {
+   "file": "intersections.php",
+   "line": 14,
+   "identifier": "return.unresolvableNativeType",
+   "message": "Function ParentIntersections\\outsideImpossible() has unresolvable native return type.",
+   "tip": null
+  },
+  {
+   "file": "intersections.php",
+   "line": 14,
+   "identifier": "parameter.unresolvableNativeType",
+   "message": "Parameter $value of function ParentIntersections\\outsideImpossible() has unresolvable native type.",
+   "tip": null
+  },
+  {
+   "file": "intersections.php",
+   "line": 17,
+   "identifier": "class.notFound",
+   "message": "Anonymous function has invalid return type parent.",
+   "tip": null
+  },
+  {
+   "file": "intersections.php",
+   "line": 17,
+   "identifier": "class.notFound",
+   "message": "Parameter $value of anonymous function has invalid type parent.",
+   "tip": null
+  },
+  {
+   "file": "intersections.php",
+   "line": 18,
+   "identifier": "class.notFound",
+   "message": "Anonymous function has invalid return type parent.",
+   "tip": null
+  },
+  {
+   "file": "intersections.php",
+   "line": 18,
+   "identifier": "class.notFound",
+   "message": "Parameter $value of anonymous function has invalid type parent.",
+   "tip": null
+  },
+  {
+   "file": "intersections.php",
+   "line": 19,
+   "identifier": "class.notFound",
+   "message": "Anonymous function has invalid return type parent.",
+   "tip": null
+  },
+  {
+   "file": "intersections.php",
+   "line": 19,
+   "identifier": "class.notFound",
+   "message": "Parameter $value of anonymous function has invalid type parent.",
+   "tip": null
+  },
+  {
+   "file": "intersections.php",
+   "line": 23,
+   "identifier": "class.notFound",
+   "message": "Method ParentIntersections\\NoParent::interfaceType() has invalid return type parent.",
+   "tip": null
+  },
+  {
+   "file": "intersections.php",
+   "line": 23,
+   "identifier": "class.notFound",
+   "message": "Parameter $value of method ParentIntersections\\NoParent::interfaceType() has invalid type parent.",
+   "tip": null
+  },
+  {
+   "file": "intersections.php",
+   "line": 24,
+   "identifier": "class.notFound",
+   "message": "Method ParentIntersections\\NoParent::classType() has invalid return type parent.",
+   "tip": null
+  },
+  {
+   "file": "intersections.php",
+   "line": 24,
+   "identifier": "class.notFound",
+   "message": "Parameter $value of method ParentIntersections\\NoParent::classType() has invalid type parent.",
+   "tip": null
+  },
+  {
+   "file": "intersections.php",
+   "line": 25,
+   "identifier": "class.notFound",
+   "message": "Method ParentIntersections\\NoParent::nullable() has invalid return type parent.",
+   "tip": null
+  },
+  {
+   "file": "intersections.php",
+   "line": 25,
+   "identifier": "class.notFound",
+   "message": "Parameter $value of method ParentIntersections\\NoParent::nullable() has invalid type parent.",
+   "tip": null
+  },
+  {
+   "file": "intersections.php",
+   "line": 26,
+   "identifier": "return.unresolvableNativeType",
+   "message": "Method ParentIntersections\\NoParent::impossible() has unresolvable native return type.",
+   "tip": null
+  },
+  {
+   "file": "intersections.php",
+   "line": 26,
+   "identifier": "parameter.unresolvableNativeType",
+   "message": "Parameter $value of method ParentIntersections\\NoParent::impossible() has unresolvable native type.",
+   "tip": null
+  },
+  {
+   "file": "intersections.php",
+   "line": 30,
+   "identifier": "class.notFound",
+   "message": "Anonymous function has invalid return type parent.",
+   "tip": null
+  },
+  {
+   "file": "intersections.php",
+   "line": 30,
+   "identifier": "class.notFound",
+   "message": "Parameter $value of anonymous function has invalid type parent.",
+   "tip": null
+  },
+  {
+   "file": "intersections.php",
+   "line": 31,
+   "identifier": "class.notFound",
+   "message": "Anonymous function has invalid return type parent.",
+   "tip": null
+  },
+  {
+   "file": "intersections.php",
+   "line": 31,
+   "identifier": "class.notFound",
+   "message": "Parameter $value of anonymous function has invalid type parent.",
+   "tip": null
+  },
+  {
+   "file": "intersections.php",
+   "line": 35,
+   "identifier": "class.notFound",
+   "message": "Class ParentIntersections\\MissingParent extends unknown class ParentIntersections\\Missing.",
+   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+  },
+  {
+   "file": "intersections.php",
+   "line": 37,
+   "identifier": "class.notFound",
+   "message": "Method ParentIntersections\\MissingParent::interfaceType() has invalid return type PaReNt.",
+   "tip": null
+  },
+  {
+   "file": "intersections.php",
+   "line": 37,
+   "identifier": "class.notFound",
+   "message": "Parameter $value of method ParentIntersections\\MissingParent::interfaceType() has invalid type PaReNt.",
+   "tip": null
+  },
+  {
+   "file": "intersections.php",
+   "line": 38,
+   "identifier": "class.notFound",
+   "message": "Method ParentIntersections\\MissingParent::nullable() has invalid return type PaReNt.",
+   "tip": null
+  },
+  {
+   "file": "intersections.php",
+   "line": 38,
+   "identifier": "class.notFound",
+   "message": "Parameter $value of method ParentIntersections\\MissingParent::nullable() has invalid type PaReNt.",
+   "tip": null
+  },
+  {
+   "file": "intersections.php",
+   "line": 43,
+   "identifier": "class.notFound",
+   "message": "Method ParentIntersections\\ChildContract::noClassParent() has invalid return type parent.",
+   "tip": null
+  },
+  {
+   "file": "intersections.php",
+   "line": 43,
+   "identifier": "class.notFound",
+   "message": "Parameter $value of method ParentIntersections\\ChildContract::noClassParent() has invalid type parent.",
+   "tip": null
+  },
+  {
+   "file": "intersections.php",
+   "line": 51,
+   "identifier": "return.unresolvableNativeType",
+   "message": "Method ParentIntersections\\HasParent::impossibleClass() has unresolvable native return type.",
+   "tip": null
+  },
+  {
+   "file": "intersections.php",
+   "line": 51,
+   "identifier": "parameter.unresolvableNativeType",
+   "message": "Parameter $value of method ParentIntersections\\HasParent::impossibleClass() has unresolvable native type.",
+   "tip": null
+  },
+  {
+   "file": "intersections.php",
+   "line": 52,
+   "identifier": "return.unresolvableNativeType",
+   "message": "Method ParentIntersections\\HasParent::impossibleTrait() has unresolvable native return type.",
+   "tip": null
+  },
+  {
+   "file": "intersections.php",
+   "line": 52,
+   "identifier": "parameter.unresolvableNativeType",
+   "message": "Parameter $value of method ParentIntersections\\HasParent::impossibleTrait() has unresolvable native type.",
+   "tip": null
+  },
+  {
+   "file": "intersections.php",
+   "line": 53,
+   "identifier": "return.unresolvableNativeType",
+   "message": "Method ParentIntersections\\HasParent::impossibleScalar() has unresolvable native return type.",
+   "tip": null
+  },
+  {
+   "file": "intersections.php",
+   "line": 53,
+   "identifier": "parameter.unresolvableNativeType",
+   "message": "Parameter $value of method ParentIntersections\\HasParent::impossibleScalar() has unresolvable native type.",
+   "tip": null
+  },
+  {
+   "file": "intersections.php",
+   "line": 61,
+   "identifier": "return.unresolvableNativeType",
+   "message": "Anonymous function has unresolvable native return type.",
+   "tip": null
+  },
+  {
+   "file": "intersections.php",
+   "line": 61,
+   "identifier": "parameter.unresolvableNativeType",
+   "message": "Parameter $value of anonymous function has unresolvable native type.",
+   "tip": null
+  },
+  {
+   "file": "intersections.php",
+   "line": 69,
+   "identifier": "return.unresolvableNativeType",
+   "message": "Method ParentIntersections\\BuiltinParent::impossible() has unresolvable native return type.",
+   "tip": null
+  },
+  {
+   "file": "intersections.php",
+   "line": 69,
+   "identifier": "parameter.unresolvableNativeType",
+   "message": "Parameter $value of method ParentIntersections\\BuiltinParent::impossible() has unresolvable native type.",
+   "tip": null
+  },
+  {
+   "file": "intersections.php",
+   "line": 75,
+   "identifier": "class.extendsFinal",
+   "message": "Class ParentIntersections\\HasFinalParent extends final class ParentIntersections\\FinalBase.",
+   "tip": null
+  },
+  {
+   "file": "intersections.php",
+   "line": 77,
+   "identifier": "return.unresolvableNativeType",
+   "message": "Method ParentIntersections\\HasFinalParent::impossible() has unresolvable native return type.",
+   "tip": null
+  },
+  {
+   "file": "intersections.php",
+   "line": 77,
+   "identifier": "parameter.unresolvableNativeType",
+   "message": "Parameter $value of method ParentIntersections\\HasFinalParent::impossible() has unresolvable native type.",
+   "tip": null
+  },
+  {
+   "file": "intersections.php",
+   "line": 81,
+   "identifier": "class.extendsFinal",
+   "message": "Class ParentIntersections\\HasFinalContractParent extends final class ParentIntersections\\FinalContract.",
+   "tip": null
+  },
+  {
    "file": "parents.php",
    "line": 5,
    "identifier": "return.noParent",
