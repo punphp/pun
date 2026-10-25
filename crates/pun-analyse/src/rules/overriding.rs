@@ -7,7 +7,7 @@
 //! types or abstract trait methods) are left out; Mago keeps a class's interfaces and traits unordered, so when two
 //! of them declare the method, the first by name wins instead of the first declared.
 
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet, VecDeque};
 use std::sync::OnceLock;
 
 use mago_codex::metadata::class_like::ClassLikeMetadata;
@@ -561,29 +561,31 @@ impl<'a> Checker<'a, '_> {
         Some((prototype, true, method))
     }
 
-    /// `getTraits(true)`: the class's traits and theirs, then its parents'.
+    /// `getTraits(true)`: breadth-first `collectTraits()`, then the parents' traits, keyed by canonical name.
+    /// This reflection guard does not affect the statement handler's independent trait-use contexts.
     fn traits(&self, k: &'a ClassLikeMetadata) -> Vec<&'a ClassLikeMetadata> {
         let mut out = Vec::new();
         let mut current = Some(k);
-        let mut depth = 0;
+        let mut classes = HashSet::new();
+        let mut traits = HashSet::new();
         while let Some(k) = current
-            && depth <= ANCESTRY
+            && classes.insert(k.name)
         {
-            depth += 1;
-            let mut stack: Vec<&ClassLikeMetadata> = Vec::new();
             let direct = |k: &ClassLikeMetadata| {
-                let mut names: Vec<_> = k.used_traits.iter().collect();
+                let mut names: Vec<_> = k.direct_trait_names().collect();
                 names.sort();
                 names
                     .into_iter()
-                    .rev()
                     .filter_map(|t| self.codebase.get_class_like(t.as_bytes()))
-                    .collect::<Vec<_>>()
+                    .collect::<VecDeque<_>>()
             };
-            stack.extend(direct(k));
-            while let Some(t) = stack.pop() {
+            let mut pending = direct(k);
+            while let Some(t) = pending.pop_front() {
+                if !traits.insert(t.name) {
+                    continue;
+                }
                 out.push(t);
-                stack.extend(direct(t));
+                pending.extend(direct(t));
             }
             current = k
                 .direct_parent_class

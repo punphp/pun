@@ -2,6 +2,41 @@
  "general": [],
  "errors": [
   {
+   "file": "abstract-cycle.php",
+   "line": 16,
+   "identifier": "method.childParameterType",
+   "message": "Parameter #1 $value (string) of method TraitPrototypeControls\\Cyclic::check() is not contravariant with parameter #1 $value (int) of method TraitPrototypeControls\\CyclicRequirement::check().",
+   "tip": null
+  },
+  {
+   "file": "constructor-mutual.php",
+   "line": 19,
+   "identifier": "constructor.unusedParameter",
+   "message": "Constructor of class ConstructorTraitCycles\\ConstructsMutualCycle has an unused parameter $value.",
+   "tip": null
+  },
+  {
+   "file": "constructor-mutual.php",
+   "line": 19,
+   "identifier": "class.notFound",
+   "message": "Parameter $value of method ConstructorTraitCycles\\ConstructsMutualCycle::__construct() has invalid type ConstructorTraitCycles\\MissingParameter.",
+   "tip": null
+  },
+  {
+   "file": "constructor-self.php",
+   "line": 14,
+   "identifier": "constructor.unusedParameter",
+   "message": "Constructor of class ConstructorTraitCycles\\ConstructsSelfCycle has an unused parameter $value.",
+   "tip": null
+  },
+  {
+   "file": "constructor-self.php",
+   "line": 14,
+   "identifier": "class.notFound",
+   "message": "Parameter $value of method ConstructorTraitCycles\\ConstructsSelfCycle::__construct() has invalid type ConstructorTraitCycles\\MissingParameter.",
+   "tip": null
+  },
+  {
    "file": "members.php",
    "line": 91,
    "identifier": "arguments.count",
@@ -34,6 +69,41 @@
    "line": 95,
    "identifier": "staticMethod.notFound",
    "message": "Call to an undefined static method TraitMemberControls\\AnnotatedDiamond::missing().",
+   "tip": null
+  },
+  {
+   "file": "method-mutual.php (in context of class MethodTraitCycles\\UsesMutualCycle)",
+   "line": 9,
+   "identifier": "class.notFound",
+   "message": "Method MethodTraitCycles\\UsesMutualCycle::run() has invalid return type MethodTraitCycles\\MissingReturn.",
+   "tip": null
+  },
+  {
+   "file": "method-self.php (in context of class MethodTraitCycles\\UsesSelfCycle)",
+   "line": 7,
+   "identifier": "trait.nameCase",
+   "message": "Trait MethodTraitCycles\\SelfCycle referenced with incorrect case: MethodTraitCycles\\selfcycle.",
+   "tip": null
+  },
+  {
+   "file": "method-self.php (in context of class MethodTraitCycles\\UsesSelfCycle)",
+   "line": 7,
+   "identifier": "trait.nameCase",
+   "message": "Trait MethodTraitCycles\\SelfCycle referenced with incorrect case: MethodTraitCycles\\selfcycle.",
+   "tip": null
+  },
+  {
+   "file": "method-self.php (in context of class MethodTraitCycles\\UsesSelfCycle)",
+   "line": 9,
+   "identifier": "class.notFound",
+   "message": "Method MethodTraitCycles\\UsesSelfCycle::run() has invalid return type MethodTraitCycles\\MissingReturn.",
+   "tip": null
+  },
+  {
+   "file": "method-self.php (in context of class MethodTraitCycles\\UsesSelfCycle)",
+   "line": 9,
+   "identifier": "class.notFound",
+   "message": "Method MethodTraitCycles\\UsesSelfCycle::runAgain() has invalid return type MethodTraitCycles\\MissingReturn.",
    "tip": null
   },
   {
