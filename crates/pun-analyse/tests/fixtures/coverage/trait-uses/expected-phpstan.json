@@ -1,0 +1,96 @@
+{
+ "general": [],
+ "errors": [
+  {
+   "file": "cycles.php (in context of class TraitCycles\\UsesMutualCycle)",
+   "line": 19,
+   "identifier": "trait.notFound",
+   "message": "Trait TraitCycles\\First uses unknown trait TraitCycles\\MissingFirstTrait.",
+   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+  },
+  {
+   "file": "cycles.php (in context of class TraitCycles\\UsesMutualCycle)",
+   "line": 25,
+   "identifier": "trait.notFound",
+   "message": "Trait TraitCycles\\Second uses unknown trait TraitCycles\\MissingSecondTrait.",
+   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+  },
+  {
+   "file": "cycles.php (in context of class TraitCycles\\UsesSelfCycle)",
+   "line": 7,
+   "identifier": "trait.nameCase",
+   "message": "Trait TraitCycles\\SelfCycle referenced with incorrect case: TraitCycles\\selfcycle.",
+   "tip": null
+  },
+  {
+   "file": "cycles.php (in context of class TraitCycles\\UsesSelfCycle)",
+   "line": 8,
+   "identifier": "trait.notFound",
+   "message": "Trait TraitCycles\\SelfCycle uses unknown trait TraitCycles\\MissingSelfTrait.",
+   "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols"
+  },
+  {
+   "file": "uses.php (in context of class RepeatedTrait\\Diamond)",
+   "line": 7,
+   "identifier": "class.notFound",
+   "message": "Method RepeatedTrait\\Diamond::run() has invalid return type RepeatedTrait\\MissingReturn.",
+   "tip": null
+  },
+  {
+   "file": "uses.php (in context of class RepeatedTrait\\Diamond)",
+   "line": 7,
+   "identifier": "class.notFound",
+   "message": "Method RepeatedTrait\\Diamond::run() has invalid return type RepeatedTrait\\MissingReturn.",
+   "tip": null
+  },
+  {
+   "file": "uses.php (in context of class RepeatedTrait\\RepeatedPlain)",
+   "line": 7,
+   "identifier": "class.notFound",
+   "message": "Method RepeatedTrait\\RepeatedPlain::run() has invalid return type RepeatedTrait\\MissingReturn.",
+   "tip": null
+  },
+  {
+   "file": "uses.php (in context of class RepeatedTrait\\RepeatedPlain)",
+   "line": 7,
+   "identifier": "class.notFound",
+   "message": "Method RepeatedTrait\\RepeatedPlain::run() has invalid return type RepeatedTrait\\MissingReturn.",
+   "tip": null
+  },
+  {
+   "file": "uses.php (in context of class RepeatedTrait\\SeparateAliases)",
+   "line": 7,
+   "identifier": "class.notFound",
+   "message": "Method RepeatedTrait\\SeparateAliases::firstRun() has invalid return type RepeatedTrait\\MissingReturn.",
+   "tip": null
+  },
+  {
+   "file": "uses.php (in context of class RepeatedTrait\\SeparateAliases)",
+   "line": 7,
+   "identifier": "class.notFound",
+   "message": "Method RepeatedTrait\\SeparateAliases::secondRun() has invalid return type RepeatedTrait\\MissingReturn.",
+   "tip": null
+  },
+  {
+   "file": "uses.php (in context of class RepeatedTrait\\UsesOnce)",
+   "line": 7,
+   "identifier": "class.notFound",
+   "message": "Method RepeatedTrait\\UsesOnce::run() has invalid return type RepeatedTrait\\MissingReturn.",
+   "tip": null
+  },
+  {
+   "file": "uses.php (in context of class RepeatedTrait\\UsesTwice)",
+   "line": 7,
+   "identifier": "class.notFound",
+   "message": "Method RepeatedTrait\\UsesTwice::run() has invalid return type RepeatedTrait\\MissingReturn.",
+   "tip": null
+  },
+  {
+   "file": "uses.php (in context of class RepeatedTrait\\UsesTwice)",
+   "line": 7,
+   "identifier": "class.notFound",
+   "message": "Method RepeatedTrait\\UsesTwice::runAgain() has invalid return type RepeatedTrait\\MissingReturn.",
+   "tip": null
+  }
+ ]
+}

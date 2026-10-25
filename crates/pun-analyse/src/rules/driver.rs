@@ -276,18 +276,32 @@ pub(crate) fn check_file(
     if project.report_unmatched_ignores {
         out.extend(unmatched_line_errors(&name, &unmatched));
     }
-    let mut pending = std::mem::take(&mut checker.trait_uses);
-    let mut seen = HashSet::new();
-    while let Some(u) = pending.pop() {
-        if !seen.insert((
-            u.class.to_ascii_lowercase(),
-            u.trait_name.to_ascii_lowercase(),
-        )) {
+    enum TraitWalk {
+        Enter(TraitUse),
+        Exit(String),
+    }
+    let mut pending: Vec<_> = std::mem::take(&mut checker.trait_uses)
+        .into_iter()
+        .map(TraitWalk::Enter)
+        .collect();
+    // TraitUseHandler::processTraitUse() guards only the active path: another use can have different aliases.
+    let mut active = HashSet::new();
+    while let Some(step) = pending.pop() {
+        let u = match step {
+            TraitWalk::Enter(u) => u,
+            TraitWalk::Exit(name) => {
+                active.remove(&name);
+                continue;
+            }
+        };
+        let trait_name = u.trait_name.to_ascii_lowercase();
+        if !active.insert(trait_name.clone()) {
             continue;
         }
         let (errors, uses) = in_trait_context(&name, &u, codebase, project, files, sources);
         out.extend(errors);
-        pending.extend(uses);
+        pending.push(TraitWalk::Exit(trait_name));
+        pending.extend(uses.into_iter().map(TraitWalk::Enter));
     }
     out
 }
