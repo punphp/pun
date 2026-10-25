@@ -157,6 +157,7 @@ fn checker<'a, 'arena>(
         names, codebase, program,
     ));
     typed.extend(super::debug::typed_expressions(names, codebase, program));
+    typed.extend(arrays::typed_expressions(program));
     typed.extend(super::scope::typed_method_receivers(program));
     typed.extend(super::function_callable::typed_expressions(program, project.level));
     typed.extend(super::method_callable::typed_expressions(program, project.level));

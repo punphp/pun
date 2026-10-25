@@ -1,14 +1,30 @@
-//! DuplicateKeysInLiteralArraysRule. A key's value is known for literals, `true`/`false`/`null`, user class and
-//! global constants and `X::class`; any other key (a variable, a call) is not, as if its type had no constant
-//! scalar values.
+//! DuplicateKeysInLiteralArraysRule: constant scalar keys, including inferred expressions and finite unions.
 
 use std::collections::{HashMap, HashSet};
 
 use mago_span::{HasSpan, Span};
 use mago_syntax::cst::*;
+use mago_syntax::walker::MutWalker;
 use pun_phpstan::types::Type;
 
 use super::Checker;
+
+/// Level 0 also needs the scope's type of explicit array keys, not just syntax-known constants.
+pub(super) fn typed_expressions(program: &Program) -> Vec<Span> {
+    struct Keys(Vec<Span>);
+    impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Keys {
+        fn walk_in_key_value_array_element(
+            &mut self,
+            item: &'ast KeyValueArrayElement<'arena>,
+            _: &mut (),
+        ) {
+            self.0.push(item.key.span());
+        }
+    }
+    let mut keys = Keys(Vec::new());
+    keys.walk_program(program, &mut ());
+    keys.0
+}
 
 /// The arrays php-parser has as `List_` (destructuring targets), which are no LiteralArrayNode.
 #[derive(Default)]
@@ -42,8 +58,9 @@ impl Key {
     }
 
     fn of_float(f: f64) -> Option<Key> {
-        // ponytail: NaN and infinite keys are not ported
-        f.is_finite().then(|| Key::Int(f.trunc() as i64))
+        // ponytail: non-finite and wrapping float-to-int casts are not ported. Rust's saturating
+        // cast is not PHP's wrapping cast outside this range, so do not invent a constant key.
+        (f >= i64::MIN as f64 && f < -(i64::MIN as f64)).then(|| Key::Int(f.trunc() as i64))
     }
 
     /// `var_export()`.
@@ -98,8 +115,8 @@ pub fn literal_array<'arena>(
     let mut printed: HashMap<Key, Vec<String>> = HashMap::new();
     let mut lines: HashMap<Key, Span> = HashMap::new();
     let mut auto = Auto::NotYet;
-    // ponytail: a key known here has one value, so the rule's unions of possible keys (`'a'|'b' $key`) never occur
     let mut seen: Vec<Key> = Vec::new();
+    let mut seen_unions: Vec<Vec<Key>> = Vec::new();
     for element in elements.iter() {
         // assistant's call: a missing element (`[1, , 2]`, a php-parser error outside a list) counts as one without a key
         let (key, at) = match element {
@@ -112,7 +129,7 @@ pub fn literal_array<'arena>(
             }
             e => (None, e.span()),
         };
-        let (value, print) = match key {
+        let (values, print) = match key {
             None => {
                 let next = match auto {
                     Auto::Unknown => continue,
@@ -125,33 +142,67 @@ pub fn literal_array<'arena>(
                     Auto::Known(b) => b + 1,
                 };
                 auto = Auto::Known(next);
-                (Key::Int(next), next.to_string())
+                (vec![Key::Int(next)], next.to_string())
             }
             Some(key) => {
-                let Some(value) = key_value(c, key) else {
-                    auto = Auto::Unknown;
-                    continue;
-                };
+                let values = key_value(c, key)
+                    .map(|value| vec![value])
+                    .or_else(|| match unparenthesized(key) {
+                        // Keep the existing constant resolver's boundary: Mago's built-in stubs can
+                        // contain placeholder values, and late-static constants may be overridden.
+                        Expression::ConstantAccess(_)
+                        | Expression::Access(Access::ClassConstant(_)) => None,
+                        _ => inferred_keys(&c.phpstan_type(key)?),
+                    })
+                    .unwrap_or_default();
                 // once the implicit index is unknown an explicit key can't bring it back
-                if let Key::Int(i) = value {
+                if let [Key::Int(i)] = values.as_slice() {
                     auto = match auto {
-                        Auto::NotYet => Auto::Known(i),
-                        Auto::Known(b) => Auto::Known(b.max(i)),
+                        Auto::NotYet => Auto::Known(*i),
+                        Auto::Known(b) => Auto::Known(b.max(*i)),
                         Auto::Unknown => Auto::Unknown,
                     };
                 }
-                (value, written(c, key))
+                (values, written(c, key))
             }
         };
-        if seen.contains(&value) {
-            if !duplicate_keys.contains(&value) {
+        if values.is_empty() {
+            auto = Auto::Unknown;
+            continue;
+        }
+        // PHPStan's seenKeys/seenUnions: an overlap alone is not a definite duplicate. A singleton
+        // eliminates that possibility from earlier unions, promoting their last remaining possibility.
+        let new_values: Vec<_> = values
+            .iter()
+            .filter(|value| !seen.contains(value))
+            .cloned()
+            .collect();
+        let duplicate = new_values.is_empty();
+        if let [new_value] = new_values.as_slice() {
+            seen_unions.retain_mut(|union| {
+                if let Some(offset) = union.iter().position(|value| value == new_value) {
+                    union.remove(offset);
+                    if union.len() == 1 {
+                        seen.push(union[0].clone());
+                        return false;
+                    }
+                }
+                true
+            });
+            seen.push(new_value.clone());
+        } else if !duplicate {
+            seen_unions.push(new_values);
+        }
+        for value in values {
+            printed
+                .entry(value.clone())
+                .or_default()
+                .push(print.clone());
+            lines.entry(value.clone()).or_insert(at);
+            if duplicate && !duplicate_keys.contains(&value) {
                 duplicate_keys.push(value.clone());
             }
-        } else {
-            seen.push(value.clone());
         }
-        printed.entry(value.clone()).or_default().push(print);
-        lines.entry(value).or_insert(at);
     }
     for value in duplicate_keys {
         let printed = &printed[&value];
@@ -167,6 +218,32 @@ pub fn literal_array<'arena>(
             None,
         );
     }
+}
+
+/// `toArrayKey()->getConstantScalarValues()`. Reuse the syntax path's PHP scalar-key casts; a union
+/// contributes values only when every member does (UnionType::notBenevolentPickFromTypes).
+fn inferred_keys(t: &Type) -> Option<Vec<Key>> {
+    Some(match t {
+        Type::ConstInt(_) | Type::ConstString(_) | Type::ConstBool(_) | Type::Null => {
+            vec![of_type(t.clone())]
+        }
+        Type::ConstFloat(f) => vec![Key::of_float(*f)?],
+        Type::Bool => vec![Key::Int(0), Key::Int(1)],
+        Type::Union(types) | Type::Benevolent(types) => {
+            let mut values = Vec::new();
+            for t in types {
+                for value in inferred_keys(t)? {
+                    // toArrayKey() combines equal cast keys before getConstantScalarValues().
+                    if !values.contains(&value) {
+                        values.push(value);
+                    }
+                }
+            }
+            values
+        }
+        Type::Template(t) => return inferred_keys(&t.bound),
+        _ => return None,
+    })
 }
 
 /// ExprPrinter's output for a key after php-parser's NameResolver: a class name and a qualified constant name print

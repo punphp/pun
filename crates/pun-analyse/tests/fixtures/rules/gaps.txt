@@ -27,8 +27,6 @@ Properties/AccessPropertiesRuleTest::testRequireExtends
 # declare inside a method body), so it reports none of the file's errors; Pun reports the two declares as the
 # RuleTestCase expects
 Keywords/DeclareStrictTypesRuleTest::testNested
-# array.duplicateKey on variable keys ($idx++, a @param 'foo'|'bar' $key) needs their inferred constant types
-Arrays/DuplicateKeysInLiteralArraysRuleTest::testDuplicateKeys
 # classConstant.value on a trait's duplicate constants (a PHP error): PHP's reflection keeps the last, the codex the first
 Classes/DuplicateTraitDeclarationRuleTest::testBug14250
 # a dynamic static property name (`self::${$property}`) needs the name's constant string types

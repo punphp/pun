@@ -1,0 +1,116 @@
+{
+  "totals": {
+    "errors": 0,
+    "file_errors": 17
+  },
+  "files": {
+    "keys.php": {
+      "errors": 17,
+      "messages": [
+        {
+          "message": "Array has 2 duplicate keys with value 'c' ($three, 'c').",
+          "line": 11,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value 'b' ($pair, 'b').",
+          "line": 12,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 3 duplicate keys with value 'a' ('a', $pair, $pair).",
+          "line": 13,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 3 duplicate keys with value 'b' ('b', $pair, $pair).",
+          "line": 13,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 4 duplicate keys with value -4 ($integer, $float, $string, -4).",
+          "line": 33,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value 0 ($false, 0).",
+          "line": 34,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value 1 ($true, 1).",
+          "line": 34,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value '' ($null, '').",
+          "line": 35,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value 0 (0, $boolean).",
+          "line": 36,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value 1 (1, $boolean).",
+          "line": 36,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value 'called' (key(), 'called').",
+          "line": 37,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value -3 (-3, -3).",
+          "line": 40,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value 0 ('0', $false).",
+          "line": 41,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value 2 (2, 2).",
+          "line": 47,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value 1 (1, $sameKey).",
+          "line": 48,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value 'a' ('a', $key).",
+          "line": 64,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        },
+        {
+          "message": "Array has 2 duplicate keys with value 'b' ('b', $key).",
+          "line": 64,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        }
+      ]
+    }
+  },
+  "errors": []
+}
