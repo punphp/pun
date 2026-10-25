@@ -330,17 +330,21 @@ impl ExpressionHook for Definedness {
             let name = mago_word::word(id);
             let variable = matches!(expr, Expression::Variable(_));
             let local = block.locals.get(&name);
-            let now = match local {
-                Some(t) if t.possibly_undefined() || t.possibly_undefined_from_try() => Tri::Maybe,
-                Some(_) => Tri::Yes,
-                // (`canAnyVariableExist()` outside a function)
-                None if variable
-                    && (block.variables_possibly_in_scope.contains(&name)
-                        || context.scope().get_function_like().is_none()) =>
-                {
+            let now = if variable {
+                let certainty = block.variable_certainty(name);
+                if certainty.is_defined() {
+                    Tri::Yes
+                } else if certainty.is_absent() {
+                    Tri::No
+                } else {
                     Tri::Maybe
                 }
-                None => Tri::No,
+            } else {
+                match local {
+                    Some(t) if t.possibly_undefined() || t.possibly_undefined_from_try() => Tri::Maybe,
+                    Some(_) => Tri::Yes,
+                    None => Tri::No,
+                }
             };
             let mut found = self.found.lock().expect("no hook panics while holding the lock");
             if let Some(t) = local.filter(|_| variable) {
@@ -355,6 +359,13 @@ impl ExpressionHook for Definedness {
     }
 
     fn after_expression(&self, expr: &Expression<'_>, context: &mut HookContext<'_, '_>) -> HookResult<()> {
+        // A compound assignment later rewrites its target's artifacts, including the holder
+        // offsets. Keep the completed source read before those virtual writes take place.
+        if self.ids.contains_key(&expr.span()) && !matches!(expr, Expression::Variable(_))
+            && let Some(ty) = context.get_expression_type(expr)
+        {
+            self.found.lock().expect("no hook panics while holding the lock").read.insert(expr.span(), ty.clone());
+        }
         {
             if let Some(source) = self.found.lock().expect("no hook panics while holding the lock").reference_sources.remove(&expr.span()) {
                 source.restore(context);

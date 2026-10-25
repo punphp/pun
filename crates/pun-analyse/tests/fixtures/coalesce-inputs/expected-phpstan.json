@@ -1,0 +1,498 @@
+{
+  "1": {
+    "inputs.php": {
+      "errors": 21,
+      "messages": [
+        {
+          "message": "Variable $undefined on left side of ?? is never defined.",
+          "line": 7,
+          "ignorable": true,
+          "identifier": "nullCoalesce.variable"
+        },
+        {
+          "message": "Variable $undefined on left side of ??= is never defined.",
+          "line": 7,
+          "ignorable": true,
+          "identifier": "nullCoalesce.variable"
+        },
+        {
+          "message": "Dumped type: 1",
+          "line": 8,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Variable $value on left side of ?? is never defined.",
+          "line": 15,
+          "ignorable": true,
+          "identifier": "nullCoalesce.variable"
+        },
+        {
+          "message": "Variable $value on left side of ??= always exists and is not nullable.",
+          "line": 15,
+          "ignorable": true,
+          "identifier": "nullCoalesce.variable"
+        },
+        {
+          "message": "Dumped type: 1",
+          "line": 16,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Variable $value on left side of ?? always exists and is always null.",
+          "line": 22,
+          "ignorable": true,
+          "identifier": "nullCoalesce.variable"
+        },
+        {
+          "message": "Dumped type: int",
+          "line": 23,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: 5",
+          "line": 45,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: int",
+          "line": 52,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: 1",
+          "line": 60,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: 1|2",
+          "line": 69,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Variable $undefined on left side of ?? is never defined.",
+          "line": 74,
+          "ignorable": true,
+          "identifier": "nullCoalesce.variable"
+        },
+        {
+          "message": "Dumped type: 3",
+          "line": 75,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: 3",
+          "line": 76,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Variable $side might not be defined.",
+          "line": 76,
+          "ignorable": true,
+          "identifier": "variable.undefined"
+        },
+        {
+          "message": "Call to function compact() contains possibly undefined variable $side.",
+          "line": 77,
+          "ignorable": true,
+          "identifier": "variable.undefined"
+        },
+        {
+          "message": "Dumped type: int",
+          "line": 83,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: 3",
+          "line": 84,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Variable $side might not be defined.",
+          "line": 84,
+          "ignorable": true,
+          "identifier": "variable.undefined"
+        },
+        {
+          "message": "Call to function compact() contains possibly undefined variable $side.",
+          "line": 85,
+          "ignorable": true,
+          "identifier": "variable.undefined"
+        }
+      ]
+    },
+    "bug-15046.php": {
+      "errors": 1,
+      "messages": [
+        {
+          "message": "Property Bug15046\\BothBranches::$answer on left side of ?? is not nullable nor uninitialized.",
+          "line": 140,
+          "ignorable": true,
+          "identifier": "nullCoalesce.initializedProperty"
+        }
+      ]
+    },
+    "null-coalesce-assign-right-side-scope.php": {
+      "errors": 2,
+      "messages": [
+        {
+          "message": "Variable $undefined on left side of ?? is never defined.",
+          "line": 46,
+          "ignorable": true,
+          "identifier": "nullCoalesce.variable"
+        },
+        {
+          "message": "Variable $undefined on left side of ??= is never defined.",
+          "line": 46,
+          "ignorable": true,
+          "identifier": "nullCoalesce.variable"
+        }
+      ]
+    }
+  },
+  "4": {
+    "inputs.php": {
+      "errors": 33,
+      "messages": [
+        {
+          "message": "Variable $undefined on left side of ?? is never defined.",
+          "line": 7,
+          "ignorable": true,
+          "identifier": "nullCoalesce.variable"
+        },
+        {
+          "message": "Variable $undefined on left side of ??= is never defined.",
+          "line": 7,
+          "ignorable": true,
+          "identifier": "nullCoalesce.variable"
+        },
+        {
+          "message": "Dumped type: 1",
+          "line": 8,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Call to function compact() on a separate line has no effect.",
+          "line": 9,
+          "ignorable": true,
+          "identifier": "function.resultUnused"
+        },
+        {
+          "message": "Variable $value on left side of ?? is never defined.",
+          "line": 15,
+          "ignorable": true,
+          "identifier": "nullCoalesce.variable"
+        },
+        {
+          "message": "Variable $value on left side of ??= always exists and is not nullable.",
+          "line": 15,
+          "ignorable": true,
+          "identifier": "nullCoalesce.variable"
+        },
+        {
+          "message": "Dumped type: 1",
+          "line": 16,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Call to function compact() on a separate line has no effect.",
+          "line": 17,
+          "ignorable": true,
+          "identifier": "function.resultUnused"
+        },
+        {
+          "message": "Variable $value on left side of ?? always exists and is always null.",
+          "line": 22,
+          "ignorable": true,
+          "identifier": "nullCoalesce.variable"
+        },
+        {
+          "message": "Dumped type: int",
+          "line": 23,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Call to function compact() on a separate line has no effect.",
+          "line": 24,
+          "ignorable": true,
+          "identifier": "function.resultUnused"
+        },
+        {
+          "message": "Function CoalesceInputs\\missing() returns void but does not have any side effects.",
+          "line": 42,
+          "ignorable": true,
+          "identifier": "void.pure"
+        },
+        {
+          "message": "Offset 'foo' on array{bar?: int} on left side of ??= does not exist.",
+          "line": 44,
+          "ignorable": true,
+          "identifier": "nullCoalesce.offset"
+        },
+        {
+          "message": "Dumped type: 5",
+          "line": 45,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Function CoalesceInputs\\required() returns void but does not have any side effects.",
+          "line": 49,
+          "ignorable": true,
+          "identifier": "void.pure"
+        },
+        {
+          "message": "Offset 'foo' on array{foo: int} on left side of ??= always exists and is not nullable.",
+          "line": 51,
+          "ignorable": true,
+          "identifier": "nullCoalesce.offset"
+        },
+        {
+          "message": "Dumped type: int",
+          "line": 52,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Function CoalesceInputs\\indexOnce() returns void but does not have any side effects.",
+          "line": 55,
+          "ignorable": true,
+          "identifier": "void.pure"
+        },
+        {
+          "message": "Offset 0 on array{} on left side of ??= does not exist.",
+          "line": 59,
+          "ignorable": true,
+          "identifier": "nullCoalesce.offset"
+        },
+        {
+          "message": "Dumped type: 1",
+          "line": 60,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Function CoalesceInputs\\possible() returns void but does not have any side effects.",
+          "line": 63,
+          "ignorable": true,
+          "identifier": "void.pure"
+        },
+        {
+          "message": "Dumped type: 1|2",
+          "line": 69,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Variable $undefined on left side of ?? is never defined.",
+          "line": 74,
+          "ignorable": true,
+          "identifier": "nullCoalesce.variable"
+        },
+        {
+          "message": "Dumped type: 3",
+          "line": 75,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: 3",
+          "line": 76,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Variable $side might not be defined.",
+          "line": 76,
+          "ignorable": true,
+          "identifier": "variable.undefined"
+        },
+        {
+          "message": "Call to function compact() contains possibly undefined variable $side.",
+          "line": 77,
+          "ignorable": true,
+          "identifier": "variable.undefined"
+        },
+        {
+          "message": "Call to function compact() on a separate line has no effect.",
+          "line": 77,
+          "ignorable": true,
+          "identifier": "function.resultUnused"
+        },
+        {
+          "message": "Dumped type: int",
+          "line": 83,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: 3",
+          "line": 84,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Variable $side might not be defined.",
+          "line": 84,
+          "ignorable": true,
+          "identifier": "variable.undefined"
+        },
+        {
+          "message": "Call to function compact() contains possibly undefined variable $side.",
+          "line": 85,
+          "ignorable": true,
+          "identifier": "variable.undefined"
+        },
+        {
+          "message": "Call to function compact() on a separate line has no effect.",
+          "line": 85,
+          "ignorable": true,
+          "identifier": "function.resultUnused"
+        }
+      ]
+    },
+    "bug-15046.php": {
+      "errors": 2,
+      "messages": [
+        {
+          "message": "Property Bug15046\\BothBranches::$answer on left side of ?? is not nullable nor uninitialized.",
+          "line": 140,
+          "ignorable": true,
+          "identifier": "nullCoalesce.initializedProperty"
+        },
+        {
+          "message": "Property Bug15046\\ConditionMetAgain::$answer (int) on left side of ?? is not nullable.",
+          "line": 157,
+          "ignorable": true,
+          "identifier": "nullCoalesce.property"
+        }
+      ]
+    },
+    "null-coalesce-assign-right-side-scope.php": {
+      "errors": 18,
+      "messages": [
+        {
+          "message": "Property NullCoalesceAssignRightSideScope\\Foo::$nonNullable (string) on left side of ?? is not nullable.",
+          "line": 19,
+          "ignorable": true,
+          "identifier": "nullCoalesce.property"
+        },
+        {
+          "message": "Property NullCoalesceAssignRightSideScope\\Foo::$nonNullable (string) on left side of ??= is not nullable.",
+          "line": 19,
+          "ignorable": true,
+          "identifier": "nullCoalesce.property"
+        },
+        {
+          "message": "Static property NullCoalesceAssignRightSideScope\\Foo::$staticNonNullable (string) on left side of ?? is not nullable.",
+          "line": 24,
+          "ignorable": true,
+          "identifier": "nullCoalesce.property"
+        },
+        {
+          "message": "Static property NullCoalesceAssignRightSideScope\\Foo::$staticNonNullable (string) on left side of ??= is not nullable.",
+          "line": 24,
+          "ignorable": true,
+          "identifier": "nullCoalesce.property"
+        },
+        {
+          "message": "Function NullCoalesceAssignRightSideScope\\nestedOffset() returns void but does not have any side effects.",
+          "line": 33,
+          "ignorable": true,
+          "identifier": "void.pure"
+        },
+        {
+          "message": "Function NullCoalesceAssignRightSideScope\\nonConstantArray() returns void but does not have any side effects.",
+          "line": 39,
+          "ignorable": true,
+          "identifier": "void.pure"
+        },
+        {
+          "message": "Function NullCoalesceAssignRightSideScope\\undefinedVariable() returns void but does not have any side effects.",
+          "line": 44,
+          "ignorable": true,
+          "identifier": "void.pure"
+        },
+        {
+          "message": "Variable $undefined on left side of ?? is never defined.",
+          "line": 46,
+          "ignorable": true,
+          "identifier": "nullCoalesce.variable"
+        },
+        {
+          "message": "Variable $undefined on left side of ??= is never defined.",
+          "line": 46,
+          "ignorable": true,
+          "identifier": "nullCoalesce.variable"
+        },
+        {
+          "message": "ArrayAccess<string, string> does not accept string|null.",
+          "line": 52,
+          "ignorable": true,
+          "identifier": "offsetAssign.valueType"
+        },
+        {
+          "message": "ArrayAccess<string, string> does not accept string|null.",
+          "line": 58,
+          "ignorable": true,
+          "identifier": "offsetAssign.valueType"
+        },
+        {
+          "message": "ArrayObject<string, string> does not accept string|null.",
+          "line": 70,
+          "ignorable": true,
+          "identifier": "offsetAssign.valueType"
+        },
+        {
+          "message": "Function NullCoalesceAssignRightSideScope\\issetOnRightSide() returns void but does not have any side effects.",
+          "line": 74,
+          "ignorable": true,
+          "identifier": "void.pure"
+        },
+        {
+          "message": "Function NullCoalesceAssignRightSideScope\\emptyOnRightSide() returns void but does not have any side effects.",
+          "line": 80,
+          "ignorable": true,
+          "identifier": "void.pure"
+        },
+        {
+          "message": "Function NullCoalesceAssignRightSideScope\\unsetTargetBeforeAssignOp() returns void but does not have any side effects.",
+          "line": 86,
+          "ignorable": true,
+          "identifier": "void.pure"
+        },
+        {
+          "message": "Offset 'foo' on array{bar?: string} on left side of ??= does not exist.",
+          "line": 89,
+          "ignorable": true,
+          "identifier": "nullCoalesce.offset"
+        },
+        {
+          "message": "Function NullCoalesceAssignRightSideScope\\emptyTargetBeforeAssignOp() returns void but does not have any side effects.",
+          "line": 93,
+          "ignorable": true,
+          "identifier": "void.pure"
+        },
+        {
+          "message": "Function NullCoalesceAssignRightSideScope\\assignOpInsideUnsetOffset() returns void but does not have any side effects.",
+          "line": 109,
+          "ignorable": true,
+          "identifier": "void.pure"
+        }
+      ]
+    }
+  }
+}

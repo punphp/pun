@@ -72,6 +72,9 @@ where
 
     // CoalesceHandler joins the isset-success scope with the RHS scope, even for a statically known LHS.
     // Narrow without walking the LHS again: its assignments and observer events must occur only once.
+    // An isset-allowed absent variable has a mixed placeholder read, but only the RHS supplies its value.
+    let left_is_absent = get_variable_name(binary.lhs)
+        .is_some_and(|name| block_context.variable_certainty(name).is_absent());
     let mut lhs_context = block_context.clone();
     if let Some(root) = get_root_expression_id(binary.lhs)
         && !block_context.variable_certainty(root).is_absent()
@@ -95,7 +98,8 @@ where
     let mut result_type: TUnion;
 
     let is_static_var = is_rooted_in_static_local(binary.lhs, &block_context.static_locals);
-    let left_is_set = !lhs_type.has_nullish()
+    let left_is_set = !left_is_absent
+        && !lhs_type.has_nullish()
         && !lhs_type.possibly_undefined()
         && !lhs_type.possibly_undefined_from_try()
         && !is_static_var;
@@ -121,7 +125,7 @@ where
         );
     }
 
-    if lhs_type.is_null() && !is_static_var {
+    if (lhs_type.is_null() || left_is_absent) && !is_static_var {
         context.collector.propose_with_code(
             IssueCode::RedundantNullCoalesce,
             Issue::help("Redundant null coalesce: left-hand side is always `null`.")
