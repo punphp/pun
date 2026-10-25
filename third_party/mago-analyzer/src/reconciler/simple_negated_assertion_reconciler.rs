@@ -1037,7 +1037,7 @@ where
             }
             TAtomic::Mixed(mixed) => {
                 if mixed.is_non_null() {
-                    acceptable_types.push(atomic);
+                    acceptable_types.push(TAtomic::Mixed(mixed));
                 } else {
                     acceptable_types.push(TAtomic::Mixed(mixed.with_is_non_null(true)));
                     did_remove_type = true;

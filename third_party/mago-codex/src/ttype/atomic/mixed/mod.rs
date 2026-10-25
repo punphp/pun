@@ -1,13 +1,16 @@
 use mago_word::Word;
 use mago_word::word;
+use std::sync::Arc;
 
 use crate::ttype::TType;
 use crate::ttype::atomic::mixed::truthiness::TMixedTruthiness;
+use crate::ttype::union::TUnion;
 
+pub(crate) mod subtraction;
 pub mod truthiness;
 
 /// Represents the `mixed` type, potentially with constraints applied.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, PartialOrd, Ord)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct TMixed {
     is_isset_from_loop: bool,
@@ -16,6 +19,8 @@ pub struct TMixed {
     truthiness: TMixedTruthiness,
     #[cfg_attr(feature = "serde", serde(default))]
     is_error: bool,
+    #[cfg_attr(feature = "serde", serde(default))]
+    pub(super) subtracted_type: Option<Arc<TUnion>>,
 }
 
 impl TMixed {
@@ -31,6 +36,7 @@ impl TMixed {
             is_empty: false,
             truthiness: TMixedTruthiness::Undetermined,
             is_error: false,
+            subtracted_type: None,
         }
     }
 
@@ -38,7 +44,9 @@ impl TMixed {
     #[inline]
     #[must_use]
     pub const fn error() -> Self {
-        Self { is_error: true, ..Self::new() }
+        let mut mixed = Self::new();
+        mixed.is_error = true;
+        mixed
     }
 
     /// Checks for `ErrorType` identity, not ordinary unknown or constrained mixed.
@@ -66,7 +74,7 @@ impl TMixed {
     #[inline]
     #[must_use]
     pub const fn could_be_truthy_or_non_null(&self) -> bool {
-        self.is_vanilla() || self.is_non_null()
+        self.is_vanilla() || self.is_non_null() || self.subtracted_type.is_some()
     }
 
     /// Checks if this `mixed` originated from `isset()` in a loop.
@@ -81,6 +89,7 @@ impl TMixed {
     #[must_use]
     pub const fn is_vanilla(&self) -> bool {
         !self.is_non_null && !self.is_empty && matches!(self.truthiness, TMixedTruthiness::Undetermined)
+            && self.subtracted_type.is_none()
     }
 
     /// Checks if `null` is explicitly excluded from this `mixed` type.
@@ -129,10 +138,15 @@ impl TMixed {
     /// Returns a new instance with the `is_non_null` flag set and consistency ensured.
     #[inline]
     #[must_use]
-    pub const fn with_is_non_null(mut self, is_non_null: bool) -> Self {
+    pub fn with_is_non_null(mut self, is_non_null: bool) -> Self {
         // PHPStan's ErrorType::subtract() retains an unconstrained ErrorType.
         if !self.is_error {
             self.is_non_null = is_non_null;
+            if let Some(excluded) = &self.subtracted_type {
+                let mut types: Vec<_> = excluded.types.iter().filter(|t| !t.is_null()).cloned().collect();
+                if is_non_null { types.push(crate::ttype::atomic::TAtomic::Null); }
+                self.subtracted_type = (!types.is_empty()).then(|| Arc::new(TUnion::from_vec(types)));
+            }
         }
         self
     }
@@ -178,6 +192,8 @@ impl TType for TMixed {
     fn get_id(&self) -> Word {
         if self.is_error {
             word("*ERROR*")
+        } else if let Some(excluded) = &self.subtracted_type {
+            word(&format!("mixed~({})", excluded.get_id()))
         } else if self.is_empty {
             word(match self.truthiness {
                 TMixedTruthiness::Truthy => "empty-truthy-mixed",

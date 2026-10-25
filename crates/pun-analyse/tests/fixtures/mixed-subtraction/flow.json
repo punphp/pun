@@ -1,0 +1,36 @@
+{
+  "messages": [
+    {
+      "line": 9,
+      "message": "Dumped type: mixed~0"
+    },
+    {
+      "line": 11,
+      "message": "Dumped type: mixed~0"
+    },
+    {
+      "line": 13,
+      "message": "Dumped type: mixed~0"
+    },
+    {
+      "line": 15,
+      "message": "Dumped type: mixed~0"
+    },
+    {
+      "line": 17,
+      "message": "Dumped type: mixed"
+    },
+    {
+      "line": 19,
+      "message": "Dumped type: mixed"
+    },
+    {
+      "line": 21,
+      "message": "Dumped type: 13"
+    },
+    {
+      "line": 24,
+      "message": "Dumped type: mixed~(0|null)"
+    }
+  ]
+}

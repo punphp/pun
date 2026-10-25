@@ -111,3 +111,64 @@ matching PHPStan 2.3.1's `TemplateTypeVariance::isValidVariance()`. Assignment p
 argument instead of widening it to the containing type's parameter. The public `generic_defaults`
 fixture compares empty and populated constructors, a readonly property assignment, and subsequent
 offset checks against the actual PHPStan oracle. This does not change unresolved placeholders.
+
+## Subtracted mixed values
+
+`TMixed` stores an optional shared `TUnion` of excluded values. `TMixed::subtract()` combines repeated
+exclusions, `get_subtracted_type()` exposes the excluded set, and `with_subtracted_type()` normalizes
+a `never` exclusion to ordinary mixed. `TMixed::unset_offset()` removes the empty array from the
+excluded set because unsetting an offset may produce an empty array. Exclusions such as integer `0`
+survive. `get_error()` and `TMixed::is_error()` retain their existing interfaces and behavior.
+
+These transfers follow PHPStan 2.3.1's
+[`MixedType`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Type/MixedType.php#L182-L188)
+and its [`subtract()`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Type/MixedType.php#L855-L866).
+`ErrorType::subtract()` remains a no-op. Direct subtraction of a mixed value from ordinary mixed
+returns `never`, including when the removed mixed itself has an exclusion.
+
+The shared union transfer removes newly included values from the excluded set. Two mixed exclusions
+intersect in a union and combine in an intersection. Integer differences use Mago's existing range
+arithmetic. Unsupported partial scalar differences retain no exclusion in a union, matching
+[`TypeCombinator::intersectWithSubtractedType()`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Type/TypeCombinator.php#L958-L1034).
+For example, `mixed~0 | 13` remains `mixed~0`, `mixed~0 | 0` becomes mixed, and
+`mixed~string | 'x'` becomes mixed. Plain mixed and error markers still follow operand order.
+Containment compares excluded sets in reverse. Nullability transfers retain other exclusions.
+Existing nonnull and truthy mixed constraints contribute their excluded sets to these operations.
+
+Pun converts the excluded set to `Type::SubtractedMixed`, rather than changing a dump's text.
+Its public type combinators, acceptance results, acceptance reasons, and precise descriptions retain
+the exclusion. As in `MixedType::traverse()`, traversal does not visit the excluded set.
+A subtracted mixed accepts every input, but a concrete `0`
+does not accept `mixed~0`, matching `MixedType::accepts()` and `isAcceptedBy()`.
+
+The recursive field changes `TMixed` from `Copy` to `Clone`. Three union transfers clone borrowed
+mixed values. One analyzer reconciler arm reconstructs its already-moved atomic without changing
+the reconciliation result. Equality, hashes, ordering, and serde include the excluded set.
+Old serialized values default to no exclusion. No codex atomic variant, manifest, or Mago version changes.
+
+`pun-analyse/tests/mixed_subtraction.rs` checks public codex and Pun type operations against the
+captured PHPStan oracle in `tests/fixtures/mixed-subtraction`. Its public Analyzer regression injects
+the narrowed value through an expression hook, independently of the unset producer. Copies and
+joins retain `mixed~0`, joining `0` restores ordinary mixed, and an offset read returns ordinary mixed.
+The same assertions run with native tracking enabled and disabled.
+
+The fixture oracle is regenerated with:
+
+```sh
+php crates/pun-analyse/tests/fixtures/mixed-subtraction/oracle.php \
+	/absolute/path/to/phpstan/vendor/autoload.php
+php /absolute/path/to/phpstan.phar analyse --no-progress --error-format=json -l 0 \
+	crates/pun-analyse/tests/fixtures/mixed-subtraction/flow.php |
+	jq '{messages: [.files[].messages[] | select(.identifier == "phpstan.dumpType") | {line, message}]}' \
+	> crates/pun-analyse/tests/fixtures/mixed-subtraction/flow.json
+```
+
+This slice does not change unset producers, keyed-array conversion, constant-array order, failed
+reads, or the external worker codec. Arbitrary object subtraction remains outside this bounded port.
+
+Verification on the isolated `e5d409f3` base: all 50 `punphp-phpstan` tests and 24 focused Analyzer
+tests pass. LLVM line coverage reaches all 235 changed executable lines in codex, the mechanical
+analyzer adjustment, and Pun types. Total changed production coverage is 236/237 lines.
+The remaining line is the new excluded-set conversion expression in `rules/types/convert.rs`.
+The public Analyzer test supplies exclusions through a hook, but Pun's public runner has no such
+input hook. That conversion needs the separately owned unset producer for end-to-end coverage.

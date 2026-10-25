@@ -456,6 +456,9 @@ impl<'a, 'arena> Checker<'a, 'arena> {
             TAtomic::Void => Type::Void,
             TAtomic::Scalar(s) => self.scalar(s),
             TAtomic::Mixed(m) if m.is_error() => Type::Error,
+            TAtomic::Mixed(m) if m.get_subtracted_type().is_some() => {
+                Type::mixed_subtracted(false, self.to_phpstan(m.get_subtracted_type().unwrap()))
+            }
             TAtomic::Mixed(_) => mixed(),
             TAtomic::Resource(_) => Type::Resource,
             TAtomic::Object(o) => self.object(o),

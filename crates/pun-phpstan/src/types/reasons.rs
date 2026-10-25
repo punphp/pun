@@ -37,7 +37,7 @@ pub fn accepts_reasons(a: &Type, b: &Type, strict: bool, sm: StrictMixed) -> Vec
             _ => vec![],
         },
         T::ConstArray(c) if c.unsealed.is_none() && (!compound || matches!(b, T::Intersection(_))) => our_keys(c, b, strict),
-        T::Mixed { .. } | T::Error | T::Wildcard | T::OffsetAccess(..) | T::Never(_) | T::ObjectShape(_) => vec![],
+        T::Mixed { .. } | T::SubtractedMixed { .. } | T::Error | T::Wildcard | T::OffsetAccess(..) | T::Never(_) | T::ObjectShape(_) => vec![],
         _ if compound => accepted_by(a, b, strict, sm),
         T::Array(key, item) => match b {
             T::ConstArray(c) => merged(c.keys.iter().zip(&c.values).flat_map(|(k, v)| [rec(key, k), rec(item, v)])),
@@ -99,6 +99,9 @@ fn accepted_by(a: &Type, b: &Type, strict: bool, sm: StrictMixed) -> Vec<String>
     // (a StrictMixedType answers `mixed`, which gives no reasons)
     let rec = |t: &Type| accepts_reasons(a, t, strict, sm);
     match b {
+        T::SubtractedMixed { excluded, .. } if !sm.applies(b) && is_super_type_of(excluded, a).yes() => vec![format!(
+            "Type {} has already been eliminated from mixed.", excluded.describe(Level::Precise)
+        )],
         T::Union(types) | T::Benevolent(types) => merged(types.iter().map(rec)),
         // AcceptsResult::lazyMaxMin(): the first member accepted answers
         T::Intersection(types) => match types.iter().find(|t| accepts_with(a, t, strict, sm).yes()) {

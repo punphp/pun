@@ -11,6 +11,7 @@ use crate::symbols;
 
 mod accepts;
 mod casts;
+mod mixed;
 mod reasons;
 mod templates;
 mod verbosity;
@@ -212,6 +213,8 @@ pub enum Type {
     Mixed {
         explicit: bool,
     },
+    /// MixedType with its excluded value set. Kept separate so existing plain-mixed constructors stay plain.
+    SubtractedMixed { explicit: bool, excluded: Box<Type> },
     Never(NeverKind),
     Error,
     Void,
@@ -342,6 +345,7 @@ impl Type {
         matches!(
             self,
             Type::Mixed { .. }
+                | Type::SubtractedMixed { .. }
                 | Type::Error
                 | Type::Never(_)
                 | Type::IntRange(..)
@@ -364,7 +368,7 @@ impl Type {
             Type::Template(t) => t.bound.query(f),
             // LateResolvableTypeTrait
             Type::Conditional(c) => c.resolve().query(f),
-            Type::Mixed { .. } | Type::Error => Tri::Maybe,
+            Type::Mixed { .. } | Type::SubtractedMixed { .. } | Type::Error => Tri::Maybe,
             Type::Never(_) => Tri::No,
             _ => f(self),
         }
@@ -541,7 +545,7 @@ impl Type {
     /// `isCloneable()`: an object, `mixed` and `never`; a common callable or iterable maybe.
     pub fn is_cloneable(&self) -> Tri {
         match self {
-            Type::Mixed { .. } | Type::Error | Type::Never(_) => Tri::Yes,
+            Type::Mixed { .. } | Type::SubtractedMixed { .. } | Type::Error | Type::Never(_) => Tri::Yes,
             Type::Template(t) => t.bound.is_cloneable(),
             _ => self.query(&|t| match t {
                 Type::Object(..)
@@ -868,6 +872,14 @@ impl Type {
     pub fn describe(&self, level: Level) -> String {
         match self {
             Type::Mixed { .. } => "mixed".to_string(),
+            Type::SubtractedMixed { excluded, .. } => level.handle3(|| "mixed".into(), || "mixed".into(), || {
+                let description = excluded.describe(Level::Precise);
+                if matches!(**excluded, Type::Union(_) | Type::Benevolent(_) | Type::Intersection(_)) {
+                    format!("mixed~({description})")
+                } else {
+                    format!("mixed~{description}")
+                }
+            }),
             Type::Error => level.handle3(|| "mixed".into(), || "mixed".into(), || "*ERROR*".into()),
             Type::Never(NeverKind::NonAccepting) => "never".to_string(),
             Type::Never(_) => "*NEVER*".to_string(),
@@ -1678,7 +1690,7 @@ fn print_templates(sig: &Signature) -> String {
 pub fn to_phpdoc(t: &Type) -> String {
     match t {
         Type::Accessory(Accessory::HasMethod(_)) => String::new(),
-        Type::Mixed { .. } | Type::Error => "mixed".to_string(),
+        Type::Mixed { .. } | Type::SubtractedMixed { .. } | Type::Error => "mixed".to_string(),
         Type::Never(_) => "never".to_string(),
         Type::ConstInt(i) => i.to_string(),
         Type::ConstFloat(f) => float_to_string(*f),
@@ -2288,6 +2300,7 @@ pub fn is_super_type_of(a: &Type, b: &Type) -> Tri {
         // `*` is a bivariant `mixed`
         // (a call-site variance is a generic argument's only, compared in `valid_variance()`)
         T::Mixed { .. } | T::Error | T::Wildcard | T::OffsetAccess(..) | T::Projection(..) => Tri::Yes,
+        T::SubtractedMixed { excluded, .. } => mixed::is_super(excluded, b),
         T::Never(_) => match b {
             T::Never(_) => Tri::Yes,
             T::Template(_) => Tri::Maybe,
@@ -2889,6 +2902,9 @@ fn is_sub_type_of(a: &Type, b: &Type) -> Tri {
     match a {
         // (against a mixed `$b`, isSuperTypeOf() answers yes first)
         T::Mixed { .. } | T::Error => Tri::Maybe,
+        T::SubtractedMixed { excluded, .. } => {
+            if is_super_type_of(excluded, b).yes() { Tri::No } else { Tri::Maybe }
+        }
         T::Union(types) | T::Benevolent(types) => {
             Tri::extreme_identity(types.iter().map(|t| is_super_type_of(b, t)))
         }
@@ -3174,6 +3190,12 @@ enum Merge {
 
 /// `TypeCombinator::compareTypesInUnion()`
 fn compare_in_union_merge(a: &Type, b: &Type) -> Option<Merge> {
+    if let Type::SubtractedMixed { explicit, excluded } = a {
+        return Some(Merge::A(mixed::join(*explicit, excluded, b)));
+    }
+    if let Type::SubtractedMixed { explicit, excluded } = b {
+        return Some(Merge::B(mixed::join(*explicit, excluded, a)));
+    }
     if let Type::IntRange(min, max) = a
         && let Some(t) = range_try_union(*min, *max, b)
     {
@@ -3662,6 +3684,13 @@ pub fn intersect(types: Vec<Type>) -> Type {
     'outer: while i < types.len() {
         let mut j = i + 1;
         'inner: while j < types.len() {
+            if let Some(t) = mixed::intersection(&types[i], &types[j])
+                .or_else(|| mixed::intersection(&types[j], &types[i]))
+            {
+                types[i] = t;
+                types.remove(j);
+                continue;
+            }
             if let Type::IntRange(min, max) = types[i]
                 && let Some(t) = range_try_intersect(min, max, &types[j])
             {
@@ -3871,7 +3900,7 @@ impl Type {
 
     /// `$type instanceof MixedType && !$type->isExplicitMixed()`
     pub fn is_implicit_mixed(&self) -> bool {
-        matches!(self, Type::Mixed { explicit: false })
+        matches!(self, Type::Mixed { explicit: false } | Type::SubtractedMixed { explicit: false, .. })
     }
 
     /// `TypeCombinator::addNull()`: unchanged when it may already be null (`never` is not null, so it becomes null)

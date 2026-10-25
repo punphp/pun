@@ -332,7 +332,7 @@ impl TUnion {
                     intersection_types: parameter.intersection_types.clone(),
                     constraint: Arc::new(parameter.constraint.to_non_nullable()),
                 })),
-                TAtomic::Mixed(mixed) => Some(TAtomic::Mixed(mixed.with_is_non_null(true))),
+                TAtomic::Mixed(mixed) => Some(TAtomic::Mixed(mixed.clone().with_is_non_null(true))),
                 atomic => Some(atomic.clone()),
             })
             .collect()
@@ -349,7 +349,7 @@ impl TUnion {
                     intersection_types: parameter.intersection_types.clone(),
                     constraint: Arc::new(parameter.constraint.to_truthy()),
                 })),
-                TAtomic::Mixed(mixed) => Some(TAtomic::Mixed(mixed.with_truthiness(TMixedTruthiness::Truthy))),
+                TAtomic::Mixed(mixed) => Some(TAtomic::Mixed(mixed.clone().with_truthiness(TMixedTruthiness::Truthy))),
                 atomic => {
                     if atomic.is_falsy() {
                         None
@@ -396,7 +396,7 @@ impl TUnion {
 
         for atomic in types.iter_mut() {
             if let TAtomic::Mixed(mixed) = atomic {
-                *mixed = mixed.with_is_non_null(false);
+                *mixed = mixed.clone().with_is_non_null(false);
             }
         }
 
@@ -645,7 +645,7 @@ impl TUnion {
             return false;
         }
 
-        matches!(&self.types[0], &TAtomic::Mixed(mixed) if mixed.is_falsy())
+        matches!(&self.types[0], TAtomic::Mixed(mixed) if mixed.is_falsy())
     }
 
     #[must_use]

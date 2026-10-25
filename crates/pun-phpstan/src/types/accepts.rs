@@ -14,7 +14,7 @@ pub struct StrictMixed {
 impl StrictMixed {
     pub(super) fn applies(self, t: &Type) -> bool {
         match t {
-            Type::Mixed { explicit } => {
+            Type::Mixed { explicit } | Type::SubtractedMixed { explicit, .. } => {
                 if *explicit {
                     self.explicit
                 } else {
@@ -45,7 +45,7 @@ pub fn accepts_with(a: &Type, b: &Type, strict: bool, sm: StrictMixed) -> Tri {
     let accessory = |r: Tri| if r.yes() { Tri::Yes } else if compound { by() } else { r };
     match a {
         // MixedType (ErrorType extends it) accepts anything
-        T::Mixed { .. } | T::Error | T::Wildcard | T::OffsetAccess(..) => Tri::Yes,
+        T::Mixed { .. } | T::SubtractedMixed { .. } | T::Error | T::Wildcard | T::OffsetAccess(..) => Tri::Yes,
         T::Never(NeverKind::NonAccepting) => Tri::from(matches!(b, T::Never(_))),
         T::Never(_) => Tri::Yes,
         T::Union(types) | T::Benevolent(types) => union(a, types, b, strict, sm),
@@ -355,6 +355,7 @@ fn accepted_by(a: &Type, b: &Type, strict: bool, sm: StrictMixed) -> Tri {
         T::Union(types) => Tri::extreme_identity(types.iter().map(|t| rec(a, t))),
         T::Benevolent(types) => types.iter().map(|t| rec(a, t)).fold(Tri::No, Tri::or),
         T::Mixed { .. } | T::Error => Tri::Yes,
+        T::SubtractedMixed { .. } => Tri::from(!is_super_type_of(b, a).no()),
         T::Intersection(types) => {
             let result = Tri::max_min(types.iter().map(|t| rec(a, t)));
             if result.yes() {

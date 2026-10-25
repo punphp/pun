@@ -142,6 +142,22 @@ pub fn is_contained_by(
         }
     }
 
+    if let TAtomic::Mixed(container) = container_type_part
+        && let Some(excluded) = container.get_subtracted_type()
+    {
+        return if input_type_part.is_never() {
+            true
+        } else if let TAtomic::Mixed(input) = input_type_part {
+            input.effective_subtracted_type().is_some_and(|input_excluded| {
+                union_comparator::is_contained_by(codebase, excluded, &input_excluded, false, false, false, atomic_comparison_result)
+            })
+        } else {
+            !union_comparator::can_expression_types_be_identical(
+                codebase, excluded, &TUnion::from_atomic(input_type_part.clone()), false, false,
+            )
+        };
+    }
+
     if container_type_part.is_vanilla_mixed() || container_type_part.is_templated_as_vanilla_mixed() {
         return true;
     }

@@ -22,8 +22,8 @@ pub fn cast_is_error(t: &Type, cast: Cast, sm: StrictMixed) -> bool {
     }
     let rec = |t: &Type| cast_is_error(t, cast, sm);
     match t {
-        T::Mixed { .. } | T::Wildcard if sm.applies(t) => true,
-        T::Mixed { .. } | T::Wildcard => cast == C::BitwiseNot,
+        T::Mixed { .. } | T::SubtractedMixed { .. } | T::Wildcard if sm.applies(t) => true,
+        T::Mixed { .. } | T::SubtractedMixed { .. } | T::Wildcard => cast == C::BitwiseNot,
         T::Never(_) | T::Error | T::OffsetAccess(..) | T::Projection(..) => false,
         T::Void => true,
         T::Null | T::Bool | T::ConstBool(_) => cast == C::BitwiseNot,

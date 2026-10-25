@@ -1153,6 +1153,20 @@ pub fn intersect_union_types(type_1: &TUnion, type_2: &TUnion, codebase: &Codeba
         return Some(type_1.clone());
     }
 
+    for (mixed, other) in [(type_1, type_2), (type_2, type_1)] {
+        if let [TAtomic::Mixed(mixed)] = mixed.types.as_ref()
+            && let Some(excluded) = mixed.get_subtracted_type()
+        {
+            return Some(match other.types.as_ref() {
+                [TAtomic::Mixed(other)] => TUnion::from_atomic(TAtomic::Mixed(match other.effective_subtracted_type() {
+                    Some(previous) => TMixed::with_subtracted_type(combine_union_types(excluded, &previous, codebase, Default::default())),
+                    None => mixed.clone(),
+                })),
+                _ => atomic::mixed::subtraction::remove(other, excluded, codebase),
+            });
+        }
+    }
+
     let mut intersection_performed = false;
 
     if type_1.is_mixed() {

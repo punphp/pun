@@ -165,7 +165,7 @@ impl TAtomic {
 
     #[must_use]
     pub const fn is_vanilla_mixed(&self) -> bool {
-        matches!(self, TAtomic::Mixed(_))
+        matches!(self, TAtomic::Mixed(mixed) if mixed.subtracted_type.is_none())
     }
 
     #[must_use]
