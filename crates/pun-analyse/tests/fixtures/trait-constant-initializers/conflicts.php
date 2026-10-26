@@ -16,3 +16,6 @@ class DeclaredSame { use DeclaredValue; /** @var positive-int */ public const VA
 class DeclaredDifferent { use DeclaredValue; /** @var int */ public const VALUE = 8; }
 trait NativeValue { public const int VALUE = true ? 1 : 4; }
 class NativeDifferent { use NativeValue; public const int VALUE = 1; }
+// PHPStan reflects both call initializers as mixed, despite the different runtime lengths.
+trait CallValue { public const VALUE = strlen('a'); }
+class CallEqual { use CallValue; public const VALUE = strlen('abc'); }

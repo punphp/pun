@@ -9,8 +9,8 @@ DECISIONS.md, TASKS.md and REQUESTS.md (their history is in git). Finished work 
 One lead agent works on `main` and spawns subagents for independent slices in worktrees (AGENTS.md "How work runs").
 Pushpak resumed all commands on 2026-10-25. CI stays disabled.
 
-- **Counts** (local mapping.toml `ported = true`): format 168 of 168, lint 306 of 703, analyse 299 of 385.
-  Pending: format 0, lint 397, analyse 86 (483 total). Ported rules still have the explicit parity gaps below.
+- **Counts** (local mapping.toml `ported = true`): format 168 of 168, lint 325 of 703, analyse 299 of 385.
+  Pending: format 0, lint 378, analyse 86 (464 total). Ported rules still have the explicit parity gaps below.
 - **Rule docs:** steps 1–5 built locally: all 1,256 rule pages, 67 command/group pages, 8 presets, 8 sets, six
   migration mappings and the URL-filtered directory. CLI links need the public docs origin; none is configured.
   The docs build passes on Linux (1,446 pages); public deployment has not been verified.
@@ -105,6 +105,36 @@ Pushpak resumed all commands on 2026-10-25. CI stays disabled.
   fresh owning-crate coverage is 9,735/9,735 after the public class-name compound-query controls.
   Full combined analyser fixture gates and coverage still need measurement. The 1,446-page docs build and
   rendered call, unpacking and archive-contract paragraphs pass inspection.
+- **Current batch:** lint batch 1 is integrated locally: 325/703 lint rules, with config, fixer and all 243 lint
+  tests passing on the merged snapshot. Generic callable specialization, class variance, compact extraction,
+  class-initializer unions, passive native branches and accepted try/hook/nested-namespace validation are also
+  integrated. The generic correction passes 50 fresh PHPStan comparison records and 73 combined public/type
+  tests. All 363 analyser public/library tests pass after trait-context integration. Two direct-executable
+  checks initially used the wrong working directory; both pass from the owning crate, matching Cargo.
+  The NaN default-parameter regression now passes unchanged after matching PHPStan's constant-float identity;
+  all 69 owning-crate tests and six fresh
+  scalar/shape oracle controls pass. Every one of the 2,787 level cases and 1,315 rule cases passes in bounded
+  partitions, with 680 level gaps and 18 rule gaps retained. The unfiltered rule run exceeds 900 seconds; the
+  partitions execute every case, not an unfiltered success. Sixteen stale level gaps are removed without changing
+  expectations. Fresh coverage is 10,406/10,406 PHPStan lines and 40,972/40,972 analyser lines after existing
+  exclusions. Trait initializer caches preserve implementing-class selection across inheritance and explicit
+  trait reuse; consuming declaration checks remain separate. Whole-union conflicts, keyed source order and
+  reflected magic contexts match six fresh captures with 143 diagnostics and an independent ten-dump control.
+  All five public trait tests and scoped Classes, Constants, Traits, Arrays and Properties gates pass on main.
+  A fresh negative control confirms unsupported call initializers do not create false trait-value conflicts.
+  Dynamic holders, calls/new precision, expanded cycles and general mixed/spread array order remain incomplete.
+  Coverage also found a static-receiver bug: class-string object bounds must be unwrapped before method-capability
+  checks. Fresh ordinary-call and first-class-callable controls fail before the correction and pass afterward,
+  including stdClass and unchecked mixed bounds. Its 26 public neighbors, complete Methods rule sweep and static
+  method level sweep pass. All 13 analyse CLI tests also pass after the receiver correction.
+  The CLI rule fixture loop now uses bounded Rayon parallelism:
+  all 166 fixtures pass in 776 seconds with two threads, preserving every assertion and expectation.
+  All other CLI executables pass, including all 13 analyse machine-format tests. The Pinkary format comparison
+  matches all 799 files; its absent-dependency analysis errors are not analyse/check parity evidence.
+  All 20 format CLI-parity argument sets match. Mutation parity matches Pint on 272 Pinkary app/test files
+  (seed 7) and 117 Laravel Support files with forced CRLF (seed 3), using the fresh batch binary.
+  The 1,446-page docs build and rendered contract paragraphs pass inspection. The combined coverage gate is
+  closed. No new analyse rules or CI workflows were activated.
 - **Native scalar casts:** the subsequent default-off slice passes 37 combined native, callback, slice, debug
   and arithmetic tests, including 133 actual PHPStan native dumps. Its changed engine lines are 152/152 covered.
   It models 64-bit PHP with default `precision=14`; unsupported transfers stay unavailable and native-dependent
@@ -116,8 +146,8 @@ Pushpak resumed all commands on 2026-10-25. CI stays disabled.
   PHPStan diagnostics; combined verification is running.
 - **CLI coverage:** fresh full-registry measurement is 5,397/5,397 lines, with 147 tests passing. Non-ignorable
   errors retain their rule's flag in reports and cannot be hidden by ignore comments or baselines.
-- **Lint coverage:** Linux full-registry measurement is 21,786/21,786 lines, with 243 tests passing on main.
-- **Fixer coverage:** Linux full-registry measurement is 34,895/34,895 lines, with 106 tests passing on main.
+- **Lint coverage:** Linux full-registry measurement is 21,881/21,881 lines, with 243 tests passing on main.
+- **Fixer coverage:** Linux full-registry measurement is 36,563/36,563 lines, with 106 tests passing on main.
 - **Laravel alias groundwork:** installed defaults, literal app configuration, config/package caches and Composer
   discovery feed shared alias metadata without PHP. Pinkary level 0 matches all eight oracle diagnostics for
   ported identifiers; dynamic bootstrap and runtime lookup order remain unported.
@@ -436,23 +466,13 @@ Gate passed ea7a84bc2d4c4f4b90ad177d911e6ade3accf253
 | analyse level 0 unset: port UnsetRule's readonly and hooked-property checks, recursive offset checks and definitely-undefined local checks through shared reflection, types and certainty | doing (27 integrated public tests and ten exported cases pass; required-interface native reflection and annotation writable types are integrated; fresh captures cover the bounded reflection contracts; complete rule activation and combined coverage remain) |
 | analyse level 0 attributes: complete the twelve existing attribute-rule contracts against AttributesCheck, including constructor types and version/named-argument controls, before activating their mappings | doing (explicit aliases, parenthesized flags and shared trait-constructor reflection integrated; isolated reflection controls match 9/41/45 oracle diagnostics at levels 0/5/6; conditional/coalesce initializer inference remains isolated; combined gates running; mapping stays unported) |
 | analyse shared class names: carry imported-name and internal-class case options through the shared ClassCaseSensitivityCheck, preserving explicit aliases and written-name distinctions | doing (isolated source port against fresh PHPStan controls; qualified special-name parser validation and source-only class_alias provenance remain separate attribute boundaries) |
-| analyse source alias admission: exclude ordinary analysed/scanned class_alias syntax from global class identities while preserving trusted Laravel synthetic registrations | doing (returned source port integrated locally; six public tests and 13/13 changed lines pass in isolation; combined gates running; runtime bootstrap execution remains unported) |
-| analyse compact argument extraction: preserve benevolent-union extraction domains and callable-array intersection offsets in CompactVariablesRule | doing (isolated source port; fresh complete-analyser controls precede implementation; ordinary unions and broad-domain negative controls remain distinct; no mapping activation) |
 | analyse compact rule selection (needs Pushpak): variable.undefined has one canonical Pun rule, so compact findings cannot be independently enabled, disabled or ignored by analyse/undefined/compact-variable | needs Pushpak (default: preserve the existing canonical identifier decision; keep compact unported while its extraction and public selector boundaries remain) |
-| analyse fixture harness filtering: compare gap retirement only with executed fixture cases rather than substring-matching unrelated method names | doing (focused false-retirement regressions and controlled unfiltered-orphan checks pass; 33 skipped level gaps retained and one genuinely passing Methods gap removed; rule partitions pass against 18 retained gaps; final combined coverage remains) |
-| analyse mixed level checks: apply RuleLevelHelper's explicit/implicit thresholds to subtracted mixed and erase exclusions when converting to strict mixed | doing (genuine checked StrictMixed port integrated; four-level regression and six-level public matrix pass, including source-owned property receivers; fresh combined fixture and coverage gates running) |
-| analyse strict template receiver descriptions: method/property errors at levels 9/10 display `T` instead of PHPStan's `T of mixed` after RuleLevelHelper converts a mixed template to strict mixed | doing (coherent StrictMixed type integrated with source-owned checked copies and defining-scope template defaults; 66 PHPStan tests and 200/200 isolated changed lines pass; combined coverage remains) |
-| analyse parser name validation: reject qualified special class names with PHPStan's non-ignorable parse diagnostic and suppress ordinary analysis of the erroneous file | doing (returned pre-scan, file-analysis and CLI severe-error port integrated locally, including initializer rejection; isolated 409/409 changed lines pass; combined gates running; arbitrary syntax-error translation remains unported) |
-| analyse parser declaration validation: port PHPParser's class modifier checks before body parsing, preserving duplicate/abstract-final priority and scan-only rejection | doing (member, parameter and class-modifier checks integrated; isolated 14-test parser suite and 525/525 parser lines pass; fresh combined gates running; arbitrary recovered-grammar translation remains outside this slice) |
-| analyse versioned parser admission: match readonly tokenization below PHP 8.1 before scanning or analysis | doing (bounded class-header emulation integrated; 39 analysed controls and four scan fixtures match five oracle target versions in isolation; 84/84 changed executable lines covered; main parser/statements suites pass all 34 tests; no new gaps) |
-| analyse initializer reflection: resolve global dependencies before ternary/coalesce filtering and retain canonical reflection values separately from file-local flow values | doing (returned global-only source port integrated locally; isolated 57-diagnostic oracle matrix and 165/165 changed lines pass; combined gates running; class-constant union storage and declaring-scope resolution remain separate) |
-| analyse class-constant initializer reflection: retain canonical initializer unions independently of native/PHPDoc declarations and resolve inherited constants in their declaring scope | doing (isolated union-storage and canonical-resolution port grounded in fresh PHPStan controls; ordinary classes/interfaces and named/self/parent holders only; trait rebinding and expanded cycles remain separate) |
-| analyse native annotation writes: preserve the reflected writable type beneath a native `@property-read` overlay | doing (integrated locally; all 27 unset tests and 60 combined library/public controls pass; isolated 42-diagnostic oracle matrix and 78/78 changed lines pass; full combined gates and coverage remain) |
+| analyse initializer dependency cycles: extend canonical resolution beyond the currently supported global, ordinary-class and trait dependencies | todo |
+| analyse initializer expressions: port unsupported-expression mixed fallback, new-object types and conditional class holders through the shared initializer resolver, including trait conflict comparisons | todo (fresh PHPStan evidence: calls compare as mixed, new expressions retain class identity and conditional holders union their values; current negative control prevents false call/call conflicts, but call/scalar, new/new and conditional-holder mismatches are still missed) |
 | analyse class constants: extend ClassConstantRule's receiver checks beyond named classes and self/static/parent to inferred expression receivers at higher levels | doing (named-call identities and bounded purity invalidation integrated; nine public tests pass; dynamic/nullsafe calls, indirect variables, dynamic property selectors and general type-dependent comparisons remain; mapping stays unported) |
 | analyse call termination: distinguish implicit empty-domain inference from explicitly never-returning calls, preserving nested evaluation and PHPStan reachability | doing (array_rand count bounds and random-integer returns integrated locally; 17 neighboring controls and Functions/DeadCode sweeps pass; general generic-bottom termination remains unported) |
 | analyse level 0 includes: extend integrated RequireFileExistsRule and IncludedFilePathResolver beyond local files to supported stream paths before whole-rule activation | doing (local phar:// archive members and gzip restart boundary integrated; seven include tests and fresh PHPStan capture pass; runtime wrappers, aliases/mounts, OpenSSL signatures and bzip2 remain unsupported) |
 | analyse native types (needs Pushpak): exact `getNativeType()` needs full/native state on the same control-flow walk; Mago 1.57 exposes one lane and no PHPDoc-disable setting. Choose a maintained Mago source patch or a Pun-native scope engine. Default: preserve PHPStan's paired-state contract and leave native-dependent debug rules unported rather than substitute a comments-disabled second pass | needs Pushpak |
-| analyse native scalar branches: propagate the bounded passive native lane through scalar if/elseif/else and ternaries on the existing walk, preserving PHPStan's distinct continuation and expression-value rules | doing (isolated port ready against 178 fresh PHPStan native records; 60 focused public tests and 397/397 changed production lines pass; lead integration follows the current gate; default-off and unsupported availability contracts remain; no rule activation) |
 | analyse callable inference: backport Mago 1.59.0's `Closure::fromCallable()` provider through Pun's production registry, preserving PHPStan signatures through assignment and invocation | doing (integrated locally; combined verification running; unknown/static-closure spelling and unresolved-string union fallback remain documented boundaries) |
 | analyse callback follow-up: foreach-defined coalesce return values lose their raw signature (`list<mixed>` rather than oracle `list<1|23>`); callback-refined constant conditions also lack the native/PHPDoc tip | todo |
 | analyse 3 follow-up: extend inline `@param-closure-this` bindings to dynamic callables, closure variables, constructor and unpacked callbacks, and template/conditional/union bindings | todo |
@@ -493,7 +513,11 @@ Gate passed ea7a84bc2d4c4f4b90ad177d911e6ade3accf253
 | analyse 3 follow-up (from 3d): apply the ArrayAccess exemption of InvalidVariableAssignRule inside anonymous classes (Pun has no class metadata there) | todo |
 | analyse 3 follow-up (from 3d): resolve by-reference callees for OffsetAccessWithoutDimForReadingRule beyond named functions, closure/arrow literals, $this or single-named-object method calls, static calls and new; pick the matching variant of multi-variant built-ins instead of the first | todo |
 | analyse 3 follow-up (from 3c, 3f): name anonymous classes (`class@anonymous/<path>:<line>`) in DuplicateDeclarationRule, FinalPrivateMethodRule and FinalPrivateConstantRule too, with the 3b follow-up above; then lift 3f's anonymous-class skips (method.abstract, method.nonAbstract, property.callableType, class.serializable) and the MissingMethodImplementationRuleTest::testRule gap | todo |
-| analyse parser semantic checks: complete php-parser's remaining semantic validation before name resolution and callbacks | doing (member, parameter and class-modifier checks integrated; bounded checkTryCatch port in an isolated worktree; property-hook checks remain next; recovered grammar remains separate) |
+| analyse parser semantic checks: complete php-parser's remaining semantic validation before name resolution and callbacks | doing (accepted try, property-hook and nested-braced-namespace checks integrated; isolated parser suite passes 25 tests with 657/657 parser lines covered; earlier 22-test snapshot passes on main; combined gates running; recovered grammar and namespace postprocessing remain separate) |
+| analyse attributed global constants: reject attribute groups attached to a declaration of multiple global constants at the first attribute location, after initializer diagnostics | doing (isolated port passes 28 parser tests and 668/668 parser lines; ready for the next batch, after the frozen broad gate) |
+| analyse namespace postprocessing: port first-statement placement, mixed namespace styles and code outside braced namespaces with PHPParser's statement normalization | doing (isolated port matches 76 PHPStan inputs; 31 parser and 18 statements tests pass, with 799/799 parser lines covered; ready for the next batch, after the frozen broad gate; recovered grammar remains separate) |
+| analyse parser lexical admission: retain a PHP opening tag inside a leading shebang line, which Mago currently swallows without producing a namespace node | doing (isolated mago-syntax 1.57.0 lexer port; fresh public oracle controls cover executable diagnostics, parser rejection and scanned symbol admission; preserve source bytes, spans, short-tag settings and normal shebang classification) |
+| analyse recovered grammar admission: reject an unmatched closing brace at compilation-unit entry with php-parser's exact unexpected-token diagnostic and stop recovered suffix declarations from exporting symbols | doing (fresh public Analyser and parser-state probes distinguish this entry production from expression failures, EOF and lexical errors; isolated port uses original significant tokens and the corresponding Mago grammar error; broader recovery remains separate) |
 | analyse 3 follow-up (from 3b): pass the analysed paths and cwd into `Checks` so ConstructorReturnTypeRule names anonymous classes as FuzzyRelativePathHelper does (`class@anonymous/<path>:<line>`) | todo |
 | analyse 3 follow-up (from 3b): skip statements after a terminating one in the rule walk, as PHPStan does (unreachable statements; later never-returning calls from inference) | todo |
 | analyse 3 follow-up (from 3b): examples/analyse in a debug build overflows the default thread stack on laravel-framework (ran with RUST_MIN_STACK=268435456); find the deep recursion or raise the stack in the corpus script | todo |

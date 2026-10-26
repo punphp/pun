@@ -4,13 +4,13 @@
 | crate | lines | hit | line % | tests |
 |---|---:|---:|---:|---|
 | punphp | 5397 | 5397 | 100.00% | ok |
-| punphp-analyse | 39701 | 39701 | 100.00% | ok |
+| punphp-analyse | 40972 | 40972 | 100.00% | ok |
 | punphp-config | 2604 | 2604 | 100.00% | ok |
 | punphp-fixers | 36563 | 36563 | 100.00% | ok |
 | punphp-format | 1022 | 1022 | 100.00% | ok |
 | punphp-harness | 235 | 235 | 100.00% | ok |
 | punphp-lint | 21881 | 21881 | 100.00% | ok |
-| punphp-phpstan | 10259 | 10259 | 100.00% | ok |
+| punphp-phpstan | 10406 | 10406 | 100.00% | ok |
 | punphp-problem | 105 | 105 | 100.00% | ok |
 | punphp-tokens | 3897 | 3897 | 100.00% | ok |
 | punphp-workspace | 457 | 457 | 100.00% | ok |
@@ -39,11 +39,10 @@ Uncovered lines:
 - `crates/pun-analyse/src/rules/return_types.rs:550-552` the same for the Closure method return provider.
 - `crates/pun-analyse/src/rules/larastan/relations.rs:180` RelationExistenceRule's relation method declared by one of PHP's own classes: a model extends Eloquent's Model, which extends none of them, so its methods are always the user's.
 - `crates/pun-analyse/src/laravel/mod.rs:506-513` `Provider::meta()` of the model-attribute hook: Mago's `Provider` trait requires it, but `PluginRegistry` reads `meta()` only for its own library plugins, never for a registered expression hook, and the hook struct is private.
-- `crates/pun-analyse/src/rules/infer.rs:272-275` `Provider::meta()` of the definedness hook: as for the model-attribute hook's above, `PluginRegistry` never reads it for a registered expression hook.
-- `crates/pun-analyse/src/rules/infer.rs:208` the upstream-failure fallback that drops only the failing file's inferred types. The Methods fixture panics enter the separate codex scanner's intersection-masking retry. Signed integer division overflow is now fixed in the maintained analyzer and has a public regression; no known panic producer is retained solely to cover this guard.
+- `crates/pun-analyse/src/rules/infer.rs:280-283` `Provider::meta()` of the definedness hook: as for the model-attribute hook's above, `PluginRegistry` never reads it for a registered expression hook.
 - `crates/pun-analyse/src/mago.rs:74` the upstream-panic fallback that skips only the failing file. The former debug-panic.php (`int&mixed`) no longer triggers it, and signed integer division overflow is now fixed in the maintained analyzer. The containment guard remains for unexpected upstream failures.
-- `crates/pun-analyse/src/rules/types/convert.rs:482-484` a callable alias (`TCallable::Alias`) as an expression's type: Mago's analyser expands the alias it gives a variable assigned a closure when the variable is read, and `Closure::getCurrent()` in a generic closure is the only other source; the arm stays so such a type describes as PHPStan's ClosureType.
-- `crates/pun-analyse/src/rules/types/convert.rs:665` an array shape key naming a class constant (`array{Foo::BAR: int}`): Mago resolves it to the constant's value when it expands the type, so an expression's type never carries one.
+- `crates/pun-analyse/src/rules/types/convert.rs:532-534` a callable alias (`TCallable::Alias`) as an expression's type: Mago's analyser expands the alias it gives a variable assigned a closure when the variable is read, and `Closure::getCurrent()` in a generic closure is the only other source; the arm stays so such a type describes as PHPStan's ClosureType.
+- `crates/pun-analyse/src/rules/types/convert.rs:729` an array shape key naming a class constant (`array{Foo::BAR: int}`): Mago resolves it to the constant's value when it expands the type, so an expression's type never carries one.
 - `crates/pun-phpstan/src/symbols.rs:156-158` `Visitor::expecting()` of the symbols.json map reader: serde calls it only to word the error for malformed input, and symbols.json is compiled in (every map in it is an object or `[]`).
 - `crates/pun-lint/src/rules/laravel/prefer_nullsafe.rs:49` the non-target node guard: `Linter` dispatches this rule only for MethodCall and PropertyAccess, as its `targets()` requires.
 - `crates/pun-lint/src/rules/laravel/prefer_env_helper.rs:34` the non-target node guard: `Linter` dispatches only ArrayAccess for this rule.

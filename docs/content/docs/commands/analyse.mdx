@@ -45,7 +45,12 @@ These checks also apply to attribute constructors.
 Shared attribute checks preserve explicit import aliases and evaluate parenthesized flag expressions.
 Global constant reflection keeps initializer unions separate from file-local flow values.
 Deferred global references resolve before ternary and null-coalescing filtering.
-Class-constant initializer unions remain incomplete.
+Loaded class and interface constants also retain canonical initializer unions separately from declared types.
+Named, `self` and `parent` dependencies resolve in the declaring class's scope before ternary and null-coalescing filtering.
+Trait constants use the selected implementing class's scope. Inherited non-private constants retain that identity even when a subclass explicitly reuses the trait.
+Trait constant conflicts compare complete initializer unions and array shapes.
+Reflected initializer magic constants use PHPStan's reflection context. Ordinary trait declaration and attribute checks use the consuming class's scope.
+Named class-constant reads preserve keyed initializer array order. General mixed and spread array ordering, expanded initializer cycles and dynamic initializer holders remain incomplete.
 Trait constructors retain adapted visibility, named-argument policies and parameter types in the consuming class's scope.
 Constructor template checks use the reflected return type, including implicit `void`, rather than the raw `@return` tag.
 Attribute rule support remains incomplete.
@@ -58,9 +63,15 @@ Laravel's statically resolved alias registry remains available.
 
 Invalid reserved or qualified special class names and duplicate imports report non-ignorable parser diagnostics.
 Invalid class or member modifiers, variadic defaults and direct `void` parameters also report parser diagnostics.
+Parser checks reject `try` without a catch or finally, unknown property hooks, explicit getter parameter lists and empty hook lists.
+Braced namespaces cannot contain direct nested namespace declarations.
 Named classes and direct anonymous-class expressions respect pre-8.1 `readonly` tokenization.
 Invalid files contribute no scanned symbols; command output contains only the severe parser errors.
 General PHP syntax-error translation remains incomplete.
+
+The `compact()` check preserves resolved function-import names and reads variable certainty before evaluating arguments.
+Benevolent unions and callable-array intersections retain their literal variable names.
+Its findings share `analyse/undefined/variable` selection; independent compact-rule selection remains incomplete.
 
 Dynamic `new $class` expressions report unknown class names even when another possible name exists.
 
@@ -80,10 +91,14 @@ Bindings from multiple possible receiver classes remain unsupported.
 
 Constant-bound templates retain their identities when combined with literal scalar types.
 Union descriptions use PHPStan's ordering, including distinct null-bound templates.
+Type compatibility treats `NAN` as equal to `NAN`, and `0.0` as equal to `-0.0`, including inside array shapes.
 
 At level 9, receiver checks also validate explicitly declared `mixed`.
 At level 10, they also validate implicit `mixed`.
 These checks preserve template bounds and defaults in diagnostics without changing inferred types.
+Static calls and first-class callables through `class-string<stdClass>` report non-object method errors; `class-string<mixed>` remains unchecked.
+Argument checks preserve declared `mixed` inside generic types and callable signatures.
+Generic callable arguments specialize their own templates before comparison; generic class arguments respect declared covariance and contravariance.
 
 Negative type guards preserve excluded values in `mixed` types.
 Only declared or inherited assertion contracts narrow a caller's arguments; a predicate inferred from a callee's body does not.

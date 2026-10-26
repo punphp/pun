@@ -16,12 +16,12 @@ use mago_codex::ttype::atomic::scalar::int::TInteger;
 use mago_codex::ttype::atomic::scalar::string::{TStringCasing, TStringLiteral};
 use mago_codex::ttype::union::TUnion;
 use mago_span::{HasSpan, Span};
-use mago_syntax::cst::{ArrayElement, Expression, TokenSeparatedSequence};
+use mago_syntax::cst::{Access, ArrayElement, Expression, TokenSeparatedSequence};
 use pun_phpstan::types::{
     Accessory, ConstArray, NeverKind, Param, ShapeBuilder, Signature, Template, Tri, Type, intersect, mixed, union,
 };
 
-use super::super::{Checker, declared, doc, infer};
+use super::super::{Checker, arrays, declared, doc, infer};
 
 fn text(b: &[u8]) -> String {
     String::from_utf8_lossy(b).into_owned()
@@ -54,7 +54,14 @@ impl<'a, 'arena> Checker<'a, 'arena> {
             return Type::Object(text(self.names.get(id)), vec![]);
         }
         declared::with_classes(self, || {
-            let source = self.source_type(e.span(), &self.origins);
+            let source = self.source_type(e.span(), &self.origins).or_else(|| {
+                match e.unparenthesized() {
+                    E::Access(Access::ClassConstant(_)) => {
+                        arrays::key_type(self, e, self.names, self.class_scope())
+                    }
+                    _ => None,
+                }
+            });
             // Mago's keyed arrays are BTreeMaps: only the literal still knows PHP's insertion order. Unknown
             // keys/unpacks keep the inferred fallback, rather than inventing an order for a nonliteral shape.
             let ty = self.literal_array(e).unwrap_or_else(|| {
