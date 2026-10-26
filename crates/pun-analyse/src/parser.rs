@@ -456,6 +456,17 @@ impl Reserved<'_> {
         }
     }
 
+    fn no_comma(&mut self, values: &TokenSeparatedSequence<&Expression>) {
+        // php.y's no_comma attaches attributes to the comma itself, not the list or its last value.
+        if let Some(comma) = values.get_trailing_token() {
+            self.errors.push(error(
+                self.file,
+                comma.span_for(self.file.id),
+                "A trailing comma is not allowed here".into(),
+            ));
+        }
+    }
+
     fn parents(&mut self, extends: Option<&Extends>, implements: Option<&Implements>) {
         if let Some(extends) = extends {
             for id in &extends.types {
@@ -474,6 +485,24 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Reserved<'_> {
     fn walk_out_program(&mut self, node: &'ast Program<'arena>, _: &mut ()) {
         // php.y's start production reduces only after every top-level body semantic check has collected.
         self.handle_namespaces(node);
+    }
+    fn walk_for(&mut self, node: &'ast For<'arena>, context: &mut ()) {
+        self.walk_keyword(&node.r#for, context);
+        // Each for_expr reduces its own expr_list_forbid_comma before the next clause and the body.
+        for values in [&node.initializations, &node.conditions, &node.increments] {
+            for value in values {
+                self.walk_expression(value, context);
+            }
+            self.no_comma(values);
+        }
+        self.walk_for_body(&node.body, context);
+    }
+    fn walk_out_echo(&mut self, node: &'ast Echo<'arena>, _: &mut ()) {
+        self.no_comma(&node.values);
+    }
+    fn walk_out_echo_tag(&mut self, node: &'ast EchoTag<'arena>, _: &mut ()) {
+        // ParserAbstract::createTokenMap maps T_OPEN_TAG_WITH_ECHO to the same T_ECHO production.
+        self.no_comma(&node.values);
     }
     fn walk_return(&mut self, node: &'ast Return<'arena>, context: &mut ()) {
         let saved = self.continuation;

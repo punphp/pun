@@ -1105,3 +1105,130 @@ fn reference_new_assignment_does_not_translate_other_grammar_productions() {
         );
     }
 }
+
+#[test]
+fn expression_list_commas_match_comma_locations_and_preserve_valid_neighbors() {
+    let inputs: Value = serde_json::from_str(include_str!(
+        "fixtures/parser/expression-list-commas-inputs.json"
+    ))
+    .unwrap();
+    let expected: Value = serde_json::from_str(include_str!(
+        "fixtures/parser/expression-list-commas-expected.json"
+    ))
+    .unwrap();
+    let root = Inputs::new();
+    let files = inputs
+        .as_object()
+        .unwrap()
+        .iter()
+        .map(|(name, source)| root.write_source(name, source.as_str().unwrap()))
+        .collect();
+    let mut project = Project::new(files, Vec::new());
+    project.php_version = 80500;
+    assert_eq!(errors(&project), expected["analysed"]["errors"]);
+}
+
+#[test]
+fn expression_list_commas_reduce_each_for_clause_before_later_clauses_and_body() {
+    use pun_phpstan::{Array, Key, Value as Php};
+    let root = Inputs::new();
+    let file = root.write_source(
+        "order",
+        include_str!("fixtures/parser/expression-list-commas-order.php"),
+    );
+    let mut project = Project::new(vec![file], Vec::new());
+    project.php_version = 80500;
+    project.reported = Some(std::sync::Arc::new(|_| false));
+    let mut entry = Array::new();
+    entry.set(Key::from("identifier"), Php::str("phpstan.parse"));
+    project.ignore_errors =
+        pun_phpstan::ignore::IgnoredErrors::new(&Array::list([Php::Array(entry)]), true);
+    let expected: Value = serde_json::from_str(include_str!(
+        "fixtures/parser/expression-list-commas-expected.json"
+    ))
+    .unwrap();
+    // Sorted diagnostics hide reduction order. Ignore messages distinguish each list's parameter then
+    // comma from later for clauses/body, short echo, and the root namespace postprocessing check.
+    assert_eq!(
+        json!(analyse_project(&project).unwrap().general),
+        expected["order"]["general"]
+    );
+    assert_eq!(errors(&project), expected["order"]["errors"]);
+}
+
+#[test]
+fn expression_list_commas_reject_all_scanned_symbols_but_keep_valid_lists() {
+    let inputs: Value = serde_json::from_str(include_str!(
+        "fixtures/parser/expression-list-commas-scans.json"
+    ))
+    .unwrap();
+    let expected: Value = serde_json::from_str(include_str!(
+        "fixtures/parser/expression-list-commas-expected.json"
+    ))
+    .unwrap();
+    for (name, source) in inputs.as_object().unwrap() {
+        let root = Inputs::new();
+        let main = root.write_source("main", include_str!("fixtures/parser/scan-main.php"));
+        let symbols = root.write_source("symbols", source.as_str().unwrap());
+        let mut project = Project::new(vec![main], vec![symbols]);
+        project.php_version = 80500;
+        assert_eq!(
+            errors(&project),
+            expected["scanned"][name]["errors"],
+            "{name}"
+        );
+    }
+}
+
+#[test]
+fn expression_list_commas_have_no_php_version_gate() {
+    let expected: Value = serde_json::from_str(include_str!(
+        "fixtures/parser/expression-list-commas-expected.json"
+    ))
+    .unwrap();
+    let root = Inputs::new();
+    let file = root.write_source(
+        "input",
+        include_str!("fixtures/parser/expression-list-commas-version.php"),
+    );
+    for version in [70100, 70400, 80000, 80100, 80200, 80400, 80500] {
+        let mut project = Project::new(vec![file.clone()], Vec::new());
+        project.php_version = version;
+        assert_eq!(
+            errors(&project),
+            expected["versions"][version.to_string()]["errors"],
+            "PHP {version}"
+        );
+    }
+}
+
+#[test]
+fn expression_list_commas_leave_other_productions_and_recovery_to_their_own_contracts() {
+    let inputs: Value = serde_json::from_str(include_str!(
+        "fixtures/parser/expression-list-commas-boundaries.json"
+    ))
+    .unwrap();
+    let upstream: Value = serde_json::from_str(include_str!(
+        "fixtures/parser/expression-list-commas-expected.json"
+    ))
+    .unwrap();
+    for (name, source) in inputs.as_object().unwrap() {
+        let root = Inputs::new();
+        let file = root.write_source("input", source.as_str().unwrap());
+        let mut project = Project::new(vec![file], Vec::new());
+        project.php_version = 80500;
+        let actual = errors(&project);
+        let allowed = upstream["boundaries"][name]["errors"].as_array().unwrap();
+        // This slice does not translate recovered grammar or other no_comma productions. Admit their
+        // captured parser diagnostics as they are ported, but never invent a different error or location.
+        assert!(
+            actual
+                .as_array()
+                .unwrap()
+                .iter()
+                .filter(|error| error["identifier"] == "phpstan.parse")
+                .all(|error| allowed.contains(error)),
+            "{name}: {actual}; upstream: {allowed:?}"
+        );
+    }
+}
