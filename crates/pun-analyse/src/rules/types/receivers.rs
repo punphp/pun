@@ -403,7 +403,7 @@ pub(in super::super) fn check_static<'arena>(
         return;
     };
     if let Type::ClassString(Some(g)) = &t {
-        if !c.can_call_methods(g).yes() {
+        if !is_super_type_of(&Type::ObjectWithoutClass, g).yes() {
             return;
         }
         t = (**g).clone();

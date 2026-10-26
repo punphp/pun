@@ -140,6 +140,34 @@
    "identifier": "callable.shadowTemplate",
    "message": "PHPDoc tag @param for parameter $b template T of callable<T of mixed>(T): void shadows @template T for class Cov\\Holder.",
    "tip": null
+  },
+  {
+   "file": "callables.php",
+   "line": 131,
+   "identifier": "staticMethod.nonObject",
+   "message": "Cannot call static method missing() on stdClass.",
+   "tip": null
+  },
+  {
+   "file": "callables.php",
+   "line": 132,
+   "identifier": "staticMethod.nonObject",
+   "message": "Cannot call static method missing() on stdClass.",
+   "tip": null
+  },
+  {
+   "file": "callables.php",
+   "line": 138,
+   "identifier": "staticMethod.notFound",
+   "message": "Call to an undefined static method Cov\\Suit::missing().",
+   "tip": null
+  },
+  {
+   "file": "callables.php",
+   "line": 139,
+   "identifier": "staticMethod.notFound",
+   "message": "Call to an undefined static method Cov\\Suit::missing().",
+   "tip": null
   }
  ]
 }
