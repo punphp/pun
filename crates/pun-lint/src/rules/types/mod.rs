@@ -27,7 +27,7 @@ mod add_return_type_from_property;
 mod add_return_type_from_ternary;
 mod add_scalar_return;
 mod add_union_return;
-mod declare;
+pub(crate) mod declare;
 mod native;
 mod never;
 mod silent_void;
