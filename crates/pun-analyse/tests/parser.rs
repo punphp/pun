@@ -882,3 +882,100 @@ fn entry_brace_translation_leaves_other_grammar_and_lexical_contracts_unchanged(
         );
     }
 }
+
+#[test]
+fn pipe_parentheses_preserve_direct_rhs_identity_starts_and_valid_neighbors() {
+    let inputs: Value =
+        serde_json::from_str(include_str!("fixtures/parser/pipe-parentheses-inputs.json")).unwrap();
+    let expected: Value = serde_json::from_str(include_str!(
+        "fixtures/parser/pipe-parentheses-expected.json"
+    ))
+    .unwrap();
+    let root = Inputs::new();
+    let files = inputs
+        .as_object()
+        .unwrap()
+        .iter()
+        .map(|(name, code)| root.write(name, code.as_str().unwrap()))
+        .collect();
+    let mut project = Project::new(files, Vec::new());
+    project.php_version = 80500;
+    assert_eq!(errors(&project), expected["analysed"]["errors"]);
+}
+
+#[test]
+fn pipe_parentheses_collect_after_parameters_and_inner_pipes_before_namespace_postprocessing() {
+    use pun_phpstan::{Array, Key, Value as Php};
+    let root = Inputs::new();
+    let file = root.write_source(
+        "order",
+        include_str!("fixtures/parser/pipe-parentheses-order.php"),
+    );
+    let mut project = Project::new(vec![file], Vec::new());
+    project.php_version = 80500;
+    project.reported = Some(std::sync::Arc::new(|_| false));
+    let mut entry = Array::new();
+    entry.set(Key::from("identifier"), Php::str("phpstan.parse"));
+    project.ignore_errors =
+        pun_phpstan::ignore::IgnoredErrors::new(&Array::list([Php::Array(entry)]), true);
+    let expected: Value = serde_json::from_str(include_str!(
+        "fixtures/parser/pipe-parentheses-expected.json"
+    ))
+    .unwrap();
+    // Sorted errors alone cannot distinguish entry and exit checks. Configured-ignore messages retain
+    // parameter, inner pipe, outer pipe, root namespace reduction order, even with every rule filtered out.
+    assert_eq!(
+        json!(analyse_project(&project).unwrap().general),
+        expected["order"]["general"]
+    );
+    assert_eq!(errors(&project), expected["order"]["errors"]);
+}
+
+#[test]
+fn pipe_parentheses_failures_in_scanned_files_reject_all_symbols() {
+    let inputs: Value =
+        serde_json::from_str(include_str!("fixtures/parser/pipe-parentheses-scans.json")).unwrap();
+    let expected: Value = serde_json::from_str(include_str!(
+        "fixtures/parser/pipe-parentheses-expected.json"
+    ))
+    .unwrap();
+    for (name, code) in inputs.as_object().unwrap() {
+        let root = Inputs::new();
+        let main = root.write_source("main", include_str!("fixtures/parser/scan-main.php"));
+        let symbols = root.write("symbols", code.as_str().unwrap());
+        let mut project = Project::new(vec![main], vec![symbols]);
+        project.php_version = 80500;
+        assert_eq!(
+            errors(&project),
+            expected["scanned"][name]["errors"],
+            "{name}"
+        );
+    }
+}
+
+#[test]
+fn pipe_parentheses_do_not_translate_older_target_pipe_grammar() {
+    let expected: Value = serde_json::from_str(include_str!(
+        "fixtures/parser/pipe-parentheses-expected.json"
+    ))
+    .unwrap();
+    let root = Inputs::new();
+    let file = root.write("input", "1 |> fn($x) => $x;");
+    for version in [80000, 80100, 80200, 80400] {
+        let mut project = Project::new(vec![file.clone()], Vec::new());
+        project.php_version = version;
+        // Reverse PipeOperatorEmulator produces | and > before PHP 8.5, not the semantic T_PIPE check.
+        // Allow the captured grammar diagnostics as they are ported, but never substitute this message.
+        let got = errors(&project);
+        let want = expected["older"][version.to_string()]["errors"]
+            .as_array()
+            .unwrap();
+        assert!(
+            got.as_array()
+                .unwrap()
+                .iter()
+                .all(|error| want.contains(error)),
+            "PHP {version}: got {got}, oracle {want:?}"
+        );
+    }
+}

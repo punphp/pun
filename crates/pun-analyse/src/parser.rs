@@ -591,6 +591,19 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Reserved<'_> {
             ));
         }
     }
+    fn walk_out_pipe(&mut self, node: &'ast Pipe<'arena>, _: &mut ()) {
+        // checkPipeOperatorParentheses runs after the RHS reduces. Mago retains parentheses explicitly,
+        // unlike PHPParser's parenthesizedArrowFunctions registry. Earlier targets do not tokenize T_PIPE.
+        if self.version >= PHPVersion::PHP85
+            && let Expression::ArrowFunction(arrow) = node.callable
+        {
+            self.errors.push(error(
+                self.file,
+                arrow.span(),
+                "Arrow functions on the right hand side of |> must be parenthesized".into(),
+            ));
+        }
+    }
     fn walk_out_try(&mut self, node: &'ast Try<'arena>, _: &mut ()) {
         // ParserAbstract::checkTryCatch runs after the body, catches and finally have reduced.
         if node.catch_clauses.is_empty() && node.finally_clause.is_none() {

@@ -1,0 +1,15 @@
+{
+  "bare": "1 |> fn($x) => $x;",
+  "rhs-parenthesized": "1 |> (fn($x) => $x);",
+  "rhs-double-parenthesized": "1 |> ((fn($x) => $x));",
+  "whole-pipe-parenthesized": "(1 |> fn($x) => $x);",
+  "body-only-parenthesized": "1 |> fn($x) => ($x);",
+  "static-start-line": "1 |>\nstatic\nfn($x) => $x;",
+  "attribute-start-line": "1 |>\n#[\\Deprecated]\nstatic fn($x) => $x;",
+  "by-reference-arrow": "1 |> fn&($x) => $x;",
+  "non-arrow-controls": "fn($x) => $x;\n1 |> function($x) { return $x; };\n$f = fn($x) => $x;\n1 |> $f;",
+  "parenthesized-outer-invalid-inner": "1 |> (fn($x) => (\n    2 |> fn($y) => $y\n));",
+  "resolver-suppressed": "#[\\self] class Invalid {}\n1 |> fn($x) => $x;\nmissing_suppressed();",
+  "suffix-suppressed": "1 |> fn($x) => $x;\nmissing_suppressed();",
+  "valid-neighbor": "1 |> (fn($x) => $x);\nmissing_neighbor();"
+}
