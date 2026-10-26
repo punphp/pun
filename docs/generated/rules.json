@@ -12006,7 +12006,7 @@
       "upstream": [
         "php_unit_dedicate_assert"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/phpunit/prefer-depends-attribute",

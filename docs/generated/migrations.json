@@ -1861,7 +1861,7 @@
         "rules": [
           "lint/phpunit/prefer-dedicated-assertion"
         ],
-        "note": "Same. Options: renamed for TOML: [options.\"lint/phpunit/prefer-dedicated-assertion\"]. Planned: not ported yet.",
+        "note": "Same. Options: renamed for TOML: [options.\"lint/phpunit/prefer-dedicated-assertion\"].",
         "unsupported": false
       },
       {
@@ -4847,7 +4847,7 @@
         "rules": [
           "lint/phpunit/prefer-dedicated-assertion"
         ],
-        "note": "Same. Options: renamed for TOML: [options.\"lint/phpunit/prefer-dedicated-assertion\"]. Planned: not ported yet.",
+        "note": "Same. Options: renamed for TOML: [options.\"lint/phpunit/prefer-dedicated-assertion\"].",
         "unsupported": false
       },
       {

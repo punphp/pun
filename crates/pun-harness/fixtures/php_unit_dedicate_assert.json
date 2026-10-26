@@ -1,0 +1,943 @@
+{
+    "fixer": "php_unit_dedicate_assert",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\PhpUnit\\PhpUnitDedicateAssertFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/PhpUnit/PhpUnitDedicateAssertFixerTest.php",
+    "case_count": 112,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": []
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\PhpUnit\\PhpUnitDedicateAssertFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null, array $configuration = []): void\n    {\n        $this->fixer->configure($configuration);\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        \n                    $this->assertNan($a);\n                    $this->assertNan($a);\n                    $this->assertTrue(test\\is_nan($a));\n                    $this->assertTrue(test\\a\\is_nan($a));\n                \n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        \n                    $this->assertTrue(is_nan($a));\n                    $this->assertTrue(\\is_nan($a));\n                    $this->assertTrue(test\\is_nan($a));\n                    $this->assertTrue(test\\a\\is_nan($a));\n                \n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        \n                    $this->assertFileExists($a);\n                    $this->assertFileNotExists($a);\n                    $this->assertFileExists($a);\n                    $this->assertFileNotExists($a);\n                \n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        \n                    $this->assertTrue(file_exists($a));\n                    $this->assertFalse(file_exists($a));\n                    $this->assertTrue(\\file_exists($a));\n                    $this->assertFalse(\\file_exists($a));\n                \n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        \n                    $this->assertNull($a);\n                    $this->assertNotNull($a);\n                    $this->assertNull($a);\n                    $this->assertNotNull($a, \"my message\");\n                \n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        \n                    $this->assertTrue(is_null($a));\n                    $this->assertFalse(is_null($a));\n                    $this->assertTrue(\\is_null($a));\n                    $this->assertFalse(\\is_null($a), \"my message\");\n                \n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        \n                    $this->assertEmpty($a);\n                    $this->assertNotEmpty($a);\n                \n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        \n                    $this->assertTrue(empty($a));\n                    $this->ASSERTFALSE(empty($a));\n                \n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        \n                    $this->assertInfinite($a);\n                    $this->assertFinite($a, \"my message\");\n                    $this->assertInfinite($a);\n                    $this->assertFinite($a, b\"my message\");\n                \n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        \n                    $this->assertTrue(is_infinite($a));\n                    $this->assertFalse(is_infinite($a), \"my message\");\n                    $this->assertTrue(\\is_infinite($a));\n                    $this->assertFalse(\\is_infinite($a), b\"my message\");\n                \n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        \n                    $this->assertArrayHasKey(\"test\", $a);\n                    $this->assertArrayNotHasKey($b, $a, $c);\n                \n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        \n                    $this->assertTrue(\\array_key_exists(\"test\", $a));\n                    $this->ASSERTFALSE(array_key_exists($b, $a), $c);\n                \n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        \n$this->assertTrue(is_dir($a));\n$this->assertTrue(is_writable($a));\n$this->assertTrue(is_readable($a));\n\n    }\n}\n",
+                        null,
+                        {
+                            "target": "5.0"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 7,
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        \n$this->assertTrue(is_dir($a));\n$this->assertTrue(is_writable($a));\n$this->assertTrue(is_readable($a));\n\n    }\n}\n",
+                        null,
+                        {
+                            "target": "3.0"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 8,
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        \n$this->assertDirectoryNotExists($a);\n$this->assertNotIsWritable($a);\n$this->assertNotIsReadable($a);\n\n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        \n$this->assertFalse(is_dir($a));\n$this->assertFalse(is_writable($a));\n$this->assertFalse(is_readable($a));\n\n    }\n}\n",
+                        {
+                            "target": "5.6"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 9,
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        \n$this->assertDirectoryExists($a);\n$this->assertIsWritable($a);\n$this->assertIsReadable($a);\n\n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        \n$this->assertTrue(is_dir($a));\n$this->assertTrue(is_writable($a));\n$this->assertTrue(is_readable($a));\n\n    }\n}\n",
+                        {
+                            "target": "newest"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 10,
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertInternalType('array', $a);\n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertTrue(is_array($a));\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 11,
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertNotInternalType('array', $a);\n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertFalse(is_array($a));\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 12,
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertInternalType('bool', $a);\n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertTrue(is_bool($a));\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 13,
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertNotInternalType('bool', $a);\n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertFalse(is_bool($a));\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 14,
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertInternalType('callable', $a);\n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertTrue(is_callable($a));\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 15,
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertNotInternalType('callable', $a);\n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertFalse(is_callable($a));\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 16,
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertInternalType('double', $a);\n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertTrue(is_double($a));\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 17,
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertNotInternalType('double', $a);\n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertFalse(is_double($a));\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 18,
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertInternalType('float', $a);\n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertTrue(is_float($a));\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 19,
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertNotInternalType('float', $a);\n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertFalse(is_float($a));\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 20,
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertInternalType('int', $a);\n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertTrue(is_int($a));\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 21,
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertNotInternalType('int', $a);\n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertFalse(is_int($a));\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 22,
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertInternalType('integer', $a);\n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertTrue(is_integer($a));\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 23,
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertNotInternalType('integer', $a);\n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertFalse(is_integer($a));\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 24,
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertInternalType('long', $a);\n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertTrue(is_long($a));\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 25,
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertNotInternalType('long', $a);\n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertFalse(is_long($a));\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 26,
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertInternalType('numeric', $a);\n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertTrue(is_numeric($a));\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 27,
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertNotInternalType('numeric', $a);\n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertFalse(is_numeric($a));\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 28,
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertInternalType('object', $a);\n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertTrue(is_object($a));\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 29,
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertNotInternalType('object', $a);\n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertFalse(is_object($a));\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 30,
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertInternalType('real', $a);\n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertTrue(is_real($a));\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 31,
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertNotInternalType('real', $a);\n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertFalse(is_real($a));\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 32,
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertInternalType('scalar', $a);\n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertTrue(is_scalar($a));\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 33,
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertNotInternalType('scalar', $a);\n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertFalse(is_scalar($a));\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 34,
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertInternalType('string', $a);\n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertTrue(is_string($a));\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 35,
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertNotInternalType('string', $a);\n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertFalse(is_string($a));\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 36,
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertInternalType('float', $a, \"my message\");\n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertTrue(is_float( $a), \"my message\");\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 37,
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertInternalType('float', $a);\n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertTrue(\\IS_FLOAT($a));\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 38,
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertInternalType(#\n'float'#\n, #\n$a#\n#\n)#\n;\n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertTrue(#\n\\IS_FLOAT#\n(#\n$a#\n)#\n)#\n;\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 39,
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        static::assertInternalType('float', $a);\n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        static::assertTrue(is_float( $a));\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 40,
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        self::assertInternalType('float', $a);\n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        self::assertTrue(is_float( $a));\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 41,
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        static::assertNull($a);\n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        static::assertTrue(is_null($a));\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 42,
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        self::assertNull($a);\n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        self::assertTrue(is_null($a));\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 43,
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        SELF::assertNull($a);\n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        SELF::assertTrue(is_null($a));\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 44,
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        self::assertStringContainsString($needle, $haystack);\n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        self::assertTrue(str_contains($haystack, $needle));\n    }\n}\n",
+                        {
+                            "target": "newest"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 45,
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        self::assertStringNotContainsString($needle, $a[$haystack.\"\"](123)[foo()]);\n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        self::assertFalse(str_contains($a[$haystack.\"\"](123)[foo()], $needle));\n    }\n}\n",
+                        {
+                            "target": "newest"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 46,
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        self::assertStringStartsWith($needle, $haystack);\n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        self::assertTrue(str_starts_with($haystack, $needle));\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 47,
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        self::assertStringStartsNotWith($needle, $haystack);\n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        self::assertFalse(str_starts_with($haystack, $needle));\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 48,
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        self::assertStringStartsNotWith(  #3\n            $needle#4\n            , #1\n            $haystack#2\n            );\n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        self::assertFalse(str_starts_with(  #1\n            $haystack#2\n            ,#3\n            $needle#4\n            ));\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 49,
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        self::assertStringEndsWith($needle, $haystack);\n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        self::assertTrue(str_ends_with($haystack, $needle));\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 50,
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        self::assertStringEndsNotWith($needle, $haystack);\n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        self::assertFalse(str_ends_with($haystack, $needle));\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "$a instanceof class",
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        \n                $this->assertInstanceOf(SomeClass::class, $x);\n                $this->assertInstanceOf(SomeClass::class, $y, $message);\n            \n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        \n                $this->assertTrue($x instanceof SomeClass);\n                $this->assertTrue($y instanceof SomeClass, $message);\n            \n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "$a instanceof class\\a\\b",
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        \n                $this->assertInstanceOf(\\PhpCsFixer\\Tests\\Fixtures\\Test\\AbstractFixerTest\\SimpleFixer::class, $ii);\n            \n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        \n                $this->assertTrue($ii instanceof \\PhpCsFixer\\Tests\\Fixtures\\Test\\AbstractFixerTest\\SimpleFixer);\n            \n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "$a instanceof $b",
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        \n                $this->assertInstanceOf($tty, $abc/* 1 *//* 2 */);\n                $this->assertInstanceOf($oo, $def, $message);\n            \n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        \n                $this->assertTrue($abc instanceof /* 1 */$tty /* 2 */);\n                $this->assertTrue($def instanceof $oo, $message);\n            \n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "do not fix instance of",
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        \n                $this->assertTrue($gg instanceof $ijl . \"X\", $something);\n                $this->assertTrue($ff instanceof $klh . $b(1,2,$message), $noMsg);\n            \n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "!$a instanceof class",
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        \n                $this->assertNotInstanceOf(SomeClass::class, $x);\n                $this->assertNotInstanceOf(SomeClass::class, $y, $message);\n            \n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        \n                $this->assertTrue(!$x instanceof SomeClass);\n                $this->assertTrue(!$y instanceof SomeClass, $message);\n            \n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "assertFalse with instanceof",
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        \n                self::assertNotInstanceOf(Foo::class, $a);\n                self::assertInstanceOf(Foo::class, $b);\n            \n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        \n                self::assertFalse($a instanceof Foo);\n                self::assertFalse(!$b instanceof Foo);\n            \n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "not a method call",
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        echo $this->assertTrue;\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "wrong argument count 1",
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        static::assertTrue(is_null($a, $b));\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "wrong argument count 2",
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        static::assertTrue(is_int($a, $b));\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 51,
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        \n                $this->assertTrue(is_null);\n                $this->assertTrue(is_int($a) && $b);\n                $this->assertFalse(is_nan($a));\n                $this->assertTrue(is_int($a) || \\is_bool($b));\n                $this->assertTrue($a&&is_int($a));\n                static::assertTrue(is_null);\n                self::assertTrue(is_null);\n            \n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "not in class",
+                    "args": [
+                        "<?php self::assertTrue(is_null($a));"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Do not replace is_resource",
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        self::assertTrue(is_resource($resource));\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "count - assert same",
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertCount(1, $a);\n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertSame(1, count($a));\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "sizeof - assert same",
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertCount(1, $a);\n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertSame(1, sizeof($a));\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "count - assert equals",
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertCount(2, $b);\n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertEquals(2, count($b));\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "sizeof - assert equals",
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertCount(2, $b);\n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertEquals(2, sizeof($b));\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "count - assert not same",
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertNotCount(11, $c);\n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertNotSame(11, count($c));\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "sizeof - assert not same",
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertNotCount(11, $c);\n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertNotSame(11, sizeof($c));\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "count - assert not equals",
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertNotCount(122, $d);\n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertNotEquals(122, count($d));\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "sizeof - assert not equals",
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertNotCount(122, $d);\n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertNotEquals(122, sizeof($d));\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "count - assert same with namespace",
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertCount(1, $a);\n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertSame(1, \\count($a));\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "sizeof - assert same with namespace",
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertCount(1, $a);\n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertSame(1, \\sizeof($a));\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "count - no spacing",
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertCount(1,$a);\n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertSame(1,count($a));\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "sizeof - no spacing",
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertCount(1,$a);\n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertSame(1,sizeof($a));\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "count - lot of spacing",
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertCount(\n                1\n                ,\n                \n                \n                $a\n                \n                )\n                ;\n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertSame(\n                1\n                ,\n                count\n                (\n                $a\n                )\n                )\n                ;\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "sizeof - lot of spacing",
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertCount(\n                1\n                ,\n                \n                \n                $a\n                \n                )\n                ;\n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertSame(\n                1\n                ,\n                sizeof\n                (\n                $a\n                )\n                )\n                ;\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "count - lot of fix cases",
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        \n                    $this->assertCount(1, $a);\n                    $this->assertCount(2, $a);\n                    $this->assertCount(3, $a);\n                    $this->assertNotCount(4, $a);\n                    $this->assertCount(5, $a, \"abc\");\n                    $this->assertCount(6, $a, \"def\");\n                \n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        \n                    $this->assertSame(1, count($a));\n                    $this->assertSame(2, count($a));\n                    $this->assertEquals(3, count($a));\n                    $this->assertNotSame(4, count($a));\n                    $this->assertEquals(5, count($a), \"abc\");\n                    $this->assertSame(6, \\count($a), \"def\");\n                \n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "sizeof - lot of fix cases",
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        \n                    $this->assertCount(1, $a);\n                    $this->assertCount(2, $a);\n                    $this->assertCount(3, $a);\n                    $this->assertNotCount(4, $a);\n                    $this->assertCount(5, $a, \"abc\");\n                    $this->assertCount(6, $a, \"def\");\n                \n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        \n                    $this->assertSame(1, sizeof($a));\n                    $this->assertSame(2, sizeof($a));\n                    $this->assertEquals(3, sizeof($a));\n                    $this->assertNotSame(4, sizeof($a));\n                    $this->assertEquals(5, sizeof($a), \"abc\");\n                    $this->assertSame(6, \\sizeof($a), \"def\");\n                \n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "count - comment handling",
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertCount(# 0\n1# 1\n,# 2\n# 3\n# 4\n$a# 5\n# 6\n)# 7\n;# 8\n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertSame(# 0\n1# 1\n,# 2\ncount# 3\n(# 4\n$a# 5\n)# 6\n)# 7\n;# 8\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "sizeof - comment handling",
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertCount(# 0\n1# 1\n,# 2\n# 3\n# 4\n$a# 5\n# 6\n)# 7\n;# 8\n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertSame(# 0\n1# 1\n,# 2\nsizeof# 3\n(# 4\n$a# 5\n)# 6\n)# 7\n;# 8\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "count - expected variable",
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertCount($b, $a);\n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertSame($b, count($a));\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "sizeof - expected variable",
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertCount($b, $a);\n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertSame($b, sizeof($a));\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "count - do not fix 1",
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertSame($b[1], count($a));\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "sizeof - do not fix 1",
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertSame($b[1], sizeof($a));\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "count - do not fix 2",
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertSame(b(), count($a));\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "sizeof - do not fix 2",
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertSame(b(), sizeof($a));\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "count - do not fix 3",
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertSame(1.0, count($a));\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "sizeof - do not fix 3",
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertSame(1.0, sizeof($a));\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "count - do not fix 4",
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertSame(1);\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "sizeof - do not fix 4",
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertSame(1);\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "count - do not fix 5",
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertSame(1, \"count\");\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "sizeof - do not fix 5",
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertSame(1, \"sizeof\");\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "count - do not fix 6",
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->test(); // $this->assertSame($b, count($a));\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "sizeof - do not fix 6",
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->test(); // $this->assertSame($b, sizeof($a));\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "count - do not fix 7",
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertSame(2, count($array) - 1);\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "sizeof - do not fix 7",
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertSame(2, count($array) - 1);\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "count - do not fix 8",
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        \n                    Foo::assertSame(1, sizeof($a));\n                    $this->assertSame(1, sizeof2(2));\n                    $this->assertSame(1, sizeof::foo);\n                \n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "sizeof - do not fix 8",
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        \n                    Foo::assertSame(1, sizeof($a));\n                    $this->assertSame(1, sizeof2(2));\n                    $this->assertSame(1, sizeof::foo);\n                \n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 52,
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertCount(1, $a);\n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertSame(1, COUNT($a));\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 53,
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertCount(1, $a);\n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertSame(1, SIZEOF($a));\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 54,
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertCount(1, $a);\n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertSame(1, \\COUNT($a));\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 55,
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertCount(1, $a);\n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertSame(1, \\SIZEOF($a));\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 56,
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertNan($a, );\n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertTrue(is_nan($a), );\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 57,
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertNan($a);\n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertTrue(is_nan($a, ));\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 58,
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertNan($a, );\n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertTrue(is_nan($a, ), );\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 59,
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertInternalType('array', $a,);\n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertTrue(is_array($a,),);\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 60,
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertNan($b);\n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertTrue(\\is_nan($b,));\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 61,
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertFileExists($f, 'message',);\n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertTrue(file_exists($f,), 'message',);\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 62,
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertNan($y  , );\n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertTrue(is_nan($y)  , );\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "str_starts_with with trailing \",\"",
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        self::assertStringStartsWith($needle, $haystack);\n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        self::assertTrue(str_starts_with($haystack, $needle,));\n    }\n}\n"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix81",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.1.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\PhpUnit\\PhpUnitDedicateAssertFixerTest",
+            "body": "    public function testFix81(string $expected, ?string $input = null): void\n    {\n        $this->fixer->configure(['target' => PhpUnitTargetVersion::VERSION_NEWEST]);\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix81Cases",
+                    "key": 0,
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $a = $this->assertTrue(...);\n    }\n}\n"
+                    ]
+                }
+            ]
+        }
+    ]
+}
