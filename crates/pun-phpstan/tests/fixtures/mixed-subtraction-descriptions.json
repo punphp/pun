@@ -1,0 +1,2482 @@
+[
+    {
+        "label": "exclude:literal:",
+        "input": {
+            "mixed": "0",
+            "explicit": false
+        },
+        "descriptions": [
+            "mixed~0",
+            "mixed",
+            "mixed"
+        ]
+    },
+    {
+        "label": "exclude:literal-pipe:",
+        "input": {
+            "mixed": "'a|b'",
+            "explicit": false
+        },
+        "descriptions": [
+            "mixed~'a|b'",
+            "mixed",
+            "mixed"
+        ]
+    },
+    {
+        "label": "exclude:plain-mixed:",
+        "input": {
+            "mixed": "mixed",
+            "explicit": false
+        },
+        "descriptions": [
+            "mixed~mixed",
+            "mixed",
+            "mixed"
+        ]
+    },
+    {
+        "label": "exclude:never:",
+        "input": {
+            "mixed": "never",
+            "explicit": false
+        },
+        "descriptions": [
+            "mixed",
+            "mixed",
+            "mixed"
+        ]
+    },
+    {
+        "label": "exclude:int:",
+        "input": {
+            "mixed": "int",
+            "explicit": false
+        },
+        "descriptions": [
+            "mixed~int",
+            "mixed",
+            "mixed"
+        ]
+    },
+    {
+        "label": "exclude:array:",
+        "input": {
+            "mixed": "array<mixed, mixed>",
+            "explicit": false
+        },
+        "descriptions": [
+            "mixed~array<mixed>",
+            "mixed",
+            "mixed"
+        ]
+    },
+    {
+        "label": "exclude:array-union-value:",
+        "input": {
+            "mixed": "array<int, int|string>",
+            "explicit": false
+        },
+        "descriptions": [
+            "mixed~array<int, int|string>",
+            "mixed",
+            "mixed"
+        ]
+    },
+    {
+        "label": "exclude:nonempty-array:",
+        "input": {
+            "mixed": "non-empty-array<mixed, mixed>",
+            "explicit": false
+        },
+        "descriptions": [
+            "mixed~non-empty-array<mixed>",
+            "mixed",
+            "mixed"
+        ]
+    },
+    {
+        "label": "exclude:explicit-nonempty-array:",
+        "input": {
+            "mixed": {
+                "intersection": [
+                    {
+                        "array": [
+                            "mixed",
+                            "mixed"
+                        ]
+                    },
+                    {
+                        "accessory": "non-empty-array"
+                    }
+                ]
+            },
+            "explicit": false
+        },
+        "descriptions": [
+            "mixed~non-empty-array<mixed, mixed>",
+            "mixed",
+            "mixed"
+        ]
+    },
+    {
+        "label": "exclude:nonempty-list:",
+        "input": {
+            "mixed": "non-empty-list<string>",
+            "explicit": false
+        },
+        "descriptions": [
+            "mixed~non-empty-list<string>",
+            "mixed",
+            "mixed"
+        ]
+    },
+    {
+        "label": "exclude:nonempty-string:",
+        "input": {
+            "mixed": "non-empty-string",
+            "explicit": false
+        },
+        "descriptions": [
+            "mixed~non-empty-string",
+            "mixed",
+            "mixed"
+        ]
+    },
+    {
+        "label": "exclude:object-intersection:",
+        "input": {
+            "mixed": {
+                "intersection": [
+                    "Countable",
+                    "Iterator"
+                ]
+            },
+            "explicit": false
+        },
+        "descriptions": [
+            "mixed~Countable&Iterator",
+            "mixed",
+            "mixed"
+        ]
+    },
+    {
+        "label": "exclude:union:",
+        "input": {
+            "mixed": {
+                "union": [
+                    "int",
+                    "string"
+                ]
+            },
+            "explicit": false
+        },
+        "descriptions": [
+            "mixed~(int|string)",
+            "mixed",
+            "mixed"
+        ]
+    },
+    {
+        "label": "exclude:benevolent:",
+        "input": {
+            "mixed": {
+                "benevolent": [
+                    "int",
+                    "string"
+                ]
+            },
+            "explicit": false
+        },
+        "descriptions": [
+            "mixed~((int|string))",
+            "mixed",
+            "mixed"
+        ]
+    },
+    {
+        "label": "exclude:union-intersection:",
+        "input": {
+            "mixed": {
+                "union": [
+                    "non-empty-array<mixed, mixed>",
+                    "null"
+                ]
+            },
+            "explicit": false
+        },
+        "descriptions": [
+            "mixed~(non-empty-array<mixed>|null)",
+            "mixed",
+            "mixed"
+        ]
+    },
+    {
+        "label": "exclude:excluded-int:",
+        "input": {
+            "mixed": {
+                "mixed": "int",
+                "explicit": false
+            },
+            "explicit": false
+        },
+        "descriptions": [
+            "mixed~(mixed~int)",
+            "mixed",
+            "mixed"
+        ]
+    },
+    {
+        "label": "exclude:excluded-array:",
+        "input": {
+            "mixed": {
+                "mixed": "non-empty-array<mixed, mixed>",
+                "explicit": true
+            },
+            "explicit": false
+        },
+        "descriptions": [
+            "mixed~(mixed~non-empty-array<mixed>)",
+            "mixed",
+            "mixed"
+        ]
+    },
+    {
+        "label": "exclude:excluded-union:",
+        "input": {
+            "mixed": {
+                "mixed": {
+                    "union": [
+                        "int",
+                        "string"
+                    ]
+                },
+                "explicit": false
+            },
+            "explicit": false
+        },
+        "descriptions": [
+            "mixed~(mixed~(int|string))",
+            "mixed",
+            "mixed"
+        ]
+    },
+    {
+        "label": "exclude:intersection-excluded:",
+        "input": {
+            "mixed": {
+                "intersection": [
+                    {
+                        "mixed": "int",
+                        "explicit": false
+                    },
+                    "Stringable"
+                ]
+            },
+            "explicit": false
+        },
+        "descriptions": [
+            "mixed~mixed~int&Stringable",
+            "mixed",
+            "mixed"
+        ]
+    },
+    {
+        "label": "exclude-template:int::",
+        "input": {
+            "mixed": {
+                "template": "int",
+                "name": "T",
+                "argument": false
+            },
+            "explicit": false
+        },
+        "descriptions": [
+            "mixed~T of int (function subtractionDescriptions(), parameter)",
+            "mixed",
+            "mixed"
+        ]
+    },
+    {
+        "label": "template-exclusion:int::",
+        "input": {
+            "template": {
+                "mixed": "int",
+                "explicit": false
+            },
+            "name": "T",
+            "argument": false
+        },
+        "descriptions": [
+            "T of mixed~int (function subtractionDescriptions(), parameter)",
+            "T of mixed",
+            "T of mixed"
+        ]
+    },
+    {
+        "label": "exclude-nested-template:int::",
+        "input": {
+            "mixed": {
+                "template": {
+                    "template": "int",
+                    "name": "T",
+                    "argument": false
+                },
+                "name": "U",
+                "argument": false
+            },
+            "explicit": false
+        },
+        "descriptions": [
+            "mixed~U of T of int (function subtractionDescriptions(), parameter) (function subtractionDescriptions(), parameter)",
+            "mixed",
+            "mixed"
+        ]
+    },
+    {
+        "label": "exclude-template:int::1",
+        "input": {
+            "mixed": {
+                "template": "int",
+                "name": "T",
+                "argument": true
+            },
+            "explicit": false
+        },
+        "descriptions": [
+            "mixed~T of int (function subtractionDescriptions(), argument)",
+            "mixed",
+            "mixed"
+        ]
+    },
+    {
+        "label": "template-exclusion:int::1",
+        "input": {
+            "template": {
+                "mixed": "int",
+                "explicit": false
+            },
+            "name": "T",
+            "argument": true
+        },
+        "descriptions": [
+            "T of mixed~int (function subtractionDescriptions(), argument)",
+            "T of mixed",
+            "T of mixed"
+        ]
+    },
+    {
+        "label": "exclude-nested-template:int::1",
+        "input": {
+            "mixed": {
+                "template": {
+                    "template": "int",
+                    "name": "T",
+                    "argument": true
+                },
+                "name": "U",
+                "argument": true
+            },
+            "explicit": false
+        },
+        "descriptions": [
+            "mixed~U of T of int (function subtractionDescriptions(), argument) (function subtractionDescriptions(), argument)",
+            "mixed",
+            "mixed"
+        ]
+    },
+    {
+        "label": "exclude-template:plain-mixed::",
+        "input": {
+            "mixed": {
+                "template": "mixed",
+                "name": "T",
+                "argument": false
+            },
+            "explicit": false
+        },
+        "descriptions": [
+            "mixed~T (function subtractionDescriptions(), parameter)",
+            "mixed",
+            "mixed"
+        ]
+    },
+    {
+        "label": "template-exclusion:plain-mixed::",
+        "input": {
+            "template": {
+                "mixed": "mixed",
+                "explicit": false
+            },
+            "name": "T",
+            "argument": false
+        },
+        "descriptions": [
+            "T of mixed~mixed (function subtractionDescriptions(), parameter)",
+            "T of mixed",
+            "T of mixed"
+        ]
+    },
+    {
+        "label": "exclude-nested-template:plain-mixed::",
+        "input": {
+            "mixed": {
+                "template": {
+                    "template": "mixed",
+                    "name": "T",
+                    "argument": false
+                },
+                "name": "U",
+                "argument": false
+            },
+            "explicit": false
+        },
+        "descriptions": [
+            "mixed~U of T (function subtractionDescriptions(), parameter) (function subtractionDescriptions(), parameter)",
+            "mixed",
+            "mixed"
+        ]
+    },
+    {
+        "label": "exclude-template:plain-mixed::1",
+        "input": {
+            "mixed": {
+                "template": "mixed",
+                "name": "T",
+                "argument": true
+            },
+            "explicit": false
+        },
+        "descriptions": [
+            "mixed~T (function subtractionDescriptions(), argument)",
+            "mixed",
+            "mixed"
+        ]
+    },
+    {
+        "label": "template-exclusion:plain-mixed::1",
+        "input": {
+            "template": {
+                "mixed": "mixed",
+                "explicit": false
+            },
+            "name": "T",
+            "argument": true
+        },
+        "descriptions": [
+            "T of mixed~mixed (function subtractionDescriptions(), argument)",
+            "T of mixed",
+            "T of mixed"
+        ]
+    },
+    {
+        "label": "exclude-nested-template:plain-mixed::1",
+        "input": {
+            "mixed": {
+                "template": {
+                    "template": "mixed",
+                    "name": "T",
+                    "argument": true
+                },
+                "name": "U",
+                "argument": true
+            },
+            "explicit": false
+        },
+        "descriptions": [
+            "mixed~U of T (function subtractionDescriptions(), argument) (function subtractionDescriptions(), argument)",
+            "mixed",
+            "mixed"
+        ]
+    },
+    {
+        "label": "exclude-template:nonempty-array::",
+        "input": {
+            "mixed": {
+                "template": "non-empty-array<mixed, mixed>",
+                "name": "T",
+                "argument": false
+            },
+            "explicit": false
+        },
+        "descriptions": [
+            "mixed~T of non-empty-array<mixed> (function subtractionDescriptions(), parameter)",
+            "mixed",
+            "mixed"
+        ]
+    },
+    {
+        "label": "template-exclusion:nonempty-array::",
+        "input": {
+            "template": {
+                "mixed": "non-empty-array<mixed, mixed>",
+                "explicit": false
+            },
+            "name": "T",
+            "argument": false
+        },
+        "descriptions": [
+            "T of mixed~non-empty-array<mixed> (function subtractionDescriptions(), parameter)",
+            "T of mixed",
+            "T of mixed"
+        ]
+    },
+    {
+        "label": "exclude-nested-template:nonempty-array::",
+        "input": {
+            "mixed": {
+                "template": {
+                    "template": "non-empty-array<mixed, mixed>",
+                    "name": "T",
+                    "argument": false
+                },
+                "name": "U",
+                "argument": false
+            },
+            "explicit": false
+        },
+        "descriptions": [
+            "mixed~U of T of non-empty-array<mixed> (function subtractionDescriptions(), parameter) (function subtractionDescriptions(), parameter)",
+            "mixed",
+            "mixed"
+        ]
+    },
+    {
+        "label": "exclude-template:nonempty-array::1",
+        "input": {
+            "mixed": {
+                "template": "non-empty-array<mixed, mixed>",
+                "name": "T",
+                "argument": true
+            },
+            "explicit": false
+        },
+        "descriptions": [
+            "mixed~T of non-empty-array<mixed> (function subtractionDescriptions(), argument)",
+            "mixed",
+            "mixed"
+        ]
+    },
+    {
+        "label": "template-exclusion:nonempty-array::1",
+        "input": {
+            "template": {
+                "mixed": "non-empty-array<mixed, mixed>",
+                "explicit": false
+            },
+            "name": "T",
+            "argument": true
+        },
+        "descriptions": [
+            "T of mixed~non-empty-array<mixed> (function subtractionDescriptions(), argument)",
+            "T of mixed",
+            "T of mixed"
+        ]
+    },
+    {
+        "label": "exclude-nested-template:nonempty-array::1",
+        "input": {
+            "mixed": {
+                "template": {
+                    "template": "non-empty-array<mixed, mixed>",
+                    "name": "T",
+                    "argument": true
+                },
+                "name": "U",
+                "argument": true
+            },
+            "explicit": false
+        },
+        "descriptions": [
+            "mixed~U of T of non-empty-array<mixed> (function subtractionDescriptions(), argument) (function subtractionDescriptions(), argument)",
+            "mixed",
+            "mixed"
+        ]
+    },
+    {
+        "label": "exclude-template:object-intersection::",
+        "input": {
+            "mixed": {
+                "template": {
+                    "intersection": [
+                        "Countable",
+                        "Iterator"
+                    ]
+                },
+                "name": "T",
+                "argument": false
+            },
+            "explicit": false
+        },
+        "descriptions": [
+            "mixed~T of Countable&Iterator (function subtractionDescriptions(), parameter)",
+            "mixed",
+            "mixed"
+        ]
+    },
+    {
+        "label": "template-exclusion:object-intersection::",
+        "input": {
+            "template": {
+                "mixed": {
+                    "intersection": [
+                        "Countable",
+                        "Iterator"
+                    ]
+                },
+                "explicit": false
+            },
+            "name": "T",
+            "argument": false
+        },
+        "descriptions": [
+            "T of mixed~Countable&Iterator (function subtractionDescriptions(), parameter)",
+            "T of mixed",
+            "T of mixed"
+        ]
+    },
+    {
+        "label": "exclude-nested-template:object-intersection::",
+        "input": {
+            "mixed": {
+                "template": {
+                    "template": {
+                        "intersection": [
+                            "Countable",
+                            "Iterator"
+                        ]
+                    },
+                    "name": "T",
+                    "argument": false
+                },
+                "name": "U",
+                "argument": false
+            },
+            "explicit": false
+        },
+        "descriptions": [
+            "mixed~U of T of Countable&Iterator (function subtractionDescriptions(), parameter) (function subtractionDescriptions(), parameter)",
+            "mixed",
+            "mixed"
+        ]
+    },
+    {
+        "label": "exclude-template:object-intersection::1",
+        "input": {
+            "mixed": {
+                "template": {
+                    "intersection": [
+                        "Countable",
+                        "Iterator"
+                    ]
+                },
+                "name": "T",
+                "argument": true
+            },
+            "explicit": false
+        },
+        "descriptions": [
+            "mixed~T of Countable&Iterator (function subtractionDescriptions(), argument)",
+            "mixed",
+            "mixed"
+        ]
+    },
+    {
+        "label": "template-exclusion:object-intersection::1",
+        "input": {
+            "template": {
+                "mixed": {
+                    "intersection": [
+                        "Countable",
+                        "Iterator"
+                    ]
+                },
+                "explicit": false
+            },
+            "name": "T",
+            "argument": true
+        },
+        "descriptions": [
+            "T of mixed~Countable&Iterator (function subtractionDescriptions(), argument)",
+            "T of mixed",
+            "T of mixed"
+        ]
+    },
+    {
+        "label": "exclude-nested-template:object-intersection::1",
+        "input": {
+            "mixed": {
+                "template": {
+                    "template": {
+                        "intersection": [
+                            "Countable",
+                            "Iterator"
+                        ]
+                    },
+                    "name": "T",
+                    "argument": true
+                },
+                "name": "U",
+                "argument": true
+            },
+            "explicit": false
+        },
+        "descriptions": [
+            "mixed~U of T of Countable&Iterator (function subtractionDescriptions(), argument) (function subtractionDescriptions(), argument)",
+            "mixed",
+            "mixed"
+        ]
+    },
+    {
+        "label": "exclude-template:union::",
+        "input": {
+            "mixed": {
+                "template": {
+                    "union": [
+                        "int",
+                        "string"
+                    ]
+                },
+                "name": "T",
+                "argument": false
+            },
+            "explicit": false
+        },
+        "descriptions": [
+            "mixed~(T of int|string (function subtractionDescriptions(), parameter))",
+            "mixed",
+            "mixed"
+        ]
+    },
+    {
+        "label": "template-exclusion:union::",
+        "input": {
+            "template": {
+                "mixed": {
+                    "union": [
+                        "int",
+                        "string"
+                    ]
+                },
+                "explicit": false
+            },
+            "name": "T",
+            "argument": false
+        },
+        "descriptions": [
+            "T of mixed~(int|string) (function subtractionDescriptions(), parameter)",
+            "T of mixed",
+            "T of mixed"
+        ]
+    },
+    {
+        "label": "exclude-nested-template:union::",
+        "input": {
+            "mixed": {
+                "template": {
+                    "template": {
+                        "union": [
+                            "int",
+                            "string"
+                        ]
+                    },
+                    "name": "T",
+                    "argument": false
+                },
+                "name": "U",
+                "argument": false
+            },
+            "explicit": false
+        },
+        "descriptions": [
+            "mixed~(U of T of int|string (function subtractionDescriptions(), parameter) (function subtractionDescriptions(), parameter))",
+            "mixed",
+            "mixed"
+        ]
+    },
+    {
+        "label": "exclude-template:union::1",
+        "input": {
+            "mixed": {
+                "template": {
+                    "union": [
+                        "int",
+                        "string"
+                    ]
+                },
+                "name": "T",
+                "argument": true
+            },
+            "explicit": false
+        },
+        "descriptions": [
+            "mixed~(T of int|string (function subtractionDescriptions(), argument))",
+            "mixed",
+            "mixed"
+        ]
+    },
+    {
+        "label": "template-exclusion:union::1",
+        "input": {
+            "template": {
+                "mixed": {
+                    "union": [
+                        "int",
+                        "string"
+                    ]
+                },
+                "explicit": false
+            },
+            "name": "T",
+            "argument": true
+        },
+        "descriptions": [
+            "T of mixed~(int|string) (function subtractionDescriptions(), argument)",
+            "T of mixed",
+            "T of mixed"
+        ]
+    },
+    {
+        "label": "exclude-nested-template:union::1",
+        "input": {
+            "mixed": {
+                "template": {
+                    "template": {
+                        "union": [
+                            "int",
+                            "string"
+                        ]
+                    },
+                    "name": "T",
+                    "argument": true
+                },
+                "name": "U",
+                "argument": true
+            },
+            "explicit": false
+        },
+        "descriptions": [
+            "mixed~(U of T of int|string (function subtractionDescriptions(), argument) (function subtractionDescriptions(), argument))",
+            "mixed",
+            "mixed"
+        ]
+    },
+    {
+        "label": "exclude-template:benevolent::",
+        "input": {
+            "mixed": {
+                "template": {
+                    "benevolent": [
+                        "int",
+                        "string"
+                    ]
+                },
+                "name": "T",
+                "argument": false
+            },
+            "explicit": false
+        },
+        "descriptions": [
+            "mixed~(T of (int|string) (function subtractionDescriptions(), parameter))",
+            "mixed",
+            "mixed"
+        ]
+    },
+    {
+        "label": "template-exclusion:benevolent::",
+        "input": {
+            "template": {
+                "mixed": {
+                    "benevolent": [
+                        "int",
+                        "string"
+                    ]
+                },
+                "explicit": false
+            },
+            "name": "T",
+            "argument": false
+        },
+        "descriptions": [
+            "T of mixed~((int|string)) (function subtractionDescriptions(), parameter)",
+            "T of mixed",
+            "T of mixed"
+        ]
+    },
+    {
+        "label": "exclude-nested-template:benevolent::",
+        "input": {
+            "mixed": {
+                "template": {
+                    "template": {
+                        "benevolent": [
+                            "int",
+                            "string"
+                        ]
+                    },
+                    "name": "T",
+                    "argument": false
+                },
+                "name": "U",
+                "argument": false
+            },
+            "explicit": false
+        },
+        "descriptions": [
+            "mixed~(U of T of (int|string) (function subtractionDescriptions(), parameter) (function subtractionDescriptions(), parameter))",
+            "mixed",
+            "mixed"
+        ]
+    },
+    {
+        "label": "exclude-template:benevolent::1",
+        "input": {
+            "mixed": {
+                "template": {
+                    "benevolent": [
+                        "int",
+                        "string"
+                    ]
+                },
+                "name": "T",
+                "argument": true
+            },
+            "explicit": false
+        },
+        "descriptions": [
+            "mixed~(T of (int|string) (function subtractionDescriptions(), argument))",
+            "mixed",
+            "mixed"
+        ]
+    },
+    {
+        "label": "template-exclusion:benevolent::1",
+        "input": {
+            "template": {
+                "mixed": {
+                    "benevolent": [
+                        "int",
+                        "string"
+                    ]
+                },
+                "explicit": false
+            },
+            "name": "T",
+            "argument": true
+        },
+        "descriptions": [
+            "T of mixed~((int|string)) (function subtractionDescriptions(), argument)",
+            "T of mixed",
+            "T of mixed"
+        ]
+    },
+    {
+        "label": "exclude-nested-template:benevolent::1",
+        "input": {
+            "mixed": {
+                "template": {
+                    "template": {
+                        "benevolent": [
+                            "int",
+                            "string"
+                        ]
+                    },
+                    "name": "T",
+                    "argument": true
+                },
+                "name": "U",
+                "argument": true
+            },
+            "explicit": false
+        },
+        "descriptions": [
+            "mixed~(U of T of (int|string) (function subtractionDescriptions(), argument) (function subtractionDescriptions(), argument))",
+            "mixed",
+            "mixed"
+        ]
+    },
+    {
+        "label": "exclude-template:excluded-int::",
+        "input": {
+            "mixed": {
+                "template": {
+                    "mixed": "int",
+                    "explicit": false
+                },
+                "name": "T",
+                "argument": false
+            },
+            "explicit": false
+        },
+        "descriptions": [
+            "mixed~(T of mixed~int (function subtractionDescriptions(), parameter))",
+            "mixed",
+            "mixed"
+        ]
+    },
+    {
+        "label": "template-exclusion:excluded-int::",
+        "input": {
+            "template": {
+                "mixed": {
+                    "mixed": "int",
+                    "explicit": false
+                },
+                "explicit": false
+            },
+            "name": "T",
+            "argument": false
+        },
+        "descriptions": [
+            "T of mixed~(mixed~int) (function subtractionDescriptions(), parameter)",
+            "T of mixed",
+            "T of mixed"
+        ]
+    },
+    {
+        "label": "exclude-nested-template:excluded-int::",
+        "input": {
+            "mixed": {
+                "template": {
+                    "template": {
+                        "mixed": "int",
+                        "explicit": false
+                    },
+                    "name": "T",
+                    "argument": false
+                },
+                "name": "U",
+                "argument": false
+            },
+            "explicit": false
+        },
+        "descriptions": [
+            "mixed~(U of T of mixed~int (function subtractionDescriptions(), parameter) (function subtractionDescriptions(), parameter))",
+            "mixed",
+            "mixed"
+        ]
+    },
+    {
+        "label": "exclude-template:excluded-int::1",
+        "input": {
+            "mixed": {
+                "template": {
+                    "mixed": "int",
+                    "explicit": false
+                },
+                "name": "T",
+                "argument": true
+            },
+            "explicit": false
+        },
+        "descriptions": [
+            "mixed~(T of mixed~int (function subtractionDescriptions(), argument))",
+            "mixed",
+            "mixed"
+        ]
+    },
+    {
+        "label": "template-exclusion:excluded-int::1",
+        "input": {
+            "template": {
+                "mixed": {
+                    "mixed": "int",
+                    "explicit": false
+                },
+                "explicit": false
+            },
+            "name": "T",
+            "argument": true
+        },
+        "descriptions": [
+            "T of mixed~(mixed~int) (function subtractionDescriptions(), argument)",
+            "T of mixed",
+            "T of mixed"
+        ]
+    },
+    {
+        "label": "exclude-nested-template:excluded-int::1",
+        "input": {
+            "mixed": {
+                "template": {
+                    "template": {
+                        "mixed": "int",
+                        "explicit": false
+                    },
+                    "name": "T",
+                    "argument": true
+                },
+                "name": "U",
+                "argument": true
+            },
+            "explicit": false
+        },
+        "descriptions": [
+            "mixed~(U of T of mixed~int (function subtractionDescriptions(), argument) (function subtractionDescriptions(), argument))",
+            "mixed",
+            "mixed"
+        ]
+    },
+    {
+        "label": "exclude-template:excluded-array::",
+        "input": {
+            "mixed": {
+                "template": {
+                    "mixed": "non-empty-array<mixed, mixed>",
+                    "explicit": true
+                },
+                "name": "T",
+                "argument": false
+            },
+            "explicit": false
+        },
+        "descriptions": [
+            "mixed~(T of mixed~non-empty-array<mixed> (function subtractionDescriptions(), parameter))",
+            "mixed",
+            "mixed"
+        ]
+    },
+    {
+        "label": "template-exclusion:excluded-array::",
+        "input": {
+            "template": {
+                "mixed": {
+                    "mixed": "non-empty-array<mixed, mixed>",
+                    "explicit": true
+                },
+                "explicit": false
+            },
+            "name": "T",
+            "argument": false
+        },
+        "descriptions": [
+            "T of mixed~(mixed~non-empty-array<mixed>) (function subtractionDescriptions(), parameter)",
+            "T of mixed",
+            "T of mixed"
+        ]
+    },
+    {
+        "label": "exclude-nested-template:excluded-array::",
+        "input": {
+            "mixed": {
+                "template": {
+                    "template": {
+                        "mixed": "non-empty-array<mixed, mixed>",
+                        "explicit": true
+                    },
+                    "name": "T",
+                    "argument": false
+                },
+                "name": "U",
+                "argument": false
+            },
+            "explicit": false
+        },
+        "descriptions": [
+            "mixed~(U of T of mixed~non-empty-array<mixed> (function subtractionDescriptions(), parameter) (function subtractionDescriptions(), parameter))",
+            "mixed",
+            "mixed"
+        ]
+    },
+    {
+        "label": "exclude-template:excluded-array::1",
+        "input": {
+            "mixed": {
+                "template": {
+                    "mixed": "non-empty-array<mixed, mixed>",
+                    "explicit": true
+                },
+                "name": "T",
+                "argument": true
+            },
+            "explicit": false
+        },
+        "descriptions": [
+            "mixed~(T of mixed~non-empty-array<mixed> (function subtractionDescriptions(), argument))",
+            "mixed",
+            "mixed"
+        ]
+    },
+    {
+        "label": "template-exclusion:excluded-array::1",
+        "input": {
+            "template": {
+                "mixed": {
+                    "mixed": "non-empty-array<mixed, mixed>",
+                    "explicit": true
+                },
+                "explicit": false
+            },
+            "name": "T",
+            "argument": true
+        },
+        "descriptions": [
+            "T of mixed~(mixed~non-empty-array<mixed>) (function subtractionDescriptions(), argument)",
+            "T of mixed",
+            "T of mixed"
+        ]
+    },
+    {
+        "label": "exclude-nested-template:excluded-array::1",
+        "input": {
+            "mixed": {
+                "template": {
+                    "template": {
+                        "mixed": "non-empty-array<mixed, mixed>",
+                        "explicit": true
+                    },
+                    "name": "T",
+                    "argument": true
+                },
+                "name": "U",
+                "argument": true
+            },
+            "explicit": false
+        },
+        "descriptions": [
+            "mixed~(U of T of mixed~non-empty-array<mixed> (function subtractionDescriptions(), argument) (function subtractionDescriptions(), argument))",
+            "mixed",
+            "mixed"
+        ]
+    },
+    {
+        "label": "exclude:literal:1",
+        "input": {
+            "mixed": "0",
+            "explicit": true
+        },
+        "descriptions": [
+            "mixed~0",
+            "mixed",
+            "mixed"
+        ]
+    },
+    {
+        "label": "exclude:literal-pipe:1",
+        "input": {
+            "mixed": "'a|b'",
+            "explicit": true
+        },
+        "descriptions": [
+            "mixed~'a|b'",
+            "mixed",
+            "mixed"
+        ]
+    },
+    {
+        "label": "exclude:plain-mixed:1",
+        "input": {
+            "mixed": "mixed",
+            "explicit": true
+        },
+        "descriptions": [
+            "mixed~mixed",
+            "mixed",
+            "mixed"
+        ]
+    },
+    {
+        "label": "exclude:never:1",
+        "input": {
+            "mixed": "never",
+            "explicit": true
+        },
+        "descriptions": [
+            "mixed",
+            "mixed",
+            "mixed"
+        ]
+    },
+    {
+        "label": "exclude:int:1",
+        "input": {
+            "mixed": "int",
+            "explicit": true
+        },
+        "descriptions": [
+            "mixed~int",
+            "mixed",
+            "mixed"
+        ]
+    },
+    {
+        "label": "exclude:array:1",
+        "input": {
+            "mixed": "array<mixed, mixed>",
+            "explicit": true
+        },
+        "descriptions": [
+            "mixed~array<mixed>",
+            "mixed",
+            "mixed"
+        ]
+    },
+    {
+        "label": "exclude:array-union-value:1",
+        "input": {
+            "mixed": "array<int, int|string>",
+            "explicit": true
+        },
+        "descriptions": [
+            "mixed~array<int, int|string>",
+            "mixed",
+            "mixed"
+        ]
+    },
+    {
+        "label": "exclude:nonempty-array:1",
+        "input": {
+            "mixed": "non-empty-array<mixed, mixed>",
+            "explicit": true
+        },
+        "descriptions": [
+            "mixed~non-empty-array<mixed>",
+            "mixed",
+            "mixed"
+        ]
+    },
+    {
+        "label": "exclude:explicit-nonempty-array:1",
+        "input": {
+            "mixed": {
+                "intersection": [
+                    {
+                        "array": [
+                            "mixed",
+                            "mixed"
+                        ]
+                    },
+                    {
+                        "accessory": "non-empty-array"
+                    }
+                ]
+            },
+            "explicit": true
+        },
+        "descriptions": [
+            "mixed~non-empty-array<mixed, mixed>",
+            "mixed",
+            "mixed"
+        ]
+    },
+    {
+        "label": "exclude:nonempty-list:1",
+        "input": {
+            "mixed": "non-empty-list<string>",
+            "explicit": true
+        },
+        "descriptions": [
+            "mixed~non-empty-list<string>",
+            "mixed",
+            "mixed"
+        ]
+    },
+    {
+        "label": "exclude:nonempty-string:1",
+        "input": {
+            "mixed": "non-empty-string",
+            "explicit": true
+        },
+        "descriptions": [
+            "mixed~non-empty-string",
+            "mixed",
+            "mixed"
+        ]
+    },
+    {
+        "label": "exclude:object-intersection:1",
+        "input": {
+            "mixed": {
+                "intersection": [
+                    "Countable",
+                    "Iterator"
+                ]
+            },
+            "explicit": true
+        },
+        "descriptions": [
+            "mixed~Countable&Iterator",
+            "mixed",
+            "mixed"
+        ]
+    },
+    {
+        "label": "exclude:union:1",
+        "input": {
+            "mixed": {
+                "union": [
+                    "int",
+                    "string"
+                ]
+            },
+            "explicit": true
+        },
+        "descriptions": [
+            "mixed~(int|string)",
+            "mixed",
+            "mixed"
+        ]
+    },
+    {
+        "label": "exclude:benevolent:1",
+        "input": {
+            "mixed": {
+                "benevolent": [
+                    "int",
+                    "string"
+                ]
+            },
+            "explicit": true
+        },
+        "descriptions": [
+            "mixed~((int|string))",
+            "mixed",
+            "mixed"
+        ]
+    },
+    {
+        "label": "exclude:union-intersection:1",
+        "input": {
+            "mixed": {
+                "union": [
+                    "non-empty-array<mixed, mixed>",
+                    "null"
+                ]
+            },
+            "explicit": true
+        },
+        "descriptions": [
+            "mixed~(non-empty-array<mixed>|null)",
+            "mixed",
+            "mixed"
+        ]
+    },
+    {
+        "label": "exclude:excluded-int:1",
+        "input": {
+            "mixed": {
+                "mixed": "int",
+                "explicit": false
+            },
+            "explicit": true
+        },
+        "descriptions": [
+            "mixed~(mixed~int)",
+            "mixed",
+            "mixed"
+        ]
+    },
+    {
+        "label": "exclude:excluded-array:1",
+        "input": {
+            "mixed": {
+                "mixed": "non-empty-array<mixed, mixed>",
+                "explicit": true
+            },
+            "explicit": true
+        },
+        "descriptions": [
+            "mixed~(mixed~non-empty-array<mixed>)",
+            "mixed",
+            "mixed"
+        ]
+    },
+    {
+        "label": "exclude:excluded-union:1",
+        "input": {
+            "mixed": {
+                "mixed": {
+                    "union": [
+                        "int",
+                        "string"
+                    ]
+                },
+                "explicit": false
+            },
+            "explicit": true
+        },
+        "descriptions": [
+            "mixed~(mixed~(int|string))",
+            "mixed",
+            "mixed"
+        ]
+    },
+    {
+        "label": "exclude:intersection-excluded:1",
+        "input": {
+            "mixed": {
+                "intersection": [
+                    {
+                        "mixed": "int",
+                        "explicit": false
+                    },
+                    "Stringable"
+                ]
+            },
+            "explicit": true
+        },
+        "descriptions": [
+            "mixed~mixed~int&Stringable",
+            "mixed",
+            "mixed"
+        ]
+    },
+    {
+        "label": "exclude-template:int:1:",
+        "input": {
+            "mixed": {
+                "template": "int",
+                "name": "T",
+                "argument": false
+            },
+            "explicit": true
+        },
+        "descriptions": [
+            "mixed~T of int (function subtractionDescriptions(), parameter)",
+            "mixed",
+            "mixed"
+        ]
+    },
+    {
+        "label": "template-exclusion:int:1:",
+        "input": {
+            "template": {
+                "mixed": "int",
+                "explicit": true
+            },
+            "name": "T",
+            "argument": false
+        },
+        "descriptions": [
+            "T of mixed~int (function subtractionDescriptions(), parameter)",
+            "T of mixed",
+            "T of mixed"
+        ]
+    },
+    {
+        "label": "exclude-nested-template:int:1:",
+        "input": {
+            "mixed": {
+                "template": {
+                    "template": "int",
+                    "name": "T",
+                    "argument": false
+                },
+                "name": "U",
+                "argument": false
+            },
+            "explicit": true
+        },
+        "descriptions": [
+            "mixed~U of T of int (function subtractionDescriptions(), parameter) (function subtractionDescriptions(), parameter)",
+            "mixed",
+            "mixed"
+        ]
+    },
+    {
+        "label": "exclude-template:int:1:1",
+        "input": {
+            "mixed": {
+                "template": "int",
+                "name": "T",
+                "argument": true
+            },
+            "explicit": true
+        },
+        "descriptions": [
+            "mixed~T of int (function subtractionDescriptions(), argument)",
+            "mixed",
+            "mixed"
+        ]
+    },
+    {
+        "label": "template-exclusion:int:1:1",
+        "input": {
+            "template": {
+                "mixed": "int",
+                "explicit": true
+            },
+            "name": "T",
+            "argument": true
+        },
+        "descriptions": [
+            "T of mixed~int (function subtractionDescriptions(), argument)",
+            "T of mixed",
+            "T of mixed"
+        ]
+    },
+    {
+        "label": "exclude-nested-template:int:1:1",
+        "input": {
+            "mixed": {
+                "template": {
+                    "template": "int",
+                    "name": "T",
+                    "argument": true
+                },
+                "name": "U",
+                "argument": true
+            },
+            "explicit": true
+        },
+        "descriptions": [
+            "mixed~U of T of int (function subtractionDescriptions(), argument) (function subtractionDescriptions(), argument)",
+            "mixed",
+            "mixed"
+        ]
+    },
+    {
+        "label": "exclude-template:plain-mixed:1:",
+        "input": {
+            "mixed": {
+                "template": "mixed",
+                "name": "T",
+                "argument": false
+            },
+            "explicit": true
+        },
+        "descriptions": [
+            "mixed~T (function subtractionDescriptions(), parameter)",
+            "mixed",
+            "mixed"
+        ]
+    },
+    {
+        "label": "template-exclusion:plain-mixed:1:",
+        "input": {
+            "template": {
+                "mixed": "mixed",
+                "explicit": true
+            },
+            "name": "T",
+            "argument": false
+        },
+        "descriptions": [
+            "T of mixed~mixed (function subtractionDescriptions(), parameter)",
+            "T of mixed",
+            "T of mixed"
+        ]
+    },
+    {
+        "label": "exclude-nested-template:plain-mixed:1:",
+        "input": {
+            "mixed": {
+                "template": {
+                    "template": "mixed",
+                    "name": "T",
+                    "argument": false
+                },
+                "name": "U",
+                "argument": false
+            },
+            "explicit": true
+        },
+        "descriptions": [
+            "mixed~U of T (function subtractionDescriptions(), parameter) (function subtractionDescriptions(), parameter)",
+            "mixed",
+            "mixed"
+        ]
+    },
+    {
+        "label": "exclude-template:plain-mixed:1:1",
+        "input": {
+            "mixed": {
+                "template": "mixed",
+                "name": "T",
+                "argument": true
+            },
+            "explicit": true
+        },
+        "descriptions": [
+            "mixed~T (function subtractionDescriptions(), argument)",
+            "mixed",
+            "mixed"
+        ]
+    },
+    {
+        "label": "template-exclusion:plain-mixed:1:1",
+        "input": {
+            "template": {
+                "mixed": "mixed",
+                "explicit": true
+            },
+            "name": "T",
+            "argument": true
+        },
+        "descriptions": [
+            "T of mixed~mixed (function subtractionDescriptions(), argument)",
+            "T of mixed",
+            "T of mixed"
+        ]
+    },
+    {
+        "label": "exclude-nested-template:plain-mixed:1:1",
+        "input": {
+            "mixed": {
+                "template": {
+                    "template": "mixed",
+                    "name": "T",
+                    "argument": true
+                },
+                "name": "U",
+                "argument": true
+            },
+            "explicit": true
+        },
+        "descriptions": [
+            "mixed~U of T (function subtractionDescriptions(), argument) (function subtractionDescriptions(), argument)",
+            "mixed",
+            "mixed"
+        ]
+    },
+    {
+        "label": "exclude-template:nonempty-array:1:",
+        "input": {
+            "mixed": {
+                "template": "non-empty-array<mixed, mixed>",
+                "name": "T",
+                "argument": false
+            },
+            "explicit": true
+        },
+        "descriptions": [
+            "mixed~T of non-empty-array<mixed> (function subtractionDescriptions(), parameter)",
+            "mixed",
+            "mixed"
+        ]
+    },
+    {
+        "label": "template-exclusion:nonempty-array:1:",
+        "input": {
+            "template": {
+                "mixed": "non-empty-array<mixed, mixed>",
+                "explicit": true
+            },
+            "name": "T",
+            "argument": false
+        },
+        "descriptions": [
+            "T of mixed~non-empty-array<mixed> (function subtractionDescriptions(), parameter)",
+            "T of mixed",
+            "T of mixed"
+        ]
+    },
+    {
+        "label": "exclude-nested-template:nonempty-array:1:",
+        "input": {
+            "mixed": {
+                "template": {
+                    "template": "non-empty-array<mixed, mixed>",
+                    "name": "T",
+                    "argument": false
+                },
+                "name": "U",
+                "argument": false
+            },
+            "explicit": true
+        },
+        "descriptions": [
+            "mixed~U of T of non-empty-array<mixed> (function subtractionDescriptions(), parameter) (function subtractionDescriptions(), parameter)",
+            "mixed",
+            "mixed"
+        ]
+    },
+    {
+        "label": "exclude-template:nonempty-array:1:1",
+        "input": {
+            "mixed": {
+                "template": "non-empty-array<mixed, mixed>",
+                "name": "T",
+                "argument": true
+            },
+            "explicit": true
+        },
+        "descriptions": [
+            "mixed~T of non-empty-array<mixed> (function subtractionDescriptions(), argument)",
+            "mixed",
+            "mixed"
+        ]
+    },
+    {
+        "label": "template-exclusion:nonempty-array:1:1",
+        "input": {
+            "template": {
+                "mixed": "non-empty-array<mixed, mixed>",
+                "explicit": true
+            },
+            "name": "T",
+            "argument": true
+        },
+        "descriptions": [
+            "T of mixed~non-empty-array<mixed> (function subtractionDescriptions(), argument)",
+            "T of mixed",
+            "T of mixed"
+        ]
+    },
+    {
+        "label": "exclude-nested-template:nonempty-array:1:1",
+        "input": {
+            "mixed": {
+                "template": {
+                    "template": "non-empty-array<mixed, mixed>",
+                    "name": "T",
+                    "argument": true
+                },
+                "name": "U",
+                "argument": true
+            },
+            "explicit": true
+        },
+        "descriptions": [
+            "mixed~U of T of non-empty-array<mixed> (function subtractionDescriptions(), argument) (function subtractionDescriptions(), argument)",
+            "mixed",
+            "mixed"
+        ]
+    },
+    {
+        "label": "exclude-template:object-intersection:1:",
+        "input": {
+            "mixed": {
+                "template": {
+                    "intersection": [
+                        "Countable",
+                        "Iterator"
+                    ]
+                },
+                "name": "T",
+                "argument": false
+            },
+            "explicit": true
+        },
+        "descriptions": [
+            "mixed~T of Countable&Iterator (function subtractionDescriptions(), parameter)",
+            "mixed",
+            "mixed"
+        ]
+    },
+    {
+        "label": "template-exclusion:object-intersection:1:",
+        "input": {
+            "template": {
+                "mixed": {
+                    "intersection": [
+                        "Countable",
+                        "Iterator"
+                    ]
+                },
+                "explicit": true
+            },
+            "name": "T",
+            "argument": false
+        },
+        "descriptions": [
+            "T of mixed~Countable&Iterator (function subtractionDescriptions(), parameter)",
+            "T of mixed",
+            "T of mixed"
+        ]
+    },
+    {
+        "label": "exclude-nested-template:object-intersection:1:",
+        "input": {
+            "mixed": {
+                "template": {
+                    "template": {
+                        "intersection": [
+                            "Countable",
+                            "Iterator"
+                        ]
+                    },
+                    "name": "T",
+                    "argument": false
+                },
+                "name": "U",
+                "argument": false
+            },
+            "explicit": true
+        },
+        "descriptions": [
+            "mixed~U of T of Countable&Iterator (function subtractionDescriptions(), parameter) (function subtractionDescriptions(), parameter)",
+            "mixed",
+            "mixed"
+        ]
+    },
+    {
+        "label": "exclude-template:object-intersection:1:1",
+        "input": {
+            "mixed": {
+                "template": {
+                    "intersection": [
+                        "Countable",
+                        "Iterator"
+                    ]
+                },
+                "name": "T",
+                "argument": true
+            },
+            "explicit": true
+        },
+        "descriptions": [
+            "mixed~T of Countable&Iterator (function subtractionDescriptions(), argument)",
+            "mixed",
+            "mixed"
+        ]
+    },
+    {
+        "label": "template-exclusion:object-intersection:1:1",
+        "input": {
+            "template": {
+                "mixed": {
+                    "intersection": [
+                        "Countable",
+                        "Iterator"
+                    ]
+                },
+                "explicit": true
+            },
+            "name": "T",
+            "argument": true
+        },
+        "descriptions": [
+            "T of mixed~Countable&Iterator (function subtractionDescriptions(), argument)",
+            "T of mixed",
+            "T of mixed"
+        ]
+    },
+    {
+        "label": "exclude-nested-template:object-intersection:1:1",
+        "input": {
+            "mixed": {
+                "template": {
+                    "template": {
+                        "intersection": [
+                            "Countable",
+                            "Iterator"
+                        ]
+                    },
+                    "name": "T",
+                    "argument": true
+                },
+                "name": "U",
+                "argument": true
+            },
+            "explicit": true
+        },
+        "descriptions": [
+            "mixed~U of T of Countable&Iterator (function subtractionDescriptions(), argument) (function subtractionDescriptions(), argument)",
+            "mixed",
+            "mixed"
+        ]
+    },
+    {
+        "label": "exclude-template:union:1:",
+        "input": {
+            "mixed": {
+                "template": {
+                    "union": [
+                        "int",
+                        "string"
+                    ]
+                },
+                "name": "T",
+                "argument": false
+            },
+            "explicit": true
+        },
+        "descriptions": [
+            "mixed~(T of int|string (function subtractionDescriptions(), parameter))",
+            "mixed",
+            "mixed"
+        ]
+    },
+    {
+        "label": "template-exclusion:union:1:",
+        "input": {
+            "template": {
+                "mixed": {
+                    "union": [
+                        "int",
+                        "string"
+                    ]
+                },
+                "explicit": true
+            },
+            "name": "T",
+            "argument": false
+        },
+        "descriptions": [
+            "T of mixed~(int|string) (function subtractionDescriptions(), parameter)",
+            "T of mixed",
+            "T of mixed"
+        ]
+    },
+    {
+        "label": "exclude-nested-template:union:1:",
+        "input": {
+            "mixed": {
+                "template": {
+                    "template": {
+                        "union": [
+                            "int",
+                            "string"
+                        ]
+                    },
+                    "name": "T",
+                    "argument": false
+                },
+                "name": "U",
+                "argument": false
+            },
+            "explicit": true
+        },
+        "descriptions": [
+            "mixed~(U of T of int|string (function subtractionDescriptions(), parameter) (function subtractionDescriptions(), parameter))",
+            "mixed",
+            "mixed"
+        ]
+    },
+    {
+        "label": "exclude-template:union:1:1",
+        "input": {
+            "mixed": {
+                "template": {
+                    "union": [
+                        "int",
+                        "string"
+                    ]
+                },
+                "name": "T",
+                "argument": true
+            },
+            "explicit": true
+        },
+        "descriptions": [
+            "mixed~(T of int|string (function subtractionDescriptions(), argument))",
+            "mixed",
+            "mixed"
+        ]
+    },
+    {
+        "label": "template-exclusion:union:1:1",
+        "input": {
+            "template": {
+                "mixed": {
+                    "union": [
+                        "int",
+                        "string"
+                    ]
+                },
+                "explicit": true
+            },
+            "name": "T",
+            "argument": true
+        },
+        "descriptions": [
+            "T of mixed~(int|string) (function subtractionDescriptions(), argument)",
+            "T of mixed",
+            "T of mixed"
+        ]
+    },
+    {
+        "label": "exclude-nested-template:union:1:1",
+        "input": {
+            "mixed": {
+                "template": {
+                    "template": {
+                        "union": [
+                            "int",
+                            "string"
+                        ]
+                    },
+                    "name": "T",
+                    "argument": true
+                },
+                "name": "U",
+                "argument": true
+            },
+            "explicit": true
+        },
+        "descriptions": [
+            "mixed~(U of T of int|string (function subtractionDescriptions(), argument) (function subtractionDescriptions(), argument))",
+            "mixed",
+            "mixed"
+        ]
+    },
+    {
+        "label": "exclude-template:benevolent:1:",
+        "input": {
+            "mixed": {
+                "template": {
+                    "benevolent": [
+                        "int",
+                        "string"
+                    ]
+                },
+                "name": "T",
+                "argument": false
+            },
+            "explicit": true
+        },
+        "descriptions": [
+            "mixed~(T of (int|string) (function subtractionDescriptions(), parameter))",
+            "mixed",
+            "mixed"
+        ]
+    },
+    {
+        "label": "template-exclusion:benevolent:1:",
+        "input": {
+            "template": {
+                "mixed": {
+                    "benevolent": [
+                        "int",
+                        "string"
+                    ]
+                },
+                "explicit": true
+            },
+            "name": "T",
+            "argument": false
+        },
+        "descriptions": [
+            "T of mixed~((int|string)) (function subtractionDescriptions(), parameter)",
+            "T of mixed",
+            "T of mixed"
+        ]
+    },
+    {
+        "label": "exclude-nested-template:benevolent:1:",
+        "input": {
+            "mixed": {
+                "template": {
+                    "template": {
+                        "benevolent": [
+                            "int",
+                            "string"
+                        ]
+                    },
+                    "name": "T",
+                    "argument": false
+                },
+                "name": "U",
+                "argument": false
+            },
+            "explicit": true
+        },
+        "descriptions": [
+            "mixed~(U of T of (int|string) (function subtractionDescriptions(), parameter) (function subtractionDescriptions(), parameter))",
+            "mixed",
+            "mixed"
+        ]
+    },
+    {
+        "label": "exclude-template:benevolent:1:1",
+        "input": {
+            "mixed": {
+                "template": {
+                    "benevolent": [
+                        "int",
+                        "string"
+                    ]
+                },
+                "name": "T",
+                "argument": true
+            },
+            "explicit": true
+        },
+        "descriptions": [
+            "mixed~(T of (int|string) (function subtractionDescriptions(), argument))",
+            "mixed",
+            "mixed"
+        ]
+    },
+    {
+        "label": "template-exclusion:benevolent:1:1",
+        "input": {
+            "template": {
+                "mixed": {
+                    "benevolent": [
+                        "int",
+                        "string"
+                    ]
+                },
+                "explicit": true
+            },
+            "name": "T",
+            "argument": true
+        },
+        "descriptions": [
+            "T of mixed~((int|string)) (function subtractionDescriptions(), argument)",
+            "T of mixed",
+            "T of mixed"
+        ]
+    },
+    {
+        "label": "exclude-nested-template:benevolent:1:1",
+        "input": {
+            "mixed": {
+                "template": {
+                    "template": {
+                        "benevolent": [
+                            "int",
+                            "string"
+                        ]
+                    },
+                    "name": "T",
+                    "argument": true
+                },
+                "name": "U",
+                "argument": true
+            },
+            "explicit": true
+        },
+        "descriptions": [
+            "mixed~(U of T of (int|string) (function subtractionDescriptions(), argument) (function subtractionDescriptions(), argument))",
+            "mixed",
+            "mixed"
+        ]
+    },
+    {
+        "label": "exclude-template:excluded-int:1:",
+        "input": {
+            "mixed": {
+                "template": {
+                    "mixed": "int",
+                    "explicit": false
+                },
+                "name": "T",
+                "argument": false
+            },
+            "explicit": true
+        },
+        "descriptions": [
+            "mixed~(T of mixed~int (function subtractionDescriptions(), parameter))",
+            "mixed",
+            "mixed"
+        ]
+    },
+    {
+        "label": "template-exclusion:excluded-int:1:",
+        "input": {
+            "template": {
+                "mixed": {
+                    "mixed": "int",
+                    "explicit": false
+                },
+                "explicit": true
+            },
+            "name": "T",
+            "argument": false
+        },
+        "descriptions": [
+            "T of mixed~(mixed~int) (function subtractionDescriptions(), parameter)",
+            "T of mixed",
+            "T of mixed"
+        ]
+    },
+    {
+        "label": "exclude-nested-template:excluded-int:1:",
+        "input": {
+            "mixed": {
+                "template": {
+                    "template": {
+                        "mixed": "int",
+                        "explicit": false
+                    },
+                    "name": "T",
+                    "argument": false
+                },
+                "name": "U",
+                "argument": false
+            },
+            "explicit": true
+        },
+        "descriptions": [
+            "mixed~(U of T of mixed~int (function subtractionDescriptions(), parameter) (function subtractionDescriptions(), parameter))",
+            "mixed",
+            "mixed"
+        ]
+    },
+    {
+        "label": "exclude-template:excluded-int:1:1",
+        "input": {
+            "mixed": {
+                "template": {
+                    "mixed": "int",
+                    "explicit": false
+                },
+                "name": "T",
+                "argument": true
+            },
+            "explicit": true
+        },
+        "descriptions": [
+            "mixed~(T of mixed~int (function subtractionDescriptions(), argument))",
+            "mixed",
+            "mixed"
+        ]
+    },
+    {
+        "label": "template-exclusion:excluded-int:1:1",
+        "input": {
+            "template": {
+                "mixed": {
+                    "mixed": "int",
+                    "explicit": false
+                },
+                "explicit": true
+            },
+            "name": "T",
+            "argument": true
+        },
+        "descriptions": [
+            "T of mixed~(mixed~int) (function subtractionDescriptions(), argument)",
+            "T of mixed",
+            "T of mixed"
+        ]
+    },
+    {
+        "label": "exclude-nested-template:excluded-int:1:1",
+        "input": {
+            "mixed": {
+                "template": {
+                    "template": {
+                        "mixed": "int",
+                        "explicit": false
+                    },
+                    "name": "T",
+                    "argument": true
+                },
+                "name": "U",
+                "argument": true
+            },
+            "explicit": true
+        },
+        "descriptions": [
+            "mixed~(U of T of mixed~int (function subtractionDescriptions(), argument) (function subtractionDescriptions(), argument))",
+            "mixed",
+            "mixed"
+        ]
+    },
+    {
+        "label": "exclude-template:excluded-array:1:",
+        "input": {
+            "mixed": {
+                "template": {
+                    "mixed": "non-empty-array<mixed, mixed>",
+                    "explicit": true
+                },
+                "name": "T",
+                "argument": false
+            },
+            "explicit": true
+        },
+        "descriptions": [
+            "mixed~(T of mixed~non-empty-array<mixed> (function subtractionDescriptions(), parameter))",
+            "mixed",
+            "mixed"
+        ]
+    },
+    {
+        "label": "template-exclusion:excluded-array:1:",
+        "input": {
+            "template": {
+                "mixed": {
+                    "mixed": "non-empty-array<mixed, mixed>",
+                    "explicit": true
+                },
+                "explicit": true
+            },
+            "name": "T",
+            "argument": false
+        },
+        "descriptions": [
+            "T of mixed~(mixed~non-empty-array<mixed>) (function subtractionDescriptions(), parameter)",
+            "T of mixed",
+            "T of mixed"
+        ]
+    },
+    {
+        "label": "exclude-nested-template:excluded-array:1:",
+        "input": {
+            "mixed": {
+                "template": {
+                    "template": {
+                        "mixed": "non-empty-array<mixed, mixed>",
+                        "explicit": true
+                    },
+                    "name": "T",
+                    "argument": false
+                },
+                "name": "U",
+                "argument": false
+            },
+            "explicit": true
+        },
+        "descriptions": [
+            "mixed~(U of T of mixed~non-empty-array<mixed> (function subtractionDescriptions(), parameter) (function subtractionDescriptions(), parameter))",
+            "mixed",
+            "mixed"
+        ]
+    },
+    {
+        "label": "exclude-template:excluded-array:1:1",
+        "input": {
+            "mixed": {
+                "template": {
+                    "mixed": "non-empty-array<mixed, mixed>",
+                    "explicit": true
+                },
+                "name": "T",
+                "argument": true
+            },
+            "explicit": true
+        },
+        "descriptions": [
+            "mixed~(T of mixed~non-empty-array<mixed> (function subtractionDescriptions(), argument))",
+            "mixed",
+            "mixed"
+        ]
+    },
+    {
+        "label": "template-exclusion:excluded-array:1:1",
+        "input": {
+            "template": {
+                "mixed": {
+                    "mixed": "non-empty-array<mixed, mixed>",
+                    "explicit": true
+                },
+                "explicit": true
+            },
+            "name": "T",
+            "argument": true
+        },
+        "descriptions": [
+            "T of mixed~(mixed~non-empty-array<mixed>) (function subtractionDescriptions(), argument)",
+            "T of mixed",
+            "T of mixed"
+        ]
+    },
+    {
+        "label": "exclude-nested-template:excluded-array:1:1",
+        "input": {
+            "mixed": {
+                "template": {
+                    "template": {
+                        "mixed": "non-empty-array<mixed, mixed>",
+                        "explicit": true
+                    },
+                    "name": "T",
+                    "argument": true
+                },
+                "name": "U",
+                "argument": true
+            },
+            "explicit": true
+        },
+        "descriptions": [
+            "mixed~(U of T of mixed~non-empty-array<mixed> (function subtractionDescriptions(), argument) (function subtractionDescriptions(), argument))",
+            "mixed",
+            "mixed"
+        ]
+    }
+]

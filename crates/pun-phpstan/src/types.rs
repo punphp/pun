@@ -973,8 +973,14 @@ impl Type {
             Type::LateArrayShape(s) => s.describe(),
             Type::Mixed { .. } => "mixed".to_string(),
             Type::SubtractedMixed { excluded, .. } => level.handle3(|| "mixed".into(), || "mixed".into(), || {
-                let description = excluded.describe(Level::Precise);
-                if matches!(**excluded, Type::Union(_) | Type::Benevolent(_) | Type::Intersection(_)) {
+                let description = excluded.describe(level);
+                // SubstractableTypeTrait groups unions and types with their own subtraction, not intersections.
+                // Template subclasses inherit the union class or delegate getSubtractedType() to their bound.
+                let mut class = excluded.unreasoned();
+                while let Type::Template(t) = class {
+                    class = t.bound.unreasoned();
+                }
+                if matches!(class, Type::Union(_) | Type::Benevolent(_) | Type::SubtractedMixed { .. }) {
                     format!("mixed~({description})")
                 } else {
                     format!("mixed~{description}")

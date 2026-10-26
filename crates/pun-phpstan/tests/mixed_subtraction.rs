@@ -295,3 +295,69 @@ fn pun_mixed_queries_distinguish_complete_domains_from_partial_exclusions() {
     }
     assert!(failures.is_empty(), "{}", failures.join("\n"));
 }
+
+#[test]
+fn subtraction_descriptions_follow_runtime_type_not_rendered_delimiters() {
+    use pun_phpstan::resolve::resolve_str;
+    use pun_phpstan::types::{Accessory, Template};
+
+    fn input(spec: &Value, argument: bool) -> Type {
+        if let Some(ty) = spec.as_str() {
+            return resolve_str(ty, None);
+        }
+        if let Some(bound) = spec.get("template") {
+            let argument = argument || spec["argument"].as_bool().unwrap();
+            return Type::Template(Box::new(Template {
+                name: spec["name"].as_str().unwrap().into(),
+                scope: "function subtractionDescriptions()".into(),
+                bound: input(bound, argument),
+                default: None,
+                argument,
+            }));
+        }
+        if let Some(excluded) = spec.get("mixed") {
+            return Type::mixed_subtracted(
+                spec["explicit"].as_bool().unwrap(),
+                input(excluded, argument),
+            );
+        }
+        if let Some(parts) = spec["array"].as_array() {
+            return Type::array(input(&parts[0], argument), input(&parts[1], argument));
+        }
+        if spec["accessory"] == "non-empty-array" {
+            return Type::Accessory(Accessory::NonEmptyArray);
+        }
+        for kind in ["union", "benevolent", "intersection"] {
+            if let Some(parts) = spec[kind].as_array() {
+                let parts = parts.iter().map(|part| input(part, argument)).collect();
+                return match kind {
+                    "union" => Type::Union(parts),
+                    "benevolent" => Type::Benevolent(parts),
+                    _ => Type::Intersection(parts),
+                };
+            }
+        }
+        panic!("unknown oracle type input: {spec}");
+    }
+
+    let rows: Value =
+        serde_json::from_str(include_str!("fixtures/mixed-subtraction-descriptions.json")).unwrap();
+    let mut failures = vec![];
+    for row in rows.as_array().unwrap() {
+        let ty = input(&row["input"], false);
+        for (i, level) in [Level::Precise, Level::Value, Level::TypeOnly]
+            .into_iter()
+            .enumerate()
+        {
+            let got = ty.describe(level);
+            let want = row["descriptions"][i].as_str().unwrap();
+            if got != want {
+                failures.push(format!(
+                    "{} {level:?}: {got}, expected {want}",
+                    row["label"]
+                ));
+            }
+        }
+    }
+    assert!(failures.is_empty(), "{}", failures.join("\n"));
+}
