@@ -1,0 +1,7 @@
+[
+    {
+        "fixer": "php_unit_assert_new_names",
+        "input": "<?php\nfinal class FooTest extends \\PHPUnit\\Framework\\TestCase\n{\n    public function testA()\n    {\n        $this->assertRegExp('/x/', $a);\n        self::ASSERTNOTREGEXP('/x/', $a);\n        static::assertFileNotExists('f');\n        $other->assertFileNotExists('f');\n        $this->assertFileNotExists;\n        assertFileNotExists('f');\n        $this->assertDirectoryNotIsWritable('d');\n    }\n}\nclass NotATest\n{\n    public function a() { $this->assertRegExp('/x/', $a); }\n}\n",
+        "expected": "<?php\nfinal class FooTest extends \\PHPUnit\\Framework\\TestCase\n{\n    public function testA()\n    {\n        $this->assertMatchesRegularExpression('/x/', $a);\n        self::assertDoesNotMatchRegularExpression('/x/', $a);\n        static::assertFileDoesNotExist('f');\n        $other->assertFileNotExists('f');\n        $this->assertFileNotExists;\n        assertFileNotExists('f');\n        $this->assertDirectoryIsNotWriteable('d');\n    }\n}\nclass NotATest\n{\n    public function a() { $this->assertRegExp('/x/', $a); }\n}\n"
+    }
+]

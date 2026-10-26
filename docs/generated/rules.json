@@ -12227,7 +12227,7 @@
       "upstream": [
         "php_unit_assert_new_names"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/phpunit/prefer-property-assertions",

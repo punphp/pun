@@ -1,0 +1,36 @@
+{
+    "fixer": "php_unit_assert_new_names",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\PhpUnit\\PhpUnitAssertNewNamesFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/PhpUnit/PhpUnitAssertNewNamesFixerTest.php",
+    "case_count": 1,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\PhpUnit\\PhpUnitAssertNewNamesFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        \n                    $this->assertFileDoesNotExist($a);\n                    $this->assertIsNotReadable($a);\n                    $this->assertIsNotWritable($a);\n                    $this->assertDirectoryDoesNotExist($a);\n                    $this->assertDirectoryIsNotReadable($a);\n                    $this->assertDirectoryIsNotWriteable($a);\n                    $this->assertFileIsNotReadable($a);\n                    $this->assertFileIsNotWriteable($a);\n                    $this->assertMatchesRegularExpression($a);\n                    $this->assertDoesNotMatchRegularExpression($a);\n                \n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        \n                    $this->assertFileNotExists($a);\n                    $this->assertNotIsReadable($a);\n                    $this->assertNotIsWritable($a);\n                    $this->assertDirectoryNotExists($a);\n                    $this->assertDirectoryNotIsReadable($a);\n                    $this->assertDirectoryNotIsWritable($a);\n                    $this->assertFileNotIsReadable($a);\n                    $this->assertFileNotIsWritable($a);\n                    $this->assertRegExp($a);\n                    $this->assertNotRegExp($a);\n                \n    }\n}\n"
+                    ]
+                }
+            ]
+        }
+    ]
+}

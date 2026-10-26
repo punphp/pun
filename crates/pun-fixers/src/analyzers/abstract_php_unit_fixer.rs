@@ -71,3 +71,58 @@ pub(crate) fn get_doc_block_index(tokens: &Tokens, mut index: usize) -> usize {
         }
     }
 }
+
+/// One call `AbstractPhpUnitFixer::getPreviousAssertCall` yields.
+pub(crate) struct AssertCall {
+    pub index: usize,
+    pub lowered_name: Vec<u8>,
+    pub open_brace_index: usize,
+    pub close_brace_index: usize,
+}
+
+/// `AbstractPhpUnitFixer::getPreviousAssertCall` as a cursor: each [`PreviousAssertCalls::next`] looks back from
+/// where the previous one stopped, on the tokens as they are now (upstream's generator is lazy too).
+pub(crate) struct PreviousAssertCalls {
+    index: usize,
+    start_index: usize,
+    functions: crate::analyzers::functions_analyzer::FunctionsAnalyzer,
+}
+
+impl PreviousAssertCalls {
+    pub(crate) fn new(start_index: usize, end_index: usize) -> Self {
+        Self {
+            index: end_index,
+            start_index,
+            functions: crate::analyzers::functions_analyzer::FunctionsAnalyzer::new(),
+        }
+    }
+
+    pub(crate) fn next(&mut self, tokens: &Tokens) -> Option<AssertCall> {
+        while self.index > self.start_index {
+            let index = tokens.get_prev_token_of_kind(self.index, &[T_STRING.into()], true)?;
+            // the loop's `--$index`
+            self.index = index.saturating_sub(1);
+            let lowered = pun_tokens::php_compat::strtolower(tokens[index].get_content());
+            if !lowered.starts_with(b"assert") {
+                continue;
+            }
+            let Some(open_brace_index) = tokens.get_next_meaningful_token(index) else {
+                continue;
+            };
+            if !tokens[open_brace_index].equals("(", true) {
+                continue;
+            }
+            if !self.functions.is_the_same_class_call(tokens, index) {
+                continue;
+            }
+            return Some(AssertCall {
+                index,
+                lowered_name: lowered,
+                open_brace_index,
+                close_brace_index: tokens
+                    .find_block_end(Tokens::BLOCK_TYPE_PARENTHESIS, open_brace_index),
+            });
+        }
+        None
+    }
+}

@@ -1791,7 +1791,7 @@
         "rules": [
           "lint/phpunit/prefer-new-assertion-names"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -4777,7 +4777,7 @@
         "rules": [
           "lint/phpunit/prefer-new-assertion-names"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
