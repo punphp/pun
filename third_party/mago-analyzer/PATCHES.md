@@ -1677,3 +1677,20 @@ unchanged; no executed gap became stale.
 This patch does not change function-call fallback, constant-string dynamic method diagnostics, general nullsafe
 chain reconstruction, undocumented magic reflection, or Pun's `never` display. Those independent contracts
 remain outside this patch.
+
+## Failed named function results
+
+`expression/call/function_call.rs` stores `ErrorType` when an ordinary named call has no result after argument
+and invocation processing. Reflected and provider results remain intact, and the existing after-call hooks
+retain their opportunity to replace the result. Dynamic callable expressions and the shared invocation owner
+remain unchanged.
+
+This follows PHPStan 2.3.1's
+[`FuncCallHandler::resolveReturnType()`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Analyser/ExprHandler/FuncCallHandler.php#L883-L885):
+absent function reflection returns `ErrorType`, even when `function_exists()` suppresses the primary missing-function
+diagnostic. This differs from the permissive dummy method reflection supplied by `method_exists()`.
+
+The public regression in `crates/pun-analyse/tests/failed_functions.rs` compares complete diagnostics, tips and
+ignorability with PHPStan captures at levels 0, 2 and 10. It covers copied failure values, evaluated arguments,
+imports and qualified names, function-existence guards, resolved functions, built-ins and a closure control.
+Regenerate its expectations with `tests/fixtures/failed-functions/capture.php` and the pinned PHPStan PHAR.

@@ -5,6 +5,7 @@ use mago_codex::ttype::atomic::callable::TCallable;
 use mago_codex::ttype::atomic::callable::TCallableSignature;
 use mago_codex::ttype::cast::cast_atomic_to_callable;
 use mago_codex::ttype::expander::contains_parameter_variable;
+use mago_codex::ttype::get_error;
 use mago_codex::ttype::template::TemplateResult;
 use mago_reporting::Annotation;
 use mago_reporting::Issue;
@@ -92,6 +93,12 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for FunctionCall<'arena> {
             false,
             false, // object_has_nullsafe_null - not applicable for function calls
         )?;
+
+        // FuncCallHandler::resolveReturnType(): an unknown named function has ErrorType,
+        // including function_exists guards. Dynamic callable expressions have a separate contract.
+        if matches!(self.function, Expression::Identifier(_)) && artifacts.get_expression_type(&self.span()).is_none() {
+            artifacts.set_expression_type(&self.span(), get_error());
+        }
 
         if block_context.native_locals.is_some()
             && let Some(native_return) = native_return
