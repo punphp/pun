@@ -12454,7 +12454,7 @@
         "WithCallbackIdenticalToStandaloneAsserts",
         "WithCallbackIdenticalToStandaloneAssertsRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/phpunit/prefer-stub-var",

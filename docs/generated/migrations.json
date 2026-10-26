@@ -13399,7 +13399,7 @@
         "rules": [
           "lint/phpunit/prefer-standalone-asserts-over-callback"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
