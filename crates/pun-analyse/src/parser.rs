@@ -1,4 +1,4 @@
-//! php-parser 5.9's name failures, before either reflection scanning or rule callbacks. RichParser and
+//! php-parser 5.9's name and member-modifier failures, before reflection scanning or rule callbacks. RichParser and
 //! SimpleParser collect parser-stage errors first, then stop at the first NameResolver error. This is not a
 //! translation of Mago's grammar errors: a recovered CST remains outside this name-validation contract.
 
@@ -62,14 +62,56 @@ fn special(value: &[u8]) -> bool {
         || value.eq_ignore_ascii_case(b"static")
 }
 
-/// ParserAbstract::checkClassName/checkClass/checkInterface/checkEnum/checkUseUse. Declarations are checked on
-/// reduction (after their bodies), and every parser-stage error wins over every resolver-stage error.
+/// ParserAbstract's reserved-name and member-modifier checks. Modifier lists are checked as tokens arrive;
+/// declaration checks run on reduction (after their bodies). Every parser-stage error wins over NameResolver.
 struct Reserved<'a> {
     file: &'a File,
     errors: Vec<Error>,
 }
 
 impl Reserved<'_> {
+    /// Modifiers::verifyModifier, called by checkModifier and checkPropertyHookModifiers. Preserve its priority:
+    /// access conflicts, duplicate flags, then abstract/final. php.y ORs each flag even after a collected error.
+    fn modifiers(&mut self, modifiers: &Sequence<Modifier>, property_hook: bool) {
+        let mut flags = 0_u16;
+        for modifier in modifiers {
+            let (flag, name) = match modifier {
+                Modifier::Public(_) => (1, "public"),
+                Modifier::Protected(_) => (2, "protected"),
+                Modifier::Private(_) => (4, "private"),
+                Modifier::Static(_) => (8, "static"),
+                Modifier::Abstract(_) => (16, "abstract"),
+                Modifier::Final(_) => (32, "final"),
+                Modifier::Readonly(_) => (64, "readonly"),
+                Modifier::PublicSet(_) => (128, "public(set)"),
+                Modifier::ProtectedSet(_) => (256, "protected(set)"),
+                Modifier::PrivateSet(_) => (512, "private(set)"),
+            };
+            let message =
+                if (flags & 7 != 0 && flag & 7 != 0) || (flags & 896 != 0 && flag & 896 != 0) {
+                    Some("Multiple access type modifiers are not allowed".into())
+                } else if flags & flag != 0 {
+                    Some(format!("Multiple {name} modifiers are not allowed"))
+                } else if flags & 48 != 0 && flag & 48 != 0 {
+                    Some("Cannot use the final modifier on an abstract class member".into())
+                } else {
+                    None
+                };
+            if let Some(message) = message {
+                self.errors.push(error(self.file, modifier.span(), message));
+            }
+            // checkPropertyHookModifiers also rejects every non-final token, independently of verifyModifier.
+            if property_hook && !modifier.is_final() {
+                self.errors.push(error(
+                    self.file,
+                    modifier.span(),
+                    format!("Cannot use the {name} modifier on a property hook"),
+                ));
+            }
+            flags |= flag;
+        }
+    }
+
     fn class_name(&mut self, value: &[u8], at: Span, role: &str) {
         let value = name(value);
         if special(value) {
@@ -113,6 +155,81 @@ impl Reserved<'_> {
 }
 
 impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Reserved<'_> {
+    fn walk_in_plain_property(&mut self, node: &'ast PlainProperty<'arena>, _: &mut ()) {
+        self.modifiers(&node.modifiers, false);
+    }
+    fn walk_in_hooked_property(&mut self, node: &'ast HookedProperty<'arena>, _: &mut ()) {
+        self.modifiers(&node.modifiers, false);
+    }
+    fn walk_in_method(&mut self, node: &'ast Method<'arena>, _: &mut ()) {
+        self.modifiers(&node.modifiers, false);
+    }
+    fn walk_in_class_like_constant(&mut self, node: &'ast ClassLikeConstant<'arena>, _: &mut ()) {
+        self.modifiers(&node.modifiers, false);
+    }
+    fn walk_in_function_like_parameter(
+        &mut self,
+        node: &'ast FunctionLikeParameter<'arena>,
+        _: &mut (),
+    ) {
+        self.modifiers(&node.modifiers, false);
+    }
+    fn walk_in_property_hook(&mut self, node: &'ast PropertyHook<'arena>, _: &mut ()) {
+        self.modifiers(&node.modifiers, true);
+    }
+    fn walk_out_method(&mut self, node: &'ast Method<'arena>, _: &mut ()) {
+        // ParserAbstract::checkClassMethod runs after the body, with method_modifiers' first token as #2.
+        let Some(first) = node.modifiers.first() else {
+            return;
+        };
+        if node.modifiers.contains_static() {
+            let kind = match node.name.value.to_ascii_lowercase().as_slice() {
+                b"__construct" => Some("Constructor"),
+                b"__destruct" => Some("Destructor"),
+                b"__clone" => Some("Clone method"),
+                _ => None,
+            };
+            if let Some(kind) = kind {
+                self.errors.push(error(
+                    self.file,
+                    first.span(),
+                    format!(
+                        "{kind} {}() cannot be static",
+                        String::from_utf8_lossy(node.name.value)
+                    ),
+                ));
+            }
+        }
+        if node.modifiers.contains_readonly() {
+            self.errors.push(error(
+                self.file,
+                first.span(),
+                format!(
+                    "Method {}() cannot be readonly",
+                    String::from_utf8_lossy(node.name.value)
+                ),
+            ));
+        }
+    }
+    fn walk_out_class_like_constant(&mut self, node: &'ast ClassLikeConstant<'arena>, _: &mut ()) {
+        // ParserAbstract::checkClassConst runs on reduction and reports each forbidden flag once at #2.
+        let Some(first) = node.modifiers.first() else {
+            return;
+        };
+        for (present, name) in [
+            (node.modifiers.contains_static(), "static"),
+            (node.modifiers.contains_abstract(), "abstract"),
+            (node.modifiers.contains_readonly(), "readonly"),
+        ] {
+            if present {
+                self.errors.push(error(
+                    self.file,
+                    first.span(),
+                    format!("Cannot use '{name}' as constant modifier"),
+                ));
+            }
+        }
+    }
     fn walk_out_class(&mut self, node: &'ast Class<'arena>, _: &mut ()) {
         self.declaration(&node.name);
         self.parents(node.extends.as_ref(), node.implements.as_ref());

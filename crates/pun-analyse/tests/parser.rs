@@ -145,3 +145,73 @@ fn recovered_grammar_does_not_fabricate_a_name_resolution_failure() {
             .all(|e| e.identifier != "phpstan.parse")
     );
 }
+
+#[test]
+fn member_modifier_failures_precede_name_resolution_and_rule_callbacks() {
+    let inputs: Value =
+        serde_json::from_str(include_str!("fixtures/parser/modifier-inputs.json")).unwrap();
+    let expected: Value =
+        serde_json::from_str(include_str!("fixtures/parser/modifier-expected.json")).unwrap();
+    let root = Inputs::new();
+    let files = inputs
+        .as_object()
+        .unwrap()
+        .iter()
+        .map(|(name, code)| {
+            let namespace = name.replace('-', "_");
+            root.write(
+                name,
+                &format!(
+                    "namespace Modifier_{namespace};\n{}",
+                    code.as_str().unwrap()
+                ),
+            )
+        })
+        .collect();
+    assert_eq!(
+        errors(&Project::new(files, Vec::new())),
+        expected["analysed"]
+    );
+}
+
+#[test]
+fn original_abstract_final_property_hook_parser_failures() {
+    let root =
+        PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/rules/data/Properties/data");
+    let files = [
+        "abstract-final-property-hook-parse-error.php",
+        "final-property-hooks.php",
+    ]
+    .iter()
+    .map(|name| root.join(name))
+    .collect();
+    let expected: Value =
+        serde_json::from_str(include_str!("fixtures/parser/modifier-expected.json")).unwrap();
+    assert_eq!(
+        errors(&Project::new(files, Vec::new())),
+        expected["original"]
+    );
+}
+
+#[test]
+fn invalid_member_modifiers_in_scanned_files_export_no_symbols() {
+    let inputs: Value =
+        serde_json::from_str(include_str!("fixtures/parser/modifier-scans.json")).unwrap();
+    let expected: Value =
+        serde_json::from_str(include_str!("fixtures/parser/modifier-expected.json")).unwrap();
+    for (name, code) in inputs.as_object().unwrap() {
+        let root = Inputs::new();
+        let main = root.write(
+            "main",
+            include_str!("fixtures/parser/scan-main.php")
+                .strip_prefix("<?php\n")
+                .unwrap(),
+        );
+        let symbols = root.write("symbols", code.as_str().unwrap());
+        assert_eq!(
+            errors(&Project::new(vec![main], vec![symbols])),
+            expected["scanned"][name],
+            "{name}"
+        );
+    }
+}

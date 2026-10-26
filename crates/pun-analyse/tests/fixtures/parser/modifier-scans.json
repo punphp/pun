@@ -1,0 +1,7 @@
+{
+  "property": "class ScanBefore {} function scanFunction(): int { return 1; } const SCAN_CONSTANT = 1; abstract class ScanAfter { abstract final public string $x { get; } }",
+  "method": "class ScanBefore {} function scanFunction(): int { return 1; } const SCAN_CONSTANT = 1; abstract class ScanAfter { abstract final public function f(); }",
+  "hook": "class ScanBefore {} function scanFunction(): int { return 1; } const SCAN_CONSTANT = 1; class ScanAfter { public string $x { abstract final get; } }",
+  "constant": "class ScanBefore {} function scanFunction(): int { return 1; } const SCAN_CONSTANT = 1; class ScanAfter { abstract final const X = 1; }",
+  "valid": "class ScanBefore {} function scanFunction(): int { return 1; } const SCAN_CONSTANT = 1; class ScanAfter { final public string $x { get => 'x'; } }"
+}
