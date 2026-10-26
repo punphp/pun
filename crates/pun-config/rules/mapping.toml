@@ -667,7 +667,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "phpunit/no-negated-assertion" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Turns not-operator comparisons to their method name alternatives in PHPUnit TestCase" }
 "phpunit/no-setup-override-attribute" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Remove override attribute, if setUp()/tearDown() references parent call to improve readability" }
 "phpunit/no-stub-with-expectations" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Change createStub() to createMock(), when the created variable is passed to a method that requires MockObject type" }
-"phpunit/no-test-constructor" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Replace or remove __construct() in PHPUnit test cases; use setUp()." }
+"phpunit/no-test-constructor" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Replace or remove __construct() in PHPUnit test cases; use setUp()." }
 "phpunit/no-unused-mock" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Remove standalone method calls with no effect" }
 "phpunit/no-unused-mock-property" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Remove never used property mock, only to set expectations" }
 "phpunit/no-value-object-mock" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Use a real instance instead of a mock for entities and simple value objects in tests." }

@@ -19,6 +19,7 @@ mod no_flipped_assertion;
 mod no_float_delta_parameter;
 mod no_negated_assertion;
 mod no_setup_override_attribute;
+mod no_test_constructor;
 mod no_unused_mock;
 mod prefer_assert;
 mod prefer_assert_array_has_key;
@@ -59,6 +60,7 @@ pub use no_flipped_assertion::NoFlippedAssertion;
 pub use no_float_delta_parameter::NoFloatDeltaParameter;
 pub use no_negated_assertion::NoNegatedAssertion;
 pub use no_setup_override_attribute::NoSetupOverrideAttribute;
+pub use no_test_constructor::NoTestConstructor;
 pub use no_unused_mock::NoUnusedMock;
 pub use prefer_assert::PreferAssert;
 pub use prefer_assert_array_has_key::PreferAssertArrayHasKey;
@@ -140,6 +142,7 @@ pub(crate) fn all() -> Vec<Box<dyn Rule>> {
         Box::new(PreferAssert),
         Box::new(PreferMergedWillReturnCallback),
         Box::new(AddDependedTestReturnType),
+        Box::new(NoTestConstructor),
     ]
 }
 
@@ -344,7 +347,7 @@ pub(crate) fn object_class(ctx: &Context<'_>, expr: &Expression<'_>) -> Option<S
 }
 
 /// The parent classes of `class`, nearest first.
-fn class_parents(ctx: &Context<'_>, class: &str) -> Vec<String> {
+pub(crate) fn class_parents(ctx: &Context<'_>, class: &str) -> Vec<String> {
     let facts = facts(ctx);
     let mut out = Vec::new();
     let mut at = class.to_string();
