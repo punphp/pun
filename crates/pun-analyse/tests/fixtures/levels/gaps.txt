@@ -14,7 +14,6 @@
 3 Functions/ReturnTypeRuleTest::testBug3801
 3 Functions/ReturnTypeRuleTest::testBug7766
 3 Functions/ReturnTypeRuleTest::testBug3028
-3 Methods/ReturnTypeRuleTest::testBug11435
 3 Methods/ReturnTypeRuleTest::testBug4590
 3 Methods/ReturnTypeRuleTest::testTaggedUnions
 3 Methods/ReturnTypeRuleTest::testBug6358
@@ -29,7 +28,6 @@
 3 Methods/ReturnTypeRuleTest::testMergeInheritedPhpDocs
 3 Methods/ReturnTypeRuleTest::testBug3997
 3 Methods/ReturnTypeRuleTest::testBug3118
-6 Methods/MissingMethodReturnTypehintRuleTest::testIndirectInheritanceBug2740
 # Mago's inference differs from PHPStan's: `static`/`$this` lost on fluent and `new $class` returns, array shapes
 # and lists, SimpleXMLElement and DateTime::format() return types, intersections and narrowing, a trait method
 # analysed in its class, or the file's types dropped when Mago's analyzer panics (TUnion::from_vec)
@@ -178,8 +176,6 @@
 9 Methods/CallMethodsRuleTest::testCallablesWithoutCheckNullables#1
 9 Methods/CallMethodsRuleTest::testCallablesWithoutCheckNullables#2
 9 Methods/CallMethodsRuleTest::testCallablesWithoutCheckNullables#3
-9 Methods/CallMethodsRuleTest::testExplicitMixed#0
-9 Methods/CallMethodsRuleTest::testExplicitMixed#1
 9 Methods/CallMethodsRuleTest::testPureCallable
 9 Methods/CallStaticMethodsRuleTest::testMixed#0
 9 Methods/CallStaticMethodsRuleTest::testMixed#1
@@ -232,11 +228,9 @@
 5 Functions/CallToFunctionParametersRuleTest::testBug12676
 5 Functions/CallToFunctionParametersRuleTest::testBug12847
 5 Functions/CallToFunctionParametersRuleTest::testBug4371
-5 Functions/CallToFunctionParametersRuleTest::testBug5986
 5 Functions/CallToFunctionParametersRuleTest::testBug7823
 5 Functions/CallToFunctionParametersRuleTest::testBug9559
 5 Functions/CallToFunctionParametersRuleTest::testIsSubclassAllowString
-5 Functions/CallToFunctionParametersRuleTest::testProcOpen
 5 Functions/ParameterCastableToStringRuleTest::testBug3946
 5 Functions/ParameterCastableToStringRuleTest::testEnum
 5 Functions/ParameterCastableToStringRuleTest::testRule
@@ -250,7 +244,6 @@
 5 Methods/CallMethodsRuleTest::testBug3555
 5 Methods/CallMethodsRuleTest::testBug5372
 5 Methods/CallMethodsRuleTest::testBug6371
-5 Methods/CallMethodsRuleTest::testBug6464
 5 Methods/CallMethodsRuleTest::testBug9487
 5 Methods/CallMethodsRuleTest::testBugTemplateMixedUnionIntersect
 5 Methods/CallMethodsRuleTest::testCallMethodWithPhpDocsImplicitInheritance
@@ -299,7 +292,6 @@
 9 Functions/CallToFunctionParametersRuleTest::testBug2911
 9 Functions/CallToFunctionParametersRuleTest::testBug4371
 9 Functions/CallToFunctionParametersRuleTest::testBug5872
-9 Functions/CallToFunctionParametersRuleTest::testBug5986
 9 Functions/CallToFunctionParametersRuleTest::testBug6175
 9 Functions/CallToFunctionParametersRuleTest::testBug6720
 9 Functions/CallToFunctionParametersRuleTest::testBug6987
@@ -316,7 +308,6 @@
 9 Functions/CallToFunctionParametersRuleTest::testDiscussion7450WithoutCheckExplicitMixed
 9 Functions/CallToFunctionParametersRuleTest::testFunctionWithNumericParameterThatCreatedByAddition
 9 Functions/CallToFunctionParametersRuleTest::testIsSubclassAllowString
-9 Functions/CallToFunctionParametersRuleTest::testProcOpen
 9 Methods/CallMethodsRuleTest::testAcceptThrowable
 9 Methods/CallMethodsRuleTest::testBug10719
 9 Methods/CallMethodsRuleTest::testBug11463
@@ -337,11 +328,9 @@
 9 Methods/CallMethodsRuleTest::testBug5623
 9 Methods/CallMethodsRuleTest::testBug5868
 9 Methods/CallMethodsRuleTest::testBug6371
-9 Methods/CallMethodsRuleTest::testBug6464
 9 Methods/CallMethodsRuleTest::testBug9141
 9 Methods/CallMethodsRuleTest::testBug9487
 9 Methods/CallMethodsRuleTest::testBug9724
-9 Methods/CallMethodsRuleTest::testBug9951
 9 Methods/CallMethodsRuleTest::testBugTemplateMixedUnionIntersect
 9 Methods/CallMethodsRuleTest::testCallMethodWithPhpDocsImplicitInheritance
 9 Methods/CallMethodsRuleTest::testCallMethodsNullIssue
@@ -352,8 +341,6 @@
 9 Methods/CallMethodsRuleTest::testGenericVariance
 9 Methods/CallMethodsRuleTest::testGenericsInferCollection
 9 Methods/CallMethodsRuleTest::testGenericsInferCollectionLevel8
-9 Methods/CallMethodsRuleTest::testImplicitMixed#0
-9 Methods/CallMethodsRuleTest::testImplicitMixed#1
 9 Methods/CallMethodsRuleTest::testIterables#0
 9 Methods/CallMethodsRuleTest::testIterables#1
 9 Methods/CallMethodsRuleTest::testLiteralString
@@ -566,7 +553,6 @@
 3 Functions/ReturnTypeRuleTest::testBug10290
 3 Functions/ReturnTypeRuleTest::testBug5741
 3 Methods/ReturnTypeRuleTest::testBug14647
-3 Methods/ReturnTypeRuleTest::testBug12601
 3 Methods/ReturnTypeRuleTest::testBug12490
 3 Methods/ReturnTypeRuleTest::testBug11835
 3 Methods/ReturnTypeRuleTest::testBug10289
@@ -759,11 +745,10 @@
 4 Classes/ImpossibleInstanceOfRuleTest::testBug13975#1
 4 Classes/ImpossibleInstanceOfRuleTest::testPossiblyImpureTip
 4 Classes/ImpossibleInstanceOfRuleTest::testInTrait
-# an-types: too-wide returns where Mago's types differ (an arrow function's printed `fn ():`, a final class's constant with a @var read as the @var type, is_subclass_of() narrowing a class-string, a $_GET element)
+# an-types: too-wide returns where Mago's types differ (an arrow function's printed `fn ():`, is_subclass_of() narrowing a class-string, a $_GET element)
 4 Comparison/ImpossibleCheckTypeFunctionCallRuleTest::testBug8954
 5 Functions/CallToFunctionParametersRuleTest::testBug9580
 4 TooWideTypehints/TooWideArrowFunctionReturnTypehintRuleTest::testRule
-4 TooWideTypehints/TooWideMethodReturnTypehintRuleTest::testBug10312b
 # an-phpdoc: Mago's inferred type of a trait method's `callable(self)` parameter resolves `self` to the trait, not to
 # the using class (CallCallablesRule's argument.type)
 6 Classes/LocalTypeTraitAliasesRuleTest::testBug11591
