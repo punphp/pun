@@ -12533,7 +12533,7 @@
         "TestWithAnnotationToAttribute",
         "TestWithAnnotationToAttributeRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/phpunit/prefer-this-call",

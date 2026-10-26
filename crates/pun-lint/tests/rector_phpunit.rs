@@ -422,3 +422,13 @@ fn covers_annotation_with_value_to_attribute() {
         "CoversAnnotationWithValueToAttributeRector",
     );
 }
+
+#[test]
+fn test_with_annotation_to_attribute() {
+    // Pun/invalid_json: a `@testWith` line that is not JSON makes Rector fail on the file (`JsonException`); Pun leaves
+    // the method alone.
+    check(
+        PreferTestWithAttribute,
+        "TestWithAnnotationToAttributeRector",
+    );
+}
