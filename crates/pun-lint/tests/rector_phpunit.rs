@@ -364,3 +364,8 @@ fn replace_test_annotation_with_prefixed_function() {
 fn direct_instance_over_mock_arg() {
     check(NoValueObjectMock, "DirectInstanceOverMockArgRector");
 }
+
+#[test]
+fn bare_create_mock_assign_to_direct_use() {
+    check(NoBareMockAssign, "BareCreateMockAssignToDirectUseRector");
+}
