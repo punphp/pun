@@ -803,3 +803,82 @@ fn namespace_postprocessing_rejects_scanned_symbols_and_preserves_valid_neighbor
         );
     }
 }
+
+#[test]
+fn entry_brace_errors_match_phpstan_and_suppress_suffix_analysis() {
+    let inputs: Value =
+        serde_json::from_str(include_str!("fixtures/parser/entry-brace-inputs.json")).unwrap();
+    let expected: Value =
+        serde_json::from_str(include_str!("fixtures/parser/entry-brace-expected.json")).unwrap();
+    for (name, source) in inputs.as_object().unwrap() {
+        let root = Inputs::new();
+        let file = root.write_source("input", source.as_str().unwrap());
+        assert_eq!(
+            errors(&Project::new(vec![file], Vec::new())),
+            expected["analysed"][name]["errors"],
+            "{name}"
+        );
+    }
+}
+
+#[test]
+fn entry_brace_failures_reject_scanned_suffix_symbols() {
+    let inputs: Value =
+        serde_json::from_str(include_str!("fixtures/parser/entry-brace-scans.json")).unwrap();
+    let expected: Value =
+        serde_json::from_str(include_str!("fixtures/parser/entry-brace-expected.json")).unwrap();
+    for (name, source) in inputs.as_object().unwrap() {
+        let root = Inputs::new();
+        let main = root.write_source("main", include_str!("fixtures/parser/scan-main.php"));
+        let symbols = root.write_source("symbols", source.as_str().unwrap());
+        assert_eq!(
+            errors(&Project::new(vec![main], vec![symbols])),
+            expected["scanned"][name]["errors"],
+            "{name}"
+        );
+    }
+}
+
+#[test]
+fn entry_brace_errors_survive_configured_ignores_and_rule_filters() {
+    use pun_phpstan::{Array, Key, Value as Php};
+    let root = Inputs::new();
+    let file = root.write_source(
+        "order",
+        include_str!("fixtures/parser/entry-brace-order.php"),
+    );
+    let mut project = Project::new(vec![file], Vec::new());
+    project.reported = Some(std::sync::Arc::new(|_| false));
+    project.report_ignores_without_comments = true;
+    let mut entry = Array::new();
+    entry.set(Key::from("identifier"), Php::str("phpstan.parse"));
+    project.ignore_errors = pun_phpstan::ignore::IgnoredErrors::new(
+        &Array::list([Php::Array(entry), Php::str("#^NoSuchError$#")]),
+        true,
+    );
+    let expected: Value =
+        serde_json::from_str(include_str!("fixtures/parser/entry-brace-expected.json")).unwrap();
+    let analysis = analyse_project(&project).unwrap();
+    assert_eq!(json!(analysis.general), expected["order"]["general"]);
+    assert_eq!(errors(&project), expected["order"]["errors"]);
+}
+
+#[test]
+fn entry_brace_translation_leaves_other_grammar_and_lexical_contracts_unchanged() {
+    let inputs: Value =
+        serde_json::from_str(include_str!("fixtures/parser/entry-brace-unsupported.json")).unwrap();
+    let upstream: Value =
+        serde_json::from_str(include_str!("fixtures/parser/entry-brace-expected.json")).unwrap();
+    for (name, source) in inputs.as_object().unwrap() {
+        let root = Inputs::new();
+        let file = root.write_source("input", source.as_str().unwrap());
+        // These inputs have no supported rule failure. Their broader php-parser failures remain unported;
+        // captures retain those diagnostics explicitly rather than presenting this boundary as full parity.
+        assert_eq!(
+            errors(&Project::new(vec![file], Vec::new())),
+            json!([]),
+            "{name}: broader upstream contract is {}",
+            upstream["unsupported"][name]
+        );
+    }
+}

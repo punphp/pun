@@ -1,6 +1,6 @@
 //! php-parser 5.9's semantic/name failures, before reflection scanning or rule callbacks. RichParser and
-//! SimpleParser collect parser-stage errors first, then stop at the first NameResolver error. This is not a
-//! translation of Mago's grammar errors: a recovered CST remains outside this validation contract.
+//! SimpleParser collect parser-stage errors first, then stop at the first NameResolver error. Grammar
+//! translation is limited to the compilation-unit entry case below, not arbitrary recovered CSTs.
 
 use std::collections::HashSet;
 
@@ -8,13 +8,69 @@ use mago_database::file::File;
 use mago_php_version::PHPVersion;
 use mago_span::{HasSpan, Span};
 use mago_syntax::cst::*;
+use mago_syntax::error::ParseError;
+use mago_syntax::token::TokenKind;
 use mago_syntax::walker::MutWalker;
 use pun_phpstan::ignore::Error;
 
 /// FileAnalyser's ParserErrorsException diagnostics. An invalid scan-only file instead exports no symbols.
 pub(crate) fn errors(file: &File, program: &Program, version: PHPVersion) -> Vec<Error> {
     if program.has_errors() {
-        return Vec::new();
+        // PHPParser tokenizes the whole file before entering its grammar. Lexical failures need that separate
+        // collection contract, even when they follow an unrecoverable compilation-unit error. PHP also rejects
+        // vertical tabs and form feeds that Mago's whitespace table accepts; those are not shared trivia.
+        if program
+            .errors
+            .iter()
+            .any(|error| matches!(error, ParseError::SyntaxError(_)))
+            || program.trivia.iter().any(|trivia| {
+                matches!(trivia.kind, TriviaKind::WhiteSpace)
+                    && trivia
+                        .value
+                        .iter()
+                        .any(|byte| matches!(byte, b'\x0b' | b'\x0c'))
+            })
+        {
+            return Vec::new();
+        }
+        let ParseError::UnexpectedToken(_, TokenKind::RightBrace, at) = &program.errors[0] else {
+            return Vec::new();
+        };
+        let Some(Statement::OpeningTag(OpeningTag::Full(tag))) = program.statements.first() else {
+            return Vec::new();
+        };
+        // Only the shared full-tag spelling belongs to this slice. Do not reinterpret Mago's short tags or
+        // its joined <?php} / <?php/**/ openers as PHPParser grammar failures.
+        if !matches!(
+            program.source_text[tag.span.end.offset as usize],
+            b' ' | b'\t' | b'\r' | b'\n'
+        ) {
+            return Vec::new();
+        }
+        // Contiguous lexer trivia proves there were no earlier statements or expression tokens. The error
+        // expression itself may have been discarded at EOF, so its presence in the recovered CST is not proof.
+        let mut end = tag.span.end;
+        for trivia in program
+            .trivia
+            .iter()
+            .take_while(|trivia| trivia.span.start < at.start)
+        {
+            if trivia.span.start != end {
+                return Vec::new();
+            }
+            end = trivia.span.end;
+        }
+        return if end == at.start {
+            // php.y's empty top_statement_list reduces to start; Php8 state 532 then expects only EOF.
+            // ParserAbstract::doParse cannot recover here, so suffix semantics and Mago cascades do not run.
+            vec![error(
+                file,
+                *at,
+                "Syntax error, unexpected '}', expecting EOF".into(),
+            )]
+        } else {
+            Vec::new()
+        };
     }
     let mut reserved = Reserved {
         file,

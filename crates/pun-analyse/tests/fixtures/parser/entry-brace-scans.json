@@ -1,0 +1,7 @@
+{
+    "invalid-declarations": "<?php\n}\nclass ScanBefore {} class ScanAfter {} function scanFunction(): int { return 1; } const SCAN_CONSTANT = 1;\n",
+    "invalid-commented-declarations": "<?php\n/* } */\n}\nclass ScanBefore {} class ScanAfter {} function scanFunction(): int { return 1; } const SCAN_CONSTANT = 1;\n",
+    "invalid-semantic-suffix": "<?php\n}\nclass ScanBefore {} class ScanAfter {} function scanFunction(void $value): int { return 1; } const SCAN_CONSTANT = 1;\n",
+    "valid-declarations": "<?php\nclass ScanBefore {} class ScanAfter {} function scanFunction(): int { return 1; } const SCAN_CONSTANT = 1;\n",
+    "valid-balanced-declarations": "<?php\n{}\nclass ScanBefore {} class ScanAfter {} function scanFunction(): int { return 1; } const SCAN_CONSTANT = 1;\n"
+}

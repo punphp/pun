@@ -1,0 +1,587 @@
+{
+    "analysed": {
+        "bare-eof": {
+            "errors": [
+                {
+                    "file": "input.php",
+                    "line": 1,
+                    "identifier": "phpstan.parse",
+                    "message": "Syntax error, unexpected '}', expecting EOF on line 1",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": []
+        },
+        "newline": {
+            "errors": [
+                {
+                    "file": "input.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "Syntax error, unexpected '}', expecting EOF on line 2",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": []
+        },
+        "crlf": {
+            "errors": [
+                {
+                    "file": "input.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "Syntax error, unexpected '}', expecting EOF on line 2",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": []
+        },
+        "comments": {
+            "errors": [
+                {
+                    "file": "input.php",
+                    "line": 5,
+                    "identifier": "phpstan.parse",
+                    "message": "Syntax error, unexpected '}', expecting EOF on line 5",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": []
+        },
+        "control-bytes-in-comments": {
+            "errors": [
+                {
+                    "file": "input.php",
+                    "line": 3,
+                    "identifier": "phpstan.parse",
+                    "message": "Syntax error, unexpected '}', expecting EOF on line 3",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": []
+        },
+        "blank-lines": {
+            "errors": [
+                {
+                    "file": "input.php",
+                    "line": 4,
+                    "identifier": "phpstan.parse",
+                    "message": "Syntax error, unexpected '}', expecting EOF on line 4",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": []
+        },
+        "repeated-braces": {
+            "errors": [
+                {
+                    "file": "input.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "Syntax error, unexpected '}', expecting EOF on line 2",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": []
+        },
+        "suffix-name": {
+            "errors": [
+                {
+                    "file": "input.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "Syntax error, unexpected '}', expecting EOF on line 2",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": []
+        },
+        "suffix-parameter": {
+            "errors": [
+                {
+                    "file": "input.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "Syntax error, unexpected '}', expecting EOF on line 2",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": []
+        },
+        "suffix-modifiers": {
+            "errors": [
+                {
+                    "file": "input.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "Syntax error, unexpected '}', expecting EOF on line 2",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": []
+        },
+        "suffix-try": {
+            "errors": [
+                {
+                    "file": "input.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "Syntax error, unexpected '}', expecting EOF on line 2",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": []
+        },
+        "suffix-hook": {
+            "errors": [
+                {
+                    "file": "input.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "Syntax error, unexpected '}', expecting EOF on line 2",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": []
+        },
+        "suffix-namespace-layout": {
+            "errors": [
+                {
+                    "file": "input.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "Syntax error, unexpected '}', expecting EOF on line 2",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": []
+        },
+        "suffix-rules": {
+            "errors": [
+                {
+                    "file": "input.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "Syntax error, unexpected '}', expecting EOF on line 2",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": []
+        },
+        "suffix-recovery": {
+            "errors": [
+                {
+                    "file": "input.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "Syntax error, unexpected '}', expecting EOF on line 2",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": []
+        },
+        "suffix-tags": {
+            "errors": [
+                {
+                    "file": "input.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "Syntax error, unexpected '}', expecting EOF on line 2",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": []
+        },
+        "valid-balanced": {
+            "errors": [],
+            "general": []
+        },
+        "valid-function": {
+            "errors": [],
+            "general": []
+        },
+        "valid-braces-in-comments": {
+            "errors": [],
+            "general": []
+        },
+        "valid-inline": {
+            "errors": [],
+            "general": []
+        },
+        "valid-no-tag": {
+            "errors": [],
+            "general": []
+        },
+        "valid-empty": {
+            "errors": [],
+            "general": []
+        },
+        "valid-tags-only": {
+            "errors": [],
+            "general": []
+        }
+    },
+    "unsupported": {
+        "expression-brace": {
+            "errors": [
+                {
+                    "file": "input.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "Syntax error, unexpected '}' on line 2",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": []
+        },
+        "preceding-statement": {
+            "errors": [
+                {
+                    "file": "input.php",
+                    "line": 3,
+                    "identifier": "phpstan.parse",
+                    "message": "Syntax error, unexpected '}', expecting EOF on line 3",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": []
+        },
+        "preceding-empty-statement": {
+            "errors": [
+                {
+                    "file": "input.php",
+                    "line": 1,
+                    "identifier": "phpstan.parse",
+                    "message": "Syntax error, unexpected '}', expecting EOF on line 1",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": []
+        },
+        "preceding-spaced-empty-statement": {
+            "errors": [
+                {
+                    "file": "input.php",
+                    "line": 1,
+                    "identifier": "phpstan.parse",
+                    "message": "Syntax error, unexpected '}', expecting EOF on line 1",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": []
+        },
+        "preceding-inline-text": {
+            "errors": [
+                {
+                    "file": "input.php",
+                    "line": 1,
+                    "identifier": "phpstan.parse",
+                    "message": "Syntax error, unexpected '}', expecting EOF on line 1",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": []
+        },
+        "eof-parameter-list": {
+            "errors": [
+                {
+                    "file": "input.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "Syntax error, unexpected EOF, expecting T_VARIABLE on line 2",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": []
+        },
+        "eof-call": {
+            "errors": [
+                {
+                    "file": "input.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "Syntax error, unexpected EOF on line 2",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": []
+        },
+        "lexical-null-suffix": {
+            "errors": [
+                {
+                    "file": "input.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "Syntax error, unexpected '}', expecting EOF on line 2",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "input.php",
+                    "line": 3,
+                    "identifier": "phpstan.parse",
+                    "message": "Unexpected null byte on line 3",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": []
+        },
+        "lexical-comment-suffix": {
+            "errors": [
+                {
+                    "file": "input.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "Syntax error, unexpected '}', expecting EOF on line 2",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "input.php",
+                    "line": 3,
+                    "identifier": "phpstan.parse",
+                    "message": "Unterminated comment on line 3",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": []
+        },
+        "lexical-null-prefix": {
+            "errors": [
+                {
+                    "file": "input.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "Unexpected null byte on line 2",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "input.php",
+                    "line": 3,
+                    "identifier": "phpstan.parse",
+                    "message": "Syntax error, unexpected '}', expecting EOF on line 3",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": []
+        },
+        "lexical-vertical-tab-prefix": {
+            "errors": [
+                {
+                    "file": "input.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "Syntax error, unexpected '}', expecting EOF on line 2",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "input.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "Unexpected character \"\u000b\" (ASCII 11) on line 2",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": []
+        },
+        "lexical-form-feed-suffix": {
+            "errors": [
+                {
+                    "file": "input.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "Syntax error, unexpected '}', expecting EOF on line 2",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "input.php",
+                    "line": 3,
+                    "identifier": "phpstan.parse",
+                    "message": "Unexpected character \"\f\" (ASCII 12) on line 3",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": []
+        },
+        "short-tag": {
+            "errors": [],
+            "general": []
+        },
+        "joined-tag": {
+            "errors": [],
+            "general": []
+        },
+        "joined-tag-comment": {
+            "errors": [],
+            "general": []
+        }
+    },
+    "scanned": {
+        "invalid-declarations": {
+            "errors": [
+                {
+                    "file": "main.php",
+                    "line": 2,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class ScanBefore not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 3,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class ScanAfter not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 4,
+                    "identifier": "function.notFound",
+                    "message": "Function scanFunction not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 5,
+                    "identifier": "constant.notFound",
+                    "message": "Used constant SCAN_CONSTANT not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                }
+            ],
+            "general": []
+        },
+        "invalid-commented-declarations": {
+            "errors": [
+                {
+                    "file": "main.php",
+                    "line": 2,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class ScanBefore not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 3,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class ScanAfter not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 4,
+                    "identifier": "function.notFound",
+                    "message": "Function scanFunction not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 5,
+                    "identifier": "constant.notFound",
+                    "message": "Used constant SCAN_CONSTANT not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                }
+            ],
+            "general": []
+        },
+        "invalid-semantic-suffix": {
+            "errors": [
+                {
+                    "file": "main.php",
+                    "line": 2,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class ScanBefore not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 3,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class ScanAfter not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 4,
+                    "identifier": "function.notFound",
+                    "message": "Function scanFunction not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 5,
+                    "identifier": "constant.notFound",
+                    "message": "Used constant SCAN_CONSTANT not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                }
+            ],
+            "general": []
+        },
+        "valid-declarations": {
+            "errors": [],
+            "general": []
+        },
+        "valid-balanced-declarations": {
+            "errors": [],
+            "general": []
+        }
+    },
+    "order": {
+        "errors": [
+            {
+                "file": "order.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Syntax error, unexpected '}', expecting EOF on line 3",
+                "tip": null,
+                "ignorable": false
+            }
+        ],
+        "general": [
+            "Error message \"Syntax error, unexpected '}', expecting EOF on line 3\" cannot be ignored, use excludePaths instead.",
+            "Ignored error pattern #^NoSuchError$# was not matched in reported errors."
+        ]
+    }
+}
