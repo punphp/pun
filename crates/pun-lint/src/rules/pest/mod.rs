@@ -342,9 +342,10 @@ impl<'a> Holder<'a> {
     }
 }
 
-/// `getMatcherSubjectHolder`: down the chain from `call`'s object, the first `->and()` call, or the `expect()` call
-/// at its root.
+/// `isExpectChain` and `getMatcherSubjectHolder`: for a chain on `expect()`, the first `->and()` call down the chain
+/// from `call`'s object, or the `expect()` call at its root.
 pub(crate) fn subject_holder<'a>(call: &'a MethodCall<'a>) -> Option<Holder<'a>> {
+    let root = expect_call(call)?;
     let mut current = call.object;
     loop {
         current = match unparenthesize(current) {
@@ -353,12 +354,7 @@ pub(crate) fn subject_holder<'a>(call: &'a MethodCall<'a>) -> Option<Holder<'a>>
             }
             Expression::Call(Call::Method(m)) => m.object,
             Expression::Access(Access::Property(p)) => p.object,
-            Expression::Call(Call::Function(f))
-                if super::rector_code_quality::named(f, "expect") =>
-            {
-                return Some(Holder::function(f));
-            }
-            _ => return None,
+            _ => return Some(Holder::function(root)),
         };
     }
 }
@@ -368,11 +364,8 @@ pub(crate) fn matcher_subject<'a>(call: &'a MethodCall<'a>) -> Option<&'a Expres
     subject_holder(call).and_then(|h| first_value(h.arguments))
 }
 
-/// `isMatcherAppliedDirectly`: `call` is called on its holder, or on the holder's `->not`.
-pub(crate) fn applied_directly(call: &MethodCall<'_>) -> bool {
-    let Some(holder) = subject_holder(call) else {
-        return false;
-    };
+/// `isMatcherAppliedDirectly`: `call` is called on its holder `holder`, or on the holder's `->not`.
+pub(crate) fn applied_directly(call: &MethodCall<'_>, holder: &Holder<'_>) -> bool {
     let mut var = unparenthesize(call.object);
     if let Some(not) = property_fetch(var).filter(|p| is_name(&p.property, "not")) {
         var = unparenthesize(not.object);
@@ -390,14 +383,16 @@ pub(crate) fn value_text<'s>(ctx: &Context<'s>, expr: &Expression<'_>) -> &'s st
     text(ctx, unparenthesize(expr))
 }
 
-/// `$holder->args[0] = new Arg($value)`: the first argument (its name or `...` too) becomes `value`.
+/// `$holder->args[0] = new Arg($value)`: the first argument (its name or `...` too) becomes `value`. Every caller
+/// takes `value` from that argument, so the list is never empty there.
 pub(crate) fn set_first_argument(
     ctx: &Context<'_>,
     list: &ArgumentList<'_>,
     value: &Expression<'_>,
-) -> Option<Edit> {
-    let first = list.arguments.first()?;
-    Some(Edit::new(node_span(first), value_text(ctx, value)))
+) -> Vec<Edit> {
+    (list.arguments.iter().take(1))
+        .map(|first| Edit::new(node_span(first), value_text(ctx, value)))
+        .collect()
 }
 
 /// `$node->args = [new Arg(...), ...]` on a method call, with its name `name` (new or not) and `values` the printed
@@ -490,15 +485,12 @@ pub(crate) fn extract_function<'a>(
     functions: &[&str],
     valid_methods: &[&str],
 ) -> Option<Extracted<'a>> {
-    if !is_expect_chain(call) {
-        return None;
-    }
     let method = identifier(&call.method)?;
     if !valid_methods.iter().any(|m| m.as_bytes() == method) {
         return None;
     }
     let holder = subject_holder(call)?;
-    if !applied_directly(call) {
+    if !applied_directly(call, &holder) {
         return None;
     }
     let function = func_call(first_value(holder.arguments)?)?;
@@ -529,15 +521,14 @@ pub(crate) fn build_matcher_call(
     matcher: &str,
     args: &[&Expression<'_>],
     not: bool,
-) -> Option<Vec<Edit>> {
+) -> Vec<Edit> {
     let not = if not { "->not" } else { "" };
-    Some(vec![
-        set_first_argument(ctx, holder.arguments, value)?,
-        Edit::new(
-            Span::new(holder.span.end, node_span(call).end),
-            format!("{not}->{matcher}({})", arguments_text(ctx, args)),
-        ),
-    ])
+    let mut edits = set_first_argument(ctx, holder.arguments, value);
+    edits.push(Edit::new(
+        Span::new(holder.span.end, node_span(call).end),
+        format!("{not}->{matcher}({})", arguments_text(ctx, args)),
+    ));
+    edits
 }
 
 /// `ExpectChainValidation::isFalse` / `isTrue`: the constant `false` / `true`.
@@ -566,10 +557,7 @@ pub(crate) fn function_matcher<'a>(
         return;
     };
     let not = needs_not(extracted.method, call);
-    let Some(edits) = build_matcher_call(ctx, call, extracted.holder, subject, matcher, &args, not)
-    else {
-        return;
-    };
+    let edits = build_matcher_call(ctx, call, extracted.holder, subject, matcher, &args, not);
     out.push(report(
         node_span(call),
         format!("Use `{matcher}()` instead of checking `{function}()`."),
@@ -606,11 +594,9 @@ pub(crate) fn type_is(ctx: &Context<'_>, expr: &Expression<'_>, kind: Is) -> Tri
     let Some(union) = facts.full_type(node_span(unparenthesize(expr))) else {
         return Trinary::Maybe;
     };
-    let mut answers = union.types.iter().map(|t| atomic_is(t, kind));
-    let Some(first) = answers.next() else {
-        return Trinary::Maybe;
-    };
-    answers.fold(first, |a, b| if a == b { a } else { Trinary::Maybe })
+    (union.types.iter().map(|t| atomic_is(t, kind)))
+        .reduce(|a, b| if a == b { a } else { Trinary::Maybe })
+        .unwrap_or(Trinary::Maybe)
 }
 
 fn atomic_is(atomic: &TAtomic, kind: Is) -> Trinary {
@@ -833,17 +819,30 @@ fn reformat_comment(text: &str) -> String {
     }
     // `/*` alone on its line and `*/` after blanks on the last: those blanks come off every line.
     let last = lines[lines.len() - 1];
-    if lines[0].trim_end() == "/*" || lines[0].trim_end() == "/**" {
+    if (lines[0].trim_end() == "/*" || lines[0].trim_end() == "/**") && last.trim_start() == "*/" {
         let blanks = &last[..last.len() - last.trim_start().len()];
-        if last.trim_start() == "*/" {
-            return lines
-                .iter()
-                .map(|l| l.strip_prefix(blanks).unwrap_or(l))
-                .collect::<Vec<_>>()
-                .join("\n");
-        }
+        return lines
+            .iter()
+            .map(|l| l.strip_prefix(blanks).unwrap_or(l))
+            .collect::<Vec<_>>()
+            .join("\n");
     }
-    text.to_string()
+    // `/*` and text on the first line: the other lines lose their shortest indent, less the width of `/* `.
+    let ws = |c: char| matches!(c, ' ' | '\t' | '\n' | '\r' | '\x0b' | '\x0c');
+    // A comment of more than one line is a `/*` one: `//` and `#` comments end at the newline.
+    let rest = &text[if text.starts_with("/**") { 3 } else { 2 }..];
+    let opener = text.len() - rest.trim_start_matches(ws).len();
+    let shortest = (lines[1..].iter())
+        .map(|l| l.len() - l.trim_start_matches(ws).len())
+        .min()
+        .unwrap_or(0);
+    match shortest.checked_sub(opener).filter(|n| *n > 0) {
+        Some(remove) => std::iter::once(lines[0])
+            .chain(lines[1..].iter().map(|l| &l[remove..]))
+            .collect::<Vec<_>>()
+            .join("\n"),
+        None => text.to_string(),
+    }
 }
 
 /// `pComments`: `comments` reformatted and joined by newlines at `indent`.
@@ -1070,10 +1069,9 @@ fn diff(n: usize, new: &[Item<'_>]) -> Vec<Diff> {
             .count();
         if j - i == k - j {
             for n in 0..j - i {
-                let (Diff::Remove(o), Diff::Add(a)) = (result[i + n], result[j + n]) else {
-                    unreachable!()
-                };
-                out.push(Diff::Replace(o, a));
+                if let (Diff::Remove(o), Diff::Add(a)) = (result[i + n], result[j + n]) {
+                    out.push(Diff::Replace(o, a));
+                }
             }
         } else {
             out.extend_from_slice(&result[i..k]);
@@ -1192,11 +1190,9 @@ pub(crate) fn print_list(
                 before_first_keep = false;
                 let old = olds[o];
                 last_indent = indent_at(ctx, old.start);
-                let comment_start = if old.comments < pos {
-                    old.start
-                } else {
-                    old.comments
-                };
+                // php-parser starts at the node itself when its comments begin before `pos` (a comment given to two
+                // nodes); a statement's comments here begin after the token before it, which is never before `pos`.
+                let comment_start = old.comments;
                 if skip_removed {
                     if tag_in(pos, old.start) {
                         return None;
@@ -1346,15 +1342,14 @@ pub(crate) fn rewrite_list(
                 .iter()
                 .filter(|i| i.old().is_none_or(|o| !olds[o].nop))
                 .count();
-    if let Some((text, end)) = print_list(ctx, &olds, braces, list.inner.start, items) {
-        let mut edits = vec![Edit::new(Span::new(list.inner.start, end), text)];
+    if let Some((mut text, mut end)) = print_list(ctx, &olds, braces, list.inner.start, items) {
+        // A file whose statement count changed gains a final newline (one edit, up to the end of the file).
         if count_changed && !ctx.source.ends_with('\n') {
-            edits.push(Edit::new(
-                Span::new(ctx.source.len(), ctx.source.len()),
-                "\n",
-            ));
+            text.push_str(&ctx.source[end..]);
+            text.push('\n');
+            end = ctx.source.len();
         }
-        return Some(edits);
+        return Some(vec![Edit::new(Span::new(list.inner.start, end), text)]);
     }
     let parent = match parent {
         Some(Node::MethodBody(_)) => grandparent,
@@ -1455,21 +1450,17 @@ pub(crate) fn rewrite_list(
             // The whole file, from `<?php` on; a file with HTML or a closing tag before its end is left alone.
             let tokens = super::php_parser::tokens(ctx.source);
             use mago_syntax::token::TokenKind as K;
-            let first = tokens.first()?;
-            if first.kind != K::OpenTag || first.start != 0 {
-                return None;
-            }
+            tokens
+                .first()
+                .filter(|t| t.kind == K::OpenTag && t.start == 0)?;
             let tag = tokens.iter().skip(1).find(|t| {
                 matches!(
                     t.kind,
                     K::CloseTag | K::InlineText | K::OpenTag | K::EchoTag | K::ShortOpenTag
                 )
             });
-            if let Some(t) = tag
-                && (t.kind != K::CloseTag || !matches!(&ctx.source[t.end..], "" | "\n"))
-            {
-                return None;
-            }
+            tag.is_none_or(|t| t.kind == K::CloseTag && matches!(&ctx.source[t.end..], "" | "\n"))
+                .then_some(())?;
             let mut out = format!("<?php\n{}", p_stmts(ctx, &olds, items, 0));
             if count_changed && !out.ends_with('\n') {
                 out.push('\n');
@@ -1531,12 +1522,15 @@ pub(crate) const STATEMENT_LISTS: &[NodeKind] = &[
     NodeKind::DeclareColonDelimitedBody,
 ];
 
-/// The list `node` holds, as php-parser's `stmts`: PHP's `?>` takes the newline after it, which Mago keeps as
-/// inline HTML.
+/// The list `node` holds, as php-parser's `stmts`, when it is one of [`STATEMENT_LISTS`]. PHP's `?>` takes the
+/// newline after it, which Mago keeps as inline HTML.
 pub(crate) fn statement_list<'ast, 'arena>(
     ctx: &Context<'_>,
     node: Node<'ast, 'arena>,
-) -> super::php_parser::List<'ast, 'arena> {
+) -> Option<super::php_parser::List<'ast, 'arena>> {
+    if !STATEMENT_LISTS.contains(&node.kind()) {
+        return None;
+    }
     let tokens = super::php_parser::tokens(ctx.source);
     let mut list = super::php_parser::holder_list(ctx.source, &tokens, node);
     list.stmts.retain(|s| match s {
@@ -1546,7 +1540,7 @@ pub(crate) fn statement_list<'ast, 'arena>(
         }
         _ => true,
     });
-    list
+    Some(list)
 }
 
 /// `$stmt->expr` of an expression statement.

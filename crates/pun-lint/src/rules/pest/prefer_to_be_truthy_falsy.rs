@@ -5,10 +5,7 @@
 use mago_syntax::cst::{Expression, Node, NodeKind, UnaryPrefixOperator};
 use pun_problem::Safety;
 
-use super::{
-    argument_value, func_call, is_expect_chain, is_name, matcher_subject, rename, report,
-    subject_holder,
-};
+use super::{argument_value, func_call, is_name, matcher_subject, rename, report, subject_holder};
 use crate::rules::rector_code_quality::named;
 use crate::syntax::{node_span, unparenthesize};
 use crate::{Context, Report, Rule};
@@ -34,9 +31,7 @@ impl Rule for PreferToBeTruthyFalsy {
         let Node::MethodCall(call) = node else {
             return;
         };
-        if !is_expect_chain(call)
-            || !(is_name(&call.method, "toBeTrue") || is_name(&call.method, "toBeFalse"))
-        {
+        if !(is_name(&call.method, "toBeTrue") || is_name(&call.method, "toBeFalse")) {
             return;
         }
         let (Some(holder), Some(subject)) = (subject_holder(call), matcher_subject(call)) else {

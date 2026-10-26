@@ -6,8 +6,8 @@ use mago_syntax::cst::{Expression, Literal, Node, NodeKind};
 use pun_problem::Safety;
 
 use super::{
-    Is, Trinary, argument_value, func_call, is_expect_chain, is_name, matcher_subject, report,
-    set_call_arguments, subject_holder, type_is,
+    Is, Trinary, argument_value, func_call, is_name, matcher_subject, report, set_call_arguments,
+    subject_holder, type_is,
 };
 use crate::rules::rector_code_quality::named;
 use crate::syntax::{node_span, unparenthesize};
@@ -34,10 +34,9 @@ impl Rule for PreferToBeUuid {
         let Node::MethodCall(call) = node else {
             return;
         };
-        if !is_expect_chain(call)
-            || !(is_name(&call.method, "toBe")
-                || is_name(&call.method, "toBeGreaterThan")
-                || is_name(&call.method, "toEqual"))
+        if !(is_name(&call.method, "toBe")
+            || is_name(&call.method, "toBeGreaterThan")
+            || is_name(&call.method, "toEqual"))
         {
             return;
         }

@@ -47,7 +47,9 @@ impl Rule for RequireTypeMatcherFirst {
         ctx: &Context<'_>,
         out: &mut Vec<Report>,
     ) {
-        let list = statement_list(ctx, node);
+        let Some(list) = statement_list(ctx, node) else {
+            return;
+        };
         let stmts = &list.stmts;
         let call_of = |i: usize| statement_expression(stmts[i]).and_then(method_call);
         // `$stmts` as refactor() changes it (old indexes), while its foreach walks the list as it was.
@@ -125,15 +127,14 @@ impl Rule for RequireTypeMatcherFirst {
         if list.nop {
             items.push(Item::Old(stmts.len()));
         }
-        let Some(edits) = rewrite_list(ctx, node, ancestors, &list, &items) else {
-            return;
-        };
-        out.push(report(
-            node_span(stmts[0]),
-            "Check the type before the value in `expect()` chains.".to_string(),
-            Safety::Safe,
-            edits,
-        ));
+        if let Some(edits) = rewrite_list(ctx, node, ancestors, &list, &items) {
+            out.push(report(
+                node_span(stmts[0]),
+                "Check the type before the value in `expect()` chains.".to_string(),
+                Safety::Safe,
+                edits,
+            ));
+        }
     }
 }
 

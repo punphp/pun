@@ -52,7 +52,9 @@ impl Rule for NoExpectException {
         ctx: &Context<'_>,
         out: &mut Vec<Report>,
     ) {
-        let list = statement_list(ctx, node);
+        let Some(list) = statement_list(ctx, node) else {
+            return;
+        };
         let stmts = &list.stmts;
         let mut items: Vec<Item<'_>> = Vec::new();
         let mut i = 0;
@@ -92,16 +94,15 @@ impl Rule for NoExpectException {
         if !changed {
             return;
         }
-        let Some(edits) = rewrite_list(ctx, node, ancestors, &list, &items) else {
-            return;
-        };
-        out.push(report(
-            node_span(stmts[0]),
-            "Use `expect(fn() => ...)->toThrow()` instead of `$this->expectException()`."
-                .to_string(),
-            Safety::Safe,
-            edits,
-        ));
+        if let Some(edits) = rewrite_list(ctx, node, ancestors, &list, &items) {
+            out.push(report(
+                node_span(stmts[0]),
+                "Use `expect(fn() => ...)->toThrow()` instead of `$this->expectException()`."
+                    .to_string(),
+                Safety::Safe,
+                edits,
+            ));
+        }
     }
 }
 

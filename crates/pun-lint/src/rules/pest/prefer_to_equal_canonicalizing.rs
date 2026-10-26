@@ -5,8 +5,8 @@ use mago_syntax::cst::{Node, NodeKind};
 use pun_problem::Safety;
 
 use super::{
-    argument_value, func_call, is_expect_chain, is_name, matcher_subject, report,
-    set_call_arguments, subject_holder, texts,
+    argument_value, func_call, is_name, matcher_subject, report, set_call_arguments,
+    subject_holder, texts,
 };
 use crate::rules::rector_code_quality::named;
 use crate::syntax::node_span;
@@ -33,9 +33,7 @@ impl Rule for PreferToEqualCanonicalizing {
         let Node::MethodCall(call) = node else {
             return;
         };
-        if !is_expect_chain(call)
-            || !(is_name(&call.method, "toBe") || is_name(&call.method, "toEqual"))
-        {
+        if !(is_name(&call.method, "toBe") || is_name(&call.method, "toEqual")) {
             return;
         }
         let [compare] = call.argument_list.arguments.as_slice() else {

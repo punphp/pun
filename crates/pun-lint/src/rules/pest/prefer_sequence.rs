@@ -31,7 +31,9 @@ impl Rule for PreferSequence {
         ctx: &Context<'_>,
         out: &mut Vec<Report>,
     ) {
-        let list = statement_list(ctx, node);
+        let Some(list) = statement_list(ctx, node) else {
+            return;
+        };
         let stmts = &list.stmts;
         let mut items: Vec<Item<'_>> = Vec::new();
         let mut i = 0;
@@ -42,12 +44,7 @@ impl Rule for PreferSequence {
                 i += 1;
                 continue;
             };
-            // `rebuildChainOnParam` refuses a chain whose bottom is neither a property fetch nor a call.
-            let Some(rebuilt) = chains.iter().map(|c| bottom(c)).collect::<Option<Vec<_>>>() else {
-                items.push(Item::Old(i));
-                i += 1;
-                continue;
-            };
+            let rebuilt: Vec<_> = chains.iter().map(|c| bottom(c)).collect();
             let count = chains.len();
             let comments: Vec<Span> = stmts[i..i + count]
                 .iter()
@@ -78,15 +75,14 @@ impl Rule for PreferSequence {
         if !changed {
             return;
         }
-        let Some(edits) = rewrite_list(ctx, node, ancestors, &list, &items) else {
-            return;
-        };
-        out.push(report(
-            node_span(stmts[0]),
-            "Use `sequence()` instead of consecutive `expect()` calls on indexes.".to_string(),
-            Safety::Safe,
-            edits,
-        ));
+        if let Some(edits) = rewrite_list(ctx, node, ancestors, &list, &items) {
+            out.push(report(
+                node_span(stmts[0]),
+                "Use `sequence()` instead of consecutive `expect()` calls on indexes.".to_string(),
+                Safety::Safe,
+                edits,
+            ));
+        }
     }
 }
 
@@ -130,24 +126,16 @@ fn sequence_group<'a>(
     Some((base?, chains))
 }
 
-/// The method calls of a chain from the top down, and whether the expression under them is a property fetch.
-fn bottom<'a>(call: &'a MethodCall<'a>) -> Option<(Vec<&'a MethodCall<'a>>, bool)> {
+/// The method calls of a chain from the top down, and whether the expression under them is a property fetch (else it
+/// is the `expect()` call, so `rebuildChainOnParam` never refuses a chain here).
+fn bottom<'a>(call: &'a MethodCall<'a>) -> (Vec<&'a MethodCall<'a>>, bool) {
     let mut calls = vec![call];
     let mut current = call.object;
     while let Some(m) = method_call(current) {
         calls.push(m);
         current = m.object;
     }
-    if property_fetch(current).is_some() {
-        Some((calls, true))
-    } else if matches!(
-        unparenthesize(current),
-        Expression::Call(mago_syntax::cst::Call::Function(_))
-    ) {
-        Some((calls, false))
-    } else {
-        None
-    }
+    (calls, property_fetch(current).is_some())
 }
 
 /// `rebuildChainOnParam` printed: the chain's method calls on `$e`, or on `$e->not` when a property fetch is under

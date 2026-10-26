@@ -34,7 +34,9 @@ impl Rule for PreferToMatchArray {
         ctx: &Context<'_>,
         out: &mut Vec<Report>,
     ) {
-        let list = statement_list(ctx, node);
+        let Some(list) = statement_list(ctx, node) else {
+            return;
+        };
         let stmts = &list.stmts;
         let chain = |i: usize| {
             stmts
@@ -79,43 +81,41 @@ impl Rule for PreferToMatchArray {
                 i += 1;
                 continue;
             }
-            if let Some(expect) = expect_call(first) {
-                let comments: Vec<Span> = stmts[i..j]
-                    .iter()
-                    .flat_map(|s| comment_spans(ctx, node_span(*s).start))
-                    .collect();
-                let expect_span = node_span(expect);
-                let arguments = expect.argument_list.arguments.as_slice();
-                // `$expectCall->args = [new Arg($firstArray)]`: one argument is replaced where it stands, more are
-                // printed again with the call.
-                let single = (arguments.len() == 1).then(|| node_span(&arguments[0]));
-                let name = node_span(expect.function);
-                items.push(Item::New {
-                    print: Box::new(move |indent| {
-                        let text = |e: &Expression<'_>| {
-                            kept_text(ctx, node_span(unparenthesize(e)), indent)
-                        };
-                        let delta =
-                            indent as isize - super::indent_at(ctx, expect_span.start) as isize;
-                        let call = match single {
-                            Some(arg) => format!(
-                                "{}{}{}",
-                                shift(ctx, Span::new(expect_span.start, arg.start), delta),
-                                text(array),
-                                shift(ctx, Span::new(arg.end, expect_span.end), delta)
-                            ),
-                            None => format!("{}({})", kept_text(ctx, name, indent), text(array)),
-                        };
-                        let pairs: Vec<String> = expectations
-                            .iter()
-                            .filter_map(|(k, v)| Some(format!("{} => {}", text(k), text((*v)?))))
-                            .collect();
-                        format!("{call}->toMatchArray([{}]);", pairs.join(", "))
-                    }),
-                    comments,
-                });
-                changed = true;
-            }
+            // `chain` keeps only chains on `expect()`.
+            let expect = expect_call(first).unwrap();
+            let comments: Vec<Span> = stmts[i..j]
+                .iter()
+                .flat_map(|s| comment_spans(ctx, node_span(*s).start))
+                .collect();
+            let expect_span = node_span(expect);
+            let arguments = expect.argument_list.arguments.as_slice();
+            // `$expectCall->args = [new Arg($firstArray)]`: one argument is replaced where it stands, more are
+            // printed again with the call.
+            let single = (arguments.len() == 1).then(|| node_span(&arguments[0]));
+            let name = node_span(expect.function);
+            items.push(Item::New {
+                print: Box::new(move |indent| {
+                    let text =
+                        |e: &Expression<'_>| kept_text(ctx, node_span(unparenthesize(e)), indent);
+                    let delta = indent as isize - super::indent_at(ctx, expect_span.start) as isize;
+                    let call = match single {
+                        Some(arg) => format!(
+                            "{}{}{}",
+                            shift(ctx, Span::new(expect_span.start, arg.start), delta),
+                            text(array),
+                            shift(ctx, Span::new(arg.end, expect_span.end), delta)
+                        ),
+                        None => format!("{}({})", kept_text(ctx, name, indent), text(array)),
+                    };
+                    let pairs: Vec<String> = expectations
+                        .iter()
+                        .filter_map(|(k, v)| Some(format!("{} => {}", text(k), text((*v)?))))
+                        .collect();
+                    format!("{call}->toMatchArray([{}]);", pairs.join(", "))
+                }),
+                comments,
+            });
+            changed = true;
             i = j;
         }
         if list.nop {
@@ -124,15 +124,15 @@ impl Rule for PreferToMatchArray {
         if !changed {
             return;
         }
-        let Some(edits) = rewrite_list(ctx, node, ancestors, &list, &items) else {
-            return;
-        };
-        out.push(report(
-            node_span(stmts[0]),
-            "Use `toMatchArray()` instead of consecutive checks of an array's keys.".to_string(),
-            Safety::Safe,
-            edits,
-        ));
+        if let Some(edits) = rewrite_list(ctx, node, ancestors, &list, &items) {
+            out.push(report(
+                node_span(stmts[0]),
+                "Use `toMatchArray()` instead of consecutive checks of an array's keys."
+                    .to_string(),
+                Safety::Safe,
+                edits,
+            ));
+        }
     }
 }
 

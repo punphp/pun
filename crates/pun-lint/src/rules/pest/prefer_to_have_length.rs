@@ -6,9 +6,8 @@ use mago_syntax::cst::{Node, NodeKind};
 use pun_problem::Safety;
 
 use super::{
-    Is, Trinary, argument_value, first_value, func_call, function_name, identifier,
-    is_expect_chain, report, set_call_arguments, set_first_argument, subject_holder, texts,
-    type_is,
+    Is, Trinary, argument_value, first_value, func_call, function_name, identifier, report,
+    set_call_arguments, set_first_argument, subject_holder, texts, type_is,
 };
 use crate::syntax::node_span;
 use crate::{Context, Report, Rule};
@@ -34,8 +33,7 @@ impl Rule for PreferToHaveLength {
         let Node::MethodCall(call) = node else {
             return;
         };
-        if !is_expect_chain(call) || !matches!(identifier(&call.method), Some(b"toBe" | b"toEqual"))
-        {
+        if !matches!(identifier(&call.method), Some(b"toBe" | b"toEqual")) {
             return;
         }
         let [length] = call.argument_list.arguments.as_slice() else {
@@ -56,10 +54,7 @@ impl Rule for PreferToHaveLength {
         if type_is(ctx, string, Is::String) == Trinary::No {
             return;
         }
-        let Some(edit) = set_first_argument(ctx, holder.arguments, string) else {
-            return;
-        };
-        let mut edits = vec![edit];
+        let mut edits = set_first_argument(ctx, holder.arguments, string);
         edits.extend(set_call_arguments(
             call,
             "toHaveLength",

@@ -1,0 +1,6 @@
+<?php
+
+use function Foo\bar;
+use function Foo\BAR;
+
+uses(Tests\TestCase::class)->in('Feature');

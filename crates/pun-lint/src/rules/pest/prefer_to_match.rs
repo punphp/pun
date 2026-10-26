@@ -5,8 +5,8 @@ use mago_syntax::cst::{Expression, Literal, Node, NodeKind};
 use pun_problem::Safety;
 
 use super::{
-    Is, Trinary, argument_value, func_call, is_expect_chain, is_name, matcher_subject, report,
-    set_call_arguments, subject_holder, texts, type_is,
+    Is, Trinary, argument_value, func_call, is_name, matcher_subject, report, set_call_arguments,
+    subject_holder, texts, type_is,
 };
 use crate::rules::rector_code_quality::named;
 use crate::syntax::{node_span, unparenthesize};
@@ -33,9 +33,7 @@ impl Rule for PreferToMatch {
         let Node::MethodCall(call) = node else {
             return;
         };
-        if !is_expect_chain(call)
-            || !(is_name(&call.method, "toBe") || is_name(&call.method, "toEqual"))
-        {
+        if !(is_name(&call.method, "toBe") || is_name(&call.method, "toEqual")) {
             return;
         }
         let [expected] = call.argument_list.arguments.as_slice() else {

@@ -4,10 +4,7 @@
 use mago_syntax::cst::{BinaryOperator, Expression, Node, NodeKind};
 use pun_problem::Safety;
 
-use super::{
-    is_expect_chain, is_name, matcher_subject, report, set_call_arguments, subject_holder,
-    value_text,
-};
+use super::{first_value, is_name, report, set_call_arguments, subject_holder, value_text};
 use crate::syntax::{node_span, unparenthesize};
 use crate::{Context, Report, Rule};
 
@@ -32,10 +29,14 @@ impl Rule for PreferToBeInstanceOf {
         let Node::MethodCall(call) = node else {
             return;
         };
-        if !is_expect_chain(call) || !is_name(&call.method, "toBeTrue") {
+        if !is_name(&call.method, "toBeTrue") {
             return;
         }
-        let Some(Expression::Binary(check)) = matcher_subject(call).map(unparenthesize) else {
+        let Some(holder) = subject_holder(call) else {
+            return;
+        };
+        let Some(Expression::Binary(check)) = first_value(holder.arguments).map(unparenthesize)
+        else {
             return;
         };
         // The class must be a name: php-parser reads `self`, `static` and `parent` as names too.
@@ -50,9 +51,6 @@ impl Rule for PreferToBeInstanceOf {
         {
             return;
         }
-        let Some(holder) = subject_holder(call) else {
-            return;
-        };
         let class = format!("{}::class", value_text(ctx, check.rhs));
         let mut edits = holder.set_arguments(ctx, check.lhs);
         edits.extend(set_call_arguments(call, "toBeInstanceOf", &[class]));

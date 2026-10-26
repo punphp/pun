@@ -31,7 +31,9 @@ impl Rule for PreferToMatchObject {
         ctx: &Context<'_>,
         out: &mut Vec<Report>,
     ) {
-        let list = statement_list(ctx, node);
+        let Some(list) = statement_list(ctx, node) else {
+            return;
+        };
         let stmts = &list.stmts;
         let chain = |i: usize| {
             stmts
@@ -78,31 +80,29 @@ impl Rule for PreferToMatchObject {
                 i += 1;
                 continue;
             }
-            let expect = expect_call(first).map(node_span);
-            if let Some(expect) = expect {
-                let comments: Vec<Span> = stmts[i..j]
-                    .iter()
-                    .flat_map(|s| comment_spans(ctx, node_span(*s).start))
-                    .collect();
-                items.push(Item::New {
-                    print: Box::new(move |indent| {
-                        let text = |e: &Expression<'_>| {
-                            kept_text(ctx, node_span(unparenthesize(e)), indent)
-                        };
-                        let pairs: Vec<String> = properties
-                            .iter()
-                            .map(|(k, v)| format!("{} => {}", text(k), text(v)))
-                            .collect();
-                        format!(
-                            "{}->toMatchObject([{}]);",
-                            kept_text(ctx, expect, indent),
-                            pairs.join(", ")
-                        )
-                    }),
-                    comments,
-                });
-                changed = true;
-            }
+            // `chain` keeps only chains on `expect()`.
+            let expect = expect_call(first).map(node_span).unwrap();
+            let comments: Vec<Span> = stmts[i..j]
+                .iter()
+                .flat_map(|s| comment_spans(ctx, node_span(*s).start))
+                .collect();
+            items.push(Item::New {
+                print: Box::new(move |indent| {
+                    let text =
+                        |e: &Expression<'_>| kept_text(ctx, node_span(unparenthesize(e)), indent);
+                    let pairs: Vec<String> = properties
+                        .iter()
+                        .map(|(k, v)| format!("{} => {}", text(k), text(v)))
+                        .collect();
+                    format!(
+                        "{}->toMatchObject([{}]);",
+                        kept_text(ctx, expect, indent),
+                        pairs.join(", ")
+                    )
+                }),
+                comments,
+            });
+            changed = true;
             i = j;
         }
         if list.nop {
@@ -111,15 +111,15 @@ impl Rule for PreferToMatchObject {
         if !changed {
             return;
         }
-        let Some(edits) = rewrite_list(ctx, node, ancestors, &list, &items) else {
-            return;
-        };
-        out.push(report(
-            node_span(stmts[0]),
-            "Use `toMatchObject()` instead of consecutive `toHaveProperty()` checks.".to_string(),
-            Safety::Safe,
-            edits,
-        ));
+        if let Some(edits) = rewrite_list(ctx, node, ancestors, &list, &items) {
+            out.push(report(
+                node_span(stmts[0]),
+                "Use `toMatchObject()` instead of consecutive `toHaveProperty()` checks."
+                    .to_string(),
+                Safety::Safe,
+                edits,
+            ));
+        }
     }
 }
 

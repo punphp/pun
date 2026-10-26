@@ -88,7 +88,7 @@ fn refactor_list(
     scope: &[Node<'_, '_>],
     global: &HashSet<Vec<u8>>,
 ) -> Option<Vec<Edit>> {
-    let list = statement_list(ctx, holder);
+    let list = statement_list(ctx, holder)?;
     let mut items = Vec::new();
     let mut changed = false;
     for (index, statement) in list.stmts.iter().enumerate() {
@@ -139,15 +139,20 @@ fn refactor_list(
     if let Some(edits) = rewrite_list(ctx, holder, &[], &list, &items) {
         return Some(edits);
     }
-    // php-parser gives up on the list of a `namespace X;` and prints the namespace again (`pStmt_Namespace`):
-    // `namespace X;`, a newline, and each statement on a line of its own.
+    // php-parser gives up on the list of a namespace and prints it again (`pStmt_Namespace`): `namespace X;`, a
+    // newline, and each statement on a line of its own. php-parser uses that `;` form for a braced namespace too
+    // unless the file has a namespace without a name; such a namespace itself is left alone here.
     let Some(Node::Namespace(ns)) = scope.last() else {
         return None;
     };
-    let name = ns.name.as_ref().map_or("", |n| text(ctx, n));
+    let name = text(ctx, ns.name.as_ref()?);
     let olds = old_statements(ctx, &list);
     let start = node_span(*ns).start;
-    let end = olds.last().map_or(node_span(*ns).end, |o| o.end);
+    // A braced namespace is printed again whole, its `}` too.
+    let end = match (&ns.body, olds.last()) {
+        (NamespaceBody::Implicit(_), Some(last)) => last.end,
+        _ => node_span(*ns).end,
+    };
     let printed = format!("namespace {name};\n{}", p_stmts(ctx, &olds, &items, 0));
     Some(vec![Edit::new(Span::new(start, end), printed)])
 }
@@ -206,13 +211,10 @@ fn globally_applied_classes(path: &Path) -> HashSet<Vec<u8>> {
     if !pest_file.is_file() || pest_file == path {
         return classes;
     }
-    let Ok(relative) = path.strip_prefix(&tests) else {
-        return classes;
-    };
+    // `tests` is a directory above `path`; a Pest.php that cannot be read applies nothing.
+    let relative = path.strip_prefix(&tests).unwrap_or(&path);
     let relative = relative.to_string_lossy().replace('\\', "/");
-    let Ok(code) = std::fs::read_to_string(&pest_file) else {
-        return classes;
-    };
+    let code = std::fs::read_to_string(&pest_file).unwrap_or_default();
     for (names, paths) in global_uses(&code) {
         if paths.iter().any(|p| covers(p, &relative)) {
             classes.extend(names);
@@ -261,58 +263,46 @@ fn global_uses(code: &str) -> Vec<(Vec<Vec<u8>>, Vec<String>)> {
 }
 
 /// php-parser's `NameResolver` throws on an alias imported twice in one scope (class and function names ignoring
-/// case, constants not).
+/// case, constants not). Only the file's own imports matter: a file with a namespace has no global uses to read.
 fn duplicate_import<'a>(statements: impl Iterator<Item = &'a Statement<'a>>) -> bool {
+    let kind = |function: bool| if function { "function" } else { "const" };
     let mut seen = HashSet::new();
     for statement in statements {
-        match statement {
-            Statement::Use(r#use) => {
-                let mut items = Vec::new();
-                match &r#use.items {
-                    UseItems::Sequence(s) => items.extend(s.items.iter().map(|i| ("class", i))),
-                    UseItems::TypedSequence(s) => {
-                        items.extend(s.items.iter().map(|i| (kind(s.r#type.is_function()), i)))
-                    }
-                    UseItems::TypedList(l) => {
-                        items.extend(l.items.iter().map(|i| (kind(l.r#type.is_function()), i)))
-                    }
-                    UseItems::MixedList(l) => items.extend(l.items.iter().map(|i| {
-                        let k = i.r#type.as_ref().map_or("class", |t| kind(t.is_function()));
-                        (k, &i.item)
-                    })),
-                }
-                for (k, item) in items {
-                    let alias = match &item.alias {
-                        Some(a) => a.identifier.value,
-                        None => item.name.last_segment(),
-                    };
-                    let alias = match k {
-                        "const" => alias.to_vec(),
-                        _ => alias.to_ascii_lowercase(),
-                    };
-                    if !seen.insert((k, alias)) {
-                        return true;
-                    }
-                }
+        let Statement::Use(r#use) = statement else {
+            continue;
+        };
+        let items: Vec<_> = match &r#use.items {
+            UseItems::Sequence(s) => s.items.iter().map(|i| ("class", i)).collect(),
+            UseItems::TypedSequence(s) => {
+                let k = kind(s.r#type.is_function());
+                s.items.iter().map(|i| (k, i)).collect()
             }
-            Statement::Namespace(ns) => {
-                let inner = match &ns.body {
-                    NamespaceBody::Implicit(b) => duplicate_import(b.statements.iter()),
-                    NamespaceBody::BraceDelimited(b) => duplicate_import(b.statements.iter()),
-                };
-                if inner {
-                    return true;
-                }
-                seen.clear();
+            UseItems::TypedList(l) => {
+                let k = kind(l.r#type.is_function());
+                l.items.iter().map(|i| (k, i)).collect()
             }
-            _ => {}
+            UseItems::MixedList(l) => (l.items.iter())
+                .map(|i| {
+                    let k = i.r#type.as_ref().map_or("class", |t| kind(t.is_function()));
+                    (k, &i.item)
+                })
+                .collect(),
+        };
+        for (k, item) in items {
+            let alias = match &item.alias {
+                Some(a) => a.identifier.value,
+                None => item.name.last_segment(),
+            };
+            let alias = match k {
+                "const" => alias.to_vec(),
+                _ => alias.to_ascii_lowercase(),
+            };
+            if !seen.insert((k, alias)) {
+                return true;
+            }
         }
     }
     false
-}
-
-fn kind(function: bool) -> &'static str {
-    if function { "function" } else { "const" }
 }
 
 /// `matchGlobalUse`: `uses(...)->in(...)`, or a `pest()` chain whose `->use()` / `->uses()` calls name classes, ended

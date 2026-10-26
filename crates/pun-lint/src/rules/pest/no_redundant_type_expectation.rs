@@ -155,14 +155,12 @@ fn matches_literal(expr: &Expression<'_>, category: &str) -> Option<bool> {
         Expression::CompositeString(CompositeString::Document(d))
             if d.parts.iter().all(|p| matches!(p, StringPart::Literal(_))) =>
         {
-            let value: Vec<u8> = d
-                .parts
-                .iter()
-                .flat_map(|p| match p {
-                    StringPart::Literal(l) => l.value.unwrap_or(l.raw).to_vec(),
-                    _ => Vec::new(),
-                })
-                .collect();
+            let mut value = Vec::new();
+            for part in d.parts.iter() {
+                if let StringPart::Literal(l) = part {
+                    value.extend_from_slice(l.value.unwrap_or(l.raw));
+                }
+            }
             string_matches(Some(&value), category)
         }
         Expression::Literal(Literal::Integer(_)) => {
