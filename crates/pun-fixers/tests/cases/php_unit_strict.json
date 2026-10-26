@@ -1,0 +1,26 @@
+[
+    {
+        "fixer": "php_unit_strict",
+        "input": "<?php\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    public function testA() {\n        $this->assertEquals(1, 2);\n        self::assertNotEquals(1, 2, 'm');\n        static::assertEquals(1);\n        $other->assertEquals(1, 2);\n        $this->assertAttributeEquals(1, 'a', $b, 'c', 'd');\n    }\n}\nclass Helper {\n    function x() { $this->assertEquals(1, 2); }\n}\n",
+        "expected": "<?php\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    public function testA() {\n        $this->assertSame(1, 2);\n        self::assertNotSame(1, 2, 'm');\n        static::assertEquals(1);\n        $other->assertEquals(1, 2);\n        $this->assertAttributeEquals(1, 'a', $b, 'c', 'd');\n    }\n}\nclass Helper {\n    function x() { $this->assertSame(1, 2); }\n}\n"
+    },
+    {
+        "fixer": "php_unit_strict",
+        "config": {
+            "assertions": [
+                "assertNotEquals"
+            ]
+        },
+        "input": "<?php\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    public function testA() {\n        $this->assertEquals(1, 2);\n        self::assertNotEquals(1, 2, 'm');\n        static::assertEquals(1);\n        $other->assertEquals(1, 2);\n        $this->assertAttributeEquals(1, 'a', $b, 'c', 'd');\n    }\n}\nclass Helper {\n    function x() { $this->assertEquals(1, 2); }\n}\n",
+        "expected": "<?php\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    public function testA() {\n        $this->assertEquals(1, 2);\n        self::assertNotSame(1, 2, 'm');\n        static::assertEquals(1);\n        $other->assertEquals(1, 2);\n        $this->assertAttributeEquals(1, 'a', $b, 'c', 'd');\n    }\n}\nclass Helper {\n    function x() { $this->assertEquals(1, 2); }\n}\n"
+    },
+    {
+        "fixer": "php_unit_strict",
+        "config": {
+            "assertions": [
+                "assertFoo"
+            ]
+        },
+        "error": "[php_unit_strict] Invalid configuration: The option \"assertions\" with value array is invalid."
+    }
+]
