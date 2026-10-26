@@ -19,6 +19,7 @@ mod prefer_comparison_matchers;
 mod prefer_defer;
 mod prefer_each_modifier;
 mod prefer_expect;
+mod prefer_extend;
 mod prefer_filesystem_matchers;
 mod prefer_not_modifier;
 mod prefer_sequence;
@@ -76,6 +77,7 @@ pub use prefer_comparison_matchers::PreferComparisonMatchers;
 pub use prefer_defer::PreferDefer;
 pub use prefer_each_modifier::PreferEachModifier;
 pub use prefer_expect::PreferExpect;
+pub use prefer_extend::PreferExtend;
 pub use prefer_filesystem_matchers::PreferFilesystemMatchers;
 pub use prefer_not_modifier::PreferNotModifier;
 pub use prefer_sequence::PreferSequence;
@@ -150,6 +152,7 @@ pub(crate) fn all() -> Vec<Box<dyn Rule>> {
         Box::new(PreferDefer),
         Box::new(PreferEachModifier),
         Box::new(PreferExpect),
+        Box::new(PreferExtend),
         Box::new(PreferFilesystemMatchers),
         Box::new(PreferNotModifier),
         Box::new(PreferSequence),

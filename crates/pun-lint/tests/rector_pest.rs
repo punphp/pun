@@ -444,3 +444,19 @@ fn ensure_type_checks_first() {
 fn convert_assert_to_expect() {
     check(PreferExpect, "ConvertAssertToExpectRector");
 }
+
+/// The plugin's tests autoload its tests/Fixture classes, copied into Source/.
+#[test]
+fn uses_to_extend() {
+    let dir = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/rector/UsesToExtendRector/Source");
+    let mut sources: Vec<(String, String)> = std::fs::read_dir(&dir)
+        .unwrap()
+        .map(|e| {
+            let path = e.unwrap().path();
+            let code = std::fs::read_to_string(&path).unwrap();
+            (path.to_string_lossy().into_owned(), code)
+        })
+        .collect();
+    sources.sort();
+    pun_lint::rules::facts::with_sources(sources, || check(PreferExtend, "UsesToExtendRector"));
+}
