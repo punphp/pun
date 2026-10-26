@@ -82,3 +82,13 @@ fn constructor_checks_follow_the_configured_level() {
     check("phpstan-contracts-level1");
     check("phpstan-contracts-level5");
 }
+
+#[test]
+fn explicit_attribute_aliases_keep_the_written_name() {
+    check("phpstan-input-aliases");
+}
+
+#[test]
+fn parenthesized_attribute_flags_keep_the_inferred_value() {
+    check("phpstan-input-flags");
+}

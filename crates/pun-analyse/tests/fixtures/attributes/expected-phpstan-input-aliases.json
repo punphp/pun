@@ -1,0 +1,69 @@
+{
+  "general": [],
+  "errors": [
+    {
+      "file": "input-aliases.php",
+      "line": 12,
+      "identifier": "class.nameCase",
+      "message": "Class AttributeInputAliases\\Definitions\\Marker referenced with incorrect case: AttributeInputAliases\\Definitions\\MARKER.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "input-aliases.php",
+      "line": 20,
+      "identifier": "class.nameCase",
+      "message": "Class AttributeInputAliases\\Definitions\\Marker referenced with incorrect case: AttributeInputAliases\\Definitions\\MARKER.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "input-aliases.php",
+      "line": 25,
+      "identifier": "class.nameCase",
+      "message": "Class AttributeInputAliases\\Definitions\\Marker referenced with incorrect case: AttributeInputAliases\\Definitions\\MARKER.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "input-aliases.php",
+      "line": 27,
+      "identifier": "class.nameCase",
+      "message": "Class AttributeInputAliases\\Definitions\\Marker referenced with incorrect case: AttributeInputAliases\\Definitions\\MARKER.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "input-aliases.php",
+      "line": 34,
+      "identifier": "class.nameCase",
+      "message": "Class AttributeInputAliases\\Definitions\\Marker referenced with incorrect case: AttributeInputAliases\\Definitions\\MARKER.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "input-aliases.php",
+      "line": 37,
+      "identifier": "class.nameCase",
+      "message": "Class AttributeInputAliases\\Definitions\\Marker referenced with incorrect case: AttributeInputAliases\\Definitions\\MARKER.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "input-aliases.php",
+      "line": 42,
+      "identifier": "class.nameCase",
+      "message": "Class AttributeInputAliases\\Definitions\\Marker referenced with incorrect case: AttributeInputAliases\\Definitions\\MARKER.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "input-aliases.php",
+      "line": 47,
+      "identifier": "class.nameCase",
+      "message": "Class AttributeInputAliases\\Definitions\\Marker referenced with incorrect case: AttributeInputAliases\\Definitions\\MARKER.",
+      "tip": null,
+      "ignorable": true
+    }
+  ]
+}

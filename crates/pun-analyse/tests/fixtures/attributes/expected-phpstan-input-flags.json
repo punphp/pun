@@ -1,0 +1,77 @@
+{
+  "general": [],
+  "errors": [
+    {
+      "file": "input-flags.php",
+      "line": 11,
+      "identifier": "attribute.target",
+      "message": "Attribute class AttributeInputFlags\\Scalar does not have the function target.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "input-flags.php",
+      "line": 23,
+      "identifier": "attribute.target",
+      "message": "Attribute class AttributeInputFlags\\Bitmask does not have the property target.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "input-flags.php",
+      "line": 33,
+      "identifier": "attribute.target",
+      "message": "Attribute class AttributeInputFlags\\Constant does not have the class target.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "input-flags.php",
+      "line": 39,
+      "identifier": "attribute.target",
+      "message": "Attribute class AttributeInputFlags\\NoTargets does not have the class target.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "input-flags.php",
+      "line": 57,
+      "identifier": "attribute.notAttribute",
+      "message": "Class AttributeInputFlags\\BooleanFlags is not an Attribute class.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "input-flags.php",
+      "line": 57,
+      "identifier": "attribute.notAttribute",
+      "message": "Class AttributeInputFlags\\FloatFlags is not an Attribute class.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "input-flags.php",
+      "line": 57,
+      "identifier": "attribute.notAttribute",
+      "message": "Class AttributeInputFlags\\NullFlags is not an Attribute class.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "input-flags.php",
+      "line": 57,
+      "identifier": "attribute.notAttribute",
+      "message": "Class AttributeInputFlags\\StringFlags is not an Attribute class.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "input-flags.php",
+      "line": 57,
+      "identifier": "attribute.notAttribute",
+      "message": "Class AttributeInputFlags\\UnresolvedFlags is not an Attribute class.",
+      "tip": null,
+      "ignorable": true
+    }
+  ]
+}

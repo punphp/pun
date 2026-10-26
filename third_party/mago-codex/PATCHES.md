@@ -220,3 +220,16 @@ Public Analyzer controls are in `pun-analyse/tests/fixtures/unset/offset-metadat
 empty declared arrays, shapes emptied by mutation, copies, overwrites, narrowed values, generic
 integer and string offsets, finite union offsets, template arrays, both join orders, and inline
 annotations. The mixed-key controls also distinguish the alias from an explicit `int|string` union.
+
+## Parenthesized scanner expressions
+
+`scanner/inference/mod.rs::infer_with_constant_sources()` uses the existing `unwrap_parens()`
+before expression dispatch. Nested parentheses preserve the inferred value for every scanner caller,
+including recursive bitmask operands. Constant sources and the enclosing class remain unchanged.
+No attribute-only inference fallback or dependency version changes are included.
+
+The public `pun-analyse/tests/attributes.rs` regressions compare complete diagnostics with PHPStan
+2.3.1. Parenthesized integer flags retain their supported targets and repeatability. String, float,
+boolean, null, and unresolved flags remain invalid attribute declarations. The oracle uses
+`tests/fixtures/attributes/phpstan-input-flags.neon`; its source revision is
+`cb3b7e99489b2e3789ee2eec10501cb7a72580ea`.

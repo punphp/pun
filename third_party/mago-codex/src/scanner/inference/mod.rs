@@ -273,6 +273,7 @@ fn infer_with_constant_sources<'arena, A>(
 where
     A: Arena,
 {
+    let expression = unwrap_parens(expression);
     match expression {
         Expression::MagicConstant(magic_constant) => Some(match magic_constant {
             MagicConstant::Line(_) => {

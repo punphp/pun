@@ -95,7 +95,7 @@ pub fn check<'arena>(
                 None,
             );
         }
-        let pair = Pair::node(name.clone(), attribute.span());
+        let pair = Pair::name(name.clone(), attribute.name.span());
         class_names::check_at(c, &[pair], Some(&class_names::Location::Attribute), true);
         if flags & required == 0 {
             c.report(
