@@ -65,6 +65,10 @@ Invalid reserved or qualified special class names and duplicate imports report n
 Invalid class or member modifiers, variadic defaults and direct `void` parameters also report parser diagnostics.
 Parser checks reject `try` without a catch or finally, unknown property hooks, explicit getter parameter lists and empty hook lists.
 Braced namespaces cannot contain direct nested namespace declarations.
+Namespace checks reject mixed declaration styles, misplaced namespace declarations and code outside braced namespaces.
+Attributes cannot annotate multiple global constants in one declaration.
+PHP opening tags inside leading shebang text remain visible to analysis and symbol scanning.
+An unmatched `}` at PHP compilation-unit entry reports a parser error and rejects declarations after it.
 Named classes and direct anonymous-class expressions respect pre-8.1 `readonly` tokenization.
 Invalid files contribute no scanned symbols; command output contains only the severe parser errors.
 General PHP syntax-error translation remains incomplete.

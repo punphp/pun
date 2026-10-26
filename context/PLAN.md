@@ -14,11 +14,12 @@ Pushpak resumed all commands on 2026-10-25. CI stays disabled.
 - **Rule docs:** steps 1–5 built locally: all 1,256 rule pages, 67 command/group pages, 8 presets, 8 sets, six
   migration mappings and the URL-filtered directory. CLI links need the public docs origin; none is configured.
   The docs build passes on Linux (1,446 pages); public deployment has not been verified.
-- **Last full batch:** 277 public and library analyser tests pass on Rust 1.99/Linux, together with the full rule
-  harness (734 seconds) and all 2,787 level-fixture cases run in 19 filtered groups. The fixture checks compare
-  ported identifiers against PHPStan with the remaining explicit gaps; they are not full level parity. Fresh
-  profiles cover 39,701/39,701 analyser production lines and 10,259/10,259 owning PHPStan lines after the existing
-  exclusions. All 12 analyse CLI tests pass. Coverage cleanup removes stale example executables as well as tests
+- **Last full batch:** 375 public and library analyser tests pass on Rust 1.99/Linux, together with the unfiltered
+  rule harness (1,315 cases, 775 seconds) and all 2,787 level-fixture cases in bounded partitions. The fixture
+  checks retain 680 level gaps and 18 rule gaps; they are not full upstream parity. Fresh profiles cover
+  41,146/41,146 analyser production lines and 10,406/10,406 owning PHPStan lines after existing exclusions.
+  All CLI executables pass, including all 166 Pint rule fixtures (646 seconds), 14 lint tests and 13 analyse
+  tests. Coverage cleanup removes stale example executables as well as tests
   and binaries, so old source mappings cannot contribute phantom lines. Harness coverage remains 235/235 lines,
   with all five tests passing in its last full measurement.
 - **Local integration gate:** the variable, named-argument and callable snapshot passes the full level-0 rule
@@ -135,6 +136,20 @@ Pushpak resumed all commands on 2026-10-25. CI stays disabled.
   (seed 7) and 117 Laravel Support files with forced CRLF (seed 3), using the fresh batch binary.
   The 1,446-page docs build and rendered contract paragraphs pass inspection. The combined coverage gate is
   closed. No new analyse rules or CI workflows were activated.
+- **Latest integration:** attributed global constants, namespace postprocessing, leading-shebang token admission
+  and compilation-unit entry brace rejection pass the full batch above. Four fresh PHPStan public captures are
+  byte-identical to their expectations. Lint batch 2 also passes: Composer class lookup, native
+  type corrections and the affected oracle fixtures follow Rector with PHPStan 2.2.7, matching both Pinkary
+  and the corpus gate. Both Rector oracle locks now pin that version; the analyse oracle stays at 2.3.1.
+  Documented constant return types and anonymous-class finality match a fresh Rector capture without changing
+  expectations. All 249 lint tests and four Prettier worker tests pass. Fresh Pinkary lint comparison: 33 agree,
+  zero Rector-only and zero Pun-only. The combined framework comparison timed out at 900 seconds and has no
+  current-main counts; split its tool runs before claiming that gate. Existing public fixtures now cover implicit
+  magic debug returns and overloaded native overrides, with byte-identical fresh PHPStan recaptures.
+  Combined coverage is closed without new exclusions. No mappings or CI workflows were enabled.
+- **Next integration:** the isolated canonical unsupported-initializer fallback matches 19 PHPStan diagnostics
+  and passes its scoped gates. Raw `new` object identity needs coordinated initializer-reader and expander
+  changes; conditional holders remain separate. A PHP 8.5 pipe-parentheses parser callback is in progress.
 - **Native scalar casts:** the subsequent default-off slice passes 37 combined native, callback, slice, debug
   and arithmetic tests, including 133 actual PHPStan native dumps. Its changed engine lines are 152/152 covered.
   It models 64-bit PHP with default `precision=14`; unsupported transfers stay unavailable and native-dependent
@@ -144,9 +159,9 @@ Pushpak resumed all commands on 2026-10-25. CI stays disabled.
   43 PHPStan diagnostics; the full batch above includes it and a byte-exact literal-key regression. All 12
   analyse CLI tests pass. Forward/scanned initializer resolution is integrated locally against 29 further
   PHPStan diagnostics; combined verification is running.
-- **CLI coverage:** fresh full-registry measurement is 5,397/5,397 lines, with 147 tests passing. Non-ignorable
+- **CLI coverage:** fresh full-registry measurement is 5,457/5,457 lines, with all executables passing. Non-ignorable
   errors retain their rule's flag in reports and cannot be hidden by ignore comments or baselines.
-- **Lint coverage:** Linux full-registry measurement is 21,881/21,881 lines, with 243 tests passing on main.
+- **Lint coverage:** Linux full-registry measurement is 21,973/21,973 lines, with 249 tests passing on main.
 - **Fixer coverage:** Linux full-registry measurement is 36,563/36,563 lines, with 106 tests passing on main.
 - **Laravel alias groundwork:** installed defaults, literal app configuration, config/package caches and Composer
   discovery feed shared alias metadata without PHP. Pinkary level 0 matches all eight oracle diagnostics for
@@ -414,7 +429,6 @@ Gate passed ea7a84bc2d4c4f4b90ad177d911e6ade3accf253
 | pun-analyse: a `run` that takes the analysed files' sources, so `pun check` reads each file once instead of again after format and lint | todo |
 | platform bug (found by salvage-cli): a token lint rule at `warn` (e.g. `style/no-alias-function`) makes `pun lint` agent output say `fail, 1 file with fixes` and the human summary mark the file with ✖, while the exit code is 0 (warnings pass); report such files as warnings (`pass, 1 warning`, `[warn]` on the line) as native warnings are | todo |
 | lint vs Rector follow-up (scripts/lint-vs-rector.py, laravel-framework: 5427 (file, rule) pairs agree, 336 Rector only, 146 Pun only; pinkary: 0 differences): the `types` rules' residuals. Rector only: add-return-type-from-new 67, add-closure-never-return 54, add-array-return-type 41, add-return-type-from-constant 26, add-string-return-type 17, add-arrow-function-return-type 15, add-numeric-return-type 13, add-return-type-from-param 11, add-fluent-return-type 9, 4 each add-string-return-type-from-scalar/add-return-type-from-property/add-bool-return-type. Pun only: add-string-return-type 31, add-return-type-from-cast 26 (e.g. `PhpRedisLock::release()`, which overrides the untyped `RedisLock::release()`: port `ClassMethodReturnTypeOverrideGuard`'s parent and child checks now that the codebase has the project's classes), add-closure-void-return 14, add-closure-return-type 7 | todo |
-| lint vs Rector follow-up: `pun lint` scans the project's files into the `types` rules' codebase (run.rs `project_codebase`), but not vendor/, so a class from a package stays unknown (a member of one gets no native type, facts.rs). Scan Composer's autoload on demand, as pun-analyse's project.rs does (scanning all of pinkary's vendor/ up front takes about 30 s on one thread) | todo |
 | lint vs Rector follow-up (needs Pushpak): `style/require-statement-padding` reports 60 laravel-framework files Rector leaves: Rector runs every rule in one traversal, so `NewlineAfterStatementRector` never sees the statements `RemoveAlwaysElseRector` moves out of an `else`; Pun's later fix round does and adds the blank line (a second `rector process` would too). Kept: rounds as in Ruff (lint.md); the other option is to stop a rule from reporting on code an earlier round's fix wrote | needs Pushpak |
 | lint vs Rector follow-up: `complexity/prefer-empty-array-identical` misses 34 laravel-framework files where PHPStan knows a written parameter is still an array (`$credentials = array_filter($credentials, ...)`, then `empty($credentials)`): syntax_types.rs `parameter` gives up on any write before the code; take the written value's type from facts.rs instead | todo |
 | lint vs Rector follow-up: one laravel-framework file each, Rector only: php-8.4/prefer-round-mode-enum, php-8.4/prefer-array-any, dead-code/no-useless-ternary, dead-code/no-unused-expression, dead-code/no-unreachable-code, dead-code/no-return-in-constructor, complexity/prefer-min-max, complexity/no-sole-value-sprintf, complexity/no-boolean-literal-compare, classes/no-protected-method-in-final, types/add-numeric-return-type-from-scalar, types/add-never-return-type; Pun only: types/add-function-void-return (`scripts/lint-vs-rector.py laravel-framework` lists the files) | todo |
@@ -468,7 +482,7 @@ Gate passed ea7a84bc2d4c4f4b90ad177d911e6ade3accf253
 | analyse shared class names: carry imported-name and internal-class case options through the shared ClassCaseSensitivityCheck, preserving explicit aliases and written-name distinctions | doing (isolated source port against fresh PHPStan controls; qualified special-name parser validation and source-only class_alias provenance remain separate attribute boundaries) |
 | analyse compact rule selection (needs Pushpak): variable.undefined has one canonical Pun rule, so compact findings cannot be independently enabled, disabled or ignored by analyse/undefined/compact-variable | needs Pushpak (default: preserve the existing canonical identifier decision; keep compact unported while its extraction and public selector boundaries remain) |
 | analyse initializer dependency cycles: extend canonical resolution beyond the currently supported global, ordinary-class and trait dependencies | todo |
-| analyse initializer expressions: port unsupported-expression mixed fallback, new-object types and conditional class holders through the shared initializer resolver, including trait conflict comparisons | todo (fresh PHPStan evidence: calls compare as mixed, new expressions retain class identity and conditional holders union their values; current negative control prevents false call/call conflicts, but call/scalar, new/new and conditional-holder mismatches are still missed) |
+| analyse initializer expressions: port unsupported-expression mixed fallback, new-object types and conditional class holders through the shared initializer resolver, including trait conflict comparisons | doing (unsupported-expression fallback returned in an additive commit against 19 fresh PHPStan diagnostics; raw new-object identity needs the canonical reader and Codex expander changes now assigned in isolation; conditional holders remain unimplemented; combined coverage must also resolve the old source-value None guard honestly) |
 | analyse class constants: extend ClassConstantRule's receiver checks beyond named classes and self/static/parent to inferred expression receivers at higher levels | doing (named-call identities and bounded purity invalidation integrated; nine public tests pass; dynamic/nullsafe calls, indirect variables, dynamic property selectors and general type-dependent comparisons remain; mapping stays unported) |
 | analyse call termination: distinguish implicit empty-domain inference from explicitly never-returning calls, preserving nested evaluation and PHPStan reachability | doing (array_rand count bounds and random-integer returns integrated locally; 17 neighboring controls and Functions/DeadCode sweeps pass; general generic-bottom termination remains unported) |
 | analyse level 0 includes: extend integrated RequireFileExistsRule and IncludedFilePathResolver beyond local files to supported stream paths before whole-rule activation | doing (local phar:// archive members and gzip restart boundary integrated; seven include tests and fresh PHPStan capture pass; runtime wrappers, aliases/mounts, OpenSSL signatures and bzip2 remain unsupported) |
@@ -513,11 +527,8 @@ Gate passed ea7a84bc2d4c4f4b90ad177d911e6ade3accf253
 | analyse 3 follow-up (from 3d): apply the ArrayAccess exemption of InvalidVariableAssignRule inside anonymous classes (Pun has no class metadata there) | todo |
 | analyse 3 follow-up (from 3d): resolve by-reference callees for OffsetAccessWithoutDimForReadingRule beyond named functions, closure/arrow literals, $this or single-named-object method calls, static calls and new; pick the matching variant of multi-variant built-ins instead of the first | todo |
 | analyse 3 follow-up (from 3c, 3f): name anonymous classes (`class@anonymous/<path>:<line>`) in DuplicateDeclarationRule, FinalPrivateMethodRule and FinalPrivateConstantRule too, with the 3b follow-up above; then lift 3f's anonymous-class skips (method.abstract, method.nonAbstract, property.callableType, class.serializable) and the MissingMethodImplementationRuleTest::testRule gap | todo |
-| analyse parser semantic checks: complete php-parser's remaining semantic validation before name resolution and callbacks | doing (accepted try, property-hook and nested-braced-namespace checks integrated; isolated parser suite passes 25 tests with 657/657 parser lines covered; earlier 22-test snapshot passes on main; combined gates running; recovered grammar and namespace postprocessing remain separate) |
-| analyse attributed global constants: reject attribute groups attached to a declaration of multiple global constants at the first attribute location, after initializer diagnostics | doing (isolated port passes 28 parser tests and 668/668 parser lines; ready for the next batch, after the frozen broad gate) |
-| analyse namespace postprocessing: port first-statement placement, mixed namespace styles and code outside braced namespaces with PHPParser's statement normalization | doing (isolated port matches 76 PHPStan inputs; 31 parser and 18 statements tests pass, with 799/799 parser lines covered; ready for the next batch, after the frozen broad gate; recovered grammar remains separate) |
-| analyse parser lexical admission: retain a PHP opening tag inside a leading shebang line, which Mago currently swallows without producing a namespace node | doing (isolated mago-syntax 1.57.0 lexer port; fresh public oracle controls cover executable diagnostics, parser rejection and scanned symbol admission; preserve source bytes, spans, short-tag settings and normal shebang classification) |
-| analyse recovered grammar admission: reject an unmatched closing brace at compilation-unit entry with php-parser's exact unexpected-token diagnostic and stop recovered suffix declarations from exporting symbols | doing (fresh public Analyser and parser-state probes distinguish this entry production from expression failures, EOF and lexical errors; isolated port uses original significant tokens and the corresponding Mago grammar error; broader recovery remains separate) |
+| analyse parser semantic checks: complete php-parser's remaining semantic validation before name resolution and callbacks | doing (accepted try, property-hook, nested-namespace, attributed constants and namespace postprocessing pass combined public, rule, level and coverage gates; reference-to-new, for-clause trailing commas and empty array elements remain admitted-CST contracts, while general recovered grammar still needs provenance) |
+| analyse pipe parser admission: require parentheses around a direct arrow-function RHS at PHP 8.5+, preserving reduction-order diagnostics and whole-file scan rejection | doing (fresh PHPStan and admitted-CST evidence identifies the bounded upstream callback; independent implementation and oracle-backed public gates running) |
 | analyse 3 follow-up (from 3b): pass the analysed paths and cwd into `Checks` so ConstructorReturnTypeRule names anonymous classes as FuzzyRelativePathHelper does (`class@anonymous/<path>:<line>`) | todo |
 | analyse 3 follow-up (from 3b): skip statements after a terminating one in the rule walk, as PHPStan does (unreachable statements; later never-returning calls from inference) | todo |
 | analyse 3 follow-up (from 3b): examples/analyse in a debug build overflows the default thread stack on laravel-framework (ran with RUST_MIN_STACK=268435456); find the deep recursion or raise the stack in the corpus script | todo |
