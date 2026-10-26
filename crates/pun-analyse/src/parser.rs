@@ -1,6 +1,6 @@
-//! php-parser 5.9's name and member-modifier failures, before reflection scanning or rule callbacks. RichParser and
+//! php-parser 5.9's name, modifier and parameter failures, before reflection scanning or rule callbacks. RichParser and
 //! SimpleParser collect parser-stage errors first, then stop at the first NameResolver error. This is not a
-//! translation of Mago's grammar errors: a recovered CST remains outside this name-validation contract.
+//! translation of Mago's grammar errors: a recovered CST remains outside this validation contract.
 
 use std::collections::HashSet;
 
@@ -62,7 +62,7 @@ fn special(value: &[u8]) -> bool {
         || value.eq_ignore_ascii_case(b"static")
 }
 
-/// ParserAbstract's reserved-name and member-modifier checks. Modifier lists are checked as tokens arrive;
+/// ParserAbstract's reserved-name, member-modifier and parameter checks. Modifiers are checked as tokens arrive;
 /// declaration checks run on reduction (after their bodies). Every parser-stage error wins over NameResolver.
 struct Reserved<'a> {
     file: &'a File,
@@ -173,6 +173,35 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Reserved<'_> {
         _: &mut (),
     ) {
         self.modifiers(&node.modifiers, false);
+    }
+    fn walk_out_function_like_parameter(
+        &mut self,
+        node: &'ast FunctionLikeParameter<'arena>,
+        _: &mut (),
+    ) {
+        // ParserAbstract::checkParam runs after the default expression and hooks have reduced. Both checks
+        // collect independently, with the variadic default before the direct (not nullable/union) void type.
+        if node.ellipsis.is_some()
+            && let Some(default) = &node.default_value
+        {
+            let mut value = default.value;
+            // php.y's '(' expr ')' production returns the inner node, retaining its own start attributes.
+            while let Expression::Parenthesized(inner) = value {
+                value = inner.expression;
+            }
+            self.errors.push(error(
+                self.file,
+                value.span(),
+                "Variadic parameter cannot have a default value".into(),
+            ));
+        }
+        if let Some(Hint::Void(hint)) = &node.hint {
+            self.errors.push(error(
+                self.file,
+                hint.span(),
+                "void cannot be used as a parameter type".into(),
+            ));
+        }
     }
     fn walk_in_property_hook(&mut self, node: &'ast PropertyHook<'arena>, _: &mut ()) {
         self.modifiers(&node.modifiers, true);

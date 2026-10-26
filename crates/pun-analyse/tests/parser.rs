@@ -215,3 +215,78 @@ fn invalid_member_modifiers_in_scanned_files_export_no_symbols() {
         );
     }
 }
+
+#[test]
+fn parameter_parser_failures_precede_name_resolution_and_preserve_type_controls() {
+    let inputs: Value =
+        serde_json::from_str(include_str!("fixtures/parser/parameter-inputs.json")).unwrap();
+    let expected: Value =
+        serde_json::from_str(include_str!("fixtures/parser/parameter-expected.json")).unwrap();
+    let root = Inputs::new();
+    let files = inputs
+        .as_object()
+        .unwrap()
+        .iter()
+        .map(|(name, code)| {
+            let namespace = name.replace('-', "_");
+            root.write(
+                name,
+                &format!(
+                    "namespace Parameter_{namespace};\n{}",
+                    code.as_str().unwrap()
+                ),
+            )
+        })
+        .collect();
+    assert_eq!(
+        errors(&Project::new(files, Vec::new())),
+        expected["analysed"]
+    );
+}
+
+#[test]
+fn original_void_parameter_typehint_is_a_non_ignorable_parser_error() {
+    let file = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+        .join("tests/fixtures/rules/data/Methods/data/void-parameter-typehint.php");
+    let expected: Value =
+        serde_json::from_str(include_str!("fixtures/parser/parameter-expected.json")).unwrap();
+    assert_eq!(
+        errors(&Project::new(vec![file], Vec::new())),
+        expected["original"]
+    );
+}
+
+#[test]
+fn original_function_and_closure_void_parameters_are_parser_errors() {
+    let file = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+        .join("tests/fixtures/rules/data/Functions/data/void-parameter-typehint.php");
+    let expected: Value =
+        serde_json::from_str(include_str!("fixtures/parser/parameter-expected.json")).unwrap();
+    assert_eq!(
+        errors(&Project::new(vec![file], Vec::new())),
+        expected["original-functions"]
+    );
+}
+
+#[test]
+fn invalid_parameters_in_scanned_files_export_no_symbols() {
+    let inputs: Value =
+        serde_json::from_str(include_str!("fixtures/parser/parameter-scans.json")).unwrap();
+    let expected: Value =
+        serde_json::from_str(include_str!("fixtures/parser/parameter-expected.json")).unwrap();
+    for (name, code) in inputs.as_object().unwrap() {
+        let root = Inputs::new();
+        let main = root.write(
+            "main",
+            include_str!("fixtures/parser/scan-main.php")
+                .strip_prefix("<?php\n")
+                .unwrap(),
+        );
+        let symbols = root.write("symbols", code.as_str().unwrap());
+        assert_eq!(
+            errors(&Project::new(vec![main], vec![symbols])),
+            expected["scanned"][name],
+            "{name}"
+        );
+    }
+}
