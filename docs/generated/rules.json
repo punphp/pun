@@ -11125,7 +11125,7 @@
         "AssertContainsOnlyMethodCallRector",
         "Rector\\PHPUnit\\PHPUnit110\\Rector\\CallLike\\AssertContainsOnlyMethodCallRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/phpunit/no-assert-internal-type",
@@ -11163,7 +11163,7 @@
         "AssertIsTypeMethodCallRector",
         "Rector\\PHPUnit\\PHPUnit120\\Rector\\Class_\\AssertIsTypeMethodCallRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/phpunit/no-assert-same-type-mismatch",
@@ -11184,7 +11184,7 @@
         "MatchAssertSameExpectedTypeRector",
         "Rector\\PHPUnit\\CodeQuality\\Rector\\MethodCall\\MatchAssertSameExpectedTypeRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/phpunit/no-at-matcher",
@@ -11268,7 +11268,7 @@
         "RemoveEmptyTestMethod",
         "RemoveEmptyTestMethodRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/phpunit/no-entity-mock",
@@ -11369,7 +11369,7 @@
         "FlipAssertRector",
         "Rector\\PHPUnit\\CodeQuality\\Rector\\MethodCall\\FlipAssertRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/phpunit/no-float-delta-parameter",
@@ -11390,7 +11390,7 @@
         "AssertEqualsOrAssertSameFloatParameterToSpecificMethodsTypeRector",
         "Rector\\PHPUnit\\CodeQuality\\Rector\\MethodCall\\AssertEqualsOrAssertSameFloatParameterToSpecificMethodsTypeRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/phpunit/no-mock-intersection-property",
@@ -11432,7 +11432,7 @@
         "AssertNotOperatorRector",
         "Rector\\PHPUnit\\CodeQuality\\Rector\\MethodCall\\AssertNotOperatorRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/phpunit/no-setup-override-attribute",
@@ -11600,7 +11600,7 @@
         "AssertIssetToSpecificMethodRector",
         "Rector\\PHPUnit\\CodeQuality\\Rector\\MethodCall\\AssertIssetToSpecificMethodRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/phpunit/prefer-assert-count",
@@ -11642,7 +11642,7 @@
         "AssertInstanceOfComparisonRector",
         "Rector\\PHPUnit\\CodeQuality\\Rector\\MethodCall\\AssertInstanceOfComparisonRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/phpunit/prefer-assert-instanceof-over-empty",
@@ -11684,7 +11684,7 @@
         "SimplifyForeachInstanceOf",
         "SimplifyForeachInstanceOfRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/phpunit/prefer-assert-null-true-false",
@@ -11705,7 +11705,7 @@
         "AssertSameBoolNullToSpecificMethodRector",
         "Rector\\PHPUnit\\CodeQuality\\Rector\\MethodCall\\AssertSameBoolNullToSpecificMethodRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/phpunit/prefer-assert-same",
@@ -11747,7 +11747,7 @@
         "AssertFalseStrposToContainsRector",
         "Rector\\PHPUnit\\CodeQuality\\Rector\\MethodCall\\AssertFalseStrposToContainsRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/phpunit/prefer-assert-true-false",
@@ -11768,7 +11768,7 @@
         "AssertSameTrueFalseToAssertTrueFalseRector",
         "Rector\\PHPUnit\\CodeQuality\\Rector\\MethodCall\\AssertSameTrueFalseToAssertTrueFalseRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/phpunit/prefer-attribute-over-annotation",
@@ -11825,7 +11825,7 @@
         "AssertComparisonToSpecificMethodRector",
         "Rector\\PHPUnit\\CodeQuality\\Rector\\MethodCall\\AssertComparisonToSpecificMethodRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/phpunit/prefer-covers-attribute",
@@ -12288,7 +12288,7 @@
         "AssertEqualsToSameRector",
         "Rector\\PHPUnit\\CodeQuality\\Rector\\MethodCall\\AssertEqualsToSameRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/phpunit/prefer-short-will-return",
@@ -12412,7 +12412,7 @@
         "AssertTrueFalseToSpecificMethodRector",
         "Rector\\PHPUnit\\CodeQuality\\Rector\\MethodCall\\AssertTrueFalseToSpecificMethodRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/phpunit/prefer-specific-will-method",
@@ -12943,7 +12943,7 @@
         "StringCastAssertStringContainsString",
         "StringCastAssertStringContainsStringRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/phpunit/require-test-annotation-style",

@@ -649,22 +649,22 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "phpunit/add-stub-intersection-type" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Add a Stub intersection @var docblock with the stubbed class to a native Stub property" }
 "phpunit/add-test-void-return" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add void to PHPUnit test methods" }
 "phpunit/add-will-return-callback-param-type" = { fix = "unsafe", sets = ["code-quality"], ported = false, status = "decided", summary = "Decorate callbacks and arrow functions in willReturnCallback() with known param/return types based on reflection method" }
-"phpunit/no-assert-contains-only" = { fix = "safe", ported = false, status = "decided", summary = "Replaces `Assert::assertContainsOnly()` calls with type-specific `Assert::assertContainsOnly*()` calls" }
+"phpunit/no-assert-contains-only" = { fix = "safe", ported = true, status = "decided", summary = "Replaces `Assert::assertContainsOnly()` calls with type-specific `Assert::assertContainsOnly*()` calls" }
 "phpunit/no-assert-internal-type" = { fix = "unsafe", sets = ["code-quality"], ported = false, status = "decided", summary = "Replace assertInternalType() with the dedicated assertIs*() assertion." }
-"phpunit/no-assert-is-type" = { fix = "safe", ported = false, status = "decided", summary = "Replaces `Assert::isType()` calls with type-specific `Assert::is*()` calls" }
-"phpunit/no-assert-same-type-mismatch" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Correct expected type in assertSame() method to match strict type of passed variable" }
+"phpunit/no-assert-is-type" = { fix = "safe", ported = true, status = "decided", summary = "Replaces `Assert::isType()` calls with type-specific `Assert::is*()` calls" }
+"phpunit/no-assert-same-type-mismatch" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Correct expected type in assertSame() method to match strict type of passed variable" }
 "phpunit/no-at-matcher" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Replace at() method call with desired matcher" }
 "phpunit/no-bare-mock-assign" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Add explicit instance assert between above nullable object pass" }
 "phpunit/no-bare-mock-builder" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Remove getMockBuilder() to createMock()" }
-"phpunit/no-empty-test" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Remove empty test methods" }
+"phpunit/no-empty-test" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Remove empty test methods" }
 "phpunit/no-entity-mock" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Move from entity mock, to direct use of class instance and setters" }
 "phpunit/no-expected-exception-annotation" = { fix = "unsafe", sets = ["code-quality"], ported = false, status = "decided", summary = "Replace @expectedException annotations with expectException() calls." }
 "phpunit/no-expects-any" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Remove `expect($this->any())` from mocks as it has no added value" }
 "phpunit/no-final-constructor-override" = { fix = "safe", ported = false, status = "decided", summary = "Remove override final construct test case" }
-"phpunit/no-flipped-assertion" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Turns accidentally flipped assert order to right one, with expected expr to left" }
-"phpunit/no-float-delta-parameter" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Change assertEquals()/assertSame() method using float on expected argument to new specific alternatives." }
+"phpunit/no-flipped-assertion" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Turns accidentally flipped assert order to right one, with expected expr to left" }
+"phpunit/no-float-delta-parameter" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Change assertEquals()/assertSame() method using float on expected argument to new specific alternatives." }
 "phpunit/no-mock-intersection-property" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Make properties in tests with intersection mock object either object type or mock type" }
-"phpunit/no-negated-assertion" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Turns not-operator comparisons to their method name alternatives in PHPUnit TestCase" }
+"phpunit/no-negated-assertion" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Turns not-operator comparisons to their method name alternatives in PHPUnit TestCase" }
 "phpunit/no-setup-override-attribute" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Remove override attribute, if setUp()/tearDown() references parent call to improve readability" }
 "phpunit/no-stub-with-expectations" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Change createStub() to createMock(), when the created variable is passed to a method that requires MockObject type" }
 "phpunit/no-test-constructor" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Replace or remove __construct() in PHPUnit test cases; use setUp()." }
@@ -672,18 +672,18 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "phpunit/no-unused-mock-property" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Remove never used property mock, only to set expectations" }
 "phpunit/no-value-object-mock" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Use a real instance instead of a mock for entities and simple value objects in tests." }
 "phpunit/prefer-assert" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Turns assert() calls in tests to PHPUnit assert method alternative" }
-"phpunit/prefer-assert-array-has-key" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Turns assertTrue() + isset() comparisons to more precise assertArrayHasKey() method" }
+"phpunit/prefer-assert-array-has-key" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Turns assertTrue() + isset() comparisons to more precise assertArrayHasKey() method" }
 "phpunit/prefer-assert-count" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Replaces use of assertSame and assertEquals on Countable objects with count method" }
-"phpunit/prefer-assert-instanceof" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Turns instanceof comparisons to their method name alternatives in PHPUnit TestCase" }
+"phpunit/prefer-assert-instanceof" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Turns instanceof comparisons to their method name alternatives in PHPUnit TestCase" }
 "phpunit/prefer-assert-instanceof-over-empty" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Change assertNotEmpty() and assertNotNull() on an object to more clear assertInstanceof()" }
-"phpunit/prefer-assert-instances-of" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Simplify unnecessary foreach check of instances" }
-"phpunit/prefer-assert-null-true-false" = { fix = "unsafe", sets = ["code-quality"], ported = false, status = "decided", summary = "Turns same bool and null comparisons to their method name alternatives in PHPUnit TestCase" }
+"phpunit/prefer-assert-instances-of" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Simplify unnecessary foreach check of instances" }
+"phpunit/prefer-assert-null-true-false" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "Turns same bool and null comparisons to their method name alternatives in PHPUnit TestCase" }
 "phpunit/prefer-assert-same" = { fix = "unsafe", sets = ["code-quality"], ported = false, status = "decided", summary = "PHPUnit methods like `assertSame` should be used instead of `assertEquals`." }
-"phpunit/prefer-assert-string-contains" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Turns `strpos`/`stripos` comparisons to their method name alternatives in PHPUnit TestCase" }
-"phpunit/prefer-assert-true-false" = { fix = "unsafe", sets = ["code-quality"], ported = false, status = "decided", summary = "Change $this->assertSame(true, ...) to assertTrue()" }
+"phpunit/prefer-assert-string-contains" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Turns `strpos`/`stripos` comparisons to their method name alternatives in PHPUnit TestCase" }
+"phpunit/prefer-assert-true-false" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "Change $this->assertSame(true, ...) to assertTrue()" }
 "phpunit/prefer-attribute-over-annotation" = { fix = "safe", ported = false, status = "decided", summary = "Change annotations with value to attribute" }
 "phpunit/prefer-attributes" = { fix = "safe", ported = false, status = "decided", summary = "PHPUnit attributes must be used over their respective PHPDoc-based annotations." }
-"phpunit/prefer-comparison-assertion" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Replace assertTrue()/assertFalse() on a comparison, instanceof, isset, count or strpos with the specific assertion." }
+"phpunit/prefer-comparison-assertion" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Replace assertTrue()/assertFalse() on a comparison, instanceof, isset, count or strpos with the specific assertion." }
 "phpunit/prefer-covers-attribute" = { fix = "safe", ported = false, status = "decided", summary = "Change covers annotations with value to attribute" }
 "phpunit/prefer-create-mock" = { fix = "unsafe", sets = ["code-quality"], ported = false, status = "decided", summary = "Replace getMock*() with createMock()." }
 "phpunit/prefer-create-stub" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Use createStub() instead of createMock() when no expectations are set." }
@@ -706,13 +706,13 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "phpunit/prefer-new-assertion-names" = { fix = "unsafe", sets = ["code-quality"], ported = false, status = "decided", summary = "Rename deprecated PHPUnit assertions like `assertFileNotExists` to new methods like `assertFileDoesNotExist`." }
 "phpunit/prefer-property-assertions" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Split object casted to array to assert public properties to standalone assert calls" }
 "phpunit/prefer-requires-attribute" = { fix = "safe", ported = false, status = "decided", summary = "Change Requires annotations with values to attributes" }
-"phpunit/prefer-same-for-scalars" = { fix = "unsafe", sets = ["code-quality"], ported = false, status = "decided", summary = "Turns `assertEquals()` into stricter `assertSame()` for scalar values in PHPUnit TestCase" }
+"phpunit/prefer-same-for-scalars" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "Turns `assertEquals()` into stricter `assertSame()` for scalar values in PHPUnit TestCase" }
 "phpunit/prefer-short-will-return" = { fix = "unsafe", sets = ["code-quality"], ported = false, status = "decided", summary = "Use willReturn() and similar instead of will($this->returnValue())." }
 "phpunit/prefer-simple-callback-assert" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Replaces use of with, callback and sole assertSame() to simple equalTo() matcher" }
 "phpunit/prefer-simple-mock-expectation" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Replace withConsecutive()/willReturnCallback() that cover one value with with()/willReturn()." }
 "phpunit/prefer-simple-with-matcher" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Simplify ->with() matchers: plain values instead of equalTo(), isInstanceOf() instead of a callback." }
 "phpunit/prefer-specific-assertions" = { fix = "unsafe", sets = ["code-quality"], ported = false, status = "decided", summary = "PHPUnit assertion method calls like `->assertSame(true, $foo)` should be written with dedicated method like `->assertTrue($foo)`." }
-"phpunit/prefer-specific-true-false-assertion" = { fix = "unsafe", sets = ["code-quality"], ported = false, status = "decided", summary = "Turns true/false comparisons to their method name alternatives in PHPUnit TestCase when possible" }
+"phpunit/prefer-specific-true-false-assertion" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "Turns true/false comparisons to their method name alternatives in PHPUnit TestCase when possible" }
 "phpunit/prefer-specific-will-method" = { fix = "unsafe", sets = ["code-quality"], ported = false, status = "decided", summary = "Changes $mock->will() call to more specific method" }
 "phpunit/prefer-standalone-asserts-over-callback" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Replaces identical compare in $this->callable() sole return to standalone PHPUnit asserts that show more detailed failure messages" }
 "phpunit/prefer-stub-var" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Update the @var docblock of a property changed to a Stub native type, from MockObject to Stub" }
@@ -739,7 +739,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "phpunit/require-size" = { fix = "safe", ported = false, status = "decided", summary = "All PHPUnit test cases should have `@small`, `@medium` or `@large` annotation to enable run time limits." }
 "phpunit/require-static-data-provider" = { fix = "unsafe", sets = ["code-quality"], ported = false, status = "decided", summary = "Make PHPUnit data providers static." }
 "phpunit/require-strict-types-in-tests" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Add `declare(strict_types=1)` to PHPUnit test class file" }
-"phpunit/require-string-assert-argument" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Cast 2nd argument in assertStringContainsString() to a string if not yet" }
+"phpunit/require-string-assert-argument" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Cast 2nd argument in assertStringContainsString() to a string if not yet" }
 "phpunit/require-test-annotation-style" = { fix = "unsafe", sets = ["code-quality"], ported = false, status = "decided", summary = "Mark tests consistently: a `test` prefix or a @test annotation." }
 "refactor/add-override-attribute" = { fix = "unsafe", ported = false, status = "decided", summary = "Add #[Override] to methods and properties that override a parent member." }
 "refactor/no-negated-condition" = { fix = "unsafe", sets = ["code-quality"], ported = true, origin = "mago", status = "decided", summary = "Flip a ternary whose condition is negated: drop the `!` (or use `===` / `==`) and swap the branches." }

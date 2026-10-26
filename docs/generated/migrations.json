@@ -12533,7 +12533,7 @@
         "rules": [
           "lint/phpunit/prefer-comparison-assertion"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -12543,7 +12543,7 @@
         "rules": [
           "lint/phpunit/no-assert-contains-only"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -12563,7 +12563,7 @@
         "rules": [
           "lint/phpunit/no-float-delta-parameter"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -12581,7 +12581,7 @@
         "rules": [
           "lint/phpunit/prefer-same-for-scalars"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -12591,7 +12591,7 @@
         "rules": [
           "lint/phpunit/prefer-assert-string-contains"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -12611,7 +12611,7 @@
         "rules": [
           "lint/phpunit/prefer-assert-instanceof"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -12621,7 +12621,7 @@
         "rules": [
           "lint/phpunit/no-assert-is-type"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -12631,7 +12631,7 @@
         "rules": [
           "lint/phpunit/prefer-assert-array-has-key"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -12641,7 +12641,7 @@
         "rules": [
           "lint/phpunit/no-negated-assertion"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -12659,7 +12659,7 @@
         "rules": [
           "lint/phpunit/prefer-assert-null-true-false"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -12669,7 +12669,7 @@
         "rules": [
           "lint/phpunit/prefer-assert-true-false"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -12687,7 +12687,7 @@
         "rules": [
           "lint/phpunit/prefer-specific-true-false-assertion"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -12905,7 +12905,7 @@
         "rules": [
           "lint/phpunit/no-flipped-assertion"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -12943,7 +12943,7 @@
         "rules": [
           "lint/phpunit/no-assert-same-type-mismatch"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -13109,7 +13109,7 @@
         "rules": [
           "lint/phpunit/no-empty-test"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -13233,7 +13233,7 @@
         "rules": [
           "lint/phpunit/prefer-assert-instances-of"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -13295,7 +13295,7 @@
         "rules": [
           "lint/phpunit/require-string-assert-argument"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
