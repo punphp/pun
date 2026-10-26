@@ -546,14 +546,14 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "pest/no-invalid-repeat" = { fix = "safe", sets = ["coding-style"], ported = true, status = "decided", summary = "Normalizes invalid literal repeat() counts to 1" }
 "pest/no-negated-boolean-matcher" = { fix = "safe", sets = ["coding-style"], ported = true, status = "decided", summary = "Simplifies double-negative expectations like ->not->toBeFalse() to ->toBeTrue()" }
 "pest/no-only" = { fix = "unsafe", sets = ["coding-style"], ported = true, origin = "mago", status = "decided", summary = "Remove ->only() from Pest tests." }
-"pest/no-redundant-type-expectation" = { fix = "safe", sets = ["coding-style"], ported = false, status = "decided", summary = "Removes redundant literal type expectations when a later matcher keeps the chain meaningful" }
+"pest/no-redundant-type-expectation" = { fix = "safe", sets = ["coding-style"], ported = true, status = "decided", summary = "Removes redundant literal type expectations when a later matcher keeps the chain meaningful" }
 "pest/no-redundant-uses" = { fix = "safe", sets = ["coding-style"], ported = false, status = "decided", summary = "Removes redundant local Pest uses already configured globally in tests/Pest.php" }
 "pest/no-static-test-closure" = { fix = "safe", sets = ["coding-style"], ported = true, status = "decided", summary = "Removes static from Pest test and hook callbacks that use the test case instance" }
 "pest/prefer-chained-expect" = { fix = "safe", sets = ["coding-style"], ported = false, status = "decided", summary = "Chains consecutive expect() calls into a single chained expectation, combining calls on the same value and joining different values with ->and() (configurable)" }
 "pest/prefer-comparison-matchers" = { fix = "safe", sets = ["coding-style"], ported = true, status = "decided", summary = "Converts expect($x > 10)->toBeTrue() to expect($x)->toBeGreaterThan(10)" }
 "pest/prefer-dedicated-expectation" = { fix = "unsafe", sets = ["coding-style"], ported = true, origin = "mago", status = "decided", summary = "Use dedicated Pest matchers (toBeArray(), toStartWith(), toHaveCount(), ...) instead of expect(fn(...))->toBeTrue()." }
 "pest/prefer-defer" = { fix = "safe", sets = ["coding-style"], ported = true, status = "decided", summary = "Replaces deprecated ->tap() method with ->defer() for Pest v3 migration" }
-"pest/prefer-each-modifier" = { fix = "safe", sets = ["coding-style"], ported = false, status = "decided", summary = "Converts foreach loops with expect() calls to use the ->each modifier" }
+"pest/prefer-each-modifier" = { fix = "safe", sets = ["coding-style"], ported = true, status = "decided", summary = "Converts foreach loops with expect() calls to use the ->each modifier" }
 "pest/prefer-expect" = { fix = "safe", sets = ["coding-style"], ported = false, status = "decided", summary = "Converts $this->assert*() calls to Pest expect() chains" }
 "pest/prefer-extend" = { fix = "safe", sets = ["coding-style"], ported = false, status = "decided", summary = "Converts uses() and pest()->uses() to pest()->extend() for classes and pest()->use() for traits" }
 "pest/prefer-filesystem-matchers" = { fix = "unsafe", sets = ["coding-style"], ported = true, status = "decided", summary = "Simplifies combined filesystem checks to single Pest matchers" }

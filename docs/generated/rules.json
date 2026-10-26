@@ -9021,7 +9021,7 @@
         "RemoveRedundantLiteralTypeExpectation",
         "RemoveRedundantLiteralTypeExpectationRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/pest/no-redundant-uses",
@@ -9166,7 +9166,7 @@
         "UseEachModifier",
         "UseEachModifierRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/pest/prefer-expect",

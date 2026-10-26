@@ -11,9 +11,11 @@ mod no_before_all_in_describe;
 mod no_focused_test;
 mod no_invalid_repeat;
 mod no_negated_boolean_matcher;
+mod no_redundant_type_expectation;
 mod no_static_test_closure;
 mod prefer_comparison_matchers;
 mod prefer_defer;
+mod prefer_each_modifier;
 mod prefer_filesystem_matchers;
 mod prefer_not_modifier;
 mod prefer_strict_equality_matchers;
@@ -58,9 +60,11 @@ pub use no_before_all_in_describe::NoBeforeAllInDescribe;
 pub use no_focused_test::NoFocusedTest;
 pub use no_invalid_repeat::NoInvalidRepeat;
 pub use no_negated_boolean_matcher::NoNegatedBooleanMatcher;
+pub use no_redundant_type_expectation::NoRedundantTypeExpectation;
 pub use no_static_test_closure::NoStaticTestClosure;
 pub use prefer_comparison_matchers::PreferComparisonMatchers;
 pub use prefer_defer::PreferDefer;
+pub use prefer_each_modifier::PreferEachModifier;
 pub use prefer_filesystem_matchers::PreferFilesystemMatchers;
 pub use prefer_not_modifier::PreferNotModifier;
 pub use prefer_strict_equality_matchers::PreferStrictEqualityMatchers;
@@ -121,9 +125,11 @@ pub(crate) fn all() -> Vec<Box<dyn Rule>> {
         Box::new(NoFocusedTest),
         Box::new(NoInvalidRepeat),
         Box::new(NoNegatedBooleanMatcher),
+        Box::new(NoRedundantTypeExpectation),
         Box::new(NoStaticTestClosure),
         Box::new(PreferComparisonMatchers),
         Box::new(PreferDefer),
+        Box::new(PreferEachModifier),
         Box::new(PreferFilesystemMatchers),
         Box::new(PreferNotModifier),
         Box::new(PreferStrictEqualityMatchers),
@@ -703,4 +709,191 @@ pub(crate) fn root_func_call<'a>(call: &'a MethodCall<'a>) -> Option<&'a Functio
         current = p.object;
     }
     func_call(current)
+}
+
+/// `source[span]` printed by php-parser's format-preserving printer at another indent: every line that starts in
+/// whitespace after a newline gets `delta` more columns (`TokenStream::getTokenCode` with an indent adjustment; the
+/// printer writes spaces). Lines inside strings and comments keep their bytes.
+pub(crate) fn shift(ctx: &Context<'_>, span: Span, delta: isize) -> String {
+    let text = &ctx.source[span.start..span.end];
+    if delta == 0 || !text.contains('\n') {
+        return text.to_string();
+    }
+    let mut out = String::with_capacity(text.len());
+    let mut at = span.start;
+    for t in super::php_parser::tokens(ctx.source) {
+        if t.end <= span.start || t.start >= span.end {
+            continue;
+        }
+        let (start, end) = (t.start.max(span.start), t.end.min(span.end));
+        let token = &ctx.source[start..end];
+        out.push_str(&ctx.source[at..start]);
+        at = end;
+        match token.rfind('\n') {
+            Some(i) if t.kind == mago_syntax::token::TokenKind::Whitespace => {
+                let indent = token.len() - i - 1;
+                out.push_str(&token[..=i]);
+                out.push_str(&" ".repeat((indent as isize + delta).max(0) as usize));
+            }
+            _ => out.push_str(token),
+        }
+    }
+    out.push_str(&ctx.source[at..span.end]);
+    out
+}
+
+/// The indent of the line that holds `pos`, in columns as php-parser counts them (a tab is one).
+pub(crate) fn indent_at(ctx: &Context<'_>, pos: usize) -> usize {
+    super::php_parser::line_indent(ctx.source, pos).len()
+}
+
+/// A node kept from the old code, printed where the printer stands at `indent`: its text moved from the indent of
+/// its line.
+pub(crate) fn kept_text(ctx: &Context<'_>, span: Span, indent: usize) -> String {
+    shift(
+        ctx,
+        span,
+        indent as isize - indent_at(ctx, span.start) as isize,
+    )
+}
+
+/// `pComments`: the comments a node owns, each reformatted (`Comment::getReformattedText`) and joined by newlines
+/// at `indent`.
+fn print_comments(ctx: &Context<'_>, start: usize, indent: usize) -> String {
+    let tokens = super::php_parser::tokens(ctx.source);
+    let before = tokens
+        .iter()
+        .rev()
+        .find(|t| t.end <= start && !t.kind.is_trivia())
+        .map_or(0, |t| t.end);
+    let nl = format!("\n{}", " ".repeat(indent));
+    tokens
+        .iter()
+        .filter(|t| t.start >= before && t.end <= start && t.kind.is_comment())
+        .map(|t| {
+            let text = ctx.source[t.start..t.end].replace("\r\n", "\n");
+            let text = text.trim_end_matches('\n');
+            // A `/* ... */` comment whose lines go on with `*`: each such line starts with ` *`.
+            let lines: Vec<&str> = text.split('\n').collect();
+            let text = if lines.len() > 1
+                && lines[1..]
+                    .iter()
+                    .all(|l| l.trim_start().starts_with('*') && l.len() > l.trim_start().len())
+            {
+                std::iter::once(lines[0].to_string())
+                    .chain(lines[1..].iter().map(|l| format!(" {}", l.trim_start())))
+                    .collect::<Vec<_>>()
+                    .join("\n")
+            } else {
+                text.to_string()
+            };
+            text.replace('\n', &nl)
+        })
+        .collect::<Vec<_>>()
+        .join(&nl)
+}
+
+/// `pMaybeMultiline($args)` for kept arguments printed at `indent`: joined by `, `, or, when one of them owns a
+/// comment, one a line with its comments, one level deeper, and the `)` on a line of its own.
+pub(crate) fn print_args(ctx: &Context<'_>, list: &ArgumentList<'_>, indent: usize) -> String {
+    let args = list.arguments.as_slice();
+    if !args.iter().any(|a| has_comments(ctx, node_span(a).start)) {
+        return args
+            .iter()
+            .map(|a| kept_text(ctx, node_span(a), indent))
+            .collect::<Vec<_>>()
+            .join(", ");
+    }
+    let inner = indent + 4;
+    let nl = format!("\n{}", " ".repeat(inner));
+    let mut out = String::new();
+    for (i, a) in args.iter().enumerate() {
+        let start = node_span(a).start;
+        if has_comments(ctx, start) {
+            out.push_str(&nl);
+            out.push_str(&print_comments(ctx, start, inner));
+        }
+        out.push_str(&nl);
+        out.push_str(&kept_text(ctx, node_span(a), inner));
+        if i + 1 < args.len() {
+            out.push(',');
+        }
+    }
+    out.push('\n');
+    out.push_str(&" ".repeat(indent));
+    out
+}
+
+/// `pObjectProperty`: a method or property name as the printer writes it, `{expr}` for anything but an identifier.
+pub(crate) fn print_member(
+    ctx: &Context<'_>,
+    selector: &ClassLikeMemberSelector<'_>,
+    indent: usize,
+) -> String {
+    match selector {
+        ClassLikeMemberSelector::Expression(e) => {
+            format!("{{{}}}", kept_text(ctx, node_span(e.expression), indent))
+        }
+        ClassLikeMemberSelector::Variable(v) => format!("{{{}}}", text(ctx, v)),
+        _ => text(ctx, selector).to_string(),
+    }
+}
+
+/// One link of `collectChainMethods`: a method call or a property fetch of an expect chain.
+#[derive(Clone, Copy)]
+pub(crate) enum Link<'a> {
+    Method(&'a MethodCall<'a>),
+    Property(&'a PropertyAccess<'a>),
+}
+
+/// `collectChainMethods`: the method calls and property fetches of `call`'s chain, innermost first, down to (not
+/// into) the function call at its root.
+pub(crate) fn chain_links<'a>(call: &'a MethodCall<'a>) -> Vec<Link<'a>> {
+    let mut links = vec![Link::Method(call)];
+    let mut next = call.object;
+    loop {
+        match unparenthesize(next) {
+            Expression::Call(Call::Method(m)) => {
+                links.push(Link::Method(m));
+                next = m.object;
+            }
+            Expression::Access(Access::Property(p)) => {
+                links.push(Link::Property(p));
+                next = p.object;
+            }
+            _ => break,
+        }
+    }
+    links.reverse();
+    links
+}
+
+/// `rebuildMethodChain` printed: `links` written again after `base`, each `->name` or `->name(args)`, on one line
+/// at `indent`.
+pub(crate) fn print_links(ctx: &Context<'_>, links: &[Link<'_>], indent: usize) -> String {
+    links
+        .iter()
+        .map(|link| match link {
+            Link::Method(m) => format!(
+                "->{}({})",
+                print_member(ctx, &m.method, indent),
+                print_args(ctx, &m.argument_list, indent)
+            ),
+            Link::Property(p) => format!("->{}", print_member(ctx, &p.property, indent)),
+        })
+        .collect()
+}
+
+/// php-parser's comments of a statement starting at `start`: from the first comment after the token before it.
+pub(crate) fn comments_start(ctx: &Context<'_>, start: usize) -> usize {
+    let tokens = super::php_parser::tokens(ctx.source);
+    let before = tokens
+        .iter()
+        .rev()
+        .find(|t| t.end <= start && !t.kind.is_trivia())
+        .map_or(0, |t| t.end);
+    tokens
+        .iter()
+        .find(|t| t.start >= before && t.end <= start && t.kind.is_comment())
+        .map_or(start, |t| t.start)
 }
