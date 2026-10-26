@@ -9187,7 +9187,7 @@
         "ConvertAssertToExpectRector",
         "Pest\\Rector\\Rules\\ConvertAssertToExpectRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/pest/prefer-extend",

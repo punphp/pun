@@ -439,3 +439,8 @@ fn chain_expect_calls_and_use_each_modifier() {
 fn ensure_type_checks_first() {
     check(RequireTypeMatcherFirst, "EnsureTypeChecksFirstRector");
 }
+
+#[test]
+fn convert_assert_to_expect() {
+    check(PreferExpect, "ConvertAssertToExpectRector");
+}
