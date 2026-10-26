@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+# Orb resume: nothing to authenticate or restart; confirm the toolchain from .agents/setup is still there.
+set -euo pipefail
+# shellcheck disable=SC1091
+source "$HOME/.cargo/env"
+cargo --version >/dev/null
+php --version >/dev/null
+composer --version >/dev/null 2>&1
