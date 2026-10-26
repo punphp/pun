@@ -10,6 +10,7 @@ use mago_codex::ttype::atomic::scalar::TScalar;
 use mago_codex::ttype::atomic::scalar::class_like_string::TClassLikeString;
 use mago_codex::ttype::atomic::scalar::int::TInteger;
 use mago_codex::ttype::atomic::scalar::string::{TString, TStringLiteral};
+use mago_codex::ttype::union::TUnion;
 use mago_span::HasSpan;
 use mago_syntax::cst::*;
 use pun_phpstan::types::{Level, Type, is_super_type_of};
@@ -271,6 +272,8 @@ fn constant(c: &Checker, a: &TAtomic, value_of: bool, depth: usize) -> Option<Ty
                     .get_class_constant(class, name)?
                     .inferred_type
                     .as_ref()
+                    .filter(|value| value.is_single())
+                    .map(TUnion::get_single)
             };
             constant(c, value?, false, depth + 1)
         }

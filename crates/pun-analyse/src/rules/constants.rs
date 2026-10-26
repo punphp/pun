@@ -176,13 +176,15 @@ fn conflicting_trait_constants<'arena>(
             let ours = c
                 .codebase
                 .get_class_constant(owner.as_bytes(), item.name.value)
-                .and_then(|m| super::enums::constant_value(c, m.inferred_type.as_ref()?));
+                .and_then(|m| m.inferred_type.as_ref().filter(|value| value.is_single()))
+                .and_then(|value| super::enums::constant_value(c, value.get_single()));
             let (Some(ours), Some(theirs)) = (
                 ours,
                 theirs
                     .inferred_type
                     .as_ref()
-                    .and_then(|v| super::enums::constant_value(c, v)),
+                    .filter(|value| value.is_single())
+                    .and_then(|value| super::enums::constant_value(c, value.get_single())),
             ) else {
                 continue;
             };

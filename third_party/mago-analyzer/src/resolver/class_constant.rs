@@ -16,7 +16,6 @@ use mago_codex::ttype::expander::TypeExpansionOptions;
 use mago_codex::ttype::get_class_string;
 use mago_codex::ttype::get_mixed;
 use mago_codex::ttype::union::TUnion;
-use mago_codex::ttype::wrap_atomic;
 use mago_reporting::Annotation;
 use mago_reporting::Issue;
 use mago_span::HasSpan;
@@ -357,21 +356,11 @@ where
         let display = format!("{}::{}", metadata.original_name, const_name);
         crate::utils::availability::check_class_constant_availability(context, constant_metadata, &display, const_span);
 
-        // Prefer the docblock type (@var) when it exists, as it reflects the user's
-        // intended type. When type_metadata was merely copied from the type declaration
-        // (they are equal), fall back to the more specific inferred type.
-        let mut const_type = if let Some(type_metadata) = &constant_metadata.type_metadata
-            && type_metadata.from_docblock
-        {
-            type_metadata.type_union.clone()
-        } else {
-            constant_metadata
-                .inferred_type
-                .clone()
-                .map(wrap_atomic)
-                .or_else(|| constant_metadata.type_metadata.clone().map(|s| s.type_union))
-                .unwrap_or_else(get_mixed)
-        };
+        let late_bound =
+            !matches!(resolution_origin, ResolutionOrigin::Named { .. } | ResolutionOrigin::LiteralClassString)
+                && !metadata.flags.is_final()
+                && !metadata.kind.is_enum();
+        let mut const_type = constant_metadata.value_type(late_bound);
 
         expander::expand_union(
             context.codebase,
@@ -425,18 +414,11 @@ where
                 const_span,
             );
 
-            let mut const_type = if let Some(type_metadata) = &constant_metadata.type_metadata
-                && type_metadata.from_docblock
-            {
-                type_metadata.type_union.clone()
-            } else {
-                constant_metadata
-                    .inferred_type
-                    .clone()
-                    .map(wrap_atomic)
-                    .or_else(|| constant_metadata.type_metadata.clone().map(|s| s.type_union))
-                    .unwrap_or_else(get_mixed)
-            };
+            let late_bound =
+                !matches!(resolution_origin, ResolutionOrigin::Named { .. } | ResolutionOrigin::LiteralClassString)
+                    && !required_metadata.flags.is_final()
+                    && !required_metadata.kind.is_enum();
+            let mut const_type = constant_metadata.value_type(late_bound);
 
             expander::expand_union(
                 context.codebase,

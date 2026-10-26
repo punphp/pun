@@ -982,7 +982,7 @@ fn write_class_constant(
     write_visibility(writer, metadata.visibility);
     write_optional_type_metadata(writer, metadata.type_declaration.as_ref(), session)?;
     write_optional_type_metadata(writer, metadata.type_metadata.as_ref(), session)?;
-    write_optional_atomic(writer, metadata.inferred_type.as_ref())?;
+    write_optional_union(writer, metadata.inferred_type.as_ref())?;
     write_attributes(writer, &metadata.attributes, session)?;
     writer.write_u64(metadata.flags.bits());
     write_version_constraint(writer, &metadata.version_constraint);
@@ -1260,6 +1260,59 @@ mod tests {
 
     fn session(generation: u64) -> ExternalAnalysisSession {
         ExternalAnalysisSession { generation, sources: foldhash::HashMap::default() }
+    }
+
+    #[test]
+    fn class_constant_query_keeps_every_raw_union_alternative() {
+        use mago_codex::metadata::flags::MetadataFlags;
+        use mago_codex::ttype::get_literal_int;
+
+        let mut codebase = CodebaseMetadata::new();
+        let mut class = ClassLikeMetadata::new(word("holder"), word("Holder"), Span::zero(), None, MetadataFlags::empty());
+        let mut constant = ClassLikeConstantMetadata::new(word("FLAG"), Span::zero(), Visibility::Public, MetadataFlags::empty());
+        constant.inferred_type = Some(TUnion::from_vec(vec![
+            get_literal_int(1).get_single_owned(), get_literal_int(4).get_single_owned(),
+        ]));
+        class.constants.insert(word("FLAG"), constant);
+        codebase.class_likes.insert(word("holder"), Box::new(class));
+        let mut writer = protocol::message_writer(CODEBASE_QUERY_REQUEST);
+        writer.write_u64(31);
+        writer.write_u8(GET_CLASS_CONSTANTS);
+        writer.write_u32(1);
+        writer.write_bytes(b"Holder").unwrap();
+        writer.write_bytes(b"FLAG").unwrap();
+        let (_, response) = protocol::handle_nested_request(&writer.finish(), &codebase, &session(31), |_| None).unwrap();
+        let mut reader = protocol::message_reader(&response, CODEBASE_QUERY_RESPONSE).unwrap();
+        assert_eq!(reader.read_u64("generation").unwrap(), 31);
+        assert_eq!(reader.read_u8("operation").unwrap(), GET_CLASS_CONSTANTS);
+        assert_eq!(reader.read_u32("count").unwrap(), 1);
+        assert!(reader.read_bool("constant exists").unwrap());
+        assert_eq!(reader.read_bytes("name").unwrap(), b"FLAG");
+        assert!(!reader.read_bool("source name").unwrap());
+        assert_eq!(reader.read_u32("start").unwrap(), 0);
+        assert_eq!(reader.read_u32("end").unwrap(), 0);
+        assert_eq!(reader.read_u8("visibility").unwrap(), 1);
+        assert!(!reader.read_bool("native type").unwrap());
+        assert!(!reader.read_bool("effective type").unwrap());
+        assert!(reader.read_bool("raw value").unwrap());
+        assert_eq!(reader.read_u32("type handle").unwrap(), 0);
+        reader.read_u16("union flags").unwrap();
+        assert_eq!(reader.read_u32("atomic count").unwrap(), 2);
+        let mut values = Vec::new();
+        for _ in 0..2 {
+            // The extension snapshot protocol tags a scalar integer literal as 1, 5, 1.
+            assert_eq!(reader.read_u8("atomic kind").unwrap(), 1);
+            assert_eq!(reader.read_u8("scalar kind").unwrap(), 5);
+            assert_eq!(reader.read_u8("integer kind").unwrap(), 1);
+            values.push(reader.read_u64("integer value").unwrap());
+        }
+        values.sort_unstable();
+        assert_eq!(values, [1, 4]);
+        assert_eq!(reader.read_u32("attributes").unwrap(), 0);
+        assert_eq!(reader.read_u64("flags").unwrap(), 0);
+        // An unconstrained constant has no availability ranges.
+        assert_eq!(reader.read_u32("version ranges").unwrap(), 0);
+        reader.finish().unwrap();
     }
 
     #[test]

@@ -1,0 +1,7 @@
+parameters:
+    level: 0
+    phpVersion: 80400
+    paths:
+        - values.php
+    scanFiles:
+        - scanned.php

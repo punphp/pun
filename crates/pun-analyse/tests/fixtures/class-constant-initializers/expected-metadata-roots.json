@@ -1,0 +1,32 @@
+{
+  "totals": {
+    "errors": 0,
+    "file_errors": 3
+  },
+  "files": {
+    "metadata-roots.php": {
+      "errors": 3,
+      "messages": [
+        {
+          "message": "Dumped type: 0|1|4",
+          "line": 6,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: 4.0",
+          "line": 10,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: 1|4",
+          "line": 11,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        }
+      ]
+    }
+  },
+  "errors": []
+}

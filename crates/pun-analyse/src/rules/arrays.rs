@@ -630,13 +630,7 @@ fn class_constant(c: &Checker, class: &str, name: &[u8], late: bool) -> Option<T
         }
     }
     if let Some(k) = constant.filter(|k| !k.flags.is_built_in()) {
-        return initializer(
-            c,
-            k.span,
-            k.inferred_type
-                .as_ref()
-                .map(|t| c.to_phpstan(&TUnion::from_atomic(t.clone()))),
-        );
+        return initializer(c, k.span, k.inferred_type.as_ref().map(|t| c.to_phpstan(t)));
     }
     builtin
 }
@@ -652,10 +646,21 @@ fn initializer(c: &Checker, at: Span, inferred: Option<Type>) -> Option<Type> {
         .lock()
         .expect("array constants")
         .insert(at, None);
-    // Global initializers already have one canonical value, including unions and arrays. Replaying
+    // Ordinary initializers already have one canonical value, including unions and arrays. Replaying
     // their source through runtime inference would select a ternary/coalesce branch a second time.
-    let canonical = c.codebase.constants.values().find(|k| k.span == at)
-        .and_then(|k| k.inferred_type.as_ref()).map(|t| c.to_phpstan(t));
+    let canonical = c
+        .codebase
+        .constants
+        .values()
+        .find(|k| k.span == at)
+        .and_then(|k| k.inferred_type.as_ref())
+        .or_else(|| {
+            crate::codebase::initializer_class(c.codebase, at)
+                .filter(|class| !class.kind.is_trait())
+                .and_then(|class| class.constants.values().find(|k| k.span == at))
+                .and_then(|k| k.inferred_type.as_ref())
+        })
+        .map(|t| c.to_phpstan(t));
     let value = if canonical.is_some() {
         canonical
     } else if inferred.as_ref().is_some_and(|t| {
@@ -771,10 +776,7 @@ fn initializer(c: &Checker, at: Span, inferred: Option<Type>) -> Option<Type> {
                     .flat_map(|k| k.constants.values_mut())
                 {
                     if let Some(value) = resolved(k.span) {
-                        // Class fetches prefer inferred_type over non-PHPDoc metadata. Clearing only
-                        // the replaced approximation lets an exact union survive that API too.
-                        k.inferred_type = None;
-                        k.type_metadata = Some(TypeMetadata::new(value, k.span));
+                        k.inferred_type = Some(value);
                     }
                 }
                 Cow::Owned(codebase)

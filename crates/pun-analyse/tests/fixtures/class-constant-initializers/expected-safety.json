@@ -1,0 +1,15 @@
+{
+  "totals": { "errors": 0, "file_errors": 4 },
+  "files": {
+    "safety.php": {
+      "errors": 4,
+      "messages": [
+        { "message": "Using self outside of class scope.", "line": 4, "ignorable": true, "identifier": "outOfClass.self" },
+        { "message": "Using parent outside of class scope.", "line": 5, "ignorable": true, "identifier": "outOfClass.parent" },
+        { "message": "Access to parent::VALUE but InitializerSafety\\NoParent does not extend any class.", "line": 8, "ignorable": true, "identifier": "class.noParent" },
+        { "message": "Dumped type: 1", "line": 25, "ignorable": false, "identifier": "phpstan.dumpType" }
+      ]
+    }
+  },
+  "errors": []
+}

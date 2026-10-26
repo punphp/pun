@@ -1573,7 +1573,6 @@ impl<'c, 'a, 'arena> Classes<'c, 'a, 'arena> {
             is_enum: k.kind == SymbolKind::Enum,
             is_final: k.flags.contains(MetadataFlags::FINAL),
             properties: Vec::new(),
-            // ponytail: a constant whose value is not a literal (arrays, expressions) reads as `mixed`
             constants: k
                 .constants
                 .values()
@@ -1581,7 +1580,7 @@ impl<'c, 'a, 'arena> Classes<'c, 'a, 'arena> {
                     let value = m
                         .inferred_type
                         .as_ref()
-                        .and_then(|a| super::enums::constant_value(c, a));
+                        .map(|value| c.to_phpstan(value));
                     (
                         text(m.name.as_bytes()),
                         value.map_or_else(|| "mixed".to_string(), |t| to_phpdoc(&t)),

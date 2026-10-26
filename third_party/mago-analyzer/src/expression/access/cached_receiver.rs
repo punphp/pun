@@ -11,9 +11,7 @@ use mago_codex::ttype::atomic::object::r#enum::TEnum;
 use mago_codex::ttype::expander::StaticClassType;
 use mago_codex::ttype::expander::TypeExpansionOptions;
 use mago_codex::ttype::expander::expand_union;
-use mago_codex::ttype::get_mixed;
 use mago_codex::ttype::union::TUnion;
-use mago_codex::ttype::wrap_atomic;
 use mago_span::HasSpan;
 use mago_syntax::cst::ClassConstantAccess;
 use mago_syntax::cst::ClassLikeConstantSelector;
@@ -60,18 +58,11 @@ where
     let mut result = if let Some(constant) = class.constants.get(&name) {
         reference.kind = MemberKind::ClassConstant;
         reference.declaration = Some(constant.span.subspan(0, name.len() as u32));
-        if let Some(metadata) = &constant.type_metadata
-            && metadata.from_docblock
-        {
-            metadata.type_union.clone()
-        } else {
-            constant
-                .inferred_type
-                .clone()
-                .map(wrap_atomic)
-                .or_else(|| constant.type_metadata.as_ref().map(|metadata| metadata.type_union.clone()))
-                .unwrap_or_else(get_mixed)
-        }
+        constant.value_type(
+            matches!(access.class.unparenthesized(), Expression::Static(_))
+                && !class.flags.is_final()
+                && !class.kind.is_enum(),
+        )
     } else {
         let case = class.enum_cases.get(&name)?;
         reference.kind = MemberKind::EnumCase;

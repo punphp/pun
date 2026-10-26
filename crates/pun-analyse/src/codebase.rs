@@ -12,12 +12,13 @@ use mago_analyzer::analysis_result::AnalysisResult;
 use mago_analyzer::plugin::PluginRegistry;
 use mago_analyzer::settings::Settings;
 use mago_codex::metadata::CodebaseMetadata;
+use mago_codex::metadata::class_like::ClassLikeMetadata;
 use mago_codex::metadata::constant::ConstantMetadata;
 use mago_codex::metadata::flags::MetadataFlags;
 use mago_codex::metadata::ttype::TypeMetadata;
 use mago_codex::populator::populate_codebase_parallel;
 use mago_codex::reference::SymbolReferences;
-use mago_codex::scanner::inference::infer_initializer;
+use mago_codex::scanner::inference::infer_initializer_with_codebase;
 use mago_codex::scanner::scan_program;
 use mago_codex::ttype::atomic::TAtomic;
 use mago_codex::ttype::atomic::scalar::TScalar;
@@ -486,8 +487,8 @@ fn build_with_sources_at(
     Ok((metadata, sources))
 }
 
-/// Resolve only global constants referenced by analysed code and their initializer dependencies. Scanning an
-/// autoload file remains lazy, and evaluating one initializer never walks that file's unrelated declarations.
+/// Resolve referenced globals and constants of already-loaded user classes/interfaces. Autoload remains
+/// lazy, and evaluating one initializer never analyzes that file's unrelated executable bodies.
 fn resolve_initializers(metadata: &mut CodebaseMetadata, sources: &Sources, project: &Project) {
     let mut roots = Vec::new();
     let mut arena = LocalArena::new();
@@ -508,24 +509,66 @@ fn resolve_initializers(metadata: &mut CodebaseMetadata, sources: &Sources, proj
             arena.reset();
         }
     }
-    let arguments: Vec<_> = metadata.class_likes.iter().flat_map(|(name, class)| {
-        class.attributes.iter().enumerate().flat_map(move |(attribute, value)| {
-            value.arguments.iter().enumerate().filter_map(move |(argument, value)| {
-                value.value_span.map(|at| (*name, attribute, argument, at))
+    // Loaded declarations must expose one canonical value to every consumer, including wildcard
+    // PHPDoc and existing class-string accesses whose member is not a static signature reference.
+    roots.extend(metadata.class_likes.iter().flat_map(|(name, class)| {
+        class
+            .constants
+            .iter()
+            .filter_map(move |(member, constant)| {
+                (!constant.flags.is_built_in()).then_some(Initializer::Class(*name, *member))
             })
+    }));
+    let arguments: Vec<_> = metadata
+        .class_likes
+        .iter()
+        .flat_map(|(name, class)| {
+            class
+                .attributes
+                .iter()
+                .enumerate()
+                .flat_map(move |(attribute, value)| {
+                    value
+                        .arguments
+                        .iter()
+                        .enumerate()
+                        .filter_map(move |(argument, value)| {
+                            value.value_span.map(|at| (*name, attribute, argument, at))
+                        })
+                })
         })
-    }).collect();
-    let mut initializer_sources: HashMap<_, _> = sources.values()
-        .map(|file| (file.id, file.as_ref())).collect();
-    // Symbol-only files without global declarations are not retained in Sources. Reopen only loaded
-    // attribute declarations, not arbitrary autoload files or their unrelated executable bodies.
-    let missing: HashSet<_> = arguments.iter()
+        .collect();
+    let mut initializer_sources: HashMap<_, _> = sources
+        .values()
+        .map(|file| (file.id, file.as_ref()))
+        .collect();
+    // Symbol-only files without global declarations are not retained in Sources. Reopen only files
+    // of already-loaded declarations, never arbitrary autoload files or their executable bodies.
+    let missing: HashSet<_> = arguments
+        .iter()
         .map(|(_, _, _, at)| at.file_id)
-        .filter(|id| !initializer_sources.contains_key(id)).collect();
-    let attribute_sources: Vec<_> = project.scanned.iter().chain(&project.stubs)
+        .chain(
+            metadata
+                .class_likes
+                .values()
+                .filter(|class| !class.flags.is_built_in())
+                .flat_map(|class| {
+                    class
+                        .constants
+                        .values()
+                        .map(|constant| constant.span.file_id)
+                }),
+        )
+        .filter(|id| !initializer_sources.contains_key(id))
+        .collect();
+    let attribute_sources: Vec<_> = project
+        .scanned
+        .iter()
+        .chain(&project.stubs)
         .chain(project.autoloaded.iter().map(|file| &file.path))
         .filter(|path| missing.contains(&FileId::new(path.to_string_lossy().as_bytes())))
-        .filter_map(|path| read(path, FileType::Vendored).ok().flatten()).collect();
+        .filter_map(|path| read(path, FileType::Vendored).ok().flatten())
+        .collect();
     initializer_sources.extend(attribute_sources.iter().map(|file| (file.id, file)));
     let mut resolver = Initializers {
         metadata,
@@ -538,9 +581,14 @@ fn resolve_initializers(metadata: &mut CodebaseMetadata, sources: &Sources, proj
     }
     for (name, attribute, argument, at) in arguments {
         if let Some(value) = resolver.evaluate(at, true) {
-            resolver.metadata.class_likes.get_mut(&name)
+            resolver
+                .metadata
+                .class_likes
+                .get_mut(&name)
                 .expect("selected class exists")
-                .attributes[attribute].arguments[argument].value_type = Some(value);
+                .attributes[attribute]
+                .arguments[argument]
+                .value_type = Some(value);
         }
     }
 }
@@ -548,7 +596,31 @@ fn resolve_initializers(metadata: &mut CodebaseMetadata, sources: &Sources, proj
 struct ConstantInputs<'a, 'arena> {
     metadata: &'a CodebaseMetadata,
     names: &'a ResolvedNames<'arena>,
-    names_found: Vec<mago_word::Word>,
+    names_found: Vec<Initializer>,
+}
+
+#[derive(Clone, Copy)]
+enum Initializer {
+    Global(mago_word::Word),
+    Class(mago_word::Word, mago_word::Word),
+}
+
+/// Ordinary inherited copies share a source declaration. Trait rebinding intentionally does not use
+/// this span identity: the same trait initializer can mean different things in different consumers.
+pub(crate) fn initializer_class(
+    metadata: &CodebaseMetadata,
+    at: Span,
+) -> Option<&ClassLikeMetadata> {
+    metadata
+        .class_likes
+        .values()
+        .filter(|class| {
+            class.span.file_id == at.file_id
+                && class.span.start.offset <= at.start.offset
+                && at.end.offset <= class.span.end.offset
+        })
+        .min_by_key(|class| class.span.end.offset - class.span.start.offset)
+        .map(Box::as_ref)
 }
 
 impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for ConstantInputs<'_, 'arena> {
@@ -564,7 +636,43 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for ConstantInputs<'_, 'arena> {
                     .flatten()
             });
         if let Some(selected) = selected.filter(|k| !k.flags.is_built_in()) {
-            self.names_found.push(selected.name);
+            self.names_found.push(Initializer::Global(selected.name));
+        }
+    }
+
+    fn walk_in_class_constant_access(
+        &mut self,
+        access: &'ast cst::ClassConstantAccess<'arena>,
+        _: &mut (),
+    ) {
+        let cst::ClassLikeConstantSelector::Identifier(name) = &access.constant else {
+            return;
+        };
+        let class = match access.class.unparenthesized() {
+            Expression::Identifier(name) => mago_word::word(self.names.get(name)),
+            Expression::Self_(_) | Expression::Static(_) => {
+                let Some(class) = initializer_class(self.metadata, access.span()) else {
+                    return;
+                };
+                class.name
+            }
+            Expression::Parent(_) => {
+                let Some(parent) = initializer_class(self.metadata, access.span())
+                    .and_then(|class| class.direct_parent_class)
+                else {
+                    return;
+                };
+                parent
+            }
+            _ => return,
+        };
+        if self
+            .metadata
+            .get_class_constant(class.as_bytes(), name.value)
+            .is_some_and(|constant| !constant.flags.is_built_in())
+        {
+            self.names_found
+                .push(Initializer::Class(class, mago_word::word(name.value)));
         }
     }
 }
@@ -577,7 +685,66 @@ struct Initializers<'a> {
 }
 
 impl Initializers<'_> {
-    fn resolve(&mut self, name: mago_word::Word) {
+    fn resolve(&mut self, input: Initializer) {
+        match input {
+            Initializer::Global(name) => self.resolve_global(name),
+            Initializer::Class(class, name) => self.resolve_class(class, name),
+        }
+    }
+
+    fn resolve_class(&mut self, class: mago_word::Word, name: mago_word::Word) {
+        let at = self
+            .metadata
+            .get_class_constant(class.as_bytes(), name.as_bytes())
+            .expect("selected class constant exists")
+            .span;
+        // Synthetic API stubs and unavailable sources retain their scanned values. They cannot be
+        // re-evaluated, and must not trigger repeated declaring-owner searches or inherited copies.
+        if !self.sources.contains_key(&at.file_id) {
+            return;
+        }
+        let Some(owner) =
+            initializer_class(self.metadata, at).filter(|class| !class.kind.is_trait())
+        else {
+            return;
+        };
+        let owner = owner.name;
+        if !self.visited.insert(at) {
+            return;
+        }
+        let declaration = self
+            .metadata
+            .class_likes
+            .get_mut(&owner)
+            .expect("declaring class exists")
+            .constants
+            .get_mut(&name)
+            .expect("declaring constant exists");
+        // Preserve the scanner's direct-self sentinel and existing expansion cycle guards.
+        if declaration
+            .inferred_type
+            .as_ref()
+            .is_some_and(TUnion::is_never)
+        {
+            return;
+        }
+        let previous = declaration.inferred_type.take();
+        let value = self.evaluate(at, false).or(previous);
+        // Population copies ordinary class/interface constants. Publish one raw initializer to every
+        // copy with that declaring source identity, without changing native/PHPDoc declarations.
+        for constant in self
+            .metadata
+            .class_likes
+            .values_mut()
+            .flat_map(|class| class.constants.values_mut())
+        {
+            if constant.span == at {
+                constant.inferred_type.clone_from(&value);
+            }
+        }
+    }
+
+    fn resolve_global(&mut self, name: mago_word::Word) {
         let declaration = self
             .metadata
             .constants
@@ -640,6 +807,15 @@ impl Initializers<'_> {
                     self.expression = Some(item.value);
                 }
             }
+            fn walk_in_class_like_constant_item(
+                &mut self,
+                item: &'ast cst::ClassLikeConstantItem<'arena>,
+                _: &mut (),
+            ) {
+                if item.span() == self.at {
+                    self.expression = Some(item.value);
+                }
+            }
             fn walk_in_function_call(&mut self, call: &'ast cst::FunctionCall<'arena>, _: &mut ()) {
                 // A scanned define() has the invocation span rather than a ConstantItem span.
                 if !self.argument && call.span() == self.at {
@@ -664,23 +840,25 @@ impl Initializers<'_> {
             names_found: Vec::new(),
         };
         inputs.walk_expression(expression, &mut ());
-        // Class-only inputs retain the scanner's declaring-class scope; they are not global initializers.
+        // Literal/unsupported arguments without a constant dependency retain their scanner result.
         if require_global && inputs.names_found.is_empty() {
             return None;
         }
         let mut inherited_benevolence = false;
-        for name in inputs.names_found {
-            self.resolve(name);
-            if let Some(value) = self
-                .metadata
-                .get_constant(name.as_bytes())
-                .and_then(|k| k.type_metadata.as_ref())
+        for input in inputs.names_found {
+            self.resolve(input);
+            if let Initializer::Global(name) = input
+                && let Some(value) = self
+                    .metadata
+                    .get_constant(name.as_bytes())
+                    .and_then(|k| k.type_metadata.as_ref())
             {
                 inherited_benevolence |= value.type_union.ignore_nullable_issues()
                     && value.type_union.ignore_falsable_issues();
             }
         }
-        let mut value = self.initializer_type(&arena, file, program, &names, expression, find.namespace)?;
+        let mut value =
+            self.initializer_type(&arena, file, program, &names, expression, find.namespace)?;
         if inherited_benevolence && value == get_int_or_float() {
             // Keep the numeric union's existing marker across the full evaluator's arithmetic join.
             value.set_ignore_nullable_issues(true);
@@ -710,11 +888,15 @@ impl Initializers<'_> {
             fn walk_in_expression(&mut self, expression: &'ast Expression<'arena>, _: &mut ()) {
                 self.stack.push((
                     expression.span(),
-                    matches!(expression,
-                        Expression::Conditional(_) | Expression::Call(_) | Expression::Instantiation(_)
-                        | Expression::Binary(cst::Binary {
-                            operator: cst::BinaryOperator::NullCoalesce(_), ..
-                        })
+                    matches!(
+                        expression,
+                        Expression::Conditional(_)
+                            | Expression::Call(_)
+                            | Expression::Instantiation(_)
+                            | Expression::Binary(cst::Binary {
+                                operator: cst::BinaryOperator::NullCoalesce(_),
+                                ..
+                            })
                     ),
                 ));
             }
@@ -727,23 +909,46 @@ impl Initializers<'_> {
                 self.expressions.push((expression, scanner_owned, parent));
             }
         }
-        let mut islands = Islands { stack: Vec::new(), expressions: Vec::new() };
+        let mut islands = Islands {
+            stack: Vec::new(),
+            expressions: Vec::new(),
+        };
         islands.walk_expression(expression, &mut ());
-        let scanner_owned: HashSet<_> = islands.expressions.iter()
+        let scanner_owned: HashSet<_> = islands
+            .expressions
+            .iter()
             .filter(|(_, owned, _)| *owned)
-            .map(|(expression, _, _)| expression.span()).collect();
+            .map(|(expression, _, _)| expression.span())
+            .collect();
         let scope = NamespaceScope::new(
-            namespace.as_ref().and_then(|n| n.name.as_ref()).map(|n| n.value().to_vec()),
+            namespace
+                .as_ref()
+                .and_then(|n| n.name.as_ref())
+                .map(|n| n.value().to_vec()),
         );
         let mut types = HashMap::new();
-        for (expression, _, _) in islands.expressions.into_iter().filter(|(_, owned, parent)| {
-            !owned && parent.is_none_or(|parent| scanner_owned.contains(&parent))
-        }) {
-            if let Some(value) = self.expression_type(arena, file, program, names, expression, namespace.clone()) {
+        for (expression, _, _) in islands
+            .expressions
+            .into_iter()
+            .filter(|(_, owned, parent)| {
+                !owned && parent.is_none_or(|parent| scanner_owned.contains(&parent))
+            })
+        {
+            if let Some(value) =
+                self.expression_type(arena, file, program, names, expression, namespace.clone())
+            {
                 types.insert(expression.span(), value);
             }
         }
-        infer_initializer(file, names, &scope, expression, &self.metadata.constants, &types)
+        infer_initializer_with_codebase(
+            file,
+            names,
+            &scope,
+            expression,
+            self.metadata,
+            initializer_class(self.metadata, expression.span()).map(|class| class.name),
+            &types,
+        )
     }
 
     fn expression_type<'arena>(
@@ -776,7 +981,10 @@ impl Initializers<'_> {
             ),
             ..program.clone()
         });
-        let registry = PluginRegistry::with_library_providers();
+        let mut registry = PluginRegistry::with_library_providers();
+        if let Some(class) = initializer_class(self.metadata, expression.span()) {
+            registry.register_expression_hook(InitializerScope(class.name));
+        }
         let analyzer = Analyzer::new(
             arena,
             file,
@@ -792,5 +1000,31 @@ impl Initializers<'_> {
         .ok()?
         .ok()?;
         artifacts.get_expression_type(expression).cloned()
+    }
+}
+
+/// Isolated arithmetic islands need their lexical self/parent scope, not a synthetic global scope.
+struct InitializerScope(mago_word::Word);
+
+impl mago_analyzer::plugin::Provider for InitializerScope {
+    fn meta() -> &'static mago_analyzer::plugin::ProviderMeta {
+        static META: mago_analyzer::plugin::ProviderMeta = mago_analyzer::plugin::ProviderMeta::new(
+            "pun-initializer-scope",
+            "initializer-scope",
+            "lexical initializer scope",
+        );
+        &META
+    }
+}
+
+impl mago_analyzer::plugin::ExpressionHook for InitializerScope {
+    fn before_expression(
+        &self,
+        _: &Expression<'_>,
+        context: &mut mago_analyzer::plugin::HookContext<'_, '_>,
+    ) -> mago_analyzer::plugin::HookResult<mago_analyzer::plugin::ExpressionHookResult> {
+        let class = context.codebase().get_class_like_by_name(self.0);
+        context.block_context_mut().scope.set_class_like(class);
+        Ok(mago_analyzer::plugin::ExpressionHookResult::Continue)
     }
 }

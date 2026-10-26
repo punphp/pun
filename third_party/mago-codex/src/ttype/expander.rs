@@ -491,8 +491,9 @@ fn resolve_array_key(key: ArrayKey, codebase: &CodebaseMetadata, options: &TypeE
     // Try class constants first
     if let Some(constant) = class_like.constants.get(&constant_name)
         && let Some(inferred) = &constant.inferred_type
+        && inferred.is_single()
     {
-        match inferred {
+        match inferred.get_single() {
             TAtomic::Scalar(TScalar::Integer(TInteger::Literal(i))) => {
                 return ArrayKey::Integer(*i);
             }
@@ -571,12 +572,8 @@ fn expand_member_reference(
             };
 
             let mut inferred_type = inferred_type.clone();
-            let mut skip_inferred_type = false;
-            expand_atomic(&mut inferred_type, codebase, options, &mut skip_inferred_type, new_return_type_parts);
-
-            if !skip_inferred_type {
-                new_return_type_parts.push(inferred_type);
-            }
+            expand_union(codebase, &mut inferred_type, options);
+            new_return_type_parts.extend(inferred_type.types.into_owned());
         } else if let Some(type_metadata) = constant.type_metadata.as_ref() {
             let mut constant_type = type_metadata.type_union.clone();
             expand_union(codebase, &mut constant_type, options);

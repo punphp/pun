@@ -303,3 +303,31 @@ They distinguish canonical reflection values from file-local values after a decl
 precise float arithmetic and array values, and check namespace fallback, explicit aliases, unresolved
 inputs, target flags, and unsupported calls. Class-constant union storage, arbitrary declaring scopes,
 and new cycle semantics are outside this patch.
+
+## Canonical class-constant unions and lexical dependencies
+
+`ClassLikeConstantMetadata.inferred_type` stores a `TUnion`, like global constant metadata.
+The scanner, type populator, reference expander, and constant query retain every inferred alternative.
+Array-key extraction still requires a singleton literal. The direct-self `never` sentinel remains intact.
+
+`value_type()` separates the raw initializer from native and PHPDoc declarations. Exact reads use
+the initializer. Late-bound reads on an overridable receiver use the effective declaration, or mixed
+for an untyped non-final constant. A final untyped constant retains its raw value.
+
+`infer_initializer_with_codebase()` reuses the scanner dispatcher with resolved global and class
+dependencies. Named holders, `self`, and `parent` resolve before falsey or null removal. Integer bitwise
+operations retain literal union alternatives instead of selecting an atom or generalizing to int.
+Pun's initializer service evaluates ordinary inherited copies in the lexical declaring class and
+publishes their raw value without changing declaration metadata. Class-dependent attribute arguments
+use that same service. Constants of already-loaded user classes and interfaces are canonical roots,
+including PHPDoc-only wildcard selectors and existing class-string reads. This does not load additional
+autoload files or analyze unrelated executable bodies.
+
+The source contract is PHPStan 2.3.1's `InitializerExprTypeResolver.php` at
+`cb3b7e99489b2e3789ee2eec10501cb7a72580ea`, including its non-runtime ternary and coalesce unions.
+Fresh public controls and oracle captures are in
+`crates/pun-analyse/tests/fixtures/class-constant-initializers/`.
+
+Trait rebinding does not use the ordinary declaration-span cache. New trait semantics, expanded cycle
+resolution, enum backing unions, arbitrary dynamic holders, calls, construction, and general
+initializer-expression expansion remain outside this patch.

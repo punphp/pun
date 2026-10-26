@@ -238,6 +238,7 @@ where
         file: context.file,
         resolved_names: context.resolved_names,
         expression_types: None,
+        codebase: None,
     };
     infer_with_constant_sources(&context, scope, expression, enclosing_class, None, None)
 }
@@ -257,6 +258,7 @@ where
         file: context.file,
         resolved_names: context.resolved_names,
         expression_types: None,
+        codebase: None,
     };
     infer_with_constant_sources(&context, scope, expression, enclosing_class, constants, None)
 }
@@ -276,6 +278,7 @@ where
         file: context.file,
         resolved_names: context.resolved_names,
         expression_types: None,
+        codebase: None,
     };
     infer_with_constant_sources(&context, scope, expression, enclosing_class, None, Some(class_constants))
 }
@@ -291,14 +294,35 @@ pub fn infer_initializer(
     constants: &WordMap<ConstantMetadata>,
     expression_types: &HashMap<Span, TUnion>,
 ) -> Option<TUnion> {
-    let context = InferenceContext { file, resolved_names: names, expression_types: Some(expression_types) };
+    let context =
+        InferenceContext { file, resolved_names: names, expression_types: Some(expression_types), codebase: None };
     infer_with_constant_sources(&context, scope, expression, None, Some(constants), None)
+}
+
+/// The same initializer inference with resolved global/class dependencies and a lexical declaring scope.
+pub fn infer_initializer_with_codebase(
+    file: &File,
+    names: &ResolvedNames<'_>,
+    scope: &NamespaceScope,
+    expression: &Expression<'_>,
+    codebase: &CodebaseMetadata,
+    enclosing_class: Option<Word>,
+    expression_types: &HashMap<Span, TUnion>,
+) -> Option<TUnion> {
+    let context = InferenceContext {
+        file,
+        resolved_names: names,
+        expression_types: Some(expression_types),
+        codebase: Some(codebase),
+    };
+    infer_with_constant_sources(&context, scope, expression, enclosing_class, Some(&codebase.constants), None)
 }
 
 struct InferenceContext<'ctx, 'arena> {
     file: &'ctx File,
     resolved_names: &'ctx ResolvedNames<'arena>,
     expression_types: Option<&'ctx HashMap<Span, TUnion>>,
+    codebase: Option<&'ctx CodebaseMetadata>,
 }
 
 #[inline]
@@ -529,50 +553,59 @@ fn infer_with_constant_sources<'arena>(
             let lhs = infer_with_constant_sources(context, scope, lhs, enclosing_class, constants, class_constants);
             let rhs = infer_with_constant_sources(context, scope, rhs, enclosing_class, constants, class_constants);
 
-            Some(wrap_atomic(
-                match (
-                    lhs.and_then(|v| v.get_single_literal_int_value()),
-                    rhs.and_then(|v| v.get_single_literal_int_value()),
-                ) {
-                    (Some(lhs), Some(rhs)) => {
-                        let value = match operator {
-                            BinaryOperator::BitwiseAnd(_) => lhs & rhs,
-                            BinaryOperator::BitwiseOr(_) => lhs | rhs,
-                            BinaryOperator::BitwiseXor(_) => lhs ^ rhs,
-                            BinaryOperator::LeftShift(_) => {
-                                if rhs < 0 {
-                                    return Some(get_int());
-                                }
-
-                                u32::try_from(rhs).ok().and_then(|s| lhs.checked_shl(s)).unwrap_or_default()
+            let (Some(lhs), Some(rhs)) = (lhs, rhs) else {
+                return Some(get_int());
+            };
+            let mut result = get_never();
+            for lhs in lhs.types.as_ref() {
+                for rhs in rhs.types.as_ref() {
+                    let (
+                        TAtomic::Scalar(TScalar::Integer(TInteger::Literal(lhs))),
+                        TAtomic::Scalar(TScalar::Integer(TInteger::Literal(rhs))),
+                    ) = (lhs, rhs)
+                    else {
+                        return Some(get_int());
+                    };
+                    let (lhs, rhs) = (*lhs, *rhs);
+                    let value = match operator {
+                        BinaryOperator::BitwiseAnd(_) => lhs & rhs,
+                        BinaryOperator::BitwiseOr(_) => lhs | rhs,
+                        BinaryOperator::BitwiseXor(_) => lhs ^ rhs,
+                        BinaryOperator::LeftShift(_) => {
+                            if rhs < 0 {
+                                return Some(get_int());
                             }
-                            BinaryOperator::RightShift(_) => {
-                                if rhs < 0 {
-                                    return Some(get_int());
-                                }
 
-                                match u32::try_from(rhs).ok().and_then(|s| lhs.checked_shr(s)) {
-                                    Some(v) => v,
-                                    None => {
-                                        if lhs >= 0 {
-                                            0
-                                        } else {
-                                            -1
-                                        }
+                            u32::try_from(rhs).ok().and_then(|s| lhs.checked_shl(s)).unwrap_or_default()
+                        }
+                        // The is_bitwise() guard leaves only right shift after the four arms above.
+                        _ => {
+                            if rhs < 0 {
+                                return Some(get_int());
+                            }
+
+                            match u32::try_from(rhs).ok().and_then(|s| lhs.checked_shr(s)) {
+                                Some(v) => v,
+                                None => {
+                                    if lhs >= 0 {
+                                        0
+                                    } else {
+                                        -1
                                     }
                                 }
                             }
-                            #[allow(clippy::unreachable)]
-                            _ => {
-                                unreachable!("unexpected bitwise operator: {:?}", operator);
-                            }
-                        };
+                        }
+                    };
 
-                        TAtomic::Scalar(TScalar::literal_int(value))
-                    }
-                    _ => TAtomic::Scalar(TScalar::int()),
-                },
-            ))
+                    result = combine_union_types(
+                        &result,
+                        &get_literal_int(value),
+                        &CodebaseMetadata::default(),
+                        Default::default(),
+                    );
+                }
+            }
+            Some(result)
         }
         Expression::Binary(Binary { operator, lhs, rhs }) if operator.is_arithmetic() => {
             let lhs = infer_with_constant_sources(context, scope, lhs, enclosing_class, constants, class_constants);
@@ -617,20 +650,28 @@ fn infer_with_constant_sources<'arena>(
             constant: ClassLikeConstantSelector::Identifier(identifier),
             ..
         })) => {
-            let class_name_str: &[u8] = if let Expression::Identifier(identifier) = class {
-                context.resolved_names.get(identifier)
-            } else if matches!(class, Expression::Self_(_) | Expression::Static(_)) {
-                enclosing_class.as_ref().map(Word::as_bytes)?
-            } else {
-                return None;
+            let class_name = match class.unparenthesized() {
+                Expression::Identifier(identifier) => word(context.resolved_names.get(identifier)),
+                Expression::Self_(_) | Expression::Static(_) => enclosing_class?,
+                Expression::Parent(_) => {
+                    context.codebase?.get_class_like_by_name(enclosing_class?)?.direct_parent_class?
+                }
+                _ => return None,
             };
+            let class_name_str = class_name.as_bytes();
+
+            if let Some(constant) =
+                context.codebase.and_then(|codebase| codebase.get_class_constant(class_name_str, identifier.value))
+            {
+                return Some(constant.inferred_type.clone().unwrap_or_else(get_mixed));
+            }
 
             if let Some(class_constants) = class_constants
                 && enclosing_class.is_some_and(|class_name| class_name_str.eq_ignore_ascii_case(class_name.as_bytes()))
                 && let Some(constant) = class_constants.get(&word(identifier.value))
                 && let Some(inferred_type) = &constant.inferred_type
             {
-                return Some(wrap_atomic(inferred_type.clone()));
+                return Some(inferred_type.clone());
             }
 
             Some(wrap_atomic(if identifier.value.eq_ignore_ascii_case(b"class") {

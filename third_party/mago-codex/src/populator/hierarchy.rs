@@ -630,7 +630,7 @@ pub fn populate_class_like_types(
         }
 
         if let Some(inferred) = &mut constant.inferred_type {
-            populate_atomic_type(
+            populate_union_type(
                 inferred,
                 codebase_symbols,
                 Some(&constant_reference_source),

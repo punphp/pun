@@ -1558,3 +1558,18 @@ The public `pun-analyse/tests/attributes.rs` regressions compare both reflection
 with PHPStan 2.3.1. Global initializer arrays, duplicate keys, reassigned copies, namespace lookup,
 scanned declarations, and precise arithmetic share the same controls. This patch does not change
 class-constant union storage or add cycle resolution semantics.
+
+## Raw class-constant values and late-bound declarations
+
+The class-constant resolver and cached receiver consume Codex's canonical union without converting it
+to a single atom. Named, `self`, and `parent` reads retain the raw initializer even when a native or
+PHPDoc declaration is broader or incompatible. An overridable late-bound receiver instead exposes
+the effective declaration type. Final receiver classes and final untyped constants retain raw values.
+Final typed constants still expose their declared type through an overridable receiver.
+
+Declaration-expression analysis remains independent: a PHPDoc compatibility diagnostic checks the
+runtime expression type, not the canonical reflection union. The external metadata writer uses its
+existing union wire encoding directly. No extension protocol or dependency version changes are needed.
+
+The fresh PHPStan 2.3.1 controls in `class-constant-initializers/declared.php` distinguish each selection
+and verify that a mismatched `@var string` reports runtime value 1 while exact reads retain `1|4`.
