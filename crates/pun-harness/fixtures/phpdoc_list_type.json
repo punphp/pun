@@ -1,0 +1,169 @@
+{
+    "fixer": "phpdoc_list_type",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\Phpdoc\\PhpdocListTypeFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/Phpdoc/PhpdocListTypeFixerTest.php",
+    "case_count": 19,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Phpdoc\\PhpdocListTypeFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php /** @tagNotSupportingTypes string[] */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php /** @var array<string, int> */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php /** @var array<int, array<string, bool>> */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php /** @var array<class-string<Foo>, bool> */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php /** @var array<int<1, 10>, bool> */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php /** @var array<Foo::BAR_*, bool> */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php /** @var array<'foo'|'bar', bool> */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 7,
+                    "args": [
+                        "<?php /** @var array{} */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 8,
+                    "args": [
+                        "<?php /** @var array{string, string, string} */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 9,
+                    "args": [
+                        "<?php /** @var array{\"a\", \"b[]\", \"c\"} */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 10,
+                    "args": [
+                        "<?php /** @var array{'a', 'b[]', 'c'} */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 11,
+                    "args": [
+                        "<?php /** @var list<Foo> */",
+                        "<?php /** @var array<Foo> */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 12,
+                    "args": [
+                        "<?php /** @var list<Foo> */",
+                        "<?php /** @var ARRAY<Foo> */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 13,
+                    "args": [
+                        "<?php /** @var ?list<Foo> */",
+                        "<?php /** @var ?array<Foo> */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 14,
+                    "args": [
+                        "<?php /** @var list<bool>|list<float>|list<int>|list<string> */",
+                        "<?php /** @var array<bool>|list<float>|array<int>|list<string> */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 15,
+                    "args": [
+                        "<?php /** @var non-empty-list<string> */",
+                        "<?php /** @var non-empty-array<string> */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 16,
+                    "args": [
+                        "<?php /** @var array{string, list<array{Foo, list<int>, Bar}>} */",
+                        "<?php /** @var array{string, array<array{Foo, array<int>, Bar}>} */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 17,
+                    "args": [
+                        "<?php /** @var list<int<1, 10>> */",
+                        "<?php /** @var array<int<1, 10>> */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 18,
+                    "args": [
+                        "<?php\n/** @var list<Foo> */\n/** @var \\SplFixedArray<Foo> */\n/** @var \\KůňArray<Foo> */\n/** @var \\My_Array<Foo> */\n/** @var \\My2Array<Foo> */",
+                        "<?php\n/** @var array<Foo> */\n/** @var \\SplFixedArray<Foo> */\n/** @var \\KůňArray<Foo> */\n/** @var \\My_Array<Foo> */\n/** @var \\My2Array<Foo> */"
+                    ]
+                }
+            ]
+        }
+    ]
+}

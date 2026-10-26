@@ -1,0 +1,132 @@
+{
+    "fixer": "string_line_ending",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\StringNotation\\StringLineEndingFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/StringNotation/StringLineEndingFixerTest.php",
+    "case_count": 13,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\StringNotation\\StringLineEndingFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php $a = 'my\nmulti\nline\nstring';\r\n",
+                        "<?php $a = 'my\r\nmulti\nline\r\nstring';\r\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php $a = \"my\nmulti\nline\nstring\";\r\n",
+                        "<?php $a = \"my\r\nmulti\nline\r\nstring\";\r\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php $a = \"my\nmulti\nline\nstring\nwith\n$b\ninterpolation\";\r\n",
+                        "<?php $a = \"my\r\nmulti\nline\r\nstring\nwith\r\n$b\ninterpolation\";\r\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php\n$a=\n<<<EOT\n/**\n* @SWG\\Get(\n*     path=\"/api/v0/cards\",\n*     operationId=\"listCards\",\n*     tags={\"Банковские карты\"},\n*     summary=\"Возвращает список банковских карт.\"\n*  )\n*/\n\nEOT;\n",
+                        "<?php\n$a=\n<<<EOT\n/**\r* @SWG\\Get(\r*     path=\"/api/v0/cards\",\r*     operationId=\"listCards\",\r*     tags={\"Банковские карты\"},\r*     summary=\"Возвращает список банковских карт.\"\r*  )\r*/\n\nEOT;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php\n$a=\n<<<EOT\n/**\n* @SWG\\Get(\n*     path=\"/api/v0/cards\",\n*     operationId=\"listCards\",\n*     tags={\"Банковские карты\"},\n*     summary=\"Возвращает список банковских карт.\"\n*  )\n*/\n\nEOT;\n",
+                        "<?php\n$a=\n<<<EOT\n/**\r\n* @SWG\\Get(\r\n*     path=\"/api/v0/cards\",\r\n*     operationId=\"listCards\",\r\n*     tags={\"Банковские карты\"},\r\n*     summary=\"Возвращает список банковских карт.\"\r\n*  )\r\n*/\n\nEOT;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php\n$a=\n<<<'EOT'\n/**\n* @SWG\\Get(\n*     path=\"/api/v0/cards\",\n*     operationId=\"listCards\",\n*     tags={\"Банковские карты\"},\n*     summary=\"Возвращает список банковских карт.\"\n*  )\n*/\n\nEOT;\n",
+                        "<?php\n$a=\n<<<'EOT'\n/**\r* @SWG\\Get(\r*     path=\"/api/v0/cards\",\r*     operationId=\"listCards\",\r*     tags={\"Банковские карты\"},\r*     summary=\"Возвращает список банковских карт.\"\r*  )\r*/\n\nEOT;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php\n$a=\n<<<'EOT'\n/**\n* @SWG\\Get(\n*     path=\"/api/v0/cards\",\n*     operationId=\"listCards\",\n*     tags={\"Банковские карты\"},\n*     summary=\"Возвращает список банковских карт.\"\n*  )\n*/\n\nEOT;\n",
+                        "<?php\n$a=\n<<<'EOT'\n/**\r\n* @SWG\\Get(\r\n*     path=\"/api/v0/cards\",\r\n*     operationId=\"listCards\",\r\n*     tags={\"Банковские карты\"},\r\n*     summary=\"Возвращает список банковских карт.\"\r\n*  )\r\n*/\n\nEOT;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 7,
+                    "args": [
+                        "<?php\n$a=\nb<<<'EOT'\n/**\n* @SWG\\Get(\n*     path=\"/api/v0/cards\",\n*     operationId=\"listCards\",\n*     tags={\"Банковские карты\"},\n*     summary=\"Возвращает список банковских карт.\"\n*  )\n*/\n\nEOT;\n",
+                        "<?php\n$a=\nb<<<'EOT'\n/**\r\n* @SWG\\Get(\r\n*     path=\"/api/v0/cards\",\r\n*     operationId=\"listCards\",\r\n*     tags={\"Банковские карты\"},\r\n*     summary=\"Возвращает список банковских карт.\"\r\n*  )\r\n*/\n\nEOT;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 8,
+                    "args": [
+                        "<?php\n$a=\nB<<<'EOT'\n/**\n* @SWG\\Get(\n*     path=\"/api/v0/cards\",\n*     operationId=\"listCards\",\n*     tags={\"Банковские карты\"},\n*     summary=\"Возвращает список банковских карт.\"\n*  )\n*/\n\nEOT;\n",
+                        "<?php\n$a=\nB<<<'EOT'\n/**\r\n* @SWG\\Get(\r\n*     path=\"/api/v0/cards\",\r\n*     operationId=\"listCards\",\r\n*     tags={\"Банковские карты\"},\r\n*     summary=\"Возвращает список банковских карт.\"\r\n*  )\r\n*/\n\nEOT;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 9,
+                    "args": [
+                        "<?php\n$a=\nb<<<EOT\n/**\n* @SWG\\Get(\n*     path=\"/api/v0/cards\",\n*     operationId=\"listCards\",\n*     tags={\"Банковские карты\"},\n*     summary=\"Возвращает список банковских карт.\"\n*  )\n*/\n\nEOT;\n",
+                        "<?php\n$a=\nb<<<EOT\n/**\r\n* @SWG\\Get(\r\n*     path=\"/api/v0/cards\",\r\n*     operationId=\"listCards\",\r\n*     tags={\"Банковские карты\"},\r\n*     summary=\"Возвращает список банковских карт.\"\r\n*  )\r\n*/\n\nEOT;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 10,
+                    "args": [
+                        "<?php\n$a=\nB<<<EOT\n/**\n* @SWG\\Get(\n*     path=\"/api/v0/cards\",\n*     operationId=\"listCards\",\n*     tags={\"Банковские карты\"},\n*     summary=\"Возвращает список банковских карт.\"\n*  )\n*/\n\nEOT;\n",
+                        "<?php\n$a=\nB<<<EOT\n/**\r\n* @SWG\\Get(\r\n*     path=\"/api/v0/cards\",\r\n*     operationId=\"listCards\",\r\n*     tags={\"Банковские карты\"},\r\n*     summary=\"Возвращает список банковских карт.\"\r\n*  )\r\n*/\n\nEOT;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "not T_CLOSE_TAG, do T_INLINE_HTML",
+                    "args": [
+                        "<?php foo(); ?>\r\nA\n\n",
+                        "<?php foo(); ?>\r\nA\r\n\r\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 11,
+                    "args": [
+                        "<?php $a = b'my\nmulti\nline\nstring';\r\n",
+                        "<?php $a = b'my\r\nmulti\nline\r\nstring';\r\n"
+                    ]
+                }
+            ]
+        }
+    ]
+}

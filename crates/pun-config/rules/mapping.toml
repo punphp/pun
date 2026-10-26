@@ -353,7 +353,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "control-flow/no-unsafe-finally" = { fix = "none", intent = "suspicious", sets = ["code-quality"], ported = true, origin = "mago", status = "decided", summary = "Detects control flow statements in `finally` blocks." }
 "control-flow/no-useless-else" = { fix = "safe", sets = ["early-return"], ported = true, status = "decided", summary = "There should not be useless `else` cases." }
 "control-flow/no-useless-return" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "There should not be an empty `return` statement at the end of a function." }
-"control-flow/prefer-bare-return" = { fix = "safe", ported = false, status = "decided", summary = "A return statement wishing to return `void` should not return `null`." }
+"control-flow/prefer-bare-return" = { fix = "safe", ported = true, status = "decided", summary = "A return statement wishing to return `void` should not return `null`." }
 "control-flow/prefer-bool-return" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Simplify `if` control structures that return the boolean result of their condition." }
 "control-flow/prefer-combined-isset" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Using `isset($var) &&` multiple times should be done in one call." }
 "control-flow/prefer-combined-unset" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Calling `unset` on multiple items should be done in one call." }
@@ -537,7 +537,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "operators/prefer-coalesce-assign" = { fix = "safe", sets = ["modernize"], ported = true, status = "decided", summary = "Use the null coalescing assignment operator `??=` where possible." }
 "operators/prefer-shorthand-operator" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "Shorthand notation for operators should be used if possible." }
 "performance/prefer-explode-over-preg-split" = { fix = "safe", sets = ["code-quality"], ported = true, origin = "mago", status = "decided", summary = "Detects calls to `preg_split()` whose pattern has no regex meta-characters and no modifiers, which means the split could be done with `explode()`." }
-"performance/prefer-static-closure" = { fix = "unsafe", ported = false, status = "decided", summary = "Lambdas not (indirectly) referencing `$this` must be declared `static`." }
+"performance/prefer-static-closure" = { fix = "unsafe", ported = true, status = "decided", summary = "Lambdas not (indirectly) referencing `$this` must be declared `static`." }
 "performance/require-qualified-native-constant" = { fix = "unsafe", ported = false, status = "decided", summary = "Add leading `\\` before constant invocation of internal constant to speed up resolving. Constant name match is case-sensitive, except for `null`, `false` and `true`." }
 "performance/require-qualified-native-function" = { fix = "unsafe", ported = false, status = "decided", summary = "Add leading `\\` before function invocation to speed up resolving." }
 "pest/no-before-all-in-describe" = { fix = "safe", sets = ["coding-style"], ported = false, status = "decided", summary = "Replaces invalid beforeAll() and afterAll() hooks inside describe() with beforeEach() and afterEach()" }
@@ -779,11 +779,11 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "statements/require-strict-types" = { fix = "mixed", intent = "suspicious", sets = ["code-quality"], ported = true, status = "decided", summary = "Force a strict types mode in all files.", note = "fix is safe where Rector SafeDeclareStrictTypes proves no scalar coercion, unsafe otherwise" }
 "strings/no-non-printable-character" = { fix = "unsafe", intent = "suspicious", sets = ["code-quality"], ported = true, status = "decided", summary = "Remove Zero-width space (ZWSP), Non-breaking space (NBSP) and other invisible unicode symbols." }
 "strings/no-single-argument-sprintf" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "Use the format itself instead of `sprintf()` with no values." }
-"strings/no-trailing-whitespace-in-string" = { fix = "unsafe", intent = "suspicious", ported = false, status = "decided", summary = "There must be no trailing whitespace at the end of lines in strings." }
+"strings/no-trailing-whitespace-in-string" = { fix = "unsafe", intent = "suspicious", ported = true, status = "decided", summary = "There must be no trailing whitespace at the end of lines in strings." }
 "strings/prefer-empty-string-identical" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "Changes strlen comparison to 0 to direct empty string compare" }
 "strings/prefer-mb-functions" = { fix = "unsafe", intent = "correctness", ported = true, status = "decided", summary = "Replace non multibyte-safe functions with corresponding mb function." }
 "strings/require-interpolation-style" = { fix = "safe", ported = false, origin = "mago", status = "decided", summary = "Enforces a consistent string style: either prefer string interpolation" }
-"strings/require-string-line-ending" = { fix = "unsafe", intent = "suspicious", ported = false, status = "decided", summary = "All multi-line strings must use correct line ending." }
+"strings/require-string-line-ending" = { fix = "unsafe", intent = "suspicious", ported = true, status = "decided", summary = "All multi-line strings must use correct line ending." }
 "style/add-param-type-from-phpdoc" = { fix = "unsafe", sets = ["coding-style"], ported = true, status = "decided", summary = "Takes `@param` annotations of non-mixed types and adjusts accordingly the function signature." }
 "style/add-property-type-from-phpdoc" = { fix = "unsafe", sets = ["coding-style"], ported = true, status = "decided", summary = "Takes `@var` annotation of non-mixed types and adjusts accordingly the property signature.." }
 "style/add-return-type-from-phpdoc" = { fix = "unsafe", sets = ["coding-style"], ported = true, status = "decided", summary = "Takes `@return` annotation of non-mixed types and adjusts accordingly the function signature." }
@@ -808,7 +808,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "style/no-ini-set" = { fix = "none", ported = false, origin = "mago", status = "decided", summary = "Enforces that ini_set is not used." }
 "style/no-inline-html" = { fix = "none", ported = false, origin = "mago", status = "decided", summary = "Disallows inline content (text outside of PHP tags) in source files." }
 "style/no-invalid-phpdoc" = { fix = "none", sets = ["coding-style"], ported = false, origin = "mago", status = "decided", summary = "Checks for syntax errors in docblock comments, such as malformed `{@see}` or" }
-"style/no-is-null" = { fix = "unsafe", ported = false, status = "decided", summary = "Replaces `is_null($var)` expression with `null === $var`." }
+"style/no-is-null" = { fix = "unsafe", ported = true, status = "decided", summary = "Replaces `is_null($var)` expression with `null === $var`." }
 "style/no-isset" = { fix = "none", ported = false, origin = "mago", status = "decided", summary = "Detects the use of the `isset()` construct." }
 "style/no-multi-assign" = { fix = "safe", sets = ["coding-style"], ported = true, status = "decided", summary = "Split chained assignments (`$a = $b = 1`) into one assignment per statement." }
 "style/no-multiple-classes-per-file" = { fix = "none", ported = false, origin = "mago", status = "decided", summary = "Ensures that each file contains at most one class-like definition (class, interface, enum, or trait)." }
@@ -844,9 +844,9 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "style/prefer-early-return-of-variable" = { fix = "safe", sets = ["early-return"], ported = true, status = "decided", summary = "Return the value directly where an if overrides a variable that is returned right after." }
 "style/prefer-early-return-over-prepared-value" = { fix = "safe", sets = ["early-return"], ported = true, status = "decided", summary = "Return early from each if instead of preparing a variable that is returned at the end." }
 "style/prefer-empty-string-compare" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "Compare with `''` instead of strlen() === 0." }
-"style/prefer-generic-array-phpdoc" = { fix = "unsafe", ported = false, status = "decided", summary = "PHPDoc `array<T>` type must be used instead of `T[]`." }
+"style/prefer-generic-array-phpdoc" = { fix = "unsafe", ported = true, status = "decided", summary = "PHPDoc `array<T>` type must be used instead of `T[]`." }
 "style/prefer-instanceof-stringable" = { fix = "none", sets = ["coding-style"], ported = true, origin = "mago", status = "decided", summary = "Detects the legacy pattern `is_object($x) && method_exists($x, '__toString')` and suggests" }
-"style/prefer-list-phpdoc" = { fix = "unsafe", ported = false, status = "decided", summary = "PHPDoc `list` type must be used instead of `array` without a key." }
+"style/prefer-list-phpdoc" = { fix = "unsafe", ported = true, status = "decided", summary = "PHPDoc `list` type must be used instead of `array` without a key." }
 "style/prefer-php-version-id" = { fix = "safe", sets = ["coding-style"], ported = true, status = "decided", summary = "Changes use of call to version compare function to use of PHP version constant" }
 "style/prefer-phpdoc-comment" = { fix = "unsafe", ported = false, status = "decided", summary = "Comments with annotation should be docblock when used on structural elements." }
 "style/prefer-pow-operator" = { fix = "unsafe", sets = ["modernize"], ported = true, status = "decided", summary = "Converts `pow` to the `**` operator." }
@@ -854,19 +854,19 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "style/prefer-random-int" = { fix = "unsafe", sets = ["modernize"], ported = true, status = "decided", summary = "Replaces `rand`, `srand`, `getrandmax` functions calls with their `mt_*` analogs or `random_int`." }
 "style/prefer-readonly-keyword" = { fix = "unsafe", sets = ["coding-style"], ported = true, status = "decided", summary = "Converts readonly comment on classes to the readonly keyword." }
 "style/prefer-self-reference" = { fix = "unsafe", ported = true, status = "decided", summary = "Inside class or interface element `self` should be preferred to the class name itself." }
-"style/prefer-short-ternary" = { fix = "unsafe", ported = false, status = "decided", summary = "Use the Elvis operator `?:` where possible." }
+"style/prefer-short-ternary" = { fix = "unsafe", ported = true, status = "decided", summary = "Use the Elvis operator `?:` where possible." }
 "style/prefer-spread" = { fix = "safe", sets = ["coding-style"], ported = true, status = "decided", summary = "Replace `call_user_func_array()` with variadic" }
-"style/prefer-static-private-method" = { fix = "unsafe", ported = false, status = "decided", summary = "Converts private methods to `static` where possible." }
+"style/prefer-static-private-method" = { fix = "unsafe", ported = true, status = "decided", summary = "Converts private methods to `static` where possible." }
 "style/prefer-str-contains" = { fix = "unsafe", sets = ["modernize"], ported = true, status = "decided", summary = "Replace `strpos()` and `stripos()` calls with `str_starts_with()` or `str_contains()` if possible." }
 "style/prefer-variadic-param" = { fix = "safe", sets = ["coding-style"], ported = true, status = "decided", summary = "Refactor `func_get_args()` in to a variadic param" }
 "style/prefer-while-loop" = { fix = "none", ported = false, origin = "mago", status = "decided", summary = "Suggests using a `while` loop instead of a `for` loop when the `for` loop does not have any" }
 "style/require-assign-set-padding" = { fix = "safe", sets = ["coding-style"], ported = true, status = "decided", summary = "Add extra space before new assign set" }
-"style/require-create-from-format-bang" = { fix = "unsafe", ported = false, status = "decided", summary = "The first argument of `DateTime::createFromFormat` method must start with `!`." }
+"style/require-create-from-format-bang" = { fix = "unsafe", ported = true, status = "decided", summary = "The first argument of `DateTime::createFromFormat` method must start with `!`." }
 "style/require-final-class" = { fix = "unsafe", ported = true, status = "decided", summary = "All classes must be final, except abstract ones and Doctrine entities." }
 "style/require-final-internal-class" = { fix = "unsafe", ported = true, status = "decided", summary = "Internal classes should be `final`." }
 "style/require-final-public-method" = { fix = "unsafe", ported = true, status = "decided", summary = "All `public` methods of `abstract` classes should be `final`." }
-"style/require-fopen-binary-flag" = { fix = "unsafe", ported = false, status = "decided", summary = "The flags in `fopen` calls must omit `t`, and `b` must be omitted or included consistently." }
-"style/require-fopen-flag-order" = { fix = "unsafe", ported = false, status = "decided", summary = "Order the flags in `fopen` calls, `b` and `t` must be last." }
+"style/require-fopen-binary-flag" = { fix = "unsafe", ported = true, status = "decided", summary = "The flags in `fopen` calls must omit `t`, and `b` must be omitted or included consistently." }
+"style/require-fopen-flag-order" = { fix = "unsafe", ported = true, status = "decided", summary = "Order the flags in `fopen` calls, `b` and `t` must be last." }
 "style/require-implode-separator" = { fix = "unsafe", sets = ["modernize"], ported = true, status = "decided", summary = "Function `implode` must be called with 2 arguments in the documented order." }
 "style/require-namespace" = { fix = "none", ported = false, origin = "mago", status = "decided", summary = "Detects files that contain definitions (classes, interfaces, enums, traits, functions, or constants)" }
 "style/require-naming-convention" = { fix = "none", ported = false, origin = "mago", status = "decided", summary = "Enforce naming conventions for classes, interfaces, traits, enums, functions, methods, properties, constants and variables (options per kind)." }

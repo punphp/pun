@@ -1,0 +1,536 @@
+{
+    "fixer": "is_null",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\LanguageConstruct\\IsNullFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/LanguageConstruct/IsNullFixerTest.php",
+    "case_count": 63,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\LanguageConstruct\\IsNullFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php $x = \"is_null\";"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php $x = ClassA::is_null(json_decode($x));"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php $x = ScopeA\\is_null(json_decode($x));"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php $x = namespace\\is_null(json_decode($x));"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php $x = $object->is_null(json_decode($x));"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php $x = new \\is_null(json_decode($x));"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php $x = new is_null(json_decode($x));"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 7,
+                    "args": [
+                        "<?php $x = new ScopeB\\is_null(json_decode($x));"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 8,
+                    "args": [
+                        "<?php is_nullSmth(json_decode($x));"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 9,
+                    "args": [
+                        "<?php smth_is_null(json_decode($x));"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 10,
+                    "args": [
+                        "<?php namespace Foo; function &is_null($x) { return null === $x; }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 11,
+                    "args": [
+                        "<?php \"SELECT ... is_null(json_decode($x)) ...\";"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 12,
+                    "args": [
+                        "<?php \"test\" . \"is_null\" . \"in concatenation\";"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 13,
+                    "args": [
+                        "<?php $x = null === json_decode($x);",
+                        "<?php $x = is_null(json_decode($x));"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 14,
+                    "args": [
+                        "<?php $x = null !== json_decode($x);",
+                        "<?php $x = !is_null(json_decode($x));"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 15,
+                    "args": [
+                        "<?php $x = null !== json_decode($x);",
+                        "<?php $x = ! is_null(json_decode($x));"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 16,
+                    "args": [
+                        "<?php $x = null !== json_decode($x);",
+                        "<?php $x = ! is_null( json_decode($x) );"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 17,
+                    "args": [
+                        "<?php $x = null === json_decode($x);",
+                        "<?php $x = \\is_null(json_decode($x));"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 18,
+                    "args": [
+                        "<?php $x = null !== json_decode($x);",
+                        "<?php $x = !\\is_null(json_decode($x));"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 19,
+                    "args": [
+                        "<?php $x = null !== json_decode($x);",
+                        "<?php $x = ! \\is_null(json_decode($x));"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 20,
+                    "args": [
+                        "<?php $x = null !== json_decode($x);",
+                        "<?php $x = ! \\is_null( json_decode($x) );"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 21,
+                    "args": [
+                        "<?php $x = null === json_decode($x).\".dist\";",
+                        "<?php $x = is_null(json_decode($x)).\".dist\";"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 22,
+                    "args": [
+                        "<?php $x = null !== json_decode($x).\".dist\";",
+                        "<?php $x = !is_null(json_decode($x)).\".dist\";"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 23,
+                    "args": [
+                        "<?php $x = null === json_decode($x).\".dist\";",
+                        "<?php $x = \\is_null(json_decode($x)).\".dist\";"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 24,
+                    "args": [
+                        "<?php $x = null !== json_decode($x).\".dist\";",
+                        "<?php $x = !\\is_null(json_decode($x)).\".dist\";"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 25,
+                    "args": [
+                        "<?php $x =\nnull === json_decode\n    (\n        $x\n    )\n\n;",
+                        "<?php $x =\nis_null\n\n(\n    json_decode\n    (\n        $x\n    )\n\n)\n\n;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 26,
+                    "args": [
+                        "<?php $x = /**/null === /**/ /** x*//**//** */json_decode($x)/***//*xx*/;",
+                        "<?php $x = /**/is_null/**/ /** x*/(/**//** */json_decode($x)/***/)/*xx*/;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 27,
+                    "args": [
+                        "<?php $x = null === (null === $x ? z(null === $y) : z(null === $z));",
+                        "<?php $x = is_null(is_null($x) ? z(is_null($y)) : z(is_null($z)));"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 28,
+                    "args": [
+                        "<?php $x = null === ($x = array());",
+                        "<?php $x = is_null($x = array());"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 29,
+                    "args": [
+                        "<?php null === a(null === a(null === a(null === b())));",
+                        "<?php \\is_null(a(\\is_null(a(\\is_null(a(\\is_null(b())))))));"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 30,
+                    "args": [
+                        "<?php $d= null === ($a)/*=?*/?>",
+                        "<?php $d= is_null(\n($a)/*=?*/\n)?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 31,
+                    "args": [
+                        "<?php is_null()?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 32,
+                    "args": [
+                        "<?php $result = (false === (null === $a)); ?>",
+                        "<?php $result = (false === is_null($a)); ?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 33,
+                    "args": [
+                        "<?php $result = ((null === $a) === false); ?>",
+                        "<?php $result = (is_null($a) === false); ?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 34,
+                    "args": [
+                        "<?php $result = (false !== (null === $a)); ?>",
+                        "<?php $result = (false !== is_null($a)); ?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 35,
+                    "args": [
+                        "<?php $result = ((null === $a) !== false); ?>",
+                        "<?php $result = (is_null($a) !== false); ?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 36,
+                    "args": [
+                        "<?php $result = (false == (null === $a)); ?>",
+                        "<?php $result = (false == is_null($a)); ?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 37,
+                    "args": [
+                        "<?php $result = ((null === $a) == false); ?>",
+                        "<?php $result = (is_null($a) == false); ?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 38,
+                    "args": [
+                        "<?php $result = (false != (null === $a)); ?>",
+                        "<?php $result = (false != is_null($a)); ?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 39,
+                    "args": [
+                        "<?php $result = ((null === $a) != false); ?>",
+                        "<?php $result = (is_null($a) != false); ?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 40,
+                    "args": [
+                        "<?php $result = (false <> (null === $a)); ?>",
+                        "<?php $result = (false <> is_null($a)); ?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 41,
+                    "args": [
+                        "<?php $result = ((null === $a) <> false); ?>",
+                        "<?php $result = (is_null($a) <> false); ?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 42,
+                    "args": [
+                        "<?php if (null === $x) echo \"foo\"; ?>",
+                        "<?php if (is_null($x)) echo \"foo\"; ?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 43,
+                    "args": [
+                        "<?php if (null === $x && $y) echo \"foo\"; ?>",
+                        "<?php if (is_null($x) && $y) echo \"foo\"; ?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 44,
+                    "args": [
+                        "<?php if (null === $x || $y) echo \"foo\"; ?>",
+                        "<?php if (is_null($x) || $y) echo \"foo\"; ?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 45,
+                    "args": [
+                        "<?php if (null === $x xor $y) echo \"foo\"; ?>",
+                        "<?php if (is_null($x) xor $y) echo \"foo\"; ?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 46,
+                    "args": [
+                        "<?php if (null === $x and $y) echo \"foo\"; ?>",
+                        "<?php if (is_null($x) and $y) echo \"foo\"; ?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 47,
+                    "args": [
+                        "<?php if (null === $x or $y) echo \"foo\"; ?>",
+                        "<?php if (is_null($x) or $y) echo \"foo\"; ?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 48,
+                    "args": [
+                        "<?php if ((null === $u or $v) and ($w || null === $x) xor (null !== $y and $z)) echo \"foo\"; ?>",
+                        "<?php if ((is_null($u) or $v) and ($w || is_null($x)) xor (!is_null($y) and $z)) echo \"foo\"; ?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 49,
+                    "args": [
+                        "<?php null === ($a ? $x : $y);",
+                        "<?php is_null($a ? $x : $y);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 50,
+                    "args": [
+                        "<?php $a === (null === $x);",
+                        "<?php $a === is_null($x);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 51,
+                    "args": [
+                        "<?php $a === (null === ($a ? $x : $y));",
+                        "<?php $a === is_null($a ? $x : $y);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 52,
+                    "args": [
+                        "<?php null !== ($a ?? null);",
+                        "<?php !is_null($a ?? null);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 53,
+                    "args": [
+                        "<?php null === $x;",
+                        "<?php is_null($x, );"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 54,
+                    "args": [
+                        "<?php null === $x;",
+                        "<?php is_null( $x , );"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 55,
+                    "args": [
+                        "<?php null === a(null === a(null === a(null === b(), ), ), );",
+                        "<?php \\is_null(a(\\is_null(a(\\is_null(a(\\is_null(b(), ), ), ), ), ), ), );"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 56,
+                    "args": [
+                        "<?php if ((null === $u or $v) and ($w || null === $x) xor (null !== $y and $z)) echo \"foo\"; ?>",
+                        "<?php if ((is_null($u, ) or $v) and ($w || is_null($x, )) xor (!is_null($y, ) and $z)) echo \"foo\"; ?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 57,
+                    "args": [
+                        "<?php null === ($a ? $x : $y );",
+                        "<?php is_null($a ? $x : $y, );"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 58,
+                    "args": [
+                        "<?php $a === (null === $x);",
+                        "<?php $a === is_null($x, );"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 59,
+                    "args": [
+                        "<?php $a === (null === ($a ? $x : $y ));",
+                        "<?php $a === is_null($a ? $x : $y, );"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 60,
+                    "args": [
+                        "<?php $a === (int) (null === $x) + (int) (null !== $y);",
+                        "<?php $a === (int) is_null($x) + (int) !is_null($y);"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix81",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.1.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\LanguageConstruct\\IsNullFixerTest",
+            "body": "    public function testFix81(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix81Cases",
+                    "key": "first-class callable",
+                    "args": [
+                        "<?php array_filter([], is_null(...));"
+                    ]
+                },
+                {
+                    "provider": "provideFix81Cases",
+                    "key": "first-class callable with leading slash",
+                    "args": [
+                        "<?php array_filter([], \\is_null(...));"
+                    ]
+                }
+            ]
+        }
+    ]
+}

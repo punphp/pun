@@ -1,0 +1,268 @@
+{
+    "fixer": "static_lambda",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\FunctionNotation\\StaticLambdaFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/FunctionNotation/StaticLambdaFixerTest.php",
+    "case_count": 32,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\FunctionNotation\\StaticLambdaFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": "sample",
+                    "args": [
+                        "<?php\n$a = static function () use ($b)\n{   echo $b;\n};",
+                        "<?php\n$a = function () use ($b)\n{   echo $b;\n};"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "minimal double fix case",
+                    "args": [
+                        "<?php $a=static function(){};$b=static function(){};",
+                        "<?php $a=function(){};$b=function(){};"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php $a  /**/  =   /**/     static function(){};",
+                        "<?php $a  /**/  =   /**/     function(){};"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php $a  /**/  =   /**/ static function(){};",
+                        "<?php $a  /**/  =   /**/ function(){};"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php $a  /**/  =   /**/static function(){};",
+                        "<?php $a  /**/  =   /**/function(){};"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php $a=static fn() => null;$b=static fn() => null;",
+                        "<?php $a=fn() => null;$b=fn() => null;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php $a  /**/  =   /**/     static fn() => null;",
+                        "<?php $a  /**/  =   /**/     fn() => null;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php $a  /**/  =   /**/ static fn() => null;",
+                        "<?php $a  /**/  =   /**/ fn() => null;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php $a  /**/  =   /**/static fn() => null; echo $this->foo();",
+                        "<?php $a  /**/  =   /**/fn() => null; echo $this->foo();"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 7,
+                    "args": [
+                        "<?php $a  /**/  =   /**/ static fn() => null ?> <?php echo $this->foo();",
+                        "<?php $a  /**/  =   /**/ fn() => null ?> <?php echo $this->foo();"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 8,
+                    "args": [
+                        "<?php\n                    class B\n                    {\n                        public function C()\n                        {\n                            $a = fn () => var_dump($this);\n                            $a();\n                        }\n                    }\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 9,
+                    "args": [
+                        "<?php static fn($a = [\"foo\" => \"bar\"]) => [];",
+                        "<?php fn($a = [\"foo\" => \"bar\"]) => [];"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 10,
+                    "args": [
+                        "<?php class Foo {\n                    public function getNames()\n                    {\n                        return \\array_map(\n                            static fn ($item) => $item->getName(),\n                            $this->getItems()\n                        );\n                    }\n                }",
+                        "<?php class Foo {\n                    public function getNames()\n                    {\n                        return \\array_map(\n                            fn ($item) => $item->getName(),\n                            $this->getItems()\n                        );\n                    }\n                }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 11,
+                    "args": [
+                        "<?php class Foo {\n                    public function getNames()\n                    {\n                        return \\array_map(\n                            fn ($item) => $item->getName(1, $this->foo()),\n                            $this->getItems()\n                        );\n                    }\n                }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 12,
+                    "args": [
+                        "<?php\n                    class A\n                    {\n                        public function B()\n                        {\n                            $a = function () {\n                                $b = 'this';\n                                var_dump($$b);\n                            };\n                            $a();\n                        }\n                    }\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 13,
+                    "args": [
+                        "<?php\n                    class B\n                    {\n                        public function C()\n                        {\n                            $a = function () {\n                                var_dump($THIS);\n                            };\n                            $a();\n                        }\n                    }\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 14,
+                    "args": [
+                        "<?php\n                    class D\n                    {\n                        public function E()\n                        {\n                            $a = function () {\n                                $c = include __DIR__.'/return_this.php';\n                                var_dump($c);\n                            };\n\n                            $a();\n                        }\n                    }\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 15,
+                    "args": [
+                        "<?php\n                    class F\n                    {\n                        public function G()\n                        {\n                            $a = function () {\n                                $d = include_once __DIR__.'/return_this.php';\n                                var_dump($d);\n                            };\n                            $a();\n                        }\n                    }\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 16,
+                    "args": [
+                        "<?php\n                    class H\n                    {\n                        public function I()\n                        {\n                            $a = function () {\n                                $e = require_once __DIR__.'/return_this.php';\n                                var_dump($e);\n                            };\n                            $a();\n                        }\n                    }\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 17,
+                    "args": [
+                        "<?php\n                    class J\n                    {\n                        public function K()\n                        {\n                            $a = function () {\n                                $f = require __DIR__.'/return_this.php';\n                                var_dump($f);\n                            };\n                            $a();\n                        }\n                    }\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 18,
+                    "args": [
+                        "<?php\n                    class L\n                    {\n                        public function M()\n                        {\n                            $a = function () {\n                                $g = 'this';\n                                $h = ${$g};\n                                var_dump($h);\n                            };\n                            $a();\n                        }\n                    }\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 19,
+                    "args": [
+                        "<?php\n                    class N\n                    {\n                        public function O()\n                        {\n                            $a = function () {\n                                $a = [0 => 'this'];\n                                var_dump(${$a[0]});\n                            };\n                        }\n                    }\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 20,
+                    "args": [
+                        "<?php\n                    class N\n                    {\n                        public function O()\n                        {\n                            $a = function () {\n                                return new class($this) {};\n                            };\n                        }\n                    }\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 21,
+                    "args": [
+                        "<?php function test(){} test();"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 22,
+                    "args": [
+                        "<?php abstract class P\n                {\n                    function test0(){}\n                    public function test1(){}\n                    protected function test2(){}\n                    protected abstract function test3();\n                    private function test4(){}\n                }\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 23,
+                    "args": [
+                        "<?php\n\nclass Q\n{\n    public function abc()\n    {\n        $b = function () {\n            $c = eval('return $this;');\n            var_dump($c);\n        };\n\n        $b();\n    }\n}\n\n$b = new Q();\n$b->abc();\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 24,
+                    "args": [
+                        "<?php\n\n                class A {}\n                class B extends A {\n                    public function foo()\n                    {\n                        $c = function () {\n                            return parent::foo();\n                        };\n                    }\n                }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 25,
+                    "args": [
+                        "<?php\n                    class B\n                    {\n                        public function C()\n                        {\n                            return array_map(\n                                fn () => $this,\n                                []\n                            );\n                        }\n                    }\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "anonymous function returning defining class that uses `$this`",
+                    "args": [
+                        "<?php\n$f = static function () {\n    class C extends P {\n        public function f() { return $this->f2(); }\n    }\n};",
+                        "<?php\n$f = function () {\n    class C extends P {\n        public function f() { return $this->f2(); }\n    }\n};"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "anonymous function defining trait that uses `$this`",
+                    "args": [
+                        "<?php\n$f = static function () {\n    trait T {\n        public function f() { return $this->f2(); }\n    }\n};",
+                        "<?php\n$f = function () {\n    trait T {\n        public function f() { return $this->f2(); }\n    }\n};"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "anonymous function using anonymous class that uses `$this`",
+                    "args": [
+                        "<?php\n$f = static function () {\n    $o = new class { function f() { return $this->x; } };\n    return $o->f();\n};",
+                        "<?php\n$f = function () {\n    $o = new class { function f() { return $this->x; } };\n    return $o->f();\n};"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "arrow function returning anonymous class that uses `$this`",
+                    "args": [
+                        "<?php return static fn () => new class { function f() { return $this->x; } };",
+                        "<?php return fn () => new class { function f() { return $this->x; } };"
+                    ]
+                }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,147 @@
+{
+    "fixer": "phpdoc_array_type",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\Phpdoc\\PhpdocArrayTypeFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/Phpdoc/PhpdocArrayTypeFixerTest.php",
+    "case_count": 15,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Phpdoc\\PhpdocArrayTypeFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php\n/** @tagNotSupportingTypes string[] */\n/** @var array{'a', 'b[]', 'c'} */\n/** @var 'x|T1[][]|y' */\n/** @var \"x|T2[][]|y\" */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php /** @var array<int> */",
+                        "<?php /** @var int[] */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php /** @param array<array<array<array<int>>>> $x */",
+                        "<?php /** @param int[][][][] $x */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php /** @param array<array<array<array<int>>>> $x */",
+                        "<?php /** @param int    [][  ][]  [] $x */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php /** @return iterable<array<int>> */",
+                        "<?php /** @return iterable<int[]> */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php /** @var array<Foo\\Bar> */",
+                        "<?php /** @var Foo\\Bar[] */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php /** @var array<Foo_Bar> */",
+                        "<?php /** @var Foo_Bar[] */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 7,
+                    "args": [
+                        "<?php /** @var array<bool>|array<float>|array<int>|array<string> */",
+                        "<?php /** @var array<bool>|float[]|array<int>|string[] */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 8,
+                    "args": [
+                        "<?php\n/**\n * @param array{foo?: array<int>} $foo\n * @param callable(array<int>): array<int> $bar\n */",
+                        "<?php\n/**\n * @param array{foo?: int[]} $foo\n * @param callable(int[]): int[] $bar\n */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 9,
+                    "args": [
+                        "<?php\n/**\n * @var array<array{'a'}>\n * @var \\Closure(iterable<\\DateTime>): array<void>\n * @var array<Yes>|'No[][]'|array<array<Yes>>|'No[]'\n */",
+                        "<?php\n/**\n * @var array{'a'}[]\n * @var \\Closure(iterable<\\DateTime>): void[]\n * @var Yes[]|'No[][]'|Yes[][]|'No[]'\n */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 10,
+                    "args": [
+                        "<?php\n/**\n * @param ?array<type> $a\n * @param ?array<array<type>> $b\n * @param ?'literal[]' $c\n */",
+                        "<?php\n/**\n * @param ?type[] $a\n * @param ?type[][] $b\n * @param ?'literal[]' $c\n */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 11,
+                    "args": [
+                        "<?php /** @var array<Foo|Bar> */",
+                        "<?php /** @var (Foo|Bar)[] */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 12,
+                    "args": [
+                        "<?php /** @var (Foo&Bar)|array<Baz> */",
+                        "<?php /** @var (Foo&Bar)|Baz[] */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 13,
+                    "args": [
+                        "<?php /** @var array<array<array<array<array<array<array<array<array<array<array<array<array<array<array<array<array<array<array<array<array<array<array<array<array<array<array<array<array<array<array<array<string>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> */",
+                        "<?php /** @var string[][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][] */"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 14,
+                    "args": [
+                        "<?php /** @return array<Foo<covariant TEntity>> */",
+                        "<?php /** @return Foo<covariant TEntity>[] */"
+                    ]
+                }
+            ]
+        }
+    ]
+}

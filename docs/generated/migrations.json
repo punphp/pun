@@ -341,7 +341,7 @@
         "rules": [
           "lint/style/require-create-from-format-bang"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -569,7 +569,7 @@
         "rules": [
           "lint/style/require-fopen-flag-order"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -579,7 +579,7 @@
         "rules": [
           "lint/style/require-fopen-binary-flag"
         ],
-        "note": "Same. Options: renamed for TOML: [options.\"lint/style/require-fopen-binary-flag\"]. Planned: not ported yet.",
+        "note": "Same. Options: renamed for TOML: [options.\"lint/style/require-fopen-binary-flag\"].",
         "unsupported": false
       },
       {
@@ -787,7 +787,7 @@
         "rules": [
           "lint/style/no-is-null"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -1443,7 +1443,7 @@
         "rules": [
           "lint/strings/no-trailing-whitespace-in-string"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -2051,7 +2051,7 @@
         "rules": [
           "lint/style/prefer-generic-array-phpdoc"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -2091,7 +2091,7 @@
         "rules": [
           "lint/style/prefer-list-phpdoc"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -2539,7 +2539,7 @@
         "rules": [
           "lint/control-flow/prefer-bare-return"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -2725,7 +2725,7 @@
         "rules": [
           "lint/performance/prefer-static-closure"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -2735,7 +2735,7 @@
         "rules": [
           "lint/style/prefer-static-private-method"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -2785,7 +2785,7 @@
         "rules": [
           "lint/strings/require-string-line-ending"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -2845,7 +2845,7 @@
         "rules": [
           "lint/style/prefer-short-ternary"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -3327,7 +3327,7 @@
         "rules": [
           "lint/style/require-create-from-format-bang"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -3555,7 +3555,7 @@
         "rules": [
           "lint/style/require-fopen-flag-order"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -3565,7 +3565,7 @@
         "rules": [
           "lint/style/require-fopen-binary-flag"
         ],
-        "note": "Same. Options: renamed for TOML: [options.\"lint/style/require-fopen-binary-flag\"]. Planned: not ported yet.",
+        "note": "Same. Options: renamed for TOML: [options.\"lint/style/require-fopen-binary-flag\"].",
         "unsupported": false
       },
       {
@@ -3773,7 +3773,7 @@
         "rules": [
           "lint/style/no-is-null"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -4429,7 +4429,7 @@
         "rules": [
           "lint/strings/no-trailing-whitespace-in-string"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -5037,7 +5037,7 @@
         "rules": [
           "lint/style/prefer-generic-array-phpdoc"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -5077,7 +5077,7 @@
         "rules": [
           "lint/style/prefer-list-phpdoc"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -5525,7 +5525,7 @@
         "rules": [
           "lint/control-flow/prefer-bare-return"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -5711,7 +5711,7 @@
         "rules": [
           "lint/performance/prefer-static-closure"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -5721,7 +5721,7 @@
         "rules": [
           "lint/style/prefer-static-private-method"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -5771,7 +5771,7 @@
         "rules": [
           "lint/strings/require-string-line-ending"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -5831,7 +5831,7 @@
         "rules": [
           "lint/style/prefer-short-ternary"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -25587,7 +25587,7 @@
         "rules": [
           "lint/style/no-is-null"
         ],
-        "note": "Same. Options: none (Mago options do not carry; Pun uses the CS-Fixer rule options). Planned: not ported yet.",
+        "note": "Same. Options: none (Mago options do not carry; Pun uses the CS-Fixer rule options).",
         "unsupported": false
       },
       {
@@ -26287,7 +26287,7 @@
         "rules": [
           "lint/performance/prefer-static-closure"
         ],
-        "note": "Same. Options: none (Mago options do not carry; Pun uses the CS-Fixer rule options). Planned: not ported yet.",
+        "note": "Same. Options: none (Mago options do not carry; Pun uses the CS-Fixer rule options).",
         "unsupported": false
       },
       {
