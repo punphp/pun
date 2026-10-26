@@ -53,8 +53,7 @@ pub fn doc_at(c: &Checker, span: Span) -> Option<(Vec<u8>, Arc<FileScopes>)> {
 
 /// The `NameScope` of a PHPDoc at `span` in class-like `class` (`None` outside one), with `templates` in scope.
 pub fn scope_at(c: &Checker, span: Span, class: Option<&ClassLikeMetadata>) -> NameScope {
-    let names = c
-        .file_contents(span.file_id)
+    let names = file_contents(c, span.file_id)
         .map(|contents| scopes_of(span.file_id, &contents).at(span.start.offset))
         .unwrap_or_default();
     let mut scope = NameScope {
