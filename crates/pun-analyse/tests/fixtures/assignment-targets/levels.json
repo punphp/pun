@@ -1,0 +1,12 @@
+{
+  "legacy-regression": "<?php\n[array(, $item)] = [[1, 2]];\n",
+  "reference-regression": "<?php\n[, &$item] = [1, 2];\n",
+  "nested-legacy": "<?php\n[array(array($item))] = [[[1]]];\n",
+  "keyed-legacy": "<?php\n['row' => array('item' => $item)] = ['row' => ['item' => 1]];\n",
+  "keyed-reference": "<?php\n['item' => &$item] = ['item' => 1];\n",
+  "legacy-keyed-reference": "<?php\n[array('item' => &$item)] = [['item' => 1]];\n",
+  "legacy-invalid-value": "<?php\n[array(17)] = [[1]];\n",
+  "short-invalid-value": "<?php\n[17] = [1];\n",
+  "list-literal-short": "<?php\n$item = 1;\nlist([$item]) = [[1]];\n",
+  "list-literal-legacy": "<?php\n$item = 1;\nlist(array($item)) = [[1]];\n"
+}

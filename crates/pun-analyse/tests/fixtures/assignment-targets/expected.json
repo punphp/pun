@@ -1,0 +1,510 @@
+{
+    "inputs": [
+        {
+            "file": "append-key-control.php",
+            "line": 3,
+            "identifier": "offsetAccess.noDim",
+            "message": "Cannot use [] for reading.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "append-read-control.php",
+            "line": 3,
+            "identifier": "offsetAccess.noDim",
+            "message": "Cannot use [] for reading.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "foreach-list-literal.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "legacy-invalid-call.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "legacy-invalid-value.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "legacy-list-literal-legacy.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "legacy-this.php",
+            "line": 4,
+            "identifier": "assign.this",
+            "message": "Cannot re-assign $this.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "list-legacy-append-control.php",
+            "line": 3,
+            "identifier": "offsetAccess.noDim",
+            "message": "Cannot use [] for reading.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "list-legacy-append-control.php",
+            "line": 3,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "list-literal-legacy.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "list-literal-short.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "reference-this.php",
+            "line": 4,
+            "identifier": "assign.this",
+            "message": "Cannot re-assign $this.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "reference-this.php",
+            "line": 5,
+            "identifier": "assign.this",
+            "message": "Cannot re-assign $this.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "short-invalid-value.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "short-list-literal-legacy.php",
+            "line": 2,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "unary-invalid-value.php",
+            "line": 3,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        }
+    ],
+    "nullsafe": [
+        {
+            "file": "foreach-legacy-nullsafe.php",
+            "line": 3,
+            "identifier": "nullsafe.assign",
+            "message": "Nullsafe operator cannot be on left side of assignment.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "foreach-reference-nullsafe.php",
+            "line": 3,
+            "identifier": "nullsafe.assign",
+            "message": "Nullsafe operator cannot be on left side of assignment.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "key-nullsafe.php",
+            "line": 3,
+            "identifier": "nullsafe.assign",
+            "message": "Nullsafe operator cannot be on left side of assignment.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "legacy-key-nullsafe.php",
+            "line": 3,
+            "identifier": "nullsafe.assign",
+            "message": "Nullsafe operator cannot be on left side of assignment.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "legacy-keyed-reference-nullsafe.php",
+            "line": 3,
+            "identifier": "nullsafe.assign",
+            "message": "Nullsafe operator cannot be on left side of assignment.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "legacy-nullsafe.php",
+            "line": 3,
+            "identifier": "nullsafe.assign",
+            "message": "Nullsafe operator cannot be on left side of assignment.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "list-literal-legacy-nullsafe.php",
+            "line": 3,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "list-literal-short-nullsafe.php",
+            "line": 3,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "list-reference-nullsafe.php",
+            "line": 3,
+            "identifier": "nullsafe.assign",
+            "message": "Nullsafe operator cannot be on left side of assignment.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "nested-legacy-reference-nullsafe.php",
+            "line": 3,
+            "identifier": "nullsafe.assign",
+            "message": "Nullsafe operator cannot be on left side of assignment.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "nullsafe-before-invalid-value.php",
+            "line": 3,
+            "identifier": "nullsafe.assign",
+            "message": "Nullsafe operator cannot be on left side of assignment.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "nullsafe-before-reference-rhs.php",
+            "line": 3,
+            "identifier": "nullsafe.assign",
+            "message": "Nullsafe operator cannot be on left side of assignment.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "nullsafe-reference-chain.php",
+            "line": 3,
+            "identifier": "nullsafe.assign",
+            "message": "Nullsafe operator cannot be on left side of assignment.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "reference-nullsafe.php",
+            "line": 3,
+            "identifier": "nullsafe.assign",
+            "message": "Nullsafe operator cannot be on left side of assignment.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "reference-rhs-before-invalid-target.php",
+            "line": 3,
+            "identifier": "nullsafe.byRef",
+            "message": "Nullsafe operator cannot be on right side of assignment by reference.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "reference-rhs-nullsafe.php",
+            "line": 3,
+            "identifier": "nullsafe.byRef",
+            "message": "Nullsafe operator cannot be on right side of assignment by reference.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "short-list-literal-nullsafe.php",
+            "line": 3,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        }
+    ],
+    "levels": {
+        "0": [
+            {
+                "file": "legacy-invalid-value.php",
+                "line": 2,
+                "identifier": "assign.invalidExpr",
+                "message": "Expression on left side of assignment is not assignable.",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "list-literal-legacy.php",
+                "line": 3,
+                "identifier": "assign.invalidExpr",
+                "message": "Expression on left side of assignment is not assignable.",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "list-literal-short.php",
+                "line": 3,
+                "identifier": "assign.invalidExpr",
+                "message": "Expression on left side of assignment is not assignable.",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "short-invalid-value.php",
+                "line": 2,
+                "identifier": "assign.invalidExpr",
+                "message": "Expression on left side of assignment is not assignable.",
+                "tip": null,
+                "ignorable": false
+            }
+        ],
+        "1": [
+            {
+                "file": "legacy-invalid-value.php",
+                "line": 2,
+                "identifier": "assign.invalidExpr",
+                "message": "Expression on left side of assignment is not assignable.",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "list-literal-legacy.php",
+                "line": 3,
+                "identifier": "assign.invalidExpr",
+                "message": "Expression on left side of assignment is not assignable.",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "list-literal-short.php",
+                "line": 3,
+                "identifier": "assign.invalidExpr",
+                "message": "Expression on left side of assignment is not assignable.",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "short-invalid-value.php",
+                "line": 2,
+                "identifier": "assign.invalidExpr",
+                "message": "Expression on left side of assignment is not assignable.",
+                "tip": null,
+                "ignorable": false
+            }
+        ],
+        "2": [
+            {
+                "file": "legacy-invalid-value.php",
+                "line": 2,
+                "identifier": "assign.invalidExpr",
+                "message": "Expression on left side of assignment is not assignable.",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "list-literal-legacy.php",
+                "line": 3,
+                "identifier": "assign.invalidExpr",
+                "message": "Expression on left side of assignment is not assignable.",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "list-literal-short.php",
+                "line": 3,
+                "identifier": "assign.invalidExpr",
+                "message": "Expression on left side of assignment is not assignable.",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "short-invalid-value.php",
+                "line": 2,
+                "identifier": "assign.invalidExpr",
+                "message": "Expression on left side of assignment is not assignable.",
+                "tip": null,
+                "ignorable": false
+            }
+        ],
+        "7": [
+            {
+                "file": "legacy-invalid-value.php",
+                "line": 2,
+                "identifier": "assign.invalidExpr",
+                "message": "Expression on left side of assignment is not assignable.",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "list-literal-legacy.php",
+                "line": 3,
+                "identifier": "assign.invalidExpr",
+                "message": "Expression on left side of assignment is not assignable.",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "list-literal-short.php",
+                "line": 3,
+                "identifier": "assign.invalidExpr",
+                "message": "Expression on left side of assignment is not assignable.",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "short-invalid-value.php",
+                "line": 2,
+                "identifier": "assign.invalidExpr",
+                "message": "Expression on left side of assignment is not assignable.",
+                "tip": null,
+                "ignorable": false
+            }
+        ],
+        "8": [
+            {
+                "file": "legacy-invalid-value.php",
+                "line": 2,
+                "identifier": "assign.invalidExpr",
+                "message": "Expression on left side of assignment is not assignable.",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "list-literal-legacy.php",
+                "line": 3,
+                "identifier": "assign.invalidExpr",
+                "message": "Expression on left side of assignment is not assignable.",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "list-literal-short.php",
+                "line": 3,
+                "identifier": "assign.invalidExpr",
+                "message": "Expression on left side of assignment is not assignable.",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "short-invalid-value.php",
+                "line": 2,
+                "identifier": "assign.invalidExpr",
+                "message": "Expression on left side of assignment is not assignable.",
+                "tip": null,
+                "ignorable": false
+            }
+        ],
+        "9": [
+            {
+                "file": "legacy-invalid-value.php",
+                "line": 2,
+                "identifier": "assign.invalidExpr",
+                "message": "Expression on left side of assignment is not assignable.",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "list-literal-legacy.php",
+                "line": 3,
+                "identifier": "assign.invalidExpr",
+                "message": "Expression on left side of assignment is not assignable.",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "list-literal-short.php",
+                "line": 3,
+                "identifier": "assign.invalidExpr",
+                "message": "Expression on left side of assignment is not assignable.",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "short-invalid-value.php",
+                "line": 2,
+                "identifier": "assign.invalidExpr",
+                "message": "Expression on left side of assignment is not assignable.",
+                "tip": null,
+                "ignorable": false
+            }
+        ],
+        "10": [
+            {
+                "file": "legacy-invalid-value.php",
+                "line": 2,
+                "identifier": "assign.invalidExpr",
+                "message": "Expression on left side of assignment is not assignable.",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "list-literal-legacy.php",
+                "line": 3,
+                "identifier": "assign.invalidExpr",
+                "message": "Expression on left side of assignment is not assignable.",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "list-literal-short.php",
+                "line": 3,
+                "identifier": "assign.invalidExpr",
+                "message": "Expression on left side of assignment is not assignable.",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "short-invalid-value.php",
+                "line": 2,
+                "identifier": "assign.invalidExpr",
+                "message": "Expression on left side of assignment is not assignable.",
+                "tip": null,
+                "ignorable": false
+            }
+        ]
+    }
+}

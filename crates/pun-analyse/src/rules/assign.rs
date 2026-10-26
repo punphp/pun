@@ -30,27 +30,53 @@ fn unparenthesized<'e, 'arena>(mut e: &'e Expression<'arena>) -> &'e Expression<
     e
 }
 
-/// A destructuring target's items (`List_::$items`) as (key, value, `short` for the value). php-parser has `list()`
-/// as a List_, and `[...]` as one only where `short` (a target's top level, or in a `[...]` list): in `list()`, a
-/// `[...]` is an Array_.
-type Item<'e, 'arena> = (Option<&'e Expression<'arena>>, &'e Expression<'arena>, bool);
+/// PHPParser converts a root short-array target, then recursively converts both Array_ kinds in its values.
+/// Explicit list() is already a List_, but its children are not passed through fixupArrayDestructuring.
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum ListRole {
+    Read,
+    Target,
+    ArrayItem,
+}
 
-fn list_items<'e, 'arena>(e: &'e Expression<'arena>, short: bool) -> Option<Vec<Item<'e, 'arena>>> {
-    let (elements, short) = match e {
-        Expression::List(l) => (&l.elements, false),
-        Expression::Array(a) if short => (&a.elements, true),
+/// A List_ item's key, value (without ArrayItem::$byRef), and the parser role of its value.
+type Item<'e, 'arena> = (
+    Option<&'e Expression<'arena>>,
+    &'e Expression<'arena>,
+    ListRole,
+);
+
+fn list_items<'e, 'arena>(
+    e: &'e Expression<'arena>,
+    role: ListRole,
+) -> Option<Vec<Item<'e, 'arena>>> {
+    let (elements, child_role) = match e {
+        Expression::List(l) => (&l.elements, ListRole::Read),
+        Expression::Array(a) if role != ListRole::Read => (&a.elements, ListRole::ArrayItem),
+        Expression::LegacyArray(a) if role == ListRole::ArrayItem => {
+            (&a.elements, ListRole::ArrayItem)
+        }
         _ => return None,
     };
     Some(
         elements
             .iter()
-            .filter_map(|item| match item {
-                ArrayElement::KeyValue(kv) => Some((Some(kv.key), kv.value, short)),
-                ArrayElement::Value(ValueArrayElement { value })
-                | ArrayElement::Variadic(VariadicArrayElement { value, .. }) => {
-                    Some((None, *value, short))
-                }
-                ArrayElement::Missing(_) => None,
+            .filter_map(|item| {
+                let (key, value) = match item {
+                    ArrayElement::KeyValue(kv) => (Some(kv.key), kv.value),
+                    ArrayElement::Value(ValueArrayElement { value })
+                    | ArrayElement::Variadic(VariadicArrayElement { value, .. }) => (None, *value),
+                    ArrayElement::Missing(_) => return None,
+                };
+                // php.y's ampersand variable array_pair stores byRef on ArrayItem, not on its value.
+                // Do not unwrap references in arbitrary expressions or unwrap parentheses around one.
+                let value = match value {
+                    Expression::UnaryPrefix(reference) if reference.operator.is_reference() => {
+                        reference.operand
+                    }
+                    value => value,
+                };
+                Some((key, value, child_role))
             })
             .collect(),
     )
@@ -58,11 +84,11 @@ fn list_items<'e, 'arena>(e: &'e Expression<'arena>, short: bool) -> Option<Vec<
 
 /// NullsafeCheck::containsNullSafe() on an expression read (a returned or referenced expression).
 pub fn contains_nullsafe(e: &Expression) -> bool {
-    nullsafe(e, false)
+    nullsafe(e, ListRole::Read)
 }
 
-/// NullsafeCheck::containsNullSafe(). `short`: a `[...]` here is a List_ (see [`list_items()`]).
-fn nullsafe(e: &Expression, short: bool) -> bool {
+/// NullsafeCheck::containsNullSafe() on the PHPParser expression projected by [`list_items()`].
+fn nullsafe(e: &Expression, role: ListRole) -> bool {
     let e = unparenthesized(e);
     match e {
         Expression::Access(Access::NullSafeProperty(_))
@@ -77,9 +103,9 @@ fn nullsafe(e: &Expression, short: bool) -> bool {
         Expression::Call(Call::StaticMethod(m)) => {
             is_expr_class(m.class) && contains_nullsafe(m.class)
         }
-        _ => list_items(e, short).is_some_and(|items| {
-            items.into_iter().any(|(key, value, short)| {
-                key.is_some_and(contains_nullsafe) || nullsafe(value, short)
+        _ => list_items(e, role).is_some_and(|items| {
+            items.into_iter().any(|(key, value, role)| {
+                key.is_some_and(contains_nullsafe) || nullsafe(value, role)
             })
         }),
     }
@@ -97,24 +123,24 @@ fn is_expr_class(class: &Expression) -> bool {
 }
 
 /// InvalidAssignVarRule's containsNonAssignableExpression().
-fn non_assignable(e: &Expression, short: bool) -> bool {
+fn non_assignable(e: &Expression, role: ListRole) -> bool {
     let e = unparenthesized(e);
     match e {
         Expression::Variable(_)
         | Expression::Access(Access::Property(_) | Access::StaticProperty(_))
         | Expression::ArrayAccess(_)
         | Expression::ArrayAppend(_) => false,
-        _ => list_items(e, short).is_none_or(|items| {
+        _ => list_items(e, role).is_none_or(|items| {
             items
                 .into_iter()
-                .any(|(_, value, short)| non_assignable(value, short))
+                .any(|(_, value, role)| non_assignable(value, role))
         }),
     }
 }
 
 /// InvalidAssignVarRule on `var = expr` (`by_ref`: `=&`, with `expr` the referenced expression).
 fn invalid_assign_var(c: &mut Checker, at: Span, var: &Expression, expr: Option<&Expression>) {
-    if nullsafe(var, true) {
+    if nullsafe(var, ListRole::Target) {
         c.report_non_ignorable(
             at,
             "nullsafe.assign",
@@ -128,7 +154,7 @@ fn invalid_assign_var(c: &mut Checker, at: Span, var: &Expression, expr: Option<
             "Nullsafe operator cannot be on right side of assignment by reference.".to_string(),
             None,
         );
-    } else if non_assignable(var, true) {
+    } else if non_assignable(var, ListRole::Target) {
         c.report_non_ignorable(
             at,
             "assign.invalidExpr",
@@ -150,20 +176,20 @@ pub fn assignment(c: &mut Checker, a: &Assignment) {
     };
     invalid_assign_var(c, a.span(), a.lhs, referenced);
     if let AssignmentOperator::Assign(_) = a.operator {
-        mark_assigned(c, a.lhs, true);
+        mark_assigned(c, a.lhs, ListRole::Target);
         if let Some(r) = referenced {
             c.assign.assigned.insert(unparenthesized(r).span());
         }
     }
-    assign_var(c, a.lhs, true);
+    assign_var(c, a.lhs, ListRole::Target);
 }
 
 /// processAssignVar() with `$enterExpressionAssign`: the `[]` fetches of the target's dim-fetch chains.
-fn mark_assigned(c: &mut Checker, var: &Expression, short: bool) {
+fn mark_assigned(c: &mut Checker, var: &Expression, role: ListRole) {
     let mut var = unparenthesized(var);
-    if let Some(items) = list_items(var, short) {
-        for (_, value, short) in items {
-            mark_assigned(c, value, short);
+    if let Some(items) = list_items(var, role) {
+        for (_, value, role) in items {
+            mark_assigned(c, value, role);
         }
         return;
     }
@@ -181,11 +207,11 @@ fn mark_assigned(c: &mut Checker, var: &Expression, short: bool) {
 
 /// The VariableAssignNodes processAssignVar() emits for `var`: a variable, the variable a dim-fetch chain starts
 /// at, and those of a list's items.
-fn assign_var(c: &mut Checker, var: &Expression, short: bool) {
+fn assign_var(c: &mut Checker, var: &Expression, role: ListRole) {
     let mut var = unparenthesized(var);
-    if let Some(items) = list_items(var, short) {
-        for (_, value, short) in items {
-            assign_var(c, value, short);
+    if let Some(items) = list_items(var, role) {
+        for (_, value, role) in items {
+            assign_var(c, value, role);
         }
         return;
     }
@@ -231,12 +257,12 @@ pub fn foreach(c: &mut Checker, f: &Foreach) {
         Expression::UnaryPrefix(u) if u.operator.is_reference() => u.operand,
         v => v,
     };
-    if list_items(unparenthesized(value), true).is_some() {
+    if list_items(unparenthesized(value), ListRole::Target).is_some() {
         invalid_assign_var(c, value.span(), value, None);
     }
     for target in key.into_iter().chain([value]) {
         c.assign.virtual_targets.push(target.span());
-        assign_var(c, target, true);
+        assign_var(c, target, ListRole::Target);
     }
 }
 
@@ -249,14 +275,14 @@ pub fn catch(c: &mut Checker, clause: &TryCatchClause) {
 
 /// `++`/`--` assign their operand virtually.
 pub fn increment(c: &mut Checker, operand: &Expression) {
-    assign_var(c, operand, true);
+    assign_var(c, operand, ListRole::Read);
 }
 
 /// `unset($a[$k])` assigns its dim-fetch chain virtually.
 pub fn unset(c: &mut Checker, u: &Unset) {
     for value in u.values.iter() {
         if let Expression::ArrayAccess(_) = unparenthesized(value) {
-            assign_var(c, value, true);
+            assign_var(c, value, ListRole::Read);
         }
     }
 }
@@ -453,7 +479,8 @@ fn normalized_arg<'e, 'arena>(
 /// by-reference closure, array_pop, sort and the rest).
 pub fn function_virtual_assign(c: &mut Checker, call: &FunctionCall) {
     if let Some(array) = virtual_assigned(c, call) {
-        assign_var(c, array, true);
+        // A mutated argument keeps its expression kind; PHPParser does not convert its arrays to List_.
+        assign_var(c, array, ListRole::Read);
     }
 }
 
@@ -526,7 +553,7 @@ pub fn arguments(c: &mut Checker, call: Callee) {
             c.assign.assigned.insert(value.span());
         }
         if !matches!(value, Expression::Variable(Variable::Direct(v)) if v.name == b"$this") {
-            assign_var(c, value, true);
+            assign_var(c, value, ListRole::Read);
         }
     }
 }

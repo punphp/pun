@@ -1,0 +1,22 @@
+{
+  "legacy-nullsafe": "<?php\n(function (?\\stdClass $object) {\n    [array($object?->field)] = [[1]];\n});\n",
+  "reference-nullsafe": "<?php\n(function (?\\stdClass $object) {\n    [&$object?->field] = [1];\n});\n",
+  "list-reference-nullsafe": "<?php\n(function (?\\stdClass $object) {\n    list(&$object?->field) = [1];\n});\n",
+  "legacy-keyed-reference-nullsafe": "<?php\n(function (?\\stdClass $object) {\n    [array('item' => &$object?->field)] = [[1]];\n});\n",
+  "legacy-key-nullsafe": "<?php\n(function (?\\stdClass $object) {\n    [array($object?->field => &$item)] = [[1]];\n});\n",
+  "key-nullsafe": "<?php\n(function (?\\stdClass $object) {\n    [$object?->field => &$item] = [1];\n});\n",
+  "nested-legacy-reference-nullsafe": "<?php\n(function (?\\stdClass $object) {\n    [array(array(&$object?->field))] = [[[1]]];\n});\n",
+  "nullsafe-before-invalid-value": "<?php\n(function (?\\stdClass $object) {\n    [array('invalid', &$object?->field)] = [[1, 2]];\n});\n",
+  "nullsafe-reference-chain": "<?php\n(function (?\\stdClass $object) {\n    [array(&$object?->field->next[0])] = [[1]];\n});\n",
+  "nullsafe-before-reference-rhs": "<?php\n(function (?\\stdClass $object) {\n    $object?->field =& $object?->other;\n});\n",
+  "reference-rhs-before-invalid-target": "<?php\n(function (?\\stdClass $object) {\n    strlen('a') =& $object?->field;\n});\n",
+  "reference-rhs-nullsafe": "<?php\n(function (?\\stdClass $object) {\n    $alias =& $object?->field;\n});\n",
+  "list-literal-short-nullsafe": "<?php\n(function (?\\stdClass $object) {\n    list([$object?->field]) = [[1]];\n});\n",
+  "list-literal-legacy-nullsafe": "<?php\n(function (?\\stdClass $object) {\n    list(array($object?->field)) = [[1]];\n});\n",
+  "short-list-literal-nullsafe": "<?php\n(function (?\\stdClass $object) {\n    [list(array($object?->field))] = [[[1]]];\n});\n",
+  "legacy-reference-read": "<?php\n(function (?\\stdClass $object) {\n    $alias =& array($object?->field)[0];\n});\n",
+  "short-reference-read": "<?php\n(function (?\\stdClass $object) {\n    $alias =& [$object?->field][0];\n});\n",
+  "ordinary-nullsafe-read": "<?php\n(function (?\\stdClass $object) {\n    $values = [array($object?->field)];\n    $value = $object?->field;\n});\n",
+  "foreach-reference-nullsafe": "<?php\n(function (?\\stdClass $object) {\n    foreach ([[1]] as [&$object?->field]) {}\n});\n",
+  "foreach-legacy-nullsafe": "<?php\n(function (?\\stdClass $object) {\n    foreach ([[[1]]] as [array($object?->field)]) {}\n});\n"
+}
