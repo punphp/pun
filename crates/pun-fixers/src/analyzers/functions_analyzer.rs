@@ -39,6 +39,34 @@ impl FunctionsAnalyzer {
         Self::default()
     }
 
+    /// `isTheSameClassCall`: `$this->name(`, `self::name(` or `static::name(`.
+    pub(crate) fn is_the_same_class_call(&self, tokens: &Tokens, index: usize) -> bool {
+        let Some(operator_index) = tokens.get_prev_meaningful_token(index) else {
+            return false;
+        };
+        if !tokens[operator_index].is_object_operator()
+            && !tokens[operator_index].is_kind(T_DOUBLE_COLON)
+        {
+            return false;
+        }
+        let Some(reference_index) = tokens.get_prev_meaningful_token(operator_index) else {
+            return false;
+        };
+        if !tokens[reference_index].equals_any(
+            &[
+                (T_VARIABLE, "$this").into(),
+                (T_STRING, "self").into(),
+                (T_STATIC, "static").into(),
+            ],
+            false,
+        ) {
+            return false;
+        }
+        tokens
+            .get_next_meaningful_token(index)
+            .is_some_and(|i| tokens[i].equals("(", true))
+    }
+
     pub(crate) fn is_global_function_call(&self, tokens: &Tokens, index: usize) -> bool {
         self.is_global_function_call_or_usage(tokens, index, true)
     }
