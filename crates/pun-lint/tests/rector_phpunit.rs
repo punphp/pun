@@ -377,3 +377,10 @@ fn with_callback_identical_to_standalone_asserts() {
         "WithCallbackIdenticalToStandaloneAssertsRector",
     );
 }
+
+#[test]
+fn ticket_annotation_to_attribute() {
+    // Pun/inline_tag: phpdoc-parser ends a generic tag's value at a further `@tag` inside its line and keeps that tag
+    // in the doc; Pun leaves such a doc alone.
+    check(PreferTicketAttribute, "TicketAnnotationToAttributeRector");
+}
