@@ -637,7 +637,7 @@
         "rules": [
           "lint/refactor/remove-attribute"
         ],
-        "note": "Same. Options: renamed for TOML: [options.\"lint/refactor/remove-attribute\"]. Planned: not ported yet.",
+        "note": "Same. Options: renamed for TOML: [options.\"lint/refactor/remove-attribute\"].",
         "unsupported": false
       },
       {
@@ -647,7 +647,7 @@
         "rules": [
           "lint/refactor/remove-phpdoc-annotation"
         ],
-        "note": "Same. Options: renamed for TOML: [options.\"lint/refactor/remove-phpdoc-annotation\"]. Planned: not ported yet.",
+        "note": "Same. Options: renamed for TOML: [options.\"lint/refactor/remove-phpdoc-annotation\"].",
         "unsupported": false
       },
       {
@@ -2933,7 +2933,7 @@
         "rules": [
           "lint/types/add-void-return-type"
         ],
-        "note": "Same. Options: renamed for TOML: [options.\"lint/types/add-void-return-type\"]. Planned: not ported yet.",
+        "note": "Same. Options: renamed for TOML: [options.\"lint/types/add-void-return-type\"].",
         "unsupported": false
       },
       {
@@ -3623,7 +3623,7 @@
         "rules": [
           "lint/refactor/remove-attribute"
         ],
-        "note": "Same. Options: renamed for TOML: [options.\"lint/refactor/remove-attribute\"]. Planned: not ported yet.",
+        "note": "Same. Options: renamed for TOML: [options.\"lint/refactor/remove-attribute\"].",
         "unsupported": false
       },
       {
@@ -3633,7 +3633,7 @@
         "rules": [
           "lint/refactor/remove-phpdoc-annotation"
         ],
-        "note": "Same. Options: renamed for TOML: [options.\"lint/refactor/remove-phpdoc-annotation\"]. Planned: not ported yet.",
+        "note": "Same. Options: renamed for TOML: [options.\"lint/refactor/remove-phpdoc-annotation\"].",
         "unsupported": false
       },
       {
@@ -5919,7 +5919,7 @@
         "rules": [
           "lint/types/add-void-return-type"
         ],
-        "note": "Same. Options: renamed for TOML: [options.\"lint/types/add-void-return-type\"]. Planned: not ported yet.",
+        "note": "Same. Options: renamed for TOML: [options.\"lint/types/add-void-return-type\"].",
         "unsupported": false
       },
       {

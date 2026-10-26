@@ -13052,7 +13052,7 @@
       "upstream": [
         "general_attribute_remove"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/refactor/remove-function-argument",
@@ -13105,7 +13105,7 @@
       "upstream": [
         "general_phpdoc_annotation_remove"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/refactor/rename-cast",
@@ -16936,7 +16936,7 @@
       "upstream": [
         "void_return"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/types/no-loose-comparison",

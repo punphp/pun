@@ -745,10 +745,10 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "refactor/no-negated-condition" = { fix = "unsafe", sets = ["code-quality"], ported = true, origin = "mago", status = "decided", summary = "Flip a ternary whose condition is negated: drop the `!` (or use `===` / `==`) and swap the branches." }
 "refactor/prefer-attribute-over-annotation" = { fix = "unsafe", ported = false, status = "decided", summary = "Replace configured PHPDoc annotations (including nested ones) with attributes." }
 "refactor/prefer-constant" = { fix = "unsafe", sets = ["coding-style"], ported = true, status = "decided", summary = "Replace function calls that return a constant (php_sapi_name(), pi(), ...) with the constant." }
-"refactor/remove-attribute" = { fix = "safe", ported = false, status = "decided", summary = "Removes configured attributes by their respective FQN." }
+"refactor/remove-attribute" = { fix = "safe", ported = true, status = "decided", summary = "Removes configured attributes by their respective FQN." }
 "refactor/remove-function-argument" = { fix = "unsafe", ported = false, status = "decided", summary = "Remove argument by position by function name" }
 "refactor/remove-function-call" = { fix = "unsafe", ported = false, status = "decided", summary = "Remove defined function calls" }
-"refactor/remove-phpdoc-annotation" = { fix = "safe", ported = false, status = "decided", summary = "Removes configured annotations from PHPDoc." }
+"refactor/remove-phpdoc-annotation" = { fix = "safe", ported = true, status = "decided", summary = "Removes configured annotations from PHPDoc." }
 "refactor/rename-cast" = { fix = "unsafe", ported = false, status = "decided", summary = "Renames casts" }
 "refactor/rename-class" = { fix = "unsafe", gated_by = "laravel-version", ported = false, status = "decided", summary = "Replace defined classes by new ones" }
 "refactor/rename-class-constant" = { fix = "unsafe", ported = false, status = "decided", summary = "Replace defined class constants in their calls" }
@@ -948,7 +948,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "types/add-var-phpdoc-from-default" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add @var array docblock to array property based on iterable default value" }
 "types/add-var-phpdoc-from-dim-fetch" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add @var array property docblock from dim fetches on property fetch assignment" }
 "types/add-var-phpdoc-from-getter" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add @var array property docblock from its getter @return" }
-"types/add-void-return-type" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add a `void` return type to functions, methods, closures and tests that never return a value." }
+"types/add-void-return-type" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add a `void` return type to functions, methods, closures and tests that never return a value." }
 "types/no-loose-comparison" = { fix = "mixed", intent = "suspicious", sets = ["code-quality"], ported = true, status = "decided", summary = "Comparisons should be strict.", note = "fix is safe where analysis proves both operands have the same type (Rector UseIdenticalOverEqualWithSameType), unsafe otherwise (CS-Fixer strict_comparison)" }
 "types/no-nullsafe-on-non-null" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Cleanup unneeded nullsafe operator" }
 "types/prefer-generic-collection-phpdoc" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Change @return \"Type[]|ArrayCollection\" union docblock to a generic \"ArrayCollection<int, Type>\"" }

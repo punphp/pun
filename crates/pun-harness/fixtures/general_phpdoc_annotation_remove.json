@@ -1,0 +1,155 @@
+{
+    "fixer": "general_phpdoc_annotation_remove",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\Phpdoc\\GeneralPhpdocAnnotationRemoveFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/Phpdoc/GeneralPhpdocAnnotationRemoveFixerTest.php",
+    "case_count": 9,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": []
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Phpdoc\\GeneralPhpdocAnnotationRemoveFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null, array $configuration = []): void\n    {\n        $this->fixer->configure($configuration);\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": "An Annotation gets removed",
+                    "args": [
+                        "<?php\n/**\n * @internal\n */\nfunction hello($name)\n{\n    return \"hello \" . $name;\n}",
+                        "<?php\n/**\n * @internal\n * @param string $name\n */\nfunction hello($name)\n{\n    return \"hello \" . $name;\n}",
+                        {
+                            "annotations": [
+                                "param"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "It removes multiple annotations",
+                    "args": [
+                        "<?php\n/**\n * @author me\n * @internal\n */\nfunction hello($name)\n{\n    return \"hello \" . $name;\n}",
+                        "<?php\n/**\n * @author me\n * @internal\n * @param string $name\n * @return string\n * @throws \\Exception\n */\nfunction hello($name)\n{\n    return \"hello \" . $name;\n}",
+                        {
+                            "annotations": [
+                                "param",
+                                "return",
+                                "throws"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "It does nothing if no configuration is given",
+                    "args": [
+                        "<?php\n/**\n * @author me\n * @internal\n * @param string $name\n * @return string\n * @throws \\Exception\n */\nfunction hello($name)\n{\n    return \"hello \" . $name;\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "It works on multiple functions",
+                    "args": [
+                        "<?php\n/**\n * @param string $name\n * @throws \\Exception\n */\nfunction hello($name)\n{\n    return \"hello \" . $name;\n}\n/**\n */\nfunction goodBye()\n{\n    return 0;\n}\nfunction noComment()\n{\n    callOtherFunction();\n}",
+                        "<?php\n/**\n * @author me\n * @internal\n * @param string $name\n * @return string\n * @throws \\Exception\n */\nfunction hello($name)\n{\n    return \"hello \" . $name;\n}\n/**\n * @internal\n * @author Piet-Henk\n * @return int\n */\nfunction goodBye()\n{\n    return 0;\n}\nfunction noComment()\n{\n    callOtherFunction();\n}",
+                        {
+                            "annotations": [
+                                "author",
+                                "return",
+                                "internal"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Nothing happens to non doc-block comments",
+                    "args": [
+                        "<?php\n/*\n * @internal\n * @param string $name\n */\nfunction hello($name)\n{\n    return \"hello \" . $name;\n}",
+                        null,
+                        {
+                            "annotations": [
+                                "internal",
+                                "param",
+                                "return"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Nothing happens if to be deleted annotations are not present",
+                    "args": [
+                        "<?php\n/**\n * @internal\n * @param string $name\n */\nfunction hello($name)\n{\n    return \"hello \" . $name;\n}",
+                        null,
+                        {
+                            "annotations": [
+                                "author",
+                                "test",
+                                "return",
+                                "deprecated"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php\n\nwhile ($something = myFunction($foo)) {}\n",
+                        "<?php\n/** @noinspection PhpAssignmentInConditionInspection */\nwhile ($something = myFunction($foo)) {}\n",
+                        {
+                            "annotations": [
+                                "noinspection"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php\n/**\n* @internal\n* @AuThOr Jane Doe\n*/\nfunction foo() {}",
+                        "<?php\n/**\n* @internal\n* @author John Doe\n* @AuThOr Jane Doe\n*/\nfunction foo() {}",
+                        {
+                            "annotations": [
+                                "author"
+                            ],
+                            "case_sensitive": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php\n/**\n* @internal\n*/\nfunction foo() {}",
+                        "<?php\n/**\n* @internal\n* @author John Doe\n* @AuThOr Jane Doe\n*/\nfunction foo() {}",
+                        {
+                            "annotations": [
+                                "author"
+                            ],
+                            "case_sensitive": false
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
