@@ -284,7 +284,16 @@ def ported_rector_rules() -> list[str]:
                for entry in rules.values() if isinstance(entry, dict) and entry.get("pun") in ids and "class" in entry]
     if not classes:
         sys.exit(f"no Rector class in rules/mapping.toml for {ids}")
-    return sorted(classes)
+    # Rector applies rules to a node in the order they are registered, and the first that sets a return type wins
+    # (AddClosureVoidReturnTypeWhereNoReturnRector before AddClosureNeverReturnTypeRector): register them in the
+    # order of Rector's prepared sets (src/Config/Level), then the rest by name.
+    import re
+    rank: dict[str, int] = {}
+    for level in ["DeadCode", "CodeQuality", "CodingStyle", "TypeDeclaration", "TypeDeclarationDocblocks"]:
+        text = (ROOT / f".oracle/rector/src/Config/Level/{level}Level.php").read_text()
+        for name in re.findall(r"^\s+(\w+)::class,", text, re.M):
+            rank.setdefault(name, len(rank))
+    return sorted(classes, key=lambda c: (rank.get(c.rsplit("\\", 1)[-1], len(rank)), c))
 
 
 def count(tool: str, out: str) -> int | None:
