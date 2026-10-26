@@ -3,6 +3,8 @@
 //! is not reported), ReadOnlyPropertyAssignRefRule and ReadOnlyByPhpDocPropertyAssignRefRule (`*AssignByRef`), and
 //! from level 2 WritingToReadOnlyPropertiesRule (`assign.propertyReadOnly`) beyond `$this` (see read_only_write.rs).
 
+use std::collections::HashSet;
+
 use mago_codex::metadata::class_like::ClassLikeMetadata;
 use mago_codex::metadata::property::PropertyMetadata;
 use mago_codex::visibility::Visibility;
@@ -110,6 +112,7 @@ struct Prop<'a> {
     native_readonly: bool,
     phpdoc_readonly: bool,
     private_mutation: bool,
+    private: bool,
 }
 
 const READONLY: [&str; 6] = [
@@ -169,7 +172,12 @@ pub(super) fn with_args(t: &Type, scope: &str, names: &[String], args: &[Type]) 
 
 /// `findPropertyReflectionsFromNode()`: the property when every class of the holder has it.
 fn find<'a>(c: &Checker<'a, '_>, f: &Fetch) -> Option<Prop<'a>> {
-    find_on(c, f, holder_type(c, f)?, false)
+    find_on(c, f, holder_type(c, f)?, false, false)
+}
+
+enum UnsetReflection<'a> {
+    Native(Prop<'a>),
+    NonNative,
 }
 
 /// FoundPropertyReflection::getNativeReflection() unwraps a single native reflection, not a union/intersection
@@ -177,25 +185,50 @@ fn find<'a>(c: &Checker<'a, '_>, f: &Fetch) -> Option<Prop<'a>> {
 pub(in super::super) fn native_unset_property<'a>(
     c: &Checker<'a, '_>,
     e: &Expression,
-) -> Option<(&'a ClassLikeMetadata, &'a PropertyMetadata, bool, bool)> {
+) -> Option<(&'a ClassLikeMetadata, &'a PropertyMetadata, bool, bool, bool)> {
     let f = fetch(e)?;
-    let holder = holder_type(c, &f)?.resolve_to_bounds();
-    if matches!(holder, Type::Union(_) | Type::Benevolent(_)) {
-        return None;
-    }
-    let classes: Vec<_> = holder.object_class_names().into_iter()
-        .filter_map(|name| c.codebase.get_class_like(name.as_bytes()).or_else(|| {
-            // As for dynamic class receivers: conversion uses the anonymous display name, codex its key.
-            c.codebase.class_likes.values().find(|k| k.name.as_bytes().starts_with(b"{anonymous-class:") && c.display(k) == name).map(Box::as_ref)
-        }))
-        .filter(|k| has_instance_property(c, k, &f.name))
-        .collect();
-    let [class] = classes.as_slice() else { return None };
-    let p = find_on(c, &f, Type::Object(class.name.to_string(), vec![]), true)?;
-    Some((p.declaring, p.meta, p.native_readonly, p.phpdoc_readonly))
+    let UnsetReflection::Native(p) = unset_reflection(c, &f, &holder_type(c, &f)?, false, &mut HashSet::new())? else { return None };
+    Some((p.declaring, p.meta, p.native_readonly, p.phpdoc_readonly, p.private))
 }
 
-fn find_on<'a>(c: &Checker<'a, '_>, f: &Fetch, holder: Type, native_only: bool) -> Option<Prop<'a>> {
+/// Instance-property existence and selection before native unwrapping. `NonNative` is a successful, terminal
+/// reflection: it also contributes to an intersection even if another route names the same native declaration.
+fn unset_reflection<'a>(
+    c: &Checker<'a, '_>, f: &Fetch, holder: &Type, out_of_class: bool, active: &mut HashSet<Word>,
+) -> Option<UnsetReflection<'a>> {
+    let holder = holder.resolve_to_bounds();
+    match &holder {
+        Type::Union(types) | Type::Benevolent(types) => {
+            return types.iter().all(|t| unset_reflection(c, f, t, out_of_class, active).is_some()).then_some(UnsetReflection::NonNative);
+        }
+        Type::Intersection(types) => {
+            let mut properties = types.iter().filter_map(|t| unset_reflection(c, f, t, out_of_class, active));
+            let first = properties.next()?;
+            return Some(if properties.next().is_some() { UnsetReflection::NonNative } else { first });
+        }
+        _ => {}
+    }
+    let names = holder.object_class_names();
+    let [name] = names.as_slice() else { return None };
+    let class = c.codebase.get_class_like(name.as_bytes()).or_else(|| {
+        // Conversion uses an anonymous class's display name, codex its storage key.
+        c.codebase.class_likes.values().find(|k| k.name.as_bytes().starts_with(b"{anonymous-class:") && c.display(k) == *name).map(Box::as_ref)
+    })?;
+    if !active.insert(class.name) { return None }
+    let property = if has_instance_property(c, class, &f.name) {
+        Some(match find_on(c, f, Type::Object(class.name.to_string(), vec![]), true, out_of_class) {
+            Some(p) => UnsetReflection::Native(p),
+            None => UnsetReflection::NonNative,
+        })
+    } else {
+        super::super::require_tags::property_requirements(c, class).iter()
+            .find_map(|required| unset_reflection(c, f, required, true, active))
+    };
+    active.remove(&class.name);
+    property
+}
+
+fn find_on<'a>(c: &Checker<'a, '_>, f: &Fetch, holder: Type, native_only: bool, out_of_class: bool) -> Option<Prop<'a>> {
     let names = holder.object_class_names();
     let classes: Vec<&'a ClassLikeMetadata> =
         names.iter().map(|n| c.codebase.get_class_like(n.as_bytes())).collect::<Option<_>>()?;
@@ -218,8 +251,10 @@ fn find_on<'a>(c: &Checker<'a, '_>, f: &Fetch, holder: Type, native_only: bool) 
             Some(m)
                 if f.instance
                     && declaring.kind != mago_codex::symbol::SymbolKind::Enum
-                    && (c.allows_dynamic_properties(class) || can_access(c, declaring, meta.read_visibility))
+                    && (c.allows_dynamic_properties(class)
+                        || if out_of_class { meta.read_visibility == Visibility::Public } else { can_access(c, declaring, meta.read_visibility) })
                     && (meta.read_visibility == Visibility::Public
+                        || out_of_class
                         || c.class_scope().is_none_or(|k| k.name != declaring.name))
                     && distance(c, class, &m.0.name) <= distance(c, class, &origin.name) =>
             {
@@ -230,6 +265,8 @@ fn find_on<'a>(c: &Checker<'a, '_>, f: &Fetch, holder: Type, native_only: bool) 
         },
         None => magic_property()?,
     };
+    // PhpClassReflectionExtension's annotation overlay is public even when the underlying native property is private.
+    let private = !magic && meta.read_visibility == Visibility::Private;
     if native_only && magic {
         // An annotation overlay keeps its declaring class, but its native reflection supplies modifiers/hooks.
         // An annotation-only property has no native reflection to unwrap.
@@ -294,6 +331,7 @@ fn find_on<'a>(c: &Checker<'a, '_>, f: &Fetch, holder: Type, native_only: bool) 
         phpdoc_readonly,
         private_mutation: tagged(span, &PRIVATE_MUTATION),
         native_readonly,
+        private,
     })
 }
 

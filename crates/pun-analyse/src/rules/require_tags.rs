@@ -3,6 +3,8 @@
 //! RequireExtendsCheck), RequireImplementsDefinitionClassRule, RequireImplementsDefinitionTraitRule and
 //! SealedDefinitionClassRule.
 
+use std::collections::HashSet;
+
 use mago_codex::metadata::class_like::ClassLikeMetadata;
 use mago_codex::symbol::SymbolKind;
 use mago_span::Span;
@@ -54,9 +56,25 @@ pub(super) fn tag_types(c: &Checker, k: &ClassLikeMetadata, names: [&str; 2]) ->
     })
 }
 
-const EXTENDS: [&str; 2] = ["@psalm-require-extends", "@phpstan-require-extends"];
+pub(super) const EXTENDS: [&str; 2] = ["@psalm-require-extends", "@phpstan-require-extends"];
 const IMPLEMENTS: [&str; 2] = ["@psalm-require-implements", "@phpstan-require-implements"];
 const SEALED: [&str; 2] = ["@psalm-inheritors", "@phpstan-sealed"];
+
+/// RequireExtendsPropertiesClassReflectionExtension: own tags, then nominal parent interfaces in source order.
+/// Keep whole Types: a successful annotation/union/intersection reflection must stop lookup too.
+pub(super) fn property_requirements(c: &Checker, k: &ClassLikeMetadata) -> Vec<Type> {
+    if k.kind != SymbolKind::Interface { return Vec::new() }
+    let mut pending = vec![k];
+    let mut seen = HashSet::new();
+    let mut types = Vec::new();
+    while let Some(interface) = pending.pop() {
+        if seen.insert(interface.name) {
+            types.extend(tag_types(c, interface, EXTENDS));
+            pending.extend(super::overriding_property::declaration_interfaces(c, interface).into_iter().rev());
+        }
+    }
+    types
+}
 
 /// The rules on InClassNode: a class, an interface or an enum declared at `at`.
 pub fn class_like(c: &mut Checker, at: Span, k: &ClassLikeMetadata) {

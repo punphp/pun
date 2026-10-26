@@ -475,6 +475,10 @@ fn written_item(c: &mut Checker, el: &ArrayElement) {
 
 /// `ClassReflection::allowsDynamicProperties()`.
 pub(super) fn allows_dynamic_properties(c: &Checker, k: &ClassLikeMetadata) -> bool {
+    allows_dynamic_properties_at(c, k, &mut HashSet::from([k.name]))
+}
+
+fn allows_dynamic_properties_at(c: &Checker, k: &ClassLikeMetadata, seen: &mut HashSet<mago_word::Word>) -> bool {
     if k.kind == SymbolKind::Enum {
         return false;
     }
@@ -486,6 +490,15 @@ pub(super) fn allows_dynamic_properties(c: &Checker, k: &ClassLikeMetadata) -> b
         .iter()
         .any(|m| has_native_method(c, k, m))
     {
+        return true;
+    }
+    // Only this class-like's own ObjectType requirements contribute dynamic capability, before readonly.
+    if super::require_tags::tag_types(c, k, super::require_tags::EXTENDS).into_iter().any(|ty| {
+        let pun_phpstan::types::Type::Object(name, _) = ty else { return false };
+        c.codebase.get_class_like(name.as_bytes()).is_some_and(|required| {
+            seen.insert(required.name) && allows_dynamic_properties_at(c, required, seen)
+        })
+    }) {
         return true;
     }
     if k.flags.is_readonly() {
@@ -540,8 +553,8 @@ fn is_static_hooked(c: &Checker, p: &mago_codex::metadata::property::PropertyMet
     })
 }
 
-/// `ClassReflection::hasInstanceProperty()`: a non-static native property, else (when dynamic properties are
-/// allowed) an `@property` tag.
+/// Native/dynamic property extensions: a non-static native property, else (when dynamic properties are allowed)
+/// an `@property` tag. Native unset reflection resolves the require-extends fallback after these extensions.
 pub(super) fn has_instance_property(c: &Checker, k: &ClassLikeMetadata, property: &[u8]) -> bool {
     if native_property(c, k, property) == Some(false) {
         return true;

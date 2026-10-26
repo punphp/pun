@@ -83,7 +83,7 @@ pub(super) fn check(c: &mut Checker, u: &Unset) {
     for argument in &u.values {
         if let Expression::Access(Access::Property(p)) = unparen(argument)
             && let ClassLikeMemberSelector::Identifier(name) = &p.property
-            && let Some((class, meta, native_readonly, phpdoc_readonly)) =
+            && let Some((class, meta, native_readonly, phpdoc_readonly, private)) =
                 types::native_unset_property(c, argument)
         {
             let property = format!(
@@ -120,7 +120,7 @@ pub(super) fn check(c: &mut Checker, u: &Unset) {
                 continue;
             }
             if c.php_version >= 80400
-                && meta.read_visibility != Visibility::Private
+                && !private
                 && !property_final(c, meta)
                 && !class.flags.is_final()
                 && !class
@@ -144,7 +144,8 @@ pub(super) fn check(c: &mut Checker, u: &Unset) {
 /// PhpPropertyReflection::isFinal(): the keyword, private(set), or its own @final tag.
 fn property_final(c: &Checker, p: &PropertyMetadata) -> bool {
     p.flags.is_final()
-        || p.write_visibility == Visibility::Private
+        // Private read visibility implies private writes, not PHPStan's asymmetric `private(set)` finality.
+        || (p.write_visibility == Visibility::Private && p.read_visibility != Visibility::Private)
         || c.declaration(p)
             .and_then(|(span, _)| declared::doc_at(c, span))
             .is_some_and(|(doc, _)| {

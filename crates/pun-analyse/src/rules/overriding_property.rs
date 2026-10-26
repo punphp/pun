@@ -13,7 +13,7 @@ use mago_codex::symbol::SymbolKind;
 use mago_codex::visibility::Visibility;
 use mago_database::file::{File, FileId};
 use mago_span::{HasSpan, Position, Span};
-use mago_syntax::cst::{AnonymousClass, Class as ClassNode, ClassLikeConstant, Constant, FunctionLikeParameter, Modifier, Property};
+use mago_syntax::cst::{AnonymousClass, Class as ClassNode, ClassLikeConstant, Constant, FunctionLikeParameter, Interface, Modifier, Property};
 use mago_syntax::parser::parse_file;
 use mago_syntax::walker::MutWalker;
 use pun_phpstan::types::{Level, Type, is_super_type_of};
@@ -51,14 +51,16 @@ fn accessible(is_static: bool, is_virtual: bool, hook: bool) -> bool {
 struct DeclarationIndex {
     starts: Arc<HashMap<u32, u32>>,
     readonly: HashSet<u32>,
+    interfaces: HashMap<u32, Vec<Span>>,
 }
 
-/// Declaration boundaries and native readonly modifiers, parsed once per file content.
+/// Declaration boundaries, native readonly modifiers and ordered interface parents, parsed once per file content.
 fn declaration_index(id: FileId, contents: &[u8]) -> Arc<DeclarationIndex> {
     #[derive(Default)]
     struct Starts {
         starts: HashMap<u32, u32>,
         readonly: HashSet<u32>,
+        interfaces: HashMap<u32, Vec<Span>>,
     }
     impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Starts {
         fn walk_in_property(&mut self, p: &'ast Property<'arena>, _: &mut ()) {
@@ -83,6 +85,9 @@ fn declaration_index(id: FileId, contents: &[u8]) -> Arc<DeclarationIndex> {
             if c.modifiers.iter().any(Modifier::is_readonly) {
                 self.readonly.insert(c.span().start.offset);
             }
+        }
+        fn walk_in_interface(&mut self, i: &'ast Interface<'arena>, _: &mut ()) {
+            self.interfaces.insert(i.span().start.offset, i.extends.iter().flat_map(|e| e.types.iter().map(HasSpan::span)).collect());
         }
         fn walk_in_class_like_constant(&mut self, k: &'ast ClassLikeConstant<'arena>, _: &mut ()) {
             for item in k.items.iter() {
@@ -113,7 +118,7 @@ fn declaration_index(id: FileId, contents: &[u8]) -> Arc<DeclarationIndex> {
     );
     let mut starts = Starts::default();
     starts.walk_program(parse_file(&arena, &file), &mut ());
-    let starts = Arc::new(DeclarationIndex { starts: Arc::new(starts.starts), readonly: starts.readonly });
+    let starts = Arc::new(DeclarationIndex { starts: Arc::new(starts.starts), readonly: starts.readonly, interfaces: starts.interfaces });
     cache.lock().expect("starts cache").insert(key, starts.clone());
     starts
 }
@@ -126,6 +131,17 @@ pub(super) fn declaration_starts(id: FileId, contents: &[u8]) -> Arc<HashMap<u32
 /// A property's own native modifier, or a class's readonly modifier (not PHPDoc, comments or attributes).
 pub(super) fn declaration_readonly(at: Span, contents: &[u8]) -> bool {
     declaration_index(at.file_id, contents).readonly.contains(&at.start.offset)
+}
+
+/// Nominal interface parents in declaration order (codex's populated interface sets are unordered).
+pub(super) fn declaration_interfaces<'a>(c: &Checker<'a, '_>, k: &ClassLikeMetadata) -> Vec<&'a ClassLikeMetadata> {
+    let Some(contents) = c.file_contents(k.span.file_id) else { return Vec::new() };
+    let index = declaration_index(k.span.file_id, &contents);
+    let scope = super::doc::scopes_of(k.span.file_id, &contents).at(k.span.start.offset);
+    index.interfaces.get(&k.span.start.offset).into_iter().flatten().filter_map(|span| {
+        let name = scope.resolve(mago_names::kind::NameKind::Default, &contents[span.start.offset as usize..span.end.offset as usize]).0;
+        c.codebase.get_class_like(&name).filter(|i| i.kind == SymbolKind::Interface)
+    }).collect()
 }
 
 impl<'a> Checker<'a, '_> {
