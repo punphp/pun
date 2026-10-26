@@ -9456,7 +9456,7 @@
         "UseToBeEmpty",
         "UseToBeEmptyRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/pest/prefer-to-be-file",
@@ -9561,7 +9561,7 @@
         "UseToBeJson",
         "UseToBeJsonRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/pest/prefer-to-be-list",
@@ -9708,7 +9708,7 @@
         "UseToBeUrl",
         "UseToBeUrlRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/pest/prefer-to-be-uuid",
@@ -9729,7 +9729,7 @@
         "UseToBeUuid",
         "UseToBeUuidRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/pest/prefer-to-contain",
@@ -9834,7 +9834,7 @@
         "UseToEqualCanonicalizing",
         "UseToEqualCanonicalizingRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/pest/prefer-to-equal-with-delta",
@@ -9855,7 +9855,7 @@
         "UseToEqualWithDelta",
         "UseToEqualWithDeltaRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/pest/prefer-to-have-count",
@@ -10023,7 +10023,7 @@
         "UseToHaveSameSize",
         "UseToHaveSameSizeRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/pest/prefer-to-match",
@@ -10044,7 +10044,7 @@
         "UseToMatch",
         "UseToMatchRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/pest/prefer-to-match-array",

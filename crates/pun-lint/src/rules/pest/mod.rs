@@ -19,25 +19,33 @@ mod prefer_to_be_alpha_numeric;
 mod prefer_to_be_between;
 mod prefer_to_be_digits;
 mod prefer_to_be_directory;
+mod prefer_to_be_empty;
 mod prefer_to_be_file;
 mod prefer_to_be_in;
 mod prefer_to_be_infinite;
 mod prefer_to_be_instance_of;
+mod prefer_to_be_json;
 mod prefer_to_be_list;
 mod prefer_to_be_lowercase;
 mod prefer_to_be_nan;
 mod prefer_to_be_true_false;
 mod prefer_to_be_truthy_falsy;
 mod prefer_to_be_uppercase;
+mod prefer_to_be_url;
+mod prefer_to_be_uuid;
 mod prefer_to_contain;
 mod prefer_to_contain_equal;
 mod prefer_to_contain_only_instances_of;
 mod prefer_to_end_with;
+mod prefer_to_equal_canonicalizing;
+mod prefer_to_equal_with_delta;
 mod prefer_to_have_count;
 mod prefer_to_have_key;
 mod prefer_to_have_length;
 mod prefer_to_have_method_on_class;
 mod prefer_to_have_property;
+mod prefer_to_have_same_size;
+mod prefer_to_match;
 mod prefer_to_start_with;
 mod prefer_type_matchers;
 
@@ -53,25 +61,33 @@ pub use prefer_to_be_alpha_numeric::PreferToBeAlphaNumeric;
 pub use prefer_to_be_between::PreferToBeBetween;
 pub use prefer_to_be_digits::PreferToBeDigits;
 pub use prefer_to_be_directory::PreferToBeDirectory;
+pub use prefer_to_be_empty::PreferToBeEmpty;
 pub use prefer_to_be_file::PreferToBeFile;
 pub use prefer_to_be_in::PreferToBeIn;
 pub use prefer_to_be_infinite::PreferToBeInfinite;
 pub use prefer_to_be_instance_of::PreferToBeInstanceOf;
+pub use prefer_to_be_json::PreferToBeJson;
 pub use prefer_to_be_list::PreferToBeList;
 pub use prefer_to_be_lowercase::PreferToBeLowercase;
 pub use prefer_to_be_nan::PreferToBeNan;
 pub use prefer_to_be_true_false::PreferToBeTrueFalse;
 pub use prefer_to_be_truthy_falsy::PreferToBeTruthyFalsy;
 pub use prefer_to_be_uppercase::PreferToBeUppercase;
+pub use prefer_to_be_url::PreferToBeUrl;
+pub use prefer_to_be_uuid::PreferToBeUuid;
 pub use prefer_to_contain::PreferToContain;
 pub use prefer_to_contain_equal::PreferToContainEqual;
 pub use prefer_to_contain_only_instances_of::PreferToContainOnlyInstancesOf;
 pub use prefer_to_end_with::PreferToEndWith;
+pub use prefer_to_equal_canonicalizing::PreferToEqualCanonicalizing;
+pub use prefer_to_equal_with_delta::PreferToEqualWithDelta;
 pub use prefer_to_have_count::PreferToHaveCount;
 pub use prefer_to_have_key::PreferToHaveKey;
 pub use prefer_to_have_length::PreferToHaveLength;
 pub use prefer_to_have_method_on_class::PreferToHaveMethodOnClass;
 pub use prefer_to_have_property::PreferToHaveProperty;
+pub use prefer_to_have_same_size::PreferToHaveSameSize;
+pub use prefer_to_match::PreferToMatch;
 pub use prefer_to_start_with::PreferToStartWith;
 pub use prefer_type_matchers::PreferTypeMatchers;
 
@@ -103,25 +119,33 @@ pub(crate) fn all() -> Vec<Box<dyn Rule>> {
         Box::new(PreferToBeBetween),
         Box::new(PreferToBeDigits),
         Box::new(PreferToBeDirectory),
+        Box::new(PreferToBeEmpty),
         Box::new(PreferToBeFile),
         Box::new(PreferToBeIn),
         Box::new(PreferToBeInfinite),
         Box::new(PreferToBeInstanceOf),
+        Box::new(PreferToBeJson),
         Box::new(PreferToBeList),
         Box::new(PreferToBeLowercase),
         Box::new(PreferToBeNan),
         Box::new(PreferToBeTrueFalse),
         Box::new(PreferToBeTruthyFalsy),
         Box::new(PreferToBeUppercase),
+        Box::new(PreferToBeUrl),
+        Box::new(PreferToBeUuid),
         Box::new(PreferToContain),
         Box::new(PreferToContainEqual),
         Box::new(PreferToContainOnlyInstancesOf),
         Box::new(PreferToEndWith),
+        Box::new(PreferToEqualCanonicalizing),
+        Box::new(PreferToEqualWithDelta),
         Box::new(PreferToHaveCount),
         Box::new(PreferToHaveKey),
         Box::new(PreferToHaveLength),
         Box::new(PreferToHaveMethodOnClass),
         Box::new(PreferToHaveProperty),
+        Box::new(PreferToHaveSameSize),
+        Box::new(PreferToMatch),
         Box::new(PreferToStartWith),
         Box::new(PreferTypeMatchers),
     ]

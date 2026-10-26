@@ -273,3 +273,43 @@ fn use_to_have_count() {
 fn use_to_have_length() {
     check(PreferToHaveLength, "UseToHaveLengthRector");
 }
+
+#[test]
+fn use_to_be_empty() {
+    check(PreferToBeEmpty, "UseToBeEmptyRector");
+}
+
+#[test]
+fn use_to_be_json() {
+    check(PreferToBeJson, "UseToBeJsonRector");
+}
+
+#[test]
+fn use_to_be_url() {
+    check(PreferToBeUrl, "UseToBeUrlRector");
+}
+
+#[test]
+fn use_to_be_uuid() {
+    check(PreferToBeUuid, "UseToBeUuidRector");
+}
+
+#[test]
+fn use_to_match() {
+    check(PreferToMatch, "UseToMatchRector");
+}
+
+#[test]
+fn use_to_equal_canonicalizing() {
+    check(PreferToEqualCanonicalizing, "UseToEqualCanonicalizingRector");
+}
+
+#[test]
+fn use_to_equal_with_delta() {
+    check(PreferToEqualWithDelta, "UseToEqualWithDeltaRector");
+}
+
+#[test]
+fn use_to_have_same_size() {
+    check(PreferToHaveSameSize, "UseToHaveSameSizeRector");
+}
