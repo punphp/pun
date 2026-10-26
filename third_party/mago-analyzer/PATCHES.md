@@ -1302,3 +1302,62 @@ primary errors, including the undefined echo input, and no `echo.nonString` erro
 comparison now applies that oracle-backed exception only to Mago's secondary mixed-argument
 echo warning; all primary Mago codes, lines and messages remain exact. No runtime compatibility
 setting or supported CLI behavior changes.
+
+## General array writes do not assert a literal arm
+
+PHPStan 2.3.1's
+[`ArrayType::setOffsetValueType()`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Type/ArrayType.php#L362-L428)
+adds `HasOffsetValueType` only for a single constant offset. A general string can contain a
+literal arm in Mago's representation. For example, a guarded lowercase string can be stored as
+`non-empty-lowercase-string|''`. Its empty-string arm is not a definitely written offset.
+
+`expression/assignment/array_assignment.rs` now rejects partial literal extraction in both root
+and nested writes. General writes also retain existing generic-array offset values, as
+[`HasOffsetValueType::setOffsetValueType()`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Type/Accessory/HasOffsetValueType.php#L182-L197)
+requires. Constant shapes still widen overlapping entries. The converter is unchanged: a required
+known item on a generic array still means `hasOffsetValue`.
+
+## Bounded foreach chains retain array exit states
+
+[`ForeachHandler::tryProcessUnrolledConstantArrayForeach()`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Analyser/StmtHandler/ForeachHandler.php#L658-L841)
+passes each constant entry's exit state into the next entry. Treating the entries as one union
+instead makes an unset look like a union-key unset. PHPStan deliberately retains offset accessories
+for that union operation, so changing `unset_keyed()` would break non-loop controls.
+
+`statement/loop/foreach.rs` ports the sequential chain for array exits on one sealed list with
+one to sixteen required entries. Direct value variables and optional direct key variables are
+supported. Each iteration uses fresh artifacts, detached shared block state, and the existing
+speculative gather's observer and diagnostic isolation. The normal loop walk still supplies
+diagnostics, expression observations, and non-array locals.
+
+Nested loops, references, statement hooks, destructured or indirect targets, optional entries,
+shape unions, associative iterators, and bodies with loop exits retain the existing loop path.
+The patch does not claim PHPStan's complete loop-unrolling contract or change generic unset rules.
+
+Public regressions live in `crates/pun-analyse/tests/array_mutation_states.rs` and
+`tests/fixtures/array-mutation-states/`. The original exported `testBug11146` and `testBug5298`
+expectations are unchanged. Fresh PHPStan 2.3.1 captures check general and literal writes, unrelated
+definite offsets, literal and union unsets, zero and multiple iterations, and replay bounds.
+
+The fixture capture command, from its directory, is:
+
+```sh
+env -u AUGMENT_AGENT -u AMP_CURRENT_THREAD_ID -u AI_AGENT -u CURSOR_TRACE_ID -u CURSOR_AGENT \
+	-u GEMINI_CLI -u CODEX_SANDBOX -u CODEX_THREAD_ID -u OPENCODE_CLIENT -u OPENCODE \
+	-u CLAUDECODE -u CLAUDE_CODE -u REPL_ID \
+	php ../../../../../.oracle/phpstan/vendor/bin/phpstan analyse -c phpstan.neon \
+	--error-format=json --no-progress |
+	jq '{files: (.files | with_entries(.key |= split("/")[-1]))}' > expected-phpstan.json
+```
+
+Validation on `7a973a30` plus this patch passes all 77 focused public tests, including the 6 new
+tests and all 34 freshly captured diagnostics. The complete level-4 number-comparison file passes
+its 37 cases. The level-3 property-assignment file has zero new failures across 90 cases, but its
+harness fails because two unrelated passing cases remain in that base's gap list: `testBug3383`
+and `testIntegerRangesAndConstants`. The patch does not change the shared gap list.
+
+Fresh profiles from the current executables cover **73/73 changed executable lines**, without
+exclusions: 9 in array assignment and 64 in foreach. The generic-array accessory guard and the
+constant-shape widening control both execute. The dependency is instrumented explicitly with
+`cargo llvm-cov --dep-coverage mago-analyzer --no-report`; an unfiltered LCOV report retains the
+vendored source paths.

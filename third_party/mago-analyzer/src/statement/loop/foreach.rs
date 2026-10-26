@@ -17,6 +17,7 @@ use mago_syntax::cst::UnaryPrefix;
 use mago_syntax::cst::UnaryPrefixOperator;
 use mago_syntax::cst::Variable;
 use mago_word::Word;
+use mago_word::WordMap;
 use mago_word::concat_word;
 
 use crate::analyzable::Analyzable;
@@ -31,6 +32,7 @@ use crate::context::scope::var_has_root;
 use crate::error::AnalysisError;
 use crate::expression::assignment::PropertyWriteKind;
 use crate::expression::assignment::assign_to_expression;
+use crate::statement::analyze_statements;
 use crate::statement::r#loop;
 use crate::utils::expression::get_block_expression_id;
 
@@ -54,6 +56,8 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Foreach<'arena> {
 
         let (always_enters_loop, mut key_type, mut value_type) =
             r#loop::analyze_iterator(context, block_context, artifacts, iterator, iterator_variable_id, self)?;
+
+        let unrolled_arrays = unroll_array_mutations(context, block_context, artifacts, self, is_by_reference)?;
 
         if key_type.is_never() {
             key_type = get_mixed();
@@ -215,8 +219,82 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Foreach<'arena> {
             block_context.locals.insert(iterator_id, Rc::new(refined));
         }
 
+        if let Some(arrays) = unrolled_arrays {
+            block_context.locals.extend(arrays);
+        }
+
         Ok(())
     }
+}
+
+/// ForeachHandler::tryProcessUnrolledConstantArrayForeach's sequential chain for array state.
+/// The ordinary walk remains authoritative for observations and other locals. Only a single
+/// sealed, required-key list with straight-through control flow can replace its array exits.
+fn unroll_array_mutations<'ctx, 'ast, 'arena, A: Arena>(
+    context: &mut Context<'ctx, 'arena, A>,
+    block_context: &BlockContext<'ctx>,
+    artifacts: &AnalysisArtifacts,
+    statement: &'ast Foreach<'arena>,
+    by_reference: bool,
+) -> Result<Option<WordMap<Rc<TUnion>>>, AnalysisError> {
+    if by_reference || block_context.flags.inside_loop() || context.plugin_registry.has_statement_hooks() {
+        return Ok(None);
+    }
+    let Expression::Variable(Variable::Direct(value)) = statement.target.value() else {
+        return Ok(None);
+    };
+    let key = match statement.target.key() {
+        Some(Expression::Variable(Variable::Direct(key))) => Some(key),
+        None => None,
+        _ => return Ok(None),
+    };
+    let actions = ControlAction::from_statements(statement.body.statements().iter().collect(), vec![], None, true);
+    if actions.len() != 1 || !actions.contains(ControlAction::None) {
+        return Ok(None);
+    }
+    let entries = match artifacts.get_expression_type(statement.expression).map(|t| t.types.as_ref()) {
+        Some([TAtomic::Array(TArray::List(array))]) if array.element_type.is_never() => array
+            .known_elements
+            .iter()
+            .flat_map(|items| {
+                items.iter().map(|(key, (optional, value))| {
+                    (mago_codex::ttype::get_literal_int(*key as i64), *optional, value.clone())
+                })
+            })
+            .collect::<Vec<_>>(),
+        _ => return Ok(None),
+    };
+    if entries.is_empty() || entries.len() > 16 || entries.iter().any(|(_, optional, _)| *optional) {
+        return Ok(None);
+    }
+    let mut chain = block_context.clone();
+    chain.if_body_context = None;
+    chain.finally_scope = None;
+    chain.flags.set_inside_loop(true);
+    chain.break_types.push(BreakContext::Loop(statement.span()));
+    context.gather_callback(|context| {
+        for (key_type, _, value_type) in entries {
+            let mut scratch = AnalysisArtifacts::new().with_native_types(context.settings.track_native_types);
+            scratch.set_loop_scope(LoopScope::new(statement.span(), chain.locals.clone(), None));
+            chain.invalidate_variable_certainty(value.name.into());
+            chain.locals.insert(value.name.into(), Rc::new(value_type));
+            if let Some(key) = key {
+                chain.invalidate_variable_certainty(key.name.into());
+                chain.locals.insert(key.name.into(), Rc::new(key_type));
+            }
+            analyze_statements(statement.body.statements(), context, &mut chain, &mut scratch)?;
+        }
+        Ok(Some(
+            chain
+                .locals
+                .into_iter()
+                .filter(|(name, ty)| {
+                    ty.types.iter().all(|atomic| matches!(atomic, TAtomic::Array(_)))
+                        && block_context.locals.get(name) != Some(ty)
+                })
+                .collect(),
+        ))
+    })
 }
 
 fn assignments_only_target_current_entry(

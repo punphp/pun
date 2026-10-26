@@ -1,0 +1,228 @@
+{
+  "files": {
+    "bounds.php": {
+      "errors": 9,
+      "messages": [
+        {
+          "message": "Dumped type: array<string, int>",
+          "line": 13,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Empty array passed to foreach.",
+          "line": 20,
+          "ignorable": true,
+          "identifier": "foreach.emptyArray"
+        },
+        {
+          "message": "Dumped type: non-empty-array<string, int>&hasOffsetValue('keep', 1)",
+          "line": 23,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: non-empty-array<string, int>&hasOffsetValue('remove', 1)",
+          "line": 34,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: array<string, int>",
+          "line": 48,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: non-empty-array<string, int>&hasOffsetValue('remove', 1)",
+          "line": 60,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: non-empty-array<string, int>&hasOffsetValue('keep', 2)",
+          "line": 72,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: non-empty-array<string, int>&hasOffsetValue('keep', 2)",
+          "line": 85,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: non-empty-array<string, int>&hasOffsetValue('remove', 1)",
+          "line": 97,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        }
+      ]
+    },
+    "loops.php": {
+      "errors": 7,
+      "messages": [
+        {
+          "message": "Dumped type: array<string, int>",
+          "line": 14,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: int<0, max>",
+          "line": 15,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: non-empty-array<string, int>&hasOffsetValue('remove', 1)",
+          "line": 33,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: int<1, max>",
+          "line": 34,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: non-empty-array<string, int>&hasOffsetValue('keep', 2)",
+          "line": 47,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: int<1, max>",
+          "line": 48,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: non-empty-array<string, int>&hasOffsetValue('keep', 2)",
+          "line": 58,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        }
+      ]
+    },
+    "unsets.php": {
+      "errors": 6,
+      "messages": [
+        {
+          "message": "Dumped type: non-empty-array<string, int>&hasOffsetValue('keep', 2)",
+          "line": 11,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: non-empty-array<string, int>&hasOffsetValue('keep', 2)",
+          "line": 13,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: array<string, int>",
+          "line": 15,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: non-empty-array<string, int>&hasOffsetValue('keep', 2)",
+          "line": 24,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: non-empty-array<string, int>&hasOffsetValue('keep', 2)&hasOffsetValue('remove', 1)",
+          "line": 37,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: non-empty-array<string, int>&hasOffsetValue('keep', 2)",
+          "line": 51,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        }
+      ]
+    },
+    "writes.php": {
+      "errors": 12,
+      "messages": [
+        {
+          "message": "Dumped type: non-empty-array<string, int>",
+          "line": 9,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: non-empty-array<string, int>&hasOffsetValue('', 43)",
+          "line": 11,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: non-empty-array<string, int>&hasOffsetValue('', 43)&hasOffsetValue('keep', 44)",
+          "line": 13,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: non-empty-array<string, int>&hasOffsetValue('', 43)&hasOffsetValue('keep', 44)",
+          "line": 15,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: non-empty-array<string, 1|2|3>",
+          "line": 23,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: non-empty-array<int|string, int>",
+          "line": 34,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: lowercase-string",
+          "line": 46,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: lowercase-string",
+          "line": 50,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: array<string, int>",
+          "line": 51,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: non-empty-array<string, int>",
+          "line": 53,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: non-empty-array<string, int>&hasOffsetValue('', 43)",
+          "line": 59,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: non-empty-array<string, int>&hasOffsetValue('', 43)&hasOffsetValue('keep', 44)",
+          "line": 61,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        }
+      ]
+    }
+  }
+}

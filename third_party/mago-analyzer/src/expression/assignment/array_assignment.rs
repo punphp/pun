@@ -108,11 +108,7 @@ where
     });
 
     if let Some(index_type) = &index_type {
-        for index_atomic_type in index_type.types.as_ref() {
-            if index_atomic_type.is_literal_int() || index_atomic_type.is_known_literal_string() {
-                key_values.push(index_atomic_type.clone());
-            }
-        }
+        key_values = get_index_literal_types(index_type);
     }
 
     let root_array_type = Rc::unwrap_or_clone(root_array_type);
@@ -485,13 +481,17 @@ where
                             let mut items = items.clone();
                             for (item_key, (_, entry)) in items.iter_mut() {
                                 let item_key_type = TUnion::from_atomic(item_key.to_atomic());
-                                if union_comparator::can_expression_types_be_identical(
-                                    context.codebase,
-                                    &item_key_type,
-                                    &key_type,
-                                    false,
-                                    false,
-                                ) {
+                                // HasOffsetValueType::setOffsetValueType changes its value only
+                                // for the same single literal offset, not a general string/int.
+                                if keyed_array.is_constant_shape()
+                                    && union_comparator::can_expression_types_be_identical(
+                                        context.codebase,
+                                        &item_key_type,
+                                        &key_type,
+                                        false,
+                                        false,
+                                    )
+                                {
                                     *entry = combine_union_types(
                                         entry,
                                         value_type,
@@ -851,6 +851,9 @@ fn get_index_literal_types(expression_index_type: &TUnion) -> Vec<TAtomic> {
     for single_atomic in expression_index_type.types.as_ref() {
         if single_atomic.is_literal_int() || single_atomic.is_known_literal_string() {
             valid_offset_types.push(single_atomic.clone());
+        } else {
+            // A literal arm of a general offset is not a definitely written key.
+            return vec![];
         }
     }
 

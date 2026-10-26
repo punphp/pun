@@ -1,0 +1,8 @@
+parameters:
+    level: 4
+    phpVersion: 80400
+    paths:
+        - writes.php
+        - unsets.php
+        - loops.php
+        - bounds.php
