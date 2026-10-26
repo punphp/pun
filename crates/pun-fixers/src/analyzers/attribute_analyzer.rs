@@ -1,8 +1,10 @@
 //! Port of `PhpCsFixer\Tokenizer\Analyzer\AttributeAnalyzer`.
 use crate::analyzers::analysis::{Attribute, AttributeAnalysis};
+use crate::analyzers::namespace_uses_analyzer::NamespaceUsesAnalyzer;
 use crate::analyzers::preg::Preg;
 use pun_tokens::Kind::*;
-use pun_tokens::{Proto, Tokens};
+use pun_tokens::{NamespacesAnalyzer, Proto, Tokens};
+use std::collections::HashMap;
 
 pub(crate) struct AttributeAnalyzer;
 
@@ -22,6 +24,46 @@ const TOKEN_KINDS_NOT_ALLOWED_IN_ATTRIBUTE: &[Proto<'static>] = &[
 ];
 
 impl AttributeAnalyzer {
+    /// `AttributeAnalyzer::determineAttributeFullyQualifiedName`.
+    pub(crate) fn determine_attribute_fully_qualified_name(
+        tokens: &Tokens,
+        name: &[u8],
+        mut index: usize,
+    ) -> Vec<u8> {
+        if name[0] == b'\\' {
+            return name.to_vec();
+        }
+        if !tokens[index].is_given_kind(&[T_STRING, T_NS_SEPARATOR]) {
+            index = tokens
+                .get_next_token_of_kind(index, &[T_STRING.into(), T_NS_SEPARATOR.into()], true)
+                .unwrap();
+        }
+        // `NamespacesAnalyzer::collectNamespaceAnalysis`: the namespace at `index` and its class imports by short name.
+        let namespace_analysis = NamespacesAnalyzer.get_namespace_at(tokens, index);
+        let uses: HashMap<Vec<u8>, Vec<u8>> = NamespaceUsesAnalyzer
+            .get_declarations_in_namespace(tokens, &namespace_analysis, false)
+            .into_iter()
+            .filter(|u| u.is_class())
+            .map(|u| (u.short_name, u.full_name))
+            .collect();
+        let mut namespace = namespace_analysis.full_name;
+        let first_token_of_name = tokens[index].get_content();
+        let mut name = name.to_vec();
+        if let Some(full_name) = uses.get(first_token_of_name) {
+            namespace = full_name.clone();
+            if name == first_token_of_name {
+                return namespace;
+            }
+            // `substr((string) strstr($name, '\\'), 1)`: empty when there is no `\`.
+            let after = name
+                .iter()
+                .position(|&b| b == b'\\')
+                .map_or(name.len(), |at| at + 1);
+            name = name[after..].to_vec();
+        }
+        [namespace, b"\\".to_vec(), name].concat()
+    }
+
     pub(crate) fn is_attribute(tokens: &Tokens, index: usize) -> bool {
         if !tokens[index].is_kind(T_STRING) || !tokens.is_any_token_kinds_found(&[T_ATTRIBUTE]) {
             return false;

@@ -1801,7 +1801,7 @@
         "rules": [
           "lint/phpunit/prefer-attributes"
         ],
-        "note": "Same. Options: renamed for TOML: [options.\"lint/phpunit/prefer-attributes\"]. Planned: not ported yet.",
+        "note": "Same. Options: renamed for TOML: [options.\"lint/phpunit/prefer-attributes\"].",
         "unsupported": false
       },
       {
@@ -4787,7 +4787,7 @@
         "rules": [
           "lint/phpunit/prefer-attributes"
         ],
-        "note": "Same. Options: renamed for TOML: [options.\"lint/phpunit/prefer-attributes\"]. Planned: not ported yet.",
+        "note": "Same. Options: renamed for TOML: [options.\"lint/phpunit/prefer-attributes\"].",
         "unsupported": false
       },
       {

@@ -1,10 +1,11 @@
 //! Port of `PhpCsFixer\Fixer\ClassNotation\OrderedClassElementsFixer`.
 use crate::analyzers::fixer_configuration_resolver::resolve;
+use crate::analyzers::ordered_class_elements::{Element, PHPUNIT, get_elements, sort_tokens};
 use anyhow::Result;
 use pun_format::Fixer;
-use pun_tokens::php_compat::{strcasecmp, strtolower};
+use pun_tokens::Tokens;
+use pun_tokens::php_compat::strcasecmp;
 use pun_tokens::token::CLASSY_KINDS;
-use pun_tokens::{Kind, Tokens};
 use serde_json::Value;
 use std::cmp::Ordering;
 use std::collections::HashMap;
@@ -118,19 +119,6 @@ const DEFAULT_ORDER: &[&str] = &[
     "method_protected",
     "method_private",
 ];
-const PHPUNIT: &[&str] = &[
-    "setupbeforeclass",
-    "dosetupbeforeclass",
-    "teardownafterclass",
-    "doteardownafterclass",
-    "setup",
-    "dosetup",
-    "assertpreconditions",
-    "assertpostconditions",
-    "teardown",
-    "doteardown",
-];
-
 struct OrderedClassElementsFixer {
     type_position: HashMap<String, i64>,
     sort_alpha: bool,
@@ -143,18 +131,6 @@ pub(crate) fn fixer() -> Box<dyn Fixer> {
         sort_alpha: false,
         case_sensitive: false,
     })
-}
-
-#[derive(Clone, PartialEq, Debug)]
-pub(crate) struct Element {
-    start: usize,
-    pub(crate) end: usize,
-    visibility: &'static str,
-    abstract_: bool,
-    static_: bool,
-    readonly: bool,
-    pub(crate) type_: &'static str,
-    pub(crate) name: Vec<u8>,
 }
 
 impl Fixer for OrderedClassElementsFixer {
@@ -231,170 +207,6 @@ impl Fixer for OrderedClassElementsFixer {
     }
 }
 
-pub(crate) fn get_elements(tokens: &Tokens, start: usize) -> Vec<Element> {
-    let mut start_index = start + 1;
-    let mut elements = vec![];
-    loop {
-        let mut e = Element {
-            start: start_index,
-            end: 0,
-            visibility: "public",
-            abstract_: false,
-            static_: false,
-            readonly: false,
-            type_: "",
-            name: vec![],
-        };
-        let mut i = start_index;
-        loop {
-            let token = &tokens[i];
-            if token.is_kind(Kind::T_ATTRIBUTE) {
-                i = tokens.find_block_end(Tokens::BLOCK_TYPE_ATTRIBUTE, i) + 1;
-                continue;
-            }
-            if token.equals("}", true) {
-                return elements;
-            }
-            if token.is_kind(Kind::T_ABSTRACT) {
-                e.abstract_ = true;
-                i += 1;
-                continue;
-            }
-            if token.is_kind(Kind::T_STATIC) {
-                e.static_ = true;
-                i += 1;
-                continue;
-            }
-            if token.is_kind(Kind::T_READONLY) {
-                e.readonly = true;
-            }
-            if token.is_given_kind(&[Kind::T_PROTECTED, Kind::T_PRIVATE]) {
-                e.visibility = if strtolower(token.get_content()) == b"protected" {
-                    "protected"
-                } else {
-                    "private"
-                };
-                i += 1;
-                continue;
-            }
-            if !token.is_given_kind(&[
-                Kind::CT_USE_TRAIT,
-                Kind::T_CASE,
-                Kind::T_CONST,
-                Kind::T_VARIABLE,
-                Kind::T_FUNCTION,
-            ]) {
-                i += 1;
-                continue;
-            }
-            let (ty, name) = detect_element_type(tokens, i);
-            e.type_ = ty;
-            if let Some(n) = name {
-                e.name = n;
-            }
-            if ty == "property" {
-                e.name = tokens[i].get_content().to_vec();
-            } else if ty == "constant" {
-                let eq = tokens
-                    .get_next_token_of_kind(i, &["=".into()], true)
-                    .unwrap();
-                e.name = tokens[tokens.get_prev_meaningful_token(eq).unwrap()]
-                    .get_content()
-                    .to_vec();
-            } else if [
-                "use_trait",
-                "case",
-                "method",
-                "magic",
-                "construct",
-                "destruct",
-            ]
-            .contains(&ty)
-            {
-                e.name = tokens[tokens.get_next_meaningful_token(i).unwrap()]
-                    .get_content()
-                    .to_vec();
-            }
-            e.end = find_element_end(tokens, i);
-            break;
-        }
-        start_index = e.end + 1;
-        elements.push(e);
-    }
-}
-
-fn detect_element_type(tokens: &Tokens, index: usize) -> (&'static str, Option<Vec<u8>>) {
-    let token = &tokens[index];
-    if token.is_kind(Kind::CT_USE_TRAIT) {
-        return ("use_trait", None);
-    }
-    if token.is_kind(Kind::T_CASE) {
-        return ("case", None);
-    }
-    if token.is_kind(Kind::T_CONST) {
-        return ("constant", None);
-    }
-    if token.is_kind(Kind::T_VARIABLE) {
-        return ("property", None);
-    }
-    let name = &tokens[tokens.get_next_meaningful_token(index).unwrap()];
-    if name.equals((Kind::T_STRING, "__construct"), false) {
-        return ("construct", None);
-    }
-    if name.equals((Kind::T_STRING, "__destruct"), false) {
-        return ("destruct", None);
-    }
-    let lower = strtolower(name.get_content());
-    if name.is_kind(Kind::T_STRING) && PHPUNIT.iter().any(|n| n.as_bytes() == lower) {
-        return ("phpunit", Some(lower));
-    }
-    (
-        if name.get_content().starts_with(b"__") {
-            "magic"
-        } else {
-            "method"
-        },
-        None,
-    )
-}
-
-fn find_element_end(tokens: &Tokens, index: usize) -> usize {
-    let mut index = tokens
-        .get_next_token_of_kind(
-            index,
-            &[
-                "(".into(),
-                "{".into(),
-                ";".into(),
-                Kind::CT_PROPERTY_HOOK_BRACE_OPEN.into(),
-            ],
-            true,
-        )
-        .unwrap();
-    if tokens[index].equals("(", true) {
-        index = tokens.find_block_end(Tokens::BLOCK_TYPE_PARENTHESIS, index);
-        index = tokens
-            .get_next_token_of_kind(index, &["{".into(), ";".into()], true)
-            .unwrap();
-    }
-    if tokens[index].equals("{", true) {
-        index = tokens.find_block_end(Tokens::BLOCK_TYPE_BRACE, index);
-    }
-    if tokens[index].is_kind(Kind::CT_PROPERTY_HOOK_BRACE_OPEN) {
-        index = tokens.find_block_end(Tokens::BLOCK_TYPE_PROPERTY_HOOK, index);
-    }
-    index += 1;
-    while tokens[index].is_whitespace(Some(b" \t")) || tokens[index].is_comment() {
-        index += 1;
-    }
-    index -= 1;
-    if tokens[index].is_whitespace(None) {
-        index - 1
-    } else {
-        index
-    }
-}
-
 impl OrderedClassElementsFixer {
     fn sort_elements(&self, elements: &[Element]) -> Vec<Element> {
         let mut v: Vec<(i64, &Element)> = elements
@@ -461,19 +273,6 @@ impl OrderedClassElementsFixer {
         }
         a.start.cmp(&b.start)
     }
-}
-
-pub(crate) fn sort_tokens(
-    tokens: &mut Tokens,
-    start_index: usize,
-    end_index: usize,
-    elements: &[Element],
-) {
-    let mut replace = vec![];
-    for e in elements {
-        replace.extend_from_slice(&tokens.as_slice()[e.start..=e.end]);
-    }
-    tokens.override_range(start_index + 1, end_index, replace);
 }
 
 #[cfg(test)]

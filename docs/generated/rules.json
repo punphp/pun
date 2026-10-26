@@ -11804,7 +11804,7 @@
       "upstream": [
         "php_unit_attributes"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/phpunit/prefer-comparison-assertion",

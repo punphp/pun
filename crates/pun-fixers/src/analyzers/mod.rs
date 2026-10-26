@@ -29,6 +29,7 @@ pub(crate) mod helpers;
 pub(crate) mod import_processor;
 pub(crate) mod indentation_trait;
 pub(crate) mod namespace_uses_analyzer;
+pub(crate) mod ordered_class_elements;
 pub(crate) mod pest;
 pub(crate) mod php_constants;
 pub(crate) mod php_functions;
