@@ -203,3 +203,42 @@ fn match_assert_same_expected_type() {
 fn assert_equals_to_same() {
     check(PreferSameForScalars, "AssertEqualsToSameRector");
 }
+
+#[test]
+fn assert_compare_on_countable_with_method_to_assert_count() {
+    check(
+        PreferAssertCount,
+        "AssertCompareOnCountableWithMethodToAssertCountRector",
+    );
+}
+
+#[test]
+fn remove_expect_any_from_mock() {
+    check(NoExpectsAny, "RemoveExpectAnyFromMockRector");
+}
+
+#[test]
+fn use_specific_with_method() {
+    check(PreferSimpleWithMatcher, "UseSpecificWithMethodRector");
+}
+
+#[test]
+fn use_specific_will_method() {
+    check(PreferSpecificWillMethod, "UseSpecificWillMethodRector");
+}
+
+#[test]
+fn single_with_consecutive_to_with() {
+    check(
+        PreferSimpleMockExpectation,
+        "SingleWithConsecutiveToWithRector",
+    );
+}
+
+#[test]
+fn narrow_identical_with_consecutive() {
+    check(
+        PreferNarrowWithConsecutive,
+        "NarrowIdenticalWithConsecutiveRector",
+    );
+}

@@ -10,18 +10,24 @@ mod no_assert_contains_only;
 mod no_assert_is_type;
 mod no_assert_same_type_mismatch;
 mod no_empty_test;
+mod no_expects_any;
 mod no_flipped_assertion;
 mod no_float_delta_parameter;
 mod no_negated_assertion;
 mod prefer_assert_array_has_key;
+mod prefer_assert_count;
 mod prefer_assert_instanceof;
 mod prefer_assert_instances_of;
 mod prefer_assert_null_true_false;
 mod prefer_assert_string_contains;
 mod prefer_assert_true_false;
 mod prefer_comparison_assertion;
+mod prefer_narrow_with_consecutive;
 mod prefer_same_for_scalars;
+mod prefer_simple_mock_expectation;
+mod prefer_simple_with_matcher;
 mod prefer_specific_true_false_assertion;
+mod prefer_specific_will_method;
 mod ptype;
 mod require_string_assert_argument;
 
@@ -29,18 +35,24 @@ pub use no_assert_contains_only::NoAssertContainsOnly;
 pub use no_assert_is_type::NoAssertIsType;
 pub use no_assert_same_type_mismatch::NoAssertSameTypeMismatch;
 pub use no_empty_test::NoEmptyTest;
+pub use no_expects_any::NoExpectsAny;
 pub use no_flipped_assertion::NoFlippedAssertion;
 pub use no_float_delta_parameter::NoFloatDeltaParameter;
 pub use no_negated_assertion::NoNegatedAssertion;
 pub use prefer_assert_array_has_key::PreferAssertArrayHasKey;
+pub use prefer_assert_count::PreferAssertCount;
 pub use prefer_assert_instanceof::PreferAssertInstanceof;
 pub use prefer_assert_instances_of::PreferAssertInstancesOf;
 pub use prefer_assert_null_true_false::PreferAssertNullTrueFalse;
 pub use prefer_assert_string_contains::PreferAssertStringContains;
 pub use prefer_assert_true_false::PreferAssertTrueFalse;
 pub use prefer_comparison_assertion::PreferComparisonAssertion;
+pub use prefer_narrow_with_consecutive::PreferNarrowWithConsecutive;
 pub use prefer_same_for_scalars::PreferSameForScalars;
+pub use prefer_simple_mock_expectation::PreferSimpleMockExpectation;
+pub use prefer_simple_with_matcher::PreferSimpleWithMatcher;
 pub use prefer_specific_true_false_assertion::PreferSpecificTrueFalseAssertion;
+pub use prefer_specific_will_method::PreferSpecificWillMethod;
 pub use require_string_assert_argument::RequireStringAssertArgument;
 
 use mago_codex::ttype::atomic::TAtomic;
@@ -77,6 +89,12 @@ pub(crate) fn all() -> Vec<Box<dyn Rule>> {
         Box::new(PreferAssertInstancesOf),
         Box::new(NoAssertSameTypeMismatch),
         Box::new(PreferSameForScalars),
+        Box::new(PreferAssertCount),
+        Box::new(NoExpectsAny),
+        Box::new(PreferSimpleWithMatcher),
+        Box::new(PreferSpecificWillMethod),
+        Box::new(PreferSimpleMockExpectation),
+        Box::new(PreferNarrowWithConsecutive),
     ]
 }
 
@@ -209,11 +227,12 @@ impl<'a> AnyCall<'a> {
         self.args.arguments.iter().collect()
     }
 
-    /// The text from the start of the call to the end of the receiver and its `->` or `::`, which a new call with
-    /// the same receiver keeps.
-    pub(crate) fn receiver_text<'s>(&self, ctx: &Context<'s>) -> &'s str {
-        let end = node_span(self.method).start;
-        &ctx.source[self.span.start..end]
+    /// The receiver and its `->` or `::` as php-parser's pretty printer writes them for a call node it prints anew
+    /// (`pDereferenceLhs($node->var) . '->'`): the kept receiver's own text, without what stood between it and the
+    /// operator.
+    pub(crate) fn receiver_text(&self, ctx: &Context<'_>) -> String {
+        let operator = if self.is_static { "::" } else { "->" };
+        format!("{}{operator}", text(ctx, self.receiver))
     }
 }
 
@@ -694,4 +713,100 @@ fn coalesce_replacements(diff: Vec<Elem>) -> Vec<Elem> {
         i = k;
     }
     out
+}
+
+/// `NodeNameResolver::getName` on an expression: a variable's name, a property fetch's property, a constant's or a
+/// called function's name as written (without a leading `\`).
+pub(crate) fn expr_name<'a>(expr: &'a Expression<'a>) -> Option<&'a [u8]> {
+    use mago_syntax::cst::{Access, Call};
+    let strip = |n: &'a [u8]| n.strip_prefix(b"\\").unwrap_or(n);
+    match unparenthesize(expr) {
+        Expression::Variable(Variable::Direct(v)) => Some(&v.name[1..]),
+        Expression::Access(Access::Property(p)) => match &p.property {
+            ClassLikeMemberSelector::Identifier(id) => Some(id.value),
+            _ => None,
+        },
+        Expression::Access(Access::NullSafeProperty(p)) => match &p.property {
+            ClassLikeMemberSelector::Identifier(id) => Some(id.value),
+            _ => None,
+        },
+        Expression::Access(Access::StaticProperty(p)) => match &p.property {
+            Variable::Direct(v) => Some(&v.name[1..]),
+            _ => None,
+        },
+        Expression::ConstantAccess(c) => Some(strip(c.name.value())),
+        Expression::Call(Call::Function(f)) => match f.function {
+            Expression::Identifier(id) => Some(strip(id.value())),
+            _ => None,
+        },
+        _ => None,
+    }
+}
+
+/// `BetterNodeFinder::findFirst`: whether `node` or a node inside it matches `found`.
+pub(crate) fn contains(node: Node<'_, '_>, found: &dyn Fn(Node<'_, '_>) -> bool) -> bool {
+    if found(node) {
+        return true;
+    }
+    let mut hit = false;
+    node.visit_children(|child| {
+        if !hit && contains(child, found) {
+            hit = true;
+        }
+    });
+    hit
+}
+
+/// Whether the node is a method call named one of `names`.
+pub(crate) fn is_method_call_named(node: Node<'_, '_>, names: &[&str]) -> bool {
+    matches!(node, Node::MethodCall(_)) && AnyCall::of(node).is_some_and(|c| c.is_name(names))
+}
+
+/// The text of `expr` with every method call named `equalTo` inside it replaced by its first argument's value, as
+/// `traverseNodesWithCallable` leaves it: the replacement of `expr` itself is lost (the traversed array is dropped),
+/// and a replacement is traversed in turn. `None` when such a call has no argument (Rector stops there).
+pub(crate) fn without_equal_to(ctx: &Context<'_>, expr: &Expression<'_>) -> Option<String> {
+    use mago_syntax::cst::MethodCall;
+    fn collect<'a>(node: Node<'a, 'a>, root: Span, calls: &mut Vec<&'a MethodCall<'a>>) {
+        if let Node::MethodCall(m) = node
+            && node_span(m) != root
+            && is_method_call_named(node, &["equalTo"])
+        {
+            calls.push(m);
+            return;
+        }
+        node.visit_children(|child| collect(child, root, calls));
+    }
+    let expr = unparenthesize(expr);
+    let span = node_span(expr);
+    let mut calls = Vec::new();
+    Node::Expression(expr).visit_children(|child| collect(child, span, &mut calls));
+    let mut out = String::new();
+    let mut at = span.start;
+    for m in calls {
+        let call = node_span(m);
+        out.push_str(&ctx.source[at..call.start]);
+        out.push_str(&replaced_equal_to(ctx, m)?);
+        at = call.end;
+    }
+    out.push_str(&ctx.source[at..span.end]);
+    Some(out)
+}
+
+/// The text of an `equalTo()` call's replacement: its first argument's value, with its own `equalTo()` calls
+/// replaced.
+fn replaced_equal_to(ctx: &Context<'_>, call: &mago_syntax::cst::MethodCall<'_>) -> Option<String> {
+    inner_without_equal_to(ctx, arg_value(call.argument_list.arguments.first()?))
+}
+
+/// [`without_equal_to`] for a node inside the traversed one, which is replaced too when it is an `equalTo()` call.
+pub(crate) fn inner_without_equal_to(ctx: &Context<'_>, expr: &Expression<'_>) -> Option<String> {
+    use mago_syntax::cst::Call;
+    let value = unparenthesize(expr);
+    if let Expression::Call(Call::Method(m)) = value
+        && is_method_call_named(Node::MethodCall(m), &["equalTo"])
+    {
+        return replaced_equal_to(ctx, m);
+    }
+    without_equal_to(ctx, value)
 }
