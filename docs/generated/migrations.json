@@ -11977,7 +11977,7 @@
         "rules": [
           "lint/pest/prefer-sequence"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -12305,7 +12305,7 @@
         "rules": [
           "lint/pest/prefer-to-match-array"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -12315,7 +12315,7 @@
         "rules": [
           "lint/pest/prefer-to-match-object"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {

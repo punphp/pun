@@ -371,3 +371,18 @@ fn convert_expect_exception_to_throw() {
 fn use_to_throw() {
     check(PreferToThrow, "UseToThrowRector");
 }
+
+#[test]
+fn use_to_match_object() {
+    check(PreferToMatchObject, "UseToMatchObjectRector");
+}
+
+#[test]
+fn use_to_match_array() {
+    check(PreferToMatchArray, "UseToMatchArrayRector");
+}
+
+#[test]
+fn use_sequence_matcher() {
+    check(PreferSequence, "UseSequenceMatcherRector");
+}
