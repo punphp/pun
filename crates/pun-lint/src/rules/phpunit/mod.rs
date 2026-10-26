@@ -21,6 +21,7 @@ mod no_negated_assertion;
 mod no_setup_override_attribute;
 mod no_test_constructor;
 mod no_unused_mock;
+mod no_value_object_mock;
 mod prefer_assert;
 mod prefer_assert_array_has_key;
 mod prefer_assert_count;
@@ -64,6 +65,7 @@ pub use no_negated_assertion::NoNegatedAssertion;
 pub use no_setup_override_attribute::NoSetupOverrideAttribute;
 pub use no_test_constructor::NoTestConstructor;
 pub use no_unused_mock::NoUnusedMock;
+pub use no_value_object_mock::NoValueObjectMock;
 pub use prefer_assert::PreferAssert;
 pub use prefer_assert_array_has_key::PreferAssertArrayHasKey;
 pub use prefer_assert_count::PreferAssertCount;
@@ -149,6 +151,7 @@ pub(crate) fn all() -> Vec<Box<dyn Rule>> {
         Box::new(NoTestConstructor),
         Box::new(PreferNamedDataProviderKeys),
         Box::new(PreferTestPrefix),
+        Box::new(NoValueObjectMock),
     ]
 }
 

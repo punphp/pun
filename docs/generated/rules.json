@@ -11558,7 +11558,7 @@
         "DirectInstanceOverMockArgRector",
         "Rector\\PHPUnit\\CodeQuality\\Rector\\CallLike\\DirectInstanceOverMockArgRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/phpunit/prefer-assert",
