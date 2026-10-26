@@ -852,6 +852,9 @@ pub struct Checker<'a, 'arena> {
     standalone_throws: HashSet<Span>,
     /// [`Checks`]'s `check_class_case_sensitivity`.
     case_sensitivity: bool,
+    /// [`Checks`]'s independent class-name case options.
+    check_internal_class_case_sensitivity: bool,
+    check_imported_class_name_case: bool,
     /// [`Checks`]'s independent `checkFunctionNameCase` switch.
     check_function_name_case: bool,
     /// [`driver::Checks`]'s level and `checkGenericIterableClasses`.

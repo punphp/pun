@@ -93,3 +93,81 @@ fn check_class_case_sensitivity() {
     want.retain(|k| !k.3.starts_with("Class ClassNames\\Magic "));
     assert_eq!(got, want);
 }
+
+/// Captured from PHPStan 2.3.1, restricted to ClassNameCheck identifiers. The same inputs exercise attributes,
+/// instantiation, inheritance, trait use, signatures, instanceof, catches, constants, static calls and callables.
+fn case_options(neon: &str) {
+    let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/class-case-options");
+    let dir = root.to_string_lossy().into_owned();
+    let config = resolve(&Options {
+        config: Some(format!("{dir}/phpstan-{neon}.neon")),
+        ..Options::for_project(&dir)
+    })
+    .unwrap();
+    let expected: Value = serde_json::from_slice(
+        &std::fs::read(root.join(format!("expected-{neon}.json"))).unwrap(),
+    )
+    .unwrap();
+    assert!(expected["general"].as_array().unwrap().is_empty());
+    let prefix = format!("{dir}/");
+    let mut got: Vec<_> = analyse(&root, &config)
+        .unwrap()
+        .into_iter()
+        .filter(|e| CLASS_NAME_CHECK.contains(&e.identifier.as_str()))
+        .map(|e| {
+            (
+                e.file.strip_prefix(&prefix).unwrap_or(&e.file).to_string(),
+                e.line,
+                e.identifier,
+                e.message,
+                e.tip,
+                e.can_be_ignored,
+            )
+        })
+        .collect();
+    let mut want: Vec<_> = expected["errors"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .map(|e| {
+            (
+                e["file"].as_str().unwrap().to_string(),
+                e["line"].as_i64().unwrap(),
+                e["identifier"].as_str().unwrap().to_string(),
+                e["message"].as_str().unwrap().to_string(),
+                e["tip"].as_str().map(str::to_string),
+                e["ignorable"].as_bool().unwrap(),
+            )
+        })
+        .collect();
+    got.sort();
+    want.sort();
+    assert_eq!(got, want, "{neon}");
+}
+
+#[test]
+fn case_options_default_and_explicit_off() {
+    case_options("default");
+    case_options("off");
+}
+
+#[test]
+fn case_options_imported_names() {
+    case_options("imported");
+}
+
+#[test]
+fn case_options_internal_names() {
+    case_options("internal");
+}
+
+#[test]
+fn case_options_both() {
+    case_options("both");
+}
+
+#[test]
+fn case_options_bleeding_edge_and_override() {
+    case_options("edge");
+    case_options("edge-off");
+}

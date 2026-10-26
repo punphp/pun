@@ -1,0 +1,4 @@
+includes: [phpstan-edge.neon]
+parameters:
+    featureToggles:
+        checkImportedClassNameCase: false

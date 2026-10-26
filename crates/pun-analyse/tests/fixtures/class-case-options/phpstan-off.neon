@@ -1,0 +1,5 @@
+includes: [phpstan-default.neon]
+parameters:
+    checkInternalClassCaseSensitivity: false
+    featureToggles:
+        checkImportedClassNameCase: false

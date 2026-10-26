@@ -549,6 +549,8 @@ mod tests {
             arrays: Default::default(),
             standalone_throws: Default::default(),
             case_sensitivity: false,
+            check_internal_class_case_sensitivity: false,
+            check_imported_class_name_case: false,
             check_function_name_case: false,
             level: 0,
             generic_iterable_classes: false,

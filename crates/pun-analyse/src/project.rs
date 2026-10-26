@@ -41,6 +41,10 @@ pub struct Project {
     pub ignore_errors: IgnoredErrors,
     /// PHPStan's `checkClassCaseSensitivity` (see `rules::Checks`): false, as at level 0, until the presets set it.
     pub check_class_case_sensitivity: bool,
+    /// `checkInternalClassCaseSensitivity`: include built-in classes in case checks (off by default).
+    pub check_internal_class_case_sensitivity: bool,
+    /// `featureToggles.checkImportedClassNameCase`: check a one-part name's written case (on with bleedingEdge).
+    pub check_imported_class_name_case: bool,
     /// `checkFunctionNameCase`: off by default at every level, independently of class-name case checks.
     pub check_function_name_case: bool,
     /// `cliArgumentsVariablesRegistered`: exempt argc and argv in the main scope only.
@@ -233,6 +237,8 @@ impl Project {
             ignore_errors: IgnoredErrors::new(ignore_errors, report_unmatched_ignores),
             // config.neon's false, which config.level2.neon turns on
             check_class_case_sensitivity: flag("checkClassCaseSensitivity"),
+            check_internal_class_case_sensitivity: flag("checkInternalClassCaseSensitivity"),
+            check_imported_class_name_case: toggle("checkImportedClassNameCase"),
             check_function_name_case: flag("checkFunctionNameCase"),
             cli_arguments_variables_registered: flag("cliArgumentsVariablesRegistered"),
             check_maybe_undefined_variables: flag("checkMaybeUndefinedVariables"),
@@ -288,6 +294,8 @@ impl Project {
             report_ignores_without_comments: false,
             ignore_errors: IgnoredErrors::new(&Array::new(), true),
             check_class_case_sensitivity: false,
+            check_internal_class_case_sensitivity: false,
+            check_imported_class_name_case: false,
             check_function_name_case: false,
             cli_arguments_variables_registered: true,
             check_maybe_undefined_variables: false,

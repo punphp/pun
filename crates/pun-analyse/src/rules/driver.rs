@@ -35,6 +35,10 @@ pub(crate) struct Checks {
     /// ExistingClassInInstanceOfRule, CaughtExceptionExistenceRule, ExistingClassesInPropertiesRule) report
     /// `*.nameCase` only with it on. Set from [`Project::check_class_case_sensitivity`], which the presets will set.
     check_class_case_sensitivity: bool,
+    /// [`Project::check_internal_class_case_sensitivity`].
+    check_internal_class_case_sensitivity: bool,
+    /// [`Project::check_imported_class_name_case`].
+    check_imported_class_name_case: bool,
     /// [`Project::check_function_name_case`].
     check_function_name_case: bool,
     /// [`Project::level`] and [`Project::check_generic_iterable_classes`].
@@ -101,6 +105,8 @@ impl Checks {
         }
         Checks {
             check_class_case_sensitivity: project.check_class_case_sensitivity,
+            check_internal_class_case_sensitivity: project.check_internal_class_case_sensitivity,
+            check_imported_class_name_case: project.check_imported_class_name_case,
             check_function_name_case: project.check_function_name_case,
             level: project.level,
             generic_iterable_classes: project.check_generic_iterable_classes,
@@ -235,6 +241,8 @@ fn checker<'a, 'arena>(
         arrays: arrays::State::default(),
         standalone_throws: HashSet::new(),
         case_sensitivity: project.check_class_case_sensitivity,
+        check_internal_class_case_sensitivity: project.check_internal_class_case_sensitivity,
+        check_imported_class_name_case: project.check_imported_class_name_case,
         check_function_name_case: project.check_function_name_case,
         level: project.level,
         generic_iterable_classes: project.generic_iterable_classes,

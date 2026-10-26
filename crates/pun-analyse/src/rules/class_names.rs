@@ -283,23 +283,34 @@ const STUBBED: [&str; 4] = [
     "sensitiveparameter",
 ];
 
-/// ClassCaseSensitivityCheck::checkClassNames(), with `checkInternalClassCaseSensitivity` off (built-in classes are
-/// skipped).
+/// ClassCaseSensitivityCheck::checkClassNames().
 fn case_sensitivity(c: &mut Checker, pairs: &[Pair]) {
     for pair in pairs {
-        let Some(k) = known(c, &pair.name) else {
+        // getClassNameAsWritten()/getNameAsWritten(): only a one-part, unqualified Name whose own resolved value
+        // equals the pair's class name uses its original spelling. Other nodes, qualified and relative names stay.
+        let name = if c.check_imported_class_name_case
+            && pair.written
+            && c.names.resolve(&pair.at) == Some(pair.name.as_bytes())
+            && !c.written(pair.at).contains('\\')
+        {
+            original_case(c, pair.at)
+        } else {
+            pair.name.clone()
+        };
+        let Some(k) = known(c, &name) else {
             continue;
         };
         if let Known::Builtin(b) = k
+            && !c.check_internal_class_case_sensitivity
             && !STUBBED.contains(&b.name.to_ascii_lowercase().as_str())
         {
             continue;
         }
         let real = k.display();
         // a class_alias() of another name, an explicit `use` alias written as declared, or the right case
-        if !real.eq_ignore_ascii_case(&pair.name)
+        if !real.eq_ignore_ascii_case(&name)
             || (pair.written && explicit_alias(c, pair.at))
-            || real == pair.name
+            || real == name
         {
             continue;
         }
@@ -307,10 +318,7 @@ fn case_sensitivity(c: &mut Checker, pairs: &[Pair]) {
         c.report(
             pair.at,
             &format!("{}.nameCase", kind.to_ascii_lowercase()),
-            format!(
-                "{kind} {real} referenced with incorrect case: {}.",
-                pair.name
-            ),
+            format!("{kind} {real} referenced with incorrect case: {name}."),
             None,
         );
     }

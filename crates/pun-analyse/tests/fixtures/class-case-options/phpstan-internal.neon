@@ -1,0 +1,3 @@
+includes: [phpstan-default.neon]
+parameters:
+    checkInternalClassCaseSensitivity: true
