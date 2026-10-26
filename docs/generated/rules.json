@@ -11205,7 +11205,7 @@
         "ReplaceAtMethodWithDesiredMatcher",
         "ReplaceAtMethodWithDesiredMatcherRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/phpunit/no-bare-mock-assign",
@@ -11247,7 +11247,7 @@
         "GetMockBuilderGetMockToCreateMockRector",
         "Rector\\PHPUnit\\PHPUnit60\\Rector\\MethodCall\\GetMockBuilderGetMockToCreateMockRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/phpunit/no-empty-test",
@@ -11516,7 +11516,7 @@
         "RemoveStandaloneCreateMock",
         "RemoveStandaloneCreateMockRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/phpunit/no-unused-mock-property",
@@ -11947,7 +11947,7 @@
         "CreateStubInCoalesceArgRector",
         "Rector\\PHPUnit\\PHPUnit120\\Rector\\CallLike\\CreateStubInCoalesceArgRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/phpunit/prefer-data-provider",

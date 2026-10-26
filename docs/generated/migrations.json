@@ -12763,7 +12763,7 @@
         "rules": [
           "lint/phpunit/prefer-create-stub-in-coalesce"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -12923,7 +12923,7 @@
         "rules": [
           "lint/phpunit/no-bare-mock-builder"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -13165,7 +13165,7 @@
         "rules": [
           "lint/phpunit/no-unused-mock"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -13175,7 +13175,7 @@
         "rules": [
           "lint/phpunit/no-at-matcher"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {

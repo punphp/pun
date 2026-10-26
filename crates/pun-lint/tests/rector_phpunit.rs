@@ -268,3 +268,23 @@ fn declare_strict_types_tests() {
 fn prefer_p_h_p_unit_this_call() {
     check(PreferThisCall, "PreferPHPUnitThisCallRector");
 }
+
+#[test]
+fn remove_standalone_create_mock() {
+    check(NoUnusedMock, "RemoveStandaloneCreateMockRector");
+}
+
+#[test]
+fn replace_at_method_with_desired_matcher() {
+    check(NoAtMatcher, "ReplaceAtMethodWithDesiredMatcherRector");
+}
+
+#[test]
+fn get_mock_builder_get_mock_to_create_mock() {
+    check(NoBareMockBuilder, "GetMockBuilderGetMockToCreateMockRector");
+}
+
+#[test]
+fn create_stub_in_coalesce_arg() {
+    check(PreferCreateStubInCoalesce, "CreateStubInCoalesceArgRector");
+}

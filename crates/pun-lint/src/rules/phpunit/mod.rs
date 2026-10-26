@@ -9,6 +9,8 @@
 mod no_assert_contains_only;
 mod no_assert_is_type;
 mod no_assert_same_type_mismatch;
+mod no_at_matcher;
+mod no_bare_mock_builder;
 mod no_empty_test;
 mod no_expects_any;
 mod no_final_constructor_override;
@@ -16,6 +18,7 @@ mod no_flipped_assertion;
 mod no_float_delta_parameter;
 mod no_negated_assertion;
 mod no_setup_override_attribute;
+mod no_unused_mock;
 mod prefer_assert_array_has_key;
 mod prefer_assert_count;
 mod prefer_assert_instanceof;
@@ -24,6 +27,7 @@ mod prefer_assert_null_true_false;
 mod prefer_assert_string_contains;
 mod prefer_assert_true_false;
 mod prefer_comparison_assertion;
+mod prefer_create_stub_in_coalesce;
 mod prefer_narrow_with_consecutive;
 mod prefer_same_for_scalars;
 mod prefer_simple_mock_expectation;
@@ -38,6 +42,8 @@ mod require_string_assert_argument;
 pub use no_assert_contains_only::NoAssertContainsOnly;
 pub use no_assert_is_type::NoAssertIsType;
 pub use no_assert_same_type_mismatch::NoAssertSameTypeMismatch;
+pub use no_at_matcher::NoAtMatcher;
+pub use no_bare_mock_builder::NoBareMockBuilder;
 pub use no_empty_test::NoEmptyTest;
 pub use no_expects_any::NoExpectsAny;
 pub use no_final_constructor_override::NoFinalConstructorOverride;
@@ -45,6 +51,7 @@ pub use no_flipped_assertion::NoFlippedAssertion;
 pub use no_float_delta_parameter::NoFloatDeltaParameter;
 pub use no_negated_assertion::NoNegatedAssertion;
 pub use no_setup_override_attribute::NoSetupOverrideAttribute;
+pub use no_unused_mock::NoUnusedMock;
 pub use prefer_assert_array_has_key::PreferAssertArrayHasKey;
 pub use prefer_assert_count::PreferAssertCount;
 pub use prefer_assert_instanceof::PreferAssertInstanceof;
@@ -53,6 +60,7 @@ pub use prefer_assert_null_true_false::PreferAssertNullTrueFalse;
 pub use prefer_assert_string_contains::PreferAssertStringContains;
 pub use prefer_assert_true_false::PreferAssertTrueFalse;
 pub use prefer_comparison_assertion::PreferComparisonAssertion;
+pub use prefer_create_stub_in_coalesce::PreferCreateStubInCoalesce;
 pub use prefer_narrow_with_consecutive::PreferNarrowWithConsecutive;
 pub use prefer_same_for_scalars::PreferSameForScalars;
 pub use prefer_simple_mock_expectation::PreferSimpleMockExpectation;
@@ -107,6 +115,10 @@ pub(crate) fn all() -> Vec<Box<dyn Rule>> {
         Box::new(NoSetupOverrideAttribute),
         Box::new(RequireStrictTypesInTests),
         Box::new(PreferThisCall),
+        Box::new(NoUnusedMock),
+        Box::new(NoAtMatcher),
+        Box::new(NoBareMockBuilder),
+        Box::new(PreferCreateStubInCoalesce),
     ]
 }
 
