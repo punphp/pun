@@ -1,0 +1,20 @@
+[
+    {
+        "fixer": "php_unit_data_provider_method_order",
+        "input": "<?php\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    public function provB() { return []; }\n    /**\n     * @dataProvider provA\n     * @dataProvider provB\n     */\n    public function testOne($x) {}\n    public function provA() { return []; }\n    /**\n     * @dataProvider provB\n     */\n    #[\\PHPUnit\\Framework\\Attributes\\DataProvider('provC')]\n    public function testTwo($x) {}\n    public function provC() { return []; }\n    private $prop;\n}\n",
+        "expected": "<?php\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     * @dataProvider provA\n     * @dataProvider provB\n     */\n    public function testOne($x) {}\n    public function provA() { return []; }\n    /**\n     * @dataProvider provB\n     */\n    #[\\PHPUnit\\Framework\\Attributes\\DataProvider('provC')]\n    public function testTwo($x) {}\n    public function provC() { return []; }\n    public function provB() { return []; }\n    private $prop;\n}\n"
+    },
+    {
+        "fixer": "php_unit_data_provider_method_order",
+        "config": {
+            "placement": "before"
+        },
+        "input": "<?php\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    public function provB() { return []; }\n    /**\n     * @dataProvider provA\n     * @dataProvider provB\n     */\n    public function testOne($x) {}\n    public function provA() { return []; }\n    /**\n     * @dataProvider provB\n     */\n    #[\\PHPUnit\\Framework\\Attributes\\DataProvider('provC')]\n    public function testTwo($x) {}\n    public function provC() { return []; }\n    private $prop;\n}\n",
+        "expected": "<?php\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    public function provA() { return []; }\n    public function provB() { return []; }\n    /**\n     * @dataProvider provA\n     * @dataProvider provB\n     */\n    public function testOne($x) {}\n    public function provC() { return []; }\n    /**\n     * @dataProvider provB\n     */\n    #[\\PHPUnit\\Framework\\Attributes\\DataProvider('provC')]\n    public function testTwo($x) {}\n    private $prop;\n}\n"
+    },
+    {
+        "fixer": "php_unit_data_provider_method_order",
+        "input": "<?php\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {}\n",
+        "expected": "<?php\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {}\n"
+    }
+]

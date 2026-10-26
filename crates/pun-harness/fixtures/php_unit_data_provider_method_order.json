@@ -1,0 +1,229 @@
+{
+    "fixer": "php_unit_data_provider_method_order",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\PhpUnit\\PhpUnitDataProviderMethodOrderFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/PhpUnit/PhpUnitDataProviderMethodOrderFixerTest.php",
+    "case_count": 20,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": []
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\PhpUnit\\PhpUnitDataProviderMethodOrderFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null, array $configuration = []): void\n    {\n        $this->fixer->configure($configuration);\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": "simple - placement after",
+                    "args": [
+                        "<?php\nclass FooTest extends TestCase {\n    /** @dataProvider provideFooCases */\n    public function testFoo(): void {}\n    public function provideFooCases(): iterable {}\n}",
+                        "<?php\nclass FooTest extends TestCase {\n    public function provideFooCases(): iterable {}\n    /** @dataProvider provideFooCases */\n    public function testFoo(): void {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "simple - placement before",
+                    "args": [
+                        "<?php\nclass FooTest extends TestCase {\n    public function provideFooCases(): iterable {}\n    /** @dataProvider provideFooCases */\n    public function testFoo(): void {}\n}",
+                        "<?php\nclass FooTest extends TestCase {\n    /** @dataProvider provideFooCases */\n    public function testFoo(): void {}\n    public function provideFooCases(): iterable {}\n}",
+                        {
+                            "placement": "before"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "empty test class",
+                    "args": [
+                        "<?php\nclass FooTest extends TestCase {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "data provider named with different casing",
+                    "args": [
+                        "<?php\nclass FooTest extends TestCase {\n    /** @dataProvider provideFooCases */\n    public function testFoo(): void {}\n    public function PROVIDEFOOCASES(): iterable {}\n}",
+                        "<?php\nclass FooTest extends TestCase {\n    public function PROVIDEFOOCASES(): iterable {}\n    /** @dataProvider provideFooCases */\n    public function testFoo(): void {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "with test method annotated",
+                    "args": [
+                        "<?php\nclass FooTest extends TestCase {\n    /**\n     * @test\n     * @dataProvider provideFooCases\n     */\n    public function foo(): void {}\n    public function provideFooCases(): iterable {}\n}",
+                        "<?php\nclass FooTest extends TestCase {\n    public function provideFooCases(): iterable {}\n    /**\n     * @test\n     * @dataProvider provideFooCases\n     */\n    public function foo(): void {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "data provider not found",
+                    "args": [
+                        "<?php\nclass FooTest extends TestCase {\n    public function provideFooCases(): iterable {}\n    /** @dataProvider notExistingFunction */\n    public function testFoo(): void {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "data provider used multiple times - placement after",
+                    "args": [
+                        "<?php\nclass FooTest extends TestCase {\n    /** @dataProvider provideFooCases */\n    public function testFoo(): void {}\n    /** @dataProvider provideFooCases */\n    public function testFoo2(): void {}\n    public function provideFooCases(): iterable {}\n}",
+                        "<?php\nclass FooTest extends TestCase {\n    public function provideFooCases(): iterable {}\n    /** @dataProvider provideFooCases */\n    public function testFoo(): void {}\n    /** @dataProvider provideFooCases */\n    public function testFoo2(): void {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "data provider used multiple times - placement after - do not move provider if already after first test where used",
+                    "args": [
+                        "<?php\nclass FooTest extends TestCase {\n    /** @dataProvider provideFooCases */\n    public function testFoo(): void {}\n    public function provideFooCases(): iterable {}\n    /** @dataProvider provideFooCases */\n    public function testBar(): void {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "data provider used multiple times - placement before",
+                    "args": [
+                        "<?php\nclass FooTest extends TestCase {\n    public function provideFooCases(): iterable {}\n    /** @dataProvider provideFooCases */\n    public function testFoo(): void {}\n    /** @dataProvider provideFooCases */\n    public function testFoo2(): void {}\n}",
+                        "<?php\nclass FooTest extends TestCase {\n    /** @dataProvider provideFooCases */\n    public function testFoo(): void {}\n    /** @dataProvider provideFooCases */\n    public function testFoo2(): void {}\n    public function provideFooCases(): iterable {}\n}",
+                        {
+                            "placement": "before"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "multiple data providers for one test method",
+                    "args": [
+                        "<?php\nclass FooTest extends TestCase {\n    /**\n     * @dataProvider provideFooCases\n     * @dataProvider provideFooCases3\n     * @dataProvider provideFooCases2\n     */\n    public function testFoo(): void {}\n    public function provideFooCases(): iterable {}\n    public function provideFooCases3(): iterable {}\n    public function provideFooCases2(): iterable {}\n}",
+                        "<?php\nclass FooTest extends TestCase {\n    public function provideFooCases(): iterable {}\n    /**\n     * @dataProvider provideFooCases\n     * @dataProvider provideFooCases3\n     * @dataProvider provideFooCases2\n     */\n    public function testFoo(): void {}\n    public function provideFooCases2(): iterable {}\n    public function provideFooCases3(): iterable {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "data provider used multiple times II - placement after",
+                    "args": [
+                        "<?php\nclass FooTest {\n    /** @dataProvider provideACases */\n    public function testA1(): void {}\n\n    /** @dataProvider provideBCases */\n    public function testB(): void {}\n\n    public static function provideBCases(): iterable {}\n\n    /** @dataProvider provideACases */\n    public function testA2(): void {}\n\n    public static function provideACases(): iterable {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "data provider used multiple times II - placement before",
+                    "args": [
+                        "<?php\nclass FooTest {\n    public static function provideACases(): iterable {}\n\n    /** @dataProvider provideACases */\n    public function testA2(): void {}\n\n    public static function provideBCases(): iterable {}\n\n    /** @dataProvider provideBCases */\n    public function testB(): void {}\n\n    /** @dataProvider provideACases */\n    public function testA1(): void {}\n}",
+                        null,
+                        {
+                            "placement": "before"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "with other methods - placement after",
+                    "args": [
+                        "<?php\nclass FooTest extends TestCase {\n    public function testA(): void {}\n    /** @dataProvider provideFooCases */\n    public function testFoo(): void {}\n    public function provideFooCases(): iterable {}\n    public function testB(): void {}\n}",
+                        "<?php\nclass FooTest extends TestCase {\n    public function testA(): void {}\n    public function provideFooCases(): iterable {}\n    /** @dataProvider provideFooCases */\n    public function testFoo(): void {}\n    public function testB(): void {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "with other methods - placement before",
+                    "args": [
+                        "<?php\nclass FooTest extends TestCase {\n    public function testA(): void {}\n    public function provideFooCases(): iterable {}\n    /** @dataProvider provideFooCases */\n    public function testFoo(): void {}\n    public function testB(): void {}\n}",
+                        "<?php\nclass FooTest extends TestCase {\n    public function testA(): void {}\n    /** @dataProvider provideFooCases */\n    public function testFoo(): void {}\n    public function provideFooCases(): iterable {}\n    public function testB(): void {}\n}",
+                        {
+                            "placement": "before"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "with other methods II",
+                    "args": [
+                        "<?php\nclass FooTest extends TestCase {\n    public function testA(): void {}\n    public function testB(): void {}\n    /** @dataProvider provideFooCases */\n    public function testFoo(): void {}\n    public function provideFooCases(): iterable {}\n    public function testC(): void {}\n}",
+                        "<?php\nclass FooTest extends TestCase {\n    public function testA(): void {}\n    public function provideFooCases(): iterable {}\n    public function testB(): void {}\n    /** @dataProvider provideFooCases */\n    public function testFoo(): void {}\n    public function testC(): void {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "data provider defined by both annotation and attribute",
+                    "args": [
+                        "<?php\nuse PHPUnit\\Framework\\Attributes\\DataProvider;\nclass FooTest extends TestCase {\n    /** @dataProvider provideFooCases */\n    #[DataProvider('provideFooCases')]\n    public function testFoo(): void {}\n    public function provideFooCases(): iterable {}\n}",
+                        "<?php\nuse PHPUnit\\Framework\\Attributes\\DataProvider;\nclass FooTest extends TestCase {\n    public function provideFooCases(): iterable {}\n    /** @dataProvider provideFooCases */\n    #[DataProvider('provideFooCases')]\n    public function testFoo(): void {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "multiple data providers defined by both annotation and attribute",
+                    "args": [
+                        "<?php\nuse PHPUnit\\Framework\\Attributes\\DataProvider;\nclass FooTest extends TestCase {\n    /** @dataProvider provider1 */\n    #[DataProvider('provider1')]\n    public function testFoo1(): void {}\n    public function provider1(): iterable {}\n\n    /**\n     * @dataProvider provider2a\n     * @dataProvider provider2b\n     * @dataProvider provider2c\n     */\n    #[DataProvider('provider2a')]\n    #[DataProvider('provider2b')]\n    #[DataProvider('provider2c')]\n    public function testFoo2(): void {}\n    public function provider2a(): iterable {}\n    public function provider2b(): iterable {}\n    public function provider2c(): iterable {}\n\n    /** @dataProvider provider3 */\n    #[DataProvider('provider3')]\n    public function testFoo3(): void {}\n    public function provider3(): iterable {}\n}",
+                        "<?php\nuse PHPUnit\\Framework\\Attributes\\DataProvider;\nclass FooTest extends TestCase {\n    public function provider2b(): iterable {}\n    /** @dataProvider provider1 */\n    #[DataProvider('provider1')]\n    public function testFoo1(): void {}\n    public function provider3(): iterable {}\n    public function provider2c(): iterable {}\n\n    /**\n     * @dataProvider provider2a\n     * @dataProvider provider2b\n     * @dataProvider provider2c\n     */\n    #[DataProvider('provider2a')]\n    #[DataProvider('provider2b')]\n    #[DataProvider('provider2c')]\n    public function testFoo2(): void {}\n    public function provider1(): iterable {}\n    public function provider2a(): iterable {}\n\n    /** @dataProvider provider3 */\n    #[DataProvider('provider3')]\n    public function testFoo3(): void {}\n}"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix80",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": []
+                }
+            ],
+            "requires_php": "^8.0.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\PhpUnit\\PhpUnitDataProviderMethodOrderFixerTest",
+            "body": "    public function testFix80(string $expected, ?string $input = null, array $configuration = []): void\n    {\n        $this->fixer->configure($configuration);\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "with an attribute between PHPDoc and data provider/test method - placement after",
+                    "args": [
+                        "<?php\nclass FooTest extends TestCase {\n    /**\n     * @dataProvider provideFooCases\n     */\n    #[CustomTestAttribute]\n    public function testFoo(): void {}\n    #[CustomProviderAttribute]\n    public function provideFooCases(): iterable {}\n}",
+                        "<?php\nclass FooTest extends TestCase {\n    #[CustomProviderAttribute]\n    public function provideFooCases(): iterable {}\n    /**\n     * @dataProvider provideFooCases\n     */\n    #[CustomTestAttribute]\n    public function testFoo(): void {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "with an attribute between PHPDoc and data provider/test method - placement before",
+                    "args": [
+                        "<?php\nclass FooTest extends TestCase {\n    #[CustomProviderAttribute]\n    public function provideFooCases(): iterable {}\n    /**\n     * @dataProvider provideFooCases\n     */\n    #[CustomTestAttribute]\n    public function testFoo(): void {}\n}",
+                        "<?php\nclass FooTest extends TestCase {\n    /**\n     * @dataProvider provideFooCases\n     */\n    #[CustomTestAttribute]\n    public function testFoo(): void {}\n    #[CustomProviderAttribute]\n    public function provideFooCases(): iterable {}\n}",
+                        {
+                            "placement": "before"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "data provider defined by an attribute",
+                    "args": [
+                        "<?php\nuse PHPUnit\\Framework\\Attributes\\DataProvider;\nclass FooTest extends TestCase {\n    #[DataProvider('provideFooCases')]\n    public function testFoo(): void {}\n    public function provideFooCases(): iterable {}\n}",
+                        "<?php\nuse PHPUnit\\Framework\\Attributes\\DataProvider;\nclass FooTest extends TestCase {\n    public function provideFooCases(): iterable {}\n    #[DataProvider('provideFooCases')]\n    public function testFoo(): void {}\n}"
+                    ]
+                }
+            ]
+        }
+    ]
+}
