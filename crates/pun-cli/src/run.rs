@@ -437,11 +437,14 @@ pub(crate) fn format(a: FormatArgs, stage: Stage, lint: LintOpts) -> Result<u8> 
 }
 
 /// The `types` rules look classes up in the project's other files, as Rector's PHPStan reflection does: scan every
-/// file `pun lint` would check (not only the ones named on the command line) into the codebase they share.
-/// ponytail: vendor/ isn't scanned, so a parent class from a package stays unknown; scan Composer's autoload on demand
-/// as pun-analyse's project.rs does when the residuals need it.
+/// file `pun lint` would check (not only the ones named on the command line) into the codebase they share, with the
+/// classes they name that Composer autoloads (the generated classmap, then psr-4 and psr-0 from composer.json and
+/// vendor/composer/installed.json as pun-analyse finds them), so a parent class from a package is known as in
+/// Rector's PHPStan.
+/// ponytail: `files` entries aren't scanned; PHPStan finds them through the runtime autoloader.
 fn project_codebase(cfg: &Config) -> Result<()> {
     use pun_lint::rules::facts;
+    use pun_phpstan::{Array, Key, Value};
     let files = pun_workspace::files(cfg, Some(pun_workspace::Command::Lint), &[])?;
     let sources: Vec<(String, String)> = (files.par_iter())
         .filter_map(|f| {
@@ -452,9 +455,64 @@ fn project_codebase(cfg: &Config) -> Result<()> {
             ))
         })
         .collect();
-    let codebase = facts::project_codebase(&sources, cfg.php_version().to_id());
+    let mut extensions = Array::new();
+    extensions.push(Value::Str("php".into()));
+    let mut params = Array::new();
+    params.set(Key::Str("fileExtensions".into()), Value::Array(extensions));
+    let project = pun_analyse::Project::from_config(&cfg.root, &params);
+    // the runtime autoloader Rector loads looks in Composer's generated classmap first
+    let classmap = composer_classmap(&cfg.root);
+    let mut by_class: HashMap<&[u8], &Path> = HashMap::new();
+    for (class, path) in &classmap {
+        by_class.insert(class, path);
+    }
+    for a in &project.autoloaded {
+        by_class.entry(&a.class).or_insert(&a.path);
+    }
+    let psr0 = project.autoloaded.iter().any(|a| a.psr0);
+    let autoload = |class: &[u8]| {
+        let path = by_class.get(class).or_else(|| {
+            // psr-0: `_` in the class's own name is a directory too
+            let at = class.iter().rposition(|b| *b == b'\\').map_or(0, |i| i + 1);
+            let mut dirs = class.to_vec();
+            dirs[at..]
+                .iter_mut()
+                .filter(|b| **b == b'_')
+                .for_each(|b| *b = b'\\');
+            psr0.then(|| by_class.get(dirs.as_slice())).flatten()
+        })?;
+        Some((
+            path.to_string_lossy().into_owned(),
+            std::fs::read_to_string(path).ok()?,
+        ))
+    };
+    let codebase =
+        facts::project_codebase_autoloaded(&sources, cfg.php_version().to_id(), &autoload);
     facts::set_project_codebase(Some(codebase));
     Ok(())
+}
+
+/// The classes of `vendor/composer/autoload_classmap.php` (Composer's `classmap` entries, and every class when the
+/// autoloader is optimized), ASCII-lowercased, and their files.
+fn composer_classmap(root: &Path) -> Vec<(Vec<u8>, PathBuf)> {
+    let vendor = root.join("vendor");
+    // lossy: a class name need not be UTF-8 (symfony/cache names one `\xA9`)
+    let code = std::fs::read(vendor.join("composer/autoload_classmap.php")).unwrap_or_default();
+    (String::from_utf8_lossy(&code).lines())
+        .filter_map(|line| {
+            // `'App\\Model' => $baseDir . '/app/Model.php',`
+            let (class, path) = line.trim().strip_prefix('\'')?.split_once("' => $")?;
+            let (dir, path) = path.strip_suffix("',")?.split_once(" . '/")?;
+            // the other is `$baseDir`, the project
+            let base = if dir == "vendorDir" {
+                vendor.as_path()
+            } else {
+                root
+            };
+            let class = class.replace("\\\\", "\\").to_ascii_lowercase();
+            Some((class.into_bytes(), base.join(path)))
+        })
+        .collect()
 }
 
 /// The threads that read the files (context/plan/lint.md, perf lint 4): opening files on more than about four

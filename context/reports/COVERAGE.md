@@ -9,7 +9,7 @@
 | punphp-fixers | 36563 | 36563 | 100.00% | ok |
 | punphp-format | 1022 | 1022 | 100.00% | ok |
 | punphp-harness | 235 | 235 | 100.00% | ok |
-| punphp-lint | 21881 | 21881 | 100.00% | ok |
+| punphp-lint | 22092 | 22092 | 100.00% | ok |
 | punphp-phpstan | 10259 | 10259 | 100.00% | ok |
 | punphp-problem | 105 | 105 | 100.00% | ok |
 | punphp-tokens | 3897 | 3897 | 100.00% | ok |
@@ -95,8 +95,8 @@ Uncovered lines:
 - `crates/pun-lint/src/rules/types/declare.rs:164` `void` as a declaration: callers drop `void` (no value) before asking for a declaration.
 - `crates/pun-lint/src/rules/types/declare.rs:198` an intersection with a non-object member: Mago builds intersections only of object types.
 - `crates/pun-lint/src/rules/types/declare.rs:315` `void`, `mixed` or `null` (below 7.1) in a union: `add_union_return` refuses `mixed`/`void` before, and the union rule needs PHP 8.0.
-- `crates/pun-lint/src/rules/types/facts.rs:342` Mago's analyser failing or panicking (then no `get_class()` is typed): no known input.
-- `crates/pun-lint/src/rules/types/mod.rs:367` `unreachable!()` after the class-like kinds `rposition` matched.
+- `crates/pun-lint/src/rules/types/facts.rs:564` Mago's analyser failing or panicking (then no `get_class()` is typed): no known input.
+- `crates/pun-lint/src/rules/types/mod.rs:369` `unreachable!()` after the class-like kinds `rposition` matched.
 - `crates/pun-lint/src/rules/types/never.rs:190` a method with no class scope (see add_method_void_return).
 - `crates/pun-lint/src/rules/types/never.rs:197` a named class the codebase lacks: the codebase is built from this file, which declares it.
 - `crates/pun-lint/src/rules/laravel/prefer_request_server.rs:34` the non-target node guard: `Linter` dispatches only ArrayAccess for this rule.

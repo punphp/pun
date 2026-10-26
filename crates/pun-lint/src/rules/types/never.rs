@@ -13,7 +13,7 @@ use mago_syntax::cst::{
 };
 use pun_problem::{Edit, Fix, Safety, Span};
 
-use super::facts::{Facts, facts, is_builtin_class};
+use super::facts::{Facts, facts, is_builtin_class, is_vendor_file};
 use super::{ClassScope, MAGIC, class_scope, namespace_of};
 use crate::rules::types::names::resolve_class_name;
 use crate::syntax::node_span;
@@ -203,8 +203,8 @@ pub(crate) fn should_skip_class_method(
 }
 
 /// `isReturnTypeChangeAllowed`: the parent method found by `ParentClassMethodTypeOverrideGuard` declares no native
-/// return type (or `mixed`) and is not PHP's own. A parent Pun cannot load counts as one that has the method.
-/// (Pun's codebase holds the project's files, not vendor/, so Rector's vendor/ check is what a missing parent gives.)
+/// return type (or `mixed`), is not PHP's own, and is in vendor/ exactly when the class is. A parent Pun cannot load
+/// counts as one that has the method.
 fn is_return_type_change_allowed(facts: &Facts, scope: &ClassScope, method: &[u8]) -> bool {
     let Ok(parent) = parent_method(facts, scope, method) else {
         return false;
@@ -216,7 +216,14 @@ fn is_return_type_change_allowed(facts: &Facts, scope: &ClassScope, method: &[u8
         .return_type_declaration_metadata
         .as_ref()
         .is_some_and(|t| !t.type_union.is_mixed());
-    !declared && !is_builtin_class(class.as_bytes())
+    if declared || is_builtin_class(class.as_bytes()) {
+        return false;
+    }
+    let vendor = |name: &str| {
+        (facts.codebase.get_class_like(name.as_bytes()))
+            .is_some_and(|c| is_vendor_file(c.span.file_id))
+    };
+    scope.name.as_deref().is_some_and(vendor) == vendor(&class)
 }
 
 /// `ParentClassMethodTypeOverrideGuard::resolveParentClassMethod` for a method that is not private: the method in the
