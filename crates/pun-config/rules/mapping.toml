@@ -542,65 +542,65 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "performance/require-qualified-native-function" = { fix = "unsafe", ported = true, status = "decided", summary = "Add leading `\\` before function invocation to speed up resolving." }
 "pest/no-before-all-in-describe" = { fix = "safe", sets = ["coding-style"], ported = false, status = "decided", summary = "Replaces invalid beforeAll() and afterAll() hooks inside describe() with beforeEach() and afterEach()" }
 "pest/no-expect-exception" = { fix = "safe", sets = ["coding-style"], ported = false, status = "decided", summary = "Converts expectException() and expectExceptionMessage() patterns to expect()->toThrow()" }
-"pest/no-focused-test" = { fix = "unsafe", sets = ["coding-style"], ported = false, status = "decided", summary = "Removes only() from all tests" }
+"pest/no-focused-test" = { fix = "unsafe", sets = ["coding-style"], ported = true, status = "decided", summary = "Removes only() from all tests" }
 "pest/no-invalid-repeat" = { fix = "safe", sets = ["coding-style"], ported = false, status = "decided", summary = "Normalizes invalid literal repeat() counts to 1" }
-"pest/no-negated-boolean-matcher" = { fix = "safe", sets = ["coding-style"], ported = false, status = "decided", summary = "Simplifies double-negative expectations like ->not->toBeFalse() to ->toBeTrue()" }
+"pest/no-negated-boolean-matcher" = { fix = "safe", sets = ["coding-style"], ported = true, status = "decided", summary = "Simplifies double-negative expectations like ->not->toBeFalse() to ->toBeTrue()" }
 "pest/no-only" = { fix = "unsafe", sets = ["coding-style"], ported = true, origin = "mago", status = "decided", summary = "Remove ->only() from Pest tests." }
 "pest/no-redundant-type-expectation" = { fix = "safe", sets = ["coding-style"], ported = false, status = "decided", summary = "Removes redundant literal type expectations when a later matcher keeps the chain meaningful" }
 "pest/no-redundant-uses" = { fix = "safe", sets = ["coding-style"], ported = false, status = "decided", summary = "Removes redundant local Pest uses already configured globally in tests/Pest.php" }
-"pest/no-static-test-closure" = { fix = "safe", sets = ["coding-style"], ported = false, status = "decided", summary = "Removes static from Pest test and hook callbacks that use the test case instance" }
+"pest/no-static-test-closure" = { fix = "safe", sets = ["coding-style"], ported = true, status = "decided", summary = "Removes static from Pest test and hook callbacks that use the test case instance" }
 "pest/prefer-chained-expect" = { fix = "safe", sets = ["coding-style"], ported = false, status = "decided", summary = "Chains consecutive expect() calls into a single chained expectation, combining calls on the same value and joining different values with ->and() (configurable)" }
-"pest/prefer-comparison-matchers" = { fix = "safe", sets = ["coding-style"], ported = false, status = "decided", summary = "Converts expect($x > 10)->toBeTrue() to expect($x)->toBeGreaterThan(10)" }
+"pest/prefer-comparison-matchers" = { fix = "safe", sets = ["coding-style"], ported = true, status = "decided", summary = "Converts expect($x > 10)->toBeTrue() to expect($x)->toBeGreaterThan(10)" }
 "pest/prefer-dedicated-expectation" = { fix = "unsafe", sets = ["coding-style"], ported = true, origin = "mago", status = "decided", summary = "Use dedicated Pest matchers (toBeArray(), toStartWith(), toHaveCount(), ...) instead of expect(fn(...))->toBeTrue()." }
-"pest/prefer-defer" = { fix = "safe", sets = ["coding-style"], ported = false, status = "decided", summary = "Replaces deprecated ->tap() method with ->defer() for Pest v3 migration" }
+"pest/prefer-defer" = { fix = "safe", sets = ["coding-style"], ported = true, status = "decided", summary = "Replaces deprecated ->tap() method with ->defer() for Pest v3 migration" }
 "pest/prefer-each-modifier" = { fix = "safe", sets = ["coding-style"], ported = false, status = "decided", summary = "Converts foreach loops with expect() calls to use the ->each modifier" }
 "pest/prefer-expect" = { fix = "safe", sets = ["coding-style"], ported = false, status = "decided", summary = "Converts $this->assert*() calls to Pest expect() chains" }
 "pest/prefer-extend" = { fix = "safe", sets = ["coding-style"], ported = false, status = "decided", summary = "Converts uses() and pest()->uses() to pest()->extend() for classes and pest()->use() for traits" }
 "pest/prefer-filesystem-matchers" = { fix = "unsafe", sets = ["coding-style"], ported = false, status = "decided", summary = "Simplifies combined filesystem checks to single Pest matchers" }
-"pest/prefer-not-modifier" = { fix = "safe", sets = ["coding-style"], ported = false, status = "decided", summary = "Simplifies negated expectations by flipping the matcher (e.g., expect(!$x)->toBeTrue() becomes expect($x)->toBeFalse())" }
+"pest/prefer-not-modifier" = { fix = "safe", sets = ["coding-style"], ported = true, status = "decided", summary = "Simplifies negated expectations by flipping the matcher (e.g., expect(!$x)->toBeTrue() becomes expect($x)->toBeFalse())" }
 "pest/prefer-sequence" = { fix = "safe", sets = ["coding-style"], ported = false, status = "decided", summary = "Converts consecutive indexed expect() calls to sequence()" }
 "pest/prefer-simpler-expectation" = { fix = "safe", sets = ["coding-style"], ported = true, origin = "mago", status = "decided", summary = "Simplify Pest expectations: expect($a > $b)->toBeTrue() becomes expect($a)->toBeGreaterThan($b), and similar." }
 "pest/prefer-specific-expectations" = { fix = "safe", sets = ["coding-style"], ported = true, origin = "mago", status = "decided", summary = "Use toBeTrue()/toBeFalse()/toBeNull() instead of toBe(true|false|null)." }
-"pest/prefer-strict-equality-matchers" = { fix = "safe", sets = ["coding-style"], ported = false, status = "decided", summary = "Converts strict equality expressions to toBe() matcher" }
-"pest/prefer-to-be-alpha" = { fix = "unsafe", sets = ["coding-style"], ported = false, status = "decided", summary = "Converts ctype_alpha() checks to toBeAlpha() matcher" }
-"pest/prefer-to-be-alpha-numeric" = { fix = "unsafe", sets = ["coding-style"], ported = false, status = "decided", summary = "Converts ctype_alnum() checks to toBeAlphaNumeric() matcher" }
-"pest/prefer-to-be-between" = { fix = "safe", sets = ["coding-style"], ported = false, status = "decided", summary = "Converts expect($value >= $min && $value <= $max)->toBeTrue() to expect($value)->toBeBetween($min, $max)" }
-"pest/prefer-to-be-digits" = { fix = "unsafe", sets = ["coding-style"], ported = false, status = "decided", summary = "Converts ctype_digit() checks to toBeDigits() matcher" }
-"pest/prefer-to-be-directory" = { fix = "unsafe", sets = ["coding-style"], ported = false, status = "decided", summary = "Converts is_dir() checks to toBeDirectory() matcher" }
+"pest/prefer-strict-equality-matchers" = { fix = "safe", sets = ["coding-style"], ported = true, status = "decided", summary = "Converts strict equality expressions to toBe() matcher" }
+"pest/prefer-to-be-alpha" = { fix = "unsafe", sets = ["coding-style"], ported = true, status = "decided", summary = "Converts ctype_alpha() checks to toBeAlpha() matcher" }
+"pest/prefer-to-be-alpha-numeric" = { fix = "unsafe", sets = ["coding-style"], ported = true, status = "decided", summary = "Converts ctype_alnum() checks to toBeAlphaNumeric() matcher" }
+"pest/prefer-to-be-between" = { fix = "safe", sets = ["coding-style"], ported = true, status = "decided", summary = "Converts expect($value >= $min && $value <= $max)->toBeTrue() to expect($value)->toBeBetween($min, $max)" }
+"pest/prefer-to-be-digits" = { fix = "unsafe", sets = ["coding-style"], ported = true, status = "decided", summary = "Converts ctype_digit() checks to toBeDigits() matcher" }
+"pest/prefer-to-be-directory" = { fix = "unsafe", sets = ["coding-style"], ported = true, status = "decided", summary = "Converts is_dir() checks to toBeDirectory() matcher" }
 "pest/prefer-to-be-empty" = { fix = "unsafe", sets = ["coding-style"], ported = false, status = "decided", summary = "Converts empty checks and count-zero comparisons to toBeEmpty() matcher" }
-"pest/prefer-to-be-file" = { fix = "unsafe", sets = ["coding-style"], ported = false, status = "decided", summary = "Converts is_file() checks to toBeFile() matcher" }
-"pest/prefer-to-be-in" = { fix = "unsafe", sets = ["coding-style"], ported = false, status = "decided", summary = "Converts strict in_array() checks to the toBeIn() matcher" }
-"pest/prefer-to-be-infinite" = { fix = "unsafe", sets = ["coding-style"], ported = false, status = "decided", summary = "Converts is_infinite() checks to toBeInfinite() matcher" }
-"pest/prefer-to-be-instance-of" = { fix = "safe", sets = ["coding-style"], ported = false, status = "decided", summary = "Converts expect($obj instanceof User)->toBeTrue() to expect($obj)->toBeInstanceOf(User::class)" }
+"pest/prefer-to-be-file" = { fix = "unsafe", sets = ["coding-style"], ported = true, status = "decided", summary = "Converts is_file() checks to toBeFile() matcher" }
+"pest/prefer-to-be-in" = { fix = "unsafe", sets = ["coding-style"], ported = true, status = "decided", summary = "Converts strict in_array() checks to the toBeIn() matcher" }
+"pest/prefer-to-be-infinite" = { fix = "unsafe", sets = ["coding-style"], ported = true, status = "decided", summary = "Converts is_infinite() checks to toBeInfinite() matcher" }
+"pest/prefer-to-be-instance-of" = { fix = "safe", sets = ["coding-style"], ported = true, status = "decided", summary = "Converts expect($obj instanceof User)->toBeTrue() to expect($obj)->toBeInstanceOf(User::class)" }
 "pest/prefer-to-be-json" = { fix = "unsafe", sets = ["coding-style"], ported = false, status = "decided", summary = "Converts json_decode() null checks to toBeJson() matcher" }
-"pest/prefer-to-be-list" = { fix = "unsafe", sets = ["coding-style"], ported = false, status = "decided", summary = "Converts array_is_list() checks to toBeList() matcher" }
-"pest/prefer-to-be-lowercase" = { fix = "unsafe", sets = ["coding-style"], ported = false, status = "decided", summary = "Converts strtolower() equality checks to toBeLowercase() matcher" }
-"pest/prefer-to-be-nan" = { fix = "unsafe", sets = ["coding-style"], ported = false, status = "decided", summary = "Converts is_nan() checks to toBeNan() matcher" }
-"pest/prefer-to-be-true-false" = { fix = "safe", sets = ["coding-style"], ported = false, status = "decided", summary = "Simplifies expect($x)->toBe(true) to expect($x)->toBeTrue() and similar patterns" }
-"pest/prefer-to-be-truthy-falsy" = { fix = "safe", sets = ["coding-style"], ported = false, status = "decided", summary = "Converts bool cast assertions to toBeTruthy()/toBeFalsy() matchers" }
-"pest/prefer-to-be-uppercase" = { fix = "unsafe", sets = ["coding-style"], ported = false, status = "decided", summary = "Converts strtoupper() equality checks to toBeUppercase() matcher" }
+"pest/prefer-to-be-list" = { fix = "unsafe", sets = ["coding-style"], ported = true, status = "decided", summary = "Converts array_is_list() checks to toBeList() matcher" }
+"pest/prefer-to-be-lowercase" = { fix = "unsafe", sets = ["coding-style"], ported = true, status = "decided", summary = "Converts strtolower() equality checks to toBeLowercase() matcher" }
+"pest/prefer-to-be-nan" = { fix = "unsafe", sets = ["coding-style"], ported = true, status = "decided", summary = "Converts is_nan() checks to toBeNan() matcher" }
+"pest/prefer-to-be-true-false" = { fix = "safe", sets = ["coding-style"], ported = true, status = "decided", summary = "Simplifies expect($x)->toBe(true) to expect($x)->toBeTrue() and similar patterns" }
+"pest/prefer-to-be-truthy-falsy" = { fix = "safe", sets = ["coding-style"], ported = true, status = "decided", summary = "Converts bool cast assertions to toBeTruthy()/toBeFalsy() matchers" }
+"pest/prefer-to-be-uppercase" = { fix = "unsafe", sets = ["coding-style"], ported = true, status = "decided", summary = "Converts strtoupper() equality checks to toBeUppercase() matcher" }
 "pest/prefer-to-be-url" = { fix = "unsafe", sets = ["coding-style"], ported = false, status = "decided", summary = "Converts filter_var($url, FILTER_VALIDATE_URL) checks to toBeUrl() matcher" }
 "pest/prefer-to-be-uuid" = { fix = "unsafe", sets = ["coding-style"], ported = false, status = "decided", summary = "Converts UUID regex validation to toBeUuid() matcher" }
-"pest/prefer-to-contain" = { fix = "unsafe", sets = ["coding-style"], ported = false, status = "decided", summary = "Converts in_array() checks to toContain() matcher" }
-"pest/prefer-to-contain-equal" = { fix = "unsafe", sets = ["coding-style"], ported = false, status = "decided", summary = "Converts in_array(..., false) checks to toContainEqual() matcher" }
-"pest/prefer-to-contain-only-instances-of" = { fix = "unsafe", sets = ["coding-style"], ported = false, status = "decided", summary = "Converts ->each->toBeInstanceOf() pattern to toContainOnlyInstancesOf() matcher" }
-"pest/prefer-to-end-with" = { fix = "unsafe", sets = ["coding-style"], ported = false, status = "decided", summary = "Converts str_ends_with() checks to toEndWith() matcher" }
+"pest/prefer-to-contain" = { fix = "unsafe", sets = ["coding-style"], ported = true, status = "decided", summary = "Converts in_array() checks to toContain() matcher" }
+"pest/prefer-to-contain-equal" = { fix = "unsafe", sets = ["coding-style"], ported = true, status = "decided", summary = "Converts in_array(..., false) checks to toContainEqual() matcher" }
+"pest/prefer-to-contain-only-instances-of" = { fix = "unsafe", sets = ["coding-style"], ported = true, status = "decided", summary = "Converts ->each->toBeInstanceOf() pattern to toContainOnlyInstancesOf() matcher" }
+"pest/prefer-to-end-with" = { fix = "unsafe", sets = ["coding-style"], ported = true, status = "decided", summary = "Converts str_ends_with() checks to toEndWith() matcher" }
 "pest/prefer-to-equal-canonicalizing" = { fix = "unsafe", sets = ["coding-style"], ported = false, status = "decided", summary = "Converts sort-then-compare to toEqualCanonicalizing() matcher" }
 "pest/prefer-to-equal-with-delta" = { fix = "safe", sets = ["coding-style"], ported = false, status = "decided", summary = "Converts expect(abs($a - $b) < $delta)->toBeTrue() to expect($a)->toEqualWithDelta($b, $delta)" }
-"pest/prefer-to-have-count" = { fix = "unsafe", sets = ["coding-style"], ported = false, status = "decided", summary = "Converts expect(count($arr))->toBe(5) to expect($arr)->toHaveCount(5)" }
-"pest/prefer-to-have-key" = { fix = "unsafe", sets = ["coding-style"], ported = false, status = "decided", summary = "Converts array_key_exists() checks to toHaveKey() matcher" }
+"pest/prefer-to-have-count" = { fix = "unsafe", sets = ["coding-style"], ported = true, status = "decided", summary = "Converts expect(count($arr))->toBe(5) to expect($arr)->toHaveCount(5)" }
+"pest/prefer-to-have-key" = { fix = "unsafe", sets = ["coding-style"], ported = true, status = "decided", summary = "Converts array_key_exists() checks to toHaveKey() matcher" }
 "pest/prefer-to-have-keys" = { fix = "safe", sets = ["coding-style"], ported = false, status = "decided", summary = "Converts chained toHaveKey() calls to toHaveKeys() with array of keys" }
-"pest/prefer-to-have-length" = { fix = "unsafe", sets = ["coding-style"], ported = false, status = "decided", summary = "Converts strlen()/mb_strlen() comparisons to toHaveLength() matcher" }
-"pest/prefer-to-have-method-on-class" = { fix = "safe", sets = ["coding-style"], ported = false, status = "decided", summary = "Changes expect($object)->toHaveMethod() to expect($object::class)->toHaveMethod() for Pest v3" }
+"pest/prefer-to-have-length" = { fix = "unsafe", sets = ["coding-style"], ported = true, status = "decided", summary = "Converts strlen()/mb_strlen() comparisons to toHaveLength() matcher" }
+"pest/prefer-to-have-method-on-class" = { fix = "safe", sets = ["coding-style"], ported = true, status = "decided", summary = "Changes expect($object)->toHaveMethod() to expect($object::class)->toHaveMethod() for Pest v3" }
 "pest/prefer-to-have-properties" = { fix = "safe", sets = ["coding-style"], ported = false, status = "decided", summary = "Converts chained toHaveProperty() calls to toHaveProperties() with array of properties" }
-"pest/prefer-to-have-property" = { fix = "unsafe", sets = ["coding-style"], ported = false, status = "decided", summary = "Converts property_exists() checks to toHaveProperty() matcher" }
+"pest/prefer-to-have-property" = { fix = "unsafe", sets = ["coding-style"], ported = true, status = "decided", summary = "Converts property_exists() checks to toHaveProperty() matcher" }
 "pest/prefer-to-have-same-size" = { fix = "unsafe", sets = ["coding-style"], ported = false, status = "decided", summary = "Converts expect(count($a))->toBe(count($b)) to expect($a)->toHaveSameSize($b)" }
 "pest/prefer-to-match" = { fix = "unsafe", sets = ["coding-style"], ported = false, status = "decided", summary = "Converts expect(preg_match(\"/pattern/\", $str))->toBe(1) to expect($str)->toMatch(\"/pattern/\")" }
 "pest/prefer-to-match-array" = { fix = "safe", sets = ["coding-style"], ported = false, status = "decided", summary = "Converts multiple array element assertions to toMatchArray() matcher" }
 "pest/prefer-to-match-object" = { fix = "safe", sets = ["coding-style"], ported = false, status = "decided", summary = "Converts consecutive toHaveProperty() with values to toMatchObject() matcher" }
-"pest/prefer-to-start-with" = { fix = "unsafe", sets = ["coding-style"], ported = false, status = "decided", summary = "Converts str_starts_with() checks to toStartWith() matcher" }
+"pest/prefer-to-start-with" = { fix = "unsafe", sets = ["coding-style"], ported = true, status = "decided", summary = "Converts str_starts_with() checks to toStartWith() matcher" }
 "pest/prefer-to-throw" = { fix = "safe", sets = ["coding-style"], ported = false, status = "decided", summary = "Use expect()->toThrow() instead of expectException() or try/catch in Pest tests." }
-"pest/prefer-type-matchers" = { fix = "unsafe", sets = ["coding-style"], ported = false, status = "decided", summary = "Converts expect(is_array($x))->toBeTrue() to expect($x)->toBeArray()" }
+"pest/prefer-type-matchers" = { fix = "unsafe", sets = ["coding-style"], ported = true, status = "decided", summary = "Converts expect(is_array($x))->toBeTrue() to expect($x)->toBeArray()" }
 "pest/require-type-matcher-first" = { fix = "safe", sets = ["coding-style"], ported = false, status = "decided", summary = "Ensure type-check matchers (e.g. toBeInt, toBeInstanceOf) appear before value assertions in expect() chains and consecutive expects" }
 "php-8.1/prefer-first-class-callable" = { fix = "safe", sets = ["modernize"], ported = true, origin = "mago", status = "decided", summary = "Use first-class callable syntax (`strlen(...)`) instead of closures, Closure::fromCallable() and string or array callables." }
 "php-8.4/add-csv-escape-argument" = { fix = "safe", sets = ["modernize"], gated_by = "php-version", ported = true, status = "decided", summary = "Add escape argument on CSV function calls" }

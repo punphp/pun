@@ -8939,7 +8939,7 @@
         "RemoveOnly",
         "RemoveOnlyRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/pest/no-invalid-repeat",
@@ -8981,7 +8981,7 @@
         "ToBeTrueNotFalse",
         "ToBeTrueNotFalseRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/pest/no-only",
@@ -9063,7 +9063,7 @@
         "RemoveStaticTestClosure",
         "RemoveStaticTestClosureRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/pest/prefer-chained-expect",
@@ -9105,7 +9105,7 @@
         "SimplifyComparisonExpectations",
         "SimplifyComparisonExpectationsRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/pest/prefer-dedicated-expectation",
@@ -9145,7 +9145,7 @@
         "TapToDefer",
         "TapToDeferRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/pest/prefer-each-modifier",
@@ -9250,7 +9250,7 @@
         "SimplifyExpectNot",
         "SimplifyExpectNotRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/pest/prefer-sequence",
@@ -9330,7 +9330,7 @@
         "UseStrictEqualityMatchers",
         "UseStrictEqualityMatchersRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/pest/prefer-to-be-alpha",
@@ -9351,7 +9351,7 @@
         "UseToBeAlpha",
         "UseToBeAlphaRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/pest/prefer-to-be-alpha-numeric",
@@ -9372,7 +9372,7 @@
         "UseToBeAlphaNumeric",
         "UseToBeAlphaNumericRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/pest/prefer-to-be-between",
@@ -9393,7 +9393,7 @@
         "UseToBeBetween",
         "UseToBeBetweenRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/pest/prefer-to-be-digits",
@@ -9414,7 +9414,7 @@
         "UseToBeDigits",
         "UseToBeDigitsRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/pest/prefer-to-be-directory",
@@ -9435,7 +9435,7 @@
         "UseToBeDirectory",
         "UseToBeDirectoryRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/pest/prefer-to-be-empty",
@@ -9477,7 +9477,7 @@
         "UseToBeFile",
         "UseToBeFileRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/pest/prefer-to-be-in",
@@ -9498,7 +9498,7 @@
         "UseToBeIn",
         "UseToBeInRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/pest/prefer-to-be-infinite",
@@ -9519,7 +9519,7 @@
         "UseToBeInfinite",
         "UseToBeInfiniteRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/pest/prefer-to-be-instance-of",
@@ -9540,7 +9540,7 @@
         "UseInstanceOfMatcher",
         "UseInstanceOfMatcherRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/pest/prefer-to-be-json",
@@ -9582,7 +9582,7 @@
         "UseToBeList",
         "UseToBeListRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/pest/prefer-to-be-lowercase",
@@ -9603,7 +9603,7 @@
         "UseToBeLowercase",
         "UseToBeLowercaseRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/pest/prefer-to-be-nan",
@@ -9624,7 +9624,7 @@
         "UseToBeNan",
         "UseToBeNanRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/pest/prefer-to-be-true-false",
@@ -9645,7 +9645,7 @@
         "SimplifyToLiteralBoolean",
         "SimplifyToLiteralBooleanRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/pest/prefer-to-be-truthy-falsy",
@@ -9666,7 +9666,7 @@
         "SimplifyToBeTruthyFalsy",
         "SimplifyToBeTruthyFalsyRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/pest/prefer-to-be-uppercase",
@@ -9687,7 +9687,7 @@
         "UseToBeUppercase",
         "UseToBeUppercaseRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/pest/prefer-to-be-url",
@@ -9750,7 +9750,7 @@
         "UseToContain",
         "UseToContainRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/pest/prefer-to-contain-equal",
@@ -9771,7 +9771,7 @@
         "UseToContainEqual",
         "UseToContainEqualRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/pest/prefer-to-contain-only-instances-of",
@@ -9792,7 +9792,7 @@
         "UseToContainOnlyInstancesOf",
         "UseToContainOnlyInstancesOfRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/pest/prefer-to-end-with",
@@ -9813,7 +9813,7 @@
         "UseToEndWith",
         "UseToEndWithRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/pest/prefer-to-equal-canonicalizing",
@@ -9876,7 +9876,7 @@
         "UseToHaveCount",
         "UseToHaveCountRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/pest/prefer-to-have-key",
@@ -9897,7 +9897,7 @@
         "UseToHaveKey",
         "UseToHaveKeyRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/pest/prefer-to-have-keys",
@@ -9939,7 +9939,7 @@
         "UseToHaveLength",
         "UseToHaveLengthRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/pest/prefer-to-have-method-on-class",
@@ -9960,7 +9960,7 @@
         "ToHaveMethodOnClass",
         "ToHaveMethodOnClassRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/pest/prefer-to-have-properties",
@@ -10002,7 +10002,7 @@
         "UseToHaveProperty",
         "UseToHavePropertyRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/pest/prefer-to-have-same-size",
@@ -10107,7 +10107,7 @@
         "UseToStartWith",
         "UseToStartWithRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/pest/prefer-to-throw",
@@ -10149,7 +10149,7 @@
         "UseTypeMatchers",
         "UseTypeMatchersRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/pest/require-type-matcher-first",
