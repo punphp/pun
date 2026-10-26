@@ -10170,7 +10170,7 @@
         "EnsureTypeChecksFirstRector",
         "Pest\\Rector\\Rules\\EnsureTypeChecksFirstRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/php-8.1/prefer-first-class-callable",

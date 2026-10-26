@@ -61,6 +61,7 @@ mod prefer_to_match_object;
 mod prefer_to_start_with;
 mod prefer_to_throw;
 mod prefer_type_matchers;
+mod require_type_matcher_first;
 
 pub use no_before_all_in_describe::NoBeforeAllInDescribe;
 pub use no_expect_exception::NoExpectException;
@@ -116,6 +117,7 @@ pub use prefer_to_match_object::PreferToMatchObject;
 pub use prefer_to_start_with::PreferToStartWith;
 pub use prefer_to_throw::PreferToThrow;
 pub use prefer_type_matchers::PreferTypeMatchers;
+pub use require_type_matcher_first::RequireTypeMatcherFirst;
 
 use mago_codex::ttype::atomic::TAtomic;
 use mago_codex::ttype::atomic::scalar::TScalar;
@@ -188,6 +190,7 @@ pub(crate) fn all() -> Vec<Box<dyn Rule>> {
         Box::new(PreferToStartWith),
         Box::new(PreferToThrow),
         Box::new(PreferTypeMatchers),
+        Box::new(RequireTypeMatcherFirst),
     ]
 }
 
@@ -1117,6 +1120,16 @@ pub(crate) fn old_statements(
     olds
 }
 
+/// The comments of an old statement (all of a `Nop`).
+fn old_comments(ctx: &Context<'_>, old: &OldStmt) -> Vec<Span> {
+    let end = if old.nop { old.end } else { old.start };
+    super::php_parser::tokens(ctx.source)
+        .iter()
+        .filter(|t| t.start >= old.comments && t.end <= end && t.kind.is_comment())
+        .map(|t| Span::new(t.start, t.end))
+        .collect()
+}
+
 /// php-parser's `pArray` on a statement list whose old statements are `olds` and new ones `items`, printed from `pos`
 /// on: the text that replaces `pos..end`, and `end`; none where the printer gives up and prints the list's parent
 /// again.
@@ -1147,16 +1160,22 @@ pub(crate) fn print_list(
     let mut skip_removed = false;
     let mut delayed: Vec<&Item<'_>> = Vec::new();
     let mut last_indent = 0;
+    // p() of a statement: an old one moved to `indent` (php-parser's indent adjustment), a new one printed there.
     let print_new = |item: &Item<'_>, indent: usize| match item {
-        Item::Old(i) => ctx.source[olds[*i].start..olds[*i].end].to_string(),
-        Item::Changed(_, text) => text.clone(),
+        Item::Old(i) => kept_text(ctx, Span::new(olds[*i].start, olds[*i].end), indent),
+        Item::Changed(i, text) => shift_text(
+            text,
+            indent as isize - indent_at(ctx, olds[*i].start) as isize,
+        ),
         Item::New { print, .. } => print(indent),
     };
-    let new_comments = |item: &Item<'_>, indent: usize| match item {
-        Item::New { comments, .. } if !comments.is_empty() => {
-            Some(p_comments(ctx, comments, indent))
-        }
-        _ => None,
+    let comments_of = |item: &Item<'_>| match item {
+        Item::New { comments, .. } => comments.clone(),
+        Item::Old(i) | Item::Changed(i, _) => old_comments(ctx, &olds[*i]),
+    };
+    let new_comments = |item: &Item<'_>, indent: usize| {
+        let comments = comments_of(item);
+        (!comments.is_empty()).then(|| p_comments(ctx, &comments, indent))
     };
     for (i, d) in diff(olds.len(), items).into_iter().enumerate() {
         match d {
@@ -1185,7 +1204,10 @@ pub(crate) fn print_list(
                     result.push_str(&print_new(item, last_indent));
                     result.push_str(&nl);
                 }
-                if matches!(d, Diff::Keep(..)) {
+                // A node with the comments of the old one keeps their text; other comments are printed again.
+                if matches!(d, Diff::Keep(..))
+                    || (comments_of(&items[n]).is_empty() && old.comments == old.start)
+                {
                     result.push_str(&ctx.source[comment_start..old.start]);
                 } else if let Some(c) = new_comments(&items[n], last_indent) {
                     result.push_str(&c);
@@ -1253,16 +1275,7 @@ pub(crate) fn p_stmts(
     for item in items {
         let comments = match item {
             Item::New { comments, .. } => comments.clone(),
-            Item::Old(i) | Item::Changed(i, _) => {
-                let tokens = super::php_parser::tokens(ctx.source);
-                let old = olds[*i];
-                let end = if old.nop { old.end } else { old.start };
-                tokens
-                    .iter()
-                    .filter(|t| t.start >= old.comments && t.end <= end && t.kind.is_comment())
-                    .map(|t| Span::new(t.start, t.end))
-                    .collect()
-            }
+            Item::Old(i) | Item::Changed(i, _) => old_comments(ctx, &olds[*i]),
         };
         if !comments.is_empty() {
             out.push_str(&nl);

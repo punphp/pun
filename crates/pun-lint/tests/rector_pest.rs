@@ -434,3 +434,8 @@ fn chain_expect_calls_and_use_each_modifier() {
         "ChainExpectCallsAndUseEachModifier",
     );
 }
+
+#[test]
+fn ensure_type_checks_first() {
+    check(RequireTypeMatcherFirst, "EnsureTypeChecksFirstRector");
+}
