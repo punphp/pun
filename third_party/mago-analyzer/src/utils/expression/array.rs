@@ -33,6 +33,7 @@ use mago_codex::ttype::expander::TypeExpansionOptions;
 use mago_codex::ttype::expander::expand_union;
 use mago_codex::ttype::get_arraykey;
 use mago_codex::ttype::get_error;
+use mago_codex::ttype::get_explicit_mixed;
 use mago_codex::ttype::get_int;
 use mago_codex::ttype::get_mixed;
 use mago_codex::ttype::get_mixed_maybe_from_loop;
@@ -1702,6 +1703,14 @@ where
 
     if matches!(mixed, TAtomic::Never) {
         return get_mixed_maybe_from_loop(true);
+    }
+
+    // MixedType::getOffsetValueType keeps only explicitness, not the receiver's
+    // truthiness, non-null constraint, or subtracted types.
+    if let TAtomic::Mixed(mixed) = mixed
+        && mixed.is_explicit()
+    {
+        return get_explicit_mixed();
     }
 
     get_mixed()

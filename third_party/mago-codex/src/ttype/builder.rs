@@ -107,8 +107,23 @@ fn get_union_from_union_type(
             Task::Join => {
                 let right = built.pop().unwrap();
                 let left = built.pop().unwrap();
-                let combined_types = left.types.iter().chain(right.types.iter()).cloned().collect();
-                built.push(TUnion::from_vec(combined_types));
+                let combined_types: Vec<_> = left.types.iter().chain(right.types.iter()).cloned().collect();
+                // TypeCombinator::union: unconstrained mixed absorbs other members,
+                // but an implicit mixed member still taints the explicit identity.
+                let plain_mixed = combined_types.iter().find_map(|atomic| match atomic {
+                    TAtomic::Mixed(mixed) if mixed.is_vanilla() => Some(mixed),
+                    _ => None,
+                });
+                let combined = if let Some(mixed) = plain_mixed {
+                    let explicit = combined_types.iter().filter_map(|atomic| match atomic {
+                        TAtomic::Mixed(mixed) => Some(mixed.is_explicit()),
+                        _ => None,
+                    }).all(|explicit| explicit);
+                    wrap_atomic(TAtomic::Mixed(mixed.clone().with_is_explicit(explicit)))
+                } else {
+                    TUnion::from_vec(combined_types)
+                };
+                built.push(combined);
             }
         }
     }
@@ -410,8 +425,8 @@ pub fn get_union_from_type(
                 classname,
             )?)
         }
-        Type::Mixed(_) | Type::Wildcard(_) => get_mixed(),
-        Type::NonEmptyMixed(_) => get_truthy_mixed(),
+        Type::Mixed(_) | Type::Wildcard(_) => get_explicit_mixed(),
+        Type::NonEmptyMixed(_) => wrap_atomic(TAtomic::Mixed(TMixed::truthy().with_is_explicit(true))),
         Type::Null(_) => get_null(),
         Type::Void(_) => get_void(),
         Type::Never(_) => get_never(),
@@ -1059,7 +1074,10 @@ fn get_array_type<'src>(
 
     let mut array = TKeyedArray::new_with_parameters(
         Arc::new(if let Some(k) = key {
-            get_union_from_type(k, scope, type_context, classname)?
+            let key_type = get_union_from_type(k, scope, type_context, classname)?;
+            // TypeNodeResolver::transformUnsafeArrayKey calls MixedType::toArrayKey;
+            // declared mixed values stay explicit, but mixed array keys do not.
+            if key_type.is_mixed() { get_arraykey() } else { key_type }
         } else {
             get_arraykey()
         }),

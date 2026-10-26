@@ -1694,3 +1694,19 @@ The public regression in `crates/pun-analyse/tests/failed_functions.rs` compares
 ignorability with PHPStan captures at levels 0, 2 and 10. It covers copied failure values, evaluated arguments,
 imports and qualified names, function-existence guards, resolved functions, built-ins and a closure control.
 Regenerate its expectations with `tests/fixtures/failed-functions/capture.php` and the pinned PHPStan PHAR.
+
+## Explicit mixed offset results
+
+`utils/expression/array.rs` preserves the explicit flag when reading an offset from mixed.
+The result is a fresh unconstrained mixed, not a copy of the receiver's truthiness, non-nullness,
+or subtracted types. Nested reads therefore keep explicit identity without inheriting receiver constraints.
+The existing never-from-loop handling remains unchanged. Unknown properties and methods still produce
+implicit mixed even when their receiver is explicit mixed.
+
+This follows PHPStan 2.3.1's
+[`MixedType::getOffsetValueType()`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Type/MixedType.php#L845-L848).
+The public controls in `crates/pun-analyse/tests/explicit_mixed_producers.rs` also exercise declarations,
+the real prelude, assignment copies, overwritten values, closure captures, and both union orders.
+No assignment, capture, or combiner changes are needed once the producers supply the existing flag.
+The fixture README records the separate native-property, clone, falsey-join, and invalid `array_pop`
+boundaries rather than treating them as explicit-mixed parity.

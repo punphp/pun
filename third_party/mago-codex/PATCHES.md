@@ -391,3 +391,25 @@ against PHPStan 2.3.1. Its `strlen()` result is `3`, matching the earlier groupe
 `tests/fixtures/strlen/`. Controls cover null positions, parentheses, nullable scalar constructors,
 mixed, never, template identity, and template-default member reads. The complete fresh oracle capture
 is in `crates/pun-analyse/tests/fixtures/phpdoc-unions/expected-phpstan.json`.
+
+## Explicit mixed declaration producers
+
+`scanner/ttype.rs` lowers a native `mixed` hint with the existing `TMixed::is_explicit` flag.
+`ttype/builder.rs` does the same for PHPDoc `mixed`, `*`, and `non-empty-mixed`.
+Absent types, inferred unknowns, and omitted generic parameters still use implicit mixed.
+The prelude's native mixed returns, including `json_decode` and `unserialize`, use the same scanner.
+`get_explicit_mixed()` is a constructor for that existing identity, not a second flag.
+
+An unconstrained mixed member absorbs other PHPDoc union members in either order.
+Any implicit mixed member clears explicitness, as in the existing flow combiner.
+Other union reductions retain their previous order and metadata behavior.
+Mixed array keys use `MixedType::toArrayKey()` semantics instead of retaining explicit mixed identity.
+Array values keep their declared identity. This preserves PHPStan's `array<mixed>` display for
+`array<mixed, mixed>` without changing the value's explicit flag.
+
+The source contracts are PHPStan 2.3.1's
+[`TypeNodeResolver`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/PhpDoc/TypeNodeResolver.php),
+[`MixedType::toArrayKey()`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Type/MixedType.php#L745-L748),
+and `TypeCombinator::union()`. Public Analyzer and native-type API controls live in
+`crates/pun-analyse/tests/explicit_mixed_producers.rs`. Its fixtures contain independent full and native
+scope captures from PHPStan 2.3.1 and Rector's PHPStan 2.2.7.

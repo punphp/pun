@@ -592,6 +592,13 @@ pub fn get_mixed() -> TUnion {
     TUnion::from_single(Cow::Borrowed(MIXED_ATOMIC))
 }
 
+/// PHPStan's declared `mixed`, distinct from an absent or unknown type.
+#[inline]
+#[must_use]
+pub fn get_explicit_mixed() -> TUnion {
+    TUnion::from_atomic(TAtomic::Mixed(TMixed::new().with_is_explicit(true)))
+}
+
 /// Returns PHPStan's `ErrorType`: unconstrained mixed with distinct error identity.
 #[inline]
 #[must_use]

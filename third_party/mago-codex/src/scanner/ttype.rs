@@ -20,6 +20,7 @@ use crate::ttype::atomic::reference::TReference;
 use crate::ttype::builder;
 use crate::ttype::error::TypeError;
 use crate::ttype::get_bool;
+use crate::ttype::get_explicit_mixed;
 use crate::ttype::get_false;
 use crate::ttype::get_float;
 use crate::ttype::get_int;
@@ -137,7 +138,7 @@ where
         Hint::Integer(_) => get_int(),
         Hint::String(_) => get_string(),
         Hint::Object(_) => get_object(),
-        Hint::Mixed(_) => get_mixed(),
+        Hint::Mixed(_) => get_explicit_mixed(),
         Hint::Parent(_) => wrap_atomic(TAtomic::Object(TObject::Named(TNamedObject::new(word("parent"))))),
         Hint::Intersection(intersection) => {
             let left = get_union_from_hint(intersection.left, classname, context);
