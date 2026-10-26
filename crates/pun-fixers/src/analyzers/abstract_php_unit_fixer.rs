@@ -77,7 +77,6 @@ pub(crate) struct AssertCall {
     pub index: usize,
     pub lowered_name: Vec<u8>,
     pub open_brace_index: usize,
-    pub close_brace_index: usize,
 }
 
 /// `AbstractPhpUnitFixer::getPreviousAssertCall` as a cursor: each [`PreviousAssertCalls::next`] looks back from
@@ -119,8 +118,6 @@ impl PreviousAssertCalls {
                 index,
                 lowered_name: lowered,
                 open_brace_index,
-                close_brace_index: tokens
-                    .find_block_end(Tokens::BLOCK_TYPE_PARENTHESIS, open_brace_index),
             });
         }
         None

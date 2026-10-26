@@ -682,7 +682,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "phpunit/prefer-assert-string-contains" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Turns `strpos`/`stripos` comparisons to their method name alternatives in PHPUnit TestCase" }
 "phpunit/prefer-assert-true-false" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "Change $this->assertSame(true, ...) to assertTrue()" }
 "phpunit/prefer-attribute-over-annotation" = { fix = "safe", ported = false, status = "decided", summary = "Change annotations with value to attribute" }
-"phpunit/prefer-attributes" = { fix = "safe", ported = false, status = "decided", summary = "PHPUnit attributes must be used over their respective PHPDoc-based annotations." }
+"phpunit/prefer-attributes" = { fix = "safe", ported = true, status = "decided", summary = "PHPUnit attributes must be used over their respective PHPDoc-based annotations." }
 "phpunit/prefer-comparison-assertion" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Replace assertTrue()/assertFalse() on a comparison, instanceof, isset, count or strpos with the specific assertion." }
 "phpunit/prefer-covers-attribute" = { fix = "safe", ported = false, status = "decided", summary = "Change covers annotations with value to attribute" }
 "phpunit/prefer-create-mock" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "Replace getMock*() with createMock()." }

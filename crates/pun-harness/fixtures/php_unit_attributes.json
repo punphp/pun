@@ -1,0 +1,706 @@
+{
+    "fixer": "php_unit_attributes",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\PhpUnit\\PhpUnitAttributesFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/PhpUnit/PhpUnitAttributesFixerTest.php",
+    "case_count": 80,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": []
+                }
+            ],
+            "requires_php": ">= 8.0.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\PhpUnit\\PhpUnitAttributesFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null, array $configuration = []): void\n    {\n        $this->fixer->configure($configuration);\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": "do not fix with wrong values",
+                    "args": [
+                        "<?php\n/**\n * @requires\n * @uses\n */\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     * @backupGlobals\n     * @backupStaticAttributes\n     * @covers\n     * @dataProvider\n     * @depends\n     * @group\n     * @preserveGlobalState\n     * @testDox\n     * @testWith\n     * @ticket\n     */\n    public function testFoo() { self::assertTrue(true); }\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "do not fix with wrong casing",
+                    "args": [
+                        "<?php\n/**\n * @COVERS \\Foo\n */\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     * @dataPROVIDER provideFooCases\n     * @requires php 8.3\n     */\n    public function testFoo() { self::assertTrue(true); }\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "do not touch coversDefaultClass",
+                    "args": [
+                        "<?php\n/**\n * @coversDefaultClass \\Foo\n */\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     * @covers ::publicMethod\n     */\n    public function testBar() { self::assertTrue(true); }\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "do not fix when not supported by attributes",
+                    "args": [
+                        "<?php\n/**\n * @covers FooClass::\n * @uses ClassName::methodName\n */\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    public function testFoo() { self::assertTrue(true); }\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "do not fix when there is already attribute of related class",
+                    "args": [
+                        "<?php\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     * @requires PHP ^8.2\n     */\n    #[\\FirstAttributeToMakeSureMultipleAttributesWorks]\n    #[\\PHPUnit\\Framework\\Attributes\\RequiresPhp('^7.1')]\n    #[\\ThirdAttributeToMakeSureMultipleAttributesWorks]\n    public function testFoo() {}\n}",
+                        null,
+                        {
+                            "keep_annotations": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "do not duplicate attribute when used without leading slash",
+                    "args": [
+                        "<?php\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     * @requires PHP ^6.1\n     */\n    #[PHPUnit\\Framework\\Attributes\\RequiresPhp('^6.1')]\n    public function testFoo() {}\n}",
+                        null,
+                        {
+                            "keep_annotations": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "do not duplicate attribute when used with import",
+                    "args": [
+                        "<?php\nuse PHPUnit\\Framework\\Attributes\\RequiresPhp;\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     * @requires PHP ^6.2\n     */\n    #[RequiresPhp('^6.2')]\n    public function testFoo() {}\n}",
+                        null,
+                        {
+                            "keep_annotations": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "do not duplicate attribute when used with partial import",
+                    "args": [
+                        "<?php\nuse PHPUnit\\Framework\\Attributes;\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     * @requires PHP ^6.2\n     */\n    #[Attributes\\RequiresPhp('^6.2')]\n    public function testFoo() {}\n}",
+                        null,
+                        {
+                            "keep_annotations": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "do not duplicate attribute when used with alias",
+                    "args": [
+                        "<?php\nuse PHPUnit\\Framework\\Attributes\\RequiresPhp as PHPUnitRequiresPhp;\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     * @requires PHP ^6.0\n     */\n    #[PHPUnitRequiresPhp('^6.0')]\n    public function testFoo() {}\n}",
+                        null,
+                        {
+                            "keep_annotations": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "do not duplicate attribute when used with partial alias",
+                    "args": [
+                        "<?php\nuse PHPUnit\\Framework\\Attributes as PHPUnitAttributes;\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     * @requires PHP ^6.0\n     */\n    #[PHPUnitAttributes\\RequiresPhp('^6.0')]\n    public function testFoo() {}\n}",
+                        null,
+                        {
+                            "keep_annotations": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "fix multiple annotations",
+                    "args": [
+                        "<?php\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     * @copyright ACME Corporation\n     */\n    #[\\PHPUnit\\Framework\\Attributes\\DataProvider('provideFooCases')]\n    #[\\PHPUnit\\Framework\\Attributes\\RequiresPhp('^8.2')]\n    #[\\PHPUnit\\Framework\\Attributes\\RequiresOperatingSystem('Linux|Darwin')]\n    public function testFoo($x) { self::assertTrue($x); }\n    public static function provideFooCases() { yield [true]; yield [false]; }\n}",
+                        "<?php\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     * @copyright ACME Corporation\n     * @dataProvider provideFooCases\n     * @requires PHP ^8.2\n     * @requires OS Linux|Darwin\n     */\n    public function testFoo($x) { self::assertTrue($x); }\n    public static function provideFooCases() { yield [true]; yield [false]; }\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "fix with multiple spaces",
+                    "args": [
+                        "<?php\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     */\n    #[\\PHPUnit\\Framework\\Attributes\\RequiresPhp('^7.4|^8.1')]\n    public function testFoo() { self::assertTrue(true); }\n}",
+                        "<?php\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     * @requires    PHP        ^7.4|^8.1\n     */\n    public function testFoo() { self::assertTrue(true); }\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "fix with > in operator",
+                    "args": [
+                        "<?php\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     */\n    #[\\PHPUnit\\Framework\\Attributes\\RequiresPhp('>= 8.1')]\n    public function testFoo() { self::assertTrue(true); }\n}",
+                        "<?php\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     * @requires PHP >= 8.1\n     */\n    public function testFoo() { self::assertTrue(true); }\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "fix with trailing spaces",
+                    "args": [
+                        "<?php\n/**\n */\n#[\\PHPUnit\\Framework\\Attributes\\CoversClass(Foo::class)]\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     * @covers Foo    \n     */\n    public function testFoo($x) {}\n    /** @covers Foo     */\n    public function testBar($x) {}\n}",
+                        "<?php\n/**\n * @covers Foo    \n */\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     * @covers Foo    \n     */\n    public function testFoo($x) {}\n    /** @covers Foo     */\n    public function testBar($x) {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "fix with non-alphanumeric characters",
+                    "args": [
+                        {
+                            "__base64": "PD9waHAKY2xhc3MgRm9vVGVzdCBleHRlbmRzIFxQSFBVbml0XEZyYW1ld29ya1xUZXN0Q2FzZSB7CiAgICAvKioKICAgICAqLwogICAgI1tcUEhQVW5pdFxGcmFtZXdvcmtcQXR0cmlidXRlc1xUZXN0RG94KCdhXCdiImMnKV0KICAgIHB1YmxpYyBmdW5jdGlvbiB0ZXN0Rm9vKCkgeyBzZWxmOjphc3NlcnRUcnVlKHRydWUpOyB9CiAgICAvKioKICAgICAqLwogICAgI1tcUEhQVW5pdFxGcmFtZXdvcmtcQXR0cmlidXRlc1xUZXN0RG94KCfpvo0nKV0KICAgIHB1YmxpYyBmdW5jdGlvbiB0ZXN0QmFyKCkgeyBzZWxmOjphc3NlcnRUcnVlKHRydWUpOyB9CiAgICAvKioKICAgICAqLwogICAgI1tcUEhQVW5pdFxGcmFtZXdvcmtcQXR0cmlidXRlc1xUZXN0RG94KCdieXRlMjI0OiDgJyldCiAgICBwdWJsaWMgZnVuY3Rpb24gdGVzdEJheigpIHsgc2VsZjo6YXNzZXJ0VHJ1ZSh0cnVlKTsgfQp9"
+                        },
+                        {
+                            "__base64": "PD9waHAKY2xhc3MgRm9vVGVzdCBleHRlbmRzIFxQSFBVbml0XEZyYW1ld29ya1xUZXN0Q2FzZSB7CiAgICAvKioKICAgICAqIEB0ZXN0RG94IGEnYiJjCiAgICAgKi8KICAgIHB1YmxpYyBmdW5jdGlvbiB0ZXN0Rm9vKCkgeyBzZWxmOjphc3NlcnRUcnVlKHRydWUpOyB9CiAgICAvKioKICAgICAqIEB0ZXN0RG94IOm+jQogICAgICovCiAgICBwdWJsaWMgZnVuY3Rpb24gdGVzdEJhcigpIHsgc2VsZjo6YXNzZXJ0VHJ1ZSh0cnVlKTsgfQogICAgLyoqCiAgICAgKiBAdGVzdERveCBieXRlMjI0OiDgCiAgICAgKi8KICAgIHB1YmxpYyBmdW5jdGlvbiB0ZXN0QmF6KCkgeyBzZWxmOjphc3NlcnRUcnVlKHRydWUpOyB9Cn0="
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle After",
+                    "args": [
+                        "<?php\n/**\n * @after\n */\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     */\n    #[\\PHPUnit\\Framework\\Attributes\\After]\n    public function testFoo($x) {}\n    \n    #[\\PHPUnit\\Framework\\Attributes\\After]\n    public function testBar($x) {}\n}",
+                        "<?php\n/**\n * @after\n */\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     * @after\n     */\n    public function testFoo($x) {}\n    /** @after */\n    public function testBar($x) {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle AfterClass",
+                    "args": [
+                        "<?php\n/**\n * @afterClass\n */\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     */\n    #[\\PHPUnit\\Framework\\Attributes\\AfterClass]\n    public function testFoo($x) {}\n    \n    #[\\PHPUnit\\Framework\\Attributes\\AfterClass]\n    public function testBar($x) {}\n}",
+                        "<?php\n/**\n * @afterClass\n */\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     * @afterClass\n     */\n    public function testFoo($x) {}\n    /** @afterClass */\n    public function testBar($x) {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle BackupGlobals enabled",
+                    "args": [
+                        "<?php\n/**\n */\n#[\\PHPUnit\\Framework\\Attributes\\BackupGlobals(true)]\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     */\n    #[\\PHPUnit\\Framework\\Attributes\\BackupGlobals(true)]\n    public function testFoo($x) {}\n    \n    #[\\PHPUnit\\Framework\\Attributes\\BackupGlobals(true)]\n    public function testBar($x) {}\n}",
+                        "<?php\n/**\n * @backupGlobals enabled\n */\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     * @backupGlobals enabled\n     */\n    public function testFoo($x) {}\n    /** @backupGlobals enabled */\n    public function testBar($x) {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle BackupGlobals disabled",
+                    "args": [
+                        "<?php\n/**\n */\n#[\\PHPUnit\\Framework\\Attributes\\BackupGlobals(false)]\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     */\n    #[\\PHPUnit\\Framework\\Attributes\\BackupGlobals(false)]\n    public function testFoo($x) {}\n    \n    #[\\PHPUnit\\Framework\\Attributes\\BackupGlobals(false)]\n    public function testBar($x) {}\n}",
+                        "<?php\n/**\n * @backupGlobals disabled\n */\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     * @backupGlobals disabled\n     */\n    public function testFoo($x) {}\n    /** @backupGlobals disabled */\n    public function testBar($x) {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle BackupGlobals no",
+                    "args": [
+                        "<?php\n/**\n */\n#[\\PHPUnit\\Framework\\Attributes\\BackupGlobals(false)]\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     */\n    #[\\PHPUnit\\Framework\\Attributes\\BackupGlobals(false)]\n    public function testFoo($x) {}\n    \n    #[\\PHPUnit\\Framework\\Attributes\\BackupGlobals(false)]\n    public function testBar($x) {}\n}",
+                        "<?php\n/**\n * @backupGlobals no\n */\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     * @backupGlobals no\n     */\n    public function testFoo($x) {}\n    /** @backupGlobals no */\n    public function testBar($x) {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle BackupStaticProperties enabled",
+                    "args": [
+                        "<?php\n/**\n */\n#[\\PHPUnit\\Framework\\Attributes\\BackupStaticProperties(true)]\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     */\n    #[\\PHPUnit\\Framework\\Attributes\\BackupStaticProperties(true)]\n    public function testFoo($x) {}\n    \n    #[\\PHPUnit\\Framework\\Attributes\\BackupStaticProperties(true)]\n    public function testBar($x) {}\n}",
+                        "<?php\n/**\n * @backupStaticAttributes enabled\n */\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     * @backupStaticAttributes enabled\n     */\n    public function testFoo($x) {}\n    /** @backupStaticAttributes enabled */\n    public function testBar($x) {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle BackupStaticProperties disabled",
+                    "args": [
+                        "<?php\n/**\n */\n#[\\PHPUnit\\Framework\\Attributes\\BackupStaticProperties(false)]\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     */\n    #[\\PHPUnit\\Framework\\Attributes\\BackupStaticProperties(false)]\n    public function testFoo($x) {}\n    \n    #[\\PHPUnit\\Framework\\Attributes\\BackupStaticProperties(false)]\n    public function testBar($x) {}\n}",
+                        "<?php\n/**\n * @backupStaticAttributes disabled\n */\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     * @backupStaticAttributes disabled\n     */\n    public function testFoo($x) {}\n    /** @backupStaticAttributes disabled */\n    public function testBar($x) {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle Before",
+                    "args": [
+                        "<?php\n/**\n * @before\n */\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     */\n    #[\\PHPUnit\\Framework\\Attributes\\Before]\n    public function testFoo($x) {}\n    \n    #[\\PHPUnit\\Framework\\Attributes\\Before]\n    public function testBar($x) {}\n}",
+                        "<?php\n/**\n * @before\n */\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     * @before\n     */\n    public function testFoo($x) {}\n    /** @before */\n    public function testBar($x) {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle BeforeClass",
+                    "args": [
+                        "<?php\n/**\n * @beforeClass\n */\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     */\n    #[\\PHPUnit\\Framework\\Attributes\\BeforeClass]\n    public function testFoo($x) {}\n    \n    #[\\PHPUnit\\Framework\\Attributes\\BeforeClass]\n    public function testBar($x) {}\n}",
+                        "<?php\n/**\n * @beforeClass\n */\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     * @beforeClass\n     */\n    public function testFoo($x) {}\n    /** @beforeClass */\n    public function testBar($x) {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle CoversFunction",
+                    "args": [
+                        "<?php\n/**\n */\n#[\\PHPUnit\\Framework\\Attributes\\CoversFunction('functionName')]\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     * @covers ::functionName\n     */\n    public function testFoo($x) {}\n    /** @covers ::functionName */\n    public function testBar($x) {}\n}",
+                        "<?php\n/**\n * @covers ::functionName\n */\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     * @covers ::functionName\n     */\n    public function testFoo($x) {}\n    /** @covers ::functionName */\n    public function testBar($x) {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle CoversClass",
+                    "args": [
+                        "<?php\n/**\n */\n#[\\PHPUnit\\Framework\\Attributes\\CoversClass(\\VendorName\\ClassName::class)]\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     * @covers \\VendorName\\ClassName\n     */\n    public function testFoo($x) {}\n    /** @covers \\VendorName\\ClassName */\n    public function testBar($x) {}\n}",
+                        "<?php\n/**\n * @covers \\VendorName\\ClassName\n */\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     * @covers \\VendorName\\ClassName\n     */\n    public function testFoo($x) {}\n    /** @covers \\VendorName\\ClassName */\n    public function testBar($x) {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle CoversMethod",
+                    "args": [
+                        "<?php\n/**\n */\n#[\\PHPUnit\\Framework\\Attributes\\CoversMethod(\\Foo\\Bar::class, 'methodName')]\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     * @covers \\Foo\\Bar::methodName\n     */\n    public function testFoo($x) {}\n    /** @covers \\Foo\\Bar::methodName */\n    public function testBar($x) {}\n}",
+                        "<?php\n/**\n * @covers \\Foo\\Bar::methodName\n */\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     * @covers \\Foo\\Bar::methodName\n     */\n    public function testFoo($x) {}\n    /** @covers \\Foo\\Bar::methodName */\n    public function testBar($x) {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle CoversTrait",
+                    "args": [
+                        "<?php\n/**\n */\n#[\\PHPUnit\\Framework\\Attributes\\CoversTrait(\\Foo\\BarTrait::class)]\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     * @covers \\Foo\\BarTrait\n     */\n    public function testFoo($x) {}\n    /** @covers \\Foo\\BarTrait */\n    public function testBar($x) {}\n}",
+                        "<?php\n/**\n * @covers \\Foo\\BarTrait\n */\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     * @covers \\Foo\\BarTrait\n     */\n    public function testFoo($x) {}\n    /** @covers \\Foo\\BarTrait */\n    public function testBar($x) {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle CoversNothing",
+                    "args": [
+                        "<?php\n/**\n */\n#[\\PHPUnit\\Framework\\Attributes\\CoversNothing]\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     */\n    #[\\PHPUnit\\Framework\\Attributes\\CoversNothing]\n    public function testFoo($x) {}\n    \n    #[\\PHPUnit\\Framework\\Attributes\\CoversNothing]\n    public function testBar($x) {}\n}",
+                        "<?php\n/**\n * @coversNothing\n */\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     * @coversNothing\n     */\n    public function testFoo($x) {}\n    /** @coversNothing */\n    public function testBar($x) {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle DataProvider",
+                    "args": [
+                        "<?php\n/**\n * @dataProvider provideFooCases\n */\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     */\n    #[\\PHPUnit\\Framework\\Attributes\\DataProvider('provideFooCases')]\n    public function testFoo($x) {}\n    \n    #[\\PHPUnit\\Framework\\Attributes\\DataProvider('provideFooCases')]\n    public function testBar($x) {}\n}",
+                        "<?php\n/**\n * @dataProvider provideFooCases\n */\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     * @dataProvider provideFooCases\n     */\n    public function testFoo($x) {}\n    /** @dataProvider provideFooCases */\n    public function testBar($x) {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle DataProviderExternal",
+                    "args": [
+                        "<?php\n/**\n * @dataProvider BarTest::provideFooCases\n */\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     */\n    #[\\PHPUnit\\Framework\\Attributes\\DataProviderExternal(BarTest::class, 'provideFooCases')]\n    public function testFoo($x) {}\n    \n    #[\\PHPUnit\\Framework\\Attributes\\DataProviderExternal(BarTest::class, 'provideFooCases')]\n    public function testBar($x) {}\n}",
+                        "<?php\n/**\n * @dataProvider BarTest::provideFooCases\n */\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     * @dataProvider BarTest::provideFooCases\n     */\n    public function testFoo($x) {}\n    /** @dataProvider BarTest::provideFooCases */\n    public function testBar($x) {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle Depends",
+                    "args": [
+                        "<?php\n/**\n * @depends methodName\n */\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     */\n    #[\\PHPUnit\\Framework\\Attributes\\Depends('methodName')]\n    public function testFoo($x) {}\n    \n    #[\\PHPUnit\\Framework\\Attributes\\Depends('methodName')]\n    public function testBar($x) {}\n}",
+                        "<?php\n/**\n * @depends methodName\n */\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     * @depends methodName\n     */\n    public function testFoo($x) {}\n    /** @depends methodName */\n    public function testBar($x) {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle DependsExternal",
+                    "args": [
+                        "<?php\n/**\n * @depends ClassName::methodName\n */\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     */\n    #[\\PHPUnit\\Framework\\Attributes\\DependsExternal(ClassName::class, 'methodName')]\n    public function testFoo($x) {}\n    \n    #[\\PHPUnit\\Framework\\Attributes\\DependsExternal(ClassName::class, 'methodName')]\n    public function testBar($x) {}\n}",
+                        "<?php\n/**\n * @depends ClassName::methodName\n */\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     * @depends ClassName::methodName\n     */\n    public function testFoo($x) {}\n    /** @depends ClassName::methodName */\n    public function testBar($x) {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle DependsExternalUsingDeepClone",
+                    "args": [
+                        "<?php\n/**\n * @depends clone ClassName::methodName\n */\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     */\n    #[\\PHPUnit\\Framework\\Attributes\\DependsExternalUsingDeepClone(ClassName::class, 'methodName')]\n    public function testFoo($x) {}\n    \n    #[\\PHPUnit\\Framework\\Attributes\\DependsExternalUsingDeepClone(ClassName::class, 'methodName')]\n    public function testBar($x) {}\n}",
+                        "<?php\n/**\n * @depends clone ClassName::methodName\n */\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     * @depends clone ClassName::methodName\n     */\n    public function testFoo($x) {}\n    /** @depends clone ClassName::methodName */\n    public function testBar($x) {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle DependsExternalUsingShallowClone",
+                    "args": [
+                        "<?php\n/**\n * @depends shallowClone ClassName::methodName\n */\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     */\n    #[\\PHPUnit\\Framework\\Attributes\\DependsExternalUsingShallowClone(ClassName::class, 'methodName')]\n    public function testFoo($x) {}\n    \n    #[\\PHPUnit\\Framework\\Attributes\\DependsExternalUsingShallowClone(ClassName::class, 'methodName')]\n    public function testBar($x) {}\n}",
+                        "<?php\n/**\n * @depends shallowClone ClassName::methodName\n */\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     * @depends shallowClone ClassName::methodName\n     */\n    public function testFoo($x) {}\n    /** @depends shallowClone ClassName::methodName */\n    public function testBar($x) {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle DependsOnClass",
+                    "args": [
+                        "<?php\n/**\n * @depends ClassName::class\n */\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     */\n    #[\\PHPUnit\\Framework\\Attributes\\DependsOnClass(ClassName::class)]\n    public function testFoo($x) {}\n    \n    #[\\PHPUnit\\Framework\\Attributes\\DependsOnClass(ClassName::class)]\n    public function testBar($x) {}\n}",
+                        "<?php\n/**\n * @depends ClassName::class\n */\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     * @depends ClassName::class\n     */\n    public function testFoo($x) {}\n    /** @depends ClassName::class */\n    public function testBar($x) {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle DependsOnClassUsingDeepClone",
+                    "args": [
+                        "<?php\n/**\n * @depends clone ClassName::class\n */\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     */\n    #[\\PHPUnit\\Framework\\Attributes\\DependsOnClassUsingDeepClone(ClassName::class)]\n    public function testFoo($x) {}\n    \n    #[\\PHPUnit\\Framework\\Attributes\\DependsOnClassUsingDeepClone(ClassName::class)]\n    public function testBar($x) {}\n}",
+                        "<?php\n/**\n * @depends clone ClassName::class\n */\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     * @depends clone ClassName::class\n     */\n    public function testFoo($x) {}\n    /** @depends clone ClassName::class */\n    public function testBar($x) {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle DependsOnClassUsingShallowClone",
+                    "args": [
+                        "<?php\n/**\n * @depends shallowClone ClassName::class\n */\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     */\n    #[\\PHPUnit\\Framework\\Attributes\\DependsOnClassUsingShallowClone(ClassName::class)]\n    public function testFoo($x) {}\n    \n    #[\\PHPUnit\\Framework\\Attributes\\DependsOnClassUsingShallowClone(ClassName::class)]\n    public function testBar($x) {}\n}",
+                        "<?php\n/**\n * @depends shallowClone ClassName::class\n */\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     * @depends shallowClone ClassName::class\n     */\n    public function testFoo($x) {}\n    /** @depends shallowClone ClassName::class */\n    public function testBar($x) {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle DependsUsingDeepClone",
+                    "args": [
+                        "<?php\n/**\n * @depends clone methodName\n */\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     */\n    #[\\PHPUnit\\Framework\\Attributes\\DependsUsingDeepClone('methodName')]\n    public function testFoo($x) {}\n    \n    #[\\PHPUnit\\Framework\\Attributes\\DependsUsingDeepClone('methodName')]\n    public function testBar($x) {}\n}",
+                        "<?php\n/**\n * @depends clone methodName\n */\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     * @depends clone methodName\n     */\n    public function testFoo($x) {}\n    /** @depends clone methodName */\n    public function testBar($x) {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle DependsUsingShallowClone",
+                    "args": [
+                        "<?php\n/**\n * @depends shallowClone methodName\n */\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     */\n    #[\\PHPUnit\\Framework\\Attributes\\DependsUsingShallowClone('methodName')]\n    public function testFoo($x) {}\n    \n    #[\\PHPUnit\\Framework\\Attributes\\DependsUsingShallowClone('methodName')]\n    public function testBar($x) {}\n}",
+                        "<?php\n/**\n * @depends shallowClone methodName\n */\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     * @depends shallowClone methodName\n     */\n    public function testFoo($x) {}\n    /** @depends shallowClone methodName */\n    public function testBar($x) {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle DoesNotPerformAssertions",
+                    "args": [
+                        "<?php\n/**\n */\n#[\\PHPUnit\\Framework\\Attributes\\DoesNotPerformAssertions]\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     */\n    #[\\PHPUnit\\Framework\\Attributes\\DoesNotPerformAssertions]\n    public function testFoo($x) {}\n    \n    #[\\PHPUnit\\Framework\\Attributes\\DoesNotPerformAssertions]\n    public function testBar($x) {}\n}",
+                        "<?php\n/**\n * @doesNotPerformAssertions\n */\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     * @doesNotPerformAssertions\n     */\n    public function testFoo($x) {}\n    /** @doesNotPerformAssertions */\n    public function testBar($x) {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle Group",
+                    "args": [
+                        "<?php\n/**\n */\n#[\\PHPUnit\\Framework\\Attributes\\Group('groupName')]\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     */\n    #[\\PHPUnit\\Framework\\Attributes\\Group('groupName')]\n    public function testFoo($x) {}\n    \n    #[\\PHPUnit\\Framework\\Attributes\\Group('groupName')]\n    public function testBar($x) {}\n}",
+                        "<?php\n/**\n * @group groupName\n */\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     * @group groupName\n     */\n    public function testFoo($x) {}\n    /** @group groupName */\n    public function testBar($x) {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle Large",
+                    "args": [
+                        "<?php\n/**\n */\n#[\\PHPUnit\\Framework\\Attributes\\Large]\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     * @large\n     */\n    public function testFoo($x) {}\n    /** @large */\n    public function testBar($x) {}\n}",
+                        "<?php\n/**\n * @large\n */\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     * @large\n     */\n    public function testFoo($x) {}\n    /** @large */\n    public function testBar($x) {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle Medium",
+                    "args": [
+                        "<?php\n/**\n */\n#[\\PHPUnit\\Framework\\Attributes\\Medium]\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     * @medium\n     */\n    public function testFoo($x) {}\n    /** @medium */\n    public function testBar($x) {}\n}",
+                        "<?php\n/**\n * @medium\n */\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     * @medium\n     */\n    public function testFoo($x) {}\n    /** @medium */\n    public function testBar($x) {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle PostCondition",
+                    "args": [
+                        "<?php\n/**\n * @postCondition\n */\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     */\n    #[\\PHPUnit\\Framework\\Attributes\\PostCondition]\n    public function testFoo($x) {}\n    \n    #[\\PHPUnit\\Framework\\Attributes\\PostCondition]\n    public function testBar($x) {}\n}",
+                        "<?php\n/**\n * @postCondition\n */\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     * @postCondition\n     */\n    public function testFoo($x) {}\n    /** @postCondition */\n    public function testBar($x) {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle PreCondition",
+                    "args": [
+                        "<?php\n/**\n * @preCondition\n */\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     */\n    #[\\PHPUnit\\Framework\\Attributes\\PreCondition]\n    public function testFoo($x) {}\n    \n    #[\\PHPUnit\\Framework\\Attributes\\PreCondition]\n    public function testBar($x) {}\n}",
+                        "<?php\n/**\n * @preCondition\n */\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     * @preCondition\n     */\n    public function testFoo($x) {}\n    /** @preCondition */\n    public function testBar($x) {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle PreserveGlobalState enabled",
+                    "args": [
+                        "<?php\n/**\n */\n#[\\PHPUnit\\Framework\\Attributes\\PreserveGlobalState(true)]\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     */\n    #[\\PHPUnit\\Framework\\Attributes\\PreserveGlobalState(true)]\n    public function testFoo($x) {}\n    \n    #[\\PHPUnit\\Framework\\Attributes\\PreserveGlobalState(true)]\n    public function testBar($x) {}\n}",
+                        "<?php\n/**\n * @preserveGlobalState enabled\n */\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     * @preserveGlobalState enabled\n     */\n    public function testFoo($x) {}\n    /** @preserveGlobalState enabled */\n    public function testBar($x) {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle PreserveGlobalState disabled",
+                    "args": [
+                        "<?php\n/**\n */\n#[\\PHPUnit\\Framework\\Attributes\\PreserveGlobalState(false)]\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     */\n    #[\\PHPUnit\\Framework\\Attributes\\PreserveGlobalState(false)]\n    public function testFoo($x) {}\n    \n    #[\\PHPUnit\\Framework\\Attributes\\PreserveGlobalState(false)]\n    public function testBar($x) {}\n}",
+                        "<?php\n/**\n * @preserveGlobalState    disabled\n */\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     * @preserveGlobalState    disabled\n     */\n    public function testFoo($x) {}\n    /** @preserveGlobalState    disabled */\n    public function testBar($x) {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle RequiresFunction",
+                    "args": [
+                        "<?php\n/**\n */\n#[\\PHPUnit\\Framework\\Attributes\\RequiresFunction('imap_open')]\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     */\n    #[\\PHPUnit\\Framework\\Attributes\\RequiresFunction('imap_open')]\n    public function testFoo($x) {}\n    \n    #[\\PHPUnit\\Framework\\Attributes\\RequiresFunction('imap_open')]\n    public function testBar($x) {}\n}",
+                        "<?php\n/**\n * @requires function imap_open\n */\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     * @requires function imap_open\n     */\n    public function testFoo($x) {}\n    /** @requires function imap_open */\n    public function testBar($x) {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle RequiresMethod",
+                    "args": [
+                        "<?php\n/**\n */\n#[\\PHPUnit\\Framework\\Attributes\\RequiresMethod(ReflectionMethod::class, 'setAccessible')]\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     */\n    #[\\PHPUnit\\Framework\\Attributes\\RequiresMethod(ReflectionMethod::class, 'setAccessible')]\n    public function testFoo($x) {}\n    \n    #[\\PHPUnit\\Framework\\Attributes\\RequiresMethod(ReflectionMethod::class, 'setAccessible')]\n    public function testBar($x) {}\n}",
+                        "<?php\n/**\n * @requires function ReflectionMethod::setAccessible\n */\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     * @requires function ReflectionMethod::setAccessible\n     */\n    public function testFoo($x) {}\n    /** @requires function ReflectionMethod::setAccessible */\n    public function testBar($x) {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle RequiresOperatingSystem",
+                    "args": [
+                        "<?php\n/**\n */\n#[\\PHPUnit\\Framework\\Attributes\\RequiresOperatingSystem('Linux')]\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     */\n    #[\\PHPUnit\\Framework\\Attributes\\RequiresOperatingSystem('Linux')]\n    public function testFoo($x) {}\n    \n    #[\\PHPUnit\\Framework\\Attributes\\RequiresOperatingSystem('Linux')]\n    public function testBar($x) {}\n}",
+                        "<?php\n/**\n * @requires OS Linux\n */\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     * @requires OS Linux\n     */\n    public function testFoo($x) {}\n    /** @requires OS Linux */\n    public function testBar($x) {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle RequiresOperatingSystemFamily",
+                    "args": [
+                        "<?php\n/**\n */\n#[\\PHPUnit\\Framework\\Attributes\\RequiresOperatingSystemFamily('Windows')]\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     */\n    #[\\PHPUnit\\Framework\\Attributes\\RequiresOperatingSystemFamily('Windows')]\n    public function testFoo($x) {}\n    \n    #[\\PHPUnit\\Framework\\Attributes\\RequiresOperatingSystemFamily('Windows')]\n    public function testBar($x) {}\n}",
+                        "<?php\n/**\n * @requires OSFAMILY Windows\n */\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     * @requires OSFAMILY Windows\n     */\n    public function testFoo($x) {}\n    /** @requires OSFAMILY Windows */\n    public function testBar($x) {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle RequiresPhp with only version",
+                    "args": [
+                        "<?php\n/**\n */\n#[\\PHPUnit\\Framework\\Attributes\\RequiresPhp('>= 8.1.20')]\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     */\n    #[\\PHPUnit\\Framework\\Attributes\\RequiresPhp('>= 8.1.20')]\n    public function testFoo($x) {}\n    \n    #[\\PHPUnit\\Framework\\Attributes\\RequiresPhp('>= 8.1.20')]\n    public function testBar($x) {}\n}",
+                        "<?php\n/**\n * @requires PHP 8.1.20\n */\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     * @requires PHP 8.1.20\n     */\n    public function testFoo($x) {}\n    /** @requires PHP 8.1.20 */\n    public function testBar($x) {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle RequiresPhp with caret",
+                    "args": [
+                        "<?php\n/**\n */\n#[\\PHPUnit\\Framework\\Attributes\\RequiresPhp('^8.1.21')]\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     */\n    #[\\PHPUnit\\Framework\\Attributes\\RequiresPhp('^8.1.21')]\n    public function testFoo($x) {}\n    \n    #[\\PHPUnit\\Framework\\Attributes\\RequiresPhp('^8.1.21')]\n    public function testBar($x) {}\n}",
+                        "<?php\n/**\n * @requires PHP ^8.1.21\n */\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     * @requires PHP ^8.1.21\n     */\n    public function testFoo($x) {}\n    /** @requires PHP ^8.1.21 */\n    public function testBar($x) {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle RequiresPhp with less than",
+                    "args": [
+                        "<?php\n/**\n */\n#[\\PHPUnit\\Framework\\Attributes\\RequiresPhp('<8.1.22')]\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     */\n    #[\\PHPUnit\\Framework\\Attributes\\RequiresPhp('<8.1.22')]\n    public function testFoo($x) {}\n    \n    #[\\PHPUnit\\Framework\\Attributes\\RequiresPhp('<8.1.22')]\n    public function testBar($x) {}\n}",
+                        "<?php\n/**\n * @requires PHP <8.1.22\n */\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     * @requires PHP <8.1.22\n     */\n    public function testFoo($x) {}\n    /** @requires PHP <8.1.22 */\n    public function testBar($x) {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle RequiresPhp with less than and space",
+                    "args": [
+                        "<?php\n/**\n */\n#[\\PHPUnit\\Framework\\Attributes\\RequiresPhp('< 8.1.23')]\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     */\n    #[\\PHPUnit\\Framework\\Attributes\\RequiresPhp('< 8.1.23')]\n    public function testFoo($x) {}\n    \n    #[\\PHPUnit\\Framework\\Attributes\\RequiresPhp('< 8.1.23')]\n    public function testBar($x) {}\n}",
+                        "<?php\n/**\n * @requires PHP < 8.1.23\n */\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     * @requires PHP < 8.1.23\n     */\n    public function testFoo($x) {}\n    /** @requires PHP < 8.1.23 */\n    public function testBar($x) {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle RequiresPhp with alternative versions",
+                    "args": [
+                        "<?php\n/**\n */\n#[\\PHPUnit\\Framework\\Attributes\\RequiresPhp('6|8')]\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     */\n    #[\\PHPUnit\\Framework\\Attributes\\RequiresPhp('6|8')]\n    public function testFoo($x) {}\n    \n    #[\\PHPUnit\\Framework\\Attributes\\RequiresPhp('6|8')]\n    public function testBar($x) {}\n}",
+                        "<?php\n/**\n * @requires PHP 6|8\n */\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     * @requires PHP 6|8\n     */\n    public function testFoo($x) {}\n    /** @requires PHP 6|8 */\n    public function testBar($x) {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle RequiresPhp with alpha versions",
+                    "args": [
+                        "<?php\n/**\n */\n#[\\PHPUnit\\Framework\\Attributes\\RequiresPhp('>= 5.4.0-alpha1')]\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     */\n    #[\\PHPUnit\\Framework\\Attributes\\RequiresPhp('>= 5.4.0-alpha1')]\n    public function testFoo($x) {}\n    \n    #[\\PHPUnit\\Framework\\Attributes\\RequiresPhp('>= 5.4.0-alpha1')]\n    public function testBar($x) {}\n}",
+                        "<?php\n/**\n * @requires PHP 5.4.0-alpha1\n */\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     * @requires PHP 5.4.0-alpha1\n     */\n    public function testFoo($x) {}\n    /** @requires PHP 5.4.0-alpha1 */\n    public function testBar($x) {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle RequiresPhpExtension",
+                    "args": [
+                        "<?php\n/**\n */\n#[\\PHPUnit\\Framework\\Attributes\\RequiresPhpExtension('mysqli', '>= 8.3.0')]\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     */\n    #[\\PHPUnit\\Framework\\Attributes\\RequiresPhpExtension('mysqli', '>= 8.3.0')]\n    public function testFoo($x) {}\n    \n    #[\\PHPUnit\\Framework\\Attributes\\RequiresPhpExtension('mysqli', '>= 8.3.0')]\n    public function testBar($x) {}\n}",
+                        "<?php\n/**\n * @requires extension mysqli >= 8.3.0\n */\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     * @requires extension mysqli >= 8.3.0\n     */\n    public function testFoo($x) {}\n    /** @requires extension mysqli >= 8.3.0 */\n    public function testBar($x) {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle RequiresPhpExtension with only version",
+                    "args": [
+                        "<?php\n/**\n */\n#[\\PHPUnit\\Framework\\Attributes\\RequiresPhpExtension('mysqli', '>= 8.3.0')]\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     */\n    #[\\PHPUnit\\Framework\\Attributes\\RequiresPhpExtension('mysqli', '>= 8.3.0')]\n    public function testFoo($x) {}\n    \n    #[\\PHPUnit\\Framework\\Attributes\\RequiresPhpExtension('mysqli', '>= 8.3.0')]\n    public function testBar($x) {}\n}",
+                        "<?php\n/**\n * @requires extension mysqli 8.3.0\n */\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     * @requires extension mysqli 8.3.0\n     */\n    public function testFoo($x) {}\n    /** @requires extension mysqli 8.3.0 */\n    public function testBar($x) {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle RequiresPhpunit",
+                    "args": [
+                        "<?php\n/**\n */\n#[\\PHPUnit\\Framework\\Attributes\\RequiresPhpunit('^10.1.0')]\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     */\n    #[\\PHPUnit\\Framework\\Attributes\\RequiresPhpunit('^10.1.0')]\n    public function testFoo($x) {}\n    \n    #[\\PHPUnit\\Framework\\Attributes\\RequiresPhpunit('^10.1.0')]\n    public function testBar($x) {}\n}",
+                        "<?php\n/**\n * @requires PHPUnit ^10.1.0\n */\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     * @requires PHPUnit ^10.1.0\n     */\n    public function testFoo($x) {}\n    /** @requires PHPUnit ^10.1.0 */\n    public function testBar($x) {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle RequiresPhpunit with only version",
+                    "args": [
+                        "<?php\n/**\n */\n#[\\PHPUnit\\Framework\\Attributes\\RequiresPhpunit('>= 11.1.1')]\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     */\n    #[\\PHPUnit\\Framework\\Attributes\\RequiresPhpunit('>= 11.1.1')]\n    public function testFoo($x) {}\n    \n    #[\\PHPUnit\\Framework\\Attributes\\RequiresPhpunit('>= 11.1.1')]\n    public function testBar($x) {}\n}",
+                        "<?php\n/**\n * @requires PHPUnit 11.1.1\n */\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     * @requires PHPUnit 11.1.1\n     */\n    public function testFoo($x) {}\n    /** @requires PHPUnit 11.1.1 */\n    public function testBar($x) {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle RequiresPhpunit with less than",
+                    "args": [
+                        "<?php\n/**\n */\n#[\\PHPUnit\\Framework\\Attributes\\RequiresPhpunit('< 13.0.0')]\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     */\n    #[\\PHPUnit\\Framework\\Attributes\\RequiresPhpunit('< 13.0.0')]\n    public function testFoo($x) {}\n    \n    #[\\PHPUnit\\Framework\\Attributes\\RequiresPhpunit('< 13.0.0')]\n    public function testBar($x) {}\n}",
+                        "<?php\n/**\n * @requires PHPUnit < 13.0.0\n */\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     * @requires PHPUnit < 13.0.0\n     */\n    public function testFoo($x) {}\n    /** @requires PHPUnit < 13.0.0 */\n    public function testBar($x) {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle RequiresSetting",
+                    "args": [
+                        "<?php\n/**\n */\n#[\\PHPUnit\\Framework\\Attributes\\RequiresSetting('date.timezone', 'Europe/London')]\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     */\n    #[\\PHPUnit\\Framework\\Attributes\\RequiresSetting('date.timezone', 'Europe/London')]\n    public function testFoo($x) {}\n    \n    #[\\PHPUnit\\Framework\\Attributes\\RequiresSetting('date.timezone', 'Europe/London')]\n    public function testBar($x) {}\n}",
+                        "<?php\n/**\n * @requires setting date.timezone Europe/London\n */\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     * @requires setting date.timezone Europe/London\n     */\n    public function testFoo($x) {}\n    /** @requires setting date.timezone Europe/London */\n    public function testBar($x) {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle RunInSeparateProcess",
+                    "args": [
+                        "<?php\n/**\n * @runInSeparateProcess\n */\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     */\n    #[\\PHPUnit\\Framework\\Attributes\\RunInSeparateProcess]\n    public function testFoo($x) {}\n    \n    #[\\PHPUnit\\Framework\\Attributes\\RunInSeparateProcess]\n    public function testBar($x) {}\n}",
+                        "<?php\n/**\n * @runInSeparateProcess\n */\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     * @runInSeparateProcess\n     */\n    public function testFoo($x) {}\n    /** @runInSeparateProcess */\n    public function testBar($x) {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle RunTestsInSeparateProcesses",
+                    "args": [
+                        "<?php\n/**\n */\n#[\\PHPUnit\\Framework\\Attributes\\RunTestsInSeparateProcesses]\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     * @runTestsInSeparateProcesses\n     */\n    public function testFoo($x) {}\n    /** @runTestsInSeparateProcesses */\n    public function testBar($x) {}\n}",
+                        "<?php\n/**\n * @runTestsInSeparateProcesses\n */\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     * @runTestsInSeparateProcesses\n     */\n    public function testFoo($x) {}\n    /** @runTestsInSeparateProcesses */\n    public function testBar($x) {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle Small",
+                    "args": [
+                        "<?php\n/**\n */\n#[\\PHPUnit\\Framework\\Attributes\\Small]\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     * @small\n     */\n    public function testFoo($x) {}\n    /** @small */\n    public function testBar($x) {}\n}",
+                        "<?php\n/**\n * @small\n */\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     * @small\n     */\n    public function testFoo($x) {}\n    /** @small */\n    public function testBar($x) {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle Test",
+                    "args": [
+                        "<?php\n/**\n * @test\n */\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     */\n    #[\\PHPUnit\\Framework\\Attributes\\Test]\n    public function testFoo($x) {}\n    \n    #[\\PHPUnit\\Framework\\Attributes\\Test]\n    public function testBar($x) {}\n}",
+                        "<?php\n/**\n * @test\n */\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     * @test\n     */\n    public function testFoo($x) {}\n    /** @test */\n    public function testBar($x) {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle TestDox",
+                    "args": [
+                        "<?php\n/**\n */\n#[\\PHPUnit\\Framework\\Attributes\\TestDox('Hello world!')]\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     */\n    #[\\PHPUnit\\Framework\\Attributes\\TestDox('Hello world!')]\n    public function testFoo($x) {}\n    \n    #[\\PHPUnit\\Framework\\Attributes\\TestDox('Hello world!')]\n    public function testBar($x) {}\n}",
+                        "<?php\n/**\n * @testDox Hello world!\n */\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     * @testDox Hello world!\n     */\n    public function testFoo($x) {}\n    /** @testDox Hello world! */\n    public function testBar($x) {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle Ticket",
+                    "args": [
+                        "<?php\n/**\n */\n#[\\PHPUnit\\Framework\\Attributes\\Ticket('ABC-123')]\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     */\n    #[\\PHPUnit\\Framework\\Attributes\\Ticket('ABC-123')]\n    public function testFoo($x) {}\n    \n    #[\\PHPUnit\\Framework\\Attributes\\Ticket('ABC-123')]\n    public function testBar($x) {}\n}",
+                        "<?php\n/**\n * @ticket ABC-123\n */\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     * @ticket ABC-123\n     */\n    public function testFoo($x) {}\n    /** @ticket ABC-123 */\n    public function testBar($x) {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle UsesClass",
+                    "args": [
+                        "<?php\n/**\n */\n#[\\PHPUnit\\Framework\\Attributes\\UsesClass(ClassName::class)]\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     * @uses ClassName\n     */\n    public function testFoo($x) {}\n    /** @uses ClassName */\n    public function testBar($x) {}\n}",
+                        "<?php\n/**\n * @uses ClassName\n */\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     * @uses ClassName\n     */\n    public function testFoo($x) {}\n    /** @uses ClassName */\n    public function testBar($x) {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle UsesFunction",
+                    "args": [
+                        "<?php\n/**\n */\n#[\\PHPUnit\\Framework\\Attributes\\UsesFunction('functionName')]\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     * @uses ::functionName\n     */\n    public function testFoo($x) {}\n    /** @uses ::functionName */\n    public function testBar($x) {}\n}",
+                        "<?php\n/**\n * @uses ::functionName\n */\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     * @uses ::functionName\n     */\n    public function testFoo($x) {}\n    /** @uses ::functionName */\n    public function testBar($x) {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle TestWith",
+                    "args": [
+                        "<?php\n/**\n * @testWith [true, false]\n */\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     */\n    #[\\PHPUnit\\Framework\\Attributes\\TestWithJson('[1, 2]')]\n    public function testFoo($x) {}\n    /**\n     */\n    #[\\PHPUnit\\Framework\\Attributes\\TestWithJson('[3, 4, 5]')]\n    #[\\PHPUnit\\Framework\\Attributes\\TestWithJson('[6, 7, 8]')]\n    #[\\PHPUnit\\Framework\\Attributes\\TestWithJson('[\"a\", \"b\"]')]\n    #[\\PHPUnit\\Framework\\Attributes\\TestWithJson('[\"c\\'d\"]')]\n    public function testBar($x) {}\n}",
+                        "<?php\n/**\n * @testWith [true, false]\n */\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     * @testWith [1, 2]\n     */\n    public function testFoo($x) {}\n    /**\n     * @testWith [3, 4, 5]\n     *           [6, 7, 8]\n     *           [\"a\", \"b\"]\n     *           [\"c'd\"]\n     */\n    public function testBar($x) {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle multiple annotations of the same name",
+                    "args": [
+                        "<?php\n/**\n */\n#[\\PHPUnit\\Framework\\Attributes\\Group('foo')]\n#[\\PHPUnit\\Framework\\Attributes\\Group('bar')]\nclass TheTest extends \\PHPUnit\\Framework\\TestCase {}",
+                        "<?php\n/**\n * @group foo\n * @group bar\n */\nclass TheTest extends \\PHPUnit\\Framework\\TestCase {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "keep annotations",
+                    "args": [
+                        "<?php\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     * @copyright ACME Corporation\n     * @dataProvider provideFooCases\n     * @requires PHP ^8.2\n     * @requires OS Linux|Darwin\n     */\n    #[\\PHPUnit\\Framework\\Attributes\\DataProvider('provideFooCases')]\n    #[\\PHPUnit\\Framework\\Attributes\\RequiresPhp('^8.2')]\n    #[\\PHPUnit\\Framework\\Attributes\\RequiresOperatingSystem('Linux|Darwin')]\n    public function testFoo($x) { self::assertTrue($x); }\n    public static function provideFooCases() { yield [true]; yield [false]; }\n}",
+                        "<?php\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     * @copyright ACME Corporation\n     * @dataProvider provideFooCases\n     * @requires PHP ^8.2\n     * @requires OS Linux|Darwin\n     */\n    public function testFoo($x) { self::assertTrue($x); }\n    public static function provideFooCases() { yield [true]; yield [false]; }\n}",
+                        {
+                            "keep_annotations": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "data provider with trailing parentheses",
+                    "args": [
+                        "<?php\nclass TheTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     */\n    #[\\PHPUnit\\Framework\\Attributes\\DataProvider('provideFooCases')]\n    #[\\PHPUnit\\Framework\\Attributes\\DataProviderExternal(AnotherTest::class, 'provideBarCases')]\n    public function testFoo($x) { self::assertTrue($x); }\n    public static function provideFooCases() { yield [true]; }\n}",
+                        "<?php\nclass TheTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     * @dataProvider provideFooCases()\n     * @dataProvider AnotherTest::provideBarCases()\n     */\n    public function testFoo($x) { self::assertTrue($x); }\n    public static function provideFooCases() { yield [true]; }\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "remove annotation if both annotation and attribute are present (keep_annotations = false)",
+                    "args": [
+                        "<?php\n/**\n */\n#[\\PHPUnit\\Framework\\Attributes\\CoversNothing]\nclass TheTest extends \\PHPUnit\\Framework\\TestCase {}",
+                        "<?php\n/**\n * @coversNothing\n */\n#[\\PHPUnit\\Framework\\Attributes\\CoversNothing]\nclass TheTest extends \\PHPUnit\\Framework\\TestCase {}",
+                        {
+                            "keep_annotations": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "do remove annotation if both annotation and attribute are present (keep_annotations = true)",
+                    "args": [
+                        "<?php\n/**\n * @coversNothing\n */\n#[\\PHPUnit\\Framework\\Attributes\\CoversNothing]\nclass TheTest extends \\PHPUnit\\Framework\\TestCase {}",
+                        null,
+                        {
+                            "keep_annotations": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "do not add for annotation \"@testWith\" when attribute \"\\PHPUnit\\Framework\\Attributes\\TestWith\" is already present",
+                    "args": [
+                        "<?php\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     * @testWith [1, 2]\n     *           [\"a\", \"b\"]\n     */\n    #[\\PHPUnit\\Framework\\Attributes\\TestWith([1, 2])]\n    #[\\PHPUnit\\Framework\\Attributes\\TestWith([\"a\", \"b\"])]\n    public function testFoo() {}\n}",
+                        null,
+                        {
+                            "keep_annotations": true
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "do not add for annotation \"@testWith\" when attribute \"TestWith\" is already present",
+                    "args": [
+                        "<?php\nnamespace MyTests;\nuse PHPUnit\\Framework\\Attributes\\TestWith;\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     * @testWith [1, 2]\n     *           [\"a\", \"b\"]\n     */\n    #[TestWith([1, 2])]\n    #[TestWith([\"a\", \"b\"])]\n    public function testFoo() {}\n}",
+                        null,
+                        {
+                            "keep_annotations": true
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,206 @@
+//! `OrderedClassElementsFixer`'s `getElements` and `sortTokens`, which `PhpUnitDataProviderMethodOrderFixer` binds
+//! and calls too.
+use pun_tokens::php_compat::strtolower;
+use pun_tokens::{Kind, Tokens};
+/// The PHPUnit methods, lower-cased, in their `phpunit` sort order.
+pub(crate) const PHPUNIT: &[&str] = &[
+    "setupbeforeclass",
+    "dosetupbeforeclass",
+    "teardownafterclass",
+    "doteardownafterclass",
+    "setup",
+    "dosetup",
+    "assertpreconditions",
+    "assertpostconditions",
+    "teardown",
+    "doteardown",
+];
+
+#[derive(Clone, PartialEq, Debug)]
+pub(crate) struct Element {
+    pub(crate) start: usize,
+    pub(crate) end: usize,
+    pub(crate) visibility: &'static str,
+    pub(crate) abstract_: bool,
+    pub(crate) static_: bool,
+    pub(crate) readonly: bool,
+    pub(crate) type_: &'static str,
+    pub(crate) name: Vec<u8>,
+}
+
+pub(crate) fn get_elements(tokens: &Tokens, start: usize) -> Vec<Element> {
+    let mut start_index = start + 1;
+    let mut elements = vec![];
+    loop {
+        let mut e = Element {
+            start: start_index,
+            end: 0,
+            visibility: "public",
+            abstract_: false,
+            static_: false,
+            readonly: false,
+            type_: "",
+            name: vec![],
+        };
+        let mut i = start_index;
+        loop {
+            let token = &tokens[i];
+            if token.is_kind(Kind::T_ATTRIBUTE) {
+                i = tokens.find_block_end(Tokens::BLOCK_TYPE_ATTRIBUTE, i) + 1;
+                continue;
+            }
+            if token.equals("}", true) {
+                return elements;
+            }
+            if token.is_kind(Kind::T_ABSTRACT) {
+                e.abstract_ = true;
+                i += 1;
+                continue;
+            }
+            if token.is_kind(Kind::T_STATIC) {
+                e.static_ = true;
+                i += 1;
+                continue;
+            }
+            if token.is_kind(Kind::T_READONLY) {
+                e.readonly = true;
+            }
+            if token.is_given_kind(&[Kind::T_PROTECTED, Kind::T_PRIVATE]) {
+                e.visibility = if strtolower(token.get_content()) == b"protected" {
+                    "protected"
+                } else {
+                    "private"
+                };
+                i += 1;
+                continue;
+            }
+            if !token.is_given_kind(&[
+                Kind::CT_USE_TRAIT,
+                Kind::T_CASE,
+                Kind::T_CONST,
+                Kind::T_VARIABLE,
+                Kind::T_FUNCTION,
+            ]) {
+                i += 1;
+                continue;
+            }
+            let (ty, name) = detect_element_type(tokens, i);
+            e.type_ = ty;
+            if let Some(n) = name {
+                e.name = n;
+            }
+            if ty == "property" {
+                e.name = tokens[i].get_content().to_vec();
+            } else if ty == "constant" {
+                let eq = tokens
+                    .get_next_token_of_kind(i, &["=".into()], true)
+                    .unwrap();
+                e.name = tokens[tokens.get_prev_meaningful_token(eq).unwrap()]
+                    .get_content()
+                    .to_vec();
+            } else if [
+                "use_trait",
+                "case",
+                "method",
+                "magic",
+                "construct",
+                "destruct",
+            ]
+            .contains(&ty)
+            {
+                e.name = tokens[tokens.get_next_meaningful_token(i).unwrap()]
+                    .get_content()
+                    .to_vec();
+            }
+            e.end = find_element_end(tokens, i);
+            break;
+        }
+        start_index = e.end + 1;
+        elements.push(e);
+    }
+}
+
+fn detect_element_type(tokens: &Tokens, index: usize) -> (&'static str, Option<Vec<u8>>) {
+    let token = &tokens[index];
+    if token.is_kind(Kind::CT_USE_TRAIT) {
+        return ("use_trait", None);
+    }
+    if token.is_kind(Kind::T_CASE) {
+        return ("case", None);
+    }
+    if token.is_kind(Kind::T_CONST) {
+        return ("constant", None);
+    }
+    if token.is_kind(Kind::T_VARIABLE) {
+        return ("property", None);
+    }
+    let name = &tokens[tokens.get_next_meaningful_token(index).unwrap()];
+    if name.equals((Kind::T_STRING, "__construct"), false) {
+        return ("construct", None);
+    }
+    if name.equals((Kind::T_STRING, "__destruct"), false) {
+        return ("destruct", None);
+    }
+    let lower = strtolower(name.get_content());
+    if name.is_kind(Kind::T_STRING) && PHPUNIT.iter().any(|n| n.as_bytes() == lower) {
+        return ("phpunit", Some(lower));
+    }
+    (
+        if name.get_content().starts_with(b"__") {
+            "magic"
+        } else {
+            "method"
+        },
+        None,
+    )
+}
+
+fn find_element_end(tokens: &Tokens, index: usize) -> usize {
+    let mut index = tokens
+        .get_next_token_of_kind(
+            index,
+            &[
+                "(".into(),
+                "{".into(),
+                ";".into(),
+                Kind::CT_PROPERTY_HOOK_BRACE_OPEN.into(),
+            ],
+            true,
+        )
+        .unwrap();
+    if tokens[index].equals("(", true) {
+        index = tokens.find_block_end(Tokens::BLOCK_TYPE_PARENTHESIS, index);
+        index = tokens
+            .get_next_token_of_kind(index, &["{".into(), ";".into()], true)
+            .unwrap();
+    }
+    if tokens[index].equals("{", true) {
+        index = tokens.find_block_end(Tokens::BLOCK_TYPE_BRACE, index);
+    }
+    if tokens[index].is_kind(Kind::CT_PROPERTY_HOOK_BRACE_OPEN) {
+        index = tokens.find_block_end(Tokens::BLOCK_TYPE_PROPERTY_HOOK, index);
+    }
+    index += 1;
+    while tokens[index].is_whitespace(Some(b" \t")) || tokens[index].is_comment() {
+        index += 1;
+    }
+    index -= 1;
+    if tokens[index].is_whitespace(None) {
+        index - 1
+    } else {
+        index
+    }
+}
+
+pub(crate) fn sort_tokens(
+    tokens: &mut Tokens,
+    start_index: usize,
+    end_index: usize,
+    elements: &[Element],
+) {
+    let mut replace = vec![];
+    for e in elements {
+        replace.extend_from_slice(&tokens.as_slice()[e.start..=e.end]);
+    }
+    tokens.override_range(start_index + 1, end_index, replace);
+}

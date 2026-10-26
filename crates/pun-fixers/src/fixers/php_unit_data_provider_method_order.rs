@@ -3,7 +3,7 @@
 use crate::analyzers::abstract_php_unit_fixer::{apply_fix, is_candidate};
 use crate::analyzers::data_provider_analyzer::get_data_providers;
 use crate::analyzers::fixer_configuration_resolver::resolve;
-use crate::ordered_class_elements::{Element, get_elements, sort_tokens};
+use crate::analyzers::ordered_class_elements::{Element, get_elements, sort_tokens};
 use indexmap::IndexMap;
 use pun_format::Fixer;
 use pun_tokens::Kind::*;
