@@ -49,6 +49,7 @@ Loaded class and interface constants also retain canonical initializer unions se
 Named, `self` and `parent` dependencies resolve in the declaring class's scope before ternary and null-coalescing filtering.
 Trait constants use the selected implementing class's scope. Inherited non-private constants retain that identity even when a subclass explicitly reuses the trait.
 Trait constant conflicts compare complete initializer unions and array shapes.
+Unsupported initializer expressions retain `mixed` in reflection, including trait conflicts and nested arrays. Ordinary calls retain their flow-inferred types.
 Reflected initializer magic constants use PHPStan's reflection context. Ordinary trait declaration and attribute checks use the consuming class's scope.
 Named class-constant reads preserve keyed initializer array order. General mixed and spread array ordering, expanded initializer cycles and dynamic initializer holders remain incomplete.
 Trait constructors retain adapted visibility, named-argument policies and parameter types in the consuming class's scope.
@@ -69,6 +70,8 @@ Namespace checks reject mixed declaration styles, misplaced namespace declaratio
 Attributes cannot annotate multiple global constants in one declaration.
 PHP opening tags inside leading shebang text remain visible to analysis and symbol scanning.
 An unmatched `}` at PHP compilation-unit entry reports a parser error and rejects declarations after it.
+PHP 8.5 targets require parentheses around an arrow function used directly on the right-hand side of `|>`.
+Assignments such as `$value =& new Thing()` report a parser error at the assignment's start.
 Named classes and direct anonymous-class expressions respect pre-8.1 `readonly` tokenization.
 Invalid files contribute no scanned symbols; command output contains only the severe parser errors.
 General PHP syntax-error translation remains incomplete.
