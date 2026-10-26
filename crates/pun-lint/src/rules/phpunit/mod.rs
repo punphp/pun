@@ -29,6 +29,7 @@ mod prefer_assert_string_contains;
 mod prefer_assert_true_false;
 mod prefer_comparison_assertion;
 mod prefer_create_stub_in_coalesce;
+mod prefer_merged_will_return_callback;
 mod prefer_narrow_will_return_callback;
 mod prefer_narrow_with_consecutive;
 mod prefer_same_for_scalars;
@@ -67,6 +68,7 @@ pub use prefer_assert_string_contains::PreferAssertStringContains;
 pub use prefer_assert_true_false::PreferAssertTrueFalse;
 pub use prefer_comparison_assertion::PreferComparisonAssertion;
 pub use prefer_create_stub_in_coalesce::PreferCreateStubInCoalesce;
+pub use prefer_merged_will_return_callback::PreferMergedWillReturnCallback;
 pub use prefer_narrow_will_return_callback::PreferNarrowWillReturnCallback;
 pub use prefer_narrow_with_consecutive::PreferNarrowWithConsecutive;
 pub use prefer_same_for_scalars::PreferSameForScalars;
@@ -134,6 +136,7 @@ pub(crate) fn all() -> Vec<Box<dyn Rule>> {
         Box::new(PreferSimpleCallbackAssert),
         Box::new(PreferNarrowWillReturnCallback),
         Box::new(PreferAssert),
+        Box::new(PreferMergedWillReturnCallback),
     ]
 }
 

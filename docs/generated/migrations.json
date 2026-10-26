@@ -12953,7 +12953,7 @@
         "rules": [
           "lint/phpunit/prefer-merged-will-return-callback"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {

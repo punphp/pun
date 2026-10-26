@@ -12107,7 +12107,7 @@
         "MergeWithCallableAndWillReturnRector",
         "Rector\\PHPUnit\\CodeQuality\\Rector\\MethodCall\\MergeWithCallableAndWillReturnRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/phpunit/prefer-mock-intersection-return",
