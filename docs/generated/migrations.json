@@ -12793,7 +12793,7 @@
         "rules": [
           "lint/phpunit/require-data-provider-newlines"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -13223,7 +13223,7 @@
         "rules": [
           "lint/phpunit/prefer-with-is-instance-of"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {

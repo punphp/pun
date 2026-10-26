@@ -288,3 +288,16 @@ fn get_mock_builder_get_mock_to_create_mock() {
 fn create_stub_in_coalesce_arg() {
     check(PreferCreateStubInCoalesce, "CreateStubInCoalesceArgRector");
 }
+
+#[test]
+fn data_provider_array_items_new_lined() {
+    check(
+        RequireDataProviderNewlines,
+        "DataProviderArrayItemsNewLinedRector",
+    );
+}
+
+#[test]
+fn simpler_with_is_instance_of() {
+    check(PreferWithIsInstanceOf, "SimplerWithIsInstanceOfRector");
+}

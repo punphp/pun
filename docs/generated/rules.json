@@ -12615,7 +12615,7 @@
         "SimplerWithIsInstanceOf",
         "SimplerWithIsInstanceOfRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/phpunit/prefer-yield-data-provider",
@@ -12712,7 +12712,7 @@
         "DataProviderArrayItemsNewLinedRector",
         "Rector\\PHPUnit\\CodeQuality\\Rector\\ClassMethod\\DataProviderArrayItemsNewLinedRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/phpunit/require-data-provider-order",

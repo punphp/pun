@@ -35,7 +35,9 @@ mod prefer_simple_with_matcher;
 mod prefer_specific_true_false_assertion;
 mod prefer_specific_will_method;
 mod prefer_this_call;
+mod prefer_with_is_instance_of;
 mod ptype;
+mod require_data_provider_newlines;
 mod require_strict_types_in_tests;
 mod require_string_assert_argument;
 
@@ -68,6 +70,8 @@ pub use prefer_simple_with_matcher::PreferSimpleWithMatcher;
 pub use prefer_specific_true_false_assertion::PreferSpecificTrueFalseAssertion;
 pub use prefer_specific_will_method::PreferSpecificWillMethod;
 pub use prefer_this_call::PreferThisCall;
+pub use prefer_with_is_instance_of::PreferWithIsInstanceOf;
+pub use require_data_provider_newlines::RequireDataProviderNewlines;
 pub use require_strict_types_in_tests::RequireStrictTypesInTests;
 pub use require_string_assert_argument::RequireStringAssertArgument;
 
@@ -119,6 +123,8 @@ pub(crate) fn all() -> Vec<Box<dyn Rule>> {
         Box::new(NoAtMatcher),
         Box::new(NoBareMockBuilder),
         Box::new(PreferCreateStubInCoalesce),
+        Box::new(RequireDataProviderNewlines),
+        Box::new(PreferWithIsInstanceOf),
     ]
 }
 
