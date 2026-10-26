@@ -41,7 +41,8 @@ use mago_prelude::Prelude;
 use mago_span::HasSpan;
 use mago_span::Span;
 use mago_syntax::cst::{self, ConstantAccess, Expression, Hint, IntersectionHint, Program};
-use mago_syntax::parser::parse_file;
+use mago_syntax::parser::parse_file_with_settings;
+use mago_syntax::settings::{LexerSettings, ParserSettings};
 use mago_syntax::walker::MutWalker;
 use rayon::prelude::*;
 
@@ -106,7 +107,17 @@ pub(crate) fn parse<'arena>(
     arena: &'arena LocalArena,
     file: &File,
 ) -> (&'arena Program<'arena>, ResolvedNames<'arena>) {
-    let program = parse_file(arena, file);
+    let program = parse_file_with_settings(
+        arena,
+        file,
+        ParserSettings {
+            lexer: LexerSettings {
+                retain_invalid_legacy_octal: true,
+                ..Default::default()
+            },
+            ..Default::default()
+        },
+    );
     (program, NameResolver::new(arena).resolve(program))
 }
 

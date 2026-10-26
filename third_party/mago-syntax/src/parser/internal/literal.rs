@@ -14,6 +14,7 @@ use crate::cst::cst::LiteralInteger;
 use crate::cst::cst::LiteralString;
 use crate::cst::cst::LiteralStringKind;
 use crate::error::ParseError;
+use crate::lexer::{OctalPrefix, octal_prefix};
 use crate::parser::Parser;
 
 impl<'arena, A> Parser<'_, 'arena, A>
@@ -22,6 +23,26 @@ where
 {
     pub(crate) fn parse_literal(&mut self) -> Result<Literal<'arena>, ParseError> {
         let token = self.stream.consume()?;
+
+        // Only the opt-in lexer emits these complete malformed legacy-octal tokens. Keep the PHP 5
+        // prefix integer, or PHPParser Float_::parse's overflowing prefix, without rewriting raw bytes.
+        if token.value.starts_with(b"0")
+            && token.value.iter().any(|byte| matches!(byte, b'8' | b'9'))
+            && token.value.iter().all(|byte| byte.is_ascii_digit() || *byte == b'_')
+        {
+            return Ok(match octal_prefix(token.value) {
+                OctalPrefix::Integer(value) => Literal::Integer(LiteralInteger {
+                    span: token.span_for(self.stream.file_id()),
+                    raw: token.value,
+                    value: Some(value),
+                }),
+                OctalPrefix::Float(value) => Literal::Float(LiteralFloat {
+                    span: token.span_for(self.stream.file_id()),
+                    raw: token.value,
+                    value: OrderedFloat(value),
+                }),
+            });
+        }
 
         Ok(match &token.kind {
             T![LiteralFloat] => Literal::Float(LiteralFloat {

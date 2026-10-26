@@ -766,6 +766,25 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Reserved<'_> {
             }
         }
     }
+    fn walk_out_literal_integer(&mut self, node: &'ast LiteralInteger<'arena>, _: &mut ()) {
+        // scalar: T_LNUMBER calls parseLNumber, which collects an Int_::fromString failure without
+        // aborting later reductions. Overflowing octal prefixes are T_DNUMBER, never this callback.
+        if self.fatal.is_none()
+            && self.version >= PHPVersion::PHP70
+            && node.raw.starts_with(b"0")
+            && node.raw.iter().any(|byte| matches!(byte, b'8' | b'9'))
+            && node
+                .raw
+                .iter()
+                .all(|byte| byte.is_ascii_digit() || *byte == b'_')
+        {
+            self.errors.push(error(
+                self.file,
+                node.span,
+                "Invalid numeric literal".into(),
+            ));
+        }
+    }
     fn walk_out_literal_string(&mut self, node: &'ast LiteralString<'arena>, _: &mut ()) {
         if matches!(node.kind, LiteralStringKind::DoubleQuoted) {
             self.lines.string(node.span);

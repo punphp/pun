@@ -1,0 +1,2364 @@
+{
+    "analysed": {
+        "legacy": {
+            "errors": [
+                {
+                    "file": "input.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "Invalid numeric literal on line 2",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "input.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "Invalid numeric literal on line 2",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "input.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "Invalid numeric literal on line 2",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "input.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "Invalid numeric literal on line 2",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": [
+                "Error message \"Invalid numeric literal on line 2\" cannot be ignored, use excludePaths instead.",
+                "Error message \"Invalid numeric literal on line 2\" cannot be ignored, use excludePaths instead.",
+                "Error message \"Invalid numeric literal on line 2\" cannot be ignored, use excludePaths instead.",
+                "Error message \"Invalid numeric literal on line 2\" cannot be ignored, use excludePaths instead."
+            ]
+        },
+        "multiple": {
+            "errors": [
+                {
+                    "file": "input.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "Invalid numeric literal on line 2",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "input.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "Invalid numeric literal on line 2",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "input.php",
+                    "line": 3,
+                    "identifier": "phpstan.parse",
+                    "message": "Invalid numeric literal on line 3",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "input.php",
+                    "line": 4,
+                    "identifier": "phpstan.parse",
+                    "message": "Invalid numeric literal on line 4",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": [
+                "Error message \"Invalid numeric literal on line 2\" cannot be ignored, use excludePaths instead.",
+                "Error message \"Invalid numeric literal on line 2\" cannot be ignored, use excludePaths instead.",
+                "Error message \"Invalid numeric literal on line 3\" cannot be ignored, use excludePaths instead.",
+                "Error message \"Invalid numeric literal on line 4\" cannot be ignored, use excludePaths instead."
+            ]
+        },
+        "valid": {
+            "errors": [],
+            "general": [
+                "Ignored error pattern phpstan.parse was not matched in reported errors."
+            ]
+        },
+        "overflow-valid": {
+            "errors": [],
+            "general": [
+                "Ignored error pattern phpstan.parse was not matched in reported errors."
+            ]
+        },
+        "overflow-prefix": {
+            "errors": [
+                {
+                    "file": "input.php",
+                    "line": 3,
+                    "identifier": "phpstan.dumpType",
+                    "message": "Dumped type: 7.378697629483821E+19",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "input.php",
+                    "line": 3,
+                    "identifier": "phpstan.dumpType",
+                    "message": "Dumped type: 9.223372036854776E+18",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": [
+                "Ignored error pattern phpstan.parse was not matched in reported errors."
+            ]
+        },
+        "overflow-wide": {
+            "errors": [
+                {
+                    "file": "input.php",
+                    "line": 3,
+                    "identifier": "phpstan.dumpType",
+                    "message": "Dumped type: 1.141798154164768E+46",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": [
+                "Ignored error pattern phpstan.parse was not matched in reported errors."
+            ]
+        },
+        "overflow-edge": {
+            "errors": [
+                {
+                    "file": "input.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "Invalid numeric literal on line 2",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": [
+                "Error message \"Invalid numeric literal on line 2\" cannot be ignored, use excludePaths instead."
+            ]
+        },
+        "overflow-early": {
+            "errors": [
+                {
+                    "file": "input.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "Invalid numeric literal on line 2",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": [
+                "Error message \"Invalid numeric literal on line 2\" cannot be ignored, use excludePaths instead."
+            ]
+        },
+        "separated-prefix": {
+            "errors": [
+                {
+                    "file": "input.php",
+                    "line": 3,
+                    "identifier": "phpstan.dumpType",
+                    "message": "Dumped type: 9.223372036854776E+18",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": [
+                "Ignored error pattern phpstan.parse was not matched in reported errors."
+            ]
+        },
+        "semantics": {
+            "errors": [
+                {
+                    "file": "input.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "void cannot be used as a parameter type on line 2",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "input.php",
+                    "line": 3,
+                    "identifier": "phpstan.parse",
+                    "message": "Invalid numeric literal on line 3",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "input.php",
+                    "line": 4,
+                    "identifier": "phpstan.parse",
+                    "message": "void cannot be used as a parameter type on line 4",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "input.php",
+                    "line": 5,
+                    "identifier": "phpstan.parse",
+                    "message": "Cannot use try without catch or finally on line 5",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": [
+                "Error message \"void cannot be used as a parameter type on line 2\" cannot be ignored, use excludePaths instead.",
+                "Error message \"Invalid numeric literal on line 3\" cannot be ignored, use excludePaths instead.",
+                "Error message \"void cannot be used as a parameter type on line 4\" cannot be ignored, use excludePaths instead.",
+                "Error message \"Cannot use try without catch or finally on line 5\" cannot be ignored, use excludePaths instead."
+            ]
+        },
+        "parameter-default": {
+            "errors": [
+                {
+                    "file": "input.php",
+                    "line": 3,
+                    "identifier": "phpstan.parse",
+                    "message": "void cannot be used as a parameter type on line 3",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "input.php",
+                    "line": 4,
+                    "identifier": "phpstan.parse",
+                    "message": "Invalid numeric literal on line 4",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "input.php",
+                    "line": 6,
+                    "identifier": "phpstan.parse",
+                    "message": "Cannot use try without catch or finally on line 6",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": [
+                "Error message \"Invalid numeric literal on line 4\" cannot be ignored, use excludePaths instead.",
+                "Error message \"void cannot be used as a parameter type on line 3\" cannot be ignored, use excludePaths instead.",
+                "Error message \"Cannot use try without catch or finally on line 6\" cannot be ignored, use excludePaths instead."
+            ]
+        },
+        "nested-order": {
+            "errors": [
+                {
+                    "file": "input.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "Invalid numeric literal on line 2",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "input.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "Invalid numeric literal on line 2",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "input.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "void cannot be used as a parameter type on line 2",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": [
+                "Error message \"Invalid numeric literal on line 2\" cannot be ignored, use excludePaths instead.",
+                "Error message \"void cannot be used as a parameter type on line 2\" cannot be ignored, use excludePaths instead.",
+                "Error message \"Invalid numeric literal on line 2\" cannot be ignored, use excludePaths instead."
+            ]
+        },
+        "fatal-before": {
+            "errors": [
+                {
+                    "file": "input.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "Invalid UTF-8 codepoint escape sequence: Codepoint too large on line 2",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": [
+                "Error message \"Invalid UTF-8 codepoint escape sequence: Codepoint too large on line 2\" cannot be ignored, use excludePaths instead."
+            ]
+        },
+        "fatal-after": {
+            "errors": [
+                {
+                    "file": "input.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "Invalid numeric literal on line 2",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "input.php",
+                    "line": 3,
+                    "identifier": "phpstan.parse",
+                    "message": "Invalid UTF-8 codepoint escape sequence: Codepoint too large on line 3",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": [
+                "Error message \"Invalid numeric literal on line 2\" cannot be ignored, use excludePaths instead.",
+                "Error message \"Invalid UTF-8 codepoint escape sequence: Codepoint too large on line 3\" cannot be ignored, use excludePaths instead."
+            ]
+        },
+        "fatal-interpolated": {
+            "errors": [
+                {
+                    "file": "input.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "Invalid UTF-8 codepoint escape sequence: Codepoint too large on line 2",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "input.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "Invalid numeric literal on line 2",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": [
+                "Error message \"Invalid numeric literal on line 2\" cannot be ignored, use excludePaths instead.",
+                "Error message \"Invalid UTF-8 codepoint escape sequence: Codepoint too large on line 2\" cannot be ignored, use excludePaths instead."
+            ]
+        },
+        "nonfatal-escape": {
+            "errors": [
+                {
+                    "file": "input.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "Invalid numeric literal on line 2",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "input.php",
+                    "line": 4,
+                    "identifier": "phpstan.parse",
+                    "message": "Invalid numeric literal on line 4",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": [
+                "Error message \"Invalid numeric literal on line 2\" cannot be ignored, use excludePaths instead.",
+                "Error message \"Invalid numeric literal on line 4\" cannot be ignored, use excludePaths instead."
+            ]
+        },
+        "array-post": {
+            "errors": [
+                {
+                    "file": "input.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "Cannot use empty array elements in arrays on line 2",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "input.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "Invalid numeric literal on line 2",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "input.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "Invalid numeric literal on line 2",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": [
+                "Error message \"Invalid numeric literal on line 2\" cannot be ignored, use excludePaths instead.",
+                "Error message \"Invalid numeric literal on line 2\" cannot be ignored, use excludePaths instead.",
+                "Error message \"Cannot use empty array elements in arrays on line 2\" cannot be ignored, use excludePaths instead."
+            ]
+        },
+        "array-fatal": {
+            "errors": [
+                {
+                    "file": "input.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "Cannot use empty array elements in arrays on line 2",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "input.php",
+                    "line": 3,
+                    "identifier": "phpstan.parse",
+                    "message": "Invalid numeric literal on line 3",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "input.php",
+                    "line": 4,
+                    "identifier": "phpstan.parse",
+                    "message": "Invalid UTF-8 codepoint escape sequence: Codepoint too large on line 4",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": [
+                "Error message \"Invalid numeric literal on line 3\" cannot be ignored, use excludePaths instead.",
+                "Error message \"Invalid UTF-8 codepoint escape sequence: Codepoint too large on line 4\" cannot be ignored, use excludePaths instead.",
+                "Error message \"Cannot use empty array elements in arrays on line 2\" cannot be ignored, use excludePaths instead."
+            ]
+        },
+        "namespace-post": {
+            "errors": [
+                {
+                    "file": "input.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "Invalid numeric literal on line 2",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "input.php",
+                    "line": 3,
+                    "identifier": "phpstan.parse",
+                    "message": "Namespace declaration statement has to be the very first statement in the script on line 3",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": [
+                "Error message \"Invalid numeric literal on line 2\" cannot be ignored, use excludePaths instead.",
+                "Error message \"Namespace declaration statement has to be the very first statement in the script on line 3\" cannot be ignored, use excludePaths instead."
+            ]
+        },
+        "resolver-priority": {
+            "errors": [
+                {
+                    "file": "input.php",
+                    "line": 3,
+                    "identifier": "phpstan.parse",
+                    "message": "Invalid numeric literal on line 3",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": [
+                "Error message \"Invalid numeric literal on line 3\" cannot be ignored, use excludePaths instead."
+            ]
+        },
+        "offset-bare": {
+            "errors": [],
+            "general": [
+                "Ignored error pattern phpstan.parse was not matched in reported errors."
+            ]
+        },
+        "offset-braced": {
+            "errors": [
+                {
+                    "file": "input.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "Invalid numeric literal on line 2",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "input.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "Invalid numeric literal on line 2",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "input.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "Invalid numeric literal on line 2",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "input.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "Invalid numeric literal on line 2",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": [
+                "Error message \"Invalid numeric literal on line 2\" cannot be ignored, use excludePaths instead.",
+                "Error message \"Invalid numeric literal on line 2\" cannot be ignored, use excludePaths instead.",
+                "Error message \"Invalid numeric literal on line 2\" cannot be ignored, use excludePaths instead.",
+                "Error message \"Invalid numeric literal on line 2\" cannot be ignored, use excludePaths instead."
+            ]
+        },
+        "offset-dollar-braced": {
+            "errors": [
+                {
+                    "file": "input.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "Invalid numeric literal on line 2",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": [
+                "Error message \"Invalid numeric literal on line 2\" cannot be ignored, use excludePaths instead."
+            ]
+        }
+    },
+    "boundaries": {
+        "explicit-invalid": {
+            "errors": [
+                {
+                    "file": "input.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "Syntax error, unexpected T_LNUMBER on line 2",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "input.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "Syntax error, unexpected T_STRING on line 2",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": [
+                "Error message \"Syntax error, unexpected T_STRING on line 2\" cannot be ignored, use excludePaths instead.",
+                "Error message \"Syntax error, unexpected T_LNUMBER on line 2\" cannot be ignored, use excludePaths instead."
+            ]
+        },
+        "separator-boundaries": {
+            "errors": [
+                {
+                    "file": "input.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "Invalid numeric literal on line 2",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "input.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "Syntax error, unexpected T_STRING on line 2",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "input.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "Syntax error, unexpected T_STRING on line 2",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": [
+                "Error message \"Syntax error, unexpected T_STRING on line 2\" cannot be ignored, use excludePaths instead.",
+                "Error message \"Invalid numeric literal on line 2\" cannot be ignored, use excludePaths instead.",
+                "Error message \"Syntax error, unexpected T_STRING on line 2\" cannot be ignored, use excludePaths instead."
+            ]
+        },
+        "grammar-before": {
+            "errors": [
+                {
+                    "file": "input.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "Syntax error, unexpected ';' on line 2",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "input.php",
+                    "line": 3,
+                    "identifier": "phpstan.parse",
+                    "message": "Invalid numeric literal on line 3",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "input.php",
+                    "line": 4,
+                    "identifier": "phpstan.parse",
+                    "message": "void cannot be used as a parameter type on line 4",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": [
+                "Error message \"Syntax error, unexpected ';' on line 2\" cannot be ignored, use excludePaths instead.",
+                "Error message \"Invalid numeric literal on line 3\" cannot be ignored, use excludePaths instead.",
+                "Error message \"void cannot be used as a parameter type on line 4\" cannot be ignored, use excludePaths instead."
+            ]
+        },
+        "brace-after": {
+            "errors": [
+                {
+                    "file": "input.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "Invalid numeric literal on line 2",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "input.php",
+                    "line": 3,
+                    "identifier": "phpstan.parse",
+                    "message": "Syntax error, unexpected '}', expecting EOF on line 3",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": [
+                "Error message \"Invalid numeric literal on line 2\" cannot be ignored, use excludePaths instead.",
+                "Error message \"Syntax error, unexpected '}', expecting EOF on line 3\" cannot be ignored, use excludePaths instead."
+            ]
+        },
+        "missing-semicolon": {
+            "errors": [
+                {
+                    "file": "input.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "Invalid numeric literal on line 2",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "input.php",
+                    "line": 3,
+                    "identifier": "phpstan.parse",
+                    "message": "Invalid numeric literal on line 3",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "input.php",
+                    "line": 3,
+                    "identifier": "phpstan.parse",
+                    "message": "Syntax error, unexpected T_VARIABLE on line 3",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": [
+                "Error message \"Invalid numeric literal on line 2\" cannot be ignored, use excludePaths instead.",
+                "Error message \"Syntax error, unexpected T_VARIABLE on line 3\" cannot be ignored, use excludePaths instead.",
+                "Error message \"Invalid numeric literal on line 3\" cannot be ignored, use excludePaths instead."
+            ]
+        },
+        "missing-semicolon-eof": {
+            "errors": [
+                {
+                    "file": "input.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "Invalid numeric literal on line 2",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "input.php",
+                    "line": 3,
+                    "identifier": "phpstan.parse",
+                    "message": "Syntax error, unexpected EOF on line 3",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": [
+                "Error message \"Invalid numeric literal on line 2\" cannot be ignored, use excludePaths instead.",
+                "Error message \"Syntax error, unexpected EOF on line 3\" cannot be ignored, use excludePaths instead."
+            ]
+        },
+        "other-lexical": {
+            "errors": [
+                {
+                    "file": "input.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "Invalid numeric literal on line 2",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "input.php",
+                    "line": 3,
+                    "identifier": "phpstan.parse",
+                    "message": "Unexpected null byte on line 3",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "input.php",
+                    "line": 4,
+                    "identifier": "phpstan.parse",
+                    "message": "Invalid numeric literal on line 4",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": [
+                "Error message \"Unexpected null byte on line 3\" cannot be ignored, use excludePaths instead.",
+                "Error message \"Invalid numeric literal on line 2\" cannot be ignored, use excludePaths instead.",
+                "Error message \"Invalid numeric literal on line 4\" cannot be ignored, use excludePaths instead."
+            ]
+        }
+    },
+    "versions": {
+        "70100": {
+            "legacy": {
+                "errors": [
+                    {
+                        "file": "input.php",
+                        "line": 2,
+                        "identifier": "phpstan.parse",
+                        "message": "Invalid numeric literal on line 2",
+                        "tip": null,
+                        "ignorable": false
+                    },
+                    {
+                        "file": "input.php",
+                        "line": 2,
+                        "identifier": "phpstan.parse",
+                        "message": "Invalid numeric literal on line 2",
+                        "tip": null,
+                        "ignorable": false
+                    },
+                    {
+                        "file": "input.php",
+                        "line": 2,
+                        "identifier": "phpstan.parse",
+                        "message": "Invalid numeric literal on line 2",
+                        "tip": null,
+                        "ignorable": false
+                    },
+                    {
+                        "file": "input.php",
+                        "line": 2,
+                        "identifier": "phpstan.parse",
+                        "message": "Invalid numeric literal on line 2",
+                        "tip": null,
+                        "ignorable": false
+                    }
+                ],
+                "general": []
+            },
+            "valid": {
+                "errors": [],
+                "general": []
+            },
+            "overflow-prefix": {
+                "errors": [
+                    {
+                        "file": "input.php",
+                        "line": 3,
+                        "identifier": "phpstan.dumpType",
+                        "message": "Dumped type: 7.378697629483821E+19",
+                        "tip": null,
+                        "ignorable": false
+                    },
+                    {
+                        "file": "input.php",
+                        "line": 3,
+                        "identifier": "phpstan.dumpType",
+                        "message": "Dumped type: 9.223372036854776E+18",
+                        "tip": null,
+                        "ignorable": false
+                    }
+                ],
+                "general": []
+            },
+            "offset-bare": {
+                "errors": [],
+                "general": []
+            }
+        },
+        "70300": {
+            "legacy": {
+                "errors": [
+                    {
+                        "file": "input.php",
+                        "line": 2,
+                        "identifier": "phpstan.parse",
+                        "message": "Invalid numeric literal on line 2",
+                        "tip": null,
+                        "ignorable": false
+                    },
+                    {
+                        "file": "input.php",
+                        "line": 2,
+                        "identifier": "phpstan.parse",
+                        "message": "Invalid numeric literal on line 2",
+                        "tip": null,
+                        "ignorable": false
+                    },
+                    {
+                        "file": "input.php",
+                        "line": 2,
+                        "identifier": "phpstan.parse",
+                        "message": "Invalid numeric literal on line 2",
+                        "tip": null,
+                        "ignorable": false
+                    },
+                    {
+                        "file": "input.php",
+                        "line": 2,
+                        "identifier": "phpstan.parse",
+                        "message": "Invalid numeric literal on line 2",
+                        "tip": null,
+                        "ignorable": false
+                    }
+                ],
+                "general": []
+            },
+            "valid": {
+                "errors": [],
+                "general": []
+            },
+            "overflow-prefix": {
+                "errors": [
+                    {
+                        "file": "input.php",
+                        "line": 3,
+                        "identifier": "phpstan.dumpType",
+                        "message": "Dumped type: 7.378697629483821E+19",
+                        "tip": null,
+                        "ignorable": false
+                    },
+                    {
+                        "file": "input.php",
+                        "line": 3,
+                        "identifier": "phpstan.dumpType",
+                        "message": "Dumped type: 9.223372036854776E+18",
+                        "tip": null,
+                        "ignorable": false
+                    }
+                ],
+                "general": []
+            },
+            "offset-bare": {
+                "errors": [],
+                "general": []
+            }
+        },
+        "70400": {
+            "legacy": {
+                "errors": [
+                    {
+                        "file": "input.php",
+                        "line": 2,
+                        "identifier": "phpstan.parse",
+                        "message": "Invalid numeric literal on line 2",
+                        "tip": null,
+                        "ignorable": false
+                    },
+                    {
+                        "file": "input.php",
+                        "line": 2,
+                        "identifier": "phpstan.parse",
+                        "message": "Invalid numeric literal on line 2",
+                        "tip": null,
+                        "ignorable": false
+                    },
+                    {
+                        "file": "input.php",
+                        "line": 2,
+                        "identifier": "phpstan.parse",
+                        "message": "Invalid numeric literal on line 2",
+                        "tip": null,
+                        "ignorable": false
+                    },
+                    {
+                        "file": "input.php",
+                        "line": 2,
+                        "identifier": "phpstan.parse",
+                        "message": "Invalid numeric literal on line 2",
+                        "tip": null,
+                        "ignorable": false
+                    }
+                ],
+                "general": []
+            },
+            "valid": {
+                "errors": [],
+                "general": []
+            },
+            "overflow-prefix": {
+                "errors": [
+                    {
+                        "file": "input.php",
+                        "line": 3,
+                        "identifier": "phpstan.dumpType",
+                        "message": "Dumped type: 7.378697629483821E+19",
+                        "tip": null,
+                        "ignorable": false
+                    },
+                    {
+                        "file": "input.php",
+                        "line": 3,
+                        "identifier": "phpstan.dumpType",
+                        "message": "Dumped type: 9.223372036854776E+18",
+                        "tip": null,
+                        "ignorable": false
+                    }
+                ],
+                "general": []
+            },
+            "offset-bare": {
+                "errors": [],
+                "general": []
+            }
+        },
+        "80000": {
+            "legacy": {
+                "errors": [
+                    {
+                        "file": "input.php",
+                        "line": 2,
+                        "identifier": "phpstan.parse",
+                        "message": "Invalid numeric literal on line 2",
+                        "tip": null,
+                        "ignorable": false
+                    },
+                    {
+                        "file": "input.php",
+                        "line": 2,
+                        "identifier": "phpstan.parse",
+                        "message": "Invalid numeric literal on line 2",
+                        "tip": null,
+                        "ignorable": false
+                    },
+                    {
+                        "file": "input.php",
+                        "line": 2,
+                        "identifier": "phpstan.parse",
+                        "message": "Invalid numeric literal on line 2",
+                        "tip": null,
+                        "ignorable": false
+                    },
+                    {
+                        "file": "input.php",
+                        "line": 2,
+                        "identifier": "phpstan.parse",
+                        "message": "Invalid numeric literal on line 2",
+                        "tip": null,
+                        "ignorable": false
+                    }
+                ],
+                "general": []
+            },
+            "valid": {
+                "errors": [],
+                "general": []
+            },
+            "overflow-prefix": {
+                "errors": [
+                    {
+                        "file": "input.php",
+                        "line": 3,
+                        "identifier": "phpstan.dumpType",
+                        "message": "Dumped type: 7.378697629483821E+19",
+                        "tip": null,
+                        "ignorable": false
+                    },
+                    {
+                        "file": "input.php",
+                        "line": 3,
+                        "identifier": "phpstan.dumpType",
+                        "message": "Dumped type: 9.223372036854776E+18",
+                        "tip": null,
+                        "ignorable": false
+                    }
+                ],
+                "general": []
+            },
+            "offset-bare": {
+                "errors": [],
+                "general": []
+            }
+        },
+        "80100": {
+            "legacy": {
+                "errors": [
+                    {
+                        "file": "input.php",
+                        "line": 2,
+                        "identifier": "phpstan.parse",
+                        "message": "Invalid numeric literal on line 2",
+                        "tip": null,
+                        "ignorable": false
+                    },
+                    {
+                        "file": "input.php",
+                        "line": 2,
+                        "identifier": "phpstan.parse",
+                        "message": "Invalid numeric literal on line 2",
+                        "tip": null,
+                        "ignorable": false
+                    },
+                    {
+                        "file": "input.php",
+                        "line": 2,
+                        "identifier": "phpstan.parse",
+                        "message": "Invalid numeric literal on line 2",
+                        "tip": null,
+                        "ignorable": false
+                    },
+                    {
+                        "file": "input.php",
+                        "line": 2,
+                        "identifier": "phpstan.parse",
+                        "message": "Invalid numeric literal on line 2",
+                        "tip": null,
+                        "ignorable": false
+                    }
+                ],
+                "general": []
+            },
+            "valid": {
+                "errors": [],
+                "general": []
+            },
+            "overflow-prefix": {
+                "errors": [
+                    {
+                        "file": "input.php",
+                        "line": 3,
+                        "identifier": "phpstan.dumpType",
+                        "message": "Dumped type: 7.378697629483821E+19",
+                        "tip": null,
+                        "ignorable": false
+                    },
+                    {
+                        "file": "input.php",
+                        "line": 3,
+                        "identifier": "phpstan.dumpType",
+                        "message": "Dumped type: 9.223372036854776E+18",
+                        "tip": null,
+                        "ignorable": false
+                    }
+                ],
+                "general": []
+            },
+            "offset-bare": {
+                "errors": [],
+                "general": []
+            }
+        },
+        "80200": {
+            "legacy": {
+                "errors": [
+                    {
+                        "file": "input.php",
+                        "line": 2,
+                        "identifier": "phpstan.parse",
+                        "message": "Invalid numeric literal on line 2",
+                        "tip": null,
+                        "ignorable": false
+                    },
+                    {
+                        "file": "input.php",
+                        "line": 2,
+                        "identifier": "phpstan.parse",
+                        "message": "Invalid numeric literal on line 2",
+                        "tip": null,
+                        "ignorable": false
+                    },
+                    {
+                        "file": "input.php",
+                        "line": 2,
+                        "identifier": "phpstan.parse",
+                        "message": "Invalid numeric literal on line 2",
+                        "tip": null,
+                        "ignorable": false
+                    },
+                    {
+                        "file": "input.php",
+                        "line": 2,
+                        "identifier": "phpstan.parse",
+                        "message": "Invalid numeric literal on line 2",
+                        "tip": null,
+                        "ignorable": false
+                    }
+                ],
+                "general": []
+            },
+            "valid": {
+                "errors": [],
+                "general": []
+            },
+            "overflow-prefix": {
+                "errors": [
+                    {
+                        "file": "input.php",
+                        "line": 3,
+                        "identifier": "phpstan.dumpType",
+                        "message": "Dumped type: 7.378697629483821E+19",
+                        "tip": null,
+                        "ignorable": false
+                    },
+                    {
+                        "file": "input.php",
+                        "line": 3,
+                        "identifier": "phpstan.dumpType",
+                        "message": "Dumped type: 9.223372036854776E+18",
+                        "tip": null,
+                        "ignorable": false
+                    }
+                ],
+                "general": []
+            },
+            "offset-bare": {
+                "errors": [],
+                "general": []
+            }
+        },
+        "80400": {
+            "legacy": {
+                "errors": [
+                    {
+                        "file": "input.php",
+                        "line": 2,
+                        "identifier": "phpstan.parse",
+                        "message": "Invalid numeric literal on line 2",
+                        "tip": null,
+                        "ignorable": false
+                    },
+                    {
+                        "file": "input.php",
+                        "line": 2,
+                        "identifier": "phpstan.parse",
+                        "message": "Invalid numeric literal on line 2",
+                        "tip": null,
+                        "ignorable": false
+                    },
+                    {
+                        "file": "input.php",
+                        "line": 2,
+                        "identifier": "phpstan.parse",
+                        "message": "Invalid numeric literal on line 2",
+                        "tip": null,
+                        "ignorable": false
+                    },
+                    {
+                        "file": "input.php",
+                        "line": 2,
+                        "identifier": "phpstan.parse",
+                        "message": "Invalid numeric literal on line 2",
+                        "tip": null,
+                        "ignorable": false
+                    }
+                ],
+                "general": []
+            },
+            "valid": {
+                "errors": [],
+                "general": []
+            },
+            "overflow-prefix": {
+                "errors": [
+                    {
+                        "file": "input.php",
+                        "line": 3,
+                        "identifier": "phpstan.dumpType",
+                        "message": "Dumped type: 7.378697629483821E+19",
+                        "tip": null,
+                        "ignorable": false
+                    },
+                    {
+                        "file": "input.php",
+                        "line": 3,
+                        "identifier": "phpstan.dumpType",
+                        "message": "Dumped type: 9.223372036854776E+18",
+                        "tip": null,
+                        "ignorable": false
+                    }
+                ],
+                "general": []
+            },
+            "offset-bare": {
+                "errors": [],
+                "general": []
+            }
+        },
+        "80500": {
+            "legacy": {
+                "errors": [
+                    {
+                        "file": "input.php",
+                        "line": 2,
+                        "identifier": "phpstan.parse",
+                        "message": "Invalid numeric literal on line 2",
+                        "tip": null,
+                        "ignorable": false
+                    },
+                    {
+                        "file": "input.php",
+                        "line": 2,
+                        "identifier": "phpstan.parse",
+                        "message": "Invalid numeric literal on line 2",
+                        "tip": null,
+                        "ignorable": false
+                    },
+                    {
+                        "file": "input.php",
+                        "line": 2,
+                        "identifier": "phpstan.parse",
+                        "message": "Invalid numeric literal on line 2",
+                        "tip": null,
+                        "ignorable": false
+                    },
+                    {
+                        "file": "input.php",
+                        "line": 2,
+                        "identifier": "phpstan.parse",
+                        "message": "Invalid numeric literal on line 2",
+                        "tip": null,
+                        "ignorable": false
+                    }
+                ],
+                "general": []
+            },
+            "valid": {
+                "errors": [],
+                "general": []
+            },
+            "overflow-prefix": {
+                "errors": [
+                    {
+                        "file": "input.php",
+                        "line": 3,
+                        "identifier": "phpstan.dumpType",
+                        "message": "Dumped type: 7.378697629483821E+19",
+                        "tip": null,
+                        "ignorable": false
+                    },
+                    {
+                        "file": "input.php",
+                        "line": 3,
+                        "identifier": "phpstan.dumpType",
+                        "message": "Dumped type: 9.223372036854776E+18",
+                        "tip": null,
+                        "ignorable": false
+                    }
+                ],
+                "general": []
+            },
+            "offset-bare": {
+                "errors": [],
+                "general": []
+            }
+        }
+    },
+    "scanned": {
+        "valid": {
+            "errors": [],
+            "general": []
+        },
+        "invalid": {
+            "errors": [
+                {
+                    "file": "main.php",
+                    "line": 2,
+                    "identifier": "constant.notFound",
+                    "message": "Constant BEFORE_SCAN not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 2,
+                    "identifier": "function.notFound",
+                    "message": "Function before_scan not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 2,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class BeforeScan not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 3,
+                    "identifier": "constant.notFound",
+                    "message": "Constant AFTER_SCAN not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 3,
+                    "identifier": "function.notFound",
+                    "message": "Function after_scan not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 3,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class AfterScan not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                }
+            ],
+            "general": []
+        },
+        "invalid-first": {
+            "errors": [
+                {
+                    "file": "main.php",
+                    "line": 2,
+                    "identifier": "constant.notFound",
+                    "message": "Constant BEFORE_SCAN not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 2,
+                    "identifier": "function.notFound",
+                    "message": "Function before_scan not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 2,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class BeforeScan not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 3,
+                    "identifier": "constant.notFound",
+                    "message": "Constant AFTER_SCAN not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 3,
+                    "identifier": "function.notFound",
+                    "message": "Function after_scan not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 3,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class AfterScan not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                }
+            ],
+            "general": []
+        },
+        "invalid-last": {
+            "errors": [
+                {
+                    "file": "main.php",
+                    "line": 2,
+                    "identifier": "constant.notFound",
+                    "message": "Constant BEFORE_SCAN not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 2,
+                    "identifier": "function.notFound",
+                    "message": "Function before_scan not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 2,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class BeforeScan not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 3,
+                    "identifier": "constant.notFound",
+                    "message": "Constant AFTER_SCAN not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 3,
+                    "identifier": "function.notFound",
+                    "message": "Function after_scan not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 3,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class AfterScan not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                }
+            ],
+            "general": []
+        },
+        "overflow-prefix": {
+            "errors": [],
+            "general": []
+        }
+    },
+    "entry": {
+        "errors": [
+            {
+                "file": "input.php",
+                "line": 2,
+                "identifier": "phpstan.parse",
+                "message": "Syntax error, unexpected '}', expecting EOF on line 2",
+                "tip": null,
+                "ignorable": false
+            }
+        ],
+        "general": []
+    },
+    "literals": {
+        "50600": {
+            "legacy": [
+                {
+                    "kind": "Scalar_Int",
+                    "raw": "08",
+                    "value": 0,
+                    "start": 9,
+                    "end": 11
+                },
+                {
+                    "kind": "Scalar_Int",
+                    "raw": "078",
+                    "value": 7,
+                    "start": 16,
+                    "end": 19
+                },
+                {
+                    "kind": "Scalar_Int",
+                    "raw": "0_8",
+                    "value": 0,
+                    "start": 24,
+                    "end": 27
+                },
+                {
+                    "kind": "Scalar_Int",
+                    "raw": "07_9",
+                    "value": 7,
+                    "start": 32,
+                    "end": 36
+                }
+            ],
+            "valid": [
+                {
+                    "kind": "Scalar_Int",
+                    "raw": "077",
+                    "value": 63,
+                    "start": 9,
+                    "end": 12
+                },
+                {
+                    "kind": "Scalar_Int",
+                    "raw": "07_7",
+                    "value": 63,
+                    "start": 17,
+                    "end": 21
+                },
+                {
+                    "kind": "Scalar_Int",
+                    "raw": "0o77",
+                    "value": 63,
+                    "start": 26,
+                    "end": 30
+                },
+                {
+                    "kind": "Scalar_Int",
+                    "raw": "0O7_7",
+                    "value": 63,
+                    "start": 35,
+                    "end": 40
+                },
+                {
+                    "kind": "Scalar_Float",
+                    "raw": "08.0",
+                    "value": 8,
+                    "start": 45,
+                    "end": 49
+                },
+                {
+                    "kind": "Scalar_Float",
+                    "raw": "08e2",
+                    "value": 800,
+                    "start": 54,
+                    "end": 58
+                },
+                {
+                    "kind": "Scalar_Int",
+                    "raw": "0x89",
+                    "value": 137,
+                    "start": 63,
+                    "end": 67
+                },
+                {
+                    "kind": "Scalar_Int",
+                    "raw": "0b10",
+                    "value": 2,
+                    "start": 72,
+                    "end": 76
+                }
+            ],
+            "overflow-prefix": [
+                {
+                    "kind": "Scalar_Float",
+                    "raw": "010000000000000000000008",
+                    "value": 9.223372036854776e+18,
+                    "start": 9,
+                    "end": 33
+                },
+                {
+                    "kind": "Scalar_Float",
+                    "raw": "077777777777777777777778",
+                    "value": 7.378697629483821e+19,
+                    "start": 38,
+                    "end": 62
+                }
+            ],
+            "overflow-wide": [
+                {
+                    "kind": "Scalar_Float",
+                    "raw": "010000000000000000000000000000000000000000000000000008",
+                    "value": 1.141798154164768e+46,
+                    "start": 9,
+                    "end": 63
+                }
+            ],
+            "overflow-edge": [
+                {
+                    "kind": "Scalar_Int",
+                    "raw": "07777777777777777777778",
+                    "value": 9223372036854775807,
+                    "start": 9,
+                    "end": 32
+                },
+                {
+                    "kind": "Scalar_Float",
+                    "raw": "010000000000000000000008",
+                    "value": 9.223372036854776e+18,
+                    "start": 37,
+                    "end": 61
+                }
+            ],
+            "separated-prefix": [
+                {
+                    "kind": "Scalar_Float",
+                    "raw": "0_1_000_000_000_000_000_000_000_8",
+                    "value": 9.223372036854776e+18,
+                    "start": 9,
+                    "end": 42
+                }
+            ],
+            "offset-bare": [
+                {
+                    "kind": "Scalar_Int",
+                    "raw": "1",
+                    "value": 1,
+                    "start": 16,
+                    "end": 17
+                },
+                {
+                    "kind": "Scalar_Int",
+                    "raw": "2",
+                    "value": 2,
+                    "start": 25,
+                    "end": 26
+                },
+                {
+                    "kind": "Scalar_Int",
+                    "raw": "3",
+                    "value": 3,
+                    "start": 34,
+                    "end": 35
+                },
+                {
+                    "kind": "Scalar_Int",
+                    "raw": "4",
+                    "value": 4,
+                    "start": 44,
+                    "end": 45
+                }
+            ]
+        },
+        "70000": {
+            "legacy": [
+                {
+                    "kind": "Scalar_Int",
+                    "raw": null,
+                    "value": 0,
+                    "start": 9,
+                    "end": 11
+                },
+                {
+                    "kind": "Scalar_Int",
+                    "raw": null,
+                    "value": 0,
+                    "start": 16,
+                    "end": 19
+                },
+                {
+                    "kind": "Scalar_Int",
+                    "raw": null,
+                    "value": 0,
+                    "start": 24,
+                    "end": 27
+                },
+                {
+                    "kind": "Scalar_Int",
+                    "raw": null,
+                    "value": 0,
+                    "start": 32,
+                    "end": 36
+                }
+            ],
+            "valid": [
+                {
+                    "kind": "Scalar_Int",
+                    "raw": "077",
+                    "value": 63,
+                    "start": 9,
+                    "end": 12
+                },
+                {
+                    "kind": "Scalar_Int",
+                    "raw": "07_7",
+                    "value": 63,
+                    "start": 17,
+                    "end": 21
+                },
+                {
+                    "kind": "Scalar_Int",
+                    "raw": "0o77",
+                    "value": 63,
+                    "start": 26,
+                    "end": 30
+                },
+                {
+                    "kind": "Scalar_Int",
+                    "raw": "0O7_7",
+                    "value": 63,
+                    "start": 35,
+                    "end": 40
+                },
+                {
+                    "kind": "Scalar_Float",
+                    "raw": "08.0",
+                    "value": 8,
+                    "start": 45,
+                    "end": 49
+                },
+                {
+                    "kind": "Scalar_Float",
+                    "raw": "08e2",
+                    "value": 800,
+                    "start": 54,
+                    "end": 58
+                },
+                {
+                    "kind": "Scalar_Int",
+                    "raw": "0x89",
+                    "value": 137,
+                    "start": 63,
+                    "end": 67
+                },
+                {
+                    "kind": "Scalar_Int",
+                    "raw": "0b10",
+                    "value": 2,
+                    "start": 72,
+                    "end": 76
+                }
+            ],
+            "overflow-prefix": [
+                {
+                    "kind": "Scalar_Float",
+                    "raw": "010000000000000000000008",
+                    "value": 9.223372036854776e+18,
+                    "start": 9,
+                    "end": 33
+                },
+                {
+                    "kind": "Scalar_Float",
+                    "raw": "077777777777777777777778",
+                    "value": 7.378697629483821e+19,
+                    "start": 38,
+                    "end": 62
+                }
+            ],
+            "overflow-wide": [
+                {
+                    "kind": "Scalar_Float",
+                    "raw": "010000000000000000000000000000000000000000000000000008",
+                    "value": 1.141798154164768e+46,
+                    "start": 9,
+                    "end": 63
+                }
+            ],
+            "overflow-edge": [
+                {
+                    "kind": "Scalar_Int",
+                    "raw": null,
+                    "value": 0,
+                    "start": 9,
+                    "end": 32
+                },
+                {
+                    "kind": "Scalar_Float",
+                    "raw": "010000000000000000000008",
+                    "value": 9.223372036854776e+18,
+                    "start": 37,
+                    "end": 61
+                }
+            ],
+            "separated-prefix": [
+                {
+                    "kind": "Scalar_Float",
+                    "raw": "0_1_000_000_000_000_000_000_000_8",
+                    "value": 9.223372036854776e+18,
+                    "start": 9,
+                    "end": 42
+                }
+            ],
+            "offset-bare": [
+                {
+                    "kind": "Scalar_Int",
+                    "raw": "1",
+                    "value": 1,
+                    "start": 16,
+                    "end": 17
+                },
+                {
+                    "kind": "Scalar_Int",
+                    "raw": "2",
+                    "value": 2,
+                    "start": 25,
+                    "end": 26
+                },
+                {
+                    "kind": "Scalar_Int",
+                    "raw": "3",
+                    "value": 3,
+                    "start": 34,
+                    "end": 35
+                },
+                {
+                    "kind": "Scalar_Int",
+                    "raw": "4",
+                    "value": 4,
+                    "start": 44,
+                    "end": 45
+                }
+            ]
+        },
+        "80500": {
+            "legacy": [
+                {
+                    "kind": "Scalar_Int",
+                    "raw": null,
+                    "value": 0,
+                    "start": 9,
+                    "end": 11
+                },
+                {
+                    "kind": "Scalar_Int",
+                    "raw": null,
+                    "value": 0,
+                    "start": 16,
+                    "end": 19
+                },
+                {
+                    "kind": "Scalar_Int",
+                    "raw": null,
+                    "value": 0,
+                    "start": 24,
+                    "end": 27
+                },
+                {
+                    "kind": "Scalar_Int",
+                    "raw": null,
+                    "value": 0,
+                    "start": 32,
+                    "end": 36
+                }
+            ],
+            "valid": [
+                {
+                    "kind": "Scalar_Int",
+                    "raw": "077",
+                    "value": 63,
+                    "start": 9,
+                    "end": 12
+                },
+                {
+                    "kind": "Scalar_Int",
+                    "raw": "07_7",
+                    "value": 63,
+                    "start": 17,
+                    "end": 21
+                },
+                {
+                    "kind": "Scalar_Int",
+                    "raw": "0o77",
+                    "value": 63,
+                    "start": 26,
+                    "end": 30
+                },
+                {
+                    "kind": "Scalar_Int",
+                    "raw": "0O7_7",
+                    "value": 63,
+                    "start": 35,
+                    "end": 40
+                },
+                {
+                    "kind": "Scalar_Float",
+                    "raw": "08.0",
+                    "value": 8,
+                    "start": 45,
+                    "end": 49
+                },
+                {
+                    "kind": "Scalar_Float",
+                    "raw": "08e2",
+                    "value": 800,
+                    "start": 54,
+                    "end": 58
+                },
+                {
+                    "kind": "Scalar_Int",
+                    "raw": "0x89",
+                    "value": 137,
+                    "start": 63,
+                    "end": 67
+                },
+                {
+                    "kind": "Scalar_Int",
+                    "raw": "0b10",
+                    "value": 2,
+                    "start": 72,
+                    "end": 76
+                }
+            ],
+            "overflow-prefix": [
+                {
+                    "kind": "Scalar_Float",
+                    "raw": "010000000000000000000008",
+                    "value": 9.223372036854776e+18,
+                    "start": 9,
+                    "end": 33
+                },
+                {
+                    "kind": "Scalar_Float",
+                    "raw": "077777777777777777777778",
+                    "value": 7.378697629483821e+19,
+                    "start": 38,
+                    "end": 62
+                }
+            ],
+            "overflow-wide": [
+                {
+                    "kind": "Scalar_Float",
+                    "raw": "010000000000000000000000000000000000000000000000000008",
+                    "value": 1.141798154164768e+46,
+                    "start": 9,
+                    "end": 63
+                }
+            ],
+            "overflow-edge": [
+                {
+                    "kind": "Scalar_Int",
+                    "raw": null,
+                    "value": 0,
+                    "start": 9,
+                    "end": 32
+                },
+                {
+                    "kind": "Scalar_Float",
+                    "raw": "010000000000000000000008",
+                    "value": 9.223372036854776e+18,
+                    "start": 37,
+                    "end": 61
+                }
+            ],
+            "separated-prefix": [
+                {
+                    "kind": "Scalar_Float",
+                    "raw": "0_1_000_000_000_000_000_000_000_8",
+                    "value": 9.223372036854776e+18,
+                    "start": 9,
+                    "end": 42
+                }
+            ],
+            "offset-bare": [
+                {
+                    "kind": "Scalar_Int",
+                    "raw": "1",
+                    "value": 1,
+                    "start": 16,
+                    "end": 17
+                },
+                {
+                    "kind": "Scalar_Int",
+                    "raw": "2",
+                    "value": 2,
+                    "start": 25,
+                    "end": 26
+                },
+                {
+                    "kind": "Scalar_Int",
+                    "raw": "3",
+                    "value": 3,
+                    "start": 34,
+                    "end": 35
+                },
+                {
+                    "kind": "Scalar_Int",
+                    "raw": "4",
+                    "value": 4,
+                    "start": 44,
+                    "end": 45
+                }
+            ]
+        }
+    },
+    "legacy_policy": {
+        "50600": [],
+        "70000": [
+            {
+                "line": 2,
+                "message": "Invalid numeric literal on line 2"
+            },
+            {
+                "line": 2,
+                "message": "Invalid numeric literal on line 2"
+            },
+            {
+                "line": 2,
+                "message": "Invalid numeric literal on line 2"
+            },
+            {
+                "line": 2,
+                "message": "Invalid numeric literal on line 2"
+            }
+        ],
+        "80500": [
+            {
+                "line": 2,
+                "message": "Invalid numeric literal on line 2"
+            },
+            {
+                "line": 2,
+                "message": "Invalid numeric literal on line 2"
+            },
+            {
+                "line": 2,
+                "message": "Invalid numeric literal on line 2"
+            },
+            {
+                "line": 2,
+                "message": "Invalid numeric literal on line 2"
+            }
+        ]
+    },
+    "tokens": {
+        "legacy": [
+            [
+                "T_LNUMBER",
+                "08",
+                2
+            ],
+            [
+                "T_LNUMBER",
+                "078",
+                2
+            ],
+            [
+                "T_LNUMBER",
+                "0_8",
+                2
+            ],
+            [
+                "T_LNUMBER",
+                "07_9",
+                2
+            ]
+        ],
+        "multiple": [
+            [
+                "T_LNUMBER",
+                "08",
+                2
+            ],
+            [
+                "T_LNUMBER",
+                "078",
+                2
+            ],
+            [
+                "T_LNUMBER",
+                "0_8",
+                3
+            ],
+            [
+                "T_LNUMBER",
+                "07_9",
+                4
+            ]
+        ],
+        "valid": [
+            [
+                "T_LNUMBER",
+                "077",
+                2
+            ],
+            [
+                "T_LNUMBER",
+                "07_7",
+                2
+            ],
+            [
+                "T_LNUMBER",
+                "0o77",
+                2
+            ],
+            [
+                "T_LNUMBER",
+                "0O7_7",
+                2
+            ],
+            [
+                "T_DNUMBER",
+                "08.0",
+                2
+            ],
+            [
+                "T_DNUMBER",
+                "08e2",
+                2
+            ],
+            [
+                "T_LNUMBER",
+                "0x89",
+                2
+            ],
+            [
+                "T_LNUMBER",
+                "0b10",
+                2
+            ]
+        ],
+        "overflow-valid": [
+            [
+                "T_DNUMBER",
+                "01000000000000000000000",
+                2
+            ],
+            [
+                "T_DNUMBER",
+                "07777777777777777777777",
+                2
+            ]
+        ],
+        "overflow-prefix": [
+            [
+                "T_DNUMBER",
+                "010000000000000000000008",
+                2
+            ],
+            [
+                "T_DNUMBER",
+                "077777777777777777777778",
+                2
+            ]
+        ],
+        "overflow-wide": [
+            [
+                "T_DNUMBER",
+                "010000000000000000000000000000000000000000000000000008",
+                2
+            ]
+        ],
+        "overflow-edge": [
+            [
+                "T_LNUMBER",
+                "07777777777777777777778",
+                2
+            ],
+            [
+                "T_DNUMBER",
+                "010000000000000000000008",
+                3
+            ]
+        ],
+        "overflow-early": [
+            [
+                "T_LNUMBER",
+                "0787777777777777777777777777777777",
+                2
+            ]
+        ],
+        "separated-prefix": [
+            [
+                "T_DNUMBER",
+                "0_1_000_000_000_000_000_000_000_8",
+                2
+            ]
+        ],
+        "semantics": [
+            [
+                "T_LNUMBER",
+                "08",
+                3
+            ]
+        ],
+        "parameter-default": [
+            [
+                "T_LNUMBER",
+                "08",
+                4
+            ]
+        ],
+        "nested-order": [
+            [
+                "T_LNUMBER",
+                "08",
+                2
+            ],
+            [
+                "T_LNUMBER",
+                "078",
+                2
+            ]
+        ],
+        "fatal-before": [
+            [
+                "T_LNUMBER",
+                "08",
+                3
+            ]
+        ],
+        "fatal-after": [
+            [
+                "T_LNUMBER",
+                "08",
+                2
+            ],
+            [
+                "T_LNUMBER",
+                "078",
+                4
+            ]
+        ],
+        "fatal-interpolated": [
+            [
+                "T_LNUMBER",
+                "08",
+                2
+            ],
+            [
+                "T_LNUMBER",
+                "078",
+                3
+            ]
+        ],
+        "nonfatal-escape": [
+            [
+                "T_LNUMBER",
+                "08",
+                2
+            ],
+            [
+                "T_LNUMBER",
+                "078",
+                4
+            ]
+        ],
+        "array-post": [
+            [
+                "T_LNUMBER",
+                "08",
+                2
+            ],
+            [
+                "T_LNUMBER",
+                "078",
+                2
+            ]
+        ],
+        "array-fatal": [
+            [
+                "T_LNUMBER",
+                "08",
+                3
+            ],
+            [
+                "T_LNUMBER",
+                "078",
+                5
+            ]
+        ],
+        "namespace-post": [
+            [
+                "T_LNUMBER",
+                "08",
+                2
+            ]
+        ],
+        "resolver-priority": [
+            [
+                "T_LNUMBER",
+                "08",
+                3
+            ]
+        ],
+        "offset-bare": [
+            [
+                "T_LNUMBER",
+                "1",
+                2
+            ],
+            [
+                "T_LNUMBER",
+                "2",
+                2
+            ],
+            [
+                "T_LNUMBER",
+                "3",
+                2
+            ],
+            [
+                "T_LNUMBER",
+                "4",
+                2
+            ],
+            [
+                "T_NUM_STRING",
+                "08",
+                2
+            ],
+            [
+                "T_NUM_STRING",
+                "078",
+                2
+            ],
+            [
+                "T_NUM_STRING",
+                "0_8",
+                2
+            ],
+            [
+                "T_NUM_STRING",
+                "07_9",
+                2
+            ]
+        ],
+        "offset-braced": [
+            [
+                "T_LNUMBER",
+                "8",
+                2
+            ],
+            [
+                "T_LNUMBER",
+                "1",
+                2
+            ],
+            [
+                "T_LNUMBER",
+                "08",
+                2
+            ],
+            [
+                "T_LNUMBER",
+                "078",
+                2
+            ],
+            [
+                "T_LNUMBER",
+                "0_8",
+                2
+            ],
+            [
+                "T_LNUMBER",
+                "07_9",
+                2
+            ]
+        ],
+        "offset-dollar-braced": [
+            [
+                "T_LNUMBER",
+                "08",
+                2
+            ]
+        ]
+    }
+}

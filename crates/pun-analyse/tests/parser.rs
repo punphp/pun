@@ -1728,3 +1728,164 @@ fn document_escape_version_policy_matches_every_admitted_public_target() {
         }
     }
 }
+
+#[test]
+fn numeric_admission_collects_literal_reductions_before_enclosing_checks() {
+    use pun_phpstan::{Array, Key, Value as Php};
+    let inputs: Value = serde_json::from_str(include_str!(
+        "fixtures/parser/numeric-admission-inputs.json"
+    ))
+    .unwrap();
+    let expected: Value = serde_json::from_str(include_str!(
+        "fixtures/parser/numeric-admission-expected.json"
+    ))
+    .unwrap();
+    for (name, source) in inputs.as_object().unwrap() {
+        let root = Inputs::new();
+        let file = root.write_source("input", source.as_str().unwrap());
+        let mut project = Project::new(vec![file], Vec::new());
+        project.php_version = 80500;
+        assert_eq!(
+            errors(&project),
+            expected["analysed"][name]["errors"],
+            "{name}"
+        );
+        // Rule filters cannot suppress parser admission; ignores expose the unsorted collecting order.
+        project.reported = Some(std::sync::Arc::new(|_| false));
+        let mut entry = Array::new();
+        entry.set(Key::from("identifier"), Php::str("phpstan.parse"));
+        project.ignore_errors =
+            pun_phpstan::ignore::IgnoredErrors::new(&Array::list([Php::Array(entry)]), true);
+        assert_eq!(
+            json!(analyse_project(&project).unwrap().general),
+            expected["analysed"][name]["general"],
+            "{name}"
+        );
+    }
+}
+
+#[test]
+fn numeric_admission_preserves_supported_target_versions() {
+    let inputs: Value = serde_json::from_str(include_str!(
+        "fixtures/parser/numeric-admission-inputs.json"
+    ))
+    .unwrap();
+    let expected: Value = serde_json::from_str(include_str!(
+        "fixtures/parser/numeric-admission-expected.json"
+    ))
+    .unwrap();
+    for version in [70100, 70300, 70400, 80000, 80100, 80200, 80400, 80500] {
+        for name in ["legacy", "valid", "overflow-prefix", "offset-bare"] {
+            let root = Inputs::new();
+            let file = root.write_source("input", inputs[name].as_str().unwrap());
+            let mut project = Project::new(vec![file], Vec::new());
+            project.php_version = version;
+            assert_eq!(
+                errors(&project),
+                expected["versions"][version.to_string()][name]["errors"],
+                "PHP {version}: {name}"
+            );
+        }
+    }
+}
+
+#[test]
+fn numeric_admission_pre_php7_policy_matches_the_pinned_parser() {
+    let inputs: Value = serde_json::from_str(include_str!(
+        "fixtures/parser/numeric-admission-inputs.json"
+    ))
+    .unwrap();
+    let expected: Value = serde_json::from_str(include_str!(
+        "fixtures/parser/numeric-admission-expected.json"
+    ))
+    .unwrap();
+    let root = Inputs::new();
+    let file = root.write_source("input", inputs["legacy"].as_str().unwrap());
+    for version in [50600, 70000] {
+        let mut project = Project::new(vec![file.clone()], Vec::new());
+        project.php_version = version;
+        let actual = errors(&project);
+        let parser: Vec<_> = actual
+            .as_array()
+            .unwrap()
+            .iter()
+            .filter(|e| e["identifier"] == "phpstan.parse")
+            .map(|e| json!({"line":e["line"],"message":e["message"]}))
+            .collect();
+        assert_eq!(
+            json!(parser),
+            expected["legacy_policy"][version.to_string()],
+            "PHP {version}"
+        );
+    }
+}
+
+#[test]
+fn numeric_admission_rejects_whole_scan_files_but_keeps_overflowing_prefixes() {
+    let expected: Value = serde_json::from_str(include_str!(
+        "fixtures/parser/numeric-admission-expected.json"
+    ))
+    .unwrap();
+    for (name, literal) in [
+        ("valid", "077"),
+        ("invalid", "08"),
+        ("invalid-first", "08"),
+        ("invalid-last", "08"),
+        ("overflow-prefix", "010000000000000000000008"),
+    ] {
+        let root = Inputs::new();
+        let declarations =
+            "class BeforeScan {} function before_scan(): void {} const BEFORE_SCAN=1;";
+        let after = "class AfterScan {} function after_scan(): void {} const AFTER_SCAN=1;";
+        let value = format!("$a={literal};");
+        let parts = match name {
+            "invalid-first" => [value.as_str(), declarations, after],
+            "invalid-last" => [declarations, after, value.as_str()],
+            _ => [declarations, value.as_str(), after],
+        };
+        let symbols = root.write("symbols", &parts.join("\n"));
+        let main = root.write("main", "new BeforeScan(); before_scan(); echo BEFORE_SCAN;\nnew AfterScan(); after_scan(); echo AFTER_SCAN;");
+        let mut project = Project::new(vec![main], vec![symbols]);
+        project.php_version = 80500;
+        project.level = 1;
+        assert_eq!(
+            errors(&project),
+            expected["scanned"][name]["errors"],
+            "{name}"
+        );
+    }
+}
+
+#[test]
+fn numeric_admission_does_not_translate_unrelated_recovered_grammar() {
+    let inputs: Value = serde_json::from_str(include_str!(
+        "fixtures/parser/numeric-admission-boundaries.json"
+    ))
+    .unwrap();
+    let expected: Value = serde_json::from_str(include_str!(
+        "fixtures/parser/numeric-admission-expected.json"
+    ))
+    .unwrap();
+    for (name, source) in inputs.as_object().unwrap() {
+        let root = Inputs::new();
+        let file = root.write_source("input", source.as_str().unwrap());
+        let project = Project::new(vec![file], Vec::new());
+        let actual = errors(&project);
+        let allowed = expected["boundaries"][name]["errors"].as_array().unwrap();
+        assert!(
+            actual
+                .as_array()
+                .unwrap()
+                .iter()
+                .filter(|e| e["identifier"] == "phpstan.parse")
+                .all(|e| allowed.contains(e)),
+            "{name}: {actual}; upstream: {allowed:?}"
+        );
+    }
+    let root = Inputs::new();
+    let file = root.write("input", "}\n$a=08;");
+    assert_eq!(
+        errors(&Project::new(vec![file], Vec::new())),
+        expected["entry"]["errors"]
+    );
+}

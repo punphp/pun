@@ -26,3 +26,23 @@ They cover namespace placement, parameter validation, executable diagnostics, an
 scan-only declarations. `pun-lint/tests/shebang.rs` checks lexer settings, token bytes and spans,
 owned and borrowed CSTs, and source-preserving lint edits. General opening-tag grammar differences
 and recovered-grammar translation remain outside this patch.
+
+## Opt-in legacy-octal token retention
+
+`LexerSettings::retain_invalid_legacy_octal` defaults to `false`. Pun's central analyser parser enables
+it to retain complete malformed legacy-octal tokens for PHPParser's nonfatal `parseLNumber` validation.
+Default lexing, lint and format still reject these literals. Other lexical failures and grammar recovery
+are unchanged. Tokens and CSTs retain the original source bytes and full spans.
+
+PHP's tokenizer selects `T_LNUMBER` or `T_DNUMBER` from the octal prefix before the first `8` or `9`,
+after ignoring separators. An overflowing prefix produces a float even though native compilation
+rejects the source. PHPParser accepts that float and converts only the prefix. `octal_prefix` follows
+PHP's base-8 integer accumulation and floating-point widening; literal construction preserves that value
+instead of treating the malformed spelling as decimal. `OffsetNumber`, explicit-octal boundaries,
+ordinary floating-point literals and short-tag settings keep their existing behavior.
+
+PHPStan 2.3.1 and PHPParser captures are in `pun-analyse/tests/fixtures/parser/numeric-admission-expected.json`.
+The public parser tests cover reduction order, target versions, fatal escapes, delayed array checks,
+name-resolution suppression and whole-file scan rejection. `pun-lint/tests/numeric_admission.rs` checks
+native token classes, prefix values, source fidelity and strict consumers. General grammar recovery
+remains outside this patch.

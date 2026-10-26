@@ -60,6 +60,7 @@ use crate::lexer::internal::mode::HaltStage;
 use crate::lexer::internal::mode::Interpolation;
 use crate::lexer::internal::mode::LexerMode;
 use crate::lexer::internal::utils::NumberKind;
+pub(crate) use crate::lexer::internal::utils::{OctalPrefix, octal_prefix};
 use crate::settings::LexerSettings;
 use crate::token::DocumentKind;
 use crate::token::Token;
@@ -658,6 +659,13 @@ impl<'input> Lexer<'input> {
                                 && let Some(invalid_idx) =
                                     (1..length).find(|&i| matches!(self.input.peek(i, 1), [b'8' | b'9']))
                             {
+                                if self.settings.retain_invalid_legacy_octal {
+                                    let kind = match octal_prefix(self.input.read(length)) {
+                                        OctalPrefix::Integer(_) => TokenKind::LiteralInteger,
+                                        OctalPrefix::Float(_) => TokenKind::LiteralFloat,
+                                    };
+                                    break 'number (kind, length);
+                                }
                                 let invalid_byte = self.input.peek(invalid_idx, 1)[0];
                                 let start = self.input.current_position();
                                 let invalid_position = Position { offset: start.offset + invalid_idx as u32 };

@@ -8,6 +8,9 @@ pub struct LexerSettings {
     ///
     /// This corresponds to PHP's `short_open_tag` ini directive.
     pub enable_short_tags: bool,
+    /// Retain malformed legacy octals as complete tokens for PHPParser-style semantic validation.
+    /// Strict consumers keep the default `false`; this does not enable general lexical recovery.
+    pub retain_invalid_legacy_octal: bool,
 }
 
 /// Settings for the parser.
@@ -22,6 +25,6 @@ pub struct ParserSettings {
 
 impl Default for LexerSettings {
     fn default() -> Self {
-        Self { enable_short_tags: true }
+        Self { enable_short_tags: true, retain_invalid_legacy_octal: false }
     }
 }

@@ -1,0 +1,9 @@
+{
+  "explicit-invalid": "<?php\n$a=0o8; $b=0o78;\n",
+  "separator-boundaries": "<?php\n$a=0__8; $b=08_;\n",
+  "grammar-before": "<?php\n$a=;\n$b=08;\nfunction f(void $v) {}\n",
+  "brace-after": "<?php\n$a=08;\n}\n$b=078;\n",
+  "missing-semicolon": "<?php\n$a=08\n$b=078;\n",
+  "missing-semicolon-eof": "<?php\n$a=08\n",
+  "other-lexical": "<?php\n$a=08;\n\u0000\n$b=078;\n"
+}

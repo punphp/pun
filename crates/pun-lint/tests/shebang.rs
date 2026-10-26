@@ -112,6 +112,7 @@ fn shebang_lexer_stops_at_enabled_openers_and_retains_original_bytes_and_spans()
             Input::new(file, source.as_bytes()),
             LexerSettings {
                 enable_short_tags: short_tags,
+                ..Default::default()
             },
         );
         let tokens: Vec<_> = std::iter::from_fn(|| lexer.advance())
@@ -163,6 +164,7 @@ fn shebang_without_an_enabled_opener_keeps_inline_text_and_lf_classification() {
             ParserSettings {
                 lexer: LexerSettings {
                     enable_short_tags: short_tags,
+                    ..Default::default()
                 },
                 ..Default::default()
             },
@@ -200,6 +202,7 @@ fn shebang_owned_and_borrowed_csts_restore_declarations_without_rewriting_source
             let settings = ParserSettings {
                 lexer: LexerSettings {
                     enable_short_tags: short_tags,
+                    ..Default::default()
                 },
                 ..Default::default()
             };
