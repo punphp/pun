@@ -1,0 +1,7 @@
+[
+    {
+        "fixer": "php_unit_dedicate_assert_internal_type",
+        "input": "<?php\nfinal class FooTest extends \\PHPUnit\\Framework\\TestCase\n{\n    public function testA()\n    {\n        $this->assertInternalType(\"double\", $a);\n        $this->assertNotInternalType('null', $a, 'msg');\n        $this->ASSERTNOTINTERNALTYPE('iterable', $a);\n        $this->assertInternalType($type, $a);\n        $this->assertInternalType('foo', $a);\n        $this->assertInternalType('int');\n        $this->assertInternalType;\n        new class {\n            public function a() { $this->assertInternalType('int', $a); }\n        };\n        $this->assertInternalType('int', /* c */ $a);\n    }\n}\n",
+        "expected": "<?php\nfinal class FooTest extends \\PHPUnit\\Framework\\TestCase\n{\n    public function testA()\n    {\n        $this->assertIsFloat($a);\n        $this->assertNotNull($a, 'msg');\n        $this->assertIsNotIterable($a);\n        $this->assertInternalType($type, $a);\n        $this->assertInternalType('foo', $a);\n        $this->assertInternalType('int');\n        $this->assertInternalType;\n        new class {\n            public function a() { $this->assertInternalType('int', $a); }\n        };\n        $this->assertIsInt($a);\n    }\n}\n"
+    }
+]

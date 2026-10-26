@@ -1,0 +1,15 @@
+[
+    {
+        "fixer": "php_unit_mock",
+        "input": "<?php\nfinal class FooTest extends \\PHPUnit\\Framework\\TestCase\n{\n    public function testA()\n    {\n        $a = $this->getMock('A');\n        $b = $this->getMock('A', ['m']);\n        $c = $this->getMock('A', ['m'], [1]);\n        $d = $this->getMockWithoutInvokingTheOriginalConstructor('A');\n        $e = $this?->GETMOCK('A');\n        $f = $this->getMock();\n    }\n}\n",
+        "expected": "<?php\nfinal class FooTest extends \\PHPUnit\\Framework\\TestCase\n{\n    public function testA()\n    {\n        $a = $this->createMock('A');\n        $b = $this->createPartialMock('A', ['m']);\n        $c = $this->getMock('A', ['m'], [1]);\n        $d = $this->createMock('A');\n        $e = $this?->createMock('A');\n        $f = $this->getMock();\n    }\n}\n"
+    },
+    {
+        "fixer": "php_unit_mock",
+        "config": {
+            "target": "5.4"
+        },
+        "input": "<?php\nfinal class FooTest extends \\PHPUnit\\Framework\\TestCase\n{\n    public function testA()\n    {\n        $a = $this->getMock('A');\n        $b = $this->getMock('A', ['m']);\n        $c = $this->getMock('A', ['m'], [1]);\n        $d = $this->getMockWithoutInvokingTheOriginalConstructor('A');\n        $e = $this?->GETMOCK('A');\n        $f = $this->getMock();\n    }\n}\n",
+        "expected": "<?php\nfinal class FooTest extends \\PHPUnit\\Framework\\TestCase\n{\n    public function testA()\n    {\n        $a = $this->createMock('A');\n        $b = $this->getMock('A', ['m']);\n        $c = $this->getMock('A', ['m'], [1]);\n        $d = $this->createMock('A');\n        $e = $this?->createMock('A');\n        $f = $this->getMock();\n    }\n}\n"
+    }
+]
