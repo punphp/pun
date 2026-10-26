@@ -162,6 +162,15 @@ The lint rules a PHP-CS-Fixer fixer runs (the risky and code-deleting ones) name
 `level` and `fix`: `"phpunit/require-method-casing" = { case = "snake-case" }`,
 `"phpdoc/no-superfluous-tags" = { allow-mixed = true }`.
 
+Lint rules ported from Mago's linter take Mago's option names and defaults, beside `level` and `fix`:
+`"complexity/no-excessive-cyclomatic" = { threshold = 20, method-threshold = 10 }`,
+`"security/no-restricted-functions" = { functions = ["exec", { name = "eval", help = "Use a parser." }], extensions = ["curl"] }`.
+Mago's per-rule `level` and the `level` of a `functions`, `extensions` or `types` entry are accepted and not used:
+the rule's level comes from pun.toml. `style/require-naming-convention` stands for Mago's nine `*-name` rules and
+takes one table per Mago code, each with `enabled` and that rule's options:
+`"style/require-naming-convention" = { method-name = { enabled = true, camel = false }, class-name = { psr = true } }`.
+As in Mago, its method, property and variable checks are off until enabled.
+
 `pun migrate` translates names and values. The [rule reference](/docs/rules) lists options for each rule.
 
 ## Removed keys

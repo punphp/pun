@@ -24875,7 +24875,7 @@
         "rules": [
           "lint/style/no-ambiguous-constant"
         ],
-        "note": "Same. Options: same. Planned: not ported yet.",
+        "note": "Same. Options: same.",
         "unsupported": false
       },
       {
@@ -24885,7 +24885,7 @@
         "rules": [
           "lint/style/no-ambiguous-function"
         ],
-        "note": "Same. Options: same. Planned: not ported yet.",
+        "note": "Same. Options: same.",
         "unsupported": false
       },
       {
@@ -24905,7 +24905,7 @@
         "rules": [
           "lint/functions/require-assert-description"
         ],
-        "note": "Same. Options: same. Planned: not ported yet.",
+        "note": "Same. Options: same.",
         "unsupported": false
       },
       {
@@ -24945,7 +24945,7 @@
         "rules": [
           "lint/style/require-naming-convention"
         ],
-        "note": "Merged with constant-name, enum-name, function-name and 5 others (see the rule's Replaces section). Options: same. Planned: not ported yet.",
+        "note": "Merged with constant-name, enum-name, function-name and 5 others (see the rule's Replaces section). Options: same.",
         "unsupported": false
       },
       {
@@ -24975,7 +24975,7 @@
         "rules": [
           "lint/style/require-naming-convention"
         ],
-        "note": "Merged with class-name, enum-name, function-name and 5 others (see the rule's Replaces section). Options: same. Planned: not ported yet.",
+        "note": "Merged with class-name, enum-name, function-name and 5 others (see the rule's Replaces section). Options: same.",
         "unsupported": false
       },
       {
@@ -24985,7 +24985,7 @@
         "rules": [
           "lint/complexity/no-excessive-cyclomatic"
         ],
-        "note": "Same. Options: same. Planned: not ported yet.",
+        "note": "Same. Options: same.",
         "unsupported": false
       },
       {
@@ -25025,7 +25025,7 @@
         "rules": [
           "lint/security/no-restricted-functions"
         ],
-        "note": "Same. Options: same. Planned: not ported yet.",
+        "note": "Same. Options: same.",
         "unsupported": false
       },
       {
@@ -25035,7 +25035,7 @@
         "rules": [
           "lint/security/no-restricted-instantiation"
         ],
-        "note": "Same. Options: same. Planned: not ported yet.",
+        "note": "Same. Options: same.",
         "unsupported": false
       },
       {
@@ -25045,7 +25045,7 @@
         "rules": [
           "lint/style/require-naming-convention"
         ],
-        "note": "Merged with class-name, constant-name, function-name and 5 others (see the rule's Replaces section). Options: same. Planned: not ported yet.",
+        "note": "Merged with class-name, constant-name, function-name and 5 others (see the rule's Replaces section). Options: same.",
         "unsupported": false
       },
       {
@@ -25055,7 +25055,7 @@
         "rules": [
           "lint/complexity/no-excessive-nesting"
         ],
-        "note": "Same. Options: same. Planned: not ported yet.",
+        "note": "Same. Options: same.",
         "unsupported": false
       },
       {
@@ -25065,7 +25065,7 @@
         "rules": [
           "lint/complexity/no-excessive-parameters"
         ],
-        "note": "Same. Options: same. Planned: not ported yet.",
+        "note": "Same. Options: same.",
         "unsupported": false
       },
       {
@@ -25115,7 +25115,7 @@
         "rules": [
           "lint/style/require-naming-convention"
         ],
-        "note": "Merged with class-name, constant-name, enum-name and 5 others (see the rule's Replaces section). Options: same. Planned: not ported yet.",
+        "note": "Merged with class-name, constant-name, enum-name and 5 others (see the rule's Replaces section). Options: same.",
         "unsupported": false
       },
       {
@@ -25125,7 +25125,7 @@
         "rules": [
           "lint/complexity/no-excessive-halstead"
         ],
-        "note": "Same. Options: same. Planned: not ported yet.",
+        "note": "Same. Options: same.",
         "unsupported": false
       },
       {
@@ -25181,7 +25181,7 @@
         "rules": [
           "lint/style/require-naming-convention"
         ],
-        "note": "Merged with class-name, constant-name, enum-name and 5 others (see the rule's Replaces section). Options: same. Planned: not ported yet.",
+        "note": "Merged with class-name, constant-name, enum-name and 5 others (see the rule's Replaces section). Options: same.",
         "unsupported": false
       },
       {
@@ -25201,7 +25201,7 @@
         "rules": [
           "lint/complexity/no-excessive-kan-defect"
         ],
-        "note": "Same. Options: same. Planned: not ported yet.",
+        "note": "Same. Options: same.",
         "unsupported": false
       },
       {
@@ -25211,7 +25211,7 @@
         "rules": [
           "lint/complexity/prefer-named-literal-argument"
         ],
-        "note": "Same. Options: same. Planned: not ported yet.",
+        "note": "Same. Options: same.",
         "unsupported": false
       },
       {
@@ -25251,7 +25251,7 @@
         "rules": [
           "lint/style/require-naming-convention"
         ],
-        "note": "Merged with class-name, constant-name, enum-name and 5 others (see the rule's Replaces section). Options: same. Planned: not ported yet.",
+        "note": "Merged with class-name, constant-name, enum-name and 5 others (see the rule's Replaces section). Options: same.",
         "unsupported": false
       },
       {
@@ -25271,7 +25271,7 @@
         "rules": [
           "lint/style/require-phpdoc"
         ],
-        "note": "Same. Options: same. Planned: not ported yet.",
+        "note": "Same. Options: same.",
         "unsupported": false
       },
       {
@@ -25331,7 +25331,7 @@
         "rules": [
           "lint/complexity/no-boolean-flag-parameter"
         ],
-        "note": "Same. Options: same. Planned: not ported yet.",
+        "note": "Same. Options: same.",
         "unsupported": false
       },
       {
@@ -25397,7 +25397,7 @@
         "rules": [
           "lint/complexity/no-else-clause"
         ],
-        "note": "Same. Options: same. Planned: not ported yet.",
+        "note": "Same. Options: same.",
         "unsupported": false
       },
       {
@@ -25517,7 +25517,7 @@
         "rules": [
           "lint/complexity/no-goto"
         ],
-        "note": "Same. Options: same. Planned: not ported yet.",
+        "note": "Same. Options: same.",
         "unsupported": false
       },
       {
@@ -25557,7 +25557,7 @@
         "rules": [
           "lint/style/no-ini-set"
         ],
-        "note": "Same. Options: same. Planned: not ported yet.",
+        "note": "Same. Options: same.",
         "unsupported": false
       },
       {
@@ -25567,7 +25567,7 @@
         "rules": [
           "lint/style/no-inline-html"
         ],
-        "note": "Same. Options: same. Planned: not ported yet.",
+        "note": "Same. Options: same.",
         "unsupported": false
       },
       {
@@ -25597,7 +25597,7 @@
         "rules": [
           "lint/style/no-isset"
         ],
-        "note": "Same. Options: same. Planned: not ported yet.",
+        "note": "Same. Options: same.",
         "unsupported": false
       },
       {
@@ -25777,7 +25777,7 @@
         "rules": [
           "lint/complexity/no-empty-file"
         ],
-        "note": "Same. Options: same. Planned: not ported yet.",
+        "note": "Same. Options: same.",
         "unsupported": false
       },
       {
@@ -26013,7 +26013,7 @@
         "rules": [
           "lint/style/no-side-effects-with-declarations"
         ],
-        "note": "Same. Options: same. Planned: not ported yet.",
+        "note": "Same. Options: same.",
         "unsupported": false
       },
       {
@@ -26023,7 +26023,7 @@
         "rules": [
           "lint/style/no-sprintf-concat"
         ],
-        "note": "Same. Options: same. Planned: not ported yet.",
+        "note": "Same. Options: same.",
         "unsupported": false
       },
       {
@@ -26189,7 +26189,7 @@
         "rules": [
           "lint/style/prefer-create-from-timestamp"
         ],
-        "note": "Same. Options: same. Planned: not ported yet.",
+        "note": "Same. Options: same.",
         "unsupported": false
       },
       {
@@ -26317,7 +26317,7 @@
         "rules": [
           "lint/style/prefer-while-loop"
         ],
-        "note": "Same. Options: same. Planned: not ported yet.",
+        "note": "Same. Options: same.",
         "unsupported": false
       },
       {
@@ -26335,7 +26335,7 @@
         "rules": [
           "lint/style/require-naming-convention"
         ],
-        "note": "Merged with class-name, constant-name, enum-name and 5 others (see the rule's Replaces section). Options: same. Planned: not ported yet.",
+        "note": "Merged with class-name, constant-name, enum-name and 5 others (see the rule's Replaces section). Options: same.",
         "unsupported": false
       },
       {
@@ -26437,7 +26437,7 @@
         "rules": [
           "lint/style/require-namespace"
         ],
-        "note": "Same. Options: same. Planned: not ported yet.",
+        "note": "Same. Options: same.",
         "unsupported": false
       },
       {
@@ -26467,7 +26467,7 @@
         "rules": [
           "lint/style/no-multiple-classes-per-file"
         ],
-        "note": "Same. Options: same. Planned: not ported yet.",
+        "note": "Same. Options: same.",
         "unsupported": false
       },
       {
@@ -26477,7 +26477,7 @@
         "rules": [
           "lint/style/require-sorted-integer-keys"
         ],
-        "note": "Same. Options: same. Planned: not ported yet.",
+        "note": "Same. Options: same.",
         "unsupported": false
       },
       {
@@ -26537,7 +26537,7 @@
         "rules": [
           "lint/strings/require-interpolation-style"
         ],
-        "note": "Same. Options: same. Planned: not ported yet.",
+        "note": "Same. Options: same.",
         "unsupported": false
       },
       {
@@ -26567,7 +26567,7 @@
         "rules": [
           "lint/style/require-todo-reference"
         ],
-        "note": "Merged with tagged-todo. Options: same. Planned: not ported yet.",
+        "note": "Merged with tagged-todo. Options: same.",
         "unsupported": false
       },
       {
@@ -26577,7 +26577,7 @@
         "rules": [
           "lint/style/require-todo-reference"
         ],
-        "note": "Merged with tagged-fixme. Options: same. Planned: not ported yet.",
+        "note": "Merged with tagged-fixme. Options: same.",
         "unsupported": false
       },
       {
@@ -26597,7 +26597,7 @@
         "rules": [
           "lint/complexity/no-excessive-enum-cases"
         ],
-        "note": "Same. Options: same. Planned: not ported yet.",
+        "note": "Same. Options: same.",
         "unsupported": false
       },
       {
@@ -26607,7 +26607,7 @@
         "rules": [
           "lint/complexity/no-excessive-methods"
         ],
-        "note": "Same. Options: same. Planned: not ported yet.",
+        "note": "Same. Options: same.",
         "unsupported": false
       },
       {
@@ -26617,7 +26617,7 @@
         "rules": [
           "lint/complexity/no-excessive-properties"
         ],
-        "note": "Same. Options: same. Planned: not ported yet.",
+        "note": "Same. Options: same.",
         "unsupported": false
       },
       {
@@ -26627,7 +26627,7 @@
         "rules": [
           "lint/style/require-naming-convention"
         ],
-        "note": "Merged with class-name, constant-name, enum-name and 5 others (see the rule's Replaces section). Options: same. Planned: not ported yet.",
+        "note": "Merged with class-name, constant-name, enum-name and 5 others (see the rule's Replaces section). Options: same.",
         "unsupported": false
       },
       {
@@ -26695,7 +26695,7 @@
         "rules": [
           "lint/style/no-invalid-phpdoc"
         ],
-        "note": "Same. Options: same. Planned: not ported yet.",
+        "note": "Same. Options: same.",
         "unsupported": false
       },
       {
@@ -26713,7 +26713,7 @@
         "rules": [
           "lint/style/require-naming-convention"
         ],
-        "note": "Merged with class-name, constant-name, enum-name and 5 others (see the rule's Replaces section). Options: same. Planned: not ported yet.",
+        "note": "Merged with class-name, constant-name, enum-name and 5 others (see the rule's Replaces section). Options: same.",
         "unsupported": false
       },
       {
