@@ -536,6 +536,16 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Reserved<'_> {
             }
         }
     }
+    fn walk_out_document_string(&mut self, node: &'ast DocumentString<'arena>, _: &mut ()) {
+        // ParserAbstract::parseDocString checks the closing token after embedded expressions reduce.
+        if matches!(node.indentation, DocumentIndentation::Mixed(_, _)) {
+            self.errors.push(error(
+                self.file,
+                node.close,
+                "Invalid indentation - tabs and spaces cannot be mixed".into(),
+            ));
+        }
+    }
     fn walk_out_array(&mut self, node: &'ast Array<'arena>, _: &mut ()) {
         self.array(node.span(), &node.elements);
     }

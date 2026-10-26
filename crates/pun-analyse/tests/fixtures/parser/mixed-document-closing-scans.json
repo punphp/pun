@@ -1,0 +1,7 @@
+{
+  "mixed-heredoc": "<?php\nclass ScanBefore {}\nfunction scanFunction() {}\nconst SCAN_CONSTANT = 1;\n$x = <<<TXT\n  body\n \tTXT;\nclass ScanAfter {}\n",
+  "mixed-nowdoc": "<?php\nclass ScanBefore {}\nfunction scanFunction() {}\nconst SCAN_CONSTANT = 1;\n$x = <<<'TXT'\n\t TXT;\nclass ScanAfter {}\n",
+  "valid-spaces": "<?php\nclass ScanBefore {}\nfunction scanFunction() {}\nconst SCAN_CONSTANT = 1;\n$x = <<<TXT\n  body\n  TXT;\nclass ScanAfter {}\n",
+  "valid-tabs": "<?php\nclass ScanBefore {}\nfunction scanFunction() {}\nconst SCAN_CONSTANT = 1;\n$x = <<<'TXT'\n\tbody\n\tTXT;\nclass ScanAfter {}\n",
+  "valid-none": "<?php\nclass ScanBefore {}\nfunction scanFunction() {}\nconst SCAN_CONSTANT = 1;\n$x = <<<TXT\nbody\nTXT;\nclass ScanAfter {}\n"
+}

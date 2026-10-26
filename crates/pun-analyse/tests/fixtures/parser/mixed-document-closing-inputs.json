@@ -1,0 +1,15 @@
+{
+  "mixed-heredoc": "<?php\n$x = <<<TXT\n  body\n \tTXT;\n",
+  "mixed-nowdoc": "<?php\n$x = <<<'TXT'\n  body\n\t TXT;\n",
+  "mixed-empty-heredoc": "<?php\n$x = <<<TXT\n \tTXT;\n",
+  "mixed-empty-nowdoc": "<?php\n$x = <<<'TXT'\n\t TXT;\n",
+  "mixed-quoted-heredoc": "<?php\n$x = <<<\"TXT\"\n  body\n \tTXT;\n",
+  "mixed-binary-heredoc": "<?php\n$x = b<<<TXT\n  body\n \tTXT;\n",
+  "mixed-binary-nowdoc": "<?php\n$x = B<<<'TXT'\n  body\n\t TXT;\n",
+  "valid-spaces": "<?php\n$x = <<<TXT\n  body\n  TXT;\n",
+  "valid-tabs": "<?php\n$x = <<<'TXT'\n\tbody\n\tTXT;\n",
+  "valid-none": "<?php\n$x = <<<TXT\nbody\nTXT;\n",
+  "valid-empty": "<?php\n$x = <<<'TXT'\n  TXT;\n",
+  "valid-indented-text": "<?php\n$x = <<<'TXT'\n  \t body\n  TXT;\n",
+  "valid-diagnostic": "<?php\nmixed_document_closing_missing_control();\n"
+}

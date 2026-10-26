@@ -1361,3 +1361,137 @@ fn empty_array_elements_leave_other_grammar_and_recovery_to_their_own_contracts(
         );
     }
 }
+
+#[test]
+fn mixed_document_closing_matches_marker_locations_and_valid_neighbors() {
+    let inputs: Value = serde_json::from_str(include_str!(
+        "fixtures/parser/mixed-document-closing-inputs.json"
+    ))
+    .unwrap();
+    let expected: Value = serde_json::from_str(include_str!(
+        "fixtures/parser/mixed-document-closing-expected.json"
+    ))
+    .unwrap();
+    let root = Inputs::new();
+    let files = inputs
+        .as_object()
+        .unwrap()
+        .iter()
+        .map(|(name, source)| root.write_source(name, source.as_str().unwrap()))
+        .collect();
+    let mut project = Project::new(files, Vec::new());
+    project.php_version = 80500;
+    assert_eq!(errors(&project), expected["analysed"]["errors"]);
+}
+
+#[test]
+fn mixed_document_closing_follows_body_checks_and_precedes_root_postprocessing() {
+    use pun_phpstan::{Array, Key, Value as Php};
+    let inputs: Value = serde_json::from_str(include_str!(
+        "fixtures/parser/mixed-document-closing-order.json"
+    ))
+    .unwrap();
+    let expected: Value = serde_json::from_str(include_str!(
+        "fixtures/parser/mixed-document-closing-expected.json"
+    ))
+    .unwrap();
+    for (name, source) in inputs.as_object().unwrap() {
+        let root = Inputs::new();
+        let file = root.write_source("order", source.as_str().unwrap());
+        let mut project = Project::new(vec![file], Vec::new());
+        project.php_version = 80500;
+        project.reported = Some(std::sync::Arc::new(|_| false));
+        let mut entry = Array::new();
+        entry.set(Key::from("identifier"), Php::str("phpstan.parse"));
+        project.ignore_errors =
+            pun_phpstan::ignore::IgnoredErrors::new(&Array::list([Php::Array(entry)]), true);
+        // Ignore messages retain collection order before public diagnostics sort by line/message.
+        assert_eq!(
+            json!(analyse_project(&project).unwrap().general),
+            expected["order"][name]["general"],
+            "{name}"
+        );
+        assert_eq!(
+            errors(&project),
+            expected["order"][name]["errors"],
+            "{name}"
+        );
+    }
+}
+
+#[test]
+fn mixed_document_closing_rejects_whole_scanned_files_but_preserves_valid_documents() {
+    let inputs: Value = serde_json::from_str(include_str!(
+        "fixtures/parser/mixed-document-closing-scans.json"
+    ))
+    .unwrap();
+    let expected: Value = serde_json::from_str(include_str!(
+        "fixtures/parser/mixed-document-closing-expected.json"
+    ))
+    .unwrap();
+    for (name, source) in inputs.as_object().unwrap() {
+        let root = Inputs::new();
+        let main = root.write_source("main", include_str!("fixtures/parser/scan-main.php"));
+        let symbols = root.write_source("symbols", source.as_str().unwrap());
+        let mut project = Project::new(vec![main], vec![symbols]);
+        project.php_version = 80500;
+        assert_eq!(
+            errors(&project),
+            expected["scanned"][name]["errors"],
+            "{name}"
+        );
+    }
+}
+
+#[test]
+fn mixed_document_closing_has_no_target_version_gate() {
+    let expected: Value = serde_json::from_str(include_str!(
+        "fixtures/parser/mixed-document-closing-expected.json"
+    ))
+    .unwrap();
+    let root = Inputs::new();
+    let file = root.write_source(
+        "input",
+        include_str!("fixtures/parser/mixed-document-closing-version.php"),
+    );
+    for version in [70100, 70300, 70400, 80000, 80100, 80200, 80400, 80500] {
+        let mut project = Project::new(vec![file.clone()], Vec::new());
+        project.php_version = version;
+        assert_eq!(
+            errors(&project),
+            expected["versions"][version.to_string()]["errors"],
+            "PHP {version}"
+        );
+    }
+}
+
+#[test]
+fn mixed_document_closing_leaves_other_literal_and_recovery_contracts_open() {
+    let inputs: Value = serde_json::from_str(include_str!(
+        "fixtures/parser/mixed-document-closing-boundaries.json"
+    ))
+    .unwrap();
+    let expected: Value = serde_json::from_str(include_str!(
+        "fixtures/parser/mixed-document-closing-expected.json"
+    ))
+    .unwrap();
+    for (name, source) in inputs.as_object().unwrap() {
+        let root = Inputs::new();
+        let file = root.write_source("input", source.as_str().unwrap());
+        let mut project = Project::new(vec![file], Vec::new());
+        project.php_version = 80500;
+        let actual = errors(&project);
+        let allowed = expected["boundaries"][name]["errors"].as_array().unwrap();
+        // These checks have different owners. Permit their captured diagnostics as they are ported,
+        // rather than requiring today's missing body/Unicode/numeric/recovery behavior to stay absent.
+        assert!(
+            actual
+                .as_array()
+                .unwrap()
+                .iter()
+                .filter(|error| error["identifier"] == "phpstan.parse")
+                .all(|error| allowed.contains(error)),
+            "{name}: {actual}; upstream: {allowed:?}"
+        );
+    }
+}
