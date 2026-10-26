@@ -265,3 +265,20 @@ predicate could also receive inferred parent assertions while keeping a false or
 Declared parent assertions still override inferred child assertions and remain inheritable.
 The PHPStan 2.3.1 controls in `mixed-subtraction/inherited-assertions.php` cover both inferred
 parent cases. `call-assertions.php` covers the declared-parent control.
+
+## Initializer ternaries and null coalescing
+
+`scanner/inference/mod.rs::infer_with_constant_sources()` follows PHPStan 2.3.1's
+[`InitializerExprTypeResolver.php:289–314`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Reflection/InitializerExprTypeResolver.php#L289-L314).
+Null coalescing unions the non-null left type with the right type. A full ternary unions the
+truthy part of its middle operand with the else type, without inspecting the condition.
+A shorthand ternary uses the condition as that middle operand. Neither form selects a runtime
+branch. The existing union combiner normalizes the results against the scanner's empty symbol view.
+Deferred constant references retain their existing expansion path.
+
+The public `pun-analyse/tests/attributes.rs` control-flow regression uses a fresh PHPStan 2.3.1
+capture from `tests/fixtures/attributes/phpstan-control-flow.neon`. Controls distinguish same
+and different branches, falsey and null removal, zero flags, unsupported targets, nested bitmasks,
+repeatability, and built-in, global, and class constant references. Unsupported operand expressions
+remain unavailable. This patch does not add calls, object construction, comparisons, boolean
+operators, precise float initializers, or removal constraints on deferred constant references.

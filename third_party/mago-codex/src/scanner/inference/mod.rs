@@ -33,6 +33,7 @@ use mago_word::word;
 
 use crate::flags::attribute::AttributeFlags;
 use crate::identifier::function_like::FunctionLikeIdentifier;
+use crate::metadata::CodebaseMetadata;
 use crate::metadata::class_like_constant::ClassLikeConstantMetadata;
 use crate::metadata::constant::ConstantMetadata;
 use crate::scanner::Context;
@@ -53,6 +54,7 @@ use crate::ttype::atomic::scalar::int::TInteger;
 use crate::ttype::atomic::scalar::string::TString;
 use crate::ttype::atomic::scalar::string::TStringCasing;
 use crate::ttype::atomic::scalar::string::TStringLiteral;
+use crate::ttype::combine_union_types;
 use crate::ttype::get_arraykey;
 use crate::ttype::get_bool;
 use crate::ttype::get_empty_string;
@@ -399,6 +401,46 @@ where
                 UnaryPrefixOperator::Not(_) => Some(get_bool()),
                 _ => None,
             }
+        }
+        // InitializerExprTypeResolver does not select a branch from the condition's value.
+        Expression::Conditional(conditional) => {
+            let else_type = infer_with_constant_sources(
+                context, scope, conditional.r#else, enclosing_class, constants, class_constants,
+            )?;
+            let if_type = infer_with_constant_sources(
+                context,
+                scope,
+                conditional.then.unwrap_or(conditional.condition),
+                enclosing_class,
+                constants,
+                class_constants,
+            )?;
+
+            // Scanned empty arrays retain an empty known-element map, which is also falsey.
+            let truthy_type = if_type.clone_with_types(
+                if_type.get_truthy_types().into_iter()
+                    .filter(|atomic| !matches!(atomic, TAtomic::Array(array) if array.is_empty()))
+                    .collect(),
+            );
+            Some(combine_union_types(
+                &truthy_type,
+                &else_type,
+                &CodebaseMetadata::default(),
+                Default::default(),
+            ))
+        }
+        Expression::Binary(Binary { operator: BinaryOperator::NullCoalesce(_), lhs, rhs }) => {
+            let left_type =
+                infer_with_constant_sources(context, scope, lhs, enclosing_class, constants, class_constants)?;
+            let right_type =
+                infer_with_constant_sources(context, scope, rhs, enclosing_class, constants, class_constants)?;
+
+            Some(combine_union_types(
+                &left_type.to_non_nullable(),
+                &right_type,
+                &CodebaseMetadata::default(),
+                Default::default(),
+            ))
         }
         Expression::Binary(Binary { operator: BinaryOperator::StringConcat(_), lhs, rhs }) => {
             let Some(lhs_type) =

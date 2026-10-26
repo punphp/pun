@@ -92,3 +92,84 @@ fn explicit_attribute_aliases_keep_the_written_name() {
 fn parenthesized_attribute_flags_keep_the_inferred_value() {
     check("phpstan-input-flags");
 }
+
+#[test]
+fn control_flow_attribute_flags_follow_initializer_types_not_runtime_branches() {
+    check("phpstan-control-flow");
+}
+
+/// Check the scanner's public metadata too: the rule must not be repairing missing initializer types.
+#[test]
+fn scanner_control_flow_flags_match_the_attribute_oracle() {
+    use std::borrow::Cow;
+    use std::collections::BTreeSet;
+
+    use mago_allocator::LocalArena;
+    use mago_codex::populator::populate_codebase;
+    use mago_codex::reference::SymbolReferences;
+    use mago_codex::scanner::scan_program;
+    use mago_codex::ttype::expander::{TypeExpansionOptions, expand_union};
+    use mago_database::file::{File, FileType};
+    use mago_names::resolver::NameResolver;
+    use mago_php_version::PHPVersion;
+    use mago_syntax::parser::parse_file;
+
+    let source = include_str!("fixtures/attributes/control-flow.php");
+    let oracle: Value = serde_json::from_str(include_str!(
+        "fixtures/attributes/expected-phpstan-control-flow.json"
+    ))
+    .unwrap();
+    let invalid: BTreeSet<_> = oracle["errors"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .filter(|error| error["identifier"] == "attribute.notAttribute")
+        .map(|error| {
+            error["message"]
+                .as_str()
+                .unwrap()
+                .strip_prefix("Class ")
+                .unwrap()
+                .strip_suffix(" is not an Attribute class.")
+                .unwrap()
+        })
+        .collect();
+    let file = File::new(
+        Cow::Borrowed(b"control-flow.php"),
+        FileType::Host,
+        None,
+        Cow::Borrowed(source.as_bytes()),
+    );
+    let arena = LocalArena::new();
+    let program = parse_file(&arena, &file);
+    assert!(!program.has_errors());
+    let names = NameResolver::new(&arena).resolve(program);
+    let mut codebase = scan_program(&arena, &file, program, &names, PHPVersion::new(8, 4, 0));
+    populate_codebase(
+        &mut codebase,
+        &mut SymbolReferences::new(),
+        Default::default(),
+        Default::default(),
+    );
+    let mut checked = 0;
+    for class in codebase.class_likes.values() {
+        let Some(attribute) = class
+            .attributes
+            .iter()
+            .find(|attribute| attribute.name.as_bytes() == b"Attribute")
+        else {
+            continue;
+        };
+        let flags = attribute.arguments[0]
+            .value_type
+            .clone()
+            .and_then(|mut flags| {
+                expand_union(&codebase, &mut flags, &TypeExpansionOptions::default());
+                flags.get_single_literal_int_value()
+            });
+        let name = String::from_utf8_lossy(class.original_name.as_bytes());
+        assert_eq!(flags.is_some(), !invalid.contains(name.as_ref()), "{name}");
+        checked += 1;
+    }
+    assert_eq!(checked, source.matches("#[\\Attribute(").count());
+}
