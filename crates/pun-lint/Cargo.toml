@@ -12,6 +12,7 @@ name = "pun_lint"
 
 [dependencies]
 pun-problem.workspace = true
+pun-tokens.workspace = true
 mago-allocator.workspace = true
 mago-database.workspace = true
 mago-span.workspace = true
