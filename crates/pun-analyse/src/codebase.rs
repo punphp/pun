@@ -23,7 +23,9 @@ use mago_codex::scanner::inference::infer_initializer_with_codebase;
 use mago_codex::scanner::scan_program;
 use mago_codex::ttype::atomic::TAtomic;
 use mago_codex::ttype::atomic::scalar::TScalar;
+use mago_codex::ttype::get_empty;
 use mago_codex::ttype::get_int_or_float;
+use mago_codex::ttype::get_mixed;
 use mago_codex::ttype::union::TUnion;
 use mago_database::file::{File, FileId, FileType};
 use mago_names::ResolvedNames;
@@ -949,7 +951,7 @@ impl Initializers<'_> {
                 .and_then(|k| self.sources.get(&k.span.file_id))
                 .and_then(|f| f.path.clone()),
         }
-        .initializer_type(&arena, file, program, &names, expression, find.namespace)?;
+        .initializer_type(&arena, file, program, &names, expression, find.namespace);
         if inherited_benevolence && value == get_int_or_float() {
             // Keep the numeric union's existing marker across the full evaluator's arithmetic join.
             value.set_ignore_nullable_issues(true);
@@ -1020,20 +1022,22 @@ pub(crate) fn source_initializer(
         namespace: None,
     };
     find.walk_program(program, &mut ());
-    InitializerInference {
-        metadata,
-        version: php_version(version),
-        class: Some(class),
-        path_constants,
-        path,
-    }
-    .initializer_type(
-        &arena,
-        file,
-        program,
-        &names,
-        find.expression?,
-        find.namespace,
+    Some(
+        InitializerInference {
+            metadata,
+            version: php_version(version),
+            class: Some(class),
+            path_constants,
+            path,
+        }
+        .initializer_type(
+            &arena,
+            file,
+            program,
+            &names,
+            find.expression?,
+            find.namespace,
+        ),
     )
 }
 
@@ -1153,11 +1157,11 @@ impl InitializerInference<'_> {
         names: &ResolvedNames<'arena>,
         expression: &'arena Expression<'arena>,
         namespace: Option<cst::Namespace<'arena>>,
-    ) -> Option<TUnion> {
+    ) -> TUnion {
         // Full inference supplies exact arithmetic only for independent subtrees without canonical
         // control flow. Never evaluate such an operand inside its parent's condition: narrowing there
-        // would replace reflection unions with flow-selected values again. Calls and construction
-        // remain the scanner's unsupported inputs, not new runtime-only initializer transfers.
+        // would replace reflection unions with flow-selected values again. Unsupported reflection
+        // leaves are mixed; function extensions and constructor inference belong to ordinary flow.
         struct Islands<'ast, 'arena> {
             stack: Vec<(Span, bool)>,
             expressions: Vec<(&'ast Expression<'arena>, bool, Option<Span>)>,
@@ -1205,12 +1209,14 @@ impl InitializerInference<'_> {
                 .map(|n| n.value().to_vec()),
         );
         let mut types = HashMap::new();
-        for (expression, _, _) in islands
-            .expressions
-            .into_iter()
-            .filter(|(_, owned, parent)| {
-                !owned && parent.is_none_or(|parent| scanner_owned.contains(&parent))
-            })
+        for (expression, _, _) in
+            islands
+                .expressions
+                .iter()
+                .copied()
+                .filter(|(_, owned, parent)| {
+                    !owned && parent.is_none_or(|parent| scanner_owned.contains(&parent))
+                })
         {
             if let Some(value) = self
                 .expression_artifacts(
@@ -1227,6 +1233,36 @@ impl InitializerInference<'_> {
                 types.insert(expression.span(), value);
             }
         }
+        // Replay only the canonical nodes, in postorder, through the same scanner query. The type
+        // map supplies reflection-owned leaves, not a second arithmetic/control-flow evaluator.
+        for (expression, _, _) in islands
+            .expressions
+            .into_iter()
+            .filter(|(_, owned, _)| *owned)
+        {
+            let mut value = infer_initializer_with_codebase(
+                file,
+                names,
+                &scope,
+                expression,
+                self.metadata,
+                self.class,
+                &types,
+            )
+            .unwrap_or_else(get_mixed);
+            // Materialize PHPStan's removeFalsey result using the existing excluded-set
+            // representation. Mago's legacy truthiness flags alone lose this reflection identity.
+            for atomic in value.types.to_mut() {
+                if let TAtomic::Mixed(mixed) = atomic
+                    && mixed.is_truthy()
+                {
+                    *atomic = mixed
+                        .subtract(&get_empty(), self.metadata)
+                        .get_single_owned();
+                }
+            }
+            types.insert(expression.span(), value);
+        }
         infer_initializer_with_codebase(
             file,
             names,
@@ -1236,6 +1272,7 @@ impl InitializerInference<'_> {
             self.class,
             &types,
         )
+        .unwrap_or_else(get_mixed)
     }
 
     fn expression_artifacts<'arena>(

@@ -170,27 +170,24 @@ fn conflicting_trait_constants<'arena>(
             };
             // Both expressions belong to the consuming context, including a trait expression hidden
             // by an own declaration. Reflected Consumer::VALUE cannot stand in for that source.
-            let (Some(ours), Some(theirs)) = (
+            if let (Some(ours), Some(theirs)) = (
                 source_value(c, item.span(), class),
                 source_value(c, theirs.span, class),
-            ) else {
-                continue;
-            };
-            if ours == theirs {
-                continue;
+            ) && ours != theirs
+            {
+                let name = text(item.name.value);
+                c.report_non_ignorable(
+                    k,
+                    "classConstant.value",
+                    format!(
+                        "Constant {display}::{name} with value {} overriding constant {}::{name} with different value {} should have the same value.",
+                        ours.describe(Level::Value),
+                        c.display(t),
+                        theirs.describe(Level::Value),
+                    ),
+                    None,
+                );
             }
-            let name = text(item.name.value);
-            c.report_non_ignorable(
-                k,
-                "classConstant.value",
-                format!(
-                    "Constant {display}::{name} with value {} overriding constant {}::{name} with different value {} should have the same value.",
-                    ours.describe(Level::Value),
-                    c.display(t),
-                    theirs.describe(Level::Value),
-                ),
-                None,
-            );
         }
     }
 }

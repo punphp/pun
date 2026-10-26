@@ -1,0 +1,8 @@
+parameters:
+    level: 0
+    phpVersion: 80400
+    paths:
+        - fallback.php
+    scanFiles:
+        - scanned.php
+    tmpDir: cache-fallback
