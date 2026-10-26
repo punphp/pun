@@ -1,9 +1,12 @@
 //! PHPStan's dynamic return types that Mago's own types lack, as Mago return type providers for the rules' inference.
 
-use std::sync::Arc;
+use std::sync::{Arc, Mutex};
 
+use foldhash::HashSet;
+use mago_analyzer::plugin::HookResult;
 use mago_analyzer::plugin::PluginRegistry;
-use mago_analyzer::plugin::context::{InvocationInfo, ProviderContext};
+use mago_analyzer::plugin::context::{HookContext, InvocationInfo, ProviderContext};
+use mago_analyzer::plugin::hook::{ExpressionHookResult, FunctionCallHook};
 use mago_analyzer::plugin::provider::Provider;
 use mago_analyzer::plugin::provider::ProviderMeta;
 use mago_analyzer::plugin::provider::function::{FunctionReturnTypeProvider, FunctionTarget};
@@ -27,12 +30,17 @@ use mago_codex::ttype::{
     get_non_negative_int, get_null, intersect_union_types,
 };
 use mago_span::{HasSpan, Span};
+use mago_syntax::cst::{
+    CompositeString, Expression, FunctionCall, Literal, PartialApplication, StringPart,
+};
 
 /// The registry the rules' inference runs with; `contents` is the analysed file's (`bindTo()` finds its receiver in it).
 pub(super) fn registry(contents: &[u8]) -> PluginRegistry {
     let mut registry = PluginRegistry::new();
     registry.register_function_provider(Benevolent);
-    registry.register_function_provider(BuiltinFunctions);
+    let builtins = BuiltinFunctions::default();
+    registry.register_function_call_hook(builtins.clone());
+    registry.register_function_provider(builtins);
     registry.register_method_provider(ClosureMethods(contents.to_vec()));
     registry
 }
@@ -51,10 +59,11 @@ pub(super) fn is_benevolent(t: &TUnion) -> bool {
 static META: ProviderMeta = ProviderMeta::new("pun", "pun", "PHPStan's dynamic return types");
 
 /// PHPStan 2.3.1's ArrayRandFunctionReturnTypeExtension, RandomIntFunctionReturnTypeExtension,
-/// ArraySliceFunctionReturnTypeExtension and the array/list/non-empty sliceArray methods.
+/// ArraySliceFunctionReturnTypeExtension, StrlenFunctionReturnTypeExtension and the array/list sliceArray methods.
 /// Mago 1.57's prelude only has a conditional generic return type: it neither slices shapes nor turns integer-keyed
 /// non-lists back into lists. Keep this in the production registry, so assignments and subsequent calls see it too.
-struct BuiltinFunctions;
+#[derive(Clone, Default)]
+struct BuiltinFunctions(Arc<Mutex<HashSet<Span>>>);
 
 impl Provider for BuiltinFunctions {
     fn meta() -> &'static ProviderMeta {
@@ -70,6 +79,7 @@ impl FunctionReturnTypeProvider for BuiltinFunctions {
             b"rand",
             b"mt_rand",
             b"random_int",
+            b"strlen",
         ])
     }
 
@@ -78,6 +88,13 @@ impl FunctionReturnTypeProvider for BuiltinFunctions {
         context: &ProviderContext<'_, '_, '_>,
         invocation: &InvocationInfo<'_, '_, '_>,
     ) -> Option<TUnion> {
+        if invocation.function_name().eq_ignore_ascii_case("strlen") {
+            if !self.0.lock().unwrap().contains(&invocation.span()) {
+                return None;
+            }
+            let input = context.get_expression_type(invocation.get_argument(0, &[b"string"])?)?;
+            return Strlen::return_type(input);
+        }
         if invocation.function_name().eq_ignore_ascii_case("rand")
             || invocation.function_name().eq_ignore_ascii_case("mt_rand")
             || invocation
@@ -167,6 +184,142 @@ impl FunctionReturnTypeProvider for BuiltinFunctions {
             &length,
             preserve,
         )?))
+    }
+}
+
+impl FunctionCallHook for BuiltinFunctions {
+    fn before_function_call(
+        &self,
+        call: &FunctionCall<'_>,
+        _: &mut HookContext<'_, '_>,
+    ) -> HookResult<ExpressionHookResult> {
+        // FuncCallHandler::resolveReturnType only applies extensions to named functions, literal-string
+        // callees and immediately invoked named first-class functions, not stored callable signatures.
+        // Mago retains the source identifier even on those signatures; record the actual CST boundary.
+        let mut callee = call.function;
+        while let Expression::Parenthesized(expression) = callee {
+            callee = expression.expression;
+        }
+        let eligible = match callee {
+            Expression::Identifier(_) | Expression::Literal(Literal::String(_)) => true,
+            Expression::CompositeString(CompositeString::Document(document)) => document
+                .parts
+                .iter()
+                .all(|part| matches!(part, StringPart::Literal(_))),
+            Expression::PartialApplication(PartialApplication::Function(function)) => {
+                matches!(function.function, Expression::Identifier(_))
+                    && function.argument_list.is_first_class_callable()
+            }
+            _ => false,
+        };
+        if eligible {
+            self.0.lock().unwrap().insert(call.span());
+        }
+        Ok(ExpressionHookResult::Continue)
+    }
+}
+
+/// StrlenFunctionReturnTypeExtension: scalar *values* are cast, not their types' toString() results.
+/// In particular, a negative zero has length two, not the union of both zero signs' lengths.
+struct Strlen;
+
+impl Strlen {
+    fn return_type(input: &TUnion) -> Option<TUnion> {
+        if let Some(mut lengths) = Self::lengths(input, 0) {
+            lengths.sort_unstable();
+            lengths.dedup();
+            let min = lengths[0];
+            let max = *lengths.last().unwrap();
+            return Some(if min == max {
+                // IntegerRangeType::fromInterval collapses equal bounds. Mago's range helper does not;
+                // retain an actual literal so subsequent calls can extract its scalar value too.
+                get_literal_int(min)
+            } else if max - min == lengths.len() as i64 - 1 {
+                get_int_range(Some(min), Some(max))
+            } else {
+                // Neither this extension nor getConstantScalarValues has a 128-value budget. Do not use
+                // Mago's default combiner: its unrelated literal threshold would widen a sparse result.
+                TUnion::from_vec(
+                    lengths
+                        .into_iter()
+                        .map(|n| get_literal_int(n).get_single().clone())
+                        .collect(),
+                )
+            });
+        }
+        // PHPStan's boolean and definitely-empty-string branches are already resolved by scalar extraction:
+        // BooleanType enumerates true/false (including inside unions), and an empty string is a constant.
+        // The remaining positive branch also covers remove(input, int|float)->isNonEmptyString()->yes().
+        Self::positive(input, 0).then(|| get_int_range(Some(1), None))
+    }
+
+    /// UnionType::getConstantScalarValues is all-or-nothing, even for benevolent unions. Unlike
+    /// getFiniteTypes, it does not enumerate bounded integer ranges. Keep strings as bytes until counting.
+    fn lengths(input: &TUnion, template_depth: usize) -> Option<Vec<i64>> {
+        // TemplateUnionType inherits its concrete members' extraction, not scalar-template widening.
+        let depth = if input.types.len() > 1 {
+            0
+        } else {
+            template_depth
+        };
+        let mut lengths = Vec::new();
+        for atomic in input.types.iter() {
+            let length = match atomic {
+                TAtomic::GenericParameter(parameter) => {
+                    lengths.extend(Self::lengths(&parameter.constraint, depth + 1)?);
+                    continue;
+                }
+                TAtomic::Scalar(TScalar::Bool(boolean)) => {
+                    if depth > 0 || boolean.is_general() {
+                        // TemplateBooleanType inherits BooleanType even when its bound is true or false.
+                        lengths.extend([0, 1]);
+                        continue;
+                    }
+                    i64::from(boolean.is_true())
+                }
+                TAtomic::Null => 0,
+                TAtomic::Scalar(TScalar::Integer(integer)) if depth <= 1 => {
+                    integer.get_literal_value()?.to_string().len() as i64
+                }
+                TAtomic::Scalar(TScalar::Float(float)) if depth == 0 => {
+                    pun_tokens::php_compat::float_to_string(float.get_literal_value()?).len() as i64
+                }
+                TAtomic::Scalar(TScalar::String(string)) if depth <= 1 => {
+                    string.get_known_literal_value()?.len() as i64
+                }
+                TAtomic::Scalar(TScalar::ClassLikeString(string)) if depth <= 1 => {
+                    string.literal_value()?.as_bytes().len() as i64
+                }
+                _ => return None,
+            };
+            lengths.push(length);
+        }
+        Some(lengths)
+    }
+
+    /// TemplateTypeFactory's concrete parent owns queries: a template of a template constant string is
+    /// TemplateStringType (not the constant subclass), and a constant-float bound becomes TemplateMixedType.
+    fn positive(input: &TUnion, template_depth: usize) -> bool {
+        let depth = if input.types.len() > 1 {
+            0
+        } else {
+            template_depth
+        };
+        input.types.iter().all(|atomic| match atomic {
+            TAtomic::GenericParameter(parameter) => {
+                Self::positive(&parameter.constraint, depth + 1)
+            }
+            TAtomic::Scalar(TScalar::Integer(_) | TScalar::Numeric) => true,
+            TAtomic::Scalar(TScalar::Float(float)) => depth == 0 || float.is_general(),
+            TAtomic::Scalar(TScalar::String(string)) => {
+                string.is_non_empty() && (depth <= 1 || !string.is_known_literal())
+            }
+            TAtomic::Scalar(TScalar::ClassLikeString(string)) => {
+                depth == 0 || (depth == 1 && string.is_literal())
+            }
+            TAtomic::Never => depth == 0,
+            _ => false,
+        })
     }
 }
 

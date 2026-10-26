@@ -1,0 +1,6 @@
+parameters:
+    level: 0
+    tmpDir: ../../../../../target/oracle-strlen
+    paths: [values.php, domains.php, templates.php, flow.php]
+    parallel:
+        maximumNumberOfProcesses: 1
