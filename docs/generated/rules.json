@@ -9084,7 +9084,7 @@
         "ChainExpectCallsRector",
         "Pest\\Rector\\Rules\\ChainExpectCallsRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/pest/prefer-comparison-matchers",

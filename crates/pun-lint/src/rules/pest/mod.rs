@@ -14,6 +14,7 @@ mod no_invalid_repeat;
 mod no_negated_boolean_matcher;
 mod no_redundant_type_expectation;
 mod no_static_test_closure;
+mod prefer_chained_expect;
 mod prefer_comparison_matchers;
 mod prefer_defer;
 mod prefer_each_modifier;
@@ -68,6 +69,7 @@ pub use no_invalid_repeat::NoInvalidRepeat;
 pub use no_negated_boolean_matcher::NoNegatedBooleanMatcher;
 pub use no_redundant_type_expectation::NoRedundantTypeExpectation;
 pub use no_static_test_closure::NoStaticTestClosure;
+pub use prefer_chained_expect::PreferChainedExpect;
 pub use prefer_comparison_matchers::PreferComparisonMatchers;
 pub use prefer_defer::PreferDefer;
 pub use prefer_each_modifier::PreferEachModifier;
@@ -139,6 +141,7 @@ pub(crate) fn all() -> Vec<Box<dyn Rule>> {
         Box::new(NoNegatedBooleanMatcher),
         Box::new(NoRedundantTypeExpectation),
         Box::new(NoStaticTestClosure),
+        Box::new(PreferChainedExpect::default()),
         Box::new(PreferComparisonMatchers),
         Box::new(PreferDefer),
         Box::new(PreferEachModifier),
@@ -1506,13 +1509,22 @@ pub(crate) const STATEMENT_LISTS: &[NodeKind] = &[
     NodeKind::DeclareColonDelimitedBody,
 ];
 
-/// The list `node` holds, as php-parser's `stmts`.
+/// The list `node` holds, as php-parser's `stmts`: PHP's `?>` takes the newline after it, which Mago keeps as
+/// inline HTML.
 pub(crate) fn statement_list<'ast, 'arena>(
     ctx: &Context<'_>,
     node: Node<'ast, 'arena>,
 ) -> super::php_parser::List<'ast, 'arena> {
     let tokens = super::php_parser::tokens(ctx.source);
-    super::php_parser::holder_list(ctx.source, &tokens, node)
+    let mut list = super::php_parser::holder_list(ctx.source, &tokens, node);
+    list.stmts.retain(|s| match s {
+        Statement::Inline(inline) => {
+            !(matches!(inline.value, b"\n" | b"\r\n")
+                && ctx.source[..node_span(inline).start].ends_with("?>"))
+        }
+        _ => true,
+    });
+    list
 }
 
 /// `$stmt->expr` of an expression statement.
