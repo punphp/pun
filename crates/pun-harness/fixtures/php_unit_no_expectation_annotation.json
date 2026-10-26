@@ -1,0 +1,251 @@
+{
+    "fixer": "php_unit_no_expectation_annotation",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\PhpUnit\\PhpUnitNoExpectationAnnotationFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/PhpUnit/PhpUnitNoExpectationAnnotationFixerTest.php",
+    "case_count": 24,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": []
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\PhpUnit\\PhpUnitNoExpectationAnnotationFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null, array $configuration = []): void\n    {\n        $this->fixer->configure($configuration);\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": "empty exception message",
+                    "args": [
+                        "<?php\n    final class MyTest extends \\PHPUnit_Framework_TestCase\n    {\n        /**\n         */\n        public function testFnc()\n        {\n            $this->setExpectedException(\\FooException::class, '');\n\n            aaa();\n        }\n    }",
+                        "<?php\n    final class MyTest extends \\PHPUnit_Framework_TestCase\n    {\n        /**\n         * @expectedException FooException\n         * @expectedExceptionMessage\n         */\n        public function testFnc()\n        {\n            aaa();\n        }\n    }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "expecting exception",
+                    "args": [
+                        "<?php\n    final class MyTest extends \\PHPUnit_Framework_TestCase\n    {\n        /**\n         */\n        public function testFnc()\n        {\n            $this->setExpectedException(\\FooException::class);\n\n            aaa();\n        }\n    }",
+                        "<?php\n    final class MyTest extends \\PHPUnit_Framework_TestCase\n    {\n        /**\n         * @expectedException FooException\n         */\n        public function testFnc()\n        {\n            aaa();\n        }\n    }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "expecting rooted exception",
+                    "args": [
+                        "<?php\n    final class MyTest extends \\PHPUnit_Framework_TestCase\n    {\n        /**\n         */\n        public function testFnc()\n        {\n            $this->setExpectedException(\\FooException::class);\n\n            aaa();\n        }\n    }",
+                        "<?php\n    final class MyTest extends \\PHPUnit_Framework_TestCase\n    {\n        /**\n         * @expectedException \\FooException\n         */\n        public function testFnc()\n        {\n            aaa();\n        }\n    }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "expecting exception with msg",
+                    "args": [
+                        "<?php\n    final class MyTest extends \\PHPUnit_Framework_TestCase\n    {\n        /**\n         */\n        public function testFnc()\n        {\n            $this->setExpectedException(\\FooException::class, 'foo@bar');\n\n            aaa();\n        }\n    }",
+                        "<?php\n    final class MyTest extends \\PHPUnit_Framework_TestCase\n    {\n        /**\n         * @expectedException FooException\n         * @expectedExceptionMessage foo@bar\n         */\n        public function testFnc()\n        {\n            aaa();\n        }\n    }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "expecting exception with code",
+                    "args": [
+                        "<?php\n    final class MyTest extends \\PHPUnit_Framework_TestCase\n    {\n        /**\n         */\n        public function testFnc()\n        {\n            $this->setExpectedException(\\FooException::class, null, 123);\n\n            aaa();\n        }\n    }",
+                        "<?php\n    final class MyTest extends \\PHPUnit_Framework_TestCase\n    {\n        /**\n         * @expectedException FooException\n         * @expectedExceptionCode 123\n         */\n        public function testFnc()\n        {\n            aaa();\n        }\n    }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "expecting exception with msg and code",
+                    "args": [
+                        "<?php\n    final class MyTest extends \\PHPUnit_Framework_TestCase\n    {\n        /**\n         */\n        public function testFnc()\n        {\n            $this->setExpectedException(\\FooException::class, 'foo', 123);\n\n            aaa();\n        }\n    }",
+                        "<?php\n    final class MyTest extends \\PHPUnit_Framework_TestCase\n    {\n        /**\n         * @expectedException FooException\n         * @expectedExceptionMessage foo\n         * @expectedExceptionCode 123\n         */\n        public function testFnc()\n        {\n            aaa();\n        }\n    }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "expecting exception with msg regex [but too low target]",
+                    "args": [
+                        "<?php\n    final class MyTest extends \\PHPUnit_Framework_TestCase\n    {\n        /**\n         * @expectedException FooException\n         * @expectedExceptionMessageRegExp /foo.*$/\n         */\n        public function testFnc()\n        {\n            aaa();\n        }\n    }",
+                        null,
+                        {
+                            "target": "3.2"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "expecting exception with msg regex",
+                    "args": [
+                        "<?php\n    final class MyTest extends \\PHPUnit_Framework_TestCase\n    {\n        /**\n         */\n        public function testFnc()\n        {\n            $this->setExpectedExceptionRegExp(\\FooException::class, '/foo.*$/');\n\n            aaa();\n        }\n    }",
+                        "<?php\n    final class MyTest extends \\PHPUnit_Framework_TestCase\n    {\n        /**\n         * @expectedException FooException\n         * @expectedExceptionMessageRegExp /foo.*$/\n         */\n        public function testFnc()\n        {\n            aaa();\n        }\n    }",
+                        {
+                            "target": "4.3"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "use_class_const=false",
+                    "args": [
+                        "<?php\n    final class MyTest extends \\PHPUnit_Framework_TestCase\n    {\n        /**\n         */\n        public function testFnc()\n        {\n            $this->setExpectedException('FooException');\n\n            aaa();\n        }\n    }",
+                        "<?php\n    final class MyTest extends \\PHPUnit_Framework_TestCase\n    {\n        /**\n         * @expectedException FooException\n         */\n        public function testFnc()\n        {\n            aaa();\n        }\n    }",
+                        {
+                            "use_class_const": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "keep rest of docblock",
+                    "args": [
+                        "<?php\n    final class MyTest extends \\PHPUnit_Framework_TestCase\n    {\n        /**\n         * Summary.\n         *\n         * @param int $param\n         * @return void\n         */\n        public function testFnc($param)\n        {\n            $this->setExpectedException(\\FooException::class);\n\n            aaa();\n        }\n    }",
+                        "<?php\n    final class MyTest extends \\PHPUnit_Framework_TestCase\n    {\n        /**\n         * Summary.\n         *\n         * @param int $param\n         * @expectedException FooException\n         * @return void\n         */\n        public function testFnc($param)\n        {\n            aaa();\n        }\n    }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "fix method without visibility",
+                    "args": [
+                        "<?php\n    final class MyTest extends \\PHPUnit_Framework_TestCase\n    {\n        /**\n         */\n        function testFnc($param)\n        {\n            $this->setExpectedException(\\FooException::class);\n\n            aaa();\n        }\n    }",
+                        "<?php\n    final class MyTest extends \\PHPUnit_Framework_TestCase\n    {\n        /**\n         * @expectedException FooException\n         */\n        function testFnc($param)\n        {\n            aaa();\n        }\n    }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "fix final method",
+                    "args": [
+                        "<?php\n    final class MyTest extends \\PHPUnit_Framework_TestCase\n    {\n        /**\n         */\n        final function testFnc($param)\n        {\n            $this->setExpectedException(\\FooException::class);\n\n            aaa();\n        }\n    }",
+                        "<?php\n    final class MyTest extends \\PHPUnit_Framework_TestCase\n    {\n        /**\n         * @expectedException FooException\n         */\n        final function testFnc($param)\n        {\n            aaa();\n        }\n    }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "ignore when no docblock",
+                    "args": [
+                        "<?php\n    final class MyTest extends \\PHPUnit_Framework_TestCase\n    {\n        final function testFoo($param)\n        {\n            aaa();\n        }\n\n        /**\n         */\n        final function testFnc($param)\n        {\n            $this->setExpectedException(\\FooException::class);\n\n            aaa();\n        }\n    }",
+                        "<?php\n    final class MyTest extends \\PHPUnit_Framework_TestCase\n    {\n        final function testFoo($param)\n        {\n            aaa();\n        }\n\n        /**\n         * @expectedException FooException\n         */\n        final function testFnc($param)\n        {\n            aaa();\n        }\n    }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "valid docblock but for property, not method",
+                    "args": [
+                        "<?php\n    final class MyTest extends \\PHPUnit_Framework_TestCase\n    {\n        /**\n         * @expectedException FooException\n         * @expectedExceptionCode 123\n         */\n         public $foo;\n\n         public function bar()\n         {\n             /**\n              * @expectedException FooException\n              * @expectedExceptionCode 123\n              */\n             $baz = 1;\n\n             /**\n              * @expectedException FooException\n              * @expectedExceptionCode 123\n              */\n             while (false) {}\n         }\n    }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "respect ' and \" in expected msg",
+                    "args": [
+                        "<?php\n    final class MyTest extends \\PHPUnit_Framework_TestCase\n    {\n        /**\n         * Summary.\n         *\n         */\n        public function testFnc($param)\n        {\n            $this->setExpectedException(\\FooException::class, 'Foo \\' bar \" baz');\n\n            aaa();\n        }\n    }",
+                        "<?php\n    final class MyTest extends \\PHPUnit_Framework_TestCase\n    {\n        /**\n         * Summary.\n         *\n         * @expectedException FooException\n         * @expectedExceptionMessage Foo ' bar \" baz\n         */\n        public function testFnc($param)\n        {\n            aaa();\n        }\n    }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "special \\ handling",
+                    "args": [
+                        "    <?php\n    final class MyTest extends \\PHPUnit_Framework_TestCase\n    {\n        /**\n         */\n        public function testElementNonExistentOne()\n        {\n            $this->setExpectedException(\\Cake\\View\\Exception\\MissingElementException::class, 'A backslash at the end \\\\');\n\n            $this->View->element('non_existent_element');\n        }\n\n        /**\n         */\n        public function testElementNonExistentTwo()\n        {\n            $this->setExpectedExceptionRegExp(\\Cake\\View\\Exception\\MissingElementException::class, '#^Element file \"Element[\\\\\\\\/]non_existent_element\\\\.ctp\" is missing\\\\.$#');\n\n            $this->View->element('non_existent_element');\n        }\n    }",
+                        "    <?php\n    final class MyTest extends \\PHPUnit_Framework_TestCase\n    {\n        /**\n         * @expectedException \\Cake\\View\\Exception\\MissingElementException\n         * @expectedExceptionMessage A backslash at the end \\\n         */\n        public function testElementNonExistentOne()\n        {\n            $this->View->element('non_existent_element');\n        }\n\n        /**\n         * @expectedException \\Cake\\View\\Exception\\MissingElementException\n         * @expectedExceptionMessageRegExp #^Element file \"Element[\\\\/]non_existent_element\\.ctp\" is missing\\.$#\n         */\n        public function testElementNonExistentTwo()\n        {\n            $this->View->element('non_existent_element');\n        }\n    }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "message on newline",
+                    "args": [
+                        "    <?php\n    final class MyTest extends \\PHPUnit_Framework_TestCase\n    {\n        /**\n         */\n        public function testMessageOnMultilines()\n        {\n            $this->setExpectedException(\\RuntimeException::class, 'Message on multilines AAA €');\n\n            aaa();\n        }\n\n        /**\n         * @foo\n         */\n        public function testMessageOnMultilinesWithAnotherTag()\n        {\n            $this->setExpectedException(\\RuntimeException::class, 'Message on multilines BBB è');\n\n            bbb();\n        }\n\n        /**\n         *\n         * @foo\n         */\n        public function testMessageOnMultilinesWithAnotherSpaceAndTag()\n        {\n            $this->setExpectedException(\\RuntimeException::class, 'Message on multilines CCC ✔');\n\n            ccc();\n        }\n    }",
+                        "    <?php\n    final class MyTest extends \\PHPUnit_Framework_TestCase\n    {\n        /**\n         * @expectedException \\RuntimeException\n         * @expectedExceptionMessage Message\n         *                           on\n         *                           multilines AAA\n         *                           €\n         */\n        public function testMessageOnMultilines()\n        {\n            aaa();\n        }\n\n        /**\n         * @expectedException \\RuntimeException\n         * @expectedExceptionMessage Message\n         *                           on\n         *                           multilines BBB\n         *                           è\n         * @foo\n         */\n        public function testMessageOnMultilinesWithAnotherTag()\n        {\n            bbb();\n        }\n\n        /**\n         * @expectedException \\RuntimeException\n         * @expectedExceptionMessage Message\n         *                           on\n         *                           multilines CCC\n         *                           ✔\n         *\n         * @foo\n         */\n        public function testMessageOnMultilinesWithAnotherSpaceAndTag()\n        {\n            ccc();\n        }\n    }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "annotation with double @",
+                    "args": [
+                        "<?php\n    final class MyTest extends \\PHPUnit_Framework_TestCase\n    {\n        /**\n         * Double \"@\" is/was below\n         */\n        public function testFnc()\n        {\n            $this->setExpectedException(\\FooException::class);\n\n            aaa();\n        }\n    }",
+                        "<?php\n    final class MyTest extends \\PHPUnit_Framework_TestCase\n    {\n        /**\n         * Double \"@\" is/was below\n         * @@expectedException FooException\n         */\n        public function testFnc()\n        {\n            aaa();\n        }\n    }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "annotation with text before @",
+                    "args": [
+                        "<?php\n    final class MyTest extends \\PHPUnit_Framework_TestCase\n    {\n        /**\n         * We are providing invalid input, for that we @expectedException FooException\n         */\n        public function testFnc()\n        {\n            aaa();\n        }\n    }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php\n    abstract class MyTest extends \\PHPUnit_Framework_TestCase\n    {\n        /**\n         * @expectedException FooException\n         * @expectedExceptionMessage\n         */\n        abstract public function testFnc();\n    }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "expecting exception in single line comment",
+                    "args": [
+                        "<?php\n    final class MyTest extends \\PHPUnit_Framework_TestCase\n    {\n        /** */\n        public function testFnc()\n        {\n            $this->setExpectedException(\\FooException::class);\n\n            aaa();\n        }\n    }",
+                        "<?php\n    final class MyTest extends \\PHPUnit_Framework_TestCase\n    {\n        /** @expectedException FooException */\n        public function testFnc()\n        {\n            aaa();\n        }\n    }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "expecting exception with message below",
+                    "args": [
+                        "<?php\n    class MyTest extends TestCase\n    {\n        /**\n         */\n        public function testSomething()\n        {\n            $this->setExpectedException(\\Foo\\Bar::class);\n\n            $this->initialize();\n        }\n    }",
+                        "<?php\n    class MyTest extends TestCase\n    {\n        /**\n         * @expectedException Foo\\Bar\n         *\n         * Testing stuff.\n         */\n        public function testSomething()\n        {\n            $this->initialize();\n        }\n    }"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testWithWhitespacesConfig",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\PhpUnit\\PhpUnitNoExpectationAnnotationFixerTest",
+            "body": "    public function testWithWhitespacesConfig(string $expected, ?string $input = null): void\n    {\n        $expected = str_replace(['    ', \"\\n\"], [\"\\t\", \"\\r\\n\"], $expected);\n        if (null !== $input) {\n            $input = str_replace(['    ', \"\\n\"], [\"\\t\", \"\\r\\n\"], $input);\n        }\n\n        $this->fixer->setWhitespacesConfig(new WhitespacesFixerConfig(\"\\t\", \"\\r\\n\"));\n\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideWithWhitespacesConfigCases",
+                    "key": 0,
+                    "args": [
+                        "<?php\n    final class MyTest extends \\PHPUnit_Framework_TestCase\n    {\n        /**\n         */\n        public function testFnc()\n        {\n            $this->setExpectedException(\\FooException::class, 'foo', 123);\n\n            aaa();\n        }\n    }",
+                        "<?php\n    final class MyTest extends \\PHPUnit_Framework_TestCase\n    {\n        /**\n         * @expectedException FooException\n         * @expectedExceptionMessage foo\n         * @expectedExceptionCode 123\n         */\n        public function testFnc()\n        {\n            aaa();\n        }\n    }"
+                    ]
+                },
+                {
+                    "provider": "provideWithWhitespacesConfigCases",
+                    "key": 1,
+                    "args": [
+                        "<?php\nfinal class MyTest extends \\PHPUnit_Framework_TestCase\n{\n/**\n*/\npublic function testFnc()\n{\n    $this->setExpectedException(\\FooException::class, 'foo', 123);\n\naaa();\n}\n}",
+                        "<?php\nfinal class MyTest extends \\PHPUnit_Framework_TestCase\n{\n/**\n* @expectedException FooException\n* @expectedExceptionMessage foo\n* @expectedExceptionCode 123\n*/\npublic function testFnc()\n{\naaa();\n}\n}"
+                    ]
+                }
+            ]
+        }
+    ]
+}
