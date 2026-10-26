@@ -361,3 +361,13 @@ fn remove_redundant_literal_type_expectation() {
 fn use_each_modifier() {
     check(PreferEachModifier, "UseEachModifierRector");
 }
+
+#[test]
+fn convert_expect_exception_to_throw() {
+    check(NoExpectException, "ConvertExpectExceptionToThrowRector");
+}
+
+#[test]
+fn use_to_throw() {
+    check(PreferToThrow, "UseToThrowRector");
+}
