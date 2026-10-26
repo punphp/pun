@@ -1821,7 +1821,7 @@
         "rules": [
           "lint/phpunit/require-data-provider-order"
         ],
-        "note": "Same. Options: renamed for TOML: [options.\"lint/phpunit/require-data-provider-order\"]. Planned: not ported yet.",
+        "note": "Same. Options: renamed for TOML: [options.\"lint/phpunit/require-data-provider-order\"].",
         "unsupported": false
       },
       {
@@ -4807,7 +4807,7 @@
         "rules": [
           "lint/phpunit/require-data-provider-order"
         ],
-        "note": "Same. Options: renamed for TOML: [options.\"lint/phpunit/require-data-provider-order\"]. Planned: not ported yet.",
+        "note": "Same. Options: renamed for TOML: [options.\"lint/phpunit/require-data-provider-order\"].",
         "unsupported": false
       },
       {

@@ -12731,7 +12731,7 @@
       "upstream": [
         "php_unit_data_provider_method_order"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/phpunit/require-exact-test-argument-type",

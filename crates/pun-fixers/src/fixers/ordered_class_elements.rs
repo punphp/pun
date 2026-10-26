@@ -146,15 +146,15 @@ pub(crate) fn fixer() -> Box<dyn Fixer> {
 }
 
 #[derive(Clone, PartialEq, Debug)]
-struct Element {
+pub(crate) struct Element {
     start: usize,
-    end: usize,
+    pub(crate) end: usize,
     visibility: &'static str,
     abstract_: bool,
     static_: bool,
     readonly: bool,
-    type_: &'static str,
-    name: Vec<u8>,
+    pub(crate) type_: &'static str,
+    pub(crate) name: Vec<u8>,
 }
 
 impl Fixer for OrderedClassElementsFixer {
@@ -231,7 +231,7 @@ impl Fixer for OrderedClassElementsFixer {
     }
 }
 
-fn get_elements(tokens: &Tokens, start: usize) -> Vec<Element> {
+pub(crate) fn get_elements(tokens: &Tokens, start: usize) -> Vec<Element> {
     let mut start_index = start + 1;
     let mut elements = vec![];
     loop {
@@ -463,7 +463,12 @@ impl OrderedClassElementsFixer {
     }
 }
 
-fn sort_tokens(tokens: &mut Tokens, start_index: usize, end_index: usize, elements: &[Element]) {
+pub(crate) fn sort_tokens(
+    tokens: &mut Tokens,
+    start_index: usize,
+    end_index: usize,
+    elements: &[Element],
+) {
     let mut replace = vec![];
     for e in elements {
         replace.extend_from_slice(&tokens.as_slice()[e.start..=e.end]);
