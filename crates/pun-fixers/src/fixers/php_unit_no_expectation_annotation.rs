@@ -7,7 +7,7 @@ use crate::analyzers::preg::Preg;
 use crate::analyzers::whitespaces_analyzer::WhitespacesAnalyzer;
 use pun_format::{Fixer, WhitespacesFixerConfig};
 use pun_tokens::Kind::*;
-use pun_tokens::php_compat::var_export_string;
+use pun_tokens::php_compat::{ltrim_chars, rtrim, trim, var_export_string};
 use pun_tokens::{Token, Tokens, TokensAnalyzer};
 use serde_json::Value;
 use std::collections::HashMap;
@@ -163,15 +163,11 @@ impl PhpUnitNoExpectationAnnotationFixer {
     fn annotations_to_param_list(&self, annotations: &HashMap<Vec<u8>, Vec<u8>>) -> Vec<Vec<u8>> {
         let mut params = Vec::new();
         let expected = &annotations[b"expectedException".as_slice()];
-        let mut exception_class = &expected[expected.iter().take_while(|&&b| b == b'\\').count()..];
+        let mut exception_class = ltrim_chars(expected, b"\\");
         if let Some(star) = exception_class.iter().position(|&b| b == b'*') {
             exception_class = &exception_class[..star];
         }
-        let exception_class = trim_end(exception_class, PHP_TRIM);
-        let exception_class = &exception_class[exception_class
-            .iter()
-            .take_while(|b| PHP_TRIM.contains(b))
-            .count()..];
+        let exception_class = trim(exception_class);
         if self.use_class_const {
             params.push([b"\\", exception_class, b"::class"].concat());
         } else {
@@ -204,17 +200,5 @@ fn extract_content_from_annotation(annotation: &Annotation) -> Vec<u8> {
     if Preg::r#match(r"/\R/u", &content) {
         content = Preg::replace(r"/\s*\R+\s*\*\s*/u", " ", &content);
     }
-    trim_end(&content, PHP_TRIM).to_vec()
-}
-
-/// The characters PHP's `trim` and `rtrim` strip by default.
-const PHP_TRIM: &[u8] = b" \t\n\r\0\x0B";
-
-/// PHP's `rtrim($s, $chars)`.
-fn trim_end<'a>(s: &'a [u8], chars: &[u8]) -> &'a [u8] {
-    let end = s
-        .iter()
-        .rposition(|b| !chars.contains(b))
-        .map_or(0, |p| p + 1);
-    &s[..end]
+    rtrim(&content).to_vec()
 }

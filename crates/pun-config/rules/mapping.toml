@@ -740,7 +740,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "phpunit/require-static-data-provider" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "Make PHPUnit data providers static." }
 "phpunit/require-strict-types-in-tests" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Add `declare(strict_types=1)` to PHPUnit test class file" }
 "phpunit/require-string-assert-argument" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Cast 2nd argument in assertStringContainsString() to a string if not yet" }
-"phpunit/require-test-annotation-style" = { fix = "unsafe", sets = ["code-quality"], ported = false, status = "decided", summary = "Mark tests consistently: a `test` prefix or a @test annotation." }
+"phpunit/require-test-annotation-style" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "Mark tests consistently: a `test` prefix or a @test annotation." }
 "refactor/add-override-attribute" = { fix = "unsafe", ported = false, status = "decided", summary = "Add #[Override] to methods and properties that override a parent member." }
 "refactor/no-negated-condition" = { fix = "unsafe", sets = ["code-quality"], ported = true, origin = "mago", status = "decided", summary = "Flip a ternary whose condition is negated: drop the `!` (or use `===` / `==`) and swap the branches." }
 "refactor/prefer-attribute-over-annotation" = { fix = "unsafe", ported = false, status = "decided", summary = "Replace configured PHPDoc annotations (including nested ones) with attributes." }
