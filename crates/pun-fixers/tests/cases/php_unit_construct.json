@@ -1,0 +1,17 @@
+[
+    {
+        "fixer": "php_unit_construct",
+        "input": "<?php\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    public function testA() {\n        $this->assertSame(TRUE, $a);\n        $this->assertNotEquals(Null , $b, 'msg');\n        $this->assertSame(true === $x, $a);\n        $this->assertSame($y, $a);\n        $foo->assertSame(false, $a);\n        $this->assertSame(false, $a);\n        self::assertNotSame(false,$c);\n    }\n}\n",
+        "expected": "<?php\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    public function testA() {\n        $this->assertTrue($a);\n        $this->assertNotNull($b, 'msg');\n        $this->assertSame(true === $x, $a);\n        $this->assertSame($y, $a);\n        $foo->assertSame(false, $a);\n        $this->assertSame(false, $a);\n        self::assertNotFalse($c);\n    }\n}\n"
+    },
+    {
+        "fixer": "php_unit_construct",
+        "config": {
+            "assertions": [
+                "assertNotSame"
+            ]
+        },
+        "input": "<?php\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    public function testA() {\n        $this->assertSame(TRUE, $a);\n        $this->assertNotEquals(Null , $b, 'msg');\n        $this->assertSame(true === $x, $a);\n        $this->assertSame($y, $a);\n        $foo->assertSame(false, $a);\n        $this->assertSame(false, $a);\n        self::assertNotSame(false,$c);\n    }\n}\n",
+        "expected": "<?php\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    public function testA() {\n        $this->assertSame(TRUE, $a);\n        $this->assertNotEquals(Null , $b, 'msg');\n        $this->assertSame(true === $x, $a);\n        $this->assertSame($y, $a);\n        $foo->assertSame(false, $a);\n        $this->assertSame(false, $a);\n        self::assertNotFalse($c);\n    }\n}\n"
+    }
+]

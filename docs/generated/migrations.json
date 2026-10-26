@@ -1811,7 +1811,7 @@
         "rules": [
           "lint/phpunit/prefer-specific-assertions"
         ],
-        "note": "Same. Options: renamed for TOML: [options.\"lint/phpunit/prefer-specific-assertions\"]. Planned: not ported yet.",
+        "note": "Same. Options: renamed for TOML: [options.\"lint/phpunit/prefer-specific-assertions\"].",
         "unsupported": false
       },
       {
@@ -4797,7 +4797,7 @@
         "rules": [
           "lint/phpunit/prefer-specific-assertions"
         ],
-        "note": "Same. Options: renamed for TOML: [options.\"lint/phpunit/prefer-specific-assertions\"]. Planned: not ported yet.",
+        "note": "Same. Options: renamed for TOML: [options.\"lint/phpunit/prefer-specific-assertions\"].",
         "unsupported": false
       },
       {
@@ -26667,7 +26667,7 @@
         "rules": [
           "lint/phpunit/prefer-specific-assertions"
         ],
-        "note": "Same. Options: none (Mago options do not carry; Pun uses the CS-Fixer rule options). Planned: not ported yet.",
+        "note": "Same. Options: none (Mago options do not carry; Pun uses the CS-Fixer rule options).",
         "unsupported": false
       },
       {

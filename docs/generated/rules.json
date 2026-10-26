@@ -12391,7 +12391,7 @@
         "php_unit_construct",
         "use-specific-assertions"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/phpunit/prefer-specific-true-false-assertion",

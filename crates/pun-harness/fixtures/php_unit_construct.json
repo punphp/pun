@@ -1,0 +1,681 @@
+{
+    "fixer": "php_unit_construct",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\PhpUnit\\PhpUnitConstructFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/PhpUnit/PhpUnitConstructFixerTest.php",
+    "case_count": 79,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "?array",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\PhpUnit\\PhpUnitConstructFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null, ?array $configuration = null): void\n    {\n        if (null !== $configuration) {\n            $this->fixer->configure($configuration);\n            $this->doTest($expected, $input);\n        } else {\n            $this->doTest($expected, $input);\n\n            foreach (['assertSame', 'assertEquals', 'assertNotEquals', 'assertNotSame'] as $method) {\n                $this->fixer->configure(['assertions' => [$method]]);\n                $this->doTest(\n                    $expected,\n                    null !== $input && str_contains($input, $method) ? $input : null,\n                );\n            }\n        }\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $sth->assertSame(true, $foo);\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertSame($b, null);\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertNull(/*bar*/ $a);\n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertSame(null /*foo*/, /*bar*/ $a);\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertSame(null === $eventException ? $exception : $eventException, $event->getException());\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertSame(null /*comment*/ === $eventException ? $exception : $eventException, $event->getException());\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        \n    $this->assertTrue(\n        $a,\n        \"foo\" . $bar\n    );\n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        \n    $this->assertSame(\n        true,\n        $a,\n        \"foo\" . $bar\n    );\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        \n    $this->assertTrue(#\n        #\n        $a,#\n        \"foo\" . $bar#\n    );\n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        \n    $this->assertSame(#\n        true,#\n        $a,#\n        \"foo\" . $bar#\n    );\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 7,
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertSame(\"a\", $a); $this->assertTrue($b);\n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertSame(\"a\", $a); $this->assertSame(true, $b);\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 8,
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertSame(true || $a, $b); $this->assertTrue($c);\n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertSame(true || $a, $b); $this->assertSame(true, $c);\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 9,
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertFalse($foo);\n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertEquals(FALSE, $foo);\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 10,
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertTrue($foo);\n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertEquals(TruE, $foo);\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 11,
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertNull($foo);\n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertEquals(NULL, $foo);\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "not in a class",
+                    "args": [
+                        "<?php $this->assertEquals(NULL, $foo);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "not phpunit class",
+                    "args": [
+                        "<?php class Foo { public function testFoo(){ $this->assertEquals(NULL, $foo); }}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "multiple candidates in multiple classes",
+                    "args": [
+                        "<?php\n                        class FooTest1 extends PHPUnit_Framework_TestCase { public function testFoo(){ $this->assertNull($foo); }}\n                        class FooTest2 extends PHPUnit_Framework_TestCase { public function testFoo(){ $this->assertNull($foo); }}\n                        class FooTest3 extends PHPUnit_Framework_TestCase { public function testFoo(){ $this->assertNull($foo); }}\n                    ",
+                        "<?php\n                        class FooTest1 extends PHPUnit_Framework_TestCase { public function testFoo(){ $this->assertEquals(NULL, $foo); }}\n                        class FooTest2 extends PHPUnit_Framework_TestCase { public function testFoo(){ $this->assertEquals(NULL, $foo); }}\n                        class FooTest3 extends PHPUnit_Framework_TestCase { public function testFoo(){ $this->assertEquals(NULL, $foo); }}\n                    "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 12,
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertTrue($a); //Same true\n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertSame(true, $a); //Same true\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 13,
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertNotTrue($a); //NotSame true\n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertNotSame(true, $a); //NotSame true\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 14,
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertTrue($a); //Equals true\n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertEquals(true, $a); //Equals true\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 15,
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertNotTrue($a); //NotEquals true\n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertNotEquals(true, $a); //NotEquals true\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 16,
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertFalse($a); //Same false\n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertSame(false, $a); //Same false\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 17,
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertNotFalse($a); //NotSame false\n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertNotSame(false, $a); //NotSame false\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 18,
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertFalse($a); //Equals false\n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertEquals(false, $a); //Equals false\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 19,
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertNotFalse($a); //NotEquals false\n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertNotEquals(false, $a); //NotEquals false\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 20,
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertNull($a); //Same null\n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertSame(null, $a); //Same null\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 21,
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertNotNull($a); //NotSame null\n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertNotSame(null, $a); //NotSame null\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 22,
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertNull($a); //Equals null\n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertEquals(null, $a); //Equals null\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 23,
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertNotNull($a); //NotEquals null\n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertNotEquals(null, $a); //NotEquals null\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 24,
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertTrue($a, \"Same\", \"true\");\n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertSame(true, $a, \"Same\", \"true\");\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 25,
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertNotTrue($a, \"NotSame\", \"true\");\n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertNotSame(true, $a, \"NotSame\", \"true\");\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 26,
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertTrue($a, \"Equals\", \"true\");\n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertEquals(true, $a, \"Equals\", \"true\");\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 27,
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertNotTrue($a, \"NotEquals\", \"true\");\n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertNotEquals(true, $a, \"NotEquals\", \"true\");\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 28,
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertFalse($a, \"Same\", \"false\");\n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertSame(false, $a, \"Same\", \"false\");\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 29,
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertNotFalse($a, \"NotSame\", \"false\");\n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertNotSame(false, $a, \"NotSame\", \"false\");\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 30,
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertFalse($a, \"Equals\", \"false\");\n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertEquals(false, $a, \"Equals\", \"false\");\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 31,
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertNotFalse($a, \"NotEquals\", \"false\");\n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertNotEquals(false, $a, \"NotEquals\", \"false\");\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 32,
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertNull($a, \"Same\", \"null\");\n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertSame(null, $a, \"Same\", \"null\");\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 33,
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertNotNull($a, \"NotSame\", \"null\");\n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertNotSame(null, $a, \"NotSame\", \"null\");\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 34,
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertNull($a, \"Equals\", \"null\");\n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertEquals(null, $a, \"Equals\", \"null\");\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 35,
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertNotNull($a, \"NotEquals\", \"null\");\n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertNotEquals(null, $a, \"NotEquals\", \"null\");\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 36,
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        static::assertTrue($a); //Same true\n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        static::assertSame(true, $a); //Same true\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 37,
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        static::assertNotTrue($a); //NotSame true\n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        static::assertNotSame(true, $a); //NotSame true\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 38,
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        static::assertTrue($a); //Equals true\n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        static::assertEquals(true, $a); //Equals true\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 39,
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        static::assertNotTrue($a); //NotEquals true\n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        static::assertNotEquals(true, $a); //NotEquals true\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 40,
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        static::assertFalse($a); //Same false\n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        static::assertSame(false, $a); //Same false\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 41,
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        static::assertNotFalse($a); //NotSame false\n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        static::assertNotSame(false, $a); //NotSame false\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 42,
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        static::assertFalse($a); //Equals false\n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        static::assertEquals(false, $a); //Equals false\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 43,
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        static::assertNotFalse($a); //NotEquals false\n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        static::assertNotEquals(false, $a); //NotEquals false\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 44,
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        static::assertNull($a); //Same null\n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        static::assertSame(null, $a); //Same null\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 45,
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        static::assertNotNull($a); //NotSame null\n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        static::assertNotSame(null, $a); //NotSame null\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 46,
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        static::assertNull($a); //Equals null\n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        static::assertEquals(null, $a); //Equals null\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 47,
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        static::assertNotNull($a); //NotEquals null\n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        static::assertNotEquals(null, $a); //NotEquals null\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 48,
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        STATIC::assertTrue($a); //Same true\n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        STATIC::assertSame(true, $a); //Same true\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 49,
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        STATIC::assertNotTrue($a); //NotSame true\n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        STATIC::assertNotSame(true, $a); //NotSame true\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 50,
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        STATIC::assertTrue($a); //Equals true\n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        STATIC::assertEquals(true, $a); //Equals true\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 51,
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        STATIC::assertNotTrue($a); //NotEquals true\n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        STATIC::assertNotEquals(true, $a); //NotEquals true\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 52,
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        STATIC::assertFalse($a); //Same false\n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        STATIC::assertSame(false, $a); //Same false\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 53,
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        STATIC::assertNotFalse($a); //NotSame false\n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        STATIC::assertNotSame(false, $a); //NotSame false\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 54,
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        STATIC::assertFalse($a); //Equals false\n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        STATIC::assertEquals(false, $a); //Equals false\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 55,
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        STATIC::assertNotFalse($a); //NotEquals false\n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        STATIC::assertNotEquals(false, $a); //NotEquals false\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 56,
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        STATIC::assertNull($a); //Same null\n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        STATIC::assertSame(null, $a); //Same null\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 57,
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        STATIC::assertNotNull($a); //NotSame null\n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        STATIC::assertNotSame(null, $a); //NotSame null\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 58,
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        STATIC::assertNull($a); //Equals null\n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        STATIC::assertEquals(null, $a); //Equals null\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 59,
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        STATIC::assertNotNull($a); //NotEquals null\n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        STATIC::assertNotEquals(null, $a); //NotEquals null\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 60,
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        self::assertTrue($a); //Same true\n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        self::assertSame(true, $a); //Same true\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 61,
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        self::assertNotTrue($a); //NotSame true\n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        self::assertNotSame(true, $a); //NotSame true\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 62,
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        self::assertTrue($a); //Equals true\n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        self::assertEquals(true, $a); //Equals true\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 63,
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        self::assertNotTrue($a); //NotEquals true\n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        self::assertNotEquals(true, $a); //NotEquals true\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 64,
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        self::assertFalse($a); //Same false\n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        self::assertSame(false, $a); //Same false\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 65,
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        self::assertNotFalse($a); //NotSame false\n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        self::assertNotSame(false, $a); //NotSame false\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 66,
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        self::assertFalse($a); //Equals false\n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        self::assertEquals(false, $a); //Equals false\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 67,
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        self::assertNotFalse($a); //NotEquals false\n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        self::assertNotEquals(false, $a); //NotEquals false\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 68,
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        self::assertNull($a); //Same null\n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        self::assertSame(null, $a); //Same null\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 69,
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        self::assertNotNull($a); //NotSame null\n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        self::assertNotSame(null, $a); //NotSame null\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 70,
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        self::assertNull($a); //Equals null\n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        self::assertEquals(null, $a); //Equals null\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 71,
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        self::assertNotNull($a); //NotEquals null\n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        self::assertNotEquals(null, $a); //NotEquals null\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertTrue($a, );\n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertSame(true, $a, );\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertTrue($a, $message , );\n    }\n}\n",
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertSame(true, $a, $message , );\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertSame(null, $a);\n    }\n}\n",
+                        null,
+                        {
+                            "assertions": []
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix81",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.1.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\PhpUnit\\PhpUnitConstructFixerTest",
+            "body": "    public function testFix81(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix81Cases",
+                    "key": 0,
+                    "args": [
+                        "<?php final class FooTest extends \\PHPUnit_Framework_TestCase {\n    public function testSomething() {\n        $this->assertEquals(...);\n    }\n}\n"
+                    ]
+                }
+            ]
+        }
+    ]
+}
