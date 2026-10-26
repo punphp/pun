@@ -26,18 +26,17 @@ use mago_codex::reference::SymbolReferences;
 use mago_codex::scanner::scan_program;
 use mago_codex::ttype::atomic::TAtomic;
 use mago_codex::ttype::atomic::object::TObject;
-use mago_codex::ttype::get_int_or_float;
 use mago_codex::ttype::union::TUnion;
+use mago_codex::ttype::{get_int_or_float, get_string};
 use mago_database::file::{File, FileId, FileType};
 use mago_names::ResolvedNames;
 use mago_names::resolver::NameResolver;
 use mago_php_version::PHPVersion;
 use mago_prelude::Prelude;
 use mago_span::HasSpan;
-use mago_syntax::comments::docblock::get_docblock_before_position;
 use mago_syntax::cst::{
     Access, BinaryOperator, Call, ClassLikeConstantSelector, ClassLikeMemberSelector, Expression,
-    FunctionCall, Literal, Node, TriviaKind, Variable,
+    FunctionCall, Node, TriviaKind, UnaryPrefixOperator, Variable,
 };
 use mago_syntax::parser::parse_file;
 use pun_problem::Span;
@@ -62,18 +61,25 @@ static PRELUDE: LazyLock<(CodebaseMetadata, SymbolReferences)> = LazyLock::new(|
 static PLUGINS: LazyLock<PluginRegistry> =
     LazyLock::new(|| create_registry_with_plugins(&[], false));
 
-/// The project's codebase, populated, when the caller has scanned the project.
-static PROJECT: RwLock<Option<Arc<CodebaseMetadata>>> = RwLock::new(None);
+/// A project's symbols with the prelude's, populated, scanned twice: with the docblocks blanked out, for PHPStan's
+/// native types that Rector's type rules read, and as written, for the types Rector reads of a call of a built-in
+/// function and of class constants.
+pub struct ProjectCodebase {
+    native: Arc<CodebaseMetadata>,
+    documented: Arc<CodebaseMetadata>,
+}
 
-/// Use `codebase` (the project's symbols with the prelude's, populated) for every file from now on, or go back to
-/// analysing each file on its own with `None`.
-pub fn set_project_codebase(codebase: Option<Arc<CodebaseMetadata>>) {
+/// The project's codebase, when the caller has scanned the project.
+static PROJECT: RwLock<Option<Arc<ProjectCodebase>>> = RwLock::new(None);
+
+/// Use `codebase` for every file from now on, or go back to analysing each file on its own with `None`.
+pub fn set_project_codebase(codebase: Option<Arc<ProjectCodebase>>) {
     *PROJECT.write().unwrap_or_else(|e| e.into_inner()) = codebase;
 }
 
 /// The codebase of a project: the prelude with the symbols of `files` (path, code), populated, for
 /// [`set_project_codebase`]. `php_version` is a `PHP_VERSION_ID`.
-pub fn project_codebase(files: &[(String, String)], php_version: u32) -> Arc<CodebaseMetadata> {
+pub fn project_codebase(files: &[(String, String)], php_version: u32) -> Arc<ProjectCodebase> {
     project_codebase_autoloaded(files, php_version, &|_| None)
 }
 
@@ -85,16 +91,19 @@ pub fn project_codebase_autoloaded(
     files: &[(String, String)],
     php_version: u32,
     autoload: &dyn Fn(&[u8]) -> Option<(String, String)>,
-) -> Arc<CodebaseMetadata> {
+) -> Arc<ProjectCodebase> {
     let version = php_version_of(php_version);
     let (prelude, references) = &*PRELUDE;
-    let mut codebase = prelude.clone();
-    let mut references = references.clone();
+    let (mut codebase, mut documented) = (prelude.clone(), prelude.clone());
     let mut named = Vec::new();
     for (path, code) in files {
         let file = mago_file(path, &without_docblocks(code), FileType::Host);
-        note_phpdoc_constants(file.id, code);
         named.extend(scan_into(&mut codebase, &file, version));
+        scan_into(
+            &mut documented,
+            &mago_file(path, code, FileType::Host),
+            version,
+        );
     }
     let mut asked: HashSet<Vec<u8>> = HashSet::new();
     while let Some(name) = named.pop() {
@@ -106,46 +115,30 @@ pub fn project_codebase_autoloaded(
             if path.contains("/vendor/") {
                 (VENDOR.write().unwrap_or_else(|e| e.into_inner())).insert(file.id);
             }
-            note_phpdoc_constants(file.id, &code);
             named.extend(scan_into(&mut codebase, &file, version));
+            let file = mago_file(&path, &code, FileType::Vendored);
+            scan_into(&mut documented, &file, version);
         }
     }
-    populate_codebase(
-        &mut codebase,
-        &mut references,
-        Default::default(),
-        Default::default(),
-    );
-    Arc::new(codebase)
+    let populated = |mut codebase: CodebaseMetadata| {
+        let mut references = references.clone();
+        populate_codebase(
+            &mut codebase,
+            &mut references,
+            Default::default(),
+            Default::default(),
+        );
+        Arc::new(codebase)
+    };
+    Arc::new(ProjectCodebase {
+        native: populated(codebase),
+        documented: populated(documented),
+    })
 }
 
 /// The files [`project_codebase_autoloaded`] read from a `vendor/` directory. A file's id is a hash of its path, so
 /// the set only grows, and codebases built at the same time share it.
 static VENDOR: LazyLock<RwLock<HashSet<FileId>>> = LazyLock::new(Default::default);
-
-/// The class constants whose docblock has a `@var` tag (PHPStan's `hasPhpDocType`), by file and the offset of the
-/// constant's name, which the codebase cannot tell: it is built with the docblocks blanked out. Like [`VENDOR`], the
-/// set only grows.
-static PHPDOC_CONSTANTS: LazyLock<RwLock<HashSet<(FileId, u32)>>> = LazyLock::new(Default::default);
-
-/// Add the constants of `code` with a `@var` tag to [`PHPDOC_CONSTANTS`].
-fn note_phpdoc_constants(file: FileId, code: &str) {
-    if !code.contains("@var") && !code.contains("-var") {
-        return;
-    }
-    let arena = LocalArena::new();
-    let program = parse_file(&arena, &mago_file("", code, FileType::Host));
-    let mut found = Vec::new();
-    any_node(Node::Program(program), &mut |n| {
-        if let Node::ClassLikeConstant(c) = n
-            && get_docblock_before_position(program.trivia.as_slice(), c.span().start.offset)
-                .is_some_and(|d| d.value.windows(4).any(|w| w == b"@var" || w == b"-var"))
-        {
-            found.extend(c.items.iter().map(|item| (file, item.span().start.offset)));
-        }
-    });
-    (PHPDOC_CONSTANTS.write().unwrap_or_else(|e| e.into_inner())).extend(found);
-}
 
 /// Whether `file` is vendor code of the project's codebase (Rector: its path contains `/vendor/`).
 pub(crate) fn is_vendor_file(file: FileId) -> bool {
@@ -180,18 +173,24 @@ struct Analysis {
 /// The codebase a file's rules look symbols up in.
 pub(crate) struct Facts {
     pub codebase: Arc<CodebaseMetadata>,
+    /// The codebase as written, docblocks read (see [`ProjectCodebase`]).
+    documented: Arc<CodebaseMetadata>,
     path: String,
     /// The file's source with its docblocks blanked out.
     native_source: String,
+    /// The file's source as written.
+    source: String,
     version: PHPVersion,
     /// The analysis, run the first time a rule asks for a type, and the spans of the values inside traits that come
     /// from a variable.
     artifacts: OnceCell<Analysis>,
+    /// The analysis of the file as written, docblocks read, run the first time a type of it is needed.
+    documented_artifacts: OnceCell<Option<AnalysisArtifacts>>,
 }
 
 impl Facts {
-    /// The native type of the expression at `span`, if the analyser reached it. Inside a trait, PHPStan (as Rector
-    /// runs it) knows no variable, `$this` included, so a value that comes from one has no type.
+    /// The native type of the expression at `span`, if the analyser reached it. Inside a trait, PHPStan 2.2.7 (as
+    /// Rector runs it, at the version Pinkary pins) does not know `$this`, so a value that comes from it has no type.
     pub fn native_type(&self, span: Span) -> Option<&TUnion> {
         let analysis = self.artifacts.get_or_init(|| self.analyse());
         let (start, end) = (span.start as u32, span.end as u32);
@@ -216,6 +215,15 @@ impl Facts {
         names: &ResolvedNames<'_>,
         call: &FunctionCall<'_>,
     ) -> Option<&'s TUnion> {
+        self.codebase
+            .get_function(&self.builtin_name(names, call)?)?
+            .return_type_declaration_metadata
+            .as_ref()
+            .map(|t| &t.type_union)
+    }
+
+    /// The name of the built-in function `call` calls, when it calls one (PHP falls back to the global function).
+    fn builtin_name(&self, names: &ResolvedNames<'_>, call: &FunctionCall<'_>) -> Option<Vec<u8>> {
         let Expression::Identifier(id) = call.function else {
             return None;
         };
@@ -230,11 +238,7 @@ impl Facts {
             written.rsplit(|b| *b == b'\\').next()?
         };
         PRELUDE.0.get_function(name)?;
-        self.codebase
-            .get_function(name)?
-            .return_type_declaration_metadata
-            .as_ref()
-            .map(|t| &t.type_union)
+        Some(name.to_vec())
     }
 
     /// What arithmetic on `operand` gives in PHPStan's native scope when `operand` calls a built-in function, whose
@@ -317,6 +321,43 @@ impl Facts {
         mago_codex::get_anonymous_class_name(&file, span).to_string()
     }
 
+    /// The type of the expression at `span` with the docblocks read (PHPStan's `getType()`), if the analyser reached
+    /// it. A docblock never widens a native type (`TypehintHelper::decideType`), so where Mago loses the documented
+    /// type to `mixed` (a variable a closure captured by reference, once the closure is called) the native type
+    /// stands.
+    pub fn full_type(&self, span: Span) -> Option<&TUnion> {
+        let full = (self.documented_artifacts()?.expression_types)
+            .get(&(span.start as u32, span.end as u32))?;
+        match self.native_type(span) {
+            Some(native) if full.is_mixed() && full.by_reference() && !native.is_mixed() => {
+                Some(native)
+            }
+            _ => Some(full.as_ref()),
+        }
+    }
+
+    fn documented_artifacts(&self) -> Option<&AnalysisArtifacts> {
+        (self.documented_artifacts)
+            .get_or_init(|| self.analyse_documented())
+            .as_ref()
+    }
+
+    /// Mago's analysis of the file as written, docblocks read, in the documented codebase.
+    fn analyse_documented(&self) -> Option<AnalysisArtifacts> {
+        let file = mago_file(&self.path, &self.source, FileType::Host);
+        let arena = LocalArena::new();
+        let program = parse_file(&arena, &file);
+        let names = NameResolver::new(&arena).resolve(program);
+        let settings = Settings::new(self.version);
+        let analyzer = Analyzer::new(&arena, &file, &names, &self.documented, &PLUGINS, settings);
+        let mut result = AnalysisResult::new(SymbolReferences::new());
+        std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
+            analyzer.analyze_with_artifacts(program, &mut result)
+        }))
+        .ok()
+        .and_then(Result::ok)
+    }
+
     /// Analyse the file. Mago trips debug assertions on some code; an analysis that panics gives no types.
     fn analyse(&self) -> Analysis {
         let file = mago_file(&self.path, &self.native_source, FileType::Host);
@@ -324,13 +365,12 @@ impl Facts {
         let program = parse_file(&arena, &file);
         let mut untyped = HashSet::new();
         let names = NameResolver::new(&arena).resolve(program);
-        let mut matches: Vec<(&[u8], u32)> = Vec::new();
         let mut functions: Vec<(u32, u32)> = Vec::new();
         // each `$variable = ...;`: the variable, where the assignment ends, and the declared return type of the
         // built-in function it calls, if it does
         let mut assigned: Vec<(&[u8], u32, Option<&TUnion>)> = Vec::new();
-        // `get_class($x)` calls: their span and the argument's
-        let mut get_class: Vec<(mago_span::Span, mago_span::Span)> = Vec::new();
+        // the calls of built-in functions, and the argument of each `get_class()`
+        let mut builtin_calls: Vec<(mago_span::Span, Option<mago_span::Span>)> = Vec::new();
         // arithmetic PHPStan types `float|int` where Mago's type is narrower
         let mut widened: Vec<(u32, u32)> = Vec::new();
 
@@ -370,55 +410,58 @@ impl Facts {
                     None => {}
                 }
             }
-            Node::Trait(_) => any_node(n, &mut |e| {
-                if let Node::Expression(e) = e
-                    && from_variable(e)
-                {
-                    let span = e.span();
-                    untyped.insert((span.start.offset, span.end.offset));
-                }
-            }),
+            Node::Trait(_) => {
+                any_node(n, &mut |e| {
+                    if let Node::Expression(e) = e
+                        && from_this(e)
+                    {
+                        let span = e.span();
+                        untyped.insert((span.start.offset, span.end.offset));
+                    }
+                });
+                // a variable whose latest assignment in the method takes such a value has none either
+                any_node(n, &mut |m| {
+                    if let Node::Method(_) = m {
+                        let mut writes: Vec<(&[u8], u32, bool)> = Vec::new();
+                        any_node(m, &mut |a| {
+                            if let Node::Assignment(a) = a
+                                && let Expression::Variable(Variable::Direct(v)) = a.lhs
+                            {
+                                let this = a.operator.is_assign() && from_this(a.rhs);
+                                writes.push((v.name, a.span().end.offset, this));
+                            }
+                        });
+                        if !writes.iter().any(|w| w.2) {
+                            return;
+                        }
+                        any_node(m, &mut |r| {
+                            let Node::DirectVariable(v) = r else { return };
+                            let at = v.span.start.offset;
+                            let last = (writes.iter())
+                                .filter(|(name, end, _)| *name == v.name && *end <= at)
+                                .max_by_key(|(_, end, _)| *end);
+                            if let Some((_, _, true)) = last {
+                                untyped.insert((at, v.span.end.offset));
+                            }
+                        });
+                    }
+                });
+            }
             Node::FunctionCall(call) => {
-                matches.extend(dynamic_matches(call));
-                if let Expression::Identifier(id) = call.function
-                    && id
-                        .value()
-                        .strip_prefix(b"\\")
-                        .unwrap_or(id.value())
-                        .eq_ignore_ascii_case(b"get_class")
-                    && let Some(argument) = call.argument_list.arguments.first()
-                {
-                    get_class.push((call.span(), argument.value().span()));
+                if let Some(name) = self.builtin_name(&names, call) {
+                    let argument = (name.eq_ignore_ascii_case(b"get_class"))
+                        .then(|| {
+                            call.argument_list
+                                .arguments
+                                .first()
+                                .map(|a| a.value().span())
+                        })
+                        .flatten();
+                    builtin_calls.push((call.span(), argument));
                 }
             }
             _ => {}
         });
-        // the variable a `preg_match()` with a pattern PHPStan does not know fills, after the call
-        if !matches.is_empty() {
-            // until the end of the innermost function around the call
-            let matches: Vec<(&[u8], u32, u32)> = matches
-                .into_iter()
-                .map(|(name, after)| {
-                    let end = functions
-                        .iter()
-                        .filter(|(s, e)| *s <= after && after <= *e)
-                        .map(|(_, e)| *e)
-                        .min()
-                        .unwrap_or(u32::MAX);
-                    (name, after, end)
-                })
-                .collect();
-            any_node(Node::Program(program), &mut |n| {
-                let at = n.span().start.offset;
-                if let Node::DirectVariable(v) = n
-                    && matches
-                        .iter()
-                        .any(|(name, after, end)| *name == v.name && *after <= at && at < *end)
-                {
-                    untyped.insert((v.span.start.offset, v.span.end.offset));
-                }
-            });
-        }
         // a variable set from a built-in function has the function's declared return type in PHPStan's native
         // scope, not the one its stub or an extension refines from the arguments (`str_replace()` gives
         // `array|string`), until the next assignment
@@ -449,6 +492,28 @@ impl Facts {
                 }
             });
         }
+        // `.` on a value whose native type may be an array is an error in PHPStan's native scope: a call of a built-in
+        // function declared to return one (`str_replace()`'s `array|string`), or a variable set from such a call. The
+        // error stays with that concatenation; one around it is a string again.
+        any_node(Node::Program(program), &mut |n| {
+            let Node::Binary(b) = n else { return };
+            if !b.operator.is_concatenation() {
+                return;
+            }
+            let array = |o: &Expression<'_>| {
+                let t = match crate::syntax::unparenthesize(o) {
+                    Expression::Call(Call::Function(call)) => self.builtin_return(&names, call),
+                    Expression::Variable(Variable::Direct(v)) => {
+                        declared.get(&(v.span.start.offset, v.span.end.offset))
+                    }
+                    _ => None,
+                };
+                t.is_some_and(|t| t.types.iter().any(|a| matches!(a, TAtomic::Array(_))))
+            };
+            if array(b.lhs) || array(b.rhs) {
+                untyped.insert((b.span().start.offset, b.span().end.offset));
+            }
+        });
         let analyzer = Analyzer::new(
             &arena,
             &file,
@@ -495,13 +560,9 @@ impl Facts {
             // `getClassConstFetchTypeByReflection`: a constant fetched from `static` or from an object (`$this::A`) is
             // `mixed` when neither its class nor the constant is final and the constant has no type
             let open = |class: &[u8], constant: &[u8]| {
-                (self.codebase.get_class_like(class)).is_some_and(|c| !c.flags.is_final())
-                    && (self.codebase.get_class_constant(class, constant)).is_some_and(|k| {
-                        !k.flags.is_final()
-                            && k.type_metadata.is_none()
-                            && !(PHPDOC_CONSTANTS.read().unwrap_or_else(|e| e.into_inner()))
-                                .contains(&(k.span.file_id, k.span.start.offset))
-                    })
+                (self.documented.get_class_like(class)).is_some_and(|c| !c.flags.is_final())
+                    && (self.documented.get_class_constant(class, constant))
+                        .is_some_and(|k| !k.flags.is_final() && k.type_metadata.is_none())
             };
             // the class-likes `static` can be, by span: the name of each class and interface, `None` for the
             // anonymous classes (final to PHPStan)
@@ -550,15 +611,41 @@ impl Facts {
                 }
                 _ => {}
             });
-            // `get_class()` of a value PHPStan cannot tell is an object may be `false` (`toGetClassResultType`)
-            for (call, argument) in get_class {
-                let key = (argument.start.offset, argument.end.offset);
-                if artifacts
-                    .expression_types
-                    .get(&key)
-                    .is_none_or(|t| t.types.iter().any(|t| matches!(t, TAtomic::Mixed(_))))
+            // a `(string)` cast is a string, also of an object whose `__toString()` declares no type (PHP declares it
+            // `string`), where Mago takes that method's missing type
+            any_node(Node::Program(program), &mut |n| {
+                if let Node::UnaryPrefix(u) = n
+                    && matches!(
+                        u.operator,
+                        UnaryPrefixOperator::StringCast(..) | UnaryPrefixOperator::BinaryCast(..)
+                    )
                 {
-                    untyped.insert((call.start.offset, call.end.offset));
+                    let key = (u.span().start.offset, u.span().end.offset);
+                    if (artifacts.expression_types.get(&key)).is_none_or(|t| {
+                        !t.types
+                            .iter()
+                            .all(|a| matches!(a, TAtomic::Scalar(s) if s.is_any_string()))
+                    }) {
+                        declared.insert(key, get_string());
+                    }
+                }
+            });
+        }
+        // `getNativeType` takes the full type, docblocks read, of a call of a built-in function
+        if let Some(documented) = (!builtin_calls.is_empty())
+            .then(|| self.documented_artifacts())
+            .flatten()
+        {
+            let key = |s: mago_span::Span| (s.start.offset, s.end.offset);
+            let t = |s: mago_span::Span| documented.expression_types.get(&key(s));
+            for (call, argument) in builtin_calls {
+                // `get_class()` of a value PHPStan cannot tell is an object may be `false` (`toGetClassResultType`)
+                if argument.is_some_and(|a| {
+                    t(a).is_none_or(|t| t.types.iter().any(|t| matches!(t, TAtomic::Mixed(_))))
+                }) {
+                    untyped.insert(key(call));
+                } else if let Some(t) = t(call) {
+                    declared.insert(key(call), TUnion::clone(t));
                 }
             }
         }
@@ -610,39 +697,18 @@ impl Facts {
     }
 }
 
-/// For `preg_match($pattern, $subject, $matches)` (or `preg_match_all`) with a pattern that is not a string literal:
-/// `$matches`, and where the call ends. PHPStan types the matches only for a pattern it knows; Mago's stub always
-/// makes them an array.
-fn dynamic_matches<'a>(call: &FunctionCall<'a>) -> Option<(&'a [u8], u32)> {
-    let Expression::Identifier(name) = call.function else {
-        return None;
-    };
-    let name = name.value().strip_prefix(b"\\").unwrap_or(name.value());
-    if !name.eq_ignore_ascii_case(b"preg_match") && !name.eq_ignore_ascii_case(b"preg_match_all") {
-        return None;
-    }
-    let mut arguments = call.argument_list.arguments.iter();
-    let pattern = arguments.next()?.value();
-    if matches!(pattern, Expression::Literal(Literal::String(_))) {
-        return None;
-    }
-    let Expression::Variable(Variable::Direct(matches)) = arguments.nth(1)?.value() else {
-        return None;
-    };
-    Some((matches.name, call.span().end.offset))
-}
-
-/// Whether PHPStan, inside a trait, leaves the value of `expr` untyped: a variable, or a property, method call or
-/// offset on one; a constant of `self` or `static`.
-fn from_variable(expr: &Expression<'_>) -> bool {
+/// Whether PHPStan, inside a trait, leaves the value of `expr` untyped: `$this`, or a property, method call, offset or clone
+/// of it; a constant of `self` or `static`.
+fn from_this(expr: &Expression<'_>) -> bool {
     match expr {
-        Expression::Variable(_) => true,
-        Expression::Parenthesized(p) => from_variable(p.expression),
-        Expression::Access(Access::Property(p)) => from_variable(p.object),
-        Expression::Access(Access::NullSafeProperty(p)) => from_variable(p.object),
-        Expression::Call(Call::Method(c)) => from_variable(c.object),
-        Expression::Call(Call::NullSafeMethod(c)) => from_variable(c.object),
-        Expression::ArrayAccess(a) => from_variable(a.array),
+        Expression::Variable(Variable::Direct(v)) => v.name == b"$this",
+        Expression::Parenthesized(p) => from_this(p.expression),
+        Expression::Access(Access::Property(p)) => from_this(p.object),
+        Expression::Access(Access::NullSafeProperty(p)) => from_this(p.object),
+        Expression::Call(Call::Method(c)) => from_this(c.object),
+        Expression::Call(Call::NullSafeMethod(c)) => from_this(c.object),
+        Expression::ArrayAccess(a) => from_this(a.array),
+        Expression::Clone(c) => from_this(c.object),
         // the constants of `self` and `static`, which are not the trait's
         Expression::Access(Access::ClassConstant(c)) => {
             matches!(c.class, Expression::Self_(_) | Expression::Static(_))
@@ -744,17 +810,20 @@ fn scan(ctx: &Context<'_>) -> Facts {
         .unwrap_or_else(|e| e.into_inner())
         .as_ref()
         .map(Arc::clone);
-    let codebase = project.unwrap_or_else(|| {
+    let project = project.unwrap_or_else(|| {
         let mut files: Vec<(String, String)> = SOURCES.with(|s| s.borrow().clone());
         files.push((path.clone(), ctx.source.to_string()));
         project_codebase(&files, ctx.php_version)
     });
     Facts {
-        codebase,
+        codebase: Arc::clone(&project.native),
+        documented: Arc::clone(&project.documented),
         path,
         native_source: without_docblocks(ctx.source),
+        source: ctx.source.to_string(),
         version: php_version_of(ctx.php_version),
         artifacts: OnceCell::new(),
+        documented_artifacts: OnceCell::new(),
     }
 }
 

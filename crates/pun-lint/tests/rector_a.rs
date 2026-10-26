@@ -407,9 +407,9 @@ fn is_a_with_string_with_third_argument() {
 
 #[test]
 fn unnecessary_ternary_expression() {
-    // config/configured_rule.php: the rule alone, Rector's default PHP version. Pun/: Rector's run on a trait, where
-    // PHPStan knows no type, on a variadic `bool` parameter, which is an array, and the parentheses php-parser leaves
-    // out around an assignment, arrow function, `print` or `include` under the new cast.
+    // config/configured_rule.php: the rule alone, Rector's default PHP version. Pun/: Rector's run on a variadic `bool`
+    // parameter, which is an array, and the parentheses php-parser leaves out around an assignment, arrow function,
+    // `print` or `include` under the new cast.
     let linter = only(rules::NoBoolTernary, 80400);
     run(&linter, "UnnecessaryTernaryExpressionRector/Fixture");
     run(&linter, "UnnecessaryTernaryExpressionRector/Oracle");
@@ -457,9 +457,7 @@ fn simplify_bool_identical_true() {
 #[test]
 fn simplify_empty_check_on_empty_array() {
     // config/configured_rule.php: the rule alone, Rector's default PHP version. Pun/: a property of a class in another
-    // file, which Pun can't read without analyse's index, and Rector's own run on the `is_array() &&` guard, a trait,
-    // an element assignment of an untyped parameter and variadic parameters; a file-level variable, which Pun does not
-    // type, and an element assignment of a typed parameter the method writes, which Pun does not follow.
+    // file (the fixture's `Source/OtherClass`), which this test does not give Pun.
     let linter = only(rules::PreferEmptyArrayIdentical, 80400);
     run(&linter, "SimplifyEmptyCheckOnEmptyArrayRector/Fixture");
     run(&linter, "SimplifyEmptyCheckOnEmptyArrayRector/Oracle");

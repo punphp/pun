@@ -49,7 +49,7 @@ namespace App;
 
 final class R
 {
-    protected function getExplicitKeys($attribute)
+    protected function getExplicitKeys($attribute): array
     {
         $pattern = str_replace('\*', '([^\.]*)', preg_quote($this->getPrimaryAttribute($attribute), '/'));
 
@@ -62,7 +62,7 @@ final class R
         return [];
     }
 
-    protected function b($attribute, $pattern)
+    protected function b($attribute, $pattern): array
     {
         if (preg_match('/^'.$pattern.'/', $attribute, $keys)) {
             return $keys;

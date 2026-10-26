@@ -94,7 +94,7 @@ trait EmptyTrait
 {
     public function f(array $a)
     {
-        return empty($a);
+        return $a === [];
     }
 }
 

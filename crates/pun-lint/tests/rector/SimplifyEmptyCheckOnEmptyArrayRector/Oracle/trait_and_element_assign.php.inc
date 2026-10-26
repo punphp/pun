@@ -16,7 +16,7 @@ final class C1 {
 -----
 <?php
 trait T1 {
-    public function a(array $x) { return empty($x); }
+    public function a(array $x) { return $x === []; }
     public function b(bool $f) { return $f === true; }
 }
 final class C1 {

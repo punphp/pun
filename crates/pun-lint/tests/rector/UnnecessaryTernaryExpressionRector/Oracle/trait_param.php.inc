@@ -5,5 +5,5 @@ trait T2 {
 -----
 <?php
 trait T2 {
-    public function a(bool $f) { return (bool) $f; }
+    public function a(bool $f) { return $f; }
 }

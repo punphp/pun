@@ -49,7 +49,7 @@ trait T
     public function e($x): string { return strtoupper($x); }
     public function f() { return $this->g(); }
     public function g(): string { return ''; }
-    public function h($x) { $y = 'a'; return $y; }
+    public function h($x): string { $y = 'a'; return $y; }
     public function i(): string { return static::class; }
     public function j($x): string { return $x ? 'a' : 'b'; }
 }
