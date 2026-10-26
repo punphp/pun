@@ -540,10 +540,10 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "performance/prefer-static-closure" = { fix = "unsafe", ported = true, status = "decided", summary = "Lambdas not (indirectly) referencing `$this` must be declared `static`." }
 "performance/require-qualified-native-constant" = { fix = "unsafe", ported = true, status = "decided", summary = "Add leading `\\` before constant invocation of internal constant to speed up resolving. Constant name match is case-sensitive, except for `null`, `false` and `true`." }
 "performance/require-qualified-native-function" = { fix = "unsafe", ported = true, status = "decided", summary = "Add leading `\\` before function invocation to speed up resolving." }
-"pest/no-before-all-in-describe" = { fix = "safe", sets = ["coding-style"], ported = false, status = "decided", summary = "Replaces invalid beforeAll() and afterAll() hooks inside describe() with beforeEach() and afterEach()" }
+"pest/no-before-all-in-describe" = { fix = "safe", sets = ["coding-style"], ported = true, status = "decided", summary = "Replaces invalid beforeAll() and afterAll() hooks inside describe() with beforeEach() and afterEach()" }
 "pest/no-expect-exception" = { fix = "safe", sets = ["coding-style"], ported = false, status = "decided", summary = "Converts expectException() and expectExceptionMessage() patterns to expect()->toThrow()" }
 "pest/no-focused-test" = { fix = "unsafe", sets = ["coding-style"], ported = true, status = "decided", summary = "Removes only() from all tests" }
-"pest/no-invalid-repeat" = { fix = "safe", sets = ["coding-style"], ported = false, status = "decided", summary = "Normalizes invalid literal repeat() counts to 1" }
+"pest/no-invalid-repeat" = { fix = "safe", sets = ["coding-style"], ported = true, status = "decided", summary = "Normalizes invalid literal repeat() counts to 1" }
 "pest/no-negated-boolean-matcher" = { fix = "safe", sets = ["coding-style"], ported = true, status = "decided", summary = "Simplifies double-negative expectations like ->not->toBeFalse() to ->toBeTrue()" }
 "pest/no-only" = { fix = "unsafe", sets = ["coding-style"], ported = true, origin = "mago", status = "decided", summary = "Remove ->only() from Pest tests." }
 "pest/no-redundant-type-expectation" = { fix = "safe", sets = ["coding-style"], ported = false, status = "decided", summary = "Removes redundant literal type expectations when a later matcher keeps the chain meaningful" }
@@ -556,7 +556,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "pest/prefer-each-modifier" = { fix = "safe", sets = ["coding-style"], ported = false, status = "decided", summary = "Converts foreach loops with expect() calls to use the ->each modifier" }
 "pest/prefer-expect" = { fix = "safe", sets = ["coding-style"], ported = false, status = "decided", summary = "Converts $this->assert*() calls to Pest expect() chains" }
 "pest/prefer-extend" = { fix = "safe", sets = ["coding-style"], ported = false, status = "decided", summary = "Converts uses() and pest()->uses() to pest()->extend() for classes and pest()->use() for traits" }
-"pest/prefer-filesystem-matchers" = { fix = "unsafe", sets = ["coding-style"], ported = false, status = "decided", summary = "Simplifies combined filesystem checks to single Pest matchers" }
+"pest/prefer-filesystem-matchers" = { fix = "unsafe", sets = ["coding-style"], ported = true, status = "decided", summary = "Simplifies combined filesystem checks to single Pest matchers" }
 "pest/prefer-not-modifier" = { fix = "safe", sets = ["coding-style"], ported = true, status = "decided", summary = "Simplifies negated expectations by flipping the matcher (e.g., expect(!$x)->toBeTrue() becomes expect($x)->toBeFalse())" }
 "pest/prefer-sequence" = { fix = "safe", sets = ["coding-style"], ported = false, status = "decided", summary = "Converts consecutive indexed expect() calls to sequence()" }
 "pest/prefer-simpler-expectation" = { fix = "safe", sets = ["coding-style"], ported = true, origin = "mago", status = "decided", summary = "Simplify Pest expectations: expect($a > $b)->toBeTrue() becomes expect($a)->toBeGreaterThan($b), and similar." }
@@ -589,10 +589,10 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "pest/prefer-to-equal-with-delta" = { fix = "safe", sets = ["coding-style"], ported = true, status = "decided", summary = "Converts expect(abs($a - $b) < $delta)->toBeTrue() to expect($a)->toEqualWithDelta($b, $delta)" }
 "pest/prefer-to-have-count" = { fix = "unsafe", sets = ["coding-style"], ported = true, status = "decided", summary = "Converts expect(count($arr))->toBe(5) to expect($arr)->toHaveCount(5)" }
 "pest/prefer-to-have-key" = { fix = "unsafe", sets = ["coding-style"], ported = true, status = "decided", summary = "Converts array_key_exists() checks to toHaveKey() matcher" }
-"pest/prefer-to-have-keys" = { fix = "safe", sets = ["coding-style"], ported = false, status = "decided", summary = "Converts chained toHaveKey() calls to toHaveKeys() with array of keys" }
+"pest/prefer-to-have-keys" = { fix = "safe", sets = ["coding-style"], ported = true, status = "decided", summary = "Converts chained toHaveKey() calls to toHaveKeys() with array of keys" }
 "pest/prefer-to-have-length" = { fix = "unsafe", sets = ["coding-style"], ported = true, status = "decided", summary = "Converts strlen()/mb_strlen() comparisons to toHaveLength() matcher" }
 "pest/prefer-to-have-method-on-class" = { fix = "safe", sets = ["coding-style"], ported = true, status = "decided", summary = "Changes expect($object)->toHaveMethod() to expect($object::class)->toHaveMethod() for Pest v3" }
-"pest/prefer-to-have-properties" = { fix = "safe", sets = ["coding-style"], ported = false, status = "decided", summary = "Converts chained toHaveProperty() calls to toHaveProperties() with array of properties" }
+"pest/prefer-to-have-properties" = { fix = "safe", sets = ["coding-style"], ported = true, status = "decided", summary = "Converts chained toHaveProperty() calls to toHaveProperties() with array of properties" }
 "pest/prefer-to-have-property" = { fix = "unsafe", sets = ["coding-style"], ported = true, status = "decided", summary = "Converts property_exists() checks to toHaveProperty() matcher" }
 "pest/prefer-to-have-same-size" = { fix = "unsafe", sets = ["coding-style"], ported = true, status = "decided", summary = "Converts expect(count($a))->toBe(count($b)) to expect($a)->toHaveSameSize($b)" }
 "pest/prefer-to-match" = { fix = "unsafe", sets = ["coding-style"], ported = true, status = "decided", summary = "Converts expect(preg_match(\"/pattern/\", $str))->toBe(1) to expect($str)->toMatch(\"/pattern/\")" }

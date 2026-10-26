@@ -1,0 +1,77 @@
+//! `lint/pest/prefer-to-have-properties`, ported from pest-plugin-rector's `UseToHavePropertiesRector`: a run of
+//! `->toHaveProperty('a')->toHaveProperty('b')` with literal strings becomes `->toHaveProperties(['a', 'b'])`, when
+//! the checked value may be an object.
+
+use mago_syntax::cst::{Expression, Literal, MethodCall, Node, NodeKind};
+use pun_problem::{Edit, Safety, Span};
+
+use super::{
+    Is, Trinary, argument_value, has_not, is_expect_chain, is_name, matcher_subject, method_call,
+    rename, report, type_is, value_text,
+};
+use crate::syntax::{node_span, unparenthesize};
+use crate::{Context, Report, Rule};
+
+pub struct PreferToHaveProperties;
+
+impl Rule for PreferToHaveProperties {
+    fn id(&self) -> &'static str {
+        "lint/pest/prefer-to-have-properties"
+    }
+
+    fn targets(&self) -> Option<&'static [NodeKind]> {
+        Some(&[NodeKind::MethodCall])
+    }
+
+    fn visit<'ast, 'arena>(
+        &self,
+        node: Node<'ast, 'arena>,
+        _ancestors: &[Node<'ast, 'arena>],
+        ctx: &Context<'_>,
+        out: &mut Vec<Report>,
+    ) {
+        let Node::MethodCall(call) = node else {
+            return;
+        };
+        if !is_expect_chain(call) || !is_name(&call.method, "toHaveProperty") {
+            return;
+        }
+        if matcher_subject(call).is_none_or(|s| type_is(ctx, s, Is::Object) == Trinary::No) {
+            return;
+        }
+        let mut keys = Vec::new();
+        let mut first: &MethodCall<'_> = call;
+        let mut current = Some(call);
+        while let Some(c) = current.filter(|c| is_name(&c.method, "toHaveProperty")) {
+            if has_not(c) {
+                return;
+            }
+            let [argument] = c.argument_list.arguments.as_slice() else {
+                return;
+            };
+            let key = argument_value(argument);
+            if !matches!(unparenthesize(key), Expression::Literal(Literal::String(_))) {
+                return;
+            }
+            keys.insert(0, value_text(ctx, key));
+            first = c;
+            current = method_call(c.object);
+        }
+        if keys.len() < 2 {
+            return;
+        }
+        let [argument] = first.argument_list.arguments.as_slice() else {
+            return;
+        };
+        out.push(report(
+            node_span(call),
+            "Use `toHaveProperties()` instead of a run of `toHaveProperty()`.".to_string(),
+            Safety::Safe,
+            vec![
+                rename(first, "toHaveProperties"),
+                Edit::new(node_span(argument), format!("[{}]", keys.join(", "))),
+                Edit::new(Span::new(node_span(first).end, node_span(call).end), ""),
+            ],
+        ));
+    }
+}

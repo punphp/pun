@@ -7,11 +7,14 @@
 //! changes a node it keeps (a new name, a new first argument), the printer rewrites that part alone. The rules here
 //! write the same text with edits on those parts.
 
+mod no_before_all_in_describe;
 mod no_focused_test;
+mod no_invalid_repeat;
 mod no_negated_boolean_matcher;
 mod no_static_test_closure;
 mod prefer_comparison_matchers;
 mod prefer_defer;
+mod prefer_filesystem_matchers;
 mod prefer_not_modifier;
 mod prefer_strict_equality_matchers;
 mod prefer_to_be_alpha;
@@ -41,19 +44,24 @@ mod prefer_to_equal_canonicalizing;
 mod prefer_to_equal_with_delta;
 mod prefer_to_have_count;
 mod prefer_to_have_key;
+mod prefer_to_have_keys;
 mod prefer_to_have_length;
 mod prefer_to_have_method_on_class;
+mod prefer_to_have_properties;
 mod prefer_to_have_property;
 mod prefer_to_have_same_size;
 mod prefer_to_match;
 mod prefer_to_start_with;
 mod prefer_type_matchers;
 
+pub use no_before_all_in_describe::NoBeforeAllInDescribe;
 pub use no_focused_test::NoFocusedTest;
+pub use no_invalid_repeat::NoInvalidRepeat;
 pub use no_negated_boolean_matcher::NoNegatedBooleanMatcher;
 pub use no_static_test_closure::NoStaticTestClosure;
 pub use prefer_comparison_matchers::PreferComparisonMatchers;
 pub use prefer_defer::PreferDefer;
+pub use prefer_filesystem_matchers::PreferFilesystemMatchers;
 pub use prefer_not_modifier::PreferNotModifier;
 pub use prefer_strict_equality_matchers::PreferStrictEqualityMatchers;
 pub use prefer_to_be_alpha::PreferToBeAlpha;
@@ -83,8 +91,10 @@ pub use prefer_to_equal_canonicalizing::PreferToEqualCanonicalizing;
 pub use prefer_to_equal_with_delta::PreferToEqualWithDelta;
 pub use prefer_to_have_count::PreferToHaveCount;
 pub use prefer_to_have_key::PreferToHaveKey;
+pub use prefer_to_have_keys::PreferToHaveKeys;
 pub use prefer_to_have_length::PreferToHaveLength;
 pub use prefer_to_have_method_on_class::PreferToHaveMethodOnClass;
+pub use prefer_to_have_properties::PreferToHaveProperties;
 pub use prefer_to_have_property::PreferToHaveProperty;
 pub use prefer_to_have_same_size::PreferToHaveSameSize;
 pub use prefer_to_match::PreferToMatch;
@@ -107,11 +117,14 @@ use crate::{Context, Report, Rule};
 /// The group's rules, in a fixed order.
 pub(crate) fn all() -> Vec<Box<dyn Rule>> {
     vec![
+        Box::new(NoBeforeAllInDescribe),
         Box::new(NoFocusedTest),
+        Box::new(NoInvalidRepeat),
         Box::new(NoNegatedBooleanMatcher),
         Box::new(NoStaticTestClosure),
         Box::new(PreferComparisonMatchers),
         Box::new(PreferDefer),
+        Box::new(PreferFilesystemMatchers),
         Box::new(PreferNotModifier),
         Box::new(PreferStrictEqualityMatchers),
         Box::new(PreferToBeAlpha),
@@ -141,8 +154,10 @@ pub(crate) fn all() -> Vec<Box<dyn Rule>> {
         Box::new(PreferToEqualWithDelta),
         Box::new(PreferToHaveCount),
         Box::new(PreferToHaveKey),
+        Box::new(PreferToHaveKeys),
         Box::new(PreferToHaveLength),
         Box::new(PreferToHaveMethodOnClass),
+        Box::new(PreferToHaveProperties),
         Box::new(PreferToHaveProperty),
         Box::new(PreferToHaveSameSize),
         Box::new(PreferToMatch),
@@ -666,4 +681,26 @@ fn uses_this(node: Node<'_, '_>) -> bool {
             found
         }
     }
+}
+
+/// php-parser's `getComments()` of a node that starts at `start`, when no node around it starts there too (php-parser
+/// gives a comment to the outermost node only): a comment right before it, with only whitespace between.
+pub(crate) fn has_comments(ctx: &Context<'_>, start: usize) -> bool {
+    super::php_parser::tokens(ctx.source)
+        .iter()
+        .rev()
+        .find(|t| t.end <= start && t.kind != mago_syntax::token::TokenKind::Whitespace)
+        .is_some_and(|t| t.kind.is_comment())
+}
+
+/// `PestChainAnalyzer::getRootFuncCall`: the call under the chain's method calls, and then its property fetches.
+pub(crate) fn root_func_call<'a>(call: &'a MethodCall<'a>) -> Option<&'a FunctionCall<'a>> {
+    let mut current: &Expression<'_> = call.object;
+    while let Some(m) = method_call(current) {
+        current = m.object;
+    }
+    while let Some(p) = property_fetch(current) {
+        current = p.object;
+    }
+    func_call(current)
 }
