@@ -8,7 +8,7 @@
 use mago_syntax::cst::{Node, NodeKind};
 use pun_problem::Safety;
 
-use super::annotations::{Annotated, single_quoted, take_generic_tags};
+use super::annotations::{Annotated, TagValue, named_tags, single_quoted};
 use super::{is_in_test_class, report};
 use crate::rules::types::facts::facts;
 use crate::{Context, Report, Rule};
@@ -36,13 +36,12 @@ impl Rule for PreferTicketAttribute {
         let Some(annotated) = Annotated::of(ctx.source, node, ancestors) else {
             return;
         };
-        let Some((new_doc, values)) = annotated
-            .doc
-            .as_ref()
-            .and_then(|doc| take_generic_tags(doc, "ticket"))
-        else {
+        let Some(doc) = annotated.doc.as_ref() else {
             return;
         };
+        if !doc.text_all().contains("@ticket") {
+            return;
+        }
         let in_test_class = match node {
             Node::Method(method) => is_in_test_class(ctx, ancestors, Some(method)),
             _ => {
@@ -60,12 +59,23 @@ impl Rule for PreferTicketAttribute {
         {
             return;
         }
-        let groups: Vec<String> = values
-            .iter()
-            .map(|v| format!("#[\\{TICKET_CLASS}({})]", single_quoted(v)))
-            .collect();
+        let Some(tags) = named_tags(ctx, ancestors, doc, "ticket") else {
+            return;
+        };
+        let mut removed = vec![false; doc.len()];
+        let mut groups = Vec::new();
+        for (i, value) in tags {
+            if let TagValue::Generic(value) = value {
+                removed[i] = true;
+                groups.push(format!("#[\\{TICKET_CLASS}({})]", single_quoted(&value)));
+            }
+        }
+        if groups.is_empty() {
+            return;
+        }
+        let new_doc = doc.print(&removed);
         out.push(report(
-            annotated.doc.as_ref().unwrap().span,
+            doc.span,
             "Use the `#[Ticket]` attribute instead of the `@ticket` annotation.",
             Safety::Safe,
             annotated.edits(ctx.source, Some(&new_doc), &groups),

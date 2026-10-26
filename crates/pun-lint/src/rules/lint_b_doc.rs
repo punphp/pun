@@ -83,6 +83,11 @@ impl<'s> Doc<'s> {
         Edit::new(self.span, printed)
     }
 
+    /// The doc comment's text.
+    pub fn text_all(&self) -> &'s str {
+        self.text
+    }
+
     /// The text of child `i`, from its first token to its last; `""` for a blank line.
     pub fn text(&self, i: usize) -> &'s str {
         let (from, to) = self.children[i];

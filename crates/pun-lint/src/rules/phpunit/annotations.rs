@@ -3,11 +3,15 @@
 //! (`GenericTagValueNode`), the doc without the tags that moved (`PhpDocTagRemover`, `DocBlockUpdater`), and the new
 //! attribute groups as php-parser prints them when they are added to the node's `attrGroups`.
 
-use mago_syntax::cst::{AttributeList, Node, Sequence};
+use mago_syntax::cst::{
+    AttributeList, Namespace, NamespaceBody, Node, Sequence, Statement, UseItem, UseItems,
+};
 use pun_problem::{Edit, Span};
 
+use crate::Context;
 use crate::rules::lint_b_doc::Doc;
 use crate::rules::rector_stmts::line_indent;
+use crate::rules::types::facts::facts;
 use crate::syntax::node_span;
 
 /// A class or a method that may get attributes: its span's start (attributes included), the end of its last
@@ -80,14 +84,566 @@ impl<'s> Annotated<'s> {
     }
 }
 
-/// Whether the doc tag `tag` (its text from the `@`) is a `@name` tag whose value phpdoc-parser reads as a
-/// `GenericTagValueNode`: the name as written, then nothing, whitespace, or a value that does not open a Doctrine
-/// annotation's `(`.
-pub(crate) fn is_generic_tag(tag: &str, name: &str) -> bool {
-    let Some(rest) = tag.strip_prefix('@').and_then(|t| t.strip_prefix(name)) else {
-        return false;
+/// How Rector reads a tag child of a doc comment for `PhpDocInfo::getTagsByName()`.
+#[derive(Debug, PartialEq)]
+pub(crate) enum TagValue {
+    /// A `GenericTagValueNode`: its value.
+    Generic(String),
+    /// A generic tag whose name resolves to a class, which `DoctrineAnnotationDecorator` turns into a
+    /// `DoctrineAnnotationTagValueNode` whose original content is the generic value.
+    Annotation(String),
+    /// `@name(...)`: phpdoc-parser's Doctrine tag.
+    Parenthesized,
+}
+
+/// `PhpDocParser::parseTagValue()`'s tags, whose value is not a `GenericTagValueNode`.
+const TYPED_TAGS: &[&str] = &[
+    "param",
+    "phpstan-param",
+    "psalm-param",
+    "phan-param",
+    "param-immediately-invoked-callable",
+    "phpstan-param-immediately-invoked-callable",
+    "param-later-invoked-callable",
+    "phpstan-param-later-invoked-callable",
+    "param-closure-this",
+    "phpstan-param-closure-this",
+    "pure-unless-callable-is-impure",
+    "phpstan-pure-unless-callable-is-impure",
+    "pure-unless-parameter-passed",
+    "phpstan-pure-unless-parameter-passed",
+    "var",
+    "phpstan-var",
+    "psalm-var",
+    "phan-var",
+    "return",
+    "phpstan-return",
+    "psalm-return",
+    "phan-return",
+    "phan-real-return",
+    "throws",
+    "phpstan-throws",
+    "mixin",
+    "phan-mixin",
+    "psalm-require-extends",
+    "phpstan-require-extends",
+    "psalm-require-implements",
+    "phpstan-require-implements",
+    "psalm-inheritors",
+    "phpstan-sealed",
+    "deprecated",
+    "property",
+    "property-read",
+    "property-write",
+    "phpstan-property",
+    "phpstan-property-read",
+    "phpstan-property-write",
+    "psalm-property",
+    "psalm-property-read",
+    "psalm-property-write",
+    "phan-property",
+    "phan-property-read",
+    "phan-property-write",
+    "method",
+    "phpstan-method",
+    "psalm-method",
+    "phan-method",
+    "template",
+    "phpstan-template",
+    "psalm-template",
+    "phan-template",
+    "template-covariant",
+    "phpstan-template-covariant",
+    "psalm-template-covariant",
+    "template-contravariant",
+    "phpstan-template-contravariant",
+    "psalm-template-contravariant",
+    "extends",
+    "phpstan-extends",
+    "phan-extends",
+    "phan-inherits",
+    "template-extends",
+    "implements",
+    "phpstan-implements",
+    "template-implements",
+    "use",
+    "phpstan-use",
+    "template-use",
+    "phpstan-type",
+    "psalm-type",
+    "phan-type",
+    "phpstan-import-type",
+    "psalm-import-type",
+    "phpstan-assert",
+    "phpstan-assert-if-true",
+    "phpstan-assert-if-false",
+    "psalm-assert",
+    "psalm-assert-if-true",
+    "psalm-assert-if-false",
+    "phan-assert",
+    "phan-assert-if-true",
+    "phan-assert-if-false",
+    "phpstan-this-out",
+    "phpstan-self-out",
+    "psalm-this-out",
+    "psalm-self-out",
+    "param-out",
+    "phpstan-param-out",
+    "psalm-param-out",
+];
+
+/// The `@name` tags of `doc` (case-sensitive, as `getTagsByName()` compares), each with its child index, as Rector
+/// reads them once `DoctrineAnnotationDecorator` has run; the node the doc belongs to has the ancestors `ancestors`.
+/// `None` where that decorator changes the doc's children and Pun does not follow: an `@\Class` or `@_tag`, a text
+/// with `})` (`mergeNestedDoctrineAnnotations()`), a generic tag with a further tag inside a line (phpdoc-parser
+/// starts a child there), or a generic tag whose brackets do not close before a later generic tag (which it takes
+/// in).
+pub(crate) fn named_tags(
+    ctx: &Context<'_>,
+    ancestors: &[Node<'_, '_>],
+    doc: &Doc<'_>,
+    name: &str,
+) -> Option<Vec<(usize, TagValue)>> {
+    let mut generic: Vec<(usize, &str, String)> = Vec::new();
+    let mut tags = Vec::new();
+    for i in 0..doc.len() {
+        let text = doc.text(i);
+        if text.contains("@\\") || text.starts_with("@_") {
+            return None;
+        }
+        let Some(tag) = tag_name(text) else {
+            if text.contains("})") {
+                return None;
+            }
+            continue;
+        };
+        if TYPED_TAGS.contains(&tag) {
+            continue;
+        }
+        let rest = &text[1 + tag.len()..];
+        if rest.trim_start_matches([' ', '\t']).starts_with('(') {
+            if tag == name {
+                tags.push((i, TagValue::Parenthesized));
+            }
+            continue;
+        }
+        let inline_tag = rest.as_bytes().windows(3).any(|w| {
+            matches!(w[0], b' ' | b'\t')
+                && w[1] == b'@'
+                && (w[2].is_ascii_alphabetic() || w[2] == b'_' || w[2] == b'\\')
+        });
+        if inline_tag {
+            return None;
+        }
+        let value = generic_tag_value(text, tag);
+        if tag == name {
+            tags.push((i, TagValue::Generic(value.clone())));
+        }
+        generic.push((i, tag, value));
+    }
+    if generic
+        .iter()
+        .rev()
+        .skip(1)
+        .any(|(_, _, value)| !closed_content(value))
+    {
+        return None;
+    }
+    if !tags.is_empty() && is_annotation_class(ctx, ancestors, name) {
+        for (_, value) in &mut tags {
+            if let TagValue::Generic(v) = value {
+                *value = TagValue::Annotation(std::mem::take(v));
+            }
+        }
+    }
+    Some(tags)
+}
+
+/// The tag name at the start of a doc child's text, without its `@`: phpdoc-parser's `TOKEN_PHPDOC_TAG`
+/// (`@(?:[a-z][a-z0-9-\\]+:)?[a-z][a-z0-9-\\]*+`, without case).
+fn tag_name(text: &str) -> Option<&str> {
+    let b = text.as_bytes();
+    if b.first() != Some(&b'@') || !b.get(1).is_some_and(u8::is_ascii_alphabetic) {
+        return None;
+    }
+    let part = |b: &[u8], from: usize| {
+        from + b[from..]
+            .iter()
+            .take_while(|c| c.is_ascii_alphanumeric() || **c == b'-' || **c == b'\\')
+            .count()
     };
-    rest.is_empty() || rest.starts_with([' ', '\t', '\n', '\r'])
+    let end = part(b, 2);
+    let end = if end > 2
+        && b.get(end) == Some(&b':')
+        && b.get(end + 1).is_some_and(u8::is_ascii_alphabetic)
+    {
+        part(b, end + 2)
+    } else {
+        end
+    };
+    Some(&text[1..end])
+}
+
+/// `ClassAnnotationMatcher::resolveTagFullyQualifiedName()` for a tag name without a `\`, then whether
+/// `DoctrineAnnotationDecorator` takes the result for an annotation class (a `\` in it, or `Target`).
+fn is_annotation_class(ctx: &Context<'_>, ancestors: &[Node<'_, '_>], tag: &str) -> bool {
+    let namespace = ancestors.iter().rev().find_map(|a| match a {
+        Node::Namespace(ns) => Some(
+            ns.name
+                .as_ref()
+                .map(|n| String::from_utf8_lossy(n.value()).into_owned()),
+        ),
+        _ => None,
+    });
+    let uses = file_uses(ancestors);
+    let resolved = match namespace.flatten() {
+        Some(ns) => {
+            let namespaced = format!("{ns}\\{tag}");
+            if facts(ctx)
+                .codebase
+                .get_class_like(namespaced.as_bytes())
+                .is_some()
+            {
+                Some(namespaced)
+            } else {
+                // `resolveAsAliased()`: an alias written as the tag, then the use imports' short names.
+                uses.iter()
+                    .find(|u| u.alias.as_deref() == Some(tag))
+                    .map(|u| u.name.clone())
+                    .or_else(|| match_name_with_uses(&uses, tag))
+            }
+        }
+        None => match_name_with_uses(&uses, tag),
+    };
+    let resolved = resolved.unwrap_or_else(|| tag.to_string());
+    resolved.contains('\\') || resolved == "Target"
+}
+
+/// A `use` import: its name, a group's prefix included, and its alias as written.
+struct UseImport {
+    name: String,
+    alias: Option<String>,
+}
+
+/// `FileNode::getUsesAndGroupUses()`: the imports of the file's namespace when it has exactly one, else of its top
+/// level; of every kind (class, function, constant).
+fn file_uses(ancestors: &[Node<'_, '_>]) -> Vec<UseImport> {
+    let Some(Node::Program(program)) = ancestors.first() else {
+        return Vec::new();
+    };
+    let namespaces: Vec<&Namespace<'_>> = program
+        .statements
+        .iter()
+        .filter_map(|s| match s {
+            Statement::Namespace(ns) => Some(ns),
+            _ => None,
+        })
+        .collect();
+    let statements: Vec<&Statement<'_>> = match namespaces.as_slice() {
+        [ns] => match &ns.body {
+            NamespaceBody::Implicit(body) => body.statements.iter().collect(),
+            NamespaceBody::BraceDelimited(block) => block.statements.iter().collect(),
+        },
+        _ => program.statements.iter().collect(),
+    };
+    let mut imports = Vec::new();
+    let text = |id: &mago_syntax::cst::Identifier<'_>| {
+        String::from_utf8_lossy(id.value())
+            .trim_start_matches('\\')
+            .to_string()
+    };
+    let mut add = |prefix: Option<String>, item: &UseItem<'_>| {
+        let name = text(&item.name);
+        imports.push(UseImport {
+            name: match prefix {
+                Some(prefix) => format!("{prefix}\\{name}"),
+                None => name,
+            },
+            alias: item
+                .alias
+                .as_ref()
+                .map(|a| String::from_utf8_lossy(a.identifier.value).into_owned()),
+        });
+    };
+    for statement in statements {
+        let Statement::Use(r#use) = statement else {
+            continue;
+        };
+        match &r#use.items {
+            UseItems::Sequence(s) => s.items.iter().for_each(|i| add(None, i)),
+            UseItems::TypedSequence(s) => s.items.iter().for_each(|i| add(None, i)),
+            UseItems::TypedList(l) => l
+                .items
+                .iter()
+                .for_each(|i| add(Some(text(&l.namespace)), i)),
+            UseItems::MixedList(l) => l
+                .items
+                .iter()
+                .for_each(|i| add(Some(text(&l.namespace)), &i.item)),
+        }
+    }
+    imports
+}
+
+/// `UseImportNameMatcher::matchNameWithUses()` for a tag name without a `\`: the first import whose short name (its
+/// alias, else its last part) is the tag, without case; an aliased import gives its name and a `\`.
+fn match_name_with_uses(uses: &[UseImport], tag: &str) -> Option<String> {
+    uses.iter().find_map(|u| {
+        let short = u
+            .alias
+            .as_deref()
+            .unwrap_or_else(|| u.name.rsplit('\\').next().unwrap_or_default());
+        short.eq_ignore_ascii_case(tag).then(|| match u.alias {
+            Some(_) => format!("{}\\", u.name),
+            None => u.name.clone(),
+        })
+    })
+}
+
+/// `DoctrineAnnotationDecorator::isClosedContent()`: as many of the content's phpdoc-parser tokens hold a `(` or a
+/// `{` as hold a `)` or a `}`.
+fn closed_content(content: &str) -> bool {
+    let (mut open, mut close) = (0, 0);
+    for token in phpdoc_tokens(content) {
+        open += usize::from(token.contains(['(', '{']));
+        close += usize::from(token.contains([')', '}']));
+    }
+    open == close
+}
+
+/// phpdoc-parser's `Lexer::tokenize()`: the text of each token, until a character no token matches (the lexer's
+/// regex is anchored).
+fn phpdoc_tokens(s: &str) -> Vec<&str> {
+    let b = s.as_bytes();
+    let mut tokens = Vec::new();
+    let mut i = 0;
+    while i < b.len() {
+        let Some(len) = token_len(b, i) else {
+            break;
+        };
+        // A token ends at a character boundary: a multibyte character is a letter to every pattern that takes it.
+        tokens.push(&s[i..i + len]);
+        i += len;
+    }
+    tokens
+}
+
+/// The length of the token at `i`: `Lexer::generateRegexp()`'s alternatives in order, without case.
+fn token_len(b: &[u8], i: usize) -> Option<usize> {
+    let at = |j: usize| b.get(j).copied();
+    let start =
+        |c: Option<u8>| c.is_some_and(|c| c.is_ascii_alphabetic() || c == b'_' || c >= 0x80);
+    let word = |c: Option<u8>| start(c) || c.is_some_and(|c| c.is_ascii_digit());
+    let run = |from: usize, f: &dyn Fn(Option<u8>) -> bool| {
+        let mut j = from;
+        while f(at(j)) {
+            j += 1;
+        }
+        j
+    };
+    let rest = &b[i..];
+    // TOKEN_HORIZONTAL_WS
+    let ws = run(i, &|c| matches!(c, Some(b' ' | b'\t')));
+    if ws > i {
+        return Some(ws - i);
+    }
+    // TOKEN_IDENTIFIER
+    let mut j = i;
+    loop {
+        let k = j + usize::from(at(j) == Some(b'\\'));
+        if !start(at(k)) {
+            break;
+        }
+        j = run(k + 1, &|c| word(c) || c == Some(b'-'));
+    }
+    if j > i {
+        return Some(j - i);
+    }
+    // TOKEN_THIS_VARIABLE, TOKEN_VARIABLE
+    if rest.len() >= 5 && rest[..5].eq_ignore_ascii_case(b"$this") && !word(at(i + 5)) {
+        return Some(5);
+    }
+    if at(i) == Some(b'$') && start(at(i + 1)) {
+        return Some(run(i + 2, &word) - i);
+    }
+    // The one-character tokens up to TOKEN_COMMA.
+    if matches!(
+        b[i],
+        b'&' | b'|' | b'?' | b'!' | b'(' | b')' | b'<' | b'>' | b'[' | b']' | b'{' | b'}' | b','
+    ) {
+        return Some(1);
+    }
+    // TOKEN_COMMENT: up to the last place on the line before a line break or a `*/`.
+    if rest.starts_with(b"//") {
+        let eol = rest.iter().position(|c| matches!(c, b'\r' | b'\n'));
+        let end = match eol {
+            Some(eol) => Some(eol),
+            None => rest[2..]
+                .windows(2)
+                .rposition(|w| w == b"*/")
+                .map(|p| p + 2),
+        };
+        if let Some(end) = end {
+            return Some(end);
+        }
+    }
+    for op in [&b"..."[..], b"::", b"=>", b"->", b"=", b":"] {
+        if rest.starts_with(op) {
+            return Some(op.len());
+        }
+    }
+    // TOKEN_OPEN_PHPDOC, TOKEN_CLOSE_PHPDOC
+    if rest.starts_with(b"/**") && at(i + 3).is_some_and(|c| c.is_ascii_whitespace() || c == 0x0b) {
+        return Some(3 + usize::from(at(i + 3) == Some(b' ')));
+    }
+    if rest.starts_with(b"*/") {
+        return Some(2);
+    }
+    // TOKEN_PHPDOC_TAG
+    if b[i] == b'@' {
+        if let Some(name) = tag_name(std::str::from_utf8(rest).ok()?) {
+            return Some(1 + name.len());
+        }
+        // TOKEN_DOCTRINE_TAG: `@[a-z_\\][a-z0-9_\:\\]*[a-z_][a-z0-9_]*`
+        if matches!(at(i + 1), Some(b'_' | b'\\')) {
+            let end = run(i + 2, &|c| {
+                c.is_some_and(|c| c.is_ascii_alphanumeric() || matches!(c, b'_' | b':' | b'\\'))
+            });
+            if let Some(k) = (i + 2..end)
+                .rev()
+                .find(|&k| b[k].is_ascii_alphabetic() || b[k] == b'_')
+            {
+                return Some(
+                    run(k + 1, &|c| {
+                        c.is_some_and(|c| c.is_ascii_alphanumeric() || c == b'_')
+                    }) - i,
+                );
+            }
+        }
+    }
+    // TOKEN_PHPDOC_EOL
+    let nl = i + usize::from(at(i) == Some(b'\r'));
+    if at(nl) == Some(b'\n') {
+        let mut j = run(nl + 1, &|c| matches!(c, Some(b' ' | b'\t')));
+        if at(j) == Some(b'*') && at(j + 1) != Some(b'/') {
+            j += 1 + usize::from(at(j + 1) == Some(b' '));
+        }
+        return Some(j - i);
+    }
+    // TOKEN_FLOAT, TOKEN_INTEGER
+    if let Some(end) = number(b, i) {
+        return Some(end - i);
+    }
+    // TOKEN_SINGLE_QUOTED_STRING, TOKEN_DOUBLE_QUOTED_STRING
+    if let quote @ (b'\'' | b'"') = b[i] {
+        let mut j = i + 1;
+        loop {
+            match at(j) {
+                Some(b'\\') if !matches!(at(j + 1), None | Some(b'\r' | b'\n')) => j += 2,
+                Some(c) if c == quote => return Some(j + 1 - i),
+                Some(b'\\' | b'\r' | b'\n') | None => break,
+                Some(_) => j += 1,
+            }
+        }
+    }
+    // TOKEN_DOCTRINE_ANNOTATION_STRING
+    if b[i] == b'"' {
+        let mut j = i + 1;
+        loop {
+            match at(j) {
+                Some(b'"') if at(j + 1) == Some(b'"') => j += 2,
+                Some(b'"') => return Some(j + 1 - i),
+                Some(_) => j += 1,
+                None => break,
+            }
+        }
+    }
+    // TOKEN_WILDCARD
+    if b[i] == b'*' {
+        return Some(1);
+    }
+    // TOKEN_OTHER
+    let mut j = i;
+    while j < b.len() && !b[j].is_ascii_whitespace() && b[j] != 0x0b && !b[j..].starts_with(b"*/") {
+        j += 1;
+    }
+    (j > i).then_some(j - i)
+}
+
+/// The end of the `TOKEN_FLOAT` or else `TOKEN_INTEGER` at `i`, if one is there.
+fn number(b: &[u8], i: usize) -> Option<usize> {
+    let at = |j: usize| b.get(j).copied();
+    // `[0-9]++(_[0-9]++)*` (any `digit`), or nothing.
+    let digits = |from: usize, digit: &dyn Fn(u8) -> bool| -> Option<usize> {
+        let mut j = from;
+        while at(j).is_some_and(digit) {
+            j += 1;
+        }
+        if j == from {
+            return None;
+        }
+        while at(j) == Some(b'_') && at(j + 1).is_some_and(digit) {
+            j += 1;
+            while at(j).is_some_and(digit) {
+                j += 1;
+            }
+        }
+        Some(j)
+    };
+    let dec = |c: u8| c.is_ascii_digit();
+    let exponent = |from: usize| -> Option<usize> {
+        if !matches!(at(from), Some(b'e' | b'E')) {
+            return None;
+        }
+        let sign = from + 1 + usize::from(matches!(at(from + 1), Some(b'+' | b'-')));
+        digits(sign, &dec)
+    };
+    let s = i + usize::from(matches!(at(i), Some(b'+' | b'-')));
+    // `D\.[0-9]*+(_[0-9]++)*(e…)?`
+    if let Some(d) = digits(s, &dec) {
+        if at(d) == Some(b'.') {
+            let mut j = d + 1;
+            while at(j).is_some_and(dec) {
+                j += 1;
+            }
+            while at(j) == Some(b'_') && at(j + 1).is_some_and(dec) {
+                j = digits(j + 1, &dec)?;
+            }
+            return Some(exponent(j).unwrap_or(j));
+        }
+    }
+    // `[0-9]*+(_[0-9]++)*\.D(e…)?`
+    let mut j = s;
+    while at(j).is_some_and(dec) {
+        j += 1;
+    }
+    while at(j) == Some(b'_') && at(j + 1).is_some_and(dec) {
+        j = digits(j + 1, &dec)?;
+    }
+    if at(j) == Some(b'.') {
+        if let Some(d) = digits(j + 1, &dec) {
+            return Some(exponent(d).unwrap_or(d));
+        }
+    }
+    // `D e[+\-]?D`
+    if let Some(d) = digits(s, &dec) {
+        if let Some(e) = exponent(d) {
+            return Some(e);
+        }
+    }
+    // TOKEN_INTEGER
+    if at(s) == Some(b'0') {
+        let based = match at(s + 1) {
+            Some(b'b' | b'B') => digits(s + 2, &|c| matches!(c, b'0' | b'1')),
+            Some(b'o' | b'O') => digits(s + 2, &|c| (b'0'..=b'7').contains(&c)),
+            Some(b'x' | b'X') => digits(s + 2, &|c| c.is_ascii_hexdigit()),
+            _ => None,
+        };
+        if based.is_some() {
+            return based;
+        }
+    }
+    digits(s, &dec)
 }
 
 /// The `GenericTagValueNode` value of the doc tag `tag` named `name`: what follows the name, its leading whitespace
@@ -114,31 +670,8 @@ pub(crate) fn generic_tag_value(tag: &str, name: &str) -> String {
     value.join("\n").trim_end().to_string()
 }
 
-/// The doc comment `doc` as Rector prints it without its generic `@name` tags (`""` when nothing is left), and their
-/// values in order; `None` when it has none, or when one has a further tag inside a line, which phpdoc-parser splits
-/// off and Pun does not follow.
-pub(crate) fn take_generic_tags(doc: &Doc<'_>, name: &str) -> Option<(String, Vec<String>)> {
-    let removed: Vec<bool> = (0..doc.len())
-        .map(|i| is_generic_tag(doc.text(i), name))
-        .collect();
-    if !removed.contains(&true) {
-        return None;
-    }
-    let mut values = Vec::new();
-    for (i, _) in removed.iter().enumerate().filter(|(_, r)| **r) {
-        let text = doc.text(i);
-        if text[1..]
-            .split([' ', '\t', '\n'])
-            .any(|w| w.starts_with('@') && w.as_bytes().get(1).is_some_and(u8::is_ascii_alphabetic))
-        {
-            return None;
-        }
-        values.push(generic_tag_value(text, name));
-    }
-    Some((doc.print(&removed), values))
-}
-
-/// php-parser's `pSingleQuotedString`: `'` and the backslashes before a `'`, a `\` or the end are escaped.
+/// php-parser's `pSingleQuotedString`: `'`, the backslashes before a `'`, a `\` or the end, and those after a `\`
+/// are escaped.
 pub(crate) fn single_quoted(value: &str) -> String {
     let bytes = value.as_bytes();
     let mut out = String::with_capacity(value.len() + 2);
