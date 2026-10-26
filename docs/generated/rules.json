@@ -10820,7 +10820,7 @@
         "AddReturnTypeToDependedRector",
         "Rector\\PHPUnit\\CodeQuality\\Rector\\Class_\\AddReturnTypeToDependedRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/phpunit/add-instanceof-assert",

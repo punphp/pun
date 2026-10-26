@@ -30,7 +30,7 @@ mod add_union_return;
 pub(crate) mod declare;
 mod native;
 mod never;
-mod silent_void;
+pub(crate) mod silent_void;
 
 pub use add_array_return::AddArrayReturn;
 pub use add_bool_return::AddBoolReturn;

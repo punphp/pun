@@ -12439,7 +12439,7 @@
         "rules": [
           "lint/phpunit/add-depended-test-return-type"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
