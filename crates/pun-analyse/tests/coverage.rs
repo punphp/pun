@@ -23,6 +23,17 @@ const GAPS: &[(&str, &str, i64, &str)] = &[
     ("types", "offsets.php", 216, "nullCoalesce.variable"),
     // Mago loses `$this` after `$this?->$this?->$name`, so the nullsafe rule misses this fetch
     ("dynamic-names", "dynamic-stringable-nullsafe-access.php", 16, "nullsafe.neverNull"),
+    // The conservative declaration-effects producer does not follow labels/goto or general branches.
+    ("level4-unused", "src/labels.php", 5, "void.pure"),
+    // Arithmetic expression effects and branch joins remain unknown, not proven empty.
+    ("strict-operators", "operators.php", 95, "void.pure"),
+    ("strict-operators", "operators.php", 105, "void.pure"),
+    // First-class callable creation has no declaration-effects producer yet.
+    ("types", "types.php", 72, "void.pure"),
+    // Foreach scope/effect joins remain unported for declaration purity.
+    ("types", "types.php", 281, "void.pure"),
+    // Local class declarations need their own producer, separate from their methods' bodies.
+    ("types-level4", "checks.php", 203, "void.pure"),
 ];
 
 fn check(dir: &Path, neon: &str) -> Result<(), String> {

@@ -1,0 +1,64 @@
+# Exact missing void.pure diagnostics, not case-wide exceptions: <case> | <file>:<line>.
+# Keep the original complete PHPStan captures; retire each location when its producer lands.
+# Unary +/- on non-literals and bitwise-not require their expression-effect producers.
+2 Operators/InvalidUnaryOperationRuleTest::testBcMathNumber | Operators/data/unary-bcmath-number.php:7
+2 Operators/InvalidUnaryOperationRuleTest::testBcMathNumber | Operators/data/unary-bcmath-number.php:11
+2 Operators/InvalidUnaryOperationRuleTest::testBcMathNumber | Operators/data/unary-bcmath-number.php:19
+2 Operators/InvalidUnaryOperationRuleTest::testRule | Operators/data/invalid-unary.php:32
+2 Operators/InvalidUnaryOperationRuleTest::testUnion | Operators/data/unary-union.php:11
+# Branch joins/array unpacking and typed non-array offset writes are not produced yet.
+3 Arrays/ArrayUnpackingRuleTest::testPhpVersionNarrowedScope | Arrays/data/array-unpacking-php-versions.php:8
+3 Arrays/OffsetAccessAssignmentRuleTest::testBug11572 | Arrays/data/bug-11572.php:13
+3 Arrays/OffsetAccessAssignmentRuleTest::testBug11572 | Arrays/data/bug-11572.php:43
+# Conditional builtin calls need reflected impurity and throw-point contracts.
+3 Exceptions/ThrowsVoidFunctionWithExplicitThrowPointRuleTest::testBug13515 | Exceptions/data/bug-13515.php:6
+# Labels/goto, if/elseif joins, property-read effects and condition narrowing are unsupported.
+4 Comparison/BooleanNotConstantConditionRuleTest::testBug12852 | Comparison/data/bug-12852.php:5
+4 Comparison/BooleanNotConstantConditionRuleTest::testBug14469 | Comparison/data/bug-14469.php:22
+4 Comparison/BooleanNotConstantConditionRuleTest::testBug14469 | Comparison/data/bug-14469.php:38
+4 Comparison/BooleanNotConstantConditionRuleTest::testBug14469 | Comparison/data/bug-14469.php:54
+4 Comparison/BooleanNotConstantConditionRuleTest::testBug14469 | Comparison/data/bug-14469.php:72
+4 Comparison/ConstantLooseComparisonRuleTest::testBug8485 | Comparison/data/bug-8485.php:15
+4 Comparison/ConstantLooseComparisonRuleTest::testBug8485 | Comparison/data/bug-8485.php:35
+4 Comparison/IfConstantConditionRuleTest::testBug8485 | Comparison/data/bug-8485.php:15
+4 Comparison/IfConstantConditionRuleTest::testBug8485 | Comparison/data/bug-8485.php:35
+# Match exhaustiveness must produce actual residual throw points, not a reduced throw-type union.
+4 Comparison/MatchExpressionRuleTest::testBug13029 | Comparison/data/bug-13029.php:7
+4 Comparison/MatchExpressionRuleTest::testBug9534 | Comparison/data/bug-9534.php:33
+# Loop results and narrowing away an unreachable throw require control-flow producers.
+4 Comparison/NumberComparisonOperatorsConstantConditionRuleTest::testBug3310 | Comparison/data/bug-3310.php:5
+4 Comparison/NumberComparisonOperatorsConstantConditionRuleTest::testBug7075 | Comparison/data/bug-7075.php:14
+# If/elseif joins and comparison conditions (including enum values) are unsupported.
+4 Comparison/StrictComparisonOfDifferentTypesRuleTest::testBug8485 | Comparison/data/bug-8485.php:15
+4 Comparison/StrictComparisonOfDifferentTypesRuleTest::testBug8485 | Comparison/data/bug-8485.php:35
+4 Comparison/StrictComparisonOfDifferentTypesRuleTest::testHashing | Comparison/data/hashing.php:21
+# Typed ArrayAccess/builtin/constructor points and narrower catches need reflected/typed producers.
+4 Exceptions/CatchWithUnthrownExceptionRuleTest::testBug11427 | Exceptions/data/bug-11427.php:121
+4 Exceptions/CatchWithUnthrownExceptionRuleTest::testBug11427 | Exceptions/data/bug-11427.php:180
+4 Exceptions/CatchWithUnthrownExceptionRuleTest::testBug6574 | Exceptions/data/bug-6574.php:111
+4 Exceptions/CatchWithUnthrownExceptionRuleTest::testFilterVarThrowOnFailure | Exceptions/data/filter-var-throw-on-failure.php:7
+4 Exceptions/CatchWithUnthrownExceptionRuleTest::testFilterVarThrowOnFailure | Exceptions/data/filter-var-throw-on-failure.php:15
+4 Exceptions/CatchWithUnthrownExceptionRuleTest::testFilterVarThrowOnFailure | Exceptions/data/filter-var-throw-on-failure.php:23
+4 Exceptions/CatchWithUnthrownExceptionRuleTest::testFilterVarThrowOnFailure | Exceptions/data/filter-var-throw-on-failure.php:31
+4 Exceptions/CatchWithUnthrownExceptionRuleTest::testFilterVarThrowOnFailure | Exceptions/data/filter-var-throw-on-failure.php:39
+4 Exceptions/CatchWithUnthrownExceptionRuleTest::testFilterVarThrowOnFailure | Exceptions/data/filter-var-throw-on-failure.php:47
+4 Exceptions/CatchWithUnthrownExceptionRuleTest::testFilterVarThrowOnFailure | Exceptions/data/filter-var-throw-on-failure.php:58
+4 Exceptions/CatchWithUnthrownExceptionRuleTest::testFilterVarThrowOnFailure | Exceptions/data/filter-var-throw-on-failure.php:66
+4 Exceptions/CatchWithUnthrownExceptionRuleTest::testGetClassThrowType | Exceptions/data/get-class-throw-type.php:63
+# Loop exits overwritten by finally are not modelled by the straight-line termination projection.
+4 Exceptions/HelperFinally::testRule | Exceptions/data/helper-finally.php:124
+4 Exceptions/HelperFinally::testRule | Exceptions/data/helper-finally.php:131
+# Coalescing assignments, their conditional reads, isset/empty and unset need their own producers.
+4 Variables/NullCoalesceRuleTest::testBug15021 | Variables/data/bug-15021.php:6
+4 Variables/NullCoalesceRuleTest::testBug4337 | Variables/data/bug-4337.php:72
+4 Variables/NullCoalesceRuleTest::testNullCoalesceAssignRightSideScope | Variables/data/null-coalesce-assign-right-side-scope.php:33
+4 Variables/NullCoalesceRuleTest::testNullCoalesceAssignRightSideScope | Variables/data/null-coalesce-assign-right-side-scope.php:39
+4 Variables/NullCoalesceRuleTest::testNullCoalesceAssignRightSideScope | Variables/data/null-coalesce-assign-right-side-scope.php:44
+4 Variables/NullCoalesceRuleTest::testNullCoalesceAssignRightSideScope | Variables/data/null-coalesce-assign-right-side-scope.php:74
+4 Variables/NullCoalesceRuleTest::testNullCoalesceAssignRightSideScope | Variables/data/null-coalesce-assign-right-side-scope.php:80
+4 Variables/NullCoalesceRuleTest::testNullCoalesceAssignRightSideScope | Variables/data/null-coalesce-assign-right-side-scope.php:86
+4 Variables/NullCoalesceRuleTest::testNullCoalesceAssignRightSideScope | Variables/data/null-coalesce-assign-right-side-scope.php:93
+4 Variables/NullCoalesceRuleTest::testNullCoalesceAssignRightSideScope | Variables/data/null-coalesce-assign-right-side-scope.php:109
+# Isset/property reads and their branch effects are unknown, not manufactured empty.
+5 Properties/AccessPropertiesRuleTest::testBug12390 | Properties/data/bug-12390.php:3
+5 Properties/AccessPropertiesRuleTest::testBug12390 | Properties/data/bug-12390.php:9

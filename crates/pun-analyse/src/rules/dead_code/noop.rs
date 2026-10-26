@@ -14,6 +14,7 @@ use mago_syntax::cst::*;
 use mago_syntax::walker::MutWalker;
 
 use super::super::Checker;
+use super::super::declaration_effects::TESTING_FUNCTIONS;
 use super::super::declarations::{doc_before, doc_tags, has_tag};
 use super::super::members::{self, Method};
 use super::no_discard::unparen;
@@ -77,18 +78,6 @@ const PURE_UNLESS_CALLABLE_IS_IMPURE: &[(&str, &[&str])] = &[
 
 /// SimpleImpurePoint::SIDE_EFFECT_FLIP_PARAMETERS: no side effects when the `return` argument is true.
 const FLIP: &[&str] = &["print_r", "var_export", "highlight_string"];
-
-/// CallToFunctionStatementWithoutSideEffectsRule::PHPSTAN_TESTING_FUNCTIONS.
-const TESTING_FUNCTIONS: &[&str] = &[
-    "PHPStan\\dumpNativeType",
-    "PHPStan\\dumpType",
-    "PHPStan\\dumpPhpDocType",
-    "PHPStan\\debugScope",
-    "PHPStan\\Testing\\assertType",
-    "PHPStan\\Testing\\assertNativeType",
-    "PHPStan\\Testing\\assertSuperType",
-    "PHPStan\\Testing\\assertVariableCertainty",
-];
 
 const PURE_TAGS: &[&str] = &[
     "@pure",

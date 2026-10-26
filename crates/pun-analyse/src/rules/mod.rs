@@ -10,6 +10,8 @@ mod class_names;
 mod classes;
 mod constants;
 mod dead_code;
+mod declaration_effects;
+mod declaration_purity;
 mod debug;
 mod declarations;
 mod declared;
@@ -105,6 +107,8 @@ pub(crate) use unused_trait::unused_traits;
 
 pub fn reports(identifier: &str) -> bool {
     IDENTIFIERS.contains(&identifier)
+        // Only the conservative unspecified-declaration branch; the complete Pure*Rule mappings stay unported.
+        || identifier == "void.pure"
         || missing_types::IDENTIFIERS.contains(&identifier)
         || generics::IDENTIFIERS.contains(&identifier)
         || larastan::IDENTIFIERS.contains(&identifier)
@@ -1499,6 +1503,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
 
     fn walk_in_function(&mut self, f: &'ast Function<'arena>, _: &mut ()) {
         dead_code::impure_function(self, f);
+        declaration_purity::function(self, f);
         callable_tags::function_like(self, f.span(), &f.parameter_list);
         conditional_return::function(self, f);
         assert_tags::function(self, f);
@@ -1588,6 +1593,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
     }
     fn walk_in_method(&mut self, m: &'ast Method<'arena>, _: &mut ()) {
         dead_code::impure_method(self, m);
+        declaration_purity::method(self, m);
         phpdoc_tags::node(self, m.span());
         callable_tags::function_like(self, m.span(), &m.parameter_list);
         conditional_return::method(self, m);

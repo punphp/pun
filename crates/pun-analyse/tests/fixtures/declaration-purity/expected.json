@@ -1,0 +1,3122 @@
+{
+    "1": [
+        {
+            "file": "boundaries.php",
+            "line": 27,
+            "identifier": "arguments.count",
+            "message": "Function DeclarationPurity\\noThrow invoked with 1 parameter, 0 required.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "matrix.php",
+            "line": 3,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "matrix.php",
+            "line": 3,
+            "identifier": "variable.undefined",
+            "message": "Undefined variable: $item",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "matrix.php",
+            "line": 6,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "matrix.php",
+            "line": 6,
+            "identifier": "variable.undefined",
+            "message": "Undefined variable: $item",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "matrix.php",
+            "line": 12,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "supported.php",
+            "line": 52,
+            "identifier": "function.inner",
+            "message": "Inner named functions are not supported by PHPStan. Consider refactoring to an anonymous function, class method, or a top-level-defined function. See issue #165 (https://github.com/phpstan/phpstan/issues/165) for more details.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 56,
+            "identifier": "phpstan.type",
+            "message": "Expected type int, actual: 1",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "supported.php",
+            "line": 57,
+            "identifier": "phpstan.type",
+            "message": "Expected type int, actual: 1",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "supported.php",
+            "line": 100,
+            "identifier": "function.notFound",
+            "message": "Function unknownFunction not found.",
+            "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 103,
+            "identifier": "arguments.count",
+            "message": "Function DeclarationPurity\\noThrow invoked with 1 parameter, 0 required.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 131,
+            "identifier": "property.notFound",
+            "message": "Access to an undefined property DeclarationPurity\\Methods::$value.",
+            "tip": "Learn more: <fg=cyan>https://phpstan.org/blog/solving-phpstan-access-to-undefined-property</>",
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 144,
+            "identifier": "function.inner",
+            "message": "Inner named functions are not supported by PHPStan. Consider refactoring to an anonymous function, class method, or a top-level-defined function. See issue #165 (https://github.com/phpstan/phpstan/issues/165) for more details.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 147,
+            "identifier": "phpstan.type",
+            "message": "Expected type int, actual: 1",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "supported.php",
+            "line": 148,
+            "identifier": "phpstan.type",
+            "message": "Expected type int, actual: 1",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "supported.php",
+            "line": 164,
+            "identifier": "function.notFound",
+            "message": "Function unknownFunction not found.",
+            "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 175,
+            "identifier": "function.inner",
+            "message": "Inner named functions are not supported by PHPStan. Consider refactoring to an anonymous function, class method, or a top-level-defined function. See issue #165 (https://github.com/phpstan/phpstan/issues/165) for more details.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 182,
+            "identifier": "method.abstractPrivate",
+            "message": "Private method DeclarationPurity\\AbstractMethod::missingBody() cannot be abstract.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "supported.php",
+            "line": 190,
+            "identifier": "function.notFound",
+            "message": "Function unknownFunction not found.",
+            "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 193,
+            "identifier": "ignore.unmatchedIdentifier",
+            "message": "No error with identifier void.pure is reported on line 193.",
+            "tip": null,
+            "ignorable": false
+        }
+    ],
+    "2": [
+        {
+            "file": "boundaries.php",
+            "line": 6,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurityBoundaries\\arithmetic() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "boundaries.php",
+            "line": 7,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurityBoundaries\\branch() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "boundaries.php",
+            "line": 8,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurityBoundaries\\loop() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "boundaries.php",
+            "line": 9,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurityBoundaries\\unsetLocal() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "boundaries.php",
+            "line": 10,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurityBoundaries\\newObject() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "boundaries.php",
+            "line": 11,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurityBoundaries\\caughtTypedThrow() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "boundaries.php",
+            "line": 12,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurityBoundaries\\caughtDocumentedThrow() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "boundaries.php",
+            "line": 13,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurityBoundaries\\namespaceFallback() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "boundaries.php",
+            "line": 14,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurityBoundaries\\offsetKey() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "boundaries.php",
+            "line": 15,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurityBoundaries\\nestedOffset() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "boundaries.php",
+            "line": 16,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurityBoundaries\\indirectVariable() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "boundaries.php",
+            "line": 24,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurityBoundaries\\negative() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "boundaries.php",
+            "line": 25,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurityBoundaries\\compoundDivision() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "boundaries.php",
+            "line": 26,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurityBoundaries\\arrayUnpack() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "boundaries.php",
+            "line": 27,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurityBoundaries\\closureArgument() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "boundaries.php",
+            "line": 27,
+            "identifier": "arguments.count",
+            "message": "Function DeclarationPurity\\noThrow invoked with 1 parameter, 0 required.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "boundaries.php",
+            "line": 31,
+            "identifier": "void.pure",
+            "message": "Method DeclarationPurityBoundaries\\Inherited::local() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "boundaries.php",
+            "line": 37,
+            "identifier": "possiblyImpure.functionCall",
+            "message": "Possibly impure call to a callable in pure function DeclarationPurityBoundaries\\invokes().",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "boundaries.php (in context of class DeclarationPurityBoundaries\\UsesTrait)",
+            "line": 18,
+            "identifier": "void.pure",
+            "message": "Method DeclarationPurityBoundaries\\UsesTrait::local() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "matrix.php",
+            "line": 2,
+            "identifier": "void.pure",
+            "message": "Function assignmentShort() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "matrix.php",
+            "line": 3,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "matrix.php",
+            "line": 3,
+            "identifier": "variable.undefined",
+            "message": "Undefined variable: $item",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "matrix.php",
+            "line": 5,
+            "identifier": "void.pure",
+            "message": "Function assignmentLegacy() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "matrix.php",
+            "line": 6,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "matrix.php",
+            "line": 6,
+            "identifier": "variable.undefined",
+            "message": "Undefined variable: $item",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "matrix.php",
+            "line": 8,
+            "identifier": "void.pure",
+            "message": "Function localWrite() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "matrix.php",
+            "line": 12,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "matrix.php",
+            "line": 20,
+            "identifier": "void.pure",
+            "message": "Function localReference() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "matrix.php",
+            "line": 27,
+            "identifier": "void.pure",
+            "message": "Function localOffset() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 7,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurity\\emptyReturn() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 8,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurity\\unreachableEffect() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 11,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurity\\docVoid() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 13,
+            "identifier": "pureFunction.void",
+            "message": "Function DeclarationPurity\\pureDeclaration() is marked as pure but returns void.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 15,
+            "identifier": "impureFunction.pure",
+            "message": "Function DeclarationPurity\\impureDeclaration() is marked as impure but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 17,
+            "identifier": "impureFunction.pure",
+            "message": "Function DeclarationPurity\\phpstanImpureDeclaration() is marked as impure but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 19,
+            "identifier": "pureFunction.void",
+            "message": "Function DeclarationPurity\\phpstanPureDeclaration() is marked as pure but returns void.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 21,
+            "identifier": "pureFunction.void",
+            "message": "Function DeclarationPurity\\psalmPureDeclaration() is marked as pure but returns void.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 23,
+            "identifier": "pureFunction.void",
+            "message": "Function DeclarationPurity\\phanPureDeclaration() is marked as pure but returns void.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 25,
+            "identifier": "pureFunction.void",
+            "message": "Function DeclarationPurity\\phanSideEffectFreeDeclaration() is marked as pure but returns void.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 31,
+            "identifier": "assert.unknownExpr",
+            "message": "Assert references unknown $x->value.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 33,
+            "identifier": "assert.unknownExpr",
+            "message": "Assert references unknown $x->value().",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 37,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurity\\localReference() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 39,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurity\\offsetReference() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 45,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurity\\localRead() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 46,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurity\\localWrites() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 47,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurity\\nestedList() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 48,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurity\\keyedList() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 50,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurity\\append() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 52,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurity\\nestedFunction() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 52,
+            "identifier": "function.inner",
+            "message": "Inner named functions are not supported by PHPStan. Consider refactoring to an anonymous function, class method, or a top-level-defined function. See issue #165 (https://github.com/phpstan/phpstan/issues/165) for more details.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 53,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurity\\nestedClosure() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 54,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurity\\nestedArrow() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 55,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurity\\closureReference() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 56,
+            "identifier": "phpstan.type",
+            "message": "Expected type int, actual: 1",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "supported.php",
+            "line": 57,
+            "identifier": "phpstan.type",
+            "message": "Expected type int, actual: 1",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "supported.php",
+            "line": 57,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurity\\testingAndWrite() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 82,
+            "identifier": "impureFunction.pure",
+            "message": "Function DeclarationPurity\\explicitImpure() is marked as impure but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 87,
+            "identifier": "pureFunction.void",
+            "message": "Function DeclarationPurity\\pureVoid() is marked as pure but returns void.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 93,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurity\\callsNoThrow() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 96,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurity\\callsPurePrecedence() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 99,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurity\\callsPrefixedNoThrow() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 100,
+            "identifier": "function.notFound",
+            "message": "Function unknownFunction not found.",
+            "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 103,
+            "identifier": "arguments.count",
+            "message": "Function DeclarationPurity\\noThrow invoked with 1 parameter, 0 required.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 104,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurity\\caughtImplicitThrow() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 105,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurity\\caughtExplicitThrow() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 110,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurity\\finallyLocal() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 111,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurity\\unreachableCatch() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 113,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurity\\caughtReturn() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 115,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurity\\block() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 118,
+            "identifier": "void.pure",
+            "message": "Method DeclarationPurity\\Methods::local() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 119,
+            "identifier": "void.pure",
+            "message": "Method DeclarationPurity\\Methods::staticLocal() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 125,
+            "identifier": "pureMethod.void",
+            "message": "Method DeclarationPurity\\Methods::pureLocal() is marked as pure but returns void.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 131,
+            "identifier": "property.notFound",
+            "message": "Access to an undefined property DeclarationPurity\\Methods::$value.",
+            "tip": "Learn more: <fg=cyan>https://phpstan.org/blog/solving-phpstan-access-to-undefined-property</>",
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 135,
+            "identifier": "void.pure",
+            "message": "Method DeclarationPurity\\UnrelatedClassTag::local() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 139,
+            "identifier": "void.pure",
+            "message": "Method DeclarationPurity\\AllPure::local() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 144,
+            "identifier": "impureFunction.pure",
+            "message": "Function DeclarationPurity\\nestedImpure() is marked as impure but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 144,
+            "identifier": "function.inner",
+            "message": "Inner named functions are not supported by PHPStan. Consider refactoring to an anonymous function, class method, or a top-level-defined function. See issue #165 (https://github.com/phpstan/phpstan/issues/165) for more details.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 146,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurity\\emptyBlock() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 147,
+            "identifier": "phpstan.type",
+            "message": "Expected type int, actual: 1",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "supported.php",
+            "line": 147,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurity\\blockTesting() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 148,
+            "identifier": "phpstan.type",
+            "message": "Expected type int, actual: 1",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "supported.php",
+            "line": 158,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurity\\returnValue() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 159,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurity\\parenthesizedValue() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 160,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurity\\nestedLegacyTarget() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 161,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurity\\noopsAndValue() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 164,
+            "identifier": "function.notFound",
+            "message": "Function unknownFunction not found.",
+            "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 169,
+            "identifier": "pureFunction.parameterPassedNotByRef",
+            "message": "Function DeclarationPurity\\conditionalPassed() is marked @pure-unless-parameter-passed for parameter $value, but $value is not passed by reference.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 175,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurity\\nestedUnspecified() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 175,
+            "identifier": "function.inner",
+            "message": "Inner named functions are not supported by PHPStan. Consider refactoring to an anonymous function, class method, or a top-level-defined function. See issue #165 (https://github.com/phpstan/phpstan/issues/165) for more details.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 179,
+            "identifier": "pureMethod.parameterPassedNotByRef",
+            "message": "Method DeclarationPurity\\MoreMethods::conditionalPassed() is marked @pure-unless-parameter-passed for parameter $value, but $value is not passed by reference.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 182,
+            "identifier": "method.abstractPrivate",
+            "message": "Private method DeclarationPurity\\AbstractMethod::missingBody() cannot be abstract.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "supported.php",
+            "line": 185,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurity\\switchLocal() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 186,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurity\\switchAlternative() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 190,
+            "identifier": "function.notFound",
+            "message": "Function unknownFunction not found.",
+            "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 191,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurity\\classConstant() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        }
+    ],
+    "4": [
+        {
+            "file": "boundaries.php",
+            "line": 5,
+            "identifier": "function.resultUnused",
+            "message": "Call to function strlen() on a separate line has no effect.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "boundaries.php",
+            "line": 6,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurityBoundaries\\arithmetic() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "boundaries.php",
+            "line": 7,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurityBoundaries\\branch() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "boundaries.php",
+            "line": 8,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurityBoundaries\\loop() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "boundaries.php",
+            "line": 9,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurityBoundaries\\unsetLocal() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "boundaries.php",
+            "line": 10,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurityBoundaries\\newObject() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "boundaries.php",
+            "line": 11,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurityBoundaries\\caughtTypedThrow() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "boundaries.php",
+            "line": 12,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurityBoundaries\\caughtDocumentedThrow() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "boundaries.php",
+            "line": 13,
+            "identifier": "function.resultUnused",
+            "message": "Call to function DeclarationPurity\\noThrow() on a separate line has no effect.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "boundaries.php",
+            "line": 13,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurityBoundaries\\namespaceFallback() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "boundaries.php",
+            "line": 14,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurityBoundaries\\offsetKey() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "boundaries.php",
+            "line": 15,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurityBoundaries\\nestedOffset() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "boundaries.php",
+            "line": 16,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurityBoundaries\\indirectVariable() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "boundaries.php",
+            "line": 22,
+            "identifier": "method.unused",
+            "message": "Method DeclarationPurityBoundaries\\ImplicitReturn::implicit() is unused.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "boundaries.php",
+            "line": 24,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurityBoundaries\\negative() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "boundaries.php",
+            "line": 25,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurityBoundaries\\compoundDivision() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "boundaries.php",
+            "line": 26,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurityBoundaries\\arrayUnpack() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "boundaries.php",
+            "line": 27,
+            "identifier": "function.resultUnused",
+            "message": "Call to function DeclarationPurity\\noThrow() on a separate line has no effect.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "boundaries.php",
+            "line": 27,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurityBoundaries\\closureArgument() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "boundaries.php",
+            "line": 27,
+            "identifier": "arguments.count",
+            "message": "Function DeclarationPurity\\noThrow invoked with 1 parameter, 0 required.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "boundaries.php",
+            "line": 31,
+            "identifier": "method.unused",
+            "message": "Method DeclarationPurityBoundaries\\Inherited::local() is unused.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "boundaries.php",
+            "line": 31,
+            "identifier": "void.pure",
+            "message": "Method DeclarationPurityBoundaries\\Inherited::local() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "boundaries.php",
+            "line": 37,
+            "identifier": "possiblyImpure.functionCall",
+            "message": "Possibly impure call to a callable in pure function DeclarationPurityBoundaries\\invokes().",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "boundaries.php (in context of class DeclarationPurityBoundaries\\UsesTrait)",
+            "line": 18,
+            "identifier": "void.pure",
+            "message": "Method DeclarationPurityBoundaries\\UsesTrait::local() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "matrix.php",
+            "line": 2,
+            "identifier": "void.pure",
+            "message": "Function assignmentShort() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "matrix.php",
+            "line": 3,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "matrix.php",
+            "line": 3,
+            "identifier": "variable.undefined",
+            "message": "Undefined variable: $item",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "matrix.php",
+            "line": 5,
+            "identifier": "void.pure",
+            "message": "Function assignmentLegacy() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "matrix.php",
+            "line": 6,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "matrix.php",
+            "line": 6,
+            "identifier": "variable.undefined",
+            "message": "Undefined variable: $item",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "matrix.php",
+            "line": 8,
+            "identifier": "void.pure",
+            "message": "Function localWrite() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "matrix.php",
+            "line": 12,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "matrix.php",
+            "line": 20,
+            "identifier": "void.pure",
+            "message": "Function localReference() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "matrix.php",
+            "line": 27,
+            "identifier": "void.pure",
+            "message": "Function localOffset() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 7,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurity\\emptyReturn() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 8,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurity\\unreachableEffect() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 8,
+            "identifier": "deadCode.unreachable",
+            "message": "Unreachable statement - code above always terminates.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 11,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurity\\docVoid() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 13,
+            "identifier": "pureFunction.void",
+            "message": "Function DeclarationPurity\\pureDeclaration() is marked as pure but returns void.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 15,
+            "identifier": "impureFunction.pure",
+            "message": "Function DeclarationPurity\\impureDeclaration() is marked as impure but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 17,
+            "identifier": "impureFunction.pure",
+            "message": "Function DeclarationPurity\\phpstanImpureDeclaration() is marked as impure but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 19,
+            "identifier": "pureFunction.void",
+            "message": "Function DeclarationPurity\\phpstanPureDeclaration() is marked as pure but returns void.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 21,
+            "identifier": "pureFunction.void",
+            "message": "Function DeclarationPurity\\psalmPureDeclaration() is marked as pure but returns void.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 23,
+            "identifier": "pureFunction.void",
+            "message": "Function DeclarationPurity\\phanPureDeclaration() is marked as pure but returns void.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 25,
+            "identifier": "pureFunction.void",
+            "message": "Function DeclarationPurity\\phanSideEffectFreeDeclaration() is marked as pure but returns void.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 31,
+            "identifier": "assert.unknownExpr",
+            "message": "Assert references unknown $x->value.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 33,
+            "identifier": "assert.unknownExpr",
+            "message": "Assert references unknown $x->value().",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 37,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurity\\localReference() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 39,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurity\\offsetReference() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 45,
+            "identifier": "expr.resultUnused",
+            "message": "Expression \"$x\" on a separate line does not do anything.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 45,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurity\\localRead() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 46,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurity\\localWrites() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 47,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurity\\nestedList() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 48,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurity\\keyedList() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 48,
+            "identifier": "offsetAccess.notFound",
+            "message": "Offset 2 does not exist on array{key: 1, 1: 2}.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 50,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurity\\append() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 52,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurity\\nestedFunction() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 52,
+            "identifier": "function.inner",
+            "message": "Inner named functions are not supported by PHPStan. Consider refactoring to an anonymous function, class method, or a top-level-defined function. See issue #165 (https://github.com/phpstan/phpstan/issues/165) for more details.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 53,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurity\\nestedClosure() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 54,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurity\\nestedArrow() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 55,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurity\\closureReference() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 56,
+            "identifier": "phpstan.type",
+            "message": "Expected type int, actual: 1",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "supported.php",
+            "line": 57,
+            "identifier": "phpstan.type",
+            "message": "Expected type int, actual: 1",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "supported.php",
+            "line": 57,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurity\\testingAndWrite() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 71,
+            "identifier": "throws.unusedType",
+            "message": "Function DeclarationPurity\\documentedThrow() has Exception in PHPDoc @throws tag but it's not thrown.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 82,
+            "identifier": "impureFunction.pure",
+            "message": "Function DeclarationPurity\\explicitImpure() is marked as impure but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 87,
+            "identifier": "pureFunction.void",
+            "message": "Function DeclarationPurity\\pureVoid() is marked as pure but returns void.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 93,
+            "identifier": "function.resultUnused",
+            "message": "Call to function DeclarationPurity\\noThrow() on a separate line has no effect.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 93,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurity\\callsNoThrow() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 94,
+            "identifier": "function.resultUnused",
+            "message": "Call to function DeclarationPurity\\implicitThrow() on a separate line has no effect.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 96,
+            "identifier": "function.resultUnused",
+            "message": "Call to function DeclarationPurity\\purePrecedence() on a separate line has no effect.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 96,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurity\\callsPurePrecedence() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 99,
+            "identifier": "function.resultUnused",
+            "message": "Call to function DeclarationPurity\\prefixedNoThrow() on a separate line has no effect.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 99,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurity\\callsPrefixedNoThrow() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 100,
+            "identifier": "function.notFound",
+            "message": "Function unknownFunction not found.",
+            "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 103,
+            "identifier": "arguments.count",
+            "message": "Function DeclarationPurity\\noThrow invoked with 1 parameter, 0 required.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 104,
+            "identifier": "function.resultUnused",
+            "message": "Call to function DeclarationPurity\\implicitThrow() on a separate line has no effect.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 104,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurity\\caughtImplicitThrow() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 105,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurity\\caughtExplicitThrow() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 108,
+            "identifier": "function.resultUnused",
+            "message": "Call to function DeclarationPurity\\implicitThrow() on a separate line has no effect.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 110,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurity\\finallyLocal() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 111,
+            "identifier": "catch.neverThrown",
+            "message": "Dead catch - Throwable is never thrown in the try block.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 111,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurity\\unreachableCatch() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 113,
+            "identifier": "function.resultUnused",
+            "message": "Call to function DeclarationPurity\\implicitThrow() on a separate line has no effect.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 113,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurity\\caughtReturn() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 114,
+            "identifier": "function.resultUnused",
+            "message": "Call to function DeclarationPurity\\implicitThrow() on a separate line has no effect.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 115,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurity\\block() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 118,
+            "identifier": "method.unused",
+            "message": "Method DeclarationPurity\\Methods::local() is unused.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 118,
+            "identifier": "void.pure",
+            "message": "Method DeclarationPurity\\Methods::local() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 119,
+            "identifier": "void.pure",
+            "message": "Method DeclarationPurity\\Methods::staticLocal() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 119,
+            "identifier": "method.unused",
+            "message": "Static method DeclarationPurity\\Methods::staticLocal() is unused.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 123,
+            "identifier": "method.unused",
+            "message": "Method DeclarationPurity\\Methods::empty() is unused.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 125,
+            "identifier": "pureMethod.void",
+            "message": "Method DeclarationPurity\\Methods::pureLocal() is marked as pure but returns void.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 125,
+            "identifier": "method.unused",
+            "message": "Method DeclarationPurity\\Methods::pureLocal() is unused.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 127,
+            "identifier": "method.unused",
+            "message": "Method DeclarationPurity\\Methods::impureLocal() is unused.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 129,
+            "identifier": "method.unused",
+            "message": "Method DeclarationPurity\\Methods::assertion() is unused.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 130,
+            "identifier": "method.unused",
+            "message": "Method DeclarationPurity\\Methods::reference() is unused.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 131,
+            "identifier": "property.notFound",
+            "message": "Access to an undefined property DeclarationPurity\\Methods::$value.",
+            "tip": "Learn more: <fg=cyan>https://phpstan.org/blog/solving-phpstan-access-to-undefined-property</>",
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 131,
+            "identifier": "method.unused",
+            "message": "Method DeclarationPurity\\Methods::writeProperty() is unused.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 135,
+            "identifier": "method.unused",
+            "message": "Method DeclarationPurity\\UnrelatedClassTag::local() is unused.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 135,
+            "identifier": "void.pure",
+            "message": "Method DeclarationPurity\\UnrelatedClassTag::local() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 139,
+            "identifier": "method.unused",
+            "message": "Method DeclarationPurity\\AllPure::local() is unused.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 139,
+            "identifier": "void.pure",
+            "message": "Method DeclarationPurity\\AllPure::local() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 143,
+            "identifier": "method.unused",
+            "message": "Method DeclarationPurity\\AllImpure::local() is unused.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 144,
+            "identifier": "impureFunction.pure",
+            "message": "Function DeclarationPurity\\nestedImpure() is marked as impure but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 144,
+            "identifier": "function.inner",
+            "message": "Inner named functions are not supported by PHPStan. Consider refactoring to an anonymous function, class method, or a top-level-defined function. See issue #165 (https://github.com/phpstan/phpstan/issues/165) for more details.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 146,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurity\\emptyBlock() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 147,
+            "identifier": "phpstan.type",
+            "message": "Expected type int, actual: 1",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "supported.php",
+            "line": 147,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurity\\blockTesting() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 148,
+            "identifier": "phpstan.type",
+            "message": "Expected type int, actual: 1",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "supported.php",
+            "line": 158,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurity\\returnValue() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 158,
+            "identifier": "return.void",
+            "message": "Function DeclarationPurity\\returnValue() with return type void returns int but should not return anything.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 159,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurity\\parenthesizedValue() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 160,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurity\\nestedLegacyTarget() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 161,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurity\\noopsAndValue() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 162,
+            "identifier": "catch.neverThrown",
+            "message": "Dead catch - Error is never thrown in the try block.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 164,
+            "identifier": "function.resultUnused",
+            "message": "Call to function DeclarationPurity\\implicitThrow() on a separate line has no effect.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 164,
+            "identifier": "function.notFound",
+            "message": "Function unknownFunction not found.",
+            "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 165,
+            "identifier": "function.resultUnused",
+            "message": "Call to function DeclarationPurity\\implicitThrow() on a separate line has no effect.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 169,
+            "identifier": "pureFunction.parameterPassedNotByRef",
+            "message": "Function DeclarationPurity\\conditionalPassed() is marked @pure-unless-parameter-passed for parameter $value, but $value is not passed by reference.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 174,
+            "identifier": "method.unused",
+            "message": "Method DeclarationPurity\\MoreMethods::noVoid() is unused.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 175,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurity\\nestedUnspecified() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 175,
+            "identifier": "function.inner",
+            "message": "Inner named functions are not supported by PHPStan. Consider refactoring to an anonymous function, class method, or a top-level-defined function. See issue #165 (https://github.com/phpstan/phpstan/issues/165) for more details.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 177,
+            "identifier": "method.unused",
+            "message": "Method DeclarationPurity\\MoreMethods::conditionalCallable() is unused.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 179,
+            "identifier": "pureMethod.parameterPassedNotByRef",
+            "message": "Method DeclarationPurity\\MoreMethods::conditionalPassed() is marked @pure-unless-parameter-passed for parameter $value, but $value is not passed by reference.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 179,
+            "identifier": "method.unused",
+            "message": "Method DeclarationPurity\\MoreMethods::conditionalPassed() is unused.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 182,
+            "identifier": "method.unused",
+            "message": "Method DeclarationPurity\\AbstractMethod::missingBody() is unused.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 182,
+            "identifier": "method.abstractPrivate",
+            "message": "Private method DeclarationPurity\\AbstractMethod::missingBody() cannot be abstract.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "supported.php",
+            "line": 185,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurity\\switchLocal() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 186,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurity\\switchAlternative() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 190,
+            "identifier": "function.notFound",
+            "message": "Function unknownFunction not found.",
+            "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 191,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurity\\classConstant() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 194,
+            "identifier": "function.resultUnused",
+            "message": "Call to function DeclarationPurity\\implicitThrow() on a separate line has no effect.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 195,
+            "identifier": "function.resultUnused",
+            "message": "Call to function DeclarationPurity\\implicitThrow() on a separate line has no effect.",
+            "tip": null,
+            "ignorable": true
+        }
+    ],
+    "10": [
+        {
+            "file": "boundaries.php",
+            "line": 5,
+            "identifier": "function.resultUnused",
+            "message": "Call to function strlen() on a separate line has no effect.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "boundaries.php",
+            "line": 6,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurityBoundaries\\arithmetic() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "boundaries.php",
+            "line": 7,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurityBoundaries\\branch() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "boundaries.php",
+            "line": 8,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurityBoundaries\\loop() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "boundaries.php",
+            "line": 9,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurityBoundaries\\unsetLocal() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "boundaries.php",
+            "line": 10,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurityBoundaries\\newObject() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "boundaries.php",
+            "line": 11,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurityBoundaries\\caughtTypedThrow() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "boundaries.php",
+            "line": 12,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurityBoundaries\\caughtDocumentedThrow() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "boundaries.php",
+            "line": 13,
+            "identifier": "function.resultUnused",
+            "message": "Call to function DeclarationPurity\\noThrow() on a separate line has no effect.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "boundaries.php",
+            "line": 13,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurityBoundaries\\namespaceFallback() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "boundaries.php",
+            "line": 14,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurityBoundaries\\offsetKey() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "boundaries.php",
+            "line": 15,
+            "identifier": "offsetAccess.nonOffsetAccessible",
+            "message": "Cannot access offset 1 on mixed.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "boundaries.php",
+            "line": 15,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurityBoundaries\\nestedOffset() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "boundaries.php",
+            "line": 16,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurityBoundaries\\indirectVariable() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "boundaries.php",
+            "line": 22,
+            "identifier": "missingType.return",
+            "message": "Method DeclarationPurityBoundaries\\ImplicitReturn::implicit() has no return type specified.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "boundaries.php",
+            "line": 22,
+            "identifier": "method.unused",
+            "message": "Method DeclarationPurityBoundaries\\ImplicitReturn::implicit() is unused.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "boundaries.php",
+            "line": 24,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurityBoundaries\\negative() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "boundaries.php",
+            "line": 25,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurityBoundaries\\compoundDivision() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "boundaries.php",
+            "line": 26,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurityBoundaries\\arrayUnpack() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "boundaries.php",
+            "line": 27,
+            "identifier": "function.resultUnused",
+            "message": "Call to function DeclarationPurity\\noThrow() on a separate line has no effect.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "boundaries.php",
+            "line": 27,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurityBoundaries\\closureArgument() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "boundaries.php",
+            "line": 27,
+            "identifier": "arguments.count",
+            "message": "Function DeclarationPurity\\noThrow invoked with 1 parameter, 0 required.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "boundaries.php",
+            "line": 31,
+            "identifier": "method.unused",
+            "message": "Method DeclarationPurityBoundaries\\Inherited::local() is unused.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "boundaries.php",
+            "line": 31,
+            "identifier": "void.pure",
+            "message": "Method DeclarationPurityBoundaries\\Inherited::local() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "boundaries.php",
+            "line": 37,
+            "identifier": "possiblyImpure.functionCall",
+            "message": "Possibly impure call to a callable in pure function DeclarationPurityBoundaries\\invokes().",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "boundaries.php (in context of class DeclarationPurityBoundaries\\UsesTrait)",
+            "line": 18,
+            "identifier": "void.pure",
+            "message": "Method DeclarationPurityBoundaries\\UsesTrait::local() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "matrix.php",
+            "line": 2,
+            "identifier": "void.pure",
+            "message": "Function assignmentShort() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "matrix.php",
+            "line": 3,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "matrix.php",
+            "line": 3,
+            "identifier": "variable.undefined",
+            "message": "Undefined variable: $item",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "matrix.php",
+            "line": 5,
+            "identifier": "void.pure",
+            "message": "Function assignmentLegacy() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "matrix.php",
+            "line": 6,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "matrix.php",
+            "line": 6,
+            "identifier": "variable.undefined",
+            "message": "Undefined variable: $item",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "matrix.php",
+            "line": 8,
+            "identifier": "void.pure",
+            "message": "Function localWrite() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "matrix.php",
+            "line": 12,
+            "identifier": "assign.invalidExpr",
+            "message": "Expression on left side of assignment is not assignable.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "matrix.php",
+            "line": 20,
+            "identifier": "void.pure",
+            "message": "Function localReference() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "matrix.php",
+            "line": 27,
+            "identifier": "void.pure",
+            "message": "Function localOffset() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 7,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurity\\emptyReturn() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 8,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurity\\unreachableEffect() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 8,
+            "identifier": "deadCode.unreachable",
+            "message": "Unreachable statement - code above always terminates.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 11,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurity\\docVoid() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 13,
+            "identifier": "pureFunction.void",
+            "message": "Function DeclarationPurity\\pureDeclaration() is marked as pure but returns void.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 15,
+            "identifier": "impureFunction.pure",
+            "message": "Function DeclarationPurity\\impureDeclaration() is marked as impure but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 17,
+            "identifier": "impureFunction.pure",
+            "message": "Function DeclarationPurity\\phpstanImpureDeclaration() is marked as impure but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 19,
+            "identifier": "pureFunction.void",
+            "message": "Function DeclarationPurity\\phpstanPureDeclaration() is marked as pure but returns void.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 21,
+            "identifier": "pureFunction.void",
+            "message": "Function DeclarationPurity\\psalmPureDeclaration() is marked as pure but returns void.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 23,
+            "identifier": "pureFunction.void",
+            "message": "Function DeclarationPurity\\phanPureDeclaration() is marked as pure but returns void.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 25,
+            "identifier": "pureFunction.void",
+            "message": "Function DeclarationPurity\\phanSideEffectFreeDeclaration() is marked as pure but returns void.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 31,
+            "identifier": "assert.unknownExpr",
+            "message": "Assert references unknown $x->value.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 33,
+            "identifier": "assert.unknownExpr",
+            "message": "Assert references unknown $x->value().",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 37,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurity\\localReference() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 39,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurity\\offsetReference() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 45,
+            "identifier": "expr.resultUnused",
+            "message": "Expression \"$x\" on a separate line does not do anything.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 45,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurity\\localRead() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 46,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurity\\localWrites() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 47,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurity\\nestedList() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 48,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurity\\keyedList() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 48,
+            "identifier": "offsetAccess.notFound",
+            "message": "Offset 2 does not exist on array{key: 1, 1: 2}.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 50,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurity\\append() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 51,
+            "identifier": "property.notFound",
+            "message": "Access to an undefined property object::$value.",
+            "tip": "Learn more: <fg=cyan>https://phpstan.org/blog/solving-phpstan-access-to-undefined-property</>",
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 51,
+            "identifier": "offsetAccess.nonOffsetAccessible",
+            "message": "Cannot access offset 0 on mixed.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 52,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurity\\nestedFunction() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 52,
+            "identifier": "function.inner",
+            "message": "Inner named functions are not supported by PHPStan. Consider refactoring to an anonymous function, class method, or a top-level-defined function. See issue #165 (https://github.com/phpstan/phpstan/issues/165) for more details.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 53,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurity\\nestedClosure() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 54,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurity\\nestedArrow() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 55,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurity\\closureReference() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 56,
+            "identifier": "phpstan.type",
+            "message": "Expected type int, actual: 1",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "supported.php",
+            "line": 57,
+            "identifier": "phpstan.type",
+            "message": "Expected type int, actual: 1",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "supported.php",
+            "line": 57,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurity\\testingAndWrite() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 71,
+            "identifier": "throws.unusedType",
+            "message": "Function DeclarationPurity\\documentedThrow() has Exception in PHPDoc @throws tag but it's not thrown.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 82,
+            "identifier": "impureFunction.pure",
+            "message": "Function DeclarationPurity\\explicitImpure() is marked as impure but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 87,
+            "identifier": "pureFunction.void",
+            "message": "Function DeclarationPurity\\pureVoid() is marked as pure but returns void.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 93,
+            "identifier": "function.resultUnused",
+            "message": "Call to function DeclarationPurity\\noThrow() on a separate line has no effect.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 93,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurity\\callsNoThrow() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 94,
+            "identifier": "function.resultUnused",
+            "message": "Call to function DeclarationPurity\\implicitThrow() on a separate line has no effect.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 96,
+            "identifier": "function.resultUnused",
+            "message": "Call to function DeclarationPurity\\purePrecedence() on a separate line has no effect.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 96,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurity\\callsPurePrecedence() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 99,
+            "identifier": "function.resultUnused",
+            "message": "Call to function DeclarationPurity\\prefixedNoThrow() on a separate line has no effect.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 99,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurity\\callsPrefixedNoThrow() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 100,
+            "identifier": "function.notFound",
+            "message": "Function unknownFunction not found.",
+            "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 102,
+            "identifier": "method.notFound",
+            "message": "Call to an undefined method object::value().",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 103,
+            "identifier": "arguments.count",
+            "message": "Function DeclarationPurity\\noThrow invoked with 1 parameter, 0 required.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 104,
+            "identifier": "function.resultUnused",
+            "message": "Call to function DeclarationPurity\\implicitThrow() on a separate line has no effect.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 104,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurity\\caughtImplicitThrow() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 105,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurity\\caughtExplicitThrow() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 108,
+            "identifier": "function.resultUnused",
+            "message": "Call to function DeclarationPurity\\implicitThrow() on a separate line has no effect.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 110,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurity\\finallyLocal() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 111,
+            "identifier": "catch.neverThrown",
+            "message": "Dead catch - Throwable is never thrown in the try block.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 111,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurity\\unreachableCatch() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 113,
+            "identifier": "function.resultUnused",
+            "message": "Call to function DeclarationPurity\\implicitThrow() on a separate line has no effect.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 113,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurity\\caughtReturn() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 114,
+            "identifier": "function.resultUnused",
+            "message": "Call to function DeclarationPurity\\implicitThrow() on a separate line has no effect.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 115,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurity\\block() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 118,
+            "identifier": "method.unused",
+            "message": "Method DeclarationPurity\\Methods::local() is unused.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 118,
+            "identifier": "void.pure",
+            "message": "Method DeclarationPurity\\Methods::local() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 119,
+            "identifier": "void.pure",
+            "message": "Method DeclarationPurity\\Methods::staticLocal() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 119,
+            "identifier": "method.unused",
+            "message": "Static method DeclarationPurity\\Methods::staticLocal() is unused.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 123,
+            "identifier": "method.unused",
+            "message": "Method DeclarationPurity\\Methods::empty() is unused.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 125,
+            "identifier": "pureMethod.void",
+            "message": "Method DeclarationPurity\\Methods::pureLocal() is marked as pure but returns void.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 125,
+            "identifier": "method.unused",
+            "message": "Method DeclarationPurity\\Methods::pureLocal() is unused.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 127,
+            "identifier": "method.unused",
+            "message": "Method DeclarationPurity\\Methods::impureLocal() is unused.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 129,
+            "identifier": "method.unused",
+            "message": "Method DeclarationPurity\\Methods::assertion() is unused.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 130,
+            "identifier": "method.unused",
+            "message": "Method DeclarationPurity\\Methods::reference() is unused.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 131,
+            "identifier": "property.notFound",
+            "message": "Access to an undefined property DeclarationPurity\\Methods::$value.",
+            "tip": "Learn more: <fg=cyan>https://phpstan.org/blog/solving-phpstan-access-to-undefined-property</>",
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 131,
+            "identifier": "method.unused",
+            "message": "Method DeclarationPurity\\Methods::writeProperty() is unused.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 135,
+            "identifier": "method.unused",
+            "message": "Method DeclarationPurity\\UnrelatedClassTag::local() is unused.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 135,
+            "identifier": "void.pure",
+            "message": "Method DeclarationPurity\\UnrelatedClassTag::local() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 139,
+            "identifier": "method.unused",
+            "message": "Method DeclarationPurity\\AllPure::local() is unused.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 139,
+            "identifier": "void.pure",
+            "message": "Method DeclarationPurity\\AllPure::local() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 143,
+            "identifier": "method.unused",
+            "message": "Method DeclarationPurity\\AllImpure::local() is unused.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 144,
+            "identifier": "impureFunction.pure",
+            "message": "Function DeclarationPurity\\nestedImpure() is marked as impure but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 144,
+            "identifier": "function.inner",
+            "message": "Inner named functions are not supported by PHPStan. Consider refactoring to an anonymous function, class method, or a top-level-defined function. See issue #165 (https://github.com/phpstan/phpstan/issues/165) for more details.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 146,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurity\\emptyBlock() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 147,
+            "identifier": "phpstan.type",
+            "message": "Expected type int, actual: 1",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "supported.php",
+            "line": 147,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurity\\blockTesting() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 148,
+            "identifier": "phpstan.type",
+            "message": "Expected type int, actual: 1",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "supported.php",
+            "line": 149,
+            "identifier": "missingType.generics",
+            "message": "Class DeclarationPurity\\OffsetEffects implements generic interface ArrayAccess but does not specify its types: TKey, TValue",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 158,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurity\\returnValue() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 158,
+            "identifier": "return.void",
+            "message": "Function DeclarationPurity\\returnValue() with return type void returns int but should not return anything.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 159,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurity\\parenthesizedValue() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 160,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurity\\nestedLegacyTarget() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 161,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurity\\noopsAndValue() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 162,
+            "identifier": "catch.neverThrown",
+            "message": "Dead catch - Error is never thrown in the try block.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 164,
+            "identifier": "function.resultUnused",
+            "message": "Call to function DeclarationPurity\\implicitThrow() on a separate line has no effect.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 164,
+            "identifier": "function.notFound",
+            "message": "Function unknownFunction not found.",
+            "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 165,
+            "identifier": "function.resultUnused",
+            "message": "Call to function DeclarationPurity\\implicitThrow() on a separate line has no effect.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 169,
+            "identifier": "pureFunction.parameterPassedNotByRef",
+            "message": "Function DeclarationPurity\\conditionalPassed() is marked @pure-unless-parameter-passed for parameter $value, but $value is not passed by reference.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 174,
+            "identifier": "method.unused",
+            "message": "Method DeclarationPurity\\MoreMethods::noVoid() is unused.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 175,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurity\\nestedUnspecified() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 175,
+            "identifier": "function.inner",
+            "message": "Inner named functions are not supported by PHPStan. Consider refactoring to an anonymous function, class method, or a top-level-defined function. See issue #165 (https://github.com/phpstan/phpstan/issues/165) for more details.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 177,
+            "identifier": "method.unused",
+            "message": "Method DeclarationPurity\\MoreMethods::conditionalCallable() is unused.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 179,
+            "identifier": "pureMethod.parameterPassedNotByRef",
+            "message": "Method DeclarationPurity\\MoreMethods::conditionalPassed() is marked @pure-unless-parameter-passed for parameter $value, but $value is not passed by reference.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 179,
+            "identifier": "method.unused",
+            "message": "Method DeclarationPurity\\MoreMethods::conditionalPassed() is unused.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 182,
+            "identifier": "method.unused",
+            "message": "Method DeclarationPurity\\AbstractMethod::missingBody() is unused.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 182,
+            "identifier": "method.abstractPrivate",
+            "message": "Private method DeclarationPurity\\AbstractMethod::missingBody() cannot be abstract.",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "supported.php",
+            "line": 185,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurity\\switchLocal() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 186,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurity\\switchAlternative() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 190,
+            "identifier": "function.notFound",
+            "message": "Function unknownFunction not found.",
+            "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 191,
+            "identifier": "void.pure",
+            "message": "Function DeclarationPurity\\classConstant() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 194,
+            "identifier": "function.resultUnused",
+            "message": "Call to function DeclarationPurity\\implicitThrow() on a separate line has no effect.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "supported.php",
+            "line": 195,
+            "identifier": "function.resultUnused",
+            "message": "Call to function DeclarationPurity\\implicitThrow() on a separate line has no effect.",
+            "tip": null,
+            "ignorable": true
+        }
+    ]
+}
