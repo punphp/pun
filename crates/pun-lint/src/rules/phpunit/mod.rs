@@ -6,6 +6,7 @@
 //! parent class by name even when its file is not known; a receiver other than `$this`, `self`, `static` and `parent`
 //! takes the type Mago gives it.
 
+mod add_depended_test_return_type;
 mod no_assert_contains_only;
 mod no_assert_is_type;
 mod no_assert_same_type_mismatch;
@@ -45,6 +46,7 @@ mod require_data_provider_newlines;
 mod require_strict_types_in_tests;
 mod require_string_assert_argument;
 
+pub use add_depended_test_return_type::AddDependedTestReturnType;
 pub use no_assert_contains_only::NoAssertContainsOnly;
 pub use no_assert_is_type::NoAssertIsType;
 pub use no_assert_same_type_mismatch::NoAssertSameTypeMismatch;
@@ -137,6 +139,7 @@ pub(crate) fn all() -> Vec<Box<dyn Rule>> {
         Box::new(PreferNarrowWillReturnCallback),
         Box::new(PreferAssert),
         Box::new(PreferMergedWillReturnCallback),
+        Box::new(AddDependedTestReturnType),
     ]
 }
 

@@ -330,3 +330,8 @@ fn merge_with_callable_and_will_return() {
         "MergeWithCallableAndWillReturnRector",
     );
 }
+
+#[test]
+fn add_return_type_to_depended() {
+    check(AddDependedTestReturnType, "AddReturnTypeToDependedRector");
+}
