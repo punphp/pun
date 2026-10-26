@@ -1017,7 +1017,7 @@
         "rules": [
           "lint/performance/require-qualified-native-constant"
         ],
-        "note": "Same. Options: renamed for TOML: [options.\"lint/performance/require-qualified-native-constant\"]. Planned: not ported yet.",
+        "note": "Same. Options: renamed for TOML: [options.\"lint/performance/require-qualified-native-constant\"].",
         "unsupported": false
       },
       {
@@ -1037,7 +1037,7 @@
         "rules": [
           "lint/performance/require-qualified-native-function"
         ],
-        "note": "Same. Options: renamed for TOML: [options.\"lint/performance/require-qualified-native-function\"]. Planned: not ported yet.",
+        "note": "Same. Options: renamed for TOML: [options.\"lint/performance/require-qualified-native-function\"].",
         "unsupported": false
       },
       {
@@ -4003,7 +4003,7 @@
         "rules": [
           "lint/performance/require-qualified-native-constant"
         ],
-        "note": "Same. Options: renamed for TOML: [options.\"lint/performance/require-qualified-native-constant\"]. Planned: not ported yet.",
+        "note": "Same. Options: renamed for TOML: [options.\"lint/performance/require-qualified-native-constant\"].",
         "unsupported": false
       },
       {
@@ -4023,7 +4023,7 @@
         "rules": [
           "lint/performance/require-qualified-native-function"
         ],
-        "note": "Same. Options: renamed for TOML: [options.\"lint/performance/require-qualified-native-function\"]. Planned: not ported yet.",
+        "note": "Same. Options: renamed for TOML: [options.\"lint/performance/require-qualified-native-function\"].",
         "unsupported": false
       },
       {
