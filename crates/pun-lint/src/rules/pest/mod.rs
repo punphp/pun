@@ -8,6 +8,7 @@
 //! write the same text with edits on those parts.
 
 mod no_before_all_in_describe;
+mod no_expect_exception;
 mod no_focused_test;
 mod no_invalid_repeat;
 mod no_negated_boolean_matcher;
@@ -54,9 +55,11 @@ mod prefer_to_have_property;
 mod prefer_to_have_same_size;
 mod prefer_to_match;
 mod prefer_to_start_with;
+mod prefer_to_throw;
 mod prefer_type_matchers;
 
 pub use no_before_all_in_describe::NoBeforeAllInDescribe;
+pub use no_expect_exception::NoExpectException;
 pub use no_focused_test::NoFocusedTest;
 pub use no_invalid_repeat::NoInvalidRepeat;
 pub use no_negated_boolean_matcher::NoNegatedBooleanMatcher;
@@ -103,13 +106,15 @@ pub use prefer_to_have_property::PreferToHaveProperty;
 pub use prefer_to_have_same_size::PreferToHaveSameSize;
 pub use prefer_to_match::PreferToMatch;
 pub use prefer_to_start_with::PreferToStartWith;
+pub use prefer_to_throw::PreferToThrow;
 pub use prefer_type_matchers::PreferTypeMatchers;
 
 use mago_codex::ttype::atomic::TAtomic;
 use mago_codex::ttype::atomic::scalar::TScalar;
 use mago_syntax::cst::{
     Access, Argument, ArgumentList, ArrowFunction, Call, ClassLikeMemberSelector, Closure,
-    Expression, FunctionCall, Identifier, Keyword, MethodCall, Node, PropertyAccess,
+    Expression, FunctionCall, Identifier, Keyword, MethodCall, Node, NodeKind, PropertyAccess,
+    Statement,
 };
 use pun_problem::{Edit, Fix, Safety, Span};
 
@@ -122,6 +127,7 @@ use crate::{Context, Report, Rule};
 pub(crate) fn all() -> Vec<Box<dyn Rule>> {
     vec![
         Box::new(NoBeforeAllInDescribe),
+        Box::new(NoExpectException),
         Box::new(NoFocusedTest),
         Box::new(NoInvalidRepeat),
         Box::new(NoNegatedBooleanMatcher),
@@ -168,6 +174,7 @@ pub(crate) fn all() -> Vec<Box<dyn Rule>> {
         Box::new(PreferToHaveSameSize),
         Box::new(PreferToMatch),
         Box::new(PreferToStartWith),
+        Box::new(PreferToThrow),
         Box::new(PreferTypeMatchers),
     ]
 }
@@ -711,34 +718,43 @@ pub(crate) fn root_func_call<'a>(call: &'a MethodCall<'a>) -> Option<&'a Functio
     func_call(current)
 }
 
-/// `source[span]` printed by php-parser's format-preserving printer at another indent: every line that starts in
-/// whitespace after a newline gets `delta` more columns (`TokenStream::getTokenCode` with an indent adjustment; the
-/// printer writes spaces). Lines inside strings and comments keep their bytes.
+/// `source[span]` as `TokenStream::getTokenCode` gives it with an indent adjustment of `delta`: in every token but a
+/// string's, each newline gains `delta` spaces, or loses exactly `-delta` spaces that follow it.
 pub(crate) fn shift(ctx: &Context<'_>, span: Span, delta: isize) -> String {
     let text = &ctx.source[span.start..span.end];
     if delta == 0 || !text.contains('\n') {
         return text.to_string();
     }
+    let (from, to) = if delta < 0 {
+        (
+            format!("\n{}", " ".repeat(delta.unsigned_abs())),
+            "\n".to_string(),
+        )
+    } else {
+        (
+            "\n".to_string(),
+            format!("\n{}", " ".repeat(delta as usize)),
+        )
+    };
     let mut out = String::with_capacity(text.len());
     let mut at = span.start;
     for t in super::php_parser::tokens(ctx.source) {
         if t.end <= span.start || t.start >= span.end {
             continue;
         }
-        let (start, end) = (t.start.max(span.start), t.end.min(span.end));
-        let token = &ctx.source[start..end];
-        out.push_str(&ctx.source[at..start]);
+        let end = t.end.min(span.end);
+        let token = &ctx.source[at..end];
         at = end;
-        match token.rfind('\n') {
-            Some(i) if t.kind == mago_syntax::token::TokenKind::Whitespace => {
-                let indent = token.len() - i - 1;
-                out.push_str(&token[..=i]);
-                out.push_str(&" ".repeat((indent as isize + delta).max(0) as usize));
-            }
-            _ => out.push_str(token),
+        use mago_syntax::token::TokenKind as K;
+        if matches!(
+            t.kind,
+            K::LiteralString | K::PartialLiteralString | K::StringPart
+        ) {
+            out.push_str(token);
+        } else {
+            out.push_str(&token.replace(&from, &to));
         }
     }
-    out.push_str(&ctx.source[at..span.end]);
     out
 }
 
@@ -757,38 +773,61 @@ pub(crate) fn kept_text(ctx: &Context<'_>, span: Span, indent: usize) -> String 
     )
 }
 
-/// `pComments`: the comments a node owns, each reformatted (`Comment::getReformattedText`) and joined by newlines
-/// at `indent`.
-fn print_comments(ctx: &Context<'_>, start: usize, indent: usize) -> String {
+/// The comments php-parser gives a node that starts at `start` (when it is the outermost node there): every comment
+/// after the token before it.
+pub(crate) fn comment_spans(ctx: &Context<'_>, start: usize) -> Vec<Span> {
     let tokens = super::php_parser::tokens(ctx.source);
     let before = tokens
         .iter()
         .rev()
         .find(|t| t.end <= start && !t.kind.is_trivia())
         .map_or(0, |t| t.end);
-    let nl = format!("\n{}", " ".repeat(indent));
     tokens
         .iter()
         .filter(|t| t.start >= before && t.end <= start && t.kind.is_comment())
-        .map(|t| {
-            let text = ctx.source[t.start..t.end].replace("\r\n", "\n");
-            let text = text.trim_end_matches('\n');
-            // A `/* ... */` comment whose lines go on with `*`: each such line starts with ` *`.
-            let lines: Vec<&str> = text.split('\n').collect();
-            let text = if lines.len() > 1
-                && lines[1..]
-                    .iter()
-                    .all(|l| l.trim_start().starts_with('*') && l.len() > l.trim_start().len())
-            {
-                std::iter::once(lines[0].to_string())
-                    .chain(lines[1..].iter().map(|l| format!(" {}", l.trim_start())))
-                    .collect::<Vec<_>>()
-                    .join("\n")
-            } else {
-                text.to_string()
-            };
-            text.replace('\n', &nl)
-        })
+        .map(|t| Span::new(t.start, t.end))
+        .collect()
+}
+
+/// `Comment::getReformattedText`.
+fn reformat_comment(text: &str) -> String {
+    let text = text.replace("\r\n", "\n");
+    let text = text.trim_end_matches('\n');
+    let lines: Vec<&str> = text.split('\n').collect();
+    if lines.len() == 1 {
+        return text.to_string();
+    }
+    // Every line after the first starts with blanks and a `*`: those blanks become one space.
+    if lines[1..].iter().all(|l| {
+        let t = l.trim_start();
+        t.starts_with('*') && t.len() < l.len()
+    }) {
+        return std::iter::once(lines[0].to_string())
+            .chain(lines[1..].iter().map(|l| format!(" {}", l.trim_start())))
+            .collect::<Vec<_>>()
+            .join("\n");
+    }
+    // `/*` alone on its line and `*/` after blanks on the last: those blanks come off every line.
+    let last = lines[lines.len() - 1];
+    if lines[0].trim_end() == "/*" || lines[0].trim_end() == "/**" {
+        let blanks = &last[..last.len() - last.trim_start().len()];
+        if last.trim_start() == "*/" {
+            return lines
+                .iter()
+                .map(|l| l.strip_prefix(blanks).unwrap_or(l))
+                .collect::<Vec<_>>()
+                .join("\n");
+        }
+    }
+    text.to_string()
+}
+
+/// `pComments`: `comments` reformatted and joined by newlines at `indent`.
+pub(crate) fn p_comments(ctx: &Context<'_>, comments: &[Span], indent: usize) -> String {
+    let nl = format!("\n{}", " ".repeat(indent));
+    comments
+        .iter()
+        .map(|c| reformat_comment(&ctx.source[c.start..c.end]).replace('\n', &nl))
         .collect::<Vec<_>>()
         .join(&nl)
 }
@@ -811,7 +850,7 @@ pub(crate) fn print_args(ctx: &Context<'_>, list: &ArgumentList<'_>, indent: usi
         let start = node_span(a).start;
         if has_comments(ctx, start) {
             out.push_str(&nl);
-            out.push_str(&print_comments(ctx, start, inner));
+            out.push_str(&p_comments(ctx, &comment_spans(ctx, start), inner));
         }
         out.push_str(&nl);
         out.push_str(&kept_text(ctx, node_span(a), inner));
@@ -896,4 +935,519 @@ pub(crate) fn comments_start(ctx: &Context<'_>, start: usize) -> usize {
         .iter()
         .find(|t| t.start >= before && t.end <= start && t.kind.is_comment())
         .map_or(start, |t| t.start)
+}
+
+/// One statement of a list a rule rewrites (php-parser's new `stmts`).
+pub(crate) enum Item<'a> {
+    /// The old statement at this index, as it was.
+    Old(usize),
+    /// The old statement at this index (the same node), whose inside changed: its text at its old place.
+    Changed(usize, String),
+    /// A new statement: `print` gives its text at an indent, and it carries the comments `comments`.
+    New {
+        print: Box<dyn Fn(usize) -> String + 'a>,
+        comments: Vec<Span>,
+    },
+}
+
+impl Item<'_> {
+    fn old(&self) -> Option<usize> {
+        match self {
+            Item::Old(i) | Item::Changed(i, _) => Some(*i),
+            Item::New { .. } => None,
+        }
+    }
+}
+
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+enum Diff {
+    Keep(usize, usize),
+    Remove(usize),
+    Add(usize),
+    Replace(usize, usize),
+}
+
+/// `Differ::diffWithReplacements` on the old statements `0..n` and `new`, a statement being equal only to itself.
+fn diff(n: usize, new: &[Item<'_>]) -> Vec<Diff> {
+    let m = new.len();
+    let equal = |x: usize, y: usize| new[y].old() == Some(x);
+    let offset = (n + m + 1) as isize;
+    let at = |k: isize| (k + offset) as usize;
+    let mut v = vec![0isize; 2 * (n + m) + 3];
+    v[at(1)] = 0;
+    let mut trace = Vec::new();
+    let (mut x, mut y) = (0isize, 0isize);
+    'outer: for d in 0..=(n + m) as isize {
+        trace.push(v.clone());
+        let mut k = -d;
+        while k <= d {
+            x = if k == -d || (k != d && v[at(k - 1)] < v[at(k + 1)]) {
+                v[at(k + 1)]
+            } else {
+                v[at(k - 1)] + 1
+            };
+            y = x - k;
+            while (x as usize) < n && (y as usize) < m && equal(x as usize, y as usize) {
+                x += 1;
+                y += 1;
+            }
+            v[at(k)] = x;
+            if x as usize >= n && y as usize >= m {
+                break 'outer;
+            }
+            k += 2;
+        }
+    }
+    let mut result = Vec::new();
+    for d in (0..trace.len() as isize).rev() {
+        let v = &trace[d as usize];
+        let k = x - y;
+        let prev_k = if k == -d || (k != d && v[at(k - 1)] < v[at(k + 1)]) {
+            k + 1
+        } else {
+            k - 1
+        };
+        let prev_x = v[at(prev_k)];
+        let prev_y = prev_x - prev_k;
+        while x > prev_x && y > prev_y {
+            result.push(Diff::Keep(x as usize - 1, y as usize - 1));
+            x -= 1;
+            y -= 1;
+        }
+        if d == 0 {
+            break;
+        }
+        while x > prev_x {
+            result.push(Diff::Remove(x as usize - 1));
+            x -= 1;
+        }
+        while y > prev_y {
+            result.push(Diff::Add(y as usize - 1));
+            y -= 1;
+        }
+    }
+    result.reverse();
+    // coalesceReplacements: a run of removals followed by as many additions is a run of replacements.
+    let mut out = Vec::new();
+    let mut i = 0;
+    while i < result.len() {
+        if !matches!(result[i], Diff::Remove(_)) {
+            out.push(result[i]);
+            i += 1;
+            continue;
+        }
+        let j = i + result[i..]
+            .iter()
+            .take_while(|d| matches!(d, Diff::Remove(_)))
+            .count();
+        let k = j + result[j..]
+            .iter()
+            .take_while(|d| matches!(d, Diff::Add(_)))
+            .count();
+        if j - i == k - j {
+            for n in 0..j - i {
+                let (Diff::Remove(o), Diff::Add(a)) = (result[i + n], result[j + n]) else {
+                    unreachable!()
+                };
+                out.push(Diff::Replace(o, a));
+            }
+        } else {
+            out.extend_from_slice(&result[i..k]);
+        }
+        i = k;
+    }
+    out
+}
+
+/// An old statement of a list as the printer sees it: where its comments start, where it starts and ends.
+#[derive(Clone, Copy)]
+pub(crate) struct OldStmt {
+    pub comments: usize,
+    pub start: usize,
+    pub end: usize,
+    /// php-parser's `Nop` for the comments after the last statement.
+    pub nop: bool,
+}
+
+/// The statements of `list` (the trailing comments' `Nop` included) with their comments.
+pub(crate) fn old_statements(
+    ctx: &Context<'_>,
+    list: &super::php_parser::List<'_, '_>,
+) -> Vec<OldStmt> {
+    let mut olds: Vec<OldStmt> = list
+        .stmts
+        .iter()
+        .map(|s| {
+            let span = node_span(*s);
+            OldStmt {
+                comments: comments_start(ctx, span.start),
+                start: span.start,
+                end: span.end,
+                nop: false,
+            }
+        })
+        .collect();
+    if list.nop {
+        let after = olds.last().map_or(list.inner.start, |s| s.end);
+        let tokens = super::php_parser::tokens(ctx.source);
+        let comments: Vec<_> = tokens
+            .iter()
+            .filter(|t| t.start >= after && t.end <= list.inner.end && t.kind.is_comment())
+            .collect();
+        let (start, end) = (comments[0].start, comments[comments.len() - 1].end);
+        olds.push(OldStmt {
+            comments: start,
+            start,
+            end,
+            nop: true,
+        });
+    }
+    olds
+}
+
+/// php-parser's `pArray` on a statement list whose old statements are `olds` and new ones `items`, printed from `pos`
+/// on: the text that replaces `pos..end`, and `end`; none where the printer gives up and prints the list's parent
+/// again.
+pub(crate) fn print_list(
+    ctx: &Context<'_>,
+    olds: &[OldStmt],
+    braces: bool,
+    mut pos: usize,
+    items: &[Item<'_>],
+) -> Option<(String, usize)> {
+    let tokens = super::php_parser::tokens(ctx.source);
+    let tag_in = |from: usize, to: usize| {
+        use mago_syntax::token::TokenKind as K;
+        tokens.iter().any(|t| {
+            t.start >= from
+                && t.end <= to
+                && matches!(
+                    t.kind,
+                    K::OpenTag | K::CloseTag | K::EchoTag | K::ShortOpenTag
+                )
+        })
+    };
+    if olds.len() == 1 && items.len() != 1 && !braces {
+        return None;
+    }
+    let mut result = String::new();
+    let mut before_first_keep = true;
+    let mut skip_removed = false;
+    let mut delayed: Vec<&Item<'_>> = Vec::new();
+    let mut last_indent = 0;
+    let print_new = |item: &Item<'_>, indent: usize| match item {
+        Item::Old(i) => ctx.source[olds[*i].start..olds[*i].end].to_string(),
+        Item::Changed(_, text) => text.clone(),
+        Item::New { print, .. } => print(indent),
+    };
+    let new_comments = |item: &Item<'_>, indent: usize| match item {
+        Item::New { comments, .. } if !comments.is_empty() => {
+            Some(p_comments(ctx, comments, indent))
+        }
+        _ => None,
+    };
+    for (i, d) in diff(olds.len(), items).into_iter().enumerate() {
+        match d {
+            Diff::Keep(o, n) | Diff::Replace(o, n) => {
+                before_first_keep = false;
+                let old = olds[o];
+                last_indent = indent_at(ctx, old.start);
+                let comment_start = if old.comments < pos {
+                    old.start
+                } else {
+                    old.comments
+                };
+                if skip_removed {
+                    if tag_in(pos, old.start) {
+                        return None;
+                    }
+                } else {
+                    result.push_str(&ctx.source[pos..comment_start]);
+                }
+                let nl = format!("\n{}", " ".repeat(last_indent));
+                for item in delayed.drain(..) {
+                    if let Some(c) = new_comments(item, last_indent) {
+                        result.push_str(&c);
+                        result.push_str(&nl);
+                    }
+                    result.push_str(&print_new(item, last_indent));
+                    result.push_str(&nl);
+                }
+                if matches!(d, Diff::Keep(..)) {
+                    result.push_str(&ctx.source[comment_start..old.start]);
+                } else if let Some(c) = new_comments(&items[n], last_indent) {
+                    result.push_str(&c);
+                    result.push_str(&nl);
+                }
+                skip_removed = false;
+                result.push_str(&print_new(&items[n], last_indent));
+                pos = old.end;
+            }
+            Diff::Add(n) => {
+                if before_first_keep {
+                    delayed.push(&items[n]);
+                    continue;
+                }
+                let nl = format!("\n{}", " ".repeat(last_indent));
+                result.push_str(&nl);
+                if let Some(c) = new_comments(&items[n], last_indent) {
+                    result.push_str(&c);
+                    result.push_str(&nl);
+                }
+                result.push_str(&print_new(&items[n], last_indent));
+            }
+            Diff::Remove(o) => {
+                let old = olds[o];
+                if i == 0 {
+                    result.push_str(&ctx.source[pos..old.comments]);
+                    skip_removed = true;
+                } else if tag_in(pos, old.comments) {
+                    return None;
+                }
+                pos = old.end;
+            }
+        }
+    }
+    if skip_removed || !delayed.is_empty() {
+        return None;
+    }
+    // Rector's `pArray`: with a `Nop` in the list, lines of blanks lose them.
+    if items.iter().any(|i| i.old().is_some_and(|o| olds[o].nop)) {
+        result = result
+            .split('\n')
+            .map(|l| {
+                if l.trim_matches([' ', '\t']).is_empty() {
+                    ""
+                } else {
+                    l
+                }
+            })
+            .collect::<Vec<_>>()
+            .join("\n");
+    }
+    Some((result, pos))
+}
+
+/// `pStmts`: each statement on a line of its own at `indent`, after its comments; the old ones keep their text, moved
+/// to `indent`.
+pub(crate) fn p_stmts(
+    ctx: &Context<'_>,
+    olds: &[OldStmt],
+    items: &[Item<'_>],
+    indent: usize,
+) -> String {
+    let nl = format!("\n{}", " ".repeat(indent));
+    let mut out = String::new();
+    for item in items {
+        let comments = match item {
+            Item::New { comments, .. } => comments.clone(),
+            Item::Old(i) | Item::Changed(i, _) => {
+                let tokens = super::php_parser::tokens(ctx.source);
+                let old = olds[*i];
+                let end = if old.nop { old.end } else { old.start };
+                tokens
+                    .iter()
+                    .filter(|t| t.start >= old.comments && t.end <= end && t.kind.is_comment())
+                    .map(|t| Span::new(t.start, t.end))
+                    .collect()
+            }
+        };
+        if !comments.is_empty() {
+            out.push_str(&nl);
+            out.push_str(&p_comments(ctx, &comments, indent));
+        }
+        match item {
+            Item::Old(i) if olds[*i].nop => {}
+            Item::Old(i) => {
+                out.push_str(&nl);
+                out.push_str(&kept_text(
+                    ctx,
+                    Span::new(olds[*i].start, olds[*i].end),
+                    indent,
+                ));
+            }
+            Item::Changed(i, text) => {
+                // The changed text stands at the old statement's indent; the printer moves it as a whole.
+                let delta = indent as isize - indent_at(ctx, olds[*i].start) as isize;
+                out.push_str(&nl);
+                out.push_str(&shift_text(text, delta));
+            }
+            Item::New { print, .. } => {
+                out.push_str(&nl);
+                out.push_str(&print(indent));
+            }
+        }
+    }
+    out
+}
+
+/// [`shift`] on text that is no longer in the file: every newline moved by `delta`.
+fn shift_text(text: &str, delta: isize) -> String {
+    match delta {
+        0 => text.to_string(),
+        d if d < 0 => text.replace(&format!("\n{}", " ".repeat(d.unsigned_abs())), "\n"),
+        d => text.replace('\n', &format!("\n{}", " ".repeat(d as usize))),
+    }
+}
+
+/// Rector's rewrite of the statement list `list` of `holder` (whose parent is `parent`) into `items`: the list
+/// printed again in place, or, where php-parser's printer gives up on the list, its parent printed again. Only a
+/// closure and a file without a namespace are printed again; elsewhere the rewrite is refused.
+pub(crate) fn rewrite_list(
+    ctx: &Context<'_>,
+    holder: Node<'_, '_>,
+    parent: Option<Node<'_, '_>>,
+    list: &super::php_parser::List<'_, '_>,
+    items: &[Item<'_>],
+) -> Option<Vec<Edit>> {
+    use super::php_parser::Frame;
+    let olds = old_statements(ctx, list);
+    let braces = matches!(list.frame, Frame::Braces { .. });
+    let program = matches!(holder, Node::Program(_));
+    let count_changed = program
+        && olds.iter().filter(|o| !o.nop).count()
+            != items
+                .iter()
+                .filter(|i| i.old().is_none_or(|o| !olds[o].nop))
+                .count();
+    if let Some((text, end)) = print_list(ctx, &olds, braces, list.inner.start, items) {
+        let mut edits = vec![Edit::new(Span::new(list.inner.start, end), text)];
+        if count_changed && !ctx.source.ends_with('\n') {
+            edits.push(Edit::new(
+                Span::new(ctx.source.len(), ctx.source.len()),
+                "\n",
+            ));
+        }
+        return Some(edits);
+    }
+    match (holder, parent) {
+        (Node::Block(_), Some(Node::Closure(closure))) => {
+            let span = node_span(closure);
+            let indent = indent_at(ctx, span.start);
+            let mut out = String::new();
+            for attributes in closure.attribute_lists.iter() {
+                out.push_str(&kept_text(ctx, node_span(attributes), indent));
+                out.push(' ');
+            }
+            if closure.r#static.is_some() {
+                out.push_str("static ");
+            }
+            out.push_str("function ");
+            if closure.ampersand.is_some() {
+                out.push('&');
+            }
+            out.push('(');
+            out.push_str(&print_params(ctx, closure, indent));
+            out.push(')');
+            if let Some(uses) = &closure.use_clause {
+                let vars: Vec<&str> = uses.variables.iter().map(|v| text(ctx, v)).collect();
+                out.push_str(&format!(" use ({})", vars.join(", ")));
+            }
+            if let Some(hint) = &closure.return_type_hint {
+                out.push_str(": ");
+                out.push_str(&kept_text(ctx, node_span(&hint.hint), indent));
+            }
+            out.push_str(" {");
+            out.push_str(&p_stmts(ctx, &olds, items, indent + 4));
+            out.push('\n');
+            out.push_str(&" ".repeat(indent));
+            out.push('}');
+            Some(vec![Edit::new(span, out)])
+        }
+        (Node::Program(_), _) => {
+            // The whole file, from `<?php` on; a file with HTML or a closing tag before its end is left alone.
+            let tokens = super::php_parser::tokens(ctx.source);
+            use mago_syntax::token::TokenKind as K;
+            let first = tokens.first()?;
+            if first.kind != K::OpenTag || first.start != 0 {
+                return None;
+            }
+            let tag = tokens.iter().skip(1).find(|t| {
+                matches!(
+                    t.kind,
+                    K::CloseTag | K::InlineText | K::OpenTag | K::EchoTag | K::ShortOpenTag
+                )
+            });
+            if let Some(t) = tag
+                && (t.kind != K::CloseTag || !matches!(&ctx.source[t.end..], "" | "\n"))
+            {
+                return None;
+            }
+            let mut out = format!("<?php\n{}", p_stmts(ctx, &olds, items, 0));
+            if count_changed && !out.ends_with('\n') {
+                out.push('\n');
+            }
+            Some(vec![Edit::new(Span::new(0, ctx.source.len()), out)])
+        }
+        _ => None,
+    }
+}
+
+/// `pParams` of a closure printed again: its parameters' text, joined by `, `, or a line each when one owns a
+/// comment.
+fn print_params(ctx: &Context<'_>, closure: &Closure<'_>, indent: usize) -> String {
+    let params: Vec<Span> = closure
+        .parameter_list
+        .parameters
+        .iter()
+        .map(|p| node_span(p))
+        .collect();
+    if !params.iter().any(|p| has_comments(ctx, p.start)) {
+        return params
+            .iter()
+            .map(|p| kept_text(ctx, *p, indent))
+            .collect::<Vec<_>>()
+            .join(", ");
+    }
+    let inner = indent + 4;
+    let nl = format!("\n{}", " ".repeat(inner));
+    let mut out = String::new();
+    for p in &params {
+        if has_comments(ctx, p.start) {
+            out.push_str(&nl);
+            out.push_str(&p_comments(ctx, &comment_spans(ctx, p.start), inner));
+        }
+        out.push_str(&nl);
+        out.push_str(&kept_text(ctx, *p, inner));
+        if !std::ptr::eq(p, params.last().unwrap()) {
+            out.push(',');
+        }
+    }
+    out.push('\n');
+    out.push_str(&" ".repeat(indent));
+    out
+}
+
+/// The nodes that hold a statement list (`NodeGroup::STMTS_AWARE`), as Mago has them: a single statement under a
+/// control structure is left out, as no rule here changes a list of one.
+pub(crate) const STATEMENT_LISTS: &[NodeKind] = &[
+    NodeKind::Program,
+    NodeKind::Block,
+    NodeKind::NamespaceImplicitBody,
+    NodeKind::SwitchExpressionCase,
+    NodeKind::SwitchDefaultCase,
+    NodeKind::IfColonDelimitedBody,
+    NodeKind::IfColonDelimitedBodyElseIfClause,
+    NodeKind::IfColonDelimitedBodyElseClause,
+    NodeKind::WhileColonDelimitedBody,
+    NodeKind::ForColonDelimitedBody,
+    NodeKind::ForeachColonDelimitedBody,
+    NodeKind::DeclareColonDelimitedBody,
+];
+
+/// The list `node` holds, as php-parser's `stmts`.
+pub(crate) fn statement_list<'ast, 'arena>(
+    ctx: &Context<'_>,
+    node: Node<'ast, 'arena>,
+) -> super::php_parser::List<'ast, 'arena> {
+    let tokens = super::php_parser::tokens(ctx.source);
+    super::php_parser::holder_list(ctx.source, &tokens, node)
+}
+
+/// `$stmt->expr` of an expression statement.
+pub(crate) fn statement_expression<'a>(statement: &'a Statement<'a>) -> Option<&'a Expression<'a>> {
+    match statement {
+        Statement::Expression(s) => Some(s.expression),
+        _ => None,
+    }
 }

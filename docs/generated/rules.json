@@ -8918,7 +8918,7 @@
         "ConvertExpectExceptionToThrowRector",
         "Pest\\Rector\\Rules\\ConvertExpectExceptionToThrowRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/pest/no-focused-test",
@@ -10128,7 +10128,7 @@
         "UseToThrow",
         "UseToThrowRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/pest/prefer-type-matchers",

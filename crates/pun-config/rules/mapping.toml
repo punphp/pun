@@ -541,7 +541,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "performance/require-qualified-native-constant" = { fix = "unsafe", ported = true, status = "decided", summary = "Add leading `\\` before constant invocation of internal constant to speed up resolving. Constant name match is case-sensitive, except for `null`, `false` and `true`." }
 "performance/require-qualified-native-function" = { fix = "unsafe", ported = true, status = "decided", summary = "Add leading `\\` before function invocation to speed up resolving." }
 "pest/no-before-all-in-describe" = { fix = "safe", sets = ["coding-style"], ported = true, status = "decided", summary = "Replaces invalid beforeAll() and afterAll() hooks inside describe() with beforeEach() and afterEach()" }
-"pest/no-expect-exception" = { fix = "safe", sets = ["coding-style"], ported = false, status = "decided", summary = "Converts expectException() and expectExceptionMessage() patterns to expect()->toThrow()" }
+"pest/no-expect-exception" = { fix = "safe", sets = ["coding-style"], ported = true, status = "decided", summary = "Converts expectException() and expectExceptionMessage() patterns to expect()->toThrow()" }
 "pest/no-focused-test" = { fix = "unsafe", sets = ["coding-style"], ported = true, status = "decided", summary = "Removes only() from all tests" }
 "pest/no-invalid-repeat" = { fix = "safe", sets = ["coding-style"], ported = true, status = "decided", summary = "Normalizes invalid literal repeat() counts to 1" }
 "pest/no-negated-boolean-matcher" = { fix = "safe", sets = ["coding-style"], ported = true, status = "decided", summary = "Simplifies double-negative expectations like ->not->toBeFalse() to ->toBeTrue()" }
@@ -599,7 +599,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "pest/prefer-to-match-array" = { fix = "safe", sets = ["coding-style"], ported = false, status = "decided", summary = "Converts multiple array element assertions to toMatchArray() matcher" }
 "pest/prefer-to-match-object" = { fix = "safe", sets = ["coding-style"], ported = false, status = "decided", summary = "Converts consecutive toHaveProperty() with values to toMatchObject() matcher" }
 "pest/prefer-to-start-with" = { fix = "unsafe", sets = ["coding-style"], ported = true, status = "decided", summary = "Converts str_starts_with() checks to toStartWith() matcher" }
-"pest/prefer-to-throw" = { fix = "safe", sets = ["coding-style"], ported = false, status = "decided", summary = "Use expect()->toThrow() instead of expectException() or try/catch in Pest tests." }
+"pest/prefer-to-throw" = { fix = "safe", sets = ["coding-style"], ported = true, status = "decided", summary = "Use expect()->toThrow() instead of expectException() or try/catch in Pest tests." }
 "pest/prefer-type-matchers" = { fix = "unsafe", sets = ["coding-style"], ported = true, status = "decided", summary = "Converts expect(is_array($x))->toBeTrue() to expect($x)->toBeArray()" }
 "pest/require-type-matcher-first" = { fix = "safe", sets = ["coding-style"], ported = false, status = "decided", summary = "Ensure type-check matchers (e.g. toBeInt, toBeInstanceOf) appear before value assertions in expect() chains and consecutive expects" }
 "php-8.1/prefer-first-class-callable" = { fix = "safe", sets = ["modernize"], ported = true, origin = "mago", status = "decided", summary = "Use first-class callable syntax (`strlen(...)`) instead of closures, Closure::fromCallable() and string or array callables." }

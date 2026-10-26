@@ -11797,7 +11797,7 @@
         "rules": [
           "lint/pest/no-expect-exception"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -12335,7 +12335,7 @@
         "rules": [
           "lint/pest/prefer-to-throw"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
