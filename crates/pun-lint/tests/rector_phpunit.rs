@@ -351,3 +351,11 @@ fn named_argument_for_data_provider() {
         "NamedArgumentForDataProviderRector",
     );
 }
+
+#[test]
+fn replace_test_annotation_with_prefixed_function() {
+    check(
+        PreferTestPrefix,
+        "ReplaceTestAnnotationWithPrefixedFunctionRector",
+    );
+}

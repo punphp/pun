@@ -13185,7 +13185,7 @@
         "rules": [
           "lint/phpunit/prefer-test-prefix"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
