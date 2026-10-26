@@ -132,9 +132,9 @@ use crate::invocation::MethodTargetContext;
 
 pub const ANALYZER_PROTOCOL_MAGIC: [u8; 4] = *b"MANA";
 // Version 2.1 adds string casing tag 3 (both ASCII casing guarantees).
-// Version 2.0 peers must be rejected rather than losing a guarantee or misreading it.
+// Version 2.2 appends named-object exclusions; older layouts must be rejected before decoding.
 pub const ANALYZER_PROTOCOL_MAJOR: u16 = 2;
-pub const ANALYZER_PROTOCOL_MINOR: u16 = 1;
+pub const ANALYZER_PROTOCOL_MINOR: u16 = 2;
 
 const HEADER_LENGTH: usize = 12;
 const INITIAL_MESSAGE_CAPACITY: usize = 256;
@@ -1707,6 +1707,10 @@ fn encode_object_snapshot<'type_info>(
                 depth + 1,
             )?;
             writer.write_bool(named.remapped_parameters);
+            writer.write_bool(named.subtracted_type.is_some());
+            if let Some(excluded) = &named.subtracted_type {
+                encode_union_snapshot_inner(writer, excluded, types, depth + 1)?;
+            }
         }
         TObject::Enum(r#enum) => {
             writer.write_u8(3);
@@ -2790,6 +2794,11 @@ fn decode_complete_object(reader: &mut PayloadReader<'_>, depth: usize) -> Resul
             let is_this = reader.read_bool("named object this flag")?;
             let intersection_types = decode_optional_complete_atomics(reader, depth + 1)?;
             let remapped_parameters = reader.read_bool("named object remapped parameters flag")?;
+            let subtracted_type = if reader.read_bool("named object exclusion presence")? {
+                Some(Arc::new(decode_complete_union(reader, depth + 1)?))
+            } else {
+                None
+            };
             TObject::Named(TNamedObject {
                 name,
                 type_parameters: type_parameters.map(Vec::into_boxed_slice),
@@ -2797,7 +2806,7 @@ fn decode_complete_object(reader: &mut PayloadReader<'_>, depth: usize) -> Resul
                 is_static,
                 is_this,
                 intersection_types: intersection_types.map(Box::new),
-                subtracted_type: None,
+                subtracted_type,
                 remapped_parameters,
             })
         }
@@ -3208,8 +3217,10 @@ fn validate_provider_indices(
 pub(super) mod testing {
     use super::*;
 
+    mod object_exclusions;
+
     #[test]
-    fn string_casing_tags_roundtrip_and_reject_version_two_zero_peers() {
+    fn string_casing_tags_roundtrip_and_reject_older_peers() {
         for (casing, tag) in [
             (TStringCasing::Unspecified, 0),
             (TStringCasing::Lowercase, 1),
@@ -3236,14 +3247,18 @@ pub(super) mod testing {
         let mut writer = message_writer(CALLABLE_SIGNATURE_RESPONSE);
         writer.write_bool(false);
         let payload = writer.finish();
+        assert_eq!(&payload[4..8], &[0, 2, 0, 2]);
         assert_eq!(message_kind(&payload).unwrap(), CALLABLE_SIGNATURE_RESPONSE);
         assert!(decode_callable_signature_response(&payload, |_| None).unwrap().is_none());
-        let mut old = payload;
-        old[4..8].copy_from_slice(&[0, 2, 0, 0]);
-        assert!(matches!(decode_callable_signature_response(&old, |_| None),
-            Err(ExternalAnalyzerError::Protocol(message)) if message.contains("unsupported analyzer protocol version 2.0")));
-        assert!(matches!(message_kind(&old),
-            Err(ExternalAnalyzerError::Protocol(message)) if message.contains("unsupported analyzer protocol version 2.0")));
+        for minor in [0, 1] {
+            let mut old = payload.clone();
+            old[4..8].copy_from_slice(&[0, 2, 0, minor]);
+            let expected = format!("unsupported analyzer protocol version 2.{minor}");
+            assert!(matches!(decode_callable_signature_response(&old, |_| None),
+                Err(ExternalAnalyzerError::Protocol(message)) if message.contains(&expected)));
+            assert!(matches!(message_kind(&old),
+                Err(ExternalAnalyzerError::Protocol(message)) if message.contains(&expected)));
+        }
     }
 
     #[test]
@@ -3732,8 +3747,7 @@ pub(super) mod testing {
         use crate::external::{ExternalAnalyzer, ExternalAnalyzerHandle};
         use crate::plugin::PluginRegistry;
 
-        // The complete snapshot's named-object payload has no negative-constraint field.
-        // A provider returning an ordinary object must not acquire one from local narrowing.
+        // An ordinary provider object carries an absent negative constraint in protocol 2.2.
         let mut writer = message_writer(RETURN_TYPE_RESPONSE);
         writer.write_bool(true);
         writer.write_u8(TYPE_COMPLETE);
@@ -3742,7 +3756,7 @@ pub(super) mod testing {
         writer.write_u8(SNAPSHOT_OBJECT);
         writer.write_u8(2);
         writer.write_bytes(b"WireObject").unwrap();
-        for _ in 0..6 {
+        for _ in 0..7 {
             writer.write_bool(false);
         }
         let hex = |bytes: Vec<u8>| bytes.iter().map(|byte| format!("{byte:02x}")).collect::<String>();

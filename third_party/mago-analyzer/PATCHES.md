@@ -1997,3 +1997,19 @@ assignment effects. Excluded mixed values use the shared intersection operation 
 assertion reconciliation, so narrowing to an object does not discard its negative constraints.
 Public controls retain the original negative-branch expectations and cover assignments, nested
 conditions, returns, ternaries, scalar guards, and generic or receiver-specific object identities.
+
+## Named-object exclusions in protocol 2.2
+
+Named-object snapshots append an exclusion-presence flag after the remapped-parameters flag.
+When present, the payload is a nested union: request snapshots retain its request-local handle;
+complete provider responses omit handles, as they do for other nested unions. Existing object,
+atomic, and message tags retain their meanings. Protocol 2.1 already introduced casing tag 3;
+the new object layout uses 2.2. Both header readers reject 2.0 and 2.1 before decoding their payloads.
+
+The encoder and decoder use the existing union recursion and member-count limits. Exclusions stay
+separate from positive intersection children, including unions and nested negative constraints.
+Real PHP worker and public Analyzer controls cover ordinary objects, flow-narrowed exclusions,
+nested provider round trips, and rejected over-depth, oversized, or empty union payloads. Rejected
+responses retain the existing provider warning and native-analysis fallback.
+Their semantic controls use PHPStan 2.3.1's retained `object-intersections` captures: joining
+`mixed~A` with `C~A&C` yields `mixed~A&C`, whereas joining it with `C` or `A&C` yields `mixed`.
