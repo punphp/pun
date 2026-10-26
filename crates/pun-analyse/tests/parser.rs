@@ -579,3 +579,71 @@ fn invalid_hooks_in_scanned_files_export_no_symbols() {
         );
     }
 }
+
+#[test]
+fn namespace_parser_failures_preserve_child_keyword_lines_and_parser_precedence() {
+    let inputs: Value =
+        serde_json::from_str(include_str!("fixtures/parser/namespace-inputs.json")).unwrap();
+    let expected: Value =
+        serde_json::from_str(include_str!("fixtures/parser/namespace-expected.json")).unwrap();
+    let root = Inputs::new();
+    let files = inputs
+        .as_object()
+        .unwrap()
+        .iter()
+        .map(|(name, code)| root.write(name, code.as_str().unwrap()))
+        .collect();
+    assert_eq!(
+        errors(&Project::new(files, Vec::new())),
+        expected["analysed"]["errors"]
+    );
+}
+
+#[test]
+fn namespace_checks_follow_complete_bodies_then_collect_direct_children_in_order() {
+    use pun_phpstan::{Array, Key, Value as Php};
+    let root = Inputs::new();
+    let file = root.write(
+        "namespace-order",
+        include_str!("fixtures/parser/namespace-order.php")
+            .strip_prefix("<?php\n")
+            .unwrap(),
+    );
+    let mut project = Project::new(vec![file], Vec::new());
+    let mut entry = Array::new();
+    entry.set(Key::from("identifier"), Php::str("phpstan.parse"));
+    project.ignore_errors =
+        pun_phpstan::ignore::IgnoredErrors::new(&Array::list([Php::Array(entry)]), true);
+    let expected: Value =
+        serde_json::from_str(include_str!("fixtures/parser/namespace-expected.json")).unwrap();
+    // The non-ignorable configured-ignore messages expose collection order before error sorting. Checking
+    // each child on entry or exit would incorrectly interleave nested-namespace errors with later siblings.
+    assert_eq!(
+        json!(analyse_project(&project).unwrap().general),
+        expected["order"]["general"]
+    );
+    assert_eq!(errors(&project), expected["order"]["errors"]);
+}
+
+#[test]
+fn invalid_nested_namespaces_in_scanned_files_export_no_symbols() {
+    let inputs: Value =
+        serde_json::from_str(include_str!("fixtures/parser/namespace-scans.json")).unwrap();
+    let expected: Value =
+        serde_json::from_str(include_str!("fixtures/parser/namespace-expected.json")).unwrap();
+    for (name, code) in inputs.as_object().unwrap() {
+        let root = Inputs::new();
+        let main = root.write(
+            "main",
+            include_str!("fixtures/parser/scan-main.php")
+                .strip_prefix("<?php\n")
+                .unwrap(),
+        );
+        let symbols = root.write("symbols", code.as_str().unwrap());
+        assert_eq!(
+            errors(&Project::new(vec![main], vec![symbols])),
+            expected["scanned"][name]["errors"],
+            "{name}"
+        );
+    }
+}

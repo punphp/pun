@@ -1,0 +1,23 @@
+{
+  "nested-named": "namespace NamedOuter {\n    namespace NamedInner {}\n}",
+  "nested-three": "namespace ThreeOuter {\n    namespace ThreeMiddle {\n        namespace ThreeInner {}\n    }\n}",
+  "nested-siblings": "namespace SiblingOuter {\n    namespace First {}\n    namespace Second {}\n}",
+  "nested-global-child": "namespace GlobalChildOuter {\n    namespace {}\n}",
+  "nested-global-parent": "namespace {\n    namespace GlobalParentInner {}\n}",
+  "nested-global-both": "namespace {\n    namespace {}\n}",
+  "keyword-line-and-case": "namespace KeywordOuter {\n    // The child keyword, not its name or brace, owns the location.\n    NaMeSpAcE\n    KeywordInner\n    {\n    }\n}",
+  "nested-qualified": "namespace QualifiedOuter\\A {\n    namespace QualifiedInner\\B {}\n}",
+  "body-parameter": "namespace ParameterOuter {\n    namespace ParameterInner {\n        function bad(void $value) {}\n    }\n}",
+  "body-try": "namespace TryOuter {\n    namespace TryInner {\n        try {}\n    }\n}",
+  "body-hook": "namespace HookOuter {\n    namespace HookInner {\n        class C { public int $p { MeOw => 1; } }\n    }\n}",
+  "outer-body-parameter": "namespace OuterParameter {\n    namespace InnerParameter {}\n    function bad(void $value) {}\n}",
+  "earlier-name": "namespace EarlierNameOuter {\n    #[\\self] class C {}\n    namespace EarlierNameInner {}\n}",
+  "body-name": "namespace BodyNameOuter {\n    namespace BodyNameInner { new \\parent; }\n}",
+  "same-file-rules": "namespace RuleOuter {\n    missing_before_namespace();\n    namespace RuleInner { missing_inside_namespace(); }\n    missing_after_namespace();\n}",
+  "positive-adjacent-braced": "namespace AdjacentFirst {}\nnamespace AdjacentSecond {}",
+  "positive-adjacent-global": "namespace {}\nnamespace AdjacentNamed {}\nnamespace {}",
+  "positive-adjacent-semicolon": "namespace SemicolonFirst;\nnamespace SemicolonSecond;",
+  "positive-qualified": "namespace PositiveQualified\\A { class C {} }",
+  "positive-blocks": "namespace PositiveBlocks { if (true) {} { } }",
+  "positive-ordinary-error": "namespace PositiveNamespaceError { missing_namespace_parser_control(); }"
+}

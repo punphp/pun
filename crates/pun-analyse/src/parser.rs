@@ -261,6 +261,21 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Reserved<'_> {
         mago_syntax::walker::walk_statement_expression_mut(self, node, context);
         self.continuation = saved;
     }
+    fn walk_out_namespace(&mut self, node: &'ast Namespace<'arena>, _: &mut ()) {
+        // ParserAbstract::checkNamespace runs on reduction, after all body errors, and inspects only direct
+        // children. Semicolon namespaces have null stmts at this stage, not Mago's later implicit body.
+        if let NamespaceBody::BraceDelimited(body) = &node.body {
+            for statement in &body.statements {
+                if let Statement::Namespace(child) = statement {
+                    self.errors.push(error(
+                        self.file,
+                        child.namespace.span,
+                        "Namespace declarations cannot be nested".into(),
+                    ));
+                }
+            }
+        }
+    }
     fn walk_in_class(&mut self, node: &'ast Class<'arena>, _: &mut ()) {
         self.class_modifiers(
             &node.modifiers,

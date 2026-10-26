@@ -1,0 +1,8 @@
+{
+  "nested-named": "namespace { class ScanBefore {} function scanFunction() {} const SCAN_CONSTANT = 1; } namespace Outer { namespace Inner {} } namespace { class ScanAfter {} }",
+  "nested-global-parent": "namespace { class ScanBefore {} function scanFunction() {} const SCAN_CONSTANT = 1; namespace Inner {} class ScanAfter {} }",
+  "nested-global-child": "namespace { class ScanBefore {} function scanFunction() {} const SCAN_CONSTANT = 1; } namespace Outer { namespace {} } namespace { class ScanAfter {} }",
+  "nested-three": "namespace { class ScanBefore {} function scanFunction() {} const SCAN_CONSTANT = 1; } namespace Outer { namespace Middle { namespace Inner {} } } namespace { class ScanAfter {} }",
+  "positive-adjacent": "namespace { class ScanBefore {} function scanFunction() {} const SCAN_CONSTANT = 1; } namespace Named {} namespace { class ScanAfter {} }",
+  "positive-global": "namespace { class ScanBefore {} function scanFunction() {} const SCAN_CONSTANT = 1; class ScanAfter {} }"
+}
