@@ -2,10 +2,11 @@
 //! 1a4b6b7 (tests/Rules/...) into tests/rector/<Rector class>/Fixture. Oracle/ holds extra inputs with what Rector
 //! 2.6.1 and the plugin at that commit (`.oracle/rector-ecosystem`, the rule alone, `withPhpVersion(80400)`) wrote for
 //! them. Pun/ holds the inputs where Rector's one pass over the file leaves code that the same rule changes again (a
-//! double negation is undone one `!` at a time); Pun's fix rounds go on until the rule has nothing left, so the expected
-//! code is the oracle's output run through the oracle again until it stops changing. A fixture is
-//! `input -----\n expected`, or only the input when the rule must not change it. Each one must pass as
-//! `pun lint --fix == expected` and `format(pun lint --fix) == format(expected)`, format being the laravel preset.
+//! double negation is undone one `!` at a time, a type matcher becomes redundant once the one before it goes); Pun's
+//! fix rounds go on until the rule has nothing left, so the expected code is the oracle's output run through the oracle
+//! again until it stops changing. A fixture is `input -----\n expected`, or only the input when the rule must not
+//! change it. Each one must pass as `pun lint --fix == expected` and `format(pun lint --fix) == format(expected)`,
+//! format being the laravel preset.
 
 use std::path::{Path, PathBuf};
 
@@ -76,15 +77,12 @@ fn run_class(rules: Vec<Box<dyn Rule>>, class: &str) {
         for (path, input, expected) in fixtures(&dir) {
             let name = format!("{sub}/{}", path.file_name().unwrap().to_string_lossy());
             let fixed = linter.fix(&path, &input).unwrap();
-            if sub == "Fixture" && fixed.source != expected {
-                assert_eq!(
-                    fixed.source,
-                    format!("{expected}\n"),
-                    "{class} {name}: lint --fix"
-                );
+            let expected = if sub == "Fixture" && fixed.source == format!("{expected}\n") {
+                fixed.source.clone()
             } else {
-                assert_eq!(fixed.source, expected, "{class} {name}: lint --fix");
-            }
+                expected
+            };
+            assert_eq!(fixed.source, expected, "{class} {name}: lint --fix");
             assert_eq!(
                 format(&pipeline, &fixed.source),
                 format(&pipeline, &expected),
@@ -349,4 +347,17 @@ fn use_to_have_properties() {
 #[test]
 fn simplify_filesystem_matchers() {
     check(PreferFilesystemMatchers, "SimplifyFilesystemMatchersRector");
+}
+
+#[test]
+fn remove_redundant_literal_type_expectation() {
+    check(
+        NoRedundantTypeExpectation,
+        "RemoveRedundantLiteralTypeExpectationRector",
+    );
+}
+
+#[test]
+fn use_each_modifier() {
+    check(PreferEachModifier, "UseEachModifierRector");
 }

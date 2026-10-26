@@ -11847,7 +11847,7 @@
         "rules": [
           "lint/pest/no-redundant-type-expectation"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -11957,7 +11957,7 @@
         "rules": [
           "lint/pest/prefer-each-modifier"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
