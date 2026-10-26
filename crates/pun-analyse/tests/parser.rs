@@ -290,3 +290,75 @@ fn invalid_parameters_in_scanned_files_export_no_symbols() {
         );
     }
 }
+
+#[test]
+fn class_modifier_failures_preserve_priority_token_lines_and_parser_precedence() {
+    let inputs: Value =
+        serde_json::from_str(include_str!("fixtures/parser/class-modifier-inputs.json")).unwrap();
+    let expected: Value =
+        serde_json::from_str(include_str!("fixtures/parser/class-modifier-expected.json")).unwrap();
+    let root = Inputs::new();
+    let files = inputs
+        .as_object()
+        .unwrap()
+        .iter()
+        .map(|(name, code)| {
+            let namespace = name.replace('-', "_");
+            root.write(
+                name,
+                &format!(
+                    "namespace ClassModifier_{namespace};\n{}",
+                    code.as_str().unwrap()
+                ),
+            )
+        })
+        .collect();
+    assert_eq!(
+        errors(&Project::new(files, Vec::new())),
+        expected["analysed"]
+    );
+}
+
+#[test]
+fn invalid_class_modifiers_in_scanned_files_export_no_symbols() {
+    let inputs: Value =
+        serde_json::from_str(include_str!("fixtures/parser/class-modifier-scans.json")).unwrap();
+    let expected: Value =
+        serde_json::from_str(include_str!("fixtures/parser/class-modifier-expected.json")).unwrap();
+    for (name, code) in inputs.as_object().unwrap() {
+        let root = Inputs::new();
+        let main = root.write(
+            "main",
+            include_str!("fixtures/parser/scan-main.php")
+                .strip_prefix("<?php\n")
+                .unwrap(),
+        );
+        let symbols = root.write("symbols", code.as_str().unwrap());
+        assert_eq!(
+            errors(&Project::new(vec![main], vec![symbols])),
+            expected["scanned"][name],
+            "{name}"
+        );
+    }
+}
+
+#[test]
+fn unsupported_class_visibility_does_not_invent_member_modifier_errors() {
+    // PHPStan 2.3.1 reports only "Syntax error, unexpected T_PUBLIC on line 2" (phpstan.parse).
+    // Mago accepts this generic modifier sequence. Grammar translation remains unsupported, but a class
+    // header must not produce the member checker's "Multiple access type modifiers" semantic error.
+    let root = Inputs::new();
+    let file = root.write(
+        "unsupported-class-visibility",
+        include_str!("fixtures/parser/class-modifier-unsupported.php")
+            .strip_prefix("<?php\n")
+            .unwrap(),
+    );
+    let analysis = analyse_project(&Project::new(vec![file], Vec::new())).unwrap();
+    assert!(
+        analysis
+            .errors
+            .iter()
+            .all(|e| { e.identifier != "phpstan.parse" || e.message.starts_with("Syntax error,") })
+    );
+}

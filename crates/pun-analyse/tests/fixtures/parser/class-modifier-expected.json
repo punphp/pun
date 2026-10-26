@@ -1,0 +1,485 @@
+{
+    "analysed": [
+        {
+            "file": "abstract-final.php",
+            "line": 3,
+            "identifier": "phpstan.parse",
+            "message": "Cannot use the final modifier on an abstract class on line 3",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "accumulated-flags.php",
+            "line": 3,
+            "identifier": "phpstan.parse",
+            "message": "Cannot use the final modifier on an abstract class on line 3",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "accumulated-flags.php",
+            "line": 3,
+            "identifier": "phpstan.parse",
+            "message": "Multiple abstract modifiers are not allowed on line 3",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "accumulated-flags.php",
+            "line": 3,
+            "identifier": "phpstan.parse",
+            "message": "Multiple final modifiers are not allowed on line 3",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "accumulated-flags.php",
+            "line": 3,
+            "identifier": "phpstan.parse",
+            "message": "Multiple readonly modifiers are not allowed on line 3",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "anonymous-abstract-final.php",
+            "line": 3,
+            "identifier": "phpstan.parse",
+            "message": "Cannot use the final modifier on an abstract class on line 3",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "anonymous-argument-collection.php",
+            "line": 3,
+            "identifier": "phpstan.parse",
+            "message": "Multiple final modifiers are not allowed on line 3",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "anonymous-argument-collection.php",
+            "line": 3,
+            "identifier": "phpstan.parse",
+            "message": "void cannot be used as a parameter type on line 3",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "anonymous-duplicate-abstract.php",
+            "line": 3,
+            "identifier": "phpstan.parse",
+            "message": "Multiple abstract modifiers are not allowed on line 3",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "anonymous-duplicate-final.php",
+            "line": 3,
+            "identifier": "phpstan.parse",
+            "message": "Multiple final modifiers are not allowed on line 3",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "anonymous-duplicate-readonly.php",
+            "line": 3,
+            "identifier": "phpstan.parse",
+            "message": "Multiple readonly modifiers are not allowed on line 3",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "anonymous-final-abstract.php",
+            "line": 3,
+            "identifier": "phpstan.parse",
+            "message": "Cannot use the final modifier on an abstract class on line 3",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "anonymous-parent-collection.php",
+            "line": 3,
+            "identifier": "phpstan.parse",
+            "message": "Cannot use 'self' as class name as it is reserved on line 3",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "anonymous-parent-collection.php",
+            "line": 3,
+            "identifier": "phpstan.parse",
+            "message": "Multiple final modifiers are not allowed on line 3",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "anonymous-priority.php",
+            "line": 3,
+            "identifier": "phpstan.parse",
+            "message": "Cannot use the final modifier on an abstract class on line 3",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "anonymous-priority.php",
+            "line": 3,
+            "identifier": "phpstan.parse",
+            "message": "Multiple final modifiers are not allowed on line 3",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "anonymous-priority.php",
+            "line": 3,
+            "identifier": "phpstan.parse",
+            "message": "Multiple readonly modifiers are not allowed on line 3",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "anonymous-token-lines.php",
+            "line": 5,
+            "identifier": "phpstan.parse",
+            "message": "Multiple readonly modifiers are not allowed on line 5",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "attribute-name-precedence.php",
+            "line": 3,
+            "identifier": "phpstan.parse",
+            "message": "Multiple final modifiers are not allowed on line 3",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "body-member-collection.php",
+            "line": 3,
+            "identifier": "phpstan.parse",
+            "message": "Cannot use the final modifier on an abstract class member on line 3",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "body-member-collection.php",
+            "line": 3,
+            "identifier": "phpstan.parse",
+            "message": "Cannot use the final modifier on an abstract class on line 3",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "body-name-precedence.php",
+            "line": 3,
+            "identifier": "phpstan.parse",
+            "message": "Multiple final modifiers are not allowed on line 3",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "body-parameter-collection.php",
+            "line": 3,
+            "identifier": "phpstan.parse",
+            "message": "Multiple final modifiers are not allowed on line 3",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "body-parameter-collection.php",
+            "line": 3,
+            "identifier": "phpstan.parse",
+            "message": "Variadic parameter cannot have a default value on line 3",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "body-parameter-collection.php",
+            "line": 3,
+            "identifier": "phpstan.parse",
+            "message": "void cannot be used as a parameter type on line 3",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "case.php",
+            "line": 3,
+            "identifier": "phpstan.parse",
+            "message": "Cannot use the final modifier on an abstract class on line 3",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "case.php",
+            "line": 3,
+            "identifier": "phpstan.parse",
+            "message": "Multiple abstract modifiers are not allowed on line 3",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "duplicate-abstract.php",
+            "line": 3,
+            "identifier": "phpstan.parse",
+            "message": "Multiple abstract modifiers are not allowed on line 3",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "duplicate-before-conflict.php",
+            "line": 3,
+            "identifier": "phpstan.parse",
+            "message": "Cannot use the final modifier on an abstract class on line 3",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "duplicate-before-conflict.php",
+            "line": 3,
+            "identifier": "phpstan.parse",
+            "message": "Multiple abstract modifiers are not allowed on line 3",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "duplicate-final-priority.php",
+            "line": 3,
+            "identifier": "phpstan.parse",
+            "message": "Cannot use the final modifier on an abstract class on line 3",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "duplicate-final-priority.php",
+            "line": 3,
+            "identifier": "phpstan.parse",
+            "message": "Multiple final modifiers are not allowed on line 3",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "duplicate-final.php",
+            "line": 3,
+            "identifier": "phpstan.parse",
+            "message": "Multiple final modifiers are not allowed on line 3",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "duplicate-readonly.php",
+            "line": 3,
+            "identifier": "phpstan.parse",
+            "message": "Multiple readonly modifiers are not allowed on line 3",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "earlier-name-precedence.php",
+            "line": 4,
+            "identifier": "phpstan.parse",
+            "message": "Multiple final modifiers are not allowed on line 4",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "final-abstract.php",
+            "line": 3,
+            "identifier": "phpstan.parse",
+            "message": "Cannot use the final modifier on an abstract class on line 3",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "nested-header-collection.php",
+            "line": 3,
+            "identifier": "phpstan.parse",
+            "message": "Multiple final modifiers are not allowed on line 3",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "nested-header-collection.php",
+            "line": 3,
+            "identifier": "phpstan.parse",
+            "message": "Multiple final modifiers are not allowed on line 3",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "positive-independent-members.php",
+            "line": 3,
+            "identifier": "property.uninitializedReadonly",
+            "message": "Class ClassModifier_positive_independent_members\\C has an uninitialized readonly property $x. Assign it in the constructor.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "positive-ordinary-error.php",
+            "line": 3,
+            "identifier": "function.notFound",
+            "message": "Function missing_class_modifier_control not found.",
+            "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+            "ignorable": true
+        },
+        {
+            "file": "reserved-name-collection.php",
+            "line": 3,
+            "identifier": "phpstan.parse",
+            "message": "Cannot use 'self' as class name as it is reserved on line 3",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "reserved-name-collection.php",
+            "line": 3,
+            "identifier": "phpstan.parse",
+            "message": "Cannot use the final modifier on an abstract class on line 3",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "reserved-name-collection.php",
+            "line": 3,
+            "identifier": "phpstan.parse",
+            "message": "void cannot be used as a parameter type on line 3",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "reserved-parent-collection.php",
+            "line": 3,
+            "identifier": "phpstan.parse",
+            "message": "Cannot use 'self' as class name as it is reserved on line 3",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "reserved-parent-collection.php",
+            "line": 3,
+            "identifier": "phpstan.parse",
+            "message": "Multiple final modifiers are not allowed on line 3",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "token-lines.php",
+            "line": 4,
+            "identifier": "phpstan.parse",
+            "message": "Multiple abstract modifiers are not allowed on line 4",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "token-lines.php",
+            "line": 6,
+            "identifier": "phpstan.parse",
+            "message": "Cannot use the final modifier on an abstract class on line 6",
+            "tip": null,
+            "ignorable": false
+        }
+    ],
+    "scanned": {
+        "duplicate": [
+            {
+                "file": "main.php",
+                "line": 2,
+                "identifier": "class.notFound",
+                "message": "Instantiated class ScanBefore not found.",
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "ignorable": true
+            },
+            {
+                "file": "main.php",
+                "line": 3,
+                "identifier": "class.notFound",
+                "message": "Instantiated class ScanAfter not found.",
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "ignorable": true
+            },
+            {
+                "file": "main.php",
+                "line": 4,
+                "identifier": "function.notFound",
+                "message": "Function scanFunction not found.",
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "ignorable": true
+            },
+            {
+                "file": "main.php",
+                "line": 5,
+                "identifier": "constant.notFound",
+                "message": "Used constant SCAN_CONSTANT not found.",
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "ignorable": true
+            }
+        ],
+        "conflict": [
+            {
+                "file": "main.php",
+                "line": 2,
+                "identifier": "class.notFound",
+                "message": "Instantiated class ScanBefore not found.",
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "ignorable": true
+            },
+            {
+                "file": "main.php",
+                "line": 3,
+                "identifier": "class.notFound",
+                "message": "Instantiated class ScanAfter not found.",
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "ignorable": true
+            },
+            {
+                "file": "main.php",
+                "line": 4,
+                "identifier": "function.notFound",
+                "message": "Function scanFunction not found.",
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "ignorable": true
+            },
+            {
+                "file": "main.php",
+                "line": 5,
+                "identifier": "constant.notFound",
+                "message": "Used constant SCAN_CONSTANT not found.",
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "ignorable": true
+            }
+        ],
+        "anonymous": [
+            {
+                "file": "main.php",
+                "line": 2,
+                "identifier": "class.notFound",
+                "message": "Instantiated class ScanBefore not found.",
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "ignorable": true
+            },
+            {
+                "file": "main.php",
+                "line": 3,
+                "identifier": "class.notFound",
+                "message": "Instantiated class ScanAfter not found.",
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "ignorable": true
+            },
+            {
+                "file": "main.php",
+                "line": 4,
+                "identifier": "function.notFound",
+                "message": "Function scanFunction not found.",
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "ignorable": true
+            },
+            {
+                "file": "main.php",
+                "line": 5,
+                "identifier": "constant.notFound",
+                "message": "Used constant SCAN_CONSTANT not found.",
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "ignorable": true
+            }
+        ],
+        "valid": []
+    }
+}

@@ -62,7 +62,7 @@ fn special(value: &[u8]) -> bool {
         || value.eq_ignore_ascii_case(b"static")
 }
 
-/// ParserAbstract's reserved-name, member-modifier and parameter checks. Modifiers are checked as tokens arrive;
+/// ParserAbstract's reserved-name, modifier and parameter checks. Modifiers are checked as tokens arrive;
 /// declaration checks run on reduction (after their bodies). Every parser-stage error wins over NameResolver.
 struct Reserved<'a> {
     file: &'a File,
@@ -70,6 +70,32 @@ struct Reserved<'a> {
 }
 
 impl Reserved<'_> {
+    /// Modifiers::verifyClassModifier/checkClassModifier: duplicate flags precede abstract/final conflicts,
+    /// and class_modifiers ORs every token even after a collected error. This is not the member contract.
+    fn class_modifiers(&mut self, modifiers: &Sequence<Modifier>) {
+        let mut flags = 0_u16;
+        for modifier in modifiers {
+            let (flag, name) = match modifier {
+                Modifier::Abstract(_) => (16, "abstract"),
+                Modifier::Final(_) => (32, "final"),
+                Modifier::Readonly(_) => (64, "readonly"),
+                // Mago accepts generic modifiers here. Other tokens fail in PHPParser's grammar instead.
+                _ => return,
+            };
+            let message = if flags & flag != 0 {
+                Some(format!("Multiple {name} modifiers are not allowed"))
+            } else if flags & 48 != 0 && flag & 48 != 0 {
+                Some("Cannot use the final modifier on an abstract class".into())
+            } else {
+                None
+            };
+            if let Some(message) = message {
+                self.errors.push(error(self.file, modifier.span(), message));
+            }
+            flags |= flag;
+        }
+    }
+
     /// Modifiers::verifyModifier, called by checkModifier and checkPropertyHookModifiers. Preserve its priority:
     /// access conflicts, duplicate flags, then abstract/final. php.y ORs each flag even after a collected error.
     fn modifiers(&mut self, modifiers: &Sequence<Modifier>, property_hook: bool) {
@@ -155,6 +181,12 @@ impl Reserved<'_> {
 }
 
 impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Reserved<'_> {
+    fn walk_in_class(&mut self, node: &'ast Class<'arena>, _: &mut ()) {
+        self.class_modifiers(&node.modifiers);
+    }
+    fn walk_in_anonymous_class(&mut self, node: &'ast AnonymousClass<'arena>, _: &mut ()) {
+        self.class_modifiers(&node.modifiers);
+    }
     fn walk_in_plain_property(&mut self, node: &'ast PlainProperty<'arena>, _: &mut ()) {
         self.modifiers(&node.modifiers, false);
     }
