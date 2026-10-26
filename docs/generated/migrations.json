@@ -12715,7 +12715,7 @@
         "rules": [
           "lint/phpunit/prefer-simple-callback-assert"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -13003,7 +13003,7 @@
         "rules": [
           "lint/phpunit/prefer-narrow-will-return-callback"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {

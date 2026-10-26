@@ -301,3 +301,19 @@ fn data_provider_array_items_new_lined() {
 fn simpler_with_is_instance_of() {
     check(PreferWithIsInstanceOf, "SimplerWithIsInstanceOfRector");
 }
+
+#[test]
+fn callback_single_assert_to_simpler() {
+    check(
+        PreferSimpleCallbackAssert,
+        "CallbackSingleAssertToSimplerRector",
+    );
+}
+
+#[test]
+fn narrow_single_will_return_callback() {
+    check(
+        PreferNarrowWillReturnCallback,
+        "NarrowSingleWillReturnCallbackRector",
+    );
+}

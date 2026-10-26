@@ -12187,7 +12187,7 @@
         "NarrowSingleWillReturnCallbackRector",
         "Rector\\PHPUnit\\CodeQuality\\Rector\\MethodCall\\NarrowSingleWillReturnCallbackRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/phpunit/prefer-narrow-with-consecutive",
@@ -12328,7 +12328,7 @@
         "CallbackSingleAssertToSimplerRector",
         "Rector\\PHPUnit\\CodeQuality\\Rector\\MethodCall\\CallbackSingleAssertToSimplerRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/phpunit/prefer-simple-mock-expectation",
