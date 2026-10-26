@@ -554,7 +554,8 @@ fn phpstan_level_fixtures() {
         }
     }
     let fixed: Vec<_> = gaps
-        .intersection(&tested)
+        .iter()
+        .filter(|name| filter.is_empty() || tested.contains(*name))
         .filter(|name| !failing.contains(*name))
         .collect();
     let new: Vec<_> = details

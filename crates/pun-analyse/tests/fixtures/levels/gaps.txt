@@ -488,7 +488,6 @@
 3 Properties/TypesAssignedToPropertiesRuleTest::testBug13438f
 3 Properties/TypesAssignedToPropertiesRuleTest::testBug7912
 3 Properties/TypesAssignedToPropertiesRuleTest::testCloneWith
-3 Properties/TypesAssignedToPropertiesRuleTest::testBug12688
 # an-types: generic objects without their template arguments: parameter defaults and template bounds (generics.notSupportedBound) where Mago's types differ
 3 Properties/TypesAssignedToPropertiesRuleTest::testGenericObjectWithUnspecifiedTemplateTypes
 3 Properties/TypesAssignedToPropertiesRuleTest::testGenericObjectWithUnspecifiedTemplateTypesLevel8

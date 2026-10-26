@@ -110,7 +110,8 @@ fn phpstan_rule_fixtures() {
         eprintln!("{id:40} {ok:4}/{cases:<4} cases match");
     }
     let fixed: Vec<_> = gaps
-        .intersection(&tested)
+        .iter()
+        .filter(|name| filter.is_empty() || tested.contains(*name))
         .filter(|name| !failing.contains(*name))
         .collect();
     let new: Vec<_> = details
