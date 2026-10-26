@@ -3792,7 +3792,7 @@
       "upstream": [
         "no-boolean-flag-parameter"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/complexity/no-boolean-literal-compare",
@@ -3948,7 +3948,7 @@
       "upstream": [
         "no-else-clause"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/complexity/no-empty-file",
@@ -3964,7 +3964,7 @@
       "upstream": [
         "no-redundant-file"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/complexity/no-excessive-cyclomatic",
@@ -3980,7 +3980,7 @@
       "upstream": [
         "cyclomatic-complexity"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/complexity/no-excessive-enum-cases",
@@ -3996,7 +3996,7 @@
       "upstream": [
         "too-many-enum-cases"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/complexity/no-excessive-halstead",
@@ -4012,7 +4012,7 @@
       "upstream": [
         "halstead"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/complexity/no-excessive-kan-defect",
@@ -4028,7 +4028,7 @@
       "upstream": [
         "kan-defect"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/complexity/no-excessive-methods",
@@ -4044,7 +4044,7 @@
       "upstream": [
         "too-many-methods"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/complexity/no-excessive-nesting",
@@ -4060,7 +4060,7 @@
       "upstream": [
         "excessive-nesting"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/complexity/no-excessive-parameters",
@@ -4076,7 +4076,7 @@
       "upstream": [
         "excessive-parameter-list"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/complexity/no-excessive-properties",
@@ -4092,7 +4092,7 @@
       "upstream": [
         "too-many-properties"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/complexity/no-goto",
@@ -4108,7 +4108,7 @@
       "upstream": [
         "no-goto"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/complexity/no-iterator-to-array-in-foreach",
@@ -4749,7 +4749,7 @@
       "group": "complexity",
       "summary": "Name literal arguments (true, false, null, numbers) in calls.",
       "enabled": [],
-      "fix": "safe",
+      "fix": "none",
       "ecosystem": "core",
       "tools": [
         "mago"
@@ -4757,7 +4757,7 @@
       "upstream": [
         "literal-named-argument"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/complexity/prefer-not-in-array",
@@ -6787,7 +6787,7 @@
       "upstream": [
         "assert-description"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/functions/require-strict-array-search",
@@ -13505,7 +13505,7 @@
       "upstream": [
         "disallowed-functions"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/security/no-restricted-instantiation",
@@ -13521,7 +13521,7 @@
       "upstream": [
         "disallowed-type-instantiation"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/security/no-tainted-data",
@@ -13728,7 +13728,7 @@
       "upstream": [
         "string-style"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/strings/require-string-line-ending",
@@ -13839,7 +13839,7 @@
       "upstream": [
         "ambiguous-constant-access"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/style/no-ambiguous-function",
@@ -13855,7 +13855,7 @@
       "upstream": [
         "ambiguous-function-call"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/style/no-array-accumulation-in-loop",
@@ -14170,7 +14170,7 @@
       "upstream": [
         "no-ini-set"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/style/no-inline-html",
@@ -14186,7 +14186,7 @@
       "upstream": [
         "no-inline"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/style/no-invalid-phpdoc",
@@ -14204,7 +14204,7 @@
       "upstream": [
         "valid-docblock"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/style/no-is-null",
@@ -14239,7 +14239,7 @@
       "upstream": [
         "no-isset"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/style/no-multi-assign",
@@ -14277,7 +14277,7 @@
       "upstream": [
         "single-class-per-file"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/style/no-nested-ternary",
@@ -14433,7 +14433,7 @@
       "upstream": [
         "no-side-effects-with-declarations"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/style/no-sleep-wakeup",
@@ -14468,7 +14468,7 @@
       "upstream": [
         "no-sprintf-concat"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/style/no-unreachable-loop",
@@ -14741,7 +14741,7 @@
       "upstream": [
         "prefer-datetimeimmutable-create-from-timestamp"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/style/prefer-date-time-immutable",
@@ -15192,7 +15192,7 @@
       "upstream": [
         "prefer-while-loop"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/style/require-assign-set-padding",
@@ -15349,7 +15349,7 @@
       "upstream": [
         "require-namespace"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/style/require-naming-convention",
@@ -15373,7 +15373,7 @@
         "trait-name",
         "variable-name"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/style/require-ordered-traits",
@@ -15426,7 +15426,7 @@
       "upstream": [
         "missing-docs"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/style/require-sorted-integer-keys",
@@ -15442,7 +15442,7 @@
       "upstream": [
         "sorted-integer-keys"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/style/require-statement-padding",
@@ -15479,7 +15479,7 @@
         "tagged-fixme",
         "tagged-todo"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/tags/no-invalid-open-tag",
