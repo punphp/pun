@@ -105,6 +105,7 @@ fn scan(
     file: &File,
     version: PHPVersion,
     reachable: Option<(&autoload::Index, &mut Vec<usize>, &mut Vec<usize>)>,
+    trusted_aliases: bool,
 ) -> CodebaseMetadata {
     let mut scanned = 'scan: {
         let arena = &*arena;
@@ -137,6 +138,18 @@ fn scan(
         .unwrap_or_default()
     };
     arena.reset();
+    // PHPStan's source locators do not execute class_alias(). Admit only registrations already established by
+    // the Laravel loader below, before population can expose source-only aliases to inference or any rule.
+    if !trusted_aliases {
+        let keys = mago_codex::metadata::CodebaseEntryKeys {
+            class_like_names: Vec::new(),
+            class_like_aliases: scanned.class_like_alias_declarations().collect(),
+            function_like_keys: Vec::new(),
+            constant_names: Vec::new(),
+            file_ids: Vec::new(),
+        };
+        scanned.remove_entries_by_keys(&keys);
+    }
     if file.file_type == FileType::Patch {
         scanned.convert_partial_to_patch();
     }
@@ -284,7 +297,7 @@ fn scan_api(version: PHPVersion) -> CodebaseMetadata {
         None,
         Cow::Borrowed(PHPSTAN_API),
     );
-    scan(&mut LocalArena::new(), &stub, version, None)
+    scan(&mut LocalArena::new(), &stub, version, None, false)
 }
 
 /// Files scanned by one task: small enough that the threads finish together.
@@ -382,6 +395,7 @@ fn build_with_sources_at(
                                 &file,
                                 version,
                                 Some((&index, &mut wanted, &mut declarations)),
+                                false,
                             );
                             let has_constants = !symbols.constants.is_empty();
                             metadata.extend(symbols);
@@ -441,7 +455,7 @@ fn build_with_sources_at(
             None,
             Cow::Owned(declarations.into_bytes()),
         );
-        metadata.extend(scan(&mut LocalArena::new(), &file, version, None));
+        metadata.extend(scan(&mut LocalArena::new(), &file, version, None, true));
     }
     if let Some(api) = api.into_inner() {
         metadata.extend(api.join().expect("the API stub scan never panics"));

@@ -1,0 +1,21 @@
+{
+  "errors": [
+    {
+      "file": "minimal.php",
+      "line": 4,
+      "identifier": "attribute.notFound",
+      "message": "Attribute class AliasName does not exist.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "minimal.php",
+      "line": 5,
+      "identifier": "class.notFound",
+      "message": "Instantiated class AliasName not found.",
+      "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+      "ignorable": true
+    }
+  ],
+  "general": []
+}

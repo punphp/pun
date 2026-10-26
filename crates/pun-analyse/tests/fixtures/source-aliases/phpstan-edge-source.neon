@@ -1,0 +1,3 @@
+includes: [phpstan.neon]
+parameters:
+    paths: [edge-definitions.php, edge-aliases.php, edge-uses.php]

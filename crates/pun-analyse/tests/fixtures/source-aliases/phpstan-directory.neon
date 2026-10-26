@@ -1,0 +1,5 @@
+includes: [phpstan.neon]
+parameters:
+    paths: [uses.php, false-use.php]
+    scanDirectories: [library]
+    scanFiles: [false-alias.php]

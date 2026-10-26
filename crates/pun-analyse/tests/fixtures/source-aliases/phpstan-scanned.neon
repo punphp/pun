@@ -1,0 +1,4 @@
+includes: [phpstan.neon]
+parameters:
+    paths: [uses.php, false-use.php]
+    scanFiles: [library/definitions.php, library/aliases.php, library/collision.php, false-alias.php]
