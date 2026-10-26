@@ -5,18 +5,21 @@
 use std::collections::HashSet;
 
 use mago_database::file::File;
+use mago_php_version::PHPVersion;
 use mago_span::{HasSpan, Span};
 use mago_syntax::cst::*;
 use mago_syntax::walker::MutWalker;
 use pun_phpstan::ignore::Error;
 
 /// FileAnalyser's ParserErrorsException diagnostics. An invalid scan-only file instead exports no symbols.
-pub(crate) fn errors(file: &File, program: &Program) -> Vec<Error> {
+pub(crate) fn errors(file: &File, program: &Program, version: PHPVersion) -> Vec<Error> {
     if program.has_errors() {
         return Vec::new();
     }
     let mut reserved = Reserved {
         file,
+        version,
+        continuation: None,
         errors: Vec::new(),
     };
     reserved.walk_program(program, &mut ());
@@ -66,14 +69,43 @@ fn special(value: &[u8]) -> bool {
 /// declaration checks run on reduction (after their bodies). Every parser-stage error wins over NameResolver.
 struct Reserved<'a> {
     file: &'a File,
+    version: PHPVersion,
+    /// Only direct expression-statement/assignment and return continuations are modeled for reverse-emulated
+    /// anonymous headers. Other expression contexts and grammar recovery inside anonymous bodies are not a
+    /// general older-version parser. Header errors after attributes or other modifiers are context-independent.
+    continuation: Option<(Span, &'static str)>,
     errors: Vec<Error>,
 }
 
 impl Reserved<'_> {
+    /// ParserAbstract::doParse/getErrorMessage: an unexpected token starts three-shift error recovery. Semantic
+    /// checks still collect during recovery. The supplied follow set belongs to the owning php.y production;
+    /// it is never inferred from Mago's error text.
+    fn header_error(&mut self, recovery: &mut u8, at: Span, token: &str, follow: Option<&str>) {
+        if *recovery == 0
+            && let Some(follow) = follow
+        {
+            self.errors.push(error(
+                self.file,
+                at,
+                format!("Syntax error, unexpected {token}{follow}"),
+            ));
+        }
+        *recovery = 3;
+    }
+
     /// Modifiers::verifyClassModifier/checkClassModifier: duplicate flags precede abstract/final conflicts,
     /// and class_modifiers ORs every token even after a collected error. This is not the member contract.
-    fn class_modifiers(&mut self, modifiers: &Sequence<Modifier>) {
+    fn class_modifiers(
+        &mut self,
+        modifiers: &Sequence<Modifier>,
+        class: Span,
+        attributes: Option<&str>,
+        continuation: Option<&str>,
+    ) {
         let mut flags = 0_u16;
+        let mut expression = false;
+        let mut recovery = 0;
         for modifier in modifiers {
             let (flag, name) = match modifier {
                 Modifier::Abstract(_) => (16, "abstract"),
@@ -82,6 +114,31 @@ impl Reserved<'_> {
                 // Mago accepts generic modifiers here. Other tokens fail in PHPParser's grammar instead.
                 _ => return,
             };
+            // ReadonlyTokenEmulator::getPhpVersion/KeywordEmulator::reverseEmulate turns T_READONLY into
+            // T_STRING below 8.1. A leading bare name becomes an expression (or `new`'s class-name reference),
+            // not a class modifier. After a class modifier/attributes it is already an unexpected token.
+            if flag == 64 && self.version < PHPVersion::PHP81 {
+                let follow = if expression {
+                    continuation
+                } else if flags != 0 {
+                    Some(", expecting T_ABSTRACT or T_FINAL or T_READONLY or T_CLASS")
+                } else {
+                    attributes
+                };
+                if expression || flags != 0 || attributes.is_some() {
+                    self.header_error(&mut recovery, modifier.span(), "T_STRING", follow);
+                }
+                flags = 0;
+                expression = true;
+                recovery = recovery.saturating_sub(1);
+                continue;
+            }
+            if expression {
+                let token = if flag == 16 { "T_ABSTRACT" } else { "T_FINAL" };
+                self.header_error(&mut recovery, modifier.span(), token, continuation);
+                expression = false;
+            }
+            recovery = recovery.saturating_sub(1);
             let message = if flags & flag != 0 {
                 Some(format!("Multiple {name} modifiers are not allowed"))
             } else if flags & 48 != 0 && flag & 48 != 0 {
@@ -93,6 +150,9 @@ impl Reserved<'_> {
                 self.errors.push(error(self.file, modifier.span(), message));
             }
             flags |= flag;
+        }
+        if expression {
+            self.header_error(&mut recovery, class, "T_CLASS", continuation);
         }
     }
 
@@ -181,11 +241,45 @@ impl Reserved<'_> {
 }
 
 impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Reserved<'_> {
+    fn walk_return(&mut self, node: &'ast Return<'arena>, context: &mut ()) {
+        let saved = self.continuation;
+        self.continuation = node.value.map(|value| (value.span(), ", expecting ';'"));
+        mago_syntax::walker::walk_return_mut(self, node, context);
+        self.continuation = saved;
+    }
+    fn walk_statement_expression(
+        &mut self,
+        node: &'ast ExpressionStatement<'arena>,
+        context: &mut (),
+    ) {
+        let saved = self.continuation;
+        let mut value = node.expression;
+        while let Expression::Assignment(assignment) = value {
+            value = assignment.rhs;
+        }
+        self.continuation = Some((value.span(), ""));
+        mago_syntax::walker::walk_statement_expression_mut(self, node, context);
+        self.continuation = saved;
+    }
     fn walk_in_class(&mut self, node: &'ast Class<'arena>, _: &mut ()) {
-        self.class_modifiers(&node.modifiers);
+        self.class_modifiers(
+            &node.modifiers,
+            node.class.span,
+            (!node.attribute_lists.is_empty())
+                .then_some(", expecting T_TRAIT or T_INTERFACE or T_ENUM"),
+            Some(""),
+        );
     }
     fn walk_in_anonymous_class(&mut self, node: &'ast AnonymousClass<'arena>, _: &mut ()) {
-        self.class_modifiers(&node.modifiers);
+        self.class_modifiers(
+            &node.modifiers,
+            node.class.span,
+            (!node.attribute_lists.is_empty())
+                .then_some(", expecting T_ABSTRACT or T_FINAL or T_READONLY or T_CLASS"),
+            self.continuation
+                .filter(|(at, _)| *at == node.span())
+                .map(|(_, follow)| follow),
+        );
     }
     fn walk_in_plain_property(&mut self, node: &'ast PlainProperty<'arena>, _: &mut ()) {
         self.modifiers(&node.modifiers, false);

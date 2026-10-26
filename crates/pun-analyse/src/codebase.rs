@@ -113,7 +113,7 @@ fn scan(
         let arena = &*arena;
         let (program, names) = parse(arena, file);
         // FileNodesFetcher rejects the whole file before exporting any reflection or autoload roots.
-        if !crate::parser::errors(file, program).is_empty() {
+        if !crate::parser::errors(file, program, version).is_empty() {
             break 'scan CodebaseMetadata::default();
         }
         if let Some((index, wanted, declarations)) = reachable {
@@ -494,7 +494,7 @@ fn resolve_initializers(metadata: &mut CodebaseMetadata, sources: &Sources, proj
     for path in &project.analysed {
         if let Some(file) = sources.get(path) {
             let (program, names) = parse(&arena, file);
-            if !crate::parser::errors(file, program).is_empty() {
+            if !crate::parser::errors(file, program, php_version(project.php_version)).is_empty() {
                 arena.reset();
                 continue;
             }

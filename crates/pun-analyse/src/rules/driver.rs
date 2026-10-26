@@ -292,7 +292,7 @@ pub(crate) fn check_file(
     };
     let arena = LocalArena::new();
     let (program, names) = parse(&arena, file);
-    let errors = crate::parser::errors(file, program);
+    let errors = crate::parser::errors(file, program, crate::codebase::php_version(project.php_version));
     if !errors.is_empty() {
         return errors;
     }

@@ -362,3 +362,67 @@ fn unsupported_class_visibility_does_not_invent_member_modifier_errors() {
             .all(|e| { e.identifier != "phpstan.parse" || e.message.starts_with("Syntax error,") })
     );
 }
+
+#[test]
+fn readonly_class_headers_follow_the_target_lexer_version() {
+    let inputs: Value =
+        serde_json::from_str(include_str!("fixtures/parser/readonly-version-inputs.json")).unwrap();
+    let expected: Value = serde_json::from_str(include_str!(
+        "fixtures/parser/readonly-version-expected.json"
+    ))
+    .unwrap();
+    let root = Inputs::new();
+    let files: Vec<_> = inputs
+        .as_object()
+        .unwrap()
+        .iter()
+        .map(|(name, code)| {
+            let namespace = name.replace('-', "_");
+            root.write(
+                name,
+                &format!(
+                    "namespace ReadonlyVersion_{namespace};\n{}",
+                    code.as_str().unwrap()
+                ),
+            )
+        })
+        .collect();
+    for version in [80000, 80100, 80200, 80400, 80500] {
+        let mut project = Project::new(files.clone(), Vec::new());
+        project.php_version = version;
+        assert_eq!(
+            errors(&project),
+            expected["analysed"][version.to_string()],
+            "{version}"
+        );
+    }
+}
+
+#[test]
+fn reverse_readonly_keyword_failures_reject_all_scanned_symbols() {
+    let inputs: Value =
+        serde_json::from_str(include_str!("fixtures/parser/readonly-version-scans.json")).unwrap();
+    let expected: Value = serde_json::from_str(include_str!(
+        "fixtures/parser/readonly-version-expected.json"
+    ))
+    .unwrap();
+    for (name, code) in inputs.as_object().unwrap() {
+        let root = Inputs::new();
+        let main = root.write(
+            "main",
+            include_str!("fixtures/parser/scan-main.php")
+                .strip_prefix("<?php\n")
+                .unwrap(),
+        );
+        let symbols = root.write("symbols", code.as_str().unwrap());
+        for version in [80000, 80100, 80200, 80400, 80500] {
+            let mut project = Project::new(vec![main.clone()], vec![symbols.clone()]);
+            project.php_version = version;
+            assert_eq!(
+                errors(&project),
+                expected["scanned"][name][version.to_string()],
+                "{name} {version}"
+            );
+        }
+    }
+}
