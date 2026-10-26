@@ -1831,7 +1831,7 @@
         "rules": [
           "lint/phpunit/require-data-provider-naming"
         ],
-        "note": "Same. Options: renamed for TOML: [options.\"lint/phpunit/require-data-provider-naming\"]. Planned: not ported yet.",
+        "note": "Same. Options: renamed for TOML: [options.\"lint/phpunit/require-data-provider-naming\"].",
         "unsupported": false
       },
       {
@@ -1841,7 +1841,7 @@
         "rules": [
           "lint/phpunit/require-iterable-data-provider"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -4817,7 +4817,7 @@
         "rules": [
           "lint/phpunit/require-data-provider-naming"
         ],
-        "note": "Same. Options: renamed for TOML: [options.\"lint/phpunit/require-data-provider-naming\"]. Planned: not ported yet.",
+        "note": "Same. Options: renamed for TOML: [options.\"lint/phpunit/require-data-provider-naming\"].",
         "unsupported": false
       },
       {
@@ -4827,7 +4827,7 @@
         "rules": [
           "lint/phpunit/require-iterable-data-provider"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {

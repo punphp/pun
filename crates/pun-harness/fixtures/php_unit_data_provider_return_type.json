@@ -1,0 +1,217 @@
+{
+    "fixer": "php_unit_data_provider_return_type",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\PhpUnit\\PhpUnitDataProviderReturnTypeFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/PhpUnit/PhpUnitDataProviderReturnTypeFixerTest.php",
+    "case_count": 19,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\PhpUnit\\PhpUnitDataProviderReturnTypeFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": "data provider with iterable return type",
+                    "args": [
+                        "<?php\nclass FooTest extends TestCase {\n    /**\n     * @dataProvider provideFooCases\n     */\n    public function testFoo() {}\n    public function provideFooCases() : iterable {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "data provider without return type",
+                    "args": [
+                        "<?php\nclass FooTest extends TestCase {\n    /**\n     * @dataProvider provideFooCases\n     */\n    public function testFoo() {}\n    /**\n     * @dataProvider provider\n     */\n    public function testBar() {}\n    public function provideFooCases(): iterable {}\n    public function provider(): iterable {}\n    public function notProvider(): array {}\n}",
+                        "<?php\nclass FooTest extends TestCase {\n    /**\n     * @dataProvider provideFooCases\n     */\n    public function testFoo() {}\n    /**\n     * @dataProvider provider\n     */\n    public function testBar() {}\n    public function provideFooCases() {}\n    public function provider() {}\n    public function notProvider(): array {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "data provider with array return type",
+                    "args": [
+                        "<?php\nclass FooTest extends TestCase {\n    /**\n     * @dataProvider provideFooCases\n     */\n    public function testFoo() {}\n    /**\n     * @dataProvider provider\n     */\n    public function testBar() {}\n    public function provideFooCases(): iterable {}\n    public function provider(): iterable {}\n    public function notProvider(): array {}\n}",
+                        "<?php\nclass FooTest extends TestCase {\n    /**\n     * @dataProvider provideFooCases\n     */\n    public function testFoo() {}\n    /**\n     * @dataProvider provider\n     */\n    public function testBar() {}\n    public function provideFooCases(): array {}\n    public function provider(): array {}\n    public function notProvider(): array {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "data provider with return type and comment",
+                    "args": [
+                        "<?php\nclass FooTest extends TestCase {\n    /**\n     * @dataProvider provideFooCases\n     */\n    public function testFoo() {}\n    /**\n     * @dataProvider provider\n     */\n    public function testBar() {}\n    public function provideFooCases(): /* foo */ iterable {}\n    public function provider(): /* foo */ iterable {}\n    public function notProvider(): array {}\n}",
+                        "<?php\nclass FooTest extends TestCase {\n    /**\n     * @dataProvider provideFooCases\n     */\n    public function testFoo() {}\n    /**\n     * @dataProvider provider\n     */\n    public function testBar() {}\n    public function provideFooCases(): /* foo */ array {}\n    public function provider(): /* foo */ array {}\n    public function notProvider(): array {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "data provider with return type namespaced class",
+                    "args": [
+                        "<?php\nclass FooTest extends TestCase {\n    /**\n     * @dataProvider provideFooCases\n     */\n    public function testFoo() {}\n    /**\n     * @dataProvider provider\n     */\n    public function testBar() {}\n    public function provideFooCases(): iterable {}\n    public function provider(): iterable {}\n    public function notProvider(): array {}\n}",
+                        "<?php\nclass FooTest extends TestCase {\n    /**\n     * @dataProvider provideFooCases\n     */\n    public function testFoo() {}\n    /**\n     * @dataProvider provider\n     */\n    public function testBar() {}\n    public function provideFooCases(): Foo\\Bar {}\n    public function provider(): Foo\\Bar {}\n    public function notProvider(): array {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "data provider with iterable return type in different case",
+                    "args": [
+                        "<?php\nclass FooTest extends TestCase {\n    /**\n     * @dataProvider provideFooCases\n     */\n    public function testFoo() {}\n    /**\n     * @dataProvider provider\n     */\n    public function testBar() {}\n    public function provideFooCases(): iterable {}\n    public function provider(): iterable {}\n    public function notProvider(): array {}\n}",
+                        "<?php\nclass FooTest extends TestCase {\n    /**\n     * @dataProvider provideFooCases\n     */\n    public function testFoo() {}\n    /**\n     * @dataProvider provider\n     */\n    public function testBar() {}\n    public function provideFooCases(): Iterable {}\n    public function provider(): Iterable {}\n    public function notProvider(): array {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "multiple data providers",
+                    "args": [
+                        "<?php class FooTest extends TestCase {\n                /**\n                 * @dataProvider provider4\n                 * @dataProvider provider1\n                 * @dataProvider provider5\n                 * @dataProvider provider6\n                 * @dataProvider provider2\n                 * @dataProvider provider3\n                 */\n                public function testFoo() {}\n                public function provider1(): iterable {}\n                public function provider2(): iterable {}\n                public function provider3(): iterable {}\n                public function provider4(): iterable {}\n                public function provider5(): iterable {}\n                public function provider6(): iterable {}\n            }",
+                        "<?php class FooTest extends TestCase {\n                /**\n                 * @dataProvider provider4\n                 * @dataProvider provider1\n                 * @dataProvider provider5\n                 * @dataProvider provider6\n                 * @dataProvider provider2\n                 * @dataProvider provider3\n                 */\n                public function testFoo() {}\n                public function provider1() {}\n                public function provider2() {}\n                public function provider3() {}\n                public function provider4() {}\n                public function provider5() {}\n                public function provider6() {}\n            }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "advanced case",
+                    "args": [
+                        "<?php\nclass FooTest extends TestCase {\n    /**\n     * @dataProvider provideFooCases\n     * @dataProvider provideFooCases2\n     */\n    public function testFoo()\n    {\n        /**\n         * @dataProvider someFunction\n         */\n        $foo = /** foo */ function ($x) { return $x + 1; };\n        /**\n         * @dataProvider someFunction2\n         */\n        /* foo */someFunction2();\n    }\n    /**\n     * @dataProvider provideFooCases3\n     */\n    public function testBar() {}\n\n    public function provideFooCases(): iterable {}\n    public function provideFooCases2(): iterable {}\n    public function provideFooCases3(): iterable {}\n    public function someFunction() {}\n    public function someFunction2() {}\n}",
+                        "<?php\nclass FooTest extends TestCase {\n    /**\n     * @dataProvider provideFooCases\n     * @dataProvider provideFooCases2\n     */\n    public function testFoo()\n    {\n        /**\n         * @dataProvider someFunction\n         */\n        $foo = /** foo */ function ($x) { return $x + 1; };\n        /**\n         * @dataProvider someFunction2\n         */\n        /* foo */someFunction2();\n    }\n    /**\n     * @dataProvider provideFooCases3\n     */\n    public function testBar() {}\n\n    public function provideFooCases() {}\n    public function provideFooCases2() {}\n    public function provideFooCases3() {}\n    public function someFunction() {}\n    public function someFunction2() {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "test function with abstract modifier",
+                    "args": [
+                        "<?php\n                    abstract class FooTest extends TestCase {\n                        /**\n                         * @dataProvider provideFooCases\n                         */\n                        abstract function testFoo() ;\n                        public function provideFooCases(): iterable {}\n                    }\n                ",
+                        "<?php\n                    abstract class FooTest extends TestCase {\n                        /**\n                         * @dataProvider provideFooCases\n                         */\n                        abstract function testFoo() ;\n                        public function provideFooCases() {}\n                    }\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "test function with final modifier",
+                    "args": [
+                        "<?php\n                    abstract class FooTest extends TestCase {\n                        /**\n                         * @dataProvider provideFooCases\n                         */\n                        final function testFoo() {}\n                        public function provideFooCases(): iterable {}\n                    }\n                ",
+                        "<?php\n                    abstract class FooTest extends TestCase {\n                        /**\n                         * @dataProvider provideFooCases\n                         */\n                        final function testFoo() {}\n                        public function provideFooCases() {}\n                    }\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "test function with private modifier",
+                    "args": [
+                        "<?php\n                    abstract class FooTest extends TestCase {\n                        /**\n                         * @dataProvider provideFooCases\n                         */\n                        private function testFoo() {}\n                        public function provideFooCases(): iterable {}\n                    }\n                ",
+                        "<?php\n                    abstract class FooTest extends TestCase {\n                        /**\n                         * @dataProvider provideFooCases\n                         */\n                        private function testFoo() {}\n                        public function provideFooCases() {}\n                    }\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "test function with protected modifier",
+                    "args": [
+                        "<?php\n                    abstract class FooTest extends TestCase {\n                        /**\n                         * @dataProvider provideFooCases\n                         */\n                        protected function testFoo() {}\n                        public function provideFooCases(): iterable {}\n                    }\n                ",
+                        "<?php\n                    abstract class FooTest extends TestCase {\n                        /**\n                         * @dataProvider provideFooCases\n                         */\n                        protected function testFoo() {}\n                        public function provideFooCases() {}\n                    }\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "test function with static modifier",
+                    "args": [
+                        "<?php\n                    abstract class FooTest extends TestCase {\n                        /**\n                         * @dataProvider provideFooCases\n                         */\n                        static function testFoo() {}\n                        public function provideFooCases(): iterable {}\n                    }\n                ",
+                        "<?php\n                    abstract class FooTest extends TestCase {\n                        /**\n                         * @dataProvider provideFooCases\n                         */\n                        static function testFoo() {}\n                        public function provideFooCases() {}\n                    }\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "test function with /* private */ modifier",
+                    "args": [
+                        "<?php\n                    abstract class FooTest extends TestCase {\n                        /**\n                         * @dataProvider provideFooCases\n                         */\n                        /* private */ function testFoo() {}\n                        public function provideFooCases(): iterable {}\n                    }\n                ",
+                        "<?php\n                    abstract class FooTest extends TestCase {\n                        /**\n                         * @dataProvider provideFooCases\n                         */\n                        /* private */ function testFoo() {}\n                        public function provideFooCases() {}\n                    }\n                "
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFixPre80",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": "< 8.0.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\PhpUnit\\PhpUnitDataProviderReturnTypeFixerTest",
+            "body": "    public function testFixPre80(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixPre80Cases",
+                    "key": "data provider with return type namespaced class starting with iterable",
+                    "args": [
+                        "<?php\nclass FooTest extends TestCase {\n    /**\n     * @dataProvider provideFooCases\n     */\n    public function testFoo() {}\n    /**\n     * @dataProvider provider\n     */\n    public function testBar() {}\n    public function provideFooCases(): iterable \\ Foo {}\n    public function provider(): iterable \\ Foo {}\n    public function notProvider(): array {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixPre80Cases",
+                    "key": "data provider with return type namespaced class and comments",
+                    "args": [
+                        "<?php\nclass FooTest extends TestCase {\n    /**\n     * @dataProvider provideFooCases\n     */\n    public function testFoo() {}\n    /**\n     * @dataProvider provider\n     */\n    public function testBar() {}\n    public function provideFooCases(): iterable/* Some info */\\/* More info */Bar {}\n    public function provider(): iterable/* Some info */\\/* More info */Bar {}\n    public function notProvider(): array {}\n}"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix80",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": "^8.0.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\PhpUnit\\PhpUnitDataProviderReturnTypeFixerTest",
+            "body": "    public function testFix80(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "with an attribute between PHPDoc and test method",
+                    "args": [
+                        "<?php\nclass FooTest extends TestCase {\n    /**\n     * @dataProvider provideFooCases\n     */\n    #[CustomAttribute]\n    public function testFoo(): void {}\n    public function provideFooCases(): iterable {}\n}",
+                        "<?php\nclass FooTest extends TestCase {\n    /**\n     * @dataProvider provideFooCases\n     */\n    #[CustomAttribute]\n    public function testFoo(): void {}\n    public function provideFooCases() {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "with data provider as an attribute",
+                    "args": [
+                        "<?php\nclass FooTest extends TestCase {\n    #[\\PHPUnit\\Framework\\Attributes\\DataProvider('addTypeToMe')]\n    public function testFoo(): void {}\n    public function addTypeToMe(): iterable {}\n}",
+                        "<?php\nclass FooTest extends TestCase {\n    #[\\PHPUnit\\Framework\\Attributes\\DataProvider('addTypeToMe')]\n    public function testFoo(): void {}\n    public function addTypeToMe() {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "with multiple data providers as an attributes",
+                    "args": [
+                        "<?php\nnamespace N;\nuse PHPUnit\\Framework as PphUnitAlias;\nuse PHPUnit\\Framework\\Attributes;\nclass FooTest extends TestCase {\n    #[\\PHPUnit\\Framework\\Attributes\\DataProvider('provider1')]\n    #[\\PHPUnit\\Framework\\Attributes\\DataProvider('doNotGetFooledByConcatenation' . 'notProvider1')]\n    #[PHPUnit\\Framework\\Attributes\\DataProvider('notProvider2')]\n    #[\n        \\PHPUnit\\Framework\\Attributes\\BackupGlobals(true),\n        \\PHPUnit\\Framework\\Attributes\\DataProvider('provider2'),\n        \\PHPUnit\\Framework\\Attributes\\Group('foo'),\n    ]\n    #[Attributes\\DataProvider('provider3')]\n    #[PphUnitAlias\\Attributes\\DataProvider('provider4')]\n    #[\\PHPUnit\\Framework\\Attributes\\DataProvider]\n    #[\\PHPUnit\\Framework\\Attributes\\DataProvider('provider5')]\n    #[\\PHPUnit\\Framework\\Attributes\\DataProvider(123)]\n    public function testSomething(int $x): void {}\n    public function provider1(): iterable {}\n    public function provider2(): iterable {}\n    public function provider3(): iterable {}\n    public function provider4(): iterable {}\n    public function provider5(): iterable {}\n    public function notProvider1() {}\n    public function notProvider2() {}\n}",
+                        "<?php\nnamespace N;\nuse PHPUnit\\Framework as PphUnitAlias;\nuse PHPUnit\\Framework\\Attributes;\nclass FooTest extends TestCase {\n    #[\\PHPUnit\\Framework\\Attributes\\DataProvider('provider1')]\n    #[\\PHPUnit\\Framework\\Attributes\\DataProvider('doNotGetFooledByConcatenation' . 'notProvider1')]\n    #[PHPUnit\\Framework\\Attributes\\DataProvider('notProvider2')]\n    #[\n        \\PHPUnit\\Framework\\Attributes\\BackupGlobals(true),\n        \\PHPUnit\\Framework\\Attributes\\DataProvider('provider2'),\n        \\PHPUnit\\Framework\\Attributes\\Group('foo'),\n    ]\n    #[Attributes\\DataProvider('provider3')]\n    #[PphUnitAlias\\Attributes\\DataProvider('provider4')]\n    #[\\PHPUnit\\Framework\\Attributes\\DataProvider]\n    #[\\PHPUnit\\Framework\\Attributes\\DataProvider('provider5')]\n    #[\\PHPUnit\\Framework\\Attributes\\DataProvider(123)]\n    public function testSomething(int $x): void {}\n    public function provider1() {}\n    public function provider2() {}\n    public function provider3() {}\n    public function provider4() {}\n    public function provider5() {}\n    public function notProvider1() {}\n    public function notProvider2() {}\n}"
+                    ]
+                }
+            ]
+        }
+    ]
+}

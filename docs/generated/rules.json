@@ -12691,7 +12691,7 @@
       "upstream": [
         "php_unit_data_provider_name"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/phpunit/require-data-provider-newlines",
@@ -12808,7 +12808,7 @@
       "upstream": [
         "php_unit_data_provider_return_type"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/phpunit/require-method-casing",
