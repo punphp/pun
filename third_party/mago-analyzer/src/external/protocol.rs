@@ -2797,6 +2797,7 @@ fn decode_complete_object(reader: &mut PayloadReader<'_>, depth: usize) -> Resul
                 is_static,
                 is_this,
                 intersection_types: intersection_types.map(Box::new),
+                subtracted_type: None,
                 remapped_parameters,
             })
         }
@@ -3716,5 +3717,84 @@ pub(super) mod testing {
         writer.write_bool(false);
         writer.write_bool(true);
         writer.finish()
+    }
+
+    #[test]
+    fn complete_object_provider_keeps_an_unsubtracted_identity_in_public_analysis() {
+        use mago_allocator::LocalArena;
+        use mago_codex::populator::populate_codebase;
+        use mago_codex::reference::SymbolReferences;
+        use mago_codex::scanner::scan_program;
+        use mago_extension::{WorkerCommand, WorkerPool, WorkerPoolOptions};
+        use mago_names::resolver::NameResolver;
+        use mago_syntax::parser::parse_file;
+        use std::num::NonZeroUsize;
+        use crate::external::{ExternalAnalyzer, ExternalAnalyzerHandle};
+        use crate::plugin::PluginRegistry;
+
+        // The complete snapshot's named-object payload has no negative-constraint field.
+        // A provider returning an ordinary object must not acquire one from local narrowing.
+        let mut writer = message_writer(RETURN_TYPE_RESPONSE);
+        writer.write_bool(true);
+        writer.write_u8(TYPE_COMPLETE);
+        writer.write_u16(0);
+        writer.write_u32(1);
+        writer.write_u8(SNAPSHOT_OBJECT);
+        writer.write_u8(2);
+        writer.write_bytes(b"WireObject").unwrap();
+        for _ in 0..6 {
+            writer.write_bool(false);
+        }
+        let hex = |bytes: Vec<u8>| bytes.iter().map(|byte| format!("{byte:02x}")).collect::<String>();
+        let command = WorkerCommand::new("php").with_arguments([
+            "-r".to_string(),
+            r#"
+function readBytes($length) {
+    $value = '';
+    while (strlen($value) < $length) {
+        $part = fread(STDIN, $length - strlen($value));
+        if ($part === false || $part === '') { return null; }
+        $value .= $part;
+    }
+    return $value;
+}
+while (($header = readBytes(32)) !== null && ord($header[8]) !== 5) {
+    $payload = readBytes(unpack('N', substr($header, 28, 4))[1]);
+    $kind = unpack('n', substr($payload, 8, 2))[1];
+    $response = hex2bin($argv[$kind === 1 ? 1 : 2]);
+    $header[8] = chr(2);
+    fwrite(STDOUT, substr($header, 0, 28).pack('N', strlen($response)).$response);
+    fflush(STDOUT);
+}
+"#.to_string(),
+            hex(registration_response()),
+            hex(writer.finish()),
+        ]);
+        let pool = Arc::new(WorkerPool::spawn(command, NonZeroUsize::new(1).unwrap(), WorkerPoolOptions::default()).unwrap());
+        let external = ExternalAnalyzer::initialize([pool], PHPVersion::PHP84, &[], false).unwrap();
+        let mut registry = PluginRegistry::default();
+        registry.set_external_analyzer(Arc::new(ExternalAnalyzerHandle::ready(external)));
+
+        let source = b"<?php class WireObject {} function demo_service() {} $value = demo_service(); $value;";
+        let arena = LocalArena::new();
+        let file = Arc::new(File::ephemeral(Cow::Borrowed(b"wire-object.php"), Cow::Borrowed(source)));
+        let program = parse_file(&arena, &file);
+        assert!(!program.has_errors());
+        let names = NameResolver::new(&arena).resolve(program);
+        let mut codebase = scan_program(&arena, &file, program, &names, PHPVersion::PHP84);
+        let mut references = SymbolReferences::new();
+        populate_codebase(&mut codebase, &mut references, Default::default(), Default::default());
+        let session = ExternalAnalysisSession::from_files([Arc::clone(&file)]);
+        let analyzer = crate::Analyzer::new(&arena, &file, &names, &codebase, &registry, Default::default())
+            .with_external_analysis_session(&session);
+        let mut result = crate::analysis_result::AnalysisResult::new(references);
+        let artifacts = analyzer.analyze_with_artifacts(program, &mut result).unwrap();
+        let end = source.len() as u32 - 1;
+        let span = mago_span::Span::new(file.id, mago_span::Position::new(end - 6), mago_span::Position::new(end));
+        let value = artifacts.get_expression_type(&span).expect("last variable type");
+        let object = value.get_single_named_object().unwrap_or_else(|| panic!("expected provider object, got {}", value.get_id()));
+        assert_eq!(object.name, word("WireObject"));
+        assert!(object.subtracted_type.is_none());
+        assert!(!object.is_static && !object.is_this);
     }
 }

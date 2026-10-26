@@ -192,11 +192,40 @@ pub fn combine(types: Vec<TAtomic>, codebase: &CodebaseMetadata, options: Combin
     }
 
     if let Some(excluded) = types.iter().find_map(|atomic| {
-        if let TAtomic::Mixed(mixed) = atomic { mixed.get_subtracted_type() } else { None }
+        if let TAtomic::Mixed(mixed) = atomic { mixed.effective_subtracted_type() } else { None }
     }) {
         return vec![TAtomic::Mixed(crate::ttype::atomic::mixed::subtraction::union(
-            excluded, &TUnion::from_vec(types.clone()), codebase,
+            &excluded, &TUnion::from_vec(types.clone()), codebase,
         ).with_is_explicit(is_explicit_mixed))];
+    }
+
+    // Equal positive object identities combine their negative constraints, not their
+    // class names alone. Generic arguments and static/$this remain part of that identity.
+    let mut types = types;
+    if types.iter().any(|atomic| matches!(atomic, TAtomic::Object(TObject::Named(object)) if object.subtracted_type.is_some())) {
+        let mut i = 0;
+        while i < types.len() {
+            let mut j = i + 1;
+            while j < types.len() {
+                if let (TAtomic::Object(TObject::Named(left)), TAtomic::Object(TObject::Named(right))) = (&types[i], &types[j])
+                    && (left.subtracted_type.is_some() || right.subtracted_type.is_some())
+                    && left.clone().with_subtracted_type(None) == right.clone().with_subtracted_type(None)
+                {
+                    let (object, excluded, other) = match &left.subtracted_type {
+                        Some(excluded) => (left, excluded, &types[j]),
+                        None => (right, right.subtracted_type.as_ref().unwrap(), &types[i]),
+                    };
+                    let remaining = crate::ttype::atomic::mixed::subtraction::union(
+                        excluded, &TUnion::from_atomic(other.clone()), codebase,
+                    );
+                    types[i] = TAtomic::Object(TObject::Named(object.clone().with_subtracted_type(remaining.get_subtracted_type().cloned())));
+                    types.remove(j);
+                } else {
+                    j += 1;
+                }
+            }
+            i += 1;
+        }
     }
 
     // TypeCombinator combines distinct arrays through getIterableKeyType(), which converts
@@ -1067,7 +1096,7 @@ fn scrape_type_properties(
     if let TAtomic::Object(TObject::Named(named_object)) = &atomic {
         let fq_class_name = named_object.get_name();
         if let Some(type_parameters) = named_object.get_type_parameters() {
-            if named_object.has_intersection_types() {
+            if named_object.has_intersection_types() || named_object.subtracted_type.is_some() {
                 combination.value_types.insert(atomic.get_id(), atomic);
 
                 return;
@@ -1132,7 +1161,9 @@ fn scrape_type_properties(
             if let TAtomic::Object(TObject::Named(existing_object)) = &existing_type {
                 let existing_name = existing_object.get_name();
 
-                if intersection_types.is_some() || existing_object.has_intersection_types() {
+                if intersection_types.is_some() || existing_object.has_intersection_types()
+                    || named_object.subtracted_type.is_some()
+                    || existing_object.subtracted_type.is_some() {
                     if is_atomic_intersection_contained_by(existing_type, &atomic, codebase) {
                         types_to_remove.push(*key);
                         continue;

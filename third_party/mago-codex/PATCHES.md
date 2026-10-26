@@ -661,3 +661,17 @@ Public controls and fresh oracle captures are in `crates/pun-analyse/tests/fixtu
 Conditional assertion production is unchanged. The retained flow oracle also records PHPStan's
 false-branch exclusions, which differ from Mago's conditional assertion transfer. The direct mixed
 union regression checks the intersection contract independently of those conditional assertions.
+
+## Named-object subtraction
+
+`TNamedObject::subtracted_type` stores negative constraints separately from positive intersection
+children. Generic arguments, `static`, and `$this` keep their existing identities. IDs and child
+queries include the excluded type. Mixed intersections preserve object exclusions, and unions
+consume those exclusions through the shared subtractable-type operations.
+
+The owning contracts are PHPStan 2.3.1's
+[`ObjectType.php:1776–1833`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Type/ObjectType.php#L1776-L1833)
+and [`TypeCombinator.php:910–1033`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Type/TypeCombinator.php#L910-L1033).
+The mixed union transfer also recognizes Mago's existing truthy and finite falsey representations.
+`StringType::tryRemove('')` preserves non-empty strings when a falsey alternative rejoins an exclusion.
+Public Analyser and type-query captures are in `tests/fixtures/object-intersections/` in `pun-analyse`.

@@ -78,6 +78,14 @@ pub(crate) struct BranchFlow {
     throw_scopes: HashMap<(Span, VariableThrowKind), WordMap<VariableScope>>,
 }
 
+/// PHPStan ExpressionResult's evaluated-operand scopes, distinct from branch specifications.
+#[derive(Debug, Clone)]
+pub(crate) struct BooleanExpressionScopes {
+    pub post: WordMap<Rc<TUnion>>,
+    pub truthy: WordMap<Rc<TUnion>>,
+    pub falsey: WordMap<Rc<TUnion>>,
+}
+
 #[derive(Debug, Clone)]
 pub struct AnalysisArtifacts {
     pub expression_types: HashMap<(u32, u32), Rc<TUnion>>,
@@ -85,6 +93,7 @@ pub struct AnalysisArtifacts {
     /// Whether every resolved call target explicitly cannot return, independently of dynamic return types.
     pub call_terminations: HashMap<(u32, u32), bool>,
     call_termination_checkpoints: ExpressionTypeCheckpoints<bool>,
+    pub(crate) boolean_expression_scopes: HashMap<(u32, u32), BooleanExpressionScopes>,
     pub if_true_assertions: HashMap<(u32, u32), WordMap<AssertionSet>>,
     pub if_false_assertions: HashMap<(u32, u32), WordMap<AssertionSet>>,
     pub true_branch_only_assertions: HashMap<(u32, u32), WordMap<AssertionSet>>,
@@ -126,6 +135,7 @@ impl AnalysisArtifacts {
             native_expression_types: None,
             call_terminations: HashMap::default(),
             call_termination_checkpoints: ExpressionTypeCheckpoints::default(),
+            boolean_expression_scopes: HashMap::default(),
             inferred_return_types: Vec::new(),
             inferred_yield_key_types: Vec::new(),
             inferred_yield_value_types: Vec::new(),

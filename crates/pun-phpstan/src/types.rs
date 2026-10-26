@@ -253,6 +253,11 @@ pub enum Type {
     ObjectWithoutClass,
     /// `ObjectType` (no args) or `GenericObjectType`, with the class name as written
     Object(String, Vec<Type>),
+    /// ObjectType's negative constraint, independent of generic/static and positive intersection identity.
+    SubtractedObject {
+        object: Box<Type>,
+        excluded: Box<Type>,
+    },
     /// `StaticType`; with arguments `GenericStaticType` (`static<T>`)
     Static(String, Vec<Type>),
     This(String),
@@ -395,6 +400,7 @@ impl Type {
     fn query_mixed(&self, f: &dyn Fn(&Type) -> Tri, mixed: Tri) -> Tri {
         match self {
             Type::Reasoned(t, _) => t.query_mixed(f, mixed),
+            Type::SubtractedObject { object, .. } => object.query_mixed(f, mixed),
             Type::LateArrayShape(s) => s.resolve().query_mixed(f, mixed),
             Type::Union(types) => Tri::extreme_identity(types.iter().map(|t| t.query_mixed(f, mixed))),
             Type::Benevolent(types) => types.iter().map(|t| t.query_mixed(f, mixed)).fold(Tri::No, Tri::or),
@@ -430,6 +436,7 @@ impl Type {
     ) -> Tri {
         match self {
             Type::Reasoned(t, _) => query(t),
+            Type::SubtractedObject { object, .. } => query(object),
             Type::LateArrayShape(s) => query(&s.resolve()),
             Type::Union(types) => Tri::extreme_identity(types.iter().map(query)),
             Type::Benevolent(types) if benevolent => types.iter().map(query).fold(Tri::No, Tri::or),
@@ -898,6 +905,7 @@ impl Type {
     /// `getObjectClassNames()`
     pub fn object_class_names(&self) -> Vec<String> {
         match self {
+            Type::SubtractedObject { object, .. } => object.object_class_names(),
             Type::Object(class, _)
             | Type::Static(class, _)
             | Type::This(class)
@@ -932,6 +940,7 @@ impl Type {
     pub fn iterable_key_type(&self) -> Type {
         match self {
             Type::Reasoned(t, _) => t.iterable_key_type(),
+            Type::SubtractedObject { object, .. } => object.iterable_key_type(),
             Type::LateArrayShape(s) => s.resolve().iterable_key_type(),
             Type::StrictMixed => self.clone(),
             Type::Template(t) if matches!(t.bound, Type::StrictMixed) => self.clone(),
@@ -964,6 +973,7 @@ impl Type {
     pub fn iterable_value_type(&self) -> Type {
         match self {
             Type::Reasoned(t, _) => t.iterable_value_type(),
+            Type::SubtractedObject { object, .. } => object.iterable_value_type(),
             Type::LateArrayShape(s) => s.resolve().iterable_value_type(),
             Type::StrictMixed => self.clone(),
             Type::Template(t) if matches!(t.bound, Type::StrictMixed) => self.clone(),
@@ -1005,10 +1015,17 @@ impl Type {
     }
 
     pub fn describe(&self, level: Level) -> String {
+        self.describe_with_subtraction(level, None)
+    }
+
+    fn describe_with_subtraction(&self, level: Level, excluded: Option<&Type>) -> String {
         match self {
             Type::Reasoned(t, _) => t.describe(level),
             Type::LateArrayShape(s) => s.describe(),
             Type::Mixed { .. } | Type::StrictMixed => "mixed".to_string(),
+            Type::SubtractedObject { object, excluded } => {
+                object.describe_with_subtraction(level, Some(excluded))
+            }
             Type::SubtractedMixed { excluded, .. } => level.handle3(|| "mixed".into(), || "mixed".into(), || {
                 let description = excluded.describe(level);
                 // SubstractableTypeTrait groups unions and types with their own subtraction, not intersections.
@@ -1017,7 +1034,7 @@ impl Type {
                 while let Type::Template(t) = class {
                     class = t.bound.unreasoned();
                 }
-                if matches!(class, Type::Union(_) | Type::Benevolent(_) | Type::SubtractedMixed { .. }) {
+                if matches!(class, Type::Union(_) | Type::Benevolent(_) | Type::SubtractedMixed { .. } | Type::SubtractedObject { .. }) {
                     format!("mixed~({description})")
                 } else {
                     format!("mixed~{description}")
@@ -1072,10 +1089,26 @@ impl Type {
             Type::Resource => "resource".to_string(),
             Type::ObjectWithoutClass => "object".to_string(),
             Type::Object(class, args) => {
-                let name = match level {
+                let mut name = match level {
                     Level::Precise => class.clone(),
                     _ => canonical_class(class),
                 };
+                if level == Level::Precise
+                    && let Some(excluded) = excluded
+                {
+                    let description = excluded.describe(level);
+                    if matches!(
+                        excluded,
+                        Type::Union(_)
+                            | Type::Benevolent(_)
+                            | Type::SubtractedMixed { .. }
+                            | Type::SubtractedObject { .. }
+                    ) {
+                        name.push_str(&format!("~({description})"));
+                    } else {
+                        name.push_str(&format!("~{description}"));
+                    }
+                }
                 if args.is_empty() {
                     name
                 } else {
@@ -1084,9 +1117,9 @@ impl Type {
                 }
             }
             Type::Static(class, args) => {
-                format!("static({})", static_of(class, args).describe(level))
+                format!("static({})", static_of(class, args).describe_with_subtraction(level, excluded))
             }
-            Type::This(class) => format!("$this({})", static_object(class).describe(level)),
+            Type::This(class) => format!("$this({})", static_object(class).describe_with_subtraction(level, excluded)),
             Type::EnumCase(class, case) => format!("{class}::{case}"),
             Type::Wildcard => "*".to_string(),
             // `TypeProjectionHelper::describe()`
@@ -1226,6 +1259,10 @@ impl Type {
         };
         match self {
             Type::Reasoned(t, reason) => f(t).with_unresolvable_reason(reason.clone()),
+            Type::SubtractedObject { object, excluded } => Type::SubtractedObject {
+                object: bx(f(object)),
+                excluded: bx(f(excluded)),
+            },
             Type::LateArrayShape(s) => s.traverse(f),
             Type::Array(k, v) => Type::array(f(k), f(v)),
             Type::Accessory(Accessory::HasOffsetValue(k, v)) => {
@@ -2547,6 +2584,15 @@ pub fn is_super_type_of(a: &Type, b: &Type) -> Tri {
     if let T::LateArrayShape(s) = b {
         return is_super_type_of(a, &s.resolve());
     }
+    if let T::SubtractedObject { object, excluded } = b
+        && matches!(a, T::Object(..) | T::Static(..) | T::This(_))
+    {
+        return if is_super_type_of(excluded, a).yes() {
+            Tri::No
+        } else {
+            is_super_type_of(a, object)
+        };
+    }
     match a {
         T::Reasoned(t, _) => is_super_type_of(t, b),
         T::LateArrayShape(s) => if b.is_never() { Tri::Yes } else { is_super_type_of(&s.resolve(), b).and(Tri::Maybe) },
@@ -2554,6 +2600,19 @@ pub fn is_super_type_of(a: &Type, b: &Type) -> Tri {
         // (a call-site variance is a generic argument's only, compared in `valid_variance()`)
         T::Mixed { .. } | T::StrictMixed | T::Error | T::Wildcard | T::OffsetAccess(..) | T::Projection(..) => Tri::Yes,
         T::SubtractedMixed { excluded, .. } => mixed::is_super(excluded, b),
+        T::SubtractedObject { object, excluded } => {
+            if b.is_compound() { return is_sub_type_of(b, a); }
+            let outside = is_super_type_of(excluded, b).negate();
+            if outside.no() { return Tri::No; }
+            let positive = match b {
+                T::SubtractedObject { object, excluded } => {
+                    if is_super_type_of(excluded, a).yes() { return Tri::No; }
+                    object.as_ref()
+                }
+                b => b,
+            };
+            is_super_type_of(object, positive).and(outside)
+        }
         T::Never(_) => match b {
             T::Never(_) => Tri::Yes,
             T::Template(_) => Tri::Maybe,
@@ -3555,6 +3614,16 @@ fn compare_in_union_merge(a: &Type, b: &Type) -> Option<Merge> {
     }
     if let Type::SubtractedMixed { explicit, excluded } = b {
         return Some(Merge::B(mixed::join(*explicit, excluded, a)));
+    }
+    if let Type::SubtractedObject { object, excluded } = a
+        && let Some(joined) = mixed::join_object(object, excluded, b)
+    {
+        return Some(Merge::A(joined));
+    }
+    if let Type::SubtractedObject { object, excluded } = b
+        && let Some(joined) = mixed::join_object(object, excluded, a)
+    {
+        return Some(Merge::B(joined));
     }
     if let Type::IntRange(min, max) = a
         && let Some(t) = range_try_union(*min, *max, b)

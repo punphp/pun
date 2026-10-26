@@ -86,6 +86,9 @@ where
                 )).cloned().collect::<Vec<_>>();
                 return Some(if types.is_empty() { get_never() } else { existing_var_type.clone_with_types(types) });
             }
+            if existing_var_type.types.iter().any(|atomic| matches!(atomic, TAtomic::Mixed(mixed) if mixed.get_subtracted_type().is_some())) {
+                return Some(intersect_union_types(existing_var_type, &wrap_atomic(assertion_type.clone()), context.codebase).unwrap_or_else(get_never));
+            }
             return Some(wrap_atomic(assertion_type.clone()));
         }
 

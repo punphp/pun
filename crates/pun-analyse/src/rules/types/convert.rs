@@ -513,10 +513,10 @@ impl<'a, 'arena> Checker<'a, 'arena> {
             TAtomic::Void => Type::Void,
             TAtomic::Scalar(s) => self.scalar(s),
             TAtomic::Mixed(m) if m.is_error() => Type::Error,
-            TAtomic::Mixed(m) if m.get_subtracted_type().is_some() => {
-                Type::mixed_subtracted(m.is_explicit(), self.to_phpstan(m.get_subtracted_type().unwrap()))
-            }
-            TAtomic::Mixed(m) => Type::Mixed { explicit: m.is_explicit() },
+            TAtomic::Mixed(m) => m.effective_subtracted_type().map_or_else(
+                || Type::Mixed { explicit: m.is_explicit() },
+                |excluded| Type::mixed_subtracted(m.is_explicit(), self.to_phpstan(&excluded)),
+            ),
             TAtomic::Resource(_) => Type::Resource,
             TAtomic::Object(o) => self.object(o),
             TAtomic::Array(a) => self.array(a),
@@ -722,6 +722,13 @@ impl<'a, 'arena> Checker<'a, 'arena> {
                 } else {
                     Type::Object(name, args)
                 };
+                let t = n.subtracted_type.as_ref().map_or_else(
+                    || t.clone(),
+                    |excluded| Type::SubtractedObject {
+                        object: Box::new(t.clone()),
+                        excluded: Box::new(self.to_phpstan(excluded)),
+                    },
+                );
                 self.with_intersections(t, n.intersection_types.as_deref().map(Vec::as_slice))
             }
             TObject::Enum(e) => match &e.case {

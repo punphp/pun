@@ -1,6 +1,7 @@
 use mago_word::Word;
 use mago_word::concat_word;
 use mago_word::word;
+use std::sync::Arc;
 
 use crate::ttype::TType;
 use crate::ttype::TypeRef;
@@ -31,6 +32,8 @@ pub struct TNamedObject {
     /// Represents additional types in an intersection type (`&B&S` part of `A&B&S`).
     /// Contains other *atomic* types (boxed due to potential recursion).
     pub intersection_types: Option<Box<Vec<TAtomic>>>,
+    /// ObjectType's excluded set, distinct from its positive intersection constraints.
+    pub subtracted_type: Option<Arc<TUnion>>,
     /// Internal analysis flag: `true` if the type parameters have been remapped.
     pub remapped_parameters: bool,
 }
@@ -48,6 +51,7 @@ impl TNamedObject {
             is_this: false,
             remapped_parameters: false,
             intersection_types: None,
+            subtracted_type: None,
         }
     }
 
@@ -128,6 +132,13 @@ impl TNamedObject {
         self
     }
 
+    /// ObjectType::changeSubtractedType(), preserving generic and receiver identity.
+    #[must_use]
+    pub fn with_subtracted_type(mut self, excluded: Option<TUnion>) -> Self {
+        self.subtracted_type = excluded.filter(|t| !t.is_never()).map(Arc::new);
+        self
+    }
+
     #[inline]
     #[must_use]
     pub fn get_variance(&self, offset: usize) -> Option<Variance> {
@@ -158,6 +169,9 @@ impl TType for TNamedObject {
             for atomic in intersection_types.iter() {
                 children.push(TypeRef::Atomic(atomic));
             }
+        }
+        if let Some(excluded) = &self.subtracted_type {
+            children.push(TypeRef::Union(excluded));
         }
     }
 
@@ -221,6 +235,10 @@ impl TType for TNamedObject {
             result = append_intersection_ids(result, intersection_types, None);
         }
 
+        if let Some(excluded) = &self.subtracted_type {
+            result = concat_word!(result, b"~(", excluded.get_id(), b")");
+        }
+
         if self.is_this {
             concat_word!(b"$this(", result, b")")
         } else if self.is_static {
@@ -265,6 +283,15 @@ impl TType for TNamedObject {
 
         if let Some(intersection_types) = self.get_intersection_types() {
             result = append_intersection_ids(result, intersection_types, Some(indent));
+        }
+
+        if let Some(excluded) = &self.subtracted_type {
+            result = concat_word!(
+                result,
+                b"~(",
+                excluded.get_pretty_id_with_indent(indent),
+                b")"
+            );
         }
 
         if self.is_this {

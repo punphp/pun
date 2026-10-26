@@ -586,6 +586,7 @@ fn intersect_traversable_with_iterable(
         is_static: object.is_static,
         is_this: object.is_this,
         intersection_types: object.intersection_types.clone(),
+        subtracted_type: object.subtracted_type.clone(),
         remapped_parameters: object.remapped_parameters,
     })))
 }

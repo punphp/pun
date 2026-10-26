@@ -49,6 +49,42 @@ pub fn is_contained_by(
         return true;
     }
 
+    if let TAtomic::Object(TObject::Named(container)) = container_type_part
+        && let Some(excluded) = &container.subtracted_type
+    {
+        let base = TAtomic::Object(TObject::Named(container.clone().with_subtracted_type(None)));
+        if !is_contained_by(
+            codebase,
+            input_type_part,
+            &base,
+            inside_assertion,
+            atomic_comparison_result,
+        ) {
+            return false;
+        }
+        if let TAtomic::Object(TObject::Named(input)) = input_type_part
+            && let Some(input_excluded) = &input.subtracted_type
+            && union_comparator::is_contained_by(
+                codebase,
+                excluded,
+                input_excluded,
+                false,
+                false,
+                false,
+                atomic_comparison_result,
+            )
+        {
+            return true;
+        }
+        return !union_comparator::can_expression_types_be_identical(
+            codebase,
+            excluded,
+            &TUnion::from_atomic(input_type_part.clone()),
+            false,
+            false,
+        );
+    }
+
     // Handle TAtomic::Alias - expand both input and container
     if let TAtomic::Alias(alias) = container_type_part {
         let Some(container_union) = alias.resolve(codebase) else {
@@ -149,7 +185,26 @@ pub fn is_contained_by(
             true
         } else if let TAtomic::Mixed(input) = input_type_part {
             input.effective_subtracted_type().is_some_and(|input_excluded| {
-                union_comparator::is_contained_by(codebase, excluded, &input_excluded, false, false, false, atomic_comparison_result)
+                union_comparator::is_contained_by(
+                    codebase, excluded, &input_excluded, false, false, false, atomic_comparison_result,
+                )
+            })
+        } else if let TAtomic::Object(TObject::Named(input)) = input_type_part
+            && let Some(input_excluded) = &input.subtracted_type
+        {
+            let base = TUnion::from_atomic(TAtomic::Object(TObject::Named(
+                input.clone().with_subtracted_type(None),
+            )));
+            crate::ttype::intersect_union_types(excluded, &base, codebase).is_none_or(|overlap| {
+                union_comparator::is_contained_by(
+                    codebase,
+                    &overlap,
+                    input_excluded,
+                    false,
+                    false,
+                    false,
+                    atomic_comparison_result,
+                )
             })
         } else {
             !union_comparator::can_expression_types_be_identical(

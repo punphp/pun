@@ -563,6 +563,7 @@ where
         is_static: classname.is_static() || (classname.is_self() && metadata.flags.is_final()),
         is_this: false,
         intersection_types: None,
+        subtracted_type: None,
         remapped_parameters: false,
     }));
 

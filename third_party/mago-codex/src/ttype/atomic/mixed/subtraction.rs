@@ -7,6 +7,7 @@ use super::TMixed;
 use crate::metadata::CodebaseMetadata;
 use crate::ttype::atomic::TAtomic;
 use crate::ttype::atomic::array::TArray;
+use crate::ttype::atomic::object::TObject;
 use crate::ttype::atomic::scalar::TScalar;
 use crate::ttype::atomic::scalar::int::TInteger;
 use crate::ttype::combiner::CombinerOptions;
@@ -22,7 +23,7 @@ impl TMixed {
     }
 
     /// Include the negative constraints used by Mago before explicit excluded sets existed.
-    pub(crate) fn effective_subtracted_type(&self) -> Option<Cow<'_, TUnion>> {
+    pub fn effective_subtracted_type(&self) -> Option<Cow<'_, TUnion>> {
         if let Some(excluded) = self.get_subtracted_type() {
             Some(Cow::Borrowed(excluded))
         } else if self.is_truthy() {
@@ -101,6 +102,16 @@ pub(crate) fn remove(from: &TUnion, excluded: &TUnion, codebase: &CodebaseMetada
                         TArray::List(array) => TArray::List(array.clone_non_empty()),
                     })]
                 } else if let (
+                    TAtomic::Scalar(TScalar::String(string)),
+                    TAtomic::Scalar(TScalar::String(empty)),
+                ) = (&atomic, remove)
+                    && empty.is_empty()
+                {
+                    // PHPStan StringType::tryRemove(''): retain precisely non-empty strings.
+                    let mut string = *string;
+                    string.is_non_empty = true;
+                    vec![TAtomic::Scalar(TScalar::String(string))]
+                } else if let (
                     TAtomic::Scalar(TScalar::Integer(a)),
                     TAtomic::Scalar(TScalar::Integer(b)),
                 ) = (&atomic, remove)
@@ -124,9 +135,66 @@ pub(crate) fn union(excluded: &TUnion, other: &TUnion, codebase: &CodebaseMetada
     let mut excluded = excluded.clone();
     for atomic in other.types.iter().filter(|atomic| !atomic.is_never()) {
         if let TAtomic::Mixed(other) = atomic {
+            if other.is_falsy() {
+                excluded = union(&excluded, &get_empty(), codebase)
+                    .get_subtracted_type()
+                    .cloned()
+                    .unwrap_or_else(get_never);
+                continue;
+            }
             let Some(other_excluded) = other.effective_subtracted_type() else {
                 return TMixed::new();
             };
+            excluded = intersect_union_types(&excluded, &other_excluded, codebase)
+                .unwrap_or_else(get_never);
+        } else if let TAtomic::Object(TObject::Named(object)) = atomic {
+            if !object.is_intersection() {
+                let other = TUnion::from_atomic(atomic.clone());
+                if union_comparator::is_contained_by(
+                    codebase,
+                    &other,
+                    &excluded,
+                    false,
+                    false,
+                    false,
+                    &mut ComparisonResult::new(),
+                ) {
+                    excluded = remove(&excluded, &other, codebase);
+                    if union_comparator::can_expression_types_be_identical(
+                        codebase, &excluded, &other, false, false,
+                    ) {
+                        return TMixed::new();
+                    }
+                    continue;
+                }
+                if !union_comparator::can_expression_types_be_identical(
+                    codebase, &excluded, &other, false, false,
+                ) {
+                    continue;
+                }
+            }
+            // TypeCombinator::intersectWithSubtractedType(): an intersection contributes
+            // the union of its subtractable conjuncts' exclusions, not the positive object.
+            let mut parts: Vec<_> = object
+                .subtracted_type
+                .iter()
+                .map(|t| (**t).clone())
+                .collect();
+            if let Some(intersections) = &object.intersection_types {
+                parts.extend(intersections.iter().filter_map(|part| match part {
+                    TAtomic::Object(TObject::Named(object)) => {
+                        object.subtracted_type.as_deref().cloned()
+                    }
+                    _ => None,
+                }));
+            }
+            let Some(mut other_excluded) = parts.pop() else {
+                return TMixed::new();
+            };
+            for part in parts {
+                other_excluded =
+                    combine_union_types(&other_excluded, &part, codebase, Default::default());
+            }
             excluded = intersect_union_types(&excluded, &other_excluded, codebase)
                 .unwrap_or_else(get_never);
         } else {

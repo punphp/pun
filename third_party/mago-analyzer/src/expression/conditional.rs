@@ -212,6 +212,8 @@ where
         );
     }
 
+    conditional::apply_boolean_branch(condition, true, artifacts, &mut if_block_context);
+
     let mut else_block_context = block_context.clone();
     else_block_context.native_locals =
         crate::native::branch(condition, &block_context.native_locals, artifacts, false, context.codebase);
@@ -248,6 +250,7 @@ where
     }
 
     // Extract function_exists/defined assertions for the "else" branch.
+    conditional::apply_boolean_branch(condition, false, artifacts, &mut else_block_context);
     extract_function_constant_existence(condition, artifacts, &mut else_block_context, true);
 
     let was_inside_general_use = else_block_context.flags.inside_general_use();

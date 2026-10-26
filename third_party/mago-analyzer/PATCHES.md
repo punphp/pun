@@ -1979,3 +1979,21 @@ including the new casing tags and rejection of protocol 2.0. This replay does no
 standalone engine suite described above. Fresh private profiles cover **16/16 changed analyzer
 production lines**, **441/441 combined production lines**, and **422/422 Rust test lines** against
 `a147e34b`, without exclusions, using one Cargo job, one Rayon thread, and `CARGO_INCREMENTAL=0`.
+
+## Boolean operand scopes
+
+Boolean expressions retain their evaluated post scope and both filtered branch scopes.
+`&&` takes its truthy override from the evaluated RHS. `||` takes its falsey override from the RHS.
+The opposite branches apply specifications to the merged operand scope. Nested expressions reuse
+the captured scopes instead of applying an earlier operand's assertions to reassigned variables.
+`if` joins the actual continuing branch types through the existing variable-scope merge service.
+
+These contracts follow PHPStan 2.3.1's
+[`BooleanAndHandler`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Analyser/ExprHandler/BooleanAndHandler.php),
+[`BooleanOrHandler`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Analyser/ExprHandler/BooleanOrHandler.php),
+and [`BooleanNarrowingHelper`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Analyser/ExprHandler/Helper/BooleanNarrowingHelper.php).
+The RHS walk still occurs when the LHS has a known Boolean result, matching PHPStan's captured
+assignment effects. Excluded mixed values use the shared intersection operation during positive
+assertion reconciliation, so narrowing to an object does not discard its negative constraints.
+Public controls retain the original negative-branch expectations and cover assignments, nested
+conditions, returns, ternaries, scalar guards, and generic or receiver-specific object identities.

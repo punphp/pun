@@ -53,6 +53,15 @@ impl PartialEq for Type {
             (T::This(a), T::This(b)) => a == b,
             (T::IntRange(a, x), T::IntRange(b, y)) => a == b && x == y,
             (T::ClassString(a), T::ClassString(b)) => a == b,
+            (T::SubtractedObject {
+                    object: a,
+                    excluded: x,
+                },
+                T::SubtractedObject {
+                    object: b,
+                    excluded: y,
+                },
+            ) => a == b && x == y,
             (T::Object(a, x), T::Object(b, y)) | (T::Static(a, x), T::Static(b, y)) => {
                 a == b && x == y
             }

@@ -1051,6 +1051,7 @@ fn get_reference_from_kind(
             type_parameters: type_parameters.map(Vec::into_boxed_slice),
             variances: type_parameter_variances.map(Box::new),
             intersection_types: None,
+            subtracted_type: None,
             is_static,
             is_this,
             remapped_parameters: false,

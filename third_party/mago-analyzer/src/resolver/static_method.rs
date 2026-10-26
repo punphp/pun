@@ -618,6 +618,7 @@ where
         is_static: true,
         is_this: true,
         intersection_types: if intersections.is_empty() { None } else { Some(Box::new(intersections)) },
+        subtracted_type: None,
         remapped_parameters: false,
     })
 }

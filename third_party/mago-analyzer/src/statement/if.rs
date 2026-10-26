@@ -237,6 +237,29 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for If<'arena> {
             );
         }
 
+        let transferred = conditional::apply_boolean_branch(
+            self.condition,
+            false,
+            artifacts,
+            &mut temporary_else_context,
+        );
+        if_scope
+            .negated_types
+            .retain(|key, _| !transferred.contains(key));
+        if_scope.negated_clauses = BlockContext::remove_reconciled_clause_refs(
+            &if_scope
+                .negated_clauses
+                .iter()
+                .cloned()
+                .map(Rc::new)
+                .collect::<Vec<_>>(),
+            &transferred,
+        )
+        .0
+        .into_iter()
+        .map(Rc::unwrap_or_clone)
+        .collect();
+
         let pre_assignment_else_redefined_locals: WordMap<Rc<TUnion>> = temporary_else_context
             .locals
             .iter()
@@ -271,6 +294,12 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for If<'arena> {
         } else {
             post_if_block_context
         };
+        conditional::apply_boolean_branch(
+            self.condition,
+            false,
+            artifacts,
+            &mut else_block_context,
+        );
         else_block_context.native_locals = crate::native::branch(
             self.condition,
             &else_block_context.native_locals,
@@ -492,7 +521,11 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for If<'arena> {
             block_context.definitely_uninitialized_property_ids = property_ids;
         }
 
-        block_context.merge_variable_scopes(&if_scope.variable_branches, context.codebase);
+        if conditional::boolean_scopes(self.condition, artifacts).is_some() {
+            block_context.merge_variable_scope_types(&if_scope.variable_branches, context.codebase);
+        } else {
+            block_context.merge_variable_scopes(&if_scope.variable_branches, context.codebase);
+        }
         block_context.apply_variable_conditions(context.codebase);
         block_context.native_locals = crate::native::join(&if_scope.native_branches, context.codebase);
         Ok(())
@@ -587,6 +620,13 @@ where
 
         if_scope.conditionally_changed_variable_ids = changed_variable_ids;
     }
+
+    conditional::apply_boolean_branch(
+        if_statement.condition,
+        true,
+        artifacts,
+        &mut if_block_context,
+    );
 
     if_block_context.reconciled_expression_clauses = vec![];
     outer_block_context

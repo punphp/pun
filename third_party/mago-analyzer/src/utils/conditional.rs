@@ -27,6 +27,133 @@ use crate::context::scope::if_scope::IfScope;
 use crate::error::AnalysisError;
 use crate::reconciler::reconcile_keyed_types;
 
+pub(crate) fn boolean_scopes<'a>(
+    expression: &Expression,
+    artifacts: &'a AnalysisArtifacts,
+) -> Option<&'a crate::artifacts::BooleanExpressionScopes> {
+    let expression = crate::utils::misc::unwrap_expression(expression);
+    let span = expression.span();
+    artifacts
+        .boolean_expression_scopes
+        .get(&(span.start.offset, span.end.offset))
+}
+
+/// Transfer the actual operand scope after specifications, which must not re-select
+/// a pre-evaluation value when a short-circuiting expression has changed its type.
+pub(crate) fn apply_boolean_branch(
+    expression: &Expression,
+    truthy: bool,
+    artifacts: &AnalysisArtifacts,
+    block_context: &mut BlockContext<'_>,
+) -> WordSet {
+    let mut changed = WordSet::default();
+    if let Some(scopes) = boolean_scopes(expression, artifacts) {
+        let locals = if truthy {
+            &scopes.truthy
+        } else {
+            &scopes.falsey
+        };
+        for (key, value) in locals {
+            if block_context.locals.get(key) != Some(value) {
+                changed.insert(*key);
+                block_context.locals.insert(*key, Rc::clone(value));
+            }
+        }
+        BlockContext::retain_unreconciled_clauses(&mut block_context.clauses, &changed);
+    }
+    changed
+}
+
+pub(crate) fn record_boolean_scopes<'ctx, A: Arena>(
+    context: &mut Context<'ctx, '_, A>,
+    artifacts: &mut AnalysisArtifacts,
+    binary: &mago_syntax::cst::Binary<'_>,
+    left: &BlockContext<'ctx>,
+    right: &BlockContext<'ctx>,
+) -> WordMap<Rc<TUnion>> {
+    // BooleanAndHandler/BooleanOrHandler join the actual walked scopes. A false &&
+    // (or true ||) can have evaluated either one or both operands.
+    let mut post = left.clone();
+    if let Some(scopes) = boolean_scopes(binary.lhs, artifacts) {
+        post.locals.clone_from(&scopes.post);
+    }
+    let right_locals =
+        boolean_scopes(binary.rhs, artifacts).map_or(&right.locals, |scopes| &scopes.post);
+    for (key, value) in right_locals {
+        let value = match post.locals.get(key) {
+            Some(left) => mago_codex::ttype::combine_union_types_rc(
+                left,
+                value,
+                context.codebase,
+                context.settings.combiner_options(),
+            ),
+            None => Rc::clone(value),
+        };
+        post.locals.insert(*key, value);
+    }
+    let expression = Expression::Binary(binary.clone());
+    let is_and = matches!(
+        binary.operator,
+        BinaryOperator::And(_) | BinaryOperator::LowAnd(_)
+    );
+    let branch = |context: &mut Context<'ctx, '_, A>, truthy: bool| {
+        let (subject, mut scope) = if is_and == truthy {
+            (binary.rhs, right.clone())
+        } else {
+            (&expression, post.clone())
+        };
+        let mut clauses = crate::formula::get_formula(
+            subject.span(),
+            subject.span(),
+            subject,
+            context.get_assertion_context_from_block(&scope),
+            artifacts,
+            &context.settings.algebra_thresholds(),
+            context.settings.formula_size_threshold,
+        )
+        .unwrap_or_default();
+        if !truthy {
+            clauses = crate::formula::negate_or_synthesize(
+                clauses,
+                subject,
+                context.get_assertion_context_from_block(&scope),
+                artifacts,
+                &context.settings.algebra_thresholds(),
+                context.settings.formula_size_threshold,
+            );
+        }
+        let (assertions, _) =
+            mago_algebra::find_satisfying_assignments(&clauses, None, &mut WordSet::default());
+        reconcile_keyed_types(
+            context,
+            &assertions,
+            AssertionMap::default(),
+            &mut scope,
+            &mut WordSet::default(),
+            &WordSet::default(),
+            &subject.span(),
+            false,
+            false,
+        );
+        if is_and == truthy {
+            apply_boolean_branch(subject, truthy, artifacts, &mut scope);
+        }
+        scope.locals
+    };
+    let truthy = branch(context, true);
+    let falsey = branch(context, false);
+    let span = binary.span();
+    artifacts.boolean_expression_scopes.insert(
+        (span.start.offset, span.end.offset),
+        crate::artifacts::BooleanExpressionScopes {
+            post: post.locals.clone(),
+            truthy,
+            falsey,
+        },
+    );
+    post.locals
+}
+
 pub(crate) fn analyze<'ctx, 'arena, A>(
     context: &mut Context<'ctx, 'arena, A>,
     outer_context: &mut BlockContext<'ctx>,
@@ -109,7 +236,7 @@ where
     externally_applied_context.flags.set_inside_conditional(was_inside_conditional);
 
     let if_body_context = if_body_context.unwrap_or_else(|| externally_applied_context.clone());
-    let post_if_context = externally_applied_context.clone();
+    let mut post_if_context = externally_applied_context.clone();
     let mut conditionally_referenced_variable_ids;
     let assigned_in_conditional_variable_ids;
     let newish_var_ids;
@@ -166,6 +293,11 @@ where
         );
         if_body_context
     };
+
+    if let Some(scopes) = boolean_scopes(condition, artifacts) {
+        post_if_context.locals.clone_from(&scopes.post);
+        externally_applied_context.locals.clone_from(&scopes.post);
+    }
 
     if check_for_paradoxes && let Some(condition_type) = artifacts.get_rc_expression_type(condition) {
         handle_paradoxical_condition(context, condition, condition_type);

@@ -37,6 +37,7 @@ pub fn accepts_with(a: &Type, b: &Type, strict: bool, sm: StrictMixed) -> Tri {
         return accepts_with(a, &sm.transform(b), strict, StrictMixed::default());
     }
     if let T::Reasoned(t, _) = b { return accepts_with(a, t, strict, sm); }
+    if let T::SubtractedObject { object, .. } = b { return accepts_with(a, object, strict, sm); }
     if let T::LateArrayShape(s) = b { return accepts_with(a, &s.resolve(), strict, sm); }
     let rec = |x: &Type, y: &Type| accepts_with(x, y, strict, sm);
     // a CompoundType `$b` answers through its `isAcceptedBy()`, a StrictMixedType too
@@ -49,6 +50,7 @@ pub fn accepts_with(a: &Type, b: &Type, strict: bool, sm: StrictMixed) -> Tri {
     let accessory = |r: Tri| if r.yes() { Tri::Yes } else if compound { by() } else { r };
     match a {
         T::Reasoned(t, _) => rec(t, b),
+        T::SubtractedObject { object, .. } => if compound { by() } else { rec(object, b) },
         T::LateArrayShape(s) => rec(&s.resolve(), b),
         // MixedType (ErrorType extends it) accepts anything
         T::Mixed { .. } | T::StrictMixed | T::SubtractedMixed { .. } | T::Error | T::Wildcard | T::OffsetAccess(..) => Tri::Yes,

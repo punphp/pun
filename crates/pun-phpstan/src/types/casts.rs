@@ -26,6 +26,7 @@ pub fn cast_is_error(t: &Type, cast: Cast, sm: StrictMixed) -> bool {
     let rec = |t: &Type| cast_is_error(t, cast, sm);
     match t {
         T::Reasoned(t, _) => rec(t),
+        T::SubtractedObject { object, .. } => rec(object),
         T::LateArrayShape(s) => rec(&s.resolve()),
         T::StrictMixed => true,
         T::Mixed { .. } | T::SubtractedMixed { .. } | T::Wildcard | T::Error => cast == C::BitwiseNot,

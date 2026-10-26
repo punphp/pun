@@ -1205,11 +1205,40 @@ pub fn intersect_union_types(type_1: &TUnion, type_2: &TUnion, codebase: &Codeba
         if let [TAtomic::Mixed(mixed)] = mixed.types.as_ref()
             && let Some(excluded) = mixed.get_subtracted_type()
         {
+            if let [TAtomic::Object(TObject::Named(exclusion))] = excluded.types.as_ref()
+                && !exclusion.has_intersection_types()
+                && union_comparator::is_contained_by(
+                    codebase, other,
+                    &TUnion::from_atomic(TAtomic::Object(TObject::Named(exclusion.clone().with_subtracted_type(None)))),
+                    false, false, false, &mut ComparisonResult::default(),
+                )
+            {
+                return Some(exclusion.subtracted_type.as_ref().map_or_else(get_never, |remaining| {
+                    intersect_union_types(other, remaining, codebase).unwrap_or_else(get_never)
+                }));
+            }
             return Some(match other.types.as_ref() {
                 [TAtomic::Mixed(other)] => TUnion::from_atomic(TAtomic::Mixed(match other.effective_subtracted_type() {
                     Some(previous) => TMixed::with_subtracted_type(combine_union_types(excluded, &previous, codebase, Default::default())),
                     None => mixed.clone(),
                 }.with_is_explicit(mixed.is_explicit() || other.is_explicit()))),
+                [TAtomic::Object(TObject::Named(object))] => {
+                    let excluded = object.subtracted_type.as_ref().map_or_else(
+                        || excluded.clone(),
+                        |previous| {
+                            combine_union_types(excluded, previous, codebase, Default::default())
+                        },
+                    );
+                    let base = object.clone().with_subtracted_type(None);
+                    let excluded = intersect_union_types(
+                        &TUnion::from_atomic(TAtomic::Object(TObject::Named(base))),
+                        &excluded,
+                        codebase,
+                    );
+                    TUnion::from_atomic(TAtomic::Object(TObject::Named(
+                        object.clone().with_subtracted_type(excluded),
+                    )))
+                }
                 _ => atomic::mixed::subtraction::remove(other, excluded, codebase),
             });
         }
