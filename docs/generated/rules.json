@@ -5192,7 +5192,7 @@
       "upstream": [
         "simplified_null_return"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/control-flow/prefer-bool-return",
@@ -8842,7 +8842,7 @@
         "prefer-static-closure",
         "static_lambda"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/performance/require-qualified-native-constant",
@@ -13675,7 +13675,7 @@
       "upstream": [
         "no_trailing_whitespace_in_string"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/strings/prefer-empty-string-identical",
@@ -13745,7 +13745,7 @@
       "upstream": [
         "string_line_ending"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/style/add-param-type-from-phpdoc",
@@ -14223,7 +14223,7 @@
         "is_null",
         "no-is-null"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/style/no-isset",
@@ -14912,7 +14912,7 @@
       "upstream": [
         "phpdoc_array_type"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/style/prefer-instanceof-stringable",
@@ -14947,7 +14947,7 @@
       "upstream": [
         "phpdoc_list_type"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/style/prefer-php-version-id",
@@ -15097,7 +15097,7 @@
       "upstream": [
         "ternary_to_elvis_operator"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/style/prefer-spread",
@@ -15134,7 +15134,7 @@
       "upstream": [
         "static_private_method"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/style/prefer-str-contains",
@@ -15229,7 +15229,7 @@
       "upstream": [
         "date_time_create_from_format_call"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/style/require-final-class",
@@ -15297,7 +15297,7 @@
       "upstream": [
         "fopen_flags"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/style/require-fopen-flag-order",
@@ -15314,7 +15314,7 @@
       "upstream": [
         "fopen_flag_order"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/style/require-implode-separator",

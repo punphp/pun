@@ -1,0 +1,312 @@
+{
+    "fixer": "date_time_create_from_format_call",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\FunctionNotation\\DateTimeCreateFromFormatCallFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/FunctionNotation/DateTimeCreateFromFormatCallFixerTest.php",
+    "case_count": 38,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\FunctionNotation\\DateTimeCreateFromFormatCallFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php \\DateTime::createFromFormat('!Y-m-d', '2022-02-11');",
+                        "<?php \\DateTime::createFromFormat('Y-m-d', '2022-02-11');"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php use DateTime; DateTime::createFromFormat('!Y-m-d', '2022-02-11');",
+                        "<?php use DateTime; DateTime::createFromFormat('Y-m-d', '2022-02-11');"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php DateTime::createFromFormat('!Y-m-d', '2022-02-11');",
+                        "<?php DateTime::createFromFormat('Y-m-d', '2022-02-11');"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php use \\Example\\DateTime; DateTime::createFromFormat('Y-m-d', '2022-02-11');"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php use \\Example\\datetime; DATETIME::createFromFormat('Y-m-d', '2022-02-11');"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php \\DateTime::createFromFormat(\"!Y-m-d\", '2022-02-11');",
+                        "<?php \\DateTime::createFromFormat(\"Y-m-d\", '2022-02-11');"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php \\DateTime::createFromFormat($foo, '2022-02-11');"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 7,
+                    "args": [
+                        "<?php \\DATETIME::createFromFormat( \"!Y-m-d\", '2022-02-11');",
+                        "<?php \\DATETIME::createFromFormat( \"Y-m-d\", '2022-02-11');"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 8,
+                    "args": [
+                        "<?php \\DateTime::createFromFormat(/* aaa */ '!Y-m-d', '2022-02-11');",
+                        "<?php \\DateTime::createFromFormat(/* aaa */ 'Y-m-d', '2022-02-11');"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 9,
+                    "args": [
+                        "<?php /*1*//*2*/DateTime/*3*/::/*4*/createFromFormat/*5*/(/*6*/\"!Y-m-d\"/*7*/,/*8*/\"2022-02-11\"/*9*/)/*10*/ ?>",
+                        "<?php /*1*//*2*/DateTime/*3*/::/*4*/createFromFormat/*5*/(/*6*/\"Y-m-d\"/*7*/,/*8*/\"2022-02-11\"/*9*/)/*10*/ ?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 10,
+                    "args": [
+                        "<?php \\DateTime::createFromFormat('Y-m-d');"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 11,
+                    "args": [
+                        "<?php \\DateTime::createFromFormat($a, $b);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 12,
+                    "args": [
+                        "<?php \\DateTime::createFromFormat('Y-m-d', $b, $c);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 13,
+                    "args": [
+                        "<?php A\\DateTime::createFromFormat('Y-m-d', '2022-02-11');"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 14,
+                    "args": [
+                        "<?php A\\DateTime::createFromFormat('Y-m-d'.\"a\", '2022-02-11');"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 15,
+                    "args": [
+                        "<?php \\DateTime::createFromFormat(123, '2022-02-11');"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 16,
+                    "args": [
+                        "<?php namespace {\n    \\DateTime::createFromFormat('!Y-m-d', '2022-02-11');\n}\n\nnamespace Bar {\n    class DateTime extends Foo {}\n    DateTime::createFromFormat('Y-m-d', '2022-02-11');\n}\n",
+                        "<?php namespace {\n    \\DateTime::createFromFormat('Y-m-d', '2022-02-11');\n}\n\nnamespace Bar {\n    class DateTime extends Foo {}\n    DateTime::createFromFormat('Y-m-d', '2022-02-11');\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "DateTime: binary string",
+                    "args": [
+                        "<?php \\DateTime::createFromFormat(b'!Y-m-d', '2022-02-11');",
+                        "<?php \\DateTime::createFromFormat(b'Y-m-d', '2022-02-11');"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "DateTime: empty string",
+                    "args": [
+                        "<?php \\DateTime::createFromFormat('', '2022-02-11');"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 17,
+                    "args": [
+                        "<?php \\DateTimeImmutable::createFromFormat('!Y-m-d', '2022-02-11');",
+                        "<?php \\DateTimeImmutable::createFromFormat('Y-m-d', '2022-02-11');"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 18,
+                    "args": [
+                        "<?php use DateTimeImmutable; DateTimeImmutable::createFromFormat('!Y-m-d', '2022-02-11');",
+                        "<?php use DateTimeImmutable; DateTimeImmutable::createFromFormat('Y-m-d', '2022-02-11');"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 19,
+                    "args": [
+                        "<?php DateTimeImmutable::createFromFormat('!Y-m-d', '2022-02-11');",
+                        "<?php DateTimeImmutable::createFromFormat('Y-m-d', '2022-02-11');"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 20,
+                    "args": [
+                        "<?php use \\Example\\DateTimeImmutable; DateTimeImmutable::createFromFormat('Y-m-d', '2022-02-11');"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 21,
+                    "args": [
+                        "<?php use \\Example\\datetimeimmutable; DATETIMEIMMUTABLE::createFromFormat('Y-m-d', '2022-02-11');"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 22,
+                    "args": [
+                        "<?php \\DateTimeImmutable::createFromFormat(\"!Y-m-d\", '2022-02-11');",
+                        "<?php \\DateTimeImmutable::createFromFormat(\"Y-m-d\", '2022-02-11');"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 23,
+                    "args": [
+                        "<?php \\DateTimeImmutable::createFromFormat($foo, '2022-02-11');"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 24,
+                    "args": [
+                        "<?php \\DATETIMEIMMUTABLE::createFromFormat( \"!Y-m-d\", '2022-02-11');",
+                        "<?php \\DATETIMEIMMUTABLE::createFromFormat( \"Y-m-d\", '2022-02-11');"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 25,
+                    "args": [
+                        "<?php \\DateTimeImmutable::createFromFormat(/* aaa */ '!Y-m-d', '2022-02-11');",
+                        "<?php \\DateTimeImmutable::createFromFormat(/* aaa */ 'Y-m-d', '2022-02-11');"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 26,
+                    "args": [
+                        "<?php /*1*//*2*/DateTimeImmutable/*3*/::/*4*/createFromFormat/*5*/(/*6*/\"!Y-m-d\"/*7*/,/*8*/\"2022-02-11\"/*9*/)/*10*/ ?>",
+                        "<?php /*1*//*2*/DateTimeImmutable/*3*/::/*4*/createFromFormat/*5*/(/*6*/\"Y-m-d\"/*7*/,/*8*/\"2022-02-11\"/*9*/)/*10*/ ?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 27,
+                    "args": [
+                        "<?php \\DateTimeImmutable::createFromFormat('Y-m-d');"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 28,
+                    "args": [
+                        "<?php \\DateTimeImmutable::createFromFormat($a, $b);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 29,
+                    "args": [
+                        "<?php \\DateTimeImmutable::createFromFormat('Y-m-d', $b, $c);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 30,
+                    "args": [
+                        "<?php A\\DateTimeImmutable::createFromFormat('Y-m-d', '2022-02-11');"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 31,
+                    "args": [
+                        "<?php A\\DateTimeImmutable::createFromFormat('Y-m-d'.\"a\", '2022-02-11');"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 32,
+                    "args": [
+                        "<?php \\DateTimeImmutable::createFromFormat(123, '2022-02-11');"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 33,
+                    "args": [
+                        "<?php namespace {\n    \\DateTimeImmutable::createFromFormat('!Y-m-d', '2022-02-11');\n}\n\nnamespace Bar {\n    class DateTimeImmutable extends Foo {}\n    DateTimeImmutable::createFromFormat('Y-m-d', '2022-02-11');\n}\n",
+                        "<?php namespace {\n    \\DateTimeImmutable::createFromFormat('Y-m-d', '2022-02-11');\n}\n\nnamespace Bar {\n    class DateTimeImmutable extends Foo {}\n    DateTimeImmutable::createFromFormat('Y-m-d', '2022-02-11');\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "DateTimeImmutable: binary string",
+                    "args": [
+                        "<?php \\DateTimeImmutable::createFromFormat(b'!Y-m-d', '2022-02-11');",
+                        "<?php \\DateTimeImmutable::createFromFormat(b'Y-m-d', '2022-02-11');"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "DateTimeImmutable: empty string",
+                    "args": [
+                        "<?php \\DateTimeImmutable::createFromFormat('', '2022-02-11');"
+                    ]
+                }
+            ]
+        }
+    ]
+}

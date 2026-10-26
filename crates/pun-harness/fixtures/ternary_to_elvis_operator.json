@@ -1,0 +1,722 @@
+{
+    "fixer": "ternary_to_elvis_operator",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\Operator\\TernaryToElvisOperatorFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/Operator/TernaryToElvisOperatorFixerTest.php",
+    "case_count": 85,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Operator\\TernaryToElvisOperatorFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": "Test with operator \"+=\".",
+                    "args": [
+                        "<?php $z = $a += $b ?  : $c;",
+                        "<?php $z = $a += $b ? $b : $c;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Test with operator \"-=\".",
+                    "args": [
+                        "<?php $z = $a -= $b ?  : $c;",
+                        "<?php $z = $a -= $b ? $b : $c;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Test with operator \"*=\".",
+                    "args": [
+                        "<?php $z = $a *= $b ?  : $c;",
+                        "<?php $z = $a *= $b ? $b : $c;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Test with operator \"**=\".",
+                    "args": [
+                        "<?php $z = $a **= $b ?  : $c;",
+                        "<?php $z = $a **= $b ? $b : $c;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Test with operator \"/=\".",
+                    "args": [
+                        "<?php $z = $a /= $b ?  : $c;",
+                        "<?php $z = $a /= $b ? $b : $c;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Test with operator \".=\".",
+                    "args": [
+                        "<?php $z = $a .= $b ?  : $c;",
+                        "<?php $z = $a .= $b ? $b : $c;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Test with operator \"%=\".",
+                    "args": [
+                        "<?php $z = $a %= $b ?  : $c;",
+                        "<?php $z = $a %= $b ? $b : $c;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Test with operator \"&=\".",
+                    "args": [
+                        "<?php $z = $a &= $b ?  : $c;",
+                        "<?php $z = $a &= $b ? $b : $c;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Test with operator \"|=\".",
+                    "args": [
+                        "<?php $z = $a |= $b ?  : $c;",
+                        "<?php $z = $a |= $b ? $b : $c;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Test with operator \"^=\".",
+                    "args": [
+                        "<?php $z = $a ^= $b ?  : $c;",
+                        "<?php $z = $a ^= $b ? $b : $c;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Test with operator \"<<=\".",
+                    "args": [
+                        "<?php $z = $a <<= $b ?  : $c;",
+                        "<?php $z = $a <<= $b ? $b : $c;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Test with operator \">>=\".",
+                    "args": [
+                        "<?php $z = $a >>= $b ?  : $c;",
+                        "<?php $z = $a >>= $b ? $b : $c;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "multiple fixes",
+                    "args": [
+                        "<?php $a ?  : 1; $a ?  : 1; $a ?  : 1; $a ?  : 1; $a ?  : 1; $a ?  : 1; $a ?  : 1;",
+                        "<?php $a ? $a : 1; $a ? $a : 1; $a ? $a : 1; $a ? $a : 1; $a ? $a : 1; $a ? $a : 1; $a ? $a : 1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php $z = $z ?  : \"a\";",
+                        "<?php $z = $z ? $z : \"a\";"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php ${\"foo\"} ?  : \"a\";",
+                        "<?php ${\"foo\"} ? ${\"foo\"} : \"a\";"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php $z::$a()[1] ?  : 1;",
+                        "<?php $z::$a()[1] ? $z::$a()[1] : 1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php $z->$a ?  : 1;",
+                        "<?php $z->$a ? $z->$a : 1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php $z = $z ?  : 1;",
+                        "<?php $z = $z ? $z : 1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php $z = $z ?  : 1.1;",
+                        "<?php $z = $z ? $z : 1.1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php $z = $a ?  : foo();",
+                        "<?php $z = $a ? $a : foo();"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 7,
+                    "args": [
+                        "<?php $z = $a ?  : \\foo();",
+                        "<?php $z = $a ? $a : \\foo();"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 8,
+                    "args": [
+                        "<?php $z = 1 ?  : $z;",
+                        "<?php $z = 1 ? 1 : $z;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 9,
+                    "args": [
+                        "<?php $z = 1.1 ?  : $z;",
+                        "<?php $z = 1.1 ? 1.1 : $z;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 10,
+                    "args": [
+                        "<?php $z = \"a\" ?  : \"b\";",
+                        "<?php $z = \"a\" ? \"a\" : \"b\";"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 11,
+                    "args": [
+                        "<?php $z = foo() ?  : $a;",
+                        "<?php $z = foo() ? foo() : $a;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 12,
+                    "args": [
+                        "<?php $z = \\foo() ?  : $a;",
+                        "<?php $z = \\foo() ? \\foo() : $a;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 13,
+                    "args": [
+                        "<?php 1 ?  : $z->$a;",
+                        "<?php 1 ? 1 : $z->$a;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 14,
+                    "args": [
+                        "<?php 1 ?  : $z::$a()[1];",
+                        "<?php 1 ? 1 : $z::$a()[1];"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 15,
+                    "args": [
+                        "<?php $a ?  : ${\"foo\"};",
+                        "<?php $a ? $a : ${\"foo\"};"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 16,
+                    "args": [
+                        "<?php {$b ?  : 1;}",
+                        "<?php {$b ? $b : 1;}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 17,
+                    "args": [
+                        "<?php {echo 1;} $c = $c ?  : 1;",
+                        "<?php {echo 1;} $c = $c ? $c : 1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 18,
+                    "args": [
+                        "<?php $d ?  : 1;",
+                        "<?php $d ? ($d) : 1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 19,
+                    "args": [
+                        "<?php $d ?  : 1;",
+                        "<?php $d ? (($d)) : 1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 20,
+                    "args": [
+                        "<?php ($d) ?  : 1;",
+                        "<?php ($d) ? $d : 1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 21,
+                    "args": [
+                        "<?php ($d) ?  : 1;",
+                        "<?php ($d) ? (($d)) : 1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 22,
+                    "args": [
+                        "<?php\n                a($d) ? $d : 1;\n                $d ? a($d) : 1;\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 23,
+                    "args": [
+                        "<?php ; $e ?  : 1;",
+                        "<?php ; $e ? $e : 1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 24,
+                    "args": [
+                        "<?php $foo8 = $bar[0] ?  : $foo;",
+                        "<?php $foo8 = $bar[0] ? $bar[0] : $foo;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 25,
+                    "args": [
+                        "<?php $foo7 = $_GET[$a] ?  : $foo;",
+                        "<?php $foo7 = $_GET[$a] ? $_GET[$a] : $foo;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 26,
+                    "args": [
+                        "<?php $foo6 = $bar[$a][0][$a ? 1 : 2][2] ? /* 1 *//* 2 *//* 3 */    /* 4 */ : $foo;",
+                        "<?php $foo6 = $bar[$a][0][$a ? 1 : 2][2] ? $bar/* 1 */[$a]/* 2 */[0]/* 3 */[$a ? 1 : 2]/* 4 */[2] : $foo;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 27,
+                    "args": [
+                        "<?php ; 2 ?  : 1;",
+                        "<?php ; 2 ? 2 : 1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 28,
+                    "args": [
+                        "<?php\n                $bar1[0][1] = $bar[0][1] ? $bar[0][1] + 1 : $bar[0][1];\n                $bar2[0] = $bar[0] ? $bar[0] + 1 : $bar[0];\n\n                $bar3[0][1] = $bar[0][1] ? ++$bar[0][1] : $bar[0][1];\n                $bar4[0] = $bar[0] ? --$bar[0] : $bar[0];\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 29,
+                    "args": [
+                        "<?php\n                $foo77 = $foo ? \"$foo\" : $foo;\n                $foo77 = $foo ? '$foo' : $foo;\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "comments 1",
+                    "args": [
+                        "<?php $a /* a */ = /* b */ $a /* c */ ? /* d */  /* e */ : /* f */ 1;",
+                        "<?php $a /* a */ = /* b */ $a /* c */ ? /* d */ $a /* e */ : /* f */ 1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "comments 2",
+                    "args": [
+                        "<?php $foo = $bar/* a */?/* b *//* c */:/* d */$baz;",
+                        "<?php $foo = $bar/* a */?/* b */$bar/* c */:/* d */$baz;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "minimal",
+                    "args": [
+                        "<?php $b?:$c;",
+                        "<?php $b?$b:$c;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "minimal 2x",
+                    "args": [
+                        "<?php $b?:$c;$f=$b?:$c;",
+                        "<?php $b?$b:$c;$f=$b?$b:$c;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 30,
+                    "args": [
+                        "<?php\n                $foo = $bar\n                    ? \n                    : $foo;\n            ",
+                        "<?php\n                $foo = $bar\n                    ? $bar\n                    : $foo;\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 31,
+                    "args": [
+                        "<?php\n                $foo = $bar # 1\n                    ?  # 2\n                    : $foo; # 3\n            ",
+                        "<?php\n                $foo = $bar # 1\n                    ? $bar # 2\n                    : $foo; # 3\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 32,
+                    "args": [
+                        "<?php foo($a ?  : $b, $c ?  : $d);",
+                        "<?php foo($a ? $a : $b, $c ? $c : $d);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 33,
+                    "args": [
+                        "<?php $j[$b ?  : $c];",
+                        "<?php $j[$b ? $b : $c];"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 34,
+                    "args": [
+                        "<?php foo($a[0] ?  : $b[0], $c[0] ?  : $d[0]);",
+                        "<?php foo($a[0] ? $a[0] : $b[0], $c[0] ? $c[0] : $d[0]);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 35,
+                    "args": [
+                        "<?php $a + 1 ?    : $b;",
+                        "<?php $a + 1 ? $a + 1 : $b;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 36,
+                    "args": [
+                        "<?php\n\n$a ?  : <<<EOT\n\nEOT;\n\n$a ?  : <<<'EOT'\n\nEOT;\n\n<<<EOT\n\nEOT\n? \n: $a\n;\n\n<<<'EOT'\n\nEOT\n? \n: $a\n;\n",
+                        "<?php\n\n$a ? $a : <<<EOT\n\nEOT;\n\n$a ? $a : <<<'EOT'\n\nEOT;\n\n<<<EOT\n\nEOT\n? <<<EOT\n\nEOT\n: $a\n;\n\n<<<'EOT'\n\nEOT\n? <<<'EOT'\n\nEOT\n: $a\n;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 37,
+                    "args": [
+                        "<?php @foo() ?  : 1;",
+                        "<?php @foo() ? @foo() : 1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 38,
+                    "args": [
+                        "<?php\n                $f = !foo() ?  : 1;\n                $f = !$a ?  : 1;\n                $f = $a[1][!$a][@foo()] ?  : 1;\n                $f = !foo() ?  : 1;\n            ",
+                        "<?php\n                $f = !foo() ? !foo() : 1;\n                $f = !$a ? !$a : 1;\n                $f = $a[1][!$a][@foo()] ? $a[1][!$a][@foo()] : 1;\n                $f = !foo() ? !foo() : 1;\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 39,
+                    "args": [
+                        "<?php $foo = $foo ? $bar : $foo;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 40,
+                    "args": [
+                        "<?php $foo1 = $bar[$a][0][1][2] ? 123 : $foo;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 41,
+                    "args": [
+                        "<?php $foo2 = $bar[$a] ? $bar[$b] : $foo;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 42,
+                    "args": [
+                        "<?php $foo2a = $bar[$a] ? $bar[$a][1] : $foo;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 43,
+                    "args": [
+                        "<?php $foo2b = $bar[$a][1] ? $bar[$a] : $foo;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 44,
+                    "args": [
+                        "<?php $foo3 = $bar[$a][1] ? $bar[$a][2] : $foo;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 45,
+                    "args": [
+                        "<?php $foo4 = 1 + $bar[0] ? $bar[0] : $foo;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 46,
+                    "args": [
+                        "<?php $foo = $bar ? $$bar : 1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "complex case 1 left out by design",
+                    "args": [
+                        "<?php $foo = !empty($bar) ? $bar : $baz;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "complex case 2 left out by design",
+                    "args": [
+                        "<?php $foo = !!$bar ? $bar : $baz;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 47,
+                    "args": [
+                        "<?php $f = 1 + $f ? $f : 1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 48,
+                    "args": [
+                        "<?php $g = $g ? $g - 1 : 1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 49,
+                    "args": [
+                        "<?php\n                $c = ++$a ? ++$a : $b;\n                $c = (++$a) ? (++$a) : $b;\n                $c = ($a++) ? ($a++) : $b;\n                $c = fooBar(++$a) ? fooBar(++$a) : $b;\n                $c = [++$a] ? [++$a] : $b;\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 50,
+                    "args": [
+                        "<?php\n                $c = --$a ? --$a : $b;\n                $c = (--$a) ? (--$a) : $b;\n                $c = ($a--) ? ($a--) : $b;\n                $c = fooBar(--$a) ? fooBar(--$a) : $b;\n                $c = [--$a] ? [--$a] : $b;\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 51,
+                    "args": [
+                        "<?= $a ?  : $b ?>",
+                        "<?= $a ? $a : $b ?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 52,
+                    "args": [
+                        "<?php new class() extends Foo {} ? new class{} : $a;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 53,
+                    "args": [
+                        "<?php $a ?  : new class{};",
+                        "<?php $a ? $a : new class{};"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 54,
+                    "args": [
+                        "<?php $a ?  : new class($a) extends Foo {};",
+                        "<?php $a ? $a : new class($a) extends Foo {};"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFixPre80",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": "< 8.0.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Operator\\TernaryToElvisOperatorFixerTest",
+            "body": "    public function testFixPre80(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixPre80Cases",
+                    "key": 0,
+                    "args": [
+                        "<?php $foo = $a->{$b} ? $bar{0} : $foo;"
+                    ]
+                },
+                {
+                    "provider": "provideFixPre80Cases",
+                    "key": 1,
+                    "args": [
+                        "<?php $l[$b[0] ?  : $c[0]];",
+                        "<?php $l[$b[0] ? $b{0} : $c[0]];"
+                    ]
+                },
+                {
+                    "provider": "provideFixPre80Cases",
+                    "key": 2,
+                    "args": [
+                        "<?php $l{$b{0} ?  : $c{0}};",
+                        "<?php $l{$b{0} ? $b{0} : $c{0}};"
+                    ]
+                },
+                {
+                    "provider": "provideFixPre80Cases",
+                    "key": 3,
+                    "args": [
+                        "<?php $z = $a[1][2] ?  : 1;",
+                        "<?php $z = $a[1][2] ? $a[1][2] : 1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixPre80Cases",
+                    "key": 4,
+                    "args": [
+                        "<?php $i = $bar{0}[1]{2}[3] ?  : $foo;",
+                        "<?php $i = $bar{0}[1]{2}[3] ? $bar{0}[1]{2}[3] : $foo;"
+                    ]
+                },
+                {
+                    "provider": "provideFixPre80Cases",
+                    "key": 5,
+                    "args": [
+                        "<?php $fooX = $bar{0}[1]{2}[3] ?  : $foo;",
+                        "<?php $fooX = $bar{0}[1]{2}[3] ? $bar{0}[1]{2}[3] : $foo;"
+                    ]
+                },
+                {
+                    "provider": "provideFixPre80Cases",
+                    "key": 6,
+                    "args": [
+                        "<?php $k = $bar{0} ?  : $foo;",
+                        "<?php $k = $bar{0} ? $bar{0} : $foo;"
+                    ]
+                },
+                {
+                    "provider": "provideFixPre80Cases",
+                    "key": "ignore different type of index braces",
+                    "args": [
+                        "<?php $z = $a[1] ?  : 1;",
+                        "<?php $z = $a[1] ? $a{1} : 1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixPre80Cases",
+                    "key": 7,
+                    "args": [
+                        "<?php __FILE__.$a.$b{2}.$c->$a[0] ?  : 1;",
+                        "<?php __FILE__.$a.$b{2}.$c->$a[0] ? __FILE__.$a.$b{2}.$c->$a[0] : 1;"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix80",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.0.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Operator\\TernaryToElvisOperatorFixerTest",
+            "body": "    public function testFix80(string $expected): void\n    {\n        $this->doTest($expected);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 0,
+                    "args": [
+                        "<?php\n\nfunction test(#[TestAttribute] ?User $user) {}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 1,
+                    "args": [
+                        "<?php\n\nfunction test(#[TestAttribute] ?User $user = null) {}\n"
+                    ]
+                }
+            ]
+        }
+    ]
+}

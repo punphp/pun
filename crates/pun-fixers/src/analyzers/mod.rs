@@ -1,4 +1,5 @@
 //! Ports of PHP-CS-Fixer analyzers and shared helpers. One module per upstream class.
+pub(crate) mod abstract_fopen_flag_fixer;
 pub(crate) mod abstract_function_reference_fixer;
 pub(crate) mod abstract_increment_operator_fixer;
 pub(crate) mod abstract_no_useless_else_fixer;

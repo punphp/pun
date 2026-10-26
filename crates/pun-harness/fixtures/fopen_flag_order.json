@@ -1,0 +1,139 @@
+{
+    "fixer": "fopen_flag_order",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\FunctionNotation\\FopenFlagOrderFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/FunctionNotation/FopenFlagOrderFixerTest.php",
+    "case_count": 15,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\FunctionNotation\\FopenFlagOrderFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": "most simple fix case",
+                    "args": [
+                        "<?php\n                    $a = fopen($foo, 'rw+b');\n                ",
+                        "<?php\n                    $a = fopen($foo, 'brw+');\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "\"fopen\" casing insensitive",
+                    "args": [
+                        "<?php\n                    $a = \\FOPen($foo, \"cr+w+b\");\n                    $a = \\FOPEN($foo, \"crw+b\");\n                ",
+                        "<?php\n                    $a = \\FOPen($foo, \"bw+r+c\");\n                    $a = \\FOPEN($foo, \"bw+rc\");\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "comments around flags",
+                    "args": [
+                        "<?php\n                    $a = fopen($foo,/*0*/'rb'/*1*/);\n                ",
+                        "<?php\n                    $a = fopen($foo,/*0*/'br'/*1*/);\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "binary string",
+                    "args": [
+                        "<?php\n                    $a = \\fopen($foo, b\"cr+w+b\");\n                    $b = \\fopen($foo, B\"crw+b\");\n                    $c = \\fopen($foo, b'cr+w+b');\n                    $d = \\fopen($foo, B'crw+b');\n                ",
+                        "<?php\n                    $a = \\fopen($foo, b\"bw+r+c\");\n                    $b = \\fopen($foo, B\"bw+rc\");\n                    $c = \\fopen($foo, b'bw+r+c');\n                    $d = \\fopen($foo, B'bw+rc');\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "common typos",
+                    "args": [
+                        "<?php\n                     $a = fopen($a, \"b+r\");\n                     $b = fopen($b, 'b+w');\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php\n                    $a = fopen($foo, 'rw+t');\n                ",
+                        "<?php\n                    $a = fopen($foo, 'trw+');\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php\n                    $a = \\fopen($foo, 'rw+tb');\n                ",
+                        "<?php\n                    $a = \\fopen($foo, 'btrw+');\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "single flag",
+                    "args": [
+                        "<?php\n                    $a = fopen($foo, \"r\");\n                    $a = fopen($foo, \"r+\");\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "not simple flags",
+                    "args": [
+                        "<?php\n                    $a = fopen($foo, \"br+\".$a);\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "wrong # of arguments",
+                    "args": [
+                        "<?php\n                    $b = \\fopen(\"br+\");\n                    $c = fopen($foo, \"bw+\", 1, 2 , 3);\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "\"flags\" is too long (must be overridden)",
+                    "args": [
+                        "<?php\n                    $d = fopen($foo, \"r+w+a+x+c+etbX\");\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "static method call",
+                    "args": [
+                        "<?php\n                    $e = A::fopen($foo, \"bw+\");\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "method call",
+                    "args": [
+                        "<?php\n                    $f = $b->fopen($foo, \"br+\");\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "comments, PHPDoc and literal",
+                    "args": [
+                        "<?php\n                    // fopen($foo, \"brw\");\n                    /* fopen($foo, \"brw\"); */\n                    echo(\"fopen($foo, \\\"brw\\\")\");\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "invalid flag values",
+                    "args": [
+                        "<?php\n                    $a = fopen($foo, '');\n                    $a = fopen($foo, 'x'); // ok but should not mark collection as changed\n                    $a = fopen($foo, 'k');\n                    $a = fopen($foo, 'kz');\n                    $a = fopen($foo, 'k+');\n                    $a = fopen($foo, '+k');\n                    $a = fopen($foo, 'xc++');\n                    $a = fopen($foo, 'w+r+r+');\n                    $a = fopen($foo, '+brw+');\n                    $a = fopen($foo, 'b+rw');\n                    $a = fopen($foo, 'bbrw+');\n                    $a = fopen($foo, 'brw++');\n                    $a = fopen($foo, '++brw');\n                    $a = fopen($foo, 'ybrw+');\n                    $a = fopen($foo, 'rr');\n                    $a = fopen($foo, 'ロ');\n                    $a = fopen($foo, 'ロ+');\n                    $a = \\fopen($foo, 'rロ');\n                    $a = \\fopen($foo, 'w+ロ');\n                "
+                    ]
+                }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,140 @@
+{
+    "fixer": "no_trailing_whitespace_in_string",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\StringNotation\\NoTrailingWhitespaceInStringFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/StringNotation/NoTrailingWhitespaceInStringFixerTest.php",
+    "case_count": 14,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\StringNotation\\NoTrailingWhitespaceInStringFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php $a = ' foo\r bar\r\n\nbaz\n  ';",
+                        "<?php $a = ' foo  \r bar \r\n  \nbaz  \n  ';"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php $a = \" foo\r bar\r\n\nbaz\n  \";",
+                        "<?php $a = \" foo  \r bar \r\n  \nbaz  \n  \";"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php $a = \"  $foo\n\";",
+                        "<?php $a = \"  $foo  \n\";"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        " foo\r bar\r\nbaz\n",
+                        " foo  \r bar \r\nbaz  \n  "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "\n<?php foo() ?>\n  foo",
+                        "  \n<?php foo() ?>  \n  foo"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php foo() ?>\n<?php foo() ?>\n",
+                        "<?php foo() ?>  \n<?php foo() ?>  \n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php foo() ?>\n\nfoo",
+                        "<?php foo() ?>\n  \nfoo"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 7,
+                    "args": [
+                        "<?php foo() ?>foo\n",
+                        "<?php foo() ?>foo  \n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 8,
+                    "args": [
+                        "",
+                        " "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 9,
+                    "args": [
+                        "<?php echo 1; ?>",
+                        "<?php echo 1; ?> "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 10,
+                    "args": [
+                        "\n<?php\n$a = <<<EOD\n  foo\nbar\n  $a\n$b\n\n   baz\nEOD;\n                ",
+                        "\n<?php\n$a = <<<EOD\n  foo  \nbar\n  $a \n$b\n    \n   baz  \nEOD;\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 11,
+                    "args": [
+                        "\n<?php\n$a = <<<'EOD'\n  foo\nbar\n\n   baz\nEOD;\n                ",
+                        "\n<?php\n$a = <<<'EOD'\n  foo  \nbar\n    \n   baz  \nEOD;\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 12,
+                    "args": [
+                        "\n<?php\n    $a = <<<'EOD'\n      foo\n    bar\n\n       baz\n    EOD;\n",
+                        "\n<?php\n    $a = <<<'EOD'\n      foo  \n    bar\n        \n       baz  \n    EOD;\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "binary string",
+                    "args": [
+                        "<?php $a = b\"  $foo\n\";",
+                        "<?php $a = b\"  $foo  \n\";"
+                    ]
+                }
+            ]
+        }
+    ]
+}

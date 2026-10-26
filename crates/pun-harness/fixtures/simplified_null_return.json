@@ -1,0 +1,308 @@
+{
+    "fixer": "simplified_null_return",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\ReturnNotation\\SimplifiedNullReturnFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/ReturnNotation/SimplifiedNullReturnFixerTest.php",
+    "case_count": 32,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\ReturnNotation\\SimplifiedNullReturnFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php return  ;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php return 'null';"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php return false;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php return (false );"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php return null === foo();"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php return array() == null ;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php return;",
+                        "<?php return null;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 7,
+                    "args": [
+                        "<?php return;",
+                        "<?php return (null);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 8,
+                    "args": [
+                        "<?php return;",
+                        "<?php return ( null    );"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 9,
+                    "args": [
+                        "<?php return;",
+                        "<?php return ( (( null)));"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 10,
+                    "args": [
+                        "<?php return /* hello */;",
+                        "<?php return /* hello */ null  ;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 11,
+                    "args": [
+                        "<?php return;",
+                        "<?php return NULL;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 12,
+                    "args": [
+                        "<?php return;",
+                        "<?php return\n(\nnull\n)\n;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 13,
+                    "args": [
+                        "<?php function foo(): ? /* C */ int { return null; }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 14,
+                    "args": [
+                        "<?php function foo(): ?int { if (false) { return null; } }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 15,
+                    "args": [
+                        "<?php function foo(): int { return null; }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 16,
+                    "args": [
+                        "<?php function foo(): A\\B\\C { return null; }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 17,
+                    "args": [
+                        "<?php function foo(): ?int { return null; } return;",
+                        "<?php function foo(): ?int { return null; } return null;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 18,
+                    "args": [
+                        "<?php function foo() { return; } function bar(): ?A\\B\\C\\D { return null; } function baz() { return; }",
+                        "<?php function foo() { return null; } function bar(): ?A\\B\\C\\D { return null; } function baz() { return null; }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 19,
+                    "args": [
+                        "<?php function foo(): ?int { $bar = function() { return; }; return null; }",
+                        "<?php function foo(): ?int { $bar = function() { return null; }; return null; }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 20,
+                    "args": [
+                        "<?php function foo(): void { return; }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 21,
+                    "args": [
+                        "<?php return ?>",
+                        "<?php return null ?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 22,
+                    "args": [
+                        "<?php return [] ?>"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 23,
+                    "args": [
+                        "<?php\n                    return // hello\n                    ?>\n                ",
+                        "<?php\n                    return null // hello\n                    ?>\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 24,
+                    "args": [
+                        "<?php\n                    return\n                    // hello\n                    ?>\n                ",
+                        "<?php\n                    return null\n                    // hello\n                    ?>\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 25,
+                    "args": [
+                        "<?php\n                    return // hello\n                    ;\n                ",
+                        "<?php\n                    return null // hello\n                    ;\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 26,
+                    "args": [
+                        "<?php\n                    return\n                    // hello\n                    ;\n                ",
+                        "<?php\n                    return null\n                    // hello\n                    ;\n                "
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix80",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.0.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\ReturnNotation\\SimplifiedNullReturnFixerTest",
+            "body": "    public function testFix80(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 0,
+                    "args": [
+                        "<?php\n            function test(): null|int\n            {\n                if (true) { return null; }\n                return 42;\n            }"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 1,
+                    "args": [
+                        "<?php\n            function test(): null|array\n            {\n                if (true) { return null; }\n                return [];\n            }"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 2,
+                    "args": [
+                        "<?php\n            function test(): array|null\n            {\n                if (true) { return null; }\n                return [];\n            }"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix84",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.4.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\ReturnNotation\\SimplifiedNullReturnFixerTest",
+            "body": "    public function testFix84(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix84Cases",
+                    "key": "nullable property with hook",
+                    "args": [
+                        "<?php class Foo\n{\n    public ?string $bar {\n        get {\n            if ($this->bar === 'top secret') {\n                return null;\n            }\n            return $this->bar;\n        }\n    }\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFix84Cases",
+                    "key": "nullable property with hook and callable",
+                    "args": [
+                        "<?php class Foo\n{\n    public ?string $bar {\n        get {\n            $getSecret = function () {\n                if (random_int(0, 1) === 0) {\n                    return;\n                }\n                return 'top secret';\n            };\n\n            if ($getSecret() === null) {\n                return null;\n            }\n            return $this->bar;\n        }\n    }\n}",
+                        "<?php class Foo\n{\n    public ?string $bar {\n        get {\n            $getSecret = function () {\n                if (random_int(0, 1) === 0) {\n                    return null;\n                }\n                return 'top secret';\n            };\n\n            if ($getSecret() === null) {\n                return null;\n            }\n            return $this->bar;\n        }\n    }\n}"
+                    ]
+                }
+            ]
+        }
+    ]
+}
