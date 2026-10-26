@@ -1,0 +1,1 @@
+{"class-name": {"enabled": false}, "constant-name": {"enabled": false}, "enum-name": {"enabled": false}, "function-name": {"enabled": false}, "method-name": {"enabled": false}, "property-name": {"enabled": false}, "trait-name": {"enabled": false}, "variable-name": {"enabled": false}, "interface-name": {"enabled": true}}

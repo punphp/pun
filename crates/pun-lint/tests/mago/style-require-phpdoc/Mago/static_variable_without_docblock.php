@@ -1,0 +1,3 @@
+<?php
+
+static $foo = 'bar';

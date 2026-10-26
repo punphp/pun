@@ -1,0 +1,1 @@
+{"exclusions":{"properties":["^[pq]$","^r"],"methods":["^m$"],"constants":["^[AB]$","("],"enum-cases":["^A$"],"statics":["^s$"]}}

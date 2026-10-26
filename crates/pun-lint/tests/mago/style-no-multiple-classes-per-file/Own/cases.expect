@@ -1,0 +1,5 @@
+43 46 File contains multiple class-like definitions; found interface `Bar` but class `Foo` is already defined in this file.
+72 75 File contains multiple class-like definitions; found trait `Baz` but class `Foo` is already defined in this file.
+84 87 File contains multiple class-like definitions; found enum `Qux` but class `Foo` is already defined in this file.
+110 113 File contains multiple class-like definitions; found class `foo` but class `Foo` is already defined in this file.
+138 143 File contains multiple class-like definitions; found class `Inner` but class `Foo` is already defined in this file.

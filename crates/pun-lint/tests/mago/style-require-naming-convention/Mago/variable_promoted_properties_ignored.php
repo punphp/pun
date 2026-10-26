@@ -1,0 +1,1 @@
+<?php class Foo { public function __construct(public int $some_Property) {} }

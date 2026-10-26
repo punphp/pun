@@ -1,0 +1,1 @@
+{"types":["HttpService\\Client",{"name":"DatabaseConnection","help":"Use DatabaseFactory::create() instead"}]}

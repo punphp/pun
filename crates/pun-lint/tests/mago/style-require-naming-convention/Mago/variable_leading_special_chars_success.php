@@ -1,0 +1,1 @@
+<?php $__hidden_variable = 1; $v1_name = 2;

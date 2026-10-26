@@ -1,0 +1,3 @@
+12 19 Enum name `my_enum` should be in class case.
+28 34 Enum name `myEnum` should be in class case.
+43 50 Enum name `MY_ENUM` should be in class case.

@@ -1,0 +1,3 @@
+13 20 Trait name `myTrait` should be in class case.
+30 38 Trait name `my_trait` should be in class case.
+48 56 Trait name `MY_TRAIT` should be in class case.

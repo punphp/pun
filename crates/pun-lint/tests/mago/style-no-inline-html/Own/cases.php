@@ -1,0 +1,4 @@
+<html>
+<?php echo 1; ?>
+text
+<?= 2 ?>

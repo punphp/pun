@@ -1,0 +1,1 @@
+{"types":[{"name":"HttpService\\Client","help":"Use ClientProvider::getClient() instead"}]}

@@ -1,0 +1,6 @@
+13 23 Constant name `myConstant` should be in constant case.
+36 47 Constant name `my_constant` should be in constant case.
+60 71 Constant name `My_Constant` should be in constant case.
+116 126 Constant name `myConstant` should be in constant case.
+154 165 Constant name `my_constant` should be in constant case.
+193 204 Constant name `My_Constant` should be in constant case.

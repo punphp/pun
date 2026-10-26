@@ -1,0 +1,4 @@
+25 27 `goto` labels are discouraged.
+28 32 Avoid using `goto`.
+40 42 `goto` labels are discouraged.
+47 51 Avoid using `goto`.

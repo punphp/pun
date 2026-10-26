@@ -778,7 +778,9 @@ fn latin1_diffs_like_pint() {
 /// ERROR line (`--format`) and `-q` line print them as they are.
 #[test]
 fn error_messages_keep_the_source_bytes_like_pint() {
-    let Some(cx) = Cx::new("error-bytes") else { return };
+    let Some(cx) = Cx::new("error-bytes") else {
+        return;
+    };
     let php = which("php");
     let oracle = cx.oracle.to_str().unwrap();
     let side = |pun: bool, args: &[&str]| {
@@ -1368,10 +1370,10 @@ fn run_errors_exit_2() {
     // An unported rule names pun.toml, the rule and the way out.
     std::fs::write(
         dir.join("pun.toml"),
-        "[format]\npreset = \"empty\"\n[lint.rules]\n\"complexity/no-boolean-flag-parameter\" = \"error\"\n",
+        "[format]\npreset = \"empty\"\n[lint.rules]\n\"laravel/prefer-aliases-attribute\" = \"error\"\n",
     )
     .unwrap();
-    let line = "✖ pun.toml  rule not supported by Pun yet: `lint/complexity/no-boolean-flag-parameter`";
+    let line = "✖ pun.toml  rule not supported by Pun yet: `lint/laravel/prefer-aliases-attribute`";
     let hint = "  remove it from pun.toml to run the other rules\n";
     assert_eq!(
         pun(&["check", "--color=never"]),

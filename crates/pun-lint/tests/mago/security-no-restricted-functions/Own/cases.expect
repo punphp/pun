@@ -1,0 +1,6 @@
+63 74 Function `Exec` is disallowed.
+76 92 Function `shell_exec` is disallowed.
+94 105 Function `curl_init` from the `curl` extension is disallowed.
+107 121 Function `curl_exec` from the `curl` extension is disallowed.
+123 134 Function `strlen` from the `Core` extension is disallowed.
+136 147 Function `var_dump` is disallowed.

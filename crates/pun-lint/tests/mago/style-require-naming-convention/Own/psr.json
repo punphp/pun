@@ -1,0 +1,1 @@
+{"class-name": {"psr": true}, "constant-name": {"enabled": true}, "enum-name": {"enabled": true}, "function-name": {"enabled": true}, "interface-name": {"psr": true}, "method-name": {"enabled": true}, "property-name": {"enabled": true}, "trait-name": {"psr": true}, "variable-name": {"enabled": true}}

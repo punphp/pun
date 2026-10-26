@@ -1,0 +1,1 @@
+15 51 Use `DateTimeImmutable::createFromTimestamp()` instead of parsing a timestamp string.

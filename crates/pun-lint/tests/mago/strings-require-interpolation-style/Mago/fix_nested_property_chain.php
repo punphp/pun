@@ -1,0 +1,3 @@
+<?php
+
+echo "deep: " . $a->b->c->d;

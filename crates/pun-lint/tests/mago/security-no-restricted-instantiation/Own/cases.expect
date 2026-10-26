@@ -1,0 +1,4 @@
+50 57 Direct instantiation of type `HttpService\Client` is disallowed.
+59 71 Direct instantiation of type `app\client` is disallowed.
+73 90 Direct instantiation of type `app\client` is disallowed.
+130 141 Direct instantiation of type `App\Foo\Bar` is disallowed.

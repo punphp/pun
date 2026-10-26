@@ -1,0 +1,2 @@
+51 68 Use `DateTimeImmutable::createFromTimestamp()` instead of parsing a timestamp string.
+70 102 Use `DateTimeImmutable::createFromTimestamp()` instead of parsing a timestamp string.

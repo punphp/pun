@@ -1,0 +1,4 @@
+15 20 `goto` labels are discouraged.
+41 45 Avoid using `goto`.
+60 64 Avoid using `goto`.
+71 75 `goto` labels are discouraged.

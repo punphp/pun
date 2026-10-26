@@ -1,0 +1,2 @@
+42 54 Direct instantiation of type `HttpService\Client` is disallowed.
+62 114 Direct instantiation of type `DatabaseConnection` is disallowed.

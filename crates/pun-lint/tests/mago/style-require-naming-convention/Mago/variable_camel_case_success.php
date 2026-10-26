@@ -1,0 +1,1 @@
+<?php $myVariableName = 1; $simple = 2;

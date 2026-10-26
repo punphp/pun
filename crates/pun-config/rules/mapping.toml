@@ -280,7 +280,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "classes/require-member-order" = { fix = "safe", sets = ["coding-style"], ported = true, status = "decided", summary = "Orders the elements of classes/interfaces/traits/enums." }
 "comments/no-unused-ignore" = { fix = "safe", intent = "suspicious", sets = ["code-quality"], status = "decided", pun_only = true, summary = "A @pun-ignore comment that suppressed nothing. Fix removes it." }
 "complexity/no-and-assignment" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Split 2 assigns with \"and\" to separate lines" }
-"complexity/no-boolean-flag-parameter" = { fix = "none", ported = false, origin = "mago", status = "decided", summary = "Flags function-like parameters that use a boolean type and drive the function's behaviour." }
+"complexity/no-boolean-flag-parameter" = { fix = "none", ported = true, origin = "mago", status = "decided", summary = "Flags function-like parameters that use a boolean type and drive the function's behaviour." }
 "complexity/no-boolean-literal-compare" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Simplify bool value compare to true or false" }
 "complexity/no-compact" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Change `compact()` call to own array" }
 "complexity/no-concat-assign-new-item" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Change concat assign on a new array item to plain assign, as the new item is always null" }
@@ -288,17 +288,17 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "complexity/no-constant-via-variable" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Change variable class constant fetch to direct class constant fetch when class or constant target is final" }
 "complexity/no-double-negation" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Replace the Double not operator (!!) by type-casting to boolean" }
 "complexity/no-duplicate-match-arm" = { fix = "none", sets = ["code-quality"], ported = true, origin = "mago", status = "decided", summary = "Detects `match` arms that produce the same result as an earlier arm." }
-"complexity/no-else-clause" = { fix = "none", ported = false, origin = "mago", status = "decided", summary = "Flags `if` statements that include an `else` or `elseif` branch." }
-"complexity/no-empty-file" = { fix = "none", ported = false, origin = "mago", status = "decided", summary = "Detects redundant files that contain no executable code or declarations." }
-"complexity/no-excessive-cyclomatic" = { fix = "none", ported = false, origin = "mago", status = "decided", summary = "Checks the cyclomatic complexity of classes, traits, enums, interfaces, functions, and closures." }
-"complexity/no-excessive-enum-cases" = { fix = "none", ported = false, origin = "mago", status = "decided", summary = "Detects enums with too many cases." }
-"complexity/no-excessive-halstead" = { fix = "none", ported = false, origin = "mago", status = "decided", summary = "Computes Halstead metrics (volume, difficulty, effort) and reports if they exceed configured thresholds." }
-"complexity/no-excessive-kan-defect" = { fix = "none", ported = false, origin = "mago", status = "decided", summary = "Detects classes, traits, interfaces, functions, and closures with high kan defect." }
-"complexity/no-excessive-methods" = { fix = "none", ported = false, origin = "mago", status = "decided", summary = "Detects class-like structures with too many methods." }
-"complexity/no-excessive-nesting" = { fix = "none", ported = false, origin = "mago", status = "decided", summary = "Checks if the nesting level in any block exceeds a configurable threshold." }
-"complexity/no-excessive-parameters" = { fix = "none", ported = false, origin = "mago", status = "decided", summary = "Detects functions, closures, and methods with too many parameters." }
-"complexity/no-excessive-properties" = { fix = "none", ported = false, origin = "mago", status = "decided", summary = "Detects class-like structures with too many properties." }
-"complexity/no-goto" = { fix = "none", ported = false, origin = "mago", status = "decided", summary = "Detects the use of `goto` statements and labels." }
+"complexity/no-else-clause" = { fix = "none", ported = true, origin = "mago", status = "decided", summary = "Flags `if` statements that include an `else` or `elseif` branch." }
+"complexity/no-empty-file" = { fix = "none", ported = true, origin = "mago", status = "decided", summary = "Detects redundant files that contain no executable code or declarations." }
+"complexity/no-excessive-cyclomatic" = { fix = "none", ported = true, origin = "mago", status = "decided", summary = "Checks the cyclomatic complexity of classes, traits, enums, interfaces, functions, and closures." }
+"complexity/no-excessive-enum-cases" = { fix = "none", ported = true, origin = "mago", status = "decided", summary = "Detects enums with too many cases." }
+"complexity/no-excessive-halstead" = { fix = "none", ported = true, origin = "mago", status = "decided", summary = "Computes Halstead metrics (volume, difficulty, effort) and reports if they exceed configured thresholds." }
+"complexity/no-excessive-kan-defect" = { fix = "none", ported = true, origin = "mago", status = "decided", summary = "Detects classes, traits, interfaces, functions, and closures with high kan defect." }
+"complexity/no-excessive-methods" = { fix = "none", ported = true, origin = "mago", status = "decided", summary = "Detects class-like structures with too many methods." }
+"complexity/no-excessive-nesting" = { fix = "none", ported = true, origin = "mago", status = "decided", summary = "Checks if the nesting level in any block exceeds a configurable threshold." }
+"complexity/no-excessive-parameters" = { fix = "none", ported = true, origin = "mago", status = "decided", summary = "Detects functions, closures, and methods with too many parameters." }
+"complexity/no-excessive-properties" = { fix = "none", ported = true, origin = "mago", status = "decided", summary = "Detects class-like structures with too many properties." }
+"complexity/no-goto" = { fix = "none", ported = true, origin = "mago", status = "decided", summary = "Detects the use of `goto` statements and labels." }
 "complexity/no-iterator-to-array-in-foreach" = { fix = "none", sets = ["code-quality"], ported = true, origin = "mago", status = "decided", summary = "Detects `iterator_to_array()` calls used directly as a `foreach` expression." }
 "complexity/no-negated-and" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Simplify negated \"and\" conditions to \"or\" with de Morgan theorem" }
 "complexity/no-negated-boolean-literal" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Replace negated boolean literals (!false, !true) with their simplified equivalents (true, false)" }
@@ -331,7 +331,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "complexity/prefer-inline-array-return" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Inline just in time array dim fetch assigns to direct return" }
 "complexity/prefer-instance-method" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Change static method and local-only calls to non-static" }
 "complexity/prefer-min-max" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Change ternary number compare to `max()` call" }
-"complexity/prefer-named-literal-argument" = { fix = "safe", ported = false, origin = "mago", status = "decided", summary = "Name literal arguments (true, false, null, numbers) in calls." }
+"complexity/prefer-named-literal-argument" = { fix = "none", ported = true, origin = "mago", status = "decided", summary = "Name literal arguments (true, false, null, numbers) in calls." }
 "complexity/prefer-not-in-array" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Use `! in_array()` instead of repeated `!==`/`!=` comparisons of one value joined by `&&`." }
 "complexity/prefer-null-coalesce" = { fix = "safe", sets = ["code-quality"], gated_by = "php-version", ported = true, status = "decided", summary = "Use `??` instead of isset()/array_key_exists() ternaries, if/return chains and foreach lookups." }
 "complexity/prefer-property-default" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Move property default from constructor to property default" }
@@ -433,7 +433,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "functions/no-unused-closure-variable" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove unused variable in use() of closure" }
 "functions/no-void-reference-return" = { fix = "none", sets = ["modernize"], ported = true, origin = "mago", status = "decided", summary = "Detects functions, methods, closures, arrow functions, and set property hooks that return by reference from a void function." }
 "functions/require-array-filter-callback" = { fix = "none", intent = "suspicious", sets = ["code-quality"], status = "decided", summary = "Requires a callback for `array_filter()`: without one it drops every falsy value, not only `null`." }
-"functions/require-assert-description" = { fix = "none", intent = "correctness", ported = false, origin = "mago", status = "decided", summary = "Detects assert functions that do not have a description." }
+"functions/require-assert-description" = { fix = "none", intent = "correctness", ported = true, origin = "mago", status = "decided", summary = "Detects assert functions that do not have a description." }
 "functions/require-strict-array-search" = { fix = "mixed", intent = "suspicious", sets = ["coding-style"], ported = true, status = "decided", summary = "Makes array_search search for identical elements" }
 "functions/require-strict-function-call" = { fix = "none", intent = "suspicious", sets = ["coding-style"], ported = true, status = "decided", summary = "Requires the strict flag of `in_array()`, `array_search()`, `array_keys()` with a search value and `base64_decode()`." }
 "functions/require-strict-in-array" = { fix = "mixed", intent = "suspicious", sets = ["coding-style"], ported = false, status = "decided", summary = "Set in_array strict to true when defined on similar type" }
@@ -770,8 +770,8 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "security/no-insecure-comparison" = { fix = "none", intent = "suspicious", sets = ["code-quality"], ported = true, origin = "mago", status = "decided", summary = "Detects insecure comparison of passwords or tokens using `==`, `!=`, `===`, or `!==`." }
 "security/no-literal-password" = { fix = "none", intent = "suspicious", sets = ["code-quality"], ported = true, origin = "mago", status = "decided", summary = "Detects the use of literal values for passwords or sensitive data." }
 "security/no-request-variable" = { fix = "none", intent = "suspicious", sets = ["code-quality"], ported = true, origin = "mago", status = "decided", summary = "Detects the use of the `$_REQUEST` variable, which is considered unsafe." }
-"security/no-restricted-functions" = { fix = "none", intent = "suspicious", ported = false, origin = "mago", status = "decided", summary = "Flags calls to functions that are disallowed via rule configuration." }
-"security/no-restricted-instantiation" = { fix = "none", intent = "suspicious", ported = false, origin = "mago", status = "decided", summary = "Flags direct instantiation of specific types that are disallowed via rule configuration." }
+"security/no-restricted-functions" = { fix = "none", intent = "suspicious", ported = true, origin = "mago", status = "decided", summary = "Flags calls to functions that are disallowed via rule configuration." }
+"security/no-restricted-instantiation" = { fix = "none", intent = "suspicious", ported = true, origin = "mago", status = "decided", summary = "Flags direct instantiation of specific types that are disallowed via rule configuration." }
 "security/no-tainted-data" = { fix = "none", intent = "suspicious", sets = ["code-quality"], ported = true, origin = "mago", status = "decided", summary = "Detects user (tainted) data being passed directly to sink functions or constructs (such as `echo`, `print`, or user-defined \"log\" functions)." }
 "security/require-preg-quote-delimiter" = { fix = "none", intent = "suspicious", sets = ["code-quality"], ported = true, origin = "mago", status = "decided", summary = "This rule requires that when using `preg_quote()`, the second `$delimiter` argument is always provided." }
 "statements/add-safe-strict-types" = { fix = "mixed", intent = "suspicious", sets = ["code-quality"], ported = false, status = "decided", summary = "Add `declare(strict_types=1)` if missing and only if the file is type-safe (no scalar type coercions)." }
@@ -782,14 +782,14 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "strings/no-trailing-whitespace-in-string" = { fix = "unsafe", intent = "suspicious", ported = true, status = "decided", summary = "There must be no trailing whitespace at the end of lines in strings." }
 "strings/prefer-empty-string-identical" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "Changes strlen comparison to 0 to direct empty string compare" }
 "strings/prefer-mb-functions" = { fix = "unsafe", intent = "correctness", ported = true, status = "decided", summary = "Replace non multibyte-safe functions with corresponding mb function." }
-"strings/require-interpolation-style" = { fix = "safe", ported = false, origin = "mago", status = "decided", summary = "Enforces a consistent string style: either prefer string interpolation" }
+"strings/require-interpolation-style" = { fix = "safe", ported = true, origin = "mago", status = "decided", summary = "Enforces a consistent string style: either prefer string interpolation" }
 "strings/require-string-line-ending" = { fix = "unsafe", intent = "suspicious", ported = true, status = "decided", summary = "All multi-line strings must use correct line ending." }
 "style/add-param-type-from-phpdoc" = { fix = "unsafe", sets = ["coding-style"], ported = true, status = "decided", summary = "Takes `@param` annotations of non-mixed types and adjusts accordingly the function signature." }
 "style/add-property-type-from-phpdoc" = { fix = "unsafe", sets = ["coding-style"], ported = true, status = "decided", summary = "Takes `@var` annotation of non-mixed types and adjusts accordingly the property signature.." }
 "style/add-return-type-from-phpdoc" = { fix = "unsafe", sets = ["coding-style"], ported = true, status = "decided", summary = "Takes `@return` annotation of non-mixed types and adjusts accordingly the function signature." }
 "style/no-alias-function" = { fix = "unsafe", sets = ["coding-style"], ported = true, status = "decided", summary = "Master functions shall be used instead of aliases.", note = "Pint laravel preset; moved out of format because CS-Fixer marks it risky" }
-"style/no-ambiguous-constant" = { fix = "none", ported = false, origin = "mago", status = "decided", summary = "Enforces that all constant references made from within a namespace are explicit." }
-"style/no-ambiguous-function" = { fix = "none", ported = false, origin = "mago", status = "decided", summary = "Enforces that all function calls made from within a namespace are explicit." }
+"style/no-ambiguous-constant" = { fix = "none", ported = true, origin = "mago", status = "decided", summary = "Enforces that all constant references made from within a namespace are explicit." }
+"style/no-ambiguous-function" = { fix = "none", ported = true, origin = "mago", status = "decided", summary = "Enforces that all function calls made from within a namespace are explicit." }
 "style/no-array-accumulation-in-loop" = { fix = "none", sets = ["coding-style"], ported = true, origin = "mago", status = "decided", summary = "Detects O(n²) array accumulation patterns inside loops." }
 "style/no-array-push" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "Converts simple usages of `array_push($x, $y);` to `$x[] = $y;`." }
 "style/no-assign-in-ternary-branch" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Assign outcome of ternary condition to variable, where applicable" }
@@ -805,13 +805,13 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "style/no-ereg" = { fix = "unsafe", sets = ["modernize"], ported = true, status = "decided", summary = "Replace deprecated `ereg` regular expression functions with `preg`." }
 "style/no-escaped-quotes" = { fix = "safe", sets = ["coding-style"], ported = true, status = "decided", summary = "Prefer quote that are not inside the string" }
 "style/no-hash-emoji" = { fix = "safe", sets = ["coding-style"], ported = true, origin = "mago", status = "decided", summary = "Discourages usage of the `#️⃣` emoji in place of the ASCII `#`." }
-"style/no-ini-set" = { fix = "none", ported = false, origin = "mago", status = "decided", summary = "Enforces that ini_set is not used." }
-"style/no-inline-html" = { fix = "none", ported = false, origin = "mago", status = "decided", summary = "Disallows inline content (text outside of PHP tags) in source files." }
-"style/no-invalid-phpdoc" = { fix = "none", sets = ["coding-style"], ported = false, origin = "mago", status = "decided", summary = "Checks for syntax errors in docblock comments, such as malformed `{@see}` or" }
+"style/no-ini-set" = { fix = "none", ported = true, origin = "mago", status = "decided", summary = "Enforces that ini_set is not used." }
+"style/no-inline-html" = { fix = "none", ported = true, origin = "mago", status = "decided", summary = "Disallows inline content (text outside of PHP tags) in source files." }
+"style/no-invalid-phpdoc" = { fix = "none", sets = ["coding-style"], ported = true, origin = "mago", status = "decided", summary = "Checks for syntax errors in docblock comments, such as malformed `{@see}` or" }
 "style/no-is-null" = { fix = "unsafe", ported = true, status = "decided", summary = "Replaces `is_null($var)` expression with `null === $var`." }
-"style/no-isset" = { fix = "none", ported = false, origin = "mago", status = "decided", summary = "Detects the use of the `isset()` construct." }
+"style/no-isset" = { fix = "none", ported = true, origin = "mago", status = "decided", summary = "Detects the use of the `isset()` construct." }
 "style/no-multi-assign" = { fix = "safe", sets = ["coding-style"], ported = true, status = "decided", summary = "Split chained assignments (`$a = $b = 1`) into one assignment per statement." }
-"style/no-multiple-classes-per-file" = { fix = "none", ported = false, origin = "mago", status = "decided", summary = "Ensures that each file contains at most one class-like definition (class, interface, enum, or trait)." }
+"style/no-multiple-classes-per-file" = { fix = "none", ported = true, origin = "mago", status = "decided", summary = "Ensures that each file contains at most one class-like definition (class, interface, enum, or trait)." }
 "style/no-nested-ternary" = { fix = "none", sets = ["coding-style"], ported = true, origin = "mago", status = "decided", summary = "Nested ternary expressions are disallowed to improve code clarity and prevent potential bugs arising from confusion over operator associativity." }
 "style/no-parameter-shadowing" = { fix = "none", sets = ["coding-style"], ported = true, origin = "mago", status = "decided", summary = "Detects when a function or method parameter is shadowed by a loop variable," }
 "style/no-php4-constructor" = { fix = "unsafe", sets = ["modernize"], ported = true, status = "decided", summary = "Convert PHP4-style constructors to `__construct`." }
@@ -819,9 +819,9 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "style/no-redundant-final-const" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove final from constants in classes defined as final" }
 "style/no-redundant-yield-from" = { fix = "unsafe", sets = ["coding-style"], ported = true, status = "decided", summary = "Yield from array must be unpacked to series of yields." }
 "style/no-short-ternary" = { fix = "none", sets = ["coding-style"], ported = true, status = "decided", summary = "Detects the use of the shorthand ternary and elvis operators." }
-"style/no-side-effects-with-declarations" = { fix = "none", ported = false, origin = "mago", status = "decided", summary = "Enforces that a PHP file either declares symbols (classes, functions," }
+"style/no-side-effects-with-declarations" = { fix = "none", ported = true, origin = "mago", status = "decided", summary = "Enforces that a PHP file either declares symbols (classes, functions," }
 "style/no-sleep-wakeup" = { fix = "unsafe", sets = ["modernize"], gated_by = "php-version", ported = true, status = "decided", summary = "Replace __sleep()/__wakeup() with __serialize()/__unserialize()." }
-"style/no-sprintf-concat" = { fix = "none", ported = false, origin = "mago", status = "decided", summary = "Disallows string concatenation with the result of an `sprintf` call." }
+"style/no-sprintf-concat" = { fix = "none", ported = true, origin = "mago", status = "decided", summary = "Disallows string concatenation with the result of an `sprintf` call." }
 "style/no-unreachable-loop" = { fix = "none", sets = ["coding-style"], ported = true, origin = "mago", status = "decided", summary = "Detects loops (for, foreach, while, do-while) that unconditionally break or return" }
 "style/no-useless-printf" = { fix = "unsafe", sets = ["coding-style"], ported = true, status = "decided", summary = "There must be no `printf` calls with only the first argument." }
 "style/no-useless-sprintf" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "Remove sprintf() calls with only the format argument." }
@@ -835,7 +835,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "style/prefer-class-keyword-on-object" = { fix = "unsafe", sets = ["modernize"], ported = true, status = "decided", summary = "Replace `get_class` calls on object variables with class keyword syntax." }
 "style/prefer-class-name-constant" = { fix = "unsafe", sets = ["coding-style"], ported = false, status = "decided", summary = "Replace string class names by `<class>::class` constant" }
 "style/prefer-compound-assignment" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "Shorthand notation for operators should be used if possible." }
-"style/prefer-create-from-timestamp" = { fix = "none", ported = false, origin = "mago", status = "decided", summary = "Suggests `DateTimeImmutable::createFromTimestamp()` when a Unix timestamp is converted" }
+"style/prefer-create-from-timestamp" = { fix = "none", ported = true, origin = "mago", status = "decided", summary = "Suggests `DateTimeImmutable::createFromTimestamp()` when a Unix timestamp is converted" }
 "style/prefer-date-time-immutable" = { fix = "unsafe", intent = "suspicious", ported = true, status = "decided", summary = "Class `DateTimeImmutable` should be used instead of `DateTime`." }
 "style/prefer-dir-constant" = { fix = "unsafe", sets = ["modernize"], ported = true, status = "decided", summary = "Replaces `dirname(__FILE__)` expression with equivalent `__DIR__` constant." }
 "style/prefer-dirname-levels" = { fix = "unsafe", sets = ["modernize"], gated_by = "php-version", ported = true, status = "decided", summary = "Replace nested dirname() calls with one call and a `$levels` argument." }
@@ -859,7 +859,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "style/prefer-static-private-method" = { fix = "unsafe", ported = true, status = "decided", summary = "Converts private methods to `static` where possible." }
 "style/prefer-str-contains" = { fix = "unsafe", sets = ["modernize"], ported = true, status = "decided", summary = "Replace `strpos()` and `stripos()` calls with `str_starts_with()` or `str_contains()` if possible." }
 "style/prefer-variadic-param" = { fix = "safe", sets = ["coding-style"], ported = true, status = "decided", summary = "Refactor `func_get_args()` in to a variadic param" }
-"style/prefer-while-loop" = { fix = "none", ported = false, origin = "mago", status = "decided", summary = "Suggests using a `while` loop instead of a `for` loop when the `for` loop does not have any" }
+"style/prefer-while-loop" = { fix = "none", ported = true, origin = "mago", status = "decided", summary = "Suggests using a `while` loop instead of a `for` loop when the `for` loop does not have any" }
 "style/require-assign-set-padding" = { fix = "safe", sets = ["coding-style"], ported = true, status = "decided", summary = "Add extra space before new assign set" }
 "style/require-create-from-format-bang" = { fix = "unsafe", ported = true, status = "decided", summary = "The first argument of `DateTime::createFromFormat` method must start with `!`." }
 "style/require-final-class" = { fix = "unsafe", ported = true, status = "decided", summary = "All classes must be final, except abstract ones and Doctrine entities." }
@@ -868,14 +868,14 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "style/require-fopen-binary-flag" = { fix = "unsafe", ported = true, status = "decided", summary = "The flags in `fopen` calls must omit `t`, and `b` must be omitted or included consistently." }
 "style/require-fopen-flag-order" = { fix = "unsafe", ported = true, status = "decided", summary = "Order the flags in `fopen` calls, `b` and `t` must be last." }
 "style/require-implode-separator" = { fix = "unsafe", sets = ["modernize"], ported = true, status = "decided", summary = "Function `implode` must be called with 2 arguments in the documented order." }
-"style/require-namespace" = { fix = "none", ported = false, origin = "mago", status = "decided", summary = "Detects files that contain definitions (classes, interfaces, enums, traits, functions, or constants)" }
-"style/require-naming-convention" = { fix = "none", ported = false, origin = "mago", status = "decided", summary = "Enforce naming conventions for classes, interfaces, traits, enums, functions, methods, properties, constants and variables (options per kind)." }
+"style/require-namespace" = { fix = "none", ported = true, origin = "mago", status = "decided", summary = "Detects files that contain definitions (classes, interfaces, enums, traits, functions, or constants)" }
+"style/require-naming-convention" = { fix = "none", ported = true, origin = "mago", status = "decided", summary = "Enforce naming conventions for classes, interfaces, traits, enums, functions, methods, properties, constants and variables (options per kind)." }
 "style/require-ordered-traits" = { fix = "unsafe", ported = true, status = "decided", summary = "Trait `use` statements must be sorted alphabetically.", note = "Pint laravel preset; moved out of format because CS-Fixer marks it risky" }
 "style/require-parent-visibility" = { fix = "safe", sets = ["coding-style"], ported = true, status = "decided", summary = "Make method visibility same as parent one" }
-"style/require-phpdoc" = { fix = "none", ported = false, origin = "mago", status = "decided", summary = "Detects declarations that are missing a docblock." }
-"style/require-sorted-integer-keys" = { fix = "none", ported = false, origin = "mago", status = "decided", summary = "Detects array literals with integer keys that are not in ascending order." }
+"style/require-phpdoc" = { fix = "none", ported = true, origin = "mago", status = "decided", summary = "Detects declarations that are missing a docblock." }
+"style/require-sorted-integer-keys" = { fix = "none", ported = true, origin = "mago", status = "decided", summary = "Detects array literals with integer keys that are not in ascending order." }
 "style/require-statement-padding" = { fix = "safe", sets = ["coding-style"], ported = true, status = "decided", summary = "Add empty new line after different-type statements to improve code readability" }
-"style/require-todo-reference" = { fix = "none", ported = false, origin = "mago", status = "decided", summary = "Require TODO and FIXME comments to reference a user or issue." }
+"style/require-todo-reference" = { fix = "none", ported = true, origin = "mago", status = "decided", summary = "Require TODO and FIXME comments to reference a user or issue." }
 "tags/no-invalid-open-tag" = { fix = "safe", intent = "correctness", sets = ["code-quality"], ported = true, origin = "mago", status = "decided", summary = "Detects misspelled PHP opening tags like `<php?` instead of `<?php`." }
 "types/add-array-return-type" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add return type from return direct array" }
 "types/add-arrow-function-return-type" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add known return type to arrow function" }

@@ -1,6 +1,27 @@
 //! The ported rules. Each file is one Pun rule, ported function by function from its upstream source.
 
 mod add_csv_escape_argument;
+mod mago_helpers;
+mod mago_restricted;
+mod mago_calls;
+mod mago_comments;
+mod mago_extension_functions;
+mod mago_style;
+mod no_boolean_flag_parameter;
+mod no_else_clause;
+mod no_empty_file;
+mod no_excessive_cyclomatic;
+mod no_excessive_halstead;
+mod no_excessive_kan_defect;
+mod no_excessive_members;
+mod no_excessive_nesting;
+mod no_excessive_parameters;
+mod no_goto;
+mod no_side_effects_with_declarations;
+mod prefer_named_literal_argument;
+mod require_interpolation_style;
+mod require_naming_convention;
+mod require_phpdoc;
 mod no_unused_promoted_property;
 mod require_parent_visibility;
 mod add_datetime_property_type;
@@ -190,6 +211,30 @@ mod types;
 mod used_variable;
 
 pub use add_csv_escape_argument::AddCsvEscapeArgument;
+pub use mago_calls::{
+    NoAmbiguousConstant, NoAmbiguousFunction, NoIniSet, NoSprintfConcat, PreferCreateFromTimestamp,
+    RequireAssertDescription,
+};
+pub use mago_comments::{NoInvalidPhpdoc, RequireTodoReference};
+pub use mago_restricted::{NoRestrictedFunctions, NoRestrictedInstantiation};
+pub use mago_style::{
+    NoInlineHtml, NoIsset, NoMultipleClassesPerFile, PreferWhileLoop, RequireNamespace, RequireSortedIntegerKeys,
+};
+pub use no_boolean_flag_parameter::NoBooleanFlagParameter;
+pub use no_else_clause::NoElseClause;
+pub use no_empty_file::NoEmptyFile;
+pub use no_excessive_cyclomatic::NoExcessiveCyclomatic;
+pub use no_excessive_halstead::NoExcessiveHalstead;
+pub use no_excessive_kan_defect::NoExcessiveKanDefect;
+pub use no_excessive_members::{NoExcessiveEnumCases, NoExcessiveMethods, NoExcessiveProperties};
+pub use no_excessive_nesting::NoExcessiveNesting;
+pub use no_excessive_parameters::NoExcessiveParameters;
+pub use no_goto::NoGoto;
+pub use no_side_effects_with_declarations::NoSideEffectsWithDeclarations;
+pub use prefer_named_literal_argument::PreferNamedLiteralArgument;
+pub use require_interpolation_style::RequireInterpolationStyle;
+pub use require_naming_convention::RequireNamingConvention;
+pub use require_phpdoc::RequirePhpdoc;
 pub use no_unused_promoted_property::NoUnusedPromotedProperty;
 pub use require_parent_visibility::RequireParentVisibility;
 pub use add_datetime_property_type::AddDatetimePropertyType;
@@ -542,5 +587,38 @@ fn ungrouped() -> Vec<Box<dyn Rule>> {
         Box::new(PreferClassKeyword),
         Box::new(RequireParentVisibility),
         Box::new(NoUnusedPromotedProperty),
+        Box::new(NoBooleanFlagParameter::default()),
+        Box::new(NoElseClause),
+        Box::new(NoEmptyFile),
+        Box::new(NoExcessiveCyclomatic::default()),
+        Box::new(NoExcessiveEnumCases::default()),
+        Box::new(NoExcessiveHalstead::default()),
+        Box::new(NoExcessiveKanDefect::default()),
+        Box::new(NoExcessiveMethods::default()),
+        Box::new(NoExcessiveNesting::default()),
+        Box::new(NoExcessiveParameters::default()),
+        Box::new(NoExcessiveProperties::default()),
+        Box::new(NoGoto),
+        Box::new(PreferNamedLiteralArgument::default()),
+        Box::new(RequireAssertDescription),
+        Box::new(NoIniSet),
+        Box::new(NoSprintfConcat),
+        Box::new(NoAmbiguousFunction),
+        Box::new(NoAmbiguousConstant),
+        Box::new(PreferCreateFromTimestamp),
+        Box::new(RequireTodoReference),
+        Box::new(NoInvalidPhpdoc),
+        Box::new(NoInlineHtml),
+        Box::new(NoIsset::default()),
+        Box::new(NoMultipleClassesPerFile),
+        Box::new(PreferWhileLoop),
+        Box::new(RequireNamespace),
+        Box::new(RequireSortedIntegerKeys),
+        Box::new(NoRestrictedFunctions::default()),
+        Box::new(NoRestrictedInstantiation::default()),
+        Box::new(RequireInterpolationStyle::default()),
+        Box::new(NoSideEffectsWithDeclarations::default()),
+        Box::new(RequireNamingConvention::default()),
+        Box::new(RequirePhpdoc::default()),
     ]
 }

@@ -1,0 +1,1 @@
+<?php $MyVariable = 1;
