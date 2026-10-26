@@ -375,7 +375,6 @@
 9 Methods/CallStaticMethodsRuleTest::testBug5259
 9 Methods/CallStaticMethodsRuleTest::testBug8296
 9 Methods/CallStaticMethodsRuleTest::testBugWrongMethodNameWithTemplateMixed
-9 Methods/CallStaticMethodsRuleTest::testDiscussion7004
 9 Methods/CallStaticMethodsRuleTest::testDynamicCall
 9 Methods/CallStaticMethodsRuleTest::testRequireExtends
 # offsetAccess.invalidOffset: array_rand() is list<int|string> by Mago, array<int, int|string> by PHPStan's dynamic

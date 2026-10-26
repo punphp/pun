@@ -455,16 +455,17 @@ fn phpstan_level_fixtures() {
     let tests = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures");
     let root = tests.join("levels");
     let data = tests.join("rules/data");
-    // PUN_LEVELS_FILTER=Properties/ runs only the fixtures (and checks only the gaps) whose name contains it
+    // PUN_LEVELS_FILTER=Properties/ selects fixture paths; only executed cases can retire a gap.
     let filter = std::env::var("PUN_LEVELS_FILTER").unwrap_or_default();
     let gaps: BTreeSet<String> = std::fs::read_to_string(root.join("gaps.txt"))
         .unwrap()
         .lines()
-        .filter(|l| !l.is_empty() && !l.starts_with('#') && l.contains(&filter))
+        .filter(|l| !l.is_empty() && !l.starts_with('#'))
         .map(str::to_string)
         .collect();
     let prefix = format!("{}/", data.display());
     let mut failing = BTreeSet::new();
+    let mut tested = BTreeSet::new();
     let mut exact_failures = BTreeSet::new();
     let mut details = Vec::new();
     let mut levels: Vec<_> = std::fs::read_dir(&root)
@@ -534,6 +535,7 @@ fn phpstan_level_fixtures() {
                     test["test"].as_str().unwrap(),
                     case["method"].as_str().unwrap()
                 );
+                tested.insert(name.clone());
                 if want != got {
                     if want
                         .symmetric_difference(&got)
@@ -551,7 +553,10 @@ fn phpstan_level_fixtures() {
             }
         }
     }
-    let fixed: Vec<_> = gaps.difference(&failing).collect();
+    let fixed: Vec<_> = gaps
+        .intersection(&tested)
+        .filter(|name| !failing.contains(*name))
+        .collect();
     let new: Vec<_> = details
         .iter()
         .filter(|d| {

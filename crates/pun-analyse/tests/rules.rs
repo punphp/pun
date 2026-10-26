@@ -28,17 +28,18 @@ fn phpstan_rule_fixtures() {
     let mut files = Vec::new();
     fixtures(&root, &mut files);
     files.sort();
-    // PUN_RULES_FILTER=Functions/ runs only the fixtures (and checks only the gaps) whose name contains it
+    // PUN_RULES_FILTER=Functions/ selects fixture paths; only executed cases can retire a gap.
     let filter = std::env::var("PUN_RULES_FILTER").unwrap_or_default();
     files.retain(|f| f.to_string_lossy().contains(&filter));
     let gaps: BTreeSet<String> = std::fs::read_to_string(root.join("gaps.txt"))
         .unwrap()
         .lines()
-        .filter(|l| !l.is_empty() && !l.starts_with('#') && l.contains(&filter))
+        .filter(|l| !l.is_empty() && !l.starts_with('#'))
         .map(str::to_string)
         .collect();
     let prefix = format!("{}/", data.display());
     let mut failing = BTreeSet::new();
+    let mut tested = BTreeSet::new();
     let mut details = Vec::new();
     // identifier => (cases where it occurs, cases where it matches)
     let mut per_rule: BTreeMap<String, (usize, usize)> = BTreeMap::new();
@@ -85,6 +86,7 @@ fn phpstan_rule_fixtures() {
                 test["test"].as_str().unwrap(),
                 case["method"].as_str().unwrap()
             );
+            tested.insert(name.clone());
             let ids: BTreeSet<&String> = want.iter().chain(&got).map(|k| &k.2).collect();
             for id in ids {
                 let of = |s: &BTreeSet<Key>| {
@@ -107,7 +109,10 @@ fn phpstan_rule_fixtures() {
     for (id, (cases, ok)) in &per_rule {
         eprintln!("{id:40} {ok:4}/{cases:<4} cases match");
     }
-    let fixed: Vec<_> = gaps.difference(&failing).collect();
+    let fixed: Vec<_> = gaps
+        .intersection(&tested)
+        .filter(|name| !failing.contains(*name))
+        .collect();
     let new: Vec<_> = details
         .iter()
         .filter(|d| !gaps.contains(d.lines().next().unwrap()))
