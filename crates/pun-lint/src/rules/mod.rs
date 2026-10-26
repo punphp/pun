@@ -10,6 +10,7 @@ mod no_unused_constructor_param;
 mod no_null_default_argument;
 mod add_param_type_sprintf;
 mod laravel;
+mod pest;
 mod lint_b_doc;
 mod lint_b_early_exit;
 mod lint_b_foreach;
@@ -198,6 +199,7 @@ pub use no_unused_constructor_param::NoUnusedConstructorParam;
 pub use no_null_default_argument::{NoNullDefaultArgument, NoNullDefaultNamedArgument};
 pub use add_param_type_sprintf::AddParamTypeSprintf;
 pub use laravel::*;
+pub use pest::*;
 pub use no_and_assignment::NoAndAssignment;
 pub use no_and_true::NoAndTrue;
 pub use no_array_accumulation_in_loop::NoArrayAccumulationInLoop;
@@ -364,6 +366,7 @@ use crate::Rule;
 pub fn all() -> Vec<Box<dyn Rule>> {
     let mut rules = laravel::all();
     rules.extend(types::all());
+    rules.extend(pest::all());
     rules.extend(ungrouped());
     rules
 }

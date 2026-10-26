@@ -34,7 +34,7 @@ Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: safe (k
 
 Removes only() from all tests
 
-Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: unsafe (can change behaviour). Runs when pest is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: unsafe (can change behaviour). Runs when pest is installed.
 
 </Card>
 <Card title="lint/pest/no-invalid-repeat">
@@ -52,7 +52,7 @@ Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: safe (k
 
 Simplifies double-negative expectations like ->not->toBeFalse() to ->toBeTrue()
 
-Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: safe (keeps behaviour). Runs when pest is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: safe (keeps behaviour). Runs when pest is installed.
 
 </Card>
 <Card title="lint/pest/no-only">
@@ -88,7 +88,7 @@ Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: safe (k
 
 Removes static from Pest test and hook callbacks that use the test case instance
 
-Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: safe (keeps behaviour). Runs when pest is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: safe (keeps behaviour). Runs when pest is installed.
 
 </Card>
 <Card title="lint/pest/prefer-chained-expect">
@@ -106,7 +106,7 @@ Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: safe (k
 
 Converts expect($x > 10)->toBeTrue() to expect($x)->toBeGreaterThan(10)
 
-Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: safe (keeps behaviour). Runs when pest is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: safe (keeps behaviour). Runs when pest is installed.
 
 </Card>
 <Card title="lint/pest/prefer-dedicated-expectation">
@@ -124,7 +124,7 @@ Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: unsafe 
 
 Replaces deprecated ->tap() method with ->defer() for Pest v3 migration
 
-Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: safe (keeps behaviour). Runs when pest is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: safe (keeps behaviour). Runs when pest is installed.
 
 </Card>
 <Card title="lint/pest/prefer-each-modifier">
@@ -169,7 +169,7 @@ Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: unsafe 
 
 Simplifies negated expectations by flipping the matcher (e.g., expect(!$x)->toBeTrue() becomes expect($x)->toBeFalse())
 
-Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: safe (keeps behaviour). Runs when pest is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: safe (keeps behaviour). Runs when pest is installed.
 
 </Card>
 <Card title="lint/pest/prefer-sequence">
@@ -205,7 +205,7 @@ Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: safe (k
 
 Converts strict equality expressions to toBe() matcher
 
-Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: safe (keeps behaviour). Runs when pest is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: safe (keeps behaviour). Runs when pest is installed.
 
 </Card>
 <Card title="lint/pest/prefer-to-be-alpha">
@@ -214,7 +214,7 @@ Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: safe (k
 
 Converts ctype_alpha() checks to toBeAlpha() matcher
 
-Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: unsafe (can change behaviour). Runs when pest is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: unsafe (can change behaviour). Runs when pest is installed.
 
 </Card>
 <Card title="lint/pest/prefer-to-be-alpha-numeric">
@@ -223,7 +223,7 @@ Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: unsafe 
 
 Converts ctype_alnum() checks to toBeAlphaNumeric() matcher
 
-Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: unsafe (can change behaviour). Runs when pest is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: unsafe (can change behaviour). Runs when pest is installed.
 
 </Card>
 <Card title="lint/pest/prefer-to-be-between">
@@ -232,7 +232,7 @@ Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: unsafe 
 
 Converts expect($value >= $min &amp;&amp; $value &lt;= $max)->toBeTrue() to expect($value)->toBeBetween($min, $max)
 
-Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: safe (keeps behaviour). Runs when pest is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: safe (keeps behaviour). Runs when pest is installed.
 
 </Card>
 <Card title="lint/pest/prefer-to-be-digits">
@@ -241,7 +241,7 @@ Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: safe (k
 
 Converts ctype_digit() checks to toBeDigits() matcher
 
-Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: unsafe (can change behaviour). Runs when pest is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: unsafe (can change behaviour). Runs when pest is installed.
 
 </Card>
 <Card title="lint/pest/prefer-to-be-directory">
@@ -250,7 +250,7 @@ Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: unsafe 
 
 Converts is_dir() checks to toBeDirectory() matcher
 
-Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: unsafe (can change behaviour). Runs when pest is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: unsafe (can change behaviour). Runs when pest is installed.
 
 </Card>
 <Card title="lint/pest/prefer-to-be-empty">
@@ -268,7 +268,7 @@ Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: unsafe 
 
 Converts is_file() checks to toBeFile() matcher
 
-Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: unsafe (can change behaviour). Runs when pest is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: unsafe (can change behaviour). Runs when pest is installed.
 
 </Card>
 <Card title="lint/pest/prefer-to-be-in">
@@ -277,7 +277,7 @@ Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: unsafe 
 
 Converts strict in_array() checks to the toBeIn() matcher
 
-Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: unsafe (can change behaviour). Runs when pest is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: unsafe (can change behaviour). Runs when pest is installed.
 
 </Card>
 <Card title="lint/pest/prefer-to-be-infinite">
@@ -286,7 +286,7 @@ Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: unsafe 
 
 Converts is_infinite() checks to toBeInfinite() matcher
 
-Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: unsafe (can change behaviour). Runs when pest is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: unsafe (can change behaviour). Runs when pest is installed.
 
 </Card>
 <Card title="lint/pest/prefer-to-be-instance-of">
@@ -295,7 +295,7 @@ Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: unsafe 
 
 Converts expect($obj instanceof User)->toBeTrue() to expect($obj)->toBeInstanceOf(User::class)
 
-Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: safe (keeps behaviour). Runs when pest is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: safe (keeps behaviour). Runs when pest is installed.
 
 </Card>
 <Card title="lint/pest/prefer-to-be-json">
@@ -313,7 +313,7 @@ Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: unsafe 
 
 Converts array_is_list() checks to toBeList() matcher
 
-Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: unsafe (can change behaviour). Runs when pest is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: unsafe (can change behaviour). Runs when pest is installed.
 
 </Card>
 <Card title="lint/pest/prefer-to-be-lowercase">
@@ -322,7 +322,7 @@ Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: unsafe 
 
 Converts strtolower() equality checks to toBeLowercase() matcher
 
-Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: unsafe (can change behaviour). Runs when pest is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: unsafe (can change behaviour). Runs when pest is installed.
 
 </Card>
 <Card title="lint/pest/prefer-to-be-nan">
@@ -331,7 +331,7 @@ Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: unsafe 
 
 Converts is_nan() checks to toBeNan() matcher
 
-Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: unsafe (can change behaviour). Runs when pest is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: unsafe (can change behaviour). Runs when pest is installed.
 
 </Card>
 <Card title="lint/pest/prefer-to-be-true-false">
@@ -340,7 +340,7 @@ Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: unsafe 
 
 Simplifies expect($x)->toBe(true) to expect($x)->toBeTrue() and similar patterns
 
-Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: safe (keeps behaviour). Runs when pest is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: safe (keeps behaviour). Runs when pest is installed.
 
 </Card>
 <Card title="lint/pest/prefer-to-be-truthy-falsy">
@@ -349,7 +349,7 @@ Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: safe (k
 
 Converts bool cast assertions to toBeTruthy()/toBeFalsy() matchers
 
-Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: safe (keeps behaviour). Runs when pest is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: safe (keeps behaviour). Runs when pest is installed.
 
 </Card>
 <Card title="lint/pest/prefer-to-be-uppercase">
@@ -358,7 +358,7 @@ Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: safe (k
 
 Converts strtoupper() equality checks to toBeUppercase() matcher
 
-Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: unsafe (can change behaviour). Runs when pest is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: unsafe (can change behaviour). Runs when pest is installed.
 
 </Card>
 <Card title="lint/pest/prefer-to-be-url">
@@ -385,7 +385,7 @@ Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: unsafe 
 
 Converts in_array() checks to toContain() matcher
 
-Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: unsafe (can change behaviour). Runs when pest is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: unsafe (can change behaviour). Runs when pest is installed.
 
 </Card>
 <Card title="lint/pest/prefer-to-contain-equal">
@@ -394,7 +394,7 @@ Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: unsafe 
 
 Converts in_array(..., false) checks to toContainEqual() matcher
 
-Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: unsafe (can change behaviour). Runs when pest is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: unsafe (can change behaviour). Runs when pest is installed.
 
 </Card>
 <Card title="lint/pest/prefer-to-contain-only-instances-of">
@@ -403,7 +403,7 @@ Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: unsafe 
 
 Converts ->each->toBeInstanceOf() pattern to toContainOnlyInstancesOf() matcher
 
-Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: unsafe (can change behaviour). Runs when pest is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: unsafe (can change behaviour). Runs when pest is installed.
 
 </Card>
 <Card title="lint/pest/prefer-to-end-with">
@@ -412,7 +412,7 @@ Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: unsafe 
 
 Converts str_ends_with() checks to toEndWith() matcher
 
-Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: unsafe (can change behaviour). Runs when pest is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: unsafe (can change behaviour). Runs when pest is installed.
 
 </Card>
 <Card title="lint/pest/prefer-to-equal-canonicalizing">
@@ -439,7 +439,7 @@ Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: safe (k
 
 Converts expect(count($arr))->toBe(5) to expect($arr)->toHaveCount(5)
 
-Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: unsafe (can change behaviour). Runs when pest is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: unsafe (can change behaviour). Runs when pest is installed.
 
 </Card>
 <Card title="lint/pest/prefer-to-have-key">
@@ -448,7 +448,7 @@ Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: unsafe 
 
 Converts array_key_exists() checks to toHaveKey() matcher
 
-Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: unsafe (can change behaviour). Runs when pest is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: unsafe (can change behaviour). Runs when pest is installed.
 
 </Card>
 <Card title="lint/pest/prefer-to-have-keys">
@@ -466,7 +466,7 @@ Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: safe (k
 
 Converts strlen()/mb_strlen() comparisons to toHaveLength() matcher
 
-Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: unsafe (can change behaviour). Runs when pest is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: unsafe (can change behaviour). Runs when pest is installed.
 
 </Card>
 <Card title="lint/pest/prefer-to-have-method-on-class">
@@ -475,7 +475,7 @@ Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: unsafe 
 
 Changes expect($object)->toHaveMethod() to expect($object::class)->toHaveMethod() for Pest v3
 
-Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: safe (keeps behaviour). Runs when pest is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: safe (keeps behaviour). Runs when pest is installed.
 
 </Card>
 <Card title="lint/pest/prefer-to-have-properties">
@@ -493,7 +493,7 @@ Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: safe (k
 
 Converts property_exists() checks to toHaveProperty() matcher
 
-Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: unsafe (can change behaviour). Runs when pest is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: unsafe (can change behaviour). Runs when pest is installed.
 
 </Card>
 <Card title="lint/pest/prefer-to-have-same-size">
@@ -538,7 +538,7 @@ Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: safe (k
 
 Converts str_starts_with() checks to toStartWith() matcher
 
-Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: unsafe (can change behaviour). Runs when pest is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: unsafe (can change behaviour). Runs when pest is installed.
 
 </Card>
 <Card title="lint/pest/prefer-to-throw">
@@ -556,7 +556,7 @@ Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: safe (k
 
 Converts expect(is_array($x))->toBeTrue() to expect($x)->toBeArray()
 
-Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: unsafe (can change behaviour). Runs when pest is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: unsafe (can change behaviour). Runs when pest is installed.
 
 </Card>
 <Card title="lint/pest/require-type-matcher-first">

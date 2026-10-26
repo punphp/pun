@@ -11837,7 +11837,7 @@
         "rules": [
           "lint/pest/no-focused-test"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -11867,7 +11867,7 @@
         "rules": [
           "lint/pest/no-static-test-closure"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -11877,7 +11877,7 @@
         "rules": [
           "lint/pest/prefer-comparison-matchers"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -11887,7 +11887,7 @@
         "rules": [
           "lint/pest/prefer-not-modifier"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -11907,7 +11907,7 @@
         "rules": [
           "lint/pest/prefer-to-be-truthy-falsy"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -11917,7 +11917,7 @@
         "rules": [
           "lint/pest/prefer-to-be-true-false"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -11927,7 +11927,7 @@
         "rules": [
           "lint/pest/prefer-defer"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -11937,7 +11937,7 @@
         "rules": [
           "lint/pest/no-negated-boolean-matcher"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -11947,7 +11947,7 @@
         "rules": [
           "lint/pest/prefer-to-have-method-on-class"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -11967,7 +11967,7 @@
         "rules": [
           "lint/pest/prefer-to-be-instance-of"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -11987,7 +11987,7 @@
         "rules": [
           "lint/pest/prefer-strict-equality-matchers"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -11997,7 +11997,7 @@
         "rules": [
           "lint/pest/prefer-to-be-alpha"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -12007,7 +12007,7 @@
         "rules": [
           "lint/pest/prefer-to-be-alpha-numeric"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -12017,7 +12017,7 @@
         "rules": [
           "lint/pest/prefer-to-be-between"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -12027,7 +12027,7 @@
         "rules": [
           "lint/pest/prefer-to-be-digits"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -12037,7 +12037,7 @@
         "rules": [
           "lint/pest/prefer-to-be-directory"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -12057,7 +12057,7 @@
         "rules": [
           "lint/pest/prefer-to-be-file"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -12067,7 +12067,7 @@
         "rules": [
           "lint/pest/prefer-to-be-in"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -12077,7 +12077,7 @@
         "rules": [
           "lint/pest/prefer-to-be-infinite"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -12097,7 +12097,7 @@
         "rules": [
           "lint/pest/prefer-to-be-list"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -12107,7 +12107,7 @@
         "rules": [
           "lint/pest/prefer-to-be-lowercase"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -12117,7 +12117,7 @@
         "rules": [
           "lint/pest/prefer-to-be-nan"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -12135,7 +12135,7 @@
         "rules": [
           "lint/pest/prefer-to-be-uppercase"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -12165,7 +12165,7 @@
         "rules": [
           "lint/pest/prefer-to-contain"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -12175,7 +12175,7 @@
         "rules": [
           "lint/pest/prefer-to-contain-equal"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -12185,7 +12185,7 @@
         "rules": [
           "lint/pest/prefer-to-contain-only-instances-of"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -12195,7 +12195,7 @@
         "rules": [
           "lint/pest/prefer-to-end-with"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -12225,7 +12225,7 @@
         "rules": [
           "lint/pest/prefer-to-have-count"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -12235,7 +12235,7 @@
         "rules": [
           "lint/pest/prefer-to-have-key"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -12255,7 +12255,7 @@
         "rules": [
           "lint/pest/prefer-to-have-length"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -12275,7 +12275,7 @@
         "rules": [
           "lint/pest/prefer-to-have-property"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -12325,7 +12325,7 @@
         "rules": [
           "lint/pest/prefer-to-start-with"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -12345,7 +12345,7 @@
         "rules": [
           "lint/pest/prefer-type-matchers"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {

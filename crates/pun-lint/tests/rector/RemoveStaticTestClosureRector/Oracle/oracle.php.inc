@@ -1,0 +1,67 @@
+<?php
+
+test('a', static function () { $this->x(); });
+test('b', static function () { $x = 1; });
+it('c', static fn () => $this->x());
+it('d', static fn () => 1);
+describe('e', static function () { $this->x(); });
+beforeEach(static function () { $this->x(); });
+afterEach(static fn () => $this->x());
+beforeAll(static function () { $this->x(); });
+afterAll(static function () { $this->x(); });
+todo('f', static function () { $this->x(); });
+test('g', static function () { $f = static function () { $this->x(); }; });
+test('h', static function () { $f = function () { $this->x(); }; });
+test('i', static function () { $f = static fn () => $this->x(); });
+test('j', static function () { it('k', function () { $this->x(); }); });
+test('l', static function () { foo(function () { $this->x(); }); });
+test('m', static function () { foo(static function () { $this->x(); }); });
+test('n', static function () { echo "{$this->x}"; });
+test('o', static function () { $THIS->x(); });
+test('p', static function () { new class { function f() { return $this; } }; });
+test('q', closure: static function () { $this->x(); });
+test('r', static function () use ($a) { $this->x(); });
+test('s', function () { $this->x(); });
+TEST('t', static function () { $this->x(); });
+\test('u', static function () { $this->x(); });
+test('v', static function () { ($this->f)(); });
+test('w', static function () { $this->f(); }, 'extra');
+test(static function () { $this->x(); });
+test('x', static function () { test('y', static function () { $this->x(); }); });
+test('z', static function () { foo(test('y', function () { $this->x(); })); });
+test('aa', static function () { $g = fn () => fn () => $this->x(); });
+test('bb', static function () { foo(...); $this->x(); });
+-----
+<?php
+
+test('a', function () { $this->x(); });
+test('b', static function () { $x = 1; });
+it('c', fn () => $this->x());
+it('d', static fn () => 1);
+describe('e', function () { $this->x(); });
+beforeEach(function () { $this->x(); });
+afterEach(fn () => $this->x());
+beforeAll(static function () { $this->x(); });
+afterAll(static function () { $this->x(); });
+todo('f', static function () { $this->x(); });
+test('g', static function () { $f = static function () { $this->x(); }; });
+test('h', function () { $f = function () { $this->x(); }; });
+test('i', function () { $f = static fn () => $this->x(); });
+test('j', static function () { it('k', function () { $this->x(); }); });
+test('l', function () { foo(function () { $this->x(); }); });
+test('m', static function () { foo(static function () { $this->x(); }); });
+test('n', function () { echo "{$this->x}"; });
+test('o', static function () { $THIS->x(); });
+test('p', function () { new class { function f() { return $this; } }; });
+test('q', closure: function () { $this->x(); });
+test('r', function () use ($a) { $this->x(); });
+test('s', function () { $this->x(); });
+TEST('t', static function () { $this->x(); });
+\test('u', function () { $this->x(); });
+test('v', static function () { ($this->f)(); });
+test('w', function () { $this->f(); }, 'extra');
+test(static function () { $this->x(); });
+test('x', static function () { test('y', function () { $this->x(); }); });
+test('z', static function () { foo(test('y', function () { $this->x(); })); });
+test('aa', function () { $g = fn () => fn () => $this->x(); });
+test('bb', function () { foo(...); $this->x(); });
