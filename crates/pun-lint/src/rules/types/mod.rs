@@ -69,28 +69,30 @@ use names::resolve_class_name;
 /// item and hashes arrays by key and item type, so `[]` against `[$a, $b]`, or two classes, make a union it skips (or
 /// writes) where Pun's grouping by kind does not; they stay out of `all()` until that is ported.
 pub(crate) fn all() -> Vec<Box<dyn Rule>> {
+    // Rector's order (src/Config/Level/TypeDeclarationLevel.php): on one function the first rule that adds a return
+    // type wins.
     vec![
-        Box::new(AddFunctionVoidReturn),
         Box::new(AddClosureVoidReturn),
-        Box::new(AddMethodVoidReturn),
-        Box::new(AddNeverReturn),
-        Box::new(AddClosureNeverReturn),
-        Box::new(AddReturnTypeFromCast),
-        Box::new(AddMagicMethodTypes),
+        Box::new(AddFunctionVoidReturn),
+        Box::new(AddArrowFunctionReturn),
         Box::new(AddBoolReturnFromConst),
-        Box::new(AddReturnTypeFromNew),
+        Box::new(AddReturnTypeFromConstant),
         Box::new(AddStringReturnFromScalar),
         Box::new(AddNumericReturnFromScalar),
         Box::new(AddBoolReturn),
-        Box::new(AddArrayReturn),
         Box::new(AddStringReturn),
         Box::new(AddNumericReturn),
-        Box::new(AddFluentReturn),
-        Box::new(AddReturnTypeFromParam),
+        Box::new(AddArrayReturn),
+        Box::new(AddReturnTypeFromNew),
+        Box::new(AddReturnTypeFromCast),
+        Box::new(AddMethodVoidReturn),
         Box::new(AddReturnTypeFromProperty),
-        Box::new(AddReturnTypeFromConstant),
+        Box::new(AddMagicMethodTypes),
+        Box::new(AddClosureNeverReturn),
         Box::new(AddClosureReturn),
-        Box::new(AddArrowFunctionReturn),
+        Box::new(AddReturnTypeFromParam),
+        Box::new(AddFluentReturn),
+        Box::new(AddNeverReturn),
     ]
 }
 
