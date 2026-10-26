@@ -11,7 +11,7 @@ use mago_codex::visibility::Visibility;
 use mago_span::{HasSpan, Span};
 use mago_syntax::cst::*;
 use mago_word::{Word, word};
-use pun_phpstan::types::{Type, is_super_type_of, mixed, recommended_level};
+use pun_phpstan::types::{NeverKind, Type, ancestor_args, decide_type, is_super_type_of, mixed, recommended_level};
 
 use super::super::declarations::immutable_tags;
 use super::super::doc::tags;
@@ -108,6 +108,7 @@ struct Prop<'a> {
     declaring: &'a ClassLikeMetadata,
     meta: &'a PropertyMetadata,
     name: String,
+    display: String,
     writable: Option<Type>,
     native_readonly: bool,
     phpdoc_readonly: bool,
@@ -285,32 +286,65 @@ fn find_on<'a>(c: &Checker<'a, '_>, f: &Fetch, holder: Type, native_only: bool, 
     } else {
         declaring
     };
-    // an `@property-read` over a writable native property writes the native type
-    let native_write = shadowed.filter(|_| meta.flags.is_readonly());
-    let ty = if let Some((declaring, meta)) = native_write {
-        declared::property_of(c, declaring, meta, &f.name[1..])
-    } else if magic {
-        meta.type_metadata.as_ref().map_or_else(mixed, |t| c.to_phpstan(&t.type_union))
+    let ty = if magic {
+        let readable = meta.type_metadata.as_ref().map_or_else(mixed, |t| c.to_phpstan(&t.type_union));
+        match shadowed {
+            Some((declaring, native)) => overlay_write_type(c, f, declaring, native, meta, readable),
+            None => readable,
+        }
     } else {
         declared::property_of(c, declaring, meta, &f.name[1..])
     };
-    let ty = match &holder {
-        Type::Object(_, args) if !args.is_empty() => {
-            let names: Vec<String> = declaring.get_template_type_names().iter().map(|n| n.to_string()).collect();
-            with_args(&ty, &format!("class {}", c.reflected_name(declaring.name.as_bytes())), &names, args)
+    let mut display = c.display(declaring);
+    let overlay_args = if magic && shadowed.is_some() {
+        match &holder {
+            Type::Object(_, args) | Type::Static(_, args) => Some(args.clone()),
+            Type::This(_) => Some(declared::class_templates(c, class).into_iter().map(|t| Type::Template(Box::new(t))).collect()),
+            _ => None,
         }
-        _ => ty,
+    } else {
+        None
+    };
+    let ty = if let Some(args) = overlay_args {
+        let scope = c.reflected_name(declaring.name.as_bytes());
+        let args = if class.name == declaring.name {
+            args
+        } else {
+            pun_phpstan::symbols::lookup(&c.reflected_name(class.name.as_bytes()))
+                .and_then(|k| ancestor_args(&k, &scope, &args)).unwrap_or_default()
+        };
+        let templates = declared::class_templates(c, declaring);
+        let args: Vec<_> = templates.iter().enumerate().map(|(i, t)| {
+            args.get(i).cloned().unwrap_or_else(|| t.default.as_ref().unwrap_or(&t.bound).clone())
+        }).collect();
+        if !args.is_empty() {
+            // ClassReflection::getDisplayName() uses type-only arguments and no separator spaces.
+            display = format!("{display}<{}>", args.iter().map(|t| t.describe(pun_phpstan::types::Level::TypeOnly)).collect::<Vec<_>>().join(","));
+        }
+        let names = templates.iter().map(|t| t.name.clone()).collect::<Vec<_>>();
+        with_args(&ty, &format!("class {scope}"), &names, &args)
+    } else {
+        match &holder {
+            Type::Object(_, args) if !args.is_empty() => {
+                let names: Vec<String> = declaring.get_template_type_names().iter().map(|n| n.to_string()).collect();
+                with_args(&ty, &format!("class {}", c.reflected_name(declaring.name.as_bytes())), &names, args)
+            }
+            _ => ty,
+        }
     };
     // an enum's `name` and `value` (EnumPropertyReflection) are neither writable nor readonly properties
     let enum_ = declaring.kind == mago_codex::symbol::SymbolKind::Enum;
     let writable = if enum_ {
         false
     } else if magic {
-        !meta.flags.is_readonly() || native_write.is_some()
+        // AnnotationsPropertiesClassReflectionExtension promotes a read-only tag only for a non-private,
+        // non-static writable native property. The resulting PhpPropertyReflection still needs a set hook
+        // when virtual, even if the annotation itself is writable.
+        (!meta.flags.is_readonly() || shadowed.is_some_and(|(d, p)| {
+            p.read_visibility != Visibility::Private && !p.flags.is_static() && native_writable(c, d, p, &f.name)
+        })) && shadowed.is_none_or(|(d, p)| native_writable(c, d, p, &f.name))
     } else {
-        meta.flags.is_static()
-            || !c.property_virtual(declaring, meta, &f.name)
-            || c.property_hooks(declaring, hook_names(meta), &f.name).1
+        native_writable(c, declaring, meta, &f.name)
     };
     let readonly = meta.flags.is_readonly() && !magic && !enum_;
     let native_readonly = readonly && (says_readonly(c, meta.name_span) || says_readonly(c, Some(declaring.span)));
@@ -327,6 +361,7 @@ fn find_on<'a>(c: &Checker<'a, '_>, f: &Fetch, holder: Type, native_only: bool, 
         declaring,
         meta,
         name,
+        display,
         writable: writable.then_some(ty),
         phpdoc_readonly,
         private_mutation: tagged(span, &PRIVATE_MUTATION),
@@ -335,11 +370,60 @@ fn find_on<'a>(c: &Checker<'a, '_>, f: &Fetch, holder: Type, native_only: bool, 
     })
 }
 
+fn native_writable(c: &Checker, declaring: &ClassLikeMetadata, p: &PropertyMetadata, name: &[u8]) -> bool {
+    p.flags.is_static() || !c.property_virtual(declaring, p, name) || c.property_hooks(declaring, hook_names(p), name).1
+}
+
+/// PhpClassReflectionExtension's overlay and PhpPropertyReflection::getWritableType(): an absent writable
+/// PHPDoc type (`@property-read`) falls back to the readable PHPDoc, not to the original native/`@var` type.
+fn overlay_write_type(
+    c: &Checker, f: &Fetch, declaring: &ClassLikeMetadata, native: &PropertyMetadata,
+    annotation: &PropertyMetadata, readable: Type,
+) -> Type {
+    let writable = annotation.write_type_metadata.as_ref().map(|t| c.to_phpstan(&t.type_union))
+        .or_else(|| annotation.flags.is_writeonly().then(|| readable.clone()));
+    let readable = if annotation.flags.is_writeonly() { Type::Never(NeverKind::Implicit) } else { readable };
+    let native_type = native.type_declaration_metadata.as_ref()
+        .map_or_else(mixed, |t| declared::from_tunion(c, &t.type_union, declaring));
+    let native_type = if is_super_type_of(&native_type, &readable).yes()
+        || !can_access(c, declaring, native.read_visibility)
+    {
+        mixed()
+    } else {
+        native_type
+    };
+    // TypesAssignedToPropertiesRule checks a write to the backing value against getReadableType().
+    if in_own_hook(f, native) {
+        return decide_type(native_type, Some(readable));
+    }
+    // A native set hook's parameter takes precedence over the annotation, including inherited hooks.
+    let mut property = Some((declaring, native));
+    for _ in 0..super::super::overriding::ANCESTRY {
+        let Some((declaring, p)) = property else { break };
+        if let Some(parameter) = p.hooks.get(&word(b"set")).and_then(|h| h.parameter.as_ref()) {
+            // Mago copies the property's effective PHPDoc type into an implicit parameter's native slot.
+            let native = parameter.type_declaration_metadata.as_ref().filter(|t| !t.from_docblock)
+                .or(p.type_declaration_metadata.as_ref());
+            let native = native
+                .map_or_else(mixed, |t| declared::from_tunion(c, &t.type_union, declaring));
+            let phpdoc = parameter.type_metadata.as_ref().filter(|t| t.from_docblock)
+                .or(p.type_metadata.as_ref().filter(|t| t.from_docblock)).map(|t| c.to_phpstan(&t.type_union));
+            return decide_type(native, phpdoc);
+        }
+        property = declaring.direct_parent_class.and_then(|n| c.codebase.get_class_like(n.as_bytes()))
+            .and_then(|parent| c.declared_property(parent, &f.name).map(|(d, _, p)| (d, p)));
+    }
+    match writable {
+        Some(writable) if !matches!(writable, Type::Never(_)) && writable != readable => writable,
+        _ => decide_type(native_type, Some(readable)),
+    }
+}
+
 /// A write of `$this->p` in one of `p`'s own hooks (`getHookedPropertyName()`).
-fn in_own_hook(f: &Fetch, p: &Prop) -> bool {
+fn in_own_hook(f: &Fetch, p: &PropertyMetadata) -> bool {
     let this =
         f.holder.is_some_and(|h| matches!(unparen(h), Expression::Variable(Variable::Direct(v)) if v.name == b"$this"));
-    this && p.meta.span.is_some_and(|s| s.has_offset(f.at.start.offset))
+    this && p.span.is_some_and(|s| s.has_offset(f.at.start.offset))
 }
 
 /// `ClassReflection::getClassHierarchyDistances()`'s distance of `of` from `class` (its traits, then each parent and
@@ -378,7 +462,7 @@ fn read_only(c: &mut Checker, f: &Fetch, p: &Prop, offset: bool) {
     if !f.instance || !can_write(c, p) || !(p.native_readonly || p.phpdoc_readonly) {
         return;
     }
-    if p.phpdoc_readonly && in_own_hook(f, p) {
+    if p.phpdoc_readonly && in_own_hook(f, p.meta) {
         return;
     }
     let (kind, id) = if p.native_readonly { ("Readonly", "readOnly") } else { ("@readonly", "readOnlyByPhpDoc") };
@@ -457,7 +541,7 @@ fn assigned(c: &mut Checker, f: &Fetch, p: &Prop, value: Option<Type>, at: Span)
         let level = recommended_level(ty, Some(&value));
         Some(format!(
             "{kind} {}::${} ({}) does not accept {}.",
-            c.display(p.declaring),
+            p.display,
             p.name,
             ty.describe(level),
             value.describe(level)

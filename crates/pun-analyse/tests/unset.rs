@@ -188,6 +188,22 @@ fn native_reflection_keeps_annotation_write_contracts() {
     oracle_at_level("native-reflection-writes.php", "native-reflection-writes.json", 80400, 3);
 }
 
+#[test]
+fn native_writable_overlays_respect_visibility_and_type_compatibility() {
+    oracle_at_level("writable-overlays.php", "writable-overlays.json", 80400, 3);
+}
+
+#[test]
+fn native_writable_overlays_keep_hook_parameters_and_writability() {
+    oracle_at_level("writable-hooks.php", "writable-hooks.json", 80400, 3);
+}
+
+#[test]
+fn native_writable_overlays_resolve_inherited_and_generic_types() {
+    oracle_at_level("writable-inheritance.php", "writable-inheritance.json", 80400, 3);
+    oracle_at_level("writable-generic-scope.php", "writable-generic-scope.json", 80400, 3);
+}
+
 // These CLI captures were independently checked against PHPStan's public Analyser. Keep trait-context file
 // suffixes as well as every diagnostic; a trait checked in an invalid consumer must not borrow required members.
 fn required_native_oracle(name: &str, scanned: &[&str]) {

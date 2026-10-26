@@ -17,4 +17,5 @@ function writes(WritableOverlay $writable, ReadOverlay $read, AnnotationOnly $ma
     $writable->p = 'allowed';
     $read->p = 'allowed';
     $magic->p = 1;
+    $read->p = 1;
 }

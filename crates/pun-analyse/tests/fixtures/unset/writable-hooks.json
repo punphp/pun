@@ -1,0 +1,92 @@
+{
+  "totals": {
+    "errors": 0,
+    "file_errors": 13
+  },
+  "files": {
+    "/home/user/workspace/pun-unset-writable-reflection/crates/pun-analyse/tests/fixtures/unset/writable-hooks.php": {
+      "errors": 13,
+      "messages": [
+        {
+          "message": "Property UnsetWritableHooks\\VirtualGet::$p is not writable.",
+          "line": 65,
+          "ignorable": true,
+          "identifier": "assign.propertyReadOnly"
+        },
+        {
+          "message": "Property UnsetWritableHooks\\VirtualGet::$p is not writable.",
+          "line": 66,
+          "ignorable": true,
+          "identifier": "assign.propertyReadOnly"
+        },
+        {
+          "message": "Property UnsetWritableHooks\\BackedGet::$p (string) does not accept int.",
+          "line": 67,
+          "ignorable": true,
+          "identifier": "assign.propertyType"
+        },
+        {
+          "message": "Property UnsetWritableHooks\\ImplicitSet::$p (int|string) does not accept false.",
+          "line": 71,
+          "ignorable": true,
+          "identifier": "assign.propertyType"
+        },
+        {
+          "message": "Property UnsetWritableHooks\\ExplicitSet::$p (int|string) does not accept false.",
+          "line": 74,
+          "ignorable": true,
+          "identifier": "assign.propertyType"
+        },
+        {
+          "message": "Property UnsetWritableHooks\\InheritedSet::$p (int|string) does not accept false.",
+          "line": 81,
+          "ignorable": true,
+          "identifier": "assign.propertyType"
+        },
+        {
+          "message": "Property UnsetWritableHooks\\WritableGet::$p is not writable.",
+          "line": 82,
+          "ignorable": true,
+          "identifier": "assign.propertyReadOnly"
+        },
+        {
+          "message": "Property UnsetWritableHooks\\WritableGet::$p is not writable.",
+          "line": 83,
+          "ignorable": true,
+          "identifier": "assign.propertyReadOnly"
+        },
+        {
+          "message": "Property UnsetWritableHooks\\RedeclaredGet::$p (int|string) does not accept false.",
+          "line": 96,
+          "ignorable": true,
+          "identifier": "assign.propertyType"
+        },
+        {
+          "message": "Get hook for non-virtual property UnsetWritableHooks\\OwnHook::$p does not read its value.",
+          "line": 103,
+          "ignorable": true,
+          "identifier": "propertyGetHook.noRead"
+        },
+        {
+          "message": "Property UnsetWritableHooks\\OwnHook::$p (string) does not accept int.",
+          "line": 105,
+          "ignorable": true,
+          "identifier": "assign.propertyType"
+        },
+        {
+          "message": "Property UnsetWritableHooks\\VarSet::$p (string) does not accept int.",
+          "line": 127,
+          "ignorable": true,
+          "identifier": "assign.propertyType"
+        },
+        {
+          "message": "Property UnsetWritableHooks\\ImplicitVarSet::$p (int|string) does not accept false.",
+          "line": 131,
+          "ignorable": true,
+          "identifier": "assign.propertyType"
+        }
+      ]
+    }
+  },
+  "errors": []
+}
