@@ -650,7 +650,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "phpunit/add-test-void-return" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add void to PHPUnit test methods" }
 "phpunit/add-will-return-callback-param-type" = { fix = "unsafe", sets = ["code-quality"], ported = false, status = "decided", summary = "Decorate callbacks and arrow functions in willReturnCallback() with known param/return types based on reflection method" }
 "phpunit/no-assert-contains-only" = { fix = "safe", ported = true, status = "decided", summary = "Replaces `Assert::assertContainsOnly()` calls with type-specific `Assert::assertContainsOnly*()` calls" }
-"phpunit/no-assert-internal-type" = { fix = "unsafe", sets = ["code-quality"], ported = false, status = "decided", summary = "Replace assertInternalType() with the dedicated assertIs*() assertion." }
+"phpunit/no-assert-internal-type" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "Replace assertInternalType() with the dedicated assertIs*() assertion." }
 "phpunit/no-assert-is-type" = { fix = "safe", ported = true, status = "decided", summary = "Replaces `Assert::isType()` calls with type-specific `Assert::is*()` calls" }
 "phpunit/no-assert-same-type-mismatch" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Correct expected type in assertSame() method to match strict type of passed variable" }
 "phpunit/no-at-matcher" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Replace at() method call with desired matcher" }
@@ -685,7 +685,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "phpunit/prefer-attributes" = { fix = "safe", ported = false, status = "decided", summary = "PHPUnit attributes must be used over their respective PHPDoc-based annotations." }
 "phpunit/prefer-comparison-assertion" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Replace assertTrue()/assertFalse() on a comparison, instanceof, isset, count or strpos with the specific assertion." }
 "phpunit/prefer-covers-attribute" = { fix = "safe", ported = false, status = "decided", summary = "Change covers annotations with value to attribute" }
-"phpunit/prefer-create-mock" = { fix = "unsafe", sets = ["code-quality"], ported = false, status = "decided", summary = "Replace getMock*() with createMock()." }
+"phpunit/prefer-create-mock" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "Replace getMock*() with createMock()." }
 "phpunit/prefer-create-stub" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Use createStub() instead of createMock() when no expectations are set." }
 "phpunit/prefer-create-stub-argument" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Use createStub() over createMock() when used as argument or array value and does not add any mock requirements" }
 "phpunit/prefer-create-stub-expression" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Replace createMock() assigned to variable that is only used as arg with no expectations, to createStub()" }

@@ -1871,7 +1871,7 @@
         "rules": [
           "lint/phpunit/no-assert-internal-type"
         ],
-        "note": "Same. Options: renamed for TOML: [options.\"lint/phpunit/no-assert-internal-type\"]. Planned: not ported yet.",
+        "note": "Same. Options: renamed for TOML: [options.\"lint/phpunit/no-assert-internal-type\"].",
         "unsupported": false
       },
       {
@@ -1921,7 +1921,7 @@
         "rules": [
           "lint/phpunit/prefer-create-mock"
         ],
-        "note": "Same. Options: renamed for TOML: [options.\"lint/phpunit/prefer-create-mock\"]. Planned: not ported yet.",
+        "note": "Same. Options: renamed for TOML: [options.\"lint/phpunit/prefer-create-mock\"].",
         "unsupported": false
       },
       {
@@ -4857,7 +4857,7 @@
         "rules": [
           "lint/phpunit/no-assert-internal-type"
         ],
-        "note": "Same. Options: renamed for TOML: [options.\"lint/phpunit/no-assert-internal-type\"]. Planned: not ported yet.",
+        "note": "Same. Options: renamed for TOML: [options.\"lint/phpunit/no-assert-internal-type\"].",
         "unsupported": false
       },
       {
@@ -4907,7 +4907,7 @@
         "rules": [
           "lint/phpunit/prefer-create-mock"
         ],
-        "note": "Same. Options: renamed for TOML: [options.\"lint/phpunit/prefer-create-mock\"]. Planned: not ported yet.",
+        "note": "Same. Options: renamed for TOML: [options.\"lint/phpunit/prefer-create-mock\"].",
         "unsupported": false
       },
       {

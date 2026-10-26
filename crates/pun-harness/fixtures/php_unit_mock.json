@@ -1,0 +1,96 @@
+{
+    "fixer": "php_unit_mock",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\PhpUnit\\PhpUnitMockFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/PhpUnit/PhpUnitMockFixerTest.php",
+    "case_count": 5,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": []
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\PhpUnit\\PhpUnitMockFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null, array $configuration = []): void\n    {\n        $this->fixer->configure($configuration);\n\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php\n    final class MyTest extends \\PHPUnit_Framework_TestCase\n    {\n        public function testFoo()\n        {\n            $this->createMock(\"Foo\");\n        }\n    }",
+                        "<?php\n    final class MyTest extends \\PHPUnit_Framework_TestCase\n    {\n        public function testFoo()\n        {\n            $this->getMockWithoutInvokingTheOriginalConstructor(\"Foo\");\n        }\n    }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php\n    final class MyTest extends \\PHPUnit_Framework_TestCase\n    {\n        public function testFoo()\n        {\n            $this->createMock(\"Foo\");\n            $this->createMock($foo(1, 2));\n            $this->getMock(\"Foo\", [\"aaa\"]);\n        }\n    }",
+                        "<?php\n    final class MyTest extends \\PHPUnit_Framework_TestCase\n    {\n        public function testFoo()\n        {\n            $this->getMock(\"Foo\");\n            $this->getMock($foo(1, 2));\n            $this->getMock(\"Foo\", [\"aaa\"]);\n        }\n    }",
+                        {
+                            "target": "5.4"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php\n    final class MyTest extends \\PHPUnit_Framework_TestCase\n    {\n        public function testFoo()\n        {\n            $this->createMock(\"Foo\");\n            $this->createMock($foo(1, 2));\n            $this->createPartialMock(\"Foo\", [\"aaa\"]);\n            $this->getMock(\"Foo\", [\"aaa\"], [\"argument\"]);\n        }\n    }",
+                        "<?php\n    final class MyTest extends \\PHPUnit_Framework_TestCase\n    {\n        public function testFoo()\n        {\n            $this->getMock(\"Foo\");\n            $this->getMock($foo(1, 2));\n            $this->getMock(\"Foo\", [\"aaa\"]);\n            $this->getMock(\"Foo\", [\"aaa\"], [\"argument\"]);\n        }\n    }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php\n    class FooTest extends TestCase\n    {\n        public function testFoo()\n        {\n            $this->createMock(\"Foo\",);\n            $this->createMock(\"Bar\"  ,);\n            $this->createMock(\"Baz\"  ,  );\n            $this->createMock($foo(1, 2), );\n            $this->createMock($foo(3, 4, ));\n            $this->createMock($foo(5, 6, ), );\n            $this->createPartialMock(\"Foo\", [\"aaa\"], );\n            $this->createPartialMock(\"Foo\", [\"bbb\", ], );\n            $this->getMock(\"Foo\", [\"aaa\"], [\"argument\"], );\n            $this->getMock(\"Foo\", [\"bbb\", ], [\"argument\", ], );\n        }\n    }",
+                        "<?php\n    class FooTest extends TestCase\n    {\n        public function testFoo()\n        {\n            $this->getMock(\"Foo\",);\n            $this->getMock(\"Bar\"  ,);\n            $this->getMock(\"Baz\"  ,  );\n            $this->getMock($foo(1, 2), );\n            $this->getMock($foo(3, 4, ));\n            $this->getMock($foo(5, 6, ), );\n            $this->getMock(\"Foo\", [\"aaa\"], );\n            $this->getMock(\"Foo\", [\"bbb\", ], );\n            $this->getMock(\"Foo\", [\"aaa\"], [\"argument\"], );\n            $this->getMock(\"Foo\", [\"bbb\", ], [\"argument\", ], );\n        }\n    }"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix80",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.0.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\PhpUnit\\PhpUnitMockFixerTest",
+            "body": "    public function testFix80(string $expected, ?string $input = null): void\n    {\n        $this->testFix($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 0,
+                    "args": [
+                        "<?php\n    class FooTest extends TestCase\n    {\n        public function testFoo()\n        {\n            $this?->createMock(\"Foo\");\n        }\n    }",
+                        "<?php\n    class FooTest extends TestCase\n    {\n        public function testFoo()\n        {\n            $this?->getMock(\"Foo\");\n        }\n    }"
+                    ]
+                }
+            ]
+        }
+    ]
+}

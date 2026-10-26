@@ -11144,7 +11144,7 @@
       "upstream": [
         "php_unit_dedicate_assert_internal_type"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/phpunit/no-assert-is-type",
@@ -11863,7 +11863,7 @@
       "upstream": [
         "php_unit_mock"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/phpunit/prefer-create-stub",

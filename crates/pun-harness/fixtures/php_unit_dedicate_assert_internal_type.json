@@ -1,0 +1,57 @@
+{
+    "fixer": "php_unit_dedicate_assert_internal_type",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\PhpUnit\\PhpUnitDedicateAssertInternalTypeFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/PhpUnit/PhpUnitDedicateAssertInternalTypeFixerTest.php",
+    "case_count": 4,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\PhpUnit\\PhpUnitDedicateAssertInternalTypeFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": "skip cases",
+                    "args": [
+                        "<?php\nfinal class MyTest extends \\PhpUnit\\FrameWork\\TestCase\n{\n    public function testMe()\n    {\n        $this->assertInternalType(gettype($expectedVar), $var);\n        $this->assertNotInternalType(gettype($expectedVar), $var);\n\n        $this->assertInternalType(\"foo\", $var);\n        $this->assertNotInternalType(\"bar\", $var);\n\n        $this->assertInternalType();\n        $this->assertNotInternalType();\n\n        $this->assertInternalType(\"array\" . \"foo\", $var);\n        $this->assertNotInternalType('bool' . \"bar\", $var);\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "expected normal cases",
+                    "args": [
+                        "<?php\nfinal class MyTest extends \\PhpUnit\\FrameWork\\TestCase\n{\n    public function testMe()\n    {\n        $this->assertIsArray($var);\n        $this->assertIsBool($var);\n        $this->assertIsBool($var);\n        $this->assertIsFloat($var);\n        $this->assertIsFloat($var);\n        $this->assertIsInt($var);\n        $this->assertIsInt($var);\n        $this->assertNull($var);\n        $this->assertIsNumeric($var);\n        $this->assertIsObject($var);\n        $this->assertIsFloat($var);\n        $this->assertIsResource($var);\n        $this->assertIsString($var);\n        $this->assertIsScalar($var);\n        $this->assertIsCallable($var);\n        $this->assertIsIterable($var);\n\n        $this->assertIsNotArray($var);\n        $this->assertIsNotBool($var);\n        $this->assertIsNotBool($var);\n        $this->assertIsNotFloat($var);\n        $this->assertIsNotFloat($var);\n        $this->assertIsNotInt($var);\n        $this->assertIsNotInt($var);\n        $this->assertNotNull($var);\n        $this->assertIsNotNumeric($var);\n        $this->assertIsNotObject($var);\n        $this->assertIsNotFloat($var);\n        $this->assertIsNotResource($var);\n        $this->assertIsNotString($var);\n        $this->assertIsNotScalar($var);\n        $this->assertIsNotCallable($var);\n        $this->assertIsNotIterable($var);\n    }\n}\n",
+                        "<?php\nfinal class MyTest extends \\PhpUnit\\FrameWork\\TestCase\n{\n    public function testMe()\n    {\n        $this->assertInternalType('array', $var);\n        $this->assertInternalType(\"boolean\", $var);\n        $this->assertInternalType(\"bool\", $var);\n        $this->assertInternalType(\"double\", $var);\n        $this->assertInternalType(\"float\", $var);\n        $this->assertInternalType(\"integer\", $var);\n        $this->assertInternalType(\"int\", $var);\n        $this->assertInternalType(\"null\", $var);\n        $this->assertInternalType(\"numeric\", $var);\n        $this->assertInternalType(\"object\", $var);\n        $this->assertInternalType(\"real\", $var);\n        $this->assertInternalType(\"resource\", $var);\n        $this->assertInternalType(\"string\", $var);\n        $this->assertInternalType(\"scalar\", $var);\n        $this->assertInternalType(\"callable\", $var);\n        $this->assertInternalType(\"iterable\", $var);\n\n        $this->assertNotInternalType(\"array\", $var);\n        $this->assertNotInternalType(\"boolean\", $var);\n        $this->assertNotInternalType(\"bool\", $var);\n        $this->assertNotInternalType(\"double\", $var);\n        $this->assertNotInternalType(\"float\", $var);\n        $this->assertNotInternalType(\"integer\", $var);\n        $this->assertNotInternalType(\"int\", $var);\n        $this->assertNotInternalType(\"null\", $var);\n        $this->assertNotInternalType(\"numeric\", $var);\n        $this->assertNotInternalType(\"object\", $var);\n        $this->assertNotInternalType(\"real\", $var);\n        $this->assertNotInternalType(\"resource\", $var);\n        $this->assertNotInternalType(\"string\", $var);\n        $this->assertNotInternalType(\"scalar\", $var);\n        $this->assertNotInternalType(\"callable\", $var);\n        $this->assertNotInternalType(\"iterable\", $var);\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "false positive cases",
+                    "args": [
+                        "<?php\nfinal class MyTest extends \\PhpUnit\\FrameWork\\TestCase\n{\n    public function testMe()\n    {\n        $this->assertInternalType = 42;\n        $this->assertNotInternalType = 43;\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "anonymous class false positive case",
+                    "args": [
+                        "<?php\nfinal class MyTest extends \\PhpUnit\\FrameWork\\TestCase\n{\n    public function testMe()\n    {\n        $class = new class {\n            private function assertInternalType()\n            {}\n            private function foo(){\n                $this->assertInternalType(\"array\", $var);\n            }\n        };\n    }\n}\n"
+                    ]
+                }
+            ]
+        }
+    ]
+}

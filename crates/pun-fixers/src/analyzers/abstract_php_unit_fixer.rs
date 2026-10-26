@@ -126,3 +126,12 @@ impl PreviousAssertCalls {
         None
     }
 }
+
+/// `PhpUnitTargetVersion::fulfills`: whether the configured target `candidate` is `target` or later.
+pub(crate) fn target_fulfills(candidate: &str, target: &str) -> bool {
+    if candidate == "newest" {
+        return true;
+    }
+    let parts = |v: &str| -> Vec<u32> { v.split('.').map(|p| p.parse().unwrap_or(0)).collect() };
+    parts(candidate) >= parts(target)
+}
