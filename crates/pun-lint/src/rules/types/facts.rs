@@ -21,6 +21,7 @@ use mago_analyzer::artifacts::AnalysisArtifacts;
 use mago_analyzer::plugin::{PluginRegistry, create_registry_with_plugins};
 use mago_analyzer::settings::Settings;
 use mago_codex::metadata::CodebaseMetadata;
+use mago_codex::metadata::flags::MetadataFlags;
 use mago_codex::populator::populate_codebase;
 use mago_codex::reference::SymbolReferences;
 use mago_codex::scanner::scan_program;
@@ -791,11 +792,18 @@ fn scan_into(codebase: &mut CodebaseMetadata, file: &File, version: PHPVersion) 
     let arena = LocalArena::new();
     let program = parse_file(&arena, file);
     let names = NameResolver::new(&arena).resolve(program);
-    if let Ok(scanned) = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
+    let mut scanned = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         scan_program(&arena, file, program, &names, version)
-    })) {
-        codebase.extend(scanned);
+    }))
+    .unwrap_or_default();
+    // PHPStan's ClassReflection::isFinalByKeyword treats anonymous classes as final, including their
+    // late-static constant reads. Keep that reflection contract in both native and documented scans.
+    for class in scanned.class_likes.values_mut() {
+        if class.kind.is_class() && class.name_span.is_none() {
+            class.flags |= MetadataFlags::FINAL;
+        }
     }
+    codebase.extend(scanned);
     names
         .iter()
         .map(|(_, _, name, _)| name.to_ascii_lowercase())
