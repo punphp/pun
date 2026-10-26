@@ -12025,7 +12025,7 @@
         "DependsAnnotationWithValueToAttributeRector",
         "Rector\\PHPUnit\\AnnotationsToAttributes\\Rector\\ClassMethod\\DependsAnnotationWithValueToAttributeRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/phpunit/prefer-expect-exception",

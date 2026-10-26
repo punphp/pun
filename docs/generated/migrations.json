@@ -12831,7 +12831,7 @@
         "rules": [
           "lint/phpunit/prefer-depends-attribute"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {

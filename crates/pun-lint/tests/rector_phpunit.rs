@@ -406,3 +406,11 @@ fn requires_annotation_with_value_to_attribute() {
         "RequiresAnnotationWithValueToAttributeRector",
     );
 }
+
+#[test]
+fn depends_annotation_with_value_to_attribute() {
+    check(
+        PreferDependsAttribute,
+        "DependsAnnotationWithValueToAttributeRector",
+    );
+}
