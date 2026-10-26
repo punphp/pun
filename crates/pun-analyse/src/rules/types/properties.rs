@@ -11,8 +11,9 @@ use mago_syntax::cst::*;
 use mago_word::{Word, word};
 use pun_phpstan::types::{Type, is_super_type_of, mixed, recommended_level};
 
+use super::super::declarations::immutable_tags;
 use super::super::doc::tags;
-use super::super::overriding_property::hook_names;
+use super::super::overriding_property::{declaration_readonly, hook_names};
 use super::super::property_access::{has_instance_property, has_static_property};
 use super::super::{Checker, declared};
 use super::flow::unparen;
@@ -119,7 +120,6 @@ const READONLY: [&str; 6] = [
     "@phpstan-readonly-allow-private-mutation",
     "@psalm-readonly-allow-private-mutation",
 ];
-const IMMUTABLE: [&str; 5] = ["@immutable", "@phan-immutable", "@psalm-immutable", "@phpstan-immutable", "@readonly"];
 const PRIVATE_MUTATION: [&str; 4] = [
     "@phpstan-readonly-allow-private-mutation",
     "@phpstan-allow-private-mutation",
@@ -151,19 +151,10 @@ fn holder_type(c: &Checker, f: &Fetch) -> Option<Type> {
     }
 }
 
-/// Whether the modifiers before a declaration's name say `readonly` (Mago marks `@readonly` and `@immutable`
-/// properties readonly too).
-fn says_readonly(c: &Checker, name: Option<Span>) -> bool {
-    let Some(name) = name else { return false };
-    c.file_contents(name.file_id).is_some_and(|contents| {
-        let head = contents[..name.start.offset as usize]
-            .iter()
-            .rev()
-            .take_while(|b| b.is_ascii_alphanumeric() || b" \t\r\n_\\?|&()".contains(b))
-            .count();
-        let head = &contents[name.start.offset as usize - head..name.start.offset as usize];
-        head.split(|b| !b.is_ascii_alphanumeric() && *b != b'_').any(|w| w.eq_ignore_ascii_case(b"readonly"))
-    })
+/// Native modifiers only: Mago also marks PHPDoc-readonly properties readonly.
+fn says_readonly(c: &Checker, at: Option<Span>) -> bool {
+    let Some(at) = at else { return false };
+    c.file_contents(at.file_id).is_some_and(|contents| declaration_readonly(at, &contents))
 }
 
 /// A class template `T` of `scope` as the holder's argument.
@@ -182,7 +173,7 @@ fn find<'a>(c: &Checker<'a, '_>, f: &Fetch) -> Option<Prop<'a>> {
 }
 
 /// FoundPropertyReflection::getNativeReflection() unwraps a single native reflection, not a union/intersection
-/// of properties or a magic/enum reflection. An intersection with just one declared property keeps that one.
+/// of properties or an annotation-only/enum reflection. An intersection with just one declared property keeps it.
 pub(in super::super) fn native_unset_property<'a>(
     c: &Checker<'a, '_>,
     e: &Expression,
@@ -221,7 +212,7 @@ fn find_on<'a>(c: &Checker<'a, '_>, f: &Fetch, holder: Type, native_only: bool) 
     };
     // the native property an `@property` replaces
     let mut shadowed = None;
-    let (declaring, meta, magic) = match c.declared_property(class, &f.name) {
+    let (declaring, mut meta, mut magic) = match c.declared_property(class, &f.name) {
         // an `@property` at most as far up the hierarchy as the native property replaces it
         Some((declaring, origin, meta)) => match magic_property() {
             Some(m)
@@ -239,7 +230,13 @@ fn find_on<'a>(c: &Checker<'a, '_>, f: &Fetch, holder: Type, native_only: bool) 
         },
         None => magic_property()?,
     };
-    if native_only && (magic || declaring.kind == mago_codex::symbol::SymbolKind::Enum) {
+    if native_only && magic {
+        // An annotation overlay keeps its declaring class, but its native reflection supplies modifiers/hooks.
+        // An annotation-only property has no native reflection to unwrap.
+        meta = shadowed?.1;
+        magic = false;
+    }
+    if native_only && declaring.kind == mago_codex::symbol::SymbolKind::Enum {
         return None;
     }
     let declaring = if native_only && declaring.kind == mago_codex::symbol::SymbolKind::Trait {
@@ -279,14 +276,14 @@ fn find_on<'a>(c: &Checker<'a, '_>, f: &Fetch, holder: Type, native_only: bool) 
             || c.property_hooks(declaring, hook_names(meta), &f.name).1
     };
     let readonly = meta.flags.is_readonly() && !magic && !enum_;
-    let native_readonly = readonly && (says_readonly(c, meta.name_span) || says_readonly(c, declaring.name_span));
+    let native_readonly = readonly && (says_readonly(c, meta.name_span) || says_readonly(c, Some(declaring.span)));
     // `ClassReflection::isImmutable()` (up the parents) or the property's own readonly tag
     let doc = |span: Option<Span>| span.and_then(|s| declared::doc_at(c, s)).map(|(d, _)| tags(&d)).unwrap_or_default();
     let tagged = |span, names: &[&str]| doc(span).iter().any(|(t, _)| names.contains(&t.as_str()));
     let immutable = std::iter::once(&declaring.name)
         .chain(&declaring.all_parent_classes)
         .filter_map(|n| c.codebase.get_class_like(n.as_bytes()))
-        .any(|k| tagged(Some(k.span), &IMMUTABLE));
+        .any(|k| immutable_tags(&c.class_tags(k)));
     let span = declared::property_span(c, meta);
     let phpdoc_readonly = !magic && !enum_ && !native_readonly && (immutable || tagged(span, &READONLY));
     Some(Prop {

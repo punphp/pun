@@ -79,6 +79,10 @@ fn readonly_array_access_offset_keeps_constructor_arguments() {
 }
 
 fn oracle(name: &str, expected_name: &str, php_version: u32) {
+    oracle_at_level(name, expected_name, php_version, 0);
+}
+
+fn oracle_at_level(name: &str, expected_name: &str, php_version: u32, level: u8) {
     let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/unset");
     let expected: Value =
         serde_json::from_slice(&std::fs::read(root.join(expected_name)).unwrap()).unwrap();
@@ -91,6 +95,7 @@ fn oracle(name: &str, expected_name: &str, php_version: u32) {
         .clone();
     let mut project = Project::new(vec![root.join(name)], Vec::new());
     project.php_version = php_version;
+    project.level = level;
     check(project, &messages).unwrap();
 }
 
@@ -171,4 +176,14 @@ fn possibly_hooked_properties_depend_on_php_version() {
 #[test]
 fn excluded_domains_and_late_offset_capabilities() {
     oracle("capabilities.php", "capabilities.json", 80400);
+}
+
+#[test]
+fn native_reflection_survives_annotations_aliases_and_declaration_boundaries() {
+    oracle("native-reflection.php", "native-reflection.json", 80400);
+}
+
+#[test]
+fn native_reflection_keeps_annotation_write_contracts() {
+    oracle_at_level("native-reflection-writes.php", "native-reflection-writes.json", 80400, 3);
 }

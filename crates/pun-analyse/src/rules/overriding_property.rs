@@ -3,7 +3,7 @@
 //! (data/native-methods.json). checkPhpDocMethodSignatures (property.phpDocType) and
 //! checkMissingOverridePropertyAttribute are off below level 3.
 
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 use std::sync::{Arc, Mutex, OnceLock};
 
 use mago_allocator::LocalArena;
@@ -13,7 +13,7 @@ use mago_codex::symbol::SymbolKind;
 use mago_codex::visibility::Visibility;
 use mago_database::file::{File, FileId};
 use mago_span::{HasSpan, Position, Span};
-use mago_syntax::cst::{ClassLikeConstant, Constant, Property};
+use mago_syntax::cst::{AnonymousClass, Class as ClassNode, ClassLikeConstant, Constant, FunctionLikeParameter, Modifier, Property};
 use mago_syntax::parser::parse_file;
 use mago_syntax::walker::MutWalker;
 use pun_phpstan::types::{Level, Type, is_super_type_of};
@@ -48,28 +48,54 @@ fn accessible(is_static: bool, is_virtual: bool, hook: bool) -> bool {
     is_static || !is_virtual || hook
 }
 
-/// Where each property declaration of a file starts, by the offset of its items' names (Mago's codex keeps no span
-/// for a plain property), parsed once per content.
-pub(super) fn declaration_starts(id: FileId, contents: &[u8]) -> Arc<HashMap<u32, u32>> {
-    struct Starts(HashMap<u32, u32>);
+struct DeclarationIndex {
+    starts: Arc<HashMap<u32, u32>>,
+    readonly: HashSet<u32>,
+}
+
+/// Declaration boundaries and native readonly modifiers, parsed once per file content.
+fn declaration_index(id: FileId, contents: &[u8]) -> Arc<DeclarationIndex> {
+    #[derive(Default)]
+    struct Starts {
+        starts: HashMap<u32, u32>,
+        readonly: HashSet<u32>,
+    }
     impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Starts {
         fn walk_in_property(&mut self, p: &'ast Property<'arena>, _: &mut ()) {
             for v in p.variables() {
-                self.0.insert(v.span.start.offset, p.span().start.offset);
+                self.starts.insert(v.span.start.offset, p.span().start.offset);
+                if p.modifiers().iter().any(Modifier::is_readonly) {
+                    self.readonly.insert(v.span.start.offset);
+                }
+            }
+        }
+        fn walk_in_function_like_parameter(&mut self, p: &'ast FunctionLikeParameter<'arena>, _: &mut ()) {
+            if p.modifiers.iter().any(Modifier::is_readonly) {
+                self.readonly.insert(p.variable.span.start.offset);
+            }
+        }
+        fn walk_in_class(&mut self, c: &'ast ClassNode<'arena>, _: &mut ()) {
+            if c.modifiers.iter().any(Modifier::is_readonly) {
+                self.readonly.insert(c.span().start.offset);
+            }
+        }
+        fn walk_in_anonymous_class(&mut self, c: &'ast AnonymousClass<'arena>, _: &mut ()) {
+            if c.modifiers.iter().any(Modifier::is_readonly) {
+                self.readonly.insert(c.span().start.offset);
             }
         }
         fn walk_in_class_like_constant(&mut self, k: &'ast ClassLikeConstant<'arena>, _: &mut ()) {
             for item in k.items.iter() {
-                self.0.insert(item.span().start.offset, k.span().start.offset);
+                self.starts.insert(item.span().start.offset, k.span().start.offset);
             }
         }
         fn walk_in_constant(&mut self, k: &'ast Constant<'arena>, _: &mut ()) {
             for item in k.items.iter() {
-                self.0.insert(item.span().start.offset, k.span().start.offset);
+                self.starts.insert(item.span().start.offset, k.span().start.offset);
             }
         }
     }
-    static CACHE: OnceLock<Mutex<HashMap<(FileId, u64), Arc<HashMap<u32, u32>>>>> = OnceLock::new();
+    static CACHE: OnceLock<Mutex<HashMap<(FileId, u64), Arc<DeclarationIndex>>>> = OnceLock::new();
     let key = (id, {
         use std::hash::{Hash, Hasher};
         let mut h = std::collections::hash_map::DefaultHasher::new();
@@ -85,11 +111,21 @@ pub(super) fn declaration_starts(id: FileId, contents: &[u8]) -> Arc<HashMap<u32
         std::borrow::Cow::Borrowed(b"starts.php".as_slice()),
         std::borrow::Cow::Owned(contents.to_vec()),
     );
-    let mut starts = Starts(HashMap::new());
+    let mut starts = Starts::default();
     starts.walk_program(parse_file(&arena, &file), &mut ());
-    let starts = Arc::new(starts.0);
+    let starts = Arc::new(DeclarationIndex { starts: Arc::new(starts.starts), readonly: starts.readonly });
     cache.lock().expect("starts cache").insert(key, starts.clone());
     starts
+}
+
+/// Where each property/constant declaration starts, by the offset of each item's name.
+pub(super) fn declaration_starts(id: FileId, contents: &[u8]) -> Arc<HashMap<u32, u32>> {
+    declaration_index(id, contents).starts.clone()
+}
+
+/// A property's own native modifier, or a class's readonly modifier (not PHPDoc, comments or attributes).
+pub(super) fn declaration_readonly(at: Span, contents: &[u8]) -> bool {
+    declaration_index(at.file_id, contents).readonly.contains(&at.start.offset)
 }
 
 impl<'a> Checker<'a, '_> {
