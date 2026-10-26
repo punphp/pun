@@ -79,3 +79,8 @@ fn compact_uses_name_resolver_names_and_pre_argument_scope() {
     // Fresh PHPStan 2.3.1 analyse captures at PHP 8.4, level 0, with both maybe-undefined settings.
     check("compact-names");
 }
+
+#[test]
+fn compact_extracts_benevolent_domains_and_callable_array_offsets() {
+    check("compact-extraction");
+}

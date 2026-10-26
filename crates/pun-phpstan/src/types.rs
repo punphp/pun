@@ -11,6 +11,7 @@ use crate::symbols;
 
 mod accepts;
 mod casts;
+mod extraction;
 mod late_shape;
 mod mixed;
 mod reasons;
@@ -3559,39 +3560,6 @@ fn range_try_union(min: Option<i64>, max: Option<i64>, other: &Type) -> Option<T
 }
 
 impl Type {
-    /// `getConstantArrays()`
-    fn constant_arrays(&self) -> Vec<ConstArray> {
-        match self {
-            // `IntersectionType::getConstantArrays()` of `callable&array`: its offsets 0 and 1
-            _ if self.is_callable_array() => {
-                let item = self.general_arrays().pop().map_or_else(mixed, |(_, v)| v);
-                vec![ConstArray {
-                    keys: vec![Type::ConstInt(0), Type::ConstInt(1)],
-                    values: vec![
-                        intersect(vec![
-                            item.clone(),
-                            Type::Union(vec![Type::ClassString(None), Type::ObjectWithoutClass]),
-                        ]),
-                        intersect(vec![
-                            item,
-                            Type::Intersection(vec![
-                                Type::String,
-                                Type::Accessory(Accessory::NonFalsyString),
-                            ]),
-                        ]),
-                    ],
-                    next_auto_indexes: vec![2],
-                    optional: vec![],
-                    is_list: Tri::Yes,
-                    unsealed: None,
-                }]
-            }
-            Type::ConstArray(a) => vec![(**a).clone()],
-            Type::Intersection(types) => types.iter().flat_map(Type::constant_arrays).collect(),
-            _ => vec![],
-        }
-    }
-
     /// `getArrays()` as (iterable key, item) pairs
     fn general_arrays(&self) -> Vec<(Type, Type)> {
         match self {

@@ -453,8 +453,7 @@ pub(super) fn variable(c: &mut Checker, variable: &Variable) {
         let Some(ty) = c.types.get(&name).map(|t| c.to_phpstan(t)) else {
             return;
         };
-        let mut names = Vec::new();
-        constant_strings(&ty, &mut names);
+        let names = ty.constant_strings();
         let mut seen = HashSet::new();
         let main = scope.main;
         let names: Vec<_> = names
@@ -514,11 +513,11 @@ pub(super) fn compact(c: &mut Checker, call: &FunctionCall) {
     };
     let mut errors = Vec::new();
     for arg in &call.argument_list.arguments {
-        let Some(ty) = c.type_of(arg.value()).map(|t| c.to_phpstan(t)) else {
+        let Some(ty) = c.phpstan_type(arg.value()) else {
             continue;
         };
         let mut names = Vec::new();
-        find_constant_strings(&ty, &mut names);
+        declared::with_classes(c, || find_constant_strings(&ty, &mut names));
         for name in names {
             let adjective = match scope.get(&name) {
                 Tri::No => "undefined",
@@ -536,78 +535,16 @@ pub(super) fn compact(c: &mut Checker, call: &FunctionCall) {
     }
 }
 
-/// Type::getConstantStrings(): template subclasses inherit extraction from their concrete parent.
-fn constant_strings(ty: &Type, out: &mut Vec<String>) {
-    match ty {
-        Type::ConstString(s) => {
-            if !out.contains(s) {
-                out.push(s.clone());
-            }
-        }
-        Type::Template(template) => {
-            let mut bound = &template.bound;
-            while let Type::Template(template) = bound {
-                bound = &template.bound;
-                // TemplateTypeFactory selects TemplateStringType before TemplateConstantStringType
-                // when the bound is itself a string template. Its inherited extraction is empty.
-                if matches!(bound, Type::ConstString(_)) {
-                    return;
-                }
-            }
-            constant_strings(bound, out);
-        }
-        Type::Union(types) | Type::Benevolent(types) => {
-            let mut strings = Vec::new();
-            for ty in types {
-                let mut inner = Vec::new();
-                constant_strings(ty, &mut inner);
-                if inner.is_empty() {
-                    return;
-                }
-                strings.extend(inner);
-            }
-            out.extend(strings);
-        }
-        Type::Intersection(types) => {
-            for ty in types {
-                constant_strings(ty, out);
-            }
-        }
-        _ => {}
-    }
-}
-
 /// CompactVariablesRule::findConstantStrings(): constant strings first, otherwise recurse through constant arrays.
 fn find_constant_strings(ty: &Type, out: &mut Vec<String>) {
-    let mut strings = Vec::new();
-    constant_strings(ty, &mut strings);
+    let strings = ty.constant_strings();
     if !strings.is_empty() {
         out.extend(strings);
         return;
     }
-    for array in constant_arrays(ty) {
+    for array in ty.constant_arrays() {
         for value in &array.values {
             find_constant_strings(value, out);
         }
-    }
-}
-
-fn constant_arrays(ty: &Type) -> Vec<&pun_phpstan::types::ConstArray> {
-    match ty {
-        Type::ConstArray(a) => vec![a],
-        Type::Template(template) => constant_arrays(&template.bound),
-        Type::Union(types) | Type::Benevolent(types) => {
-            let mut arrays = Vec::new();
-            for ty in types {
-                let inner = constant_arrays(ty);
-                if inner.is_empty() {
-                    return Vec::new();
-                }
-                arrays.extend(inner);
-            }
-            arrays
-        }
-        Type::Intersection(types) => types.iter().flat_map(constant_arrays).collect(),
-        _ => Vec::new(),
     }
 }

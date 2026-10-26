@@ -141,7 +141,16 @@ impl<'a, 'arena> Checker<'a, 'arena> {
         span: Span,
         origins: &std::collections::HashMap<Span, infer::Origin>,
     ) -> Option<Type> {
-        self.origin_type(origins.get(&span)?, origins)
+        let source = self.origin_type(origins.get(&span)?, origins);
+        // Reconciliation may erase benevolence, but the original observed source value still owns it.
+        // Recover only through these source edges, never by matching an unrelated equal declaration.
+        match self.types.get(&span).filter(|t| super::super::return_types::is_benevolent(t)) {
+            Some(observed) => {
+                let actual = self.to_phpstan(observed);
+                Some(source.map_or(actual.clone(), |source| restore(actual, &source)))
+            }
+            None => source,
+        }
     }
 
     /// Mutable ordering scaffolds do not carry declarations' list-certainty metadata.
@@ -861,6 +870,11 @@ fn restore_metadata(actual: Type, source: &Type, restore_list: bool) -> Type {
             Type::Template(actual)
         }
         (actual, Type::Template(source)) => restore_metadata(actual, &source.bound, restore_list),
+        (Type::Union(actual) | Type::Benevolent(actual), Type::Benevolent(source)) => {
+            pun_phpstan::types::to_benevolent(restore_metadata(
+                Type::Union(actual), &Type::Union(source.clone()), restore_list,
+            ))
+        }
         (Type::Union(mut actual), Type::Union(source)) => {
             // Reflection's first method comes from the first written alternative, not Mago's canonical
             // atomic order. Reorder only surviving inferred alternatives; never reintroduce a removed one.
@@ -958,6 +972,14 @@ fn restore_metadata(actual: Type, source: &Type, restore_list: bool) -> Type {
         }
         (Type::Intersection(parts), source) => {
             intersect(parts.into_iter().map(|t| restore_metadata(t, source, restore_list)).collect())
+        }
+        (Type::Mixed { .. }, source @ (Type::Intersection(_) | Type::ConstArray(_)))
+            if source.is_array().yes() && source.is_callable().yes() =>
+        {
+            // Mago can reject a callable-array PHPDoc intersection outright. Its source-owned parameter
+            // or annotation still supplies that erased bound, even if PHPStan normalizes it to a shape;
+            // a concrete inferred value always wins.
+            source.clone()
         }
         (actual @ Type::Array(..), source @ Type::Intersection(_))
             if source.is_array().yes() && source.is_callable().yes() =>
