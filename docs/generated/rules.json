@@ -12307,7 +12307,7 @@
       "upstream": [
         "php_unit_mock_short_will_return"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/phpunit/prefer-simple-callback-assert",

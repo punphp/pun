@@ -1931,7 +1931,7 @@
         "rules": [
           "lint/phpunit/prefer-short-will-return"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -4917,7 +4917,7 @@
         "rules": [
           "lint/phpunit/prefer-short-will-return"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
