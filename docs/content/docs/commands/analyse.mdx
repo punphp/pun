@@ -43,9 +43,24 @@ Shared argument checks also reject static closures for parameters that require a
 These checks also apply to attribute constructors.
 
 Shared attribute checks preserve explicit import aliases and evaluate parenthesized flag expressions.
+Global constant reflection keeps initializer unions separate from file-local flow values.
+Deferred global references resolve before ternary and null-coalescing filtering.
+Class-constant initializer unions remain incomplete.
 Trait constructors retain adapted visibility, named-argument policies and parameter types in the consuming class's scope.
 Constructor template checks use the reflected return type, including implicit `void`, rather than the raw `@return` tag.
 Attribute rule support remains incomplete.
+
+Shared class-name checks honor `checkInternalClassCaseSensitivity` and `featureToggles.checkImportedClassNameCase` from PHPStan configuration.
+Both default to false; bleeding-edge configuration enables imported-name checking unless explicitly disabled.
+
+Source `class_alias()` calls do not register aliases during analysis or scanning.
+Laravel's statically resolved alias registry remains available.
+
+Invalid reserved or qualified special class names and duplicate imports report non-ignorable parser diagnostics.
+Invalid class or member modifiers, variadic defaults and direct `void` parameters also report parser diagnostics.
+Named classes and direct anonymous-class expressions respect pre-8.1 `readonly` tokenization.
+Invalid files contribute no scanned symbols; command output contains only the severe parser errors.
+General PHP syntax-error translation remains incomplete.
 
 Dynamic `new $class` expressions report unknown class names even when another possible name exists.
 
@@ -54,7 +69,8 @@ Dynamic constant fetches such as `Example::{$name}` check each possible name whe
 Class-constant checks retain expression guards across branches, ternaries and short-circuit conditions.
 Writes invalidate guards for the affected receiver or selector.
 Named calls retain their argument identities; impure methods and by-reference arguments invalidate affected guards.
-Dynamic and nullsafe calls, indirect variables, dynamic property selectors and general type-dependent comparisons remain unsupported.
+Dynamic method selectors retain their written expression identities, including PHPStan's distinction between instance and static literal selectors.
+Dynamic function and nullsafe calls, indirect variables, dynamic property selectors and general type-dependent comparisons remain unsupported.
 
 Inline non-static closures and arrow functions use the class named by `@param-closure-this`.
 Pun resolves these tags on named functions and methods called through a class name or a single known object class, including nullable receivers.
@@ -64,6 +80,17 @@ Bindings from multiple possible receiver classes remain unsupported.
 
 Constant-bound templates retain their identities when combined with literal scalar types.
 Union descriptions use PHPStan's ordering, including distinct null-bound templates.
+
+At level 9, receiver checks also validate explicitly declared `mixed`.
+At level 10, they also validate implicit `mixed`.
+These checks preserve template bounds and defaults in diagnostics without changing inferred types.
+
+Negative type guards preserve excluded values in `mixed` types.
+Only declared or inherited assertion contracts narrow a caller's arguments; a predicate inferred from a callee's body does not.
+Native `unset` checks retain a property's modifiers and hooks beneath a PHPDoc property annotation.
+Annotation-only properties do not acquire native modifiers.
+Interface `@phpstan-require-extends` properties participate in native unset checks, preserving annotation-only reflections as non-native.
+Property writes use the reflected writable type, including compatible PHPDoc annotations over native properties.
 
 `array_rand()` inference preserves possible array keys and returns a non-empty list when the requested count is at least two.
 `rand()`, `mt_rand()` and `random_int()` preserve inferred integer bounds.
