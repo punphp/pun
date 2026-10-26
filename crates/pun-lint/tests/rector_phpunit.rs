@@ -369,3 +369,11 @@ fn direct_instance_over_mock_arg() {
 fn bare_create_mock_assign_to_direct_use() {
     check(NoBareMockAssign, "BareCreateMockAssignToDirectUseRector");
 }
+
+#[test]
+fn with_callback_identical_to_standalone_asserts() {
+    check(
+        PreferStandaloneAssertsOverCallback,
+        "WithCallbackIdenticalToStandaloneAssertsRector",
+    );
+}
