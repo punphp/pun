@@ -398,3 +398,11 @@ fn data_provider_annotation_to_attribute() {
         "DataProviderAnnotationToAttributeRector",
     );
 }
+
+#[test]
+fn requires_annotation_with_value_to_attribute() {
+    check(
+        PreferRequiresAttribute,
+        "RequiresAnnotationWithValueToAttributeRector",
+    );
+}

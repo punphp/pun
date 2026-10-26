@@ -39,6 +39,7 @@ mod prefer_merged_will_return_callback;
 mod prefer_named_data_provider_keys;
 mod prefer_narrow_will_return_callback;
 mod prefer_narrow_with_consecutive;
+mod prefer_requires_attribute;
 mod prefer_same_for_scalars;
 mod prefer_simple_callback_assert;
 mod prefer_simple_mock_expectation;
@@ -87,6 +88,7 @@ pub use prefer_merged_will_return_callback::PreferMergedWillReturnCallback;
 pub use prefer_named_data_provider_keys::PreferNamedDataProviderKeys;
 pub use prefer_narrow_will_return_callback::PreferNarrowWillReturnCallback;
 pub use prefer_narrow_with_consecutive::PreferNarrowWithConsecutive;
+pub use prefer_requires_attribute::PreferRequiresAttribute;
 pub use prefer_same_for_scalars::PreferSameForScalars;
 pub use prefer_simple_callback_assert::PreferSimpleCallbackAssert;
 pub use prefer_simple_mock_expectation::PreferSimpleMockExpectation;
@@ -165,6 +167,7 @@ pub(crate) fn all() -> Vec<Box<dyn Rule>> {
         Box::new(PreferStandaloneAssertsOverCallback),
         Box::new(PreferTicketAttribute),
         Box::new(PreferDataProviderAttribute),
+        Box::new(PreferRequiresAttribute),
     ]
 }
 
