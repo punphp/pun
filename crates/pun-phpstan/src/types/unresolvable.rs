@@ -67,11 +67,17 @@ impl PartialEq for Type {
             | (T::Intersection(a), T::Intersection(b)) => a == b,
             (T::Accessory(a), T::Accessory(b)) => a == b,
             (T::Conditional(a), T::Conditional(b)) => a == b,
+            // TemplateTypeTrait::equals() omits the strategy. StrictMixedType::equals() also accepts its
+            // template subclass (the reverse comparison still uses TemplateTypeTrait).
+            (T::Template(a), T::Template(b)) if matches!(a.bound, T::StrictMixed) =>
+                a.name == b.name && a.scope == b.scope && a.bound == b.bound && a.default == b.default,
             (T::Template(a), T::Template(b)) => a == b,
             (T::ObjectShape(a), T::ObjectShape(b)) => a == b,
             (T::Projection(a, x), T::Projection(b, y)) => a == b && x == y,
             (T::LateArrayShape(a), T::LateArrayShape(b)) => a == b,
-            (T::Error, T::Error)
+            (T::StrictMixed, T::Template(t)) => matches!(t.bound, T::StrictMixed),
+            (T::StrictMixed, T::StrictMixed)
+            | (T::Error, T::Error)
             | (T::Void, T::Void)
             | (T::Null, T::Null)
             | (T::Bool, T::Bool)

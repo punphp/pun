@@ -1,0 +1,1647 @@
+{
+    "rows": [
+        {
+            "input": "mixed",
+            "descriptions": [
+                "mixed",
+                "mixed",
+                "mixed"
+            ],
+            "phpdoc": "mixed",
+            "queries": [
+                "Maybe",
+                "Maybe",
+                "Yes",
+                "Maybe",
+                "Maybe",
+                "Maybe",
+                "Maybe",
+                "Maybe",
+                "Maybe"
+            ],
+            "casts": [
+                false,
+                false,
+                false,
+                false,
+                false,
+                true
+            ],
+            "iterable": [
+                "mixed",
+                "mixed"
+            ]
+        },
+        {
+            "input": "explicit",
+            "descriptions": [
+                "mixed",
+                "mixed",
+                "mixed"
+            ],
+            "phpdoc": "mixed",
+            "queries": [
+                "Maybe",
+                "Maybe",
+                "Yes",
+                "Maybe",
+                "Maybe",
+                "Maybe",
+                "Maybe",
+                "Maybe",
+                "Maybe"
+            ],
+            "casts": [
+                false,
+                false,
+                false,
+                false,
+                false,
+                true
+            ],
+            "iterable": [
+                "mixed",
+                "mixed"
+            ]
+        },
+        {
+            "input": "strict",
+            "descriptions": [
+                "mixed",
+                "mixed",
+                "mixed"
+            ],
+            "phpdoc": "mixed",
+            "queries": [
+                "No",
+                "No",
+                "No",
+                "No",
+                "No",
+                "No",
+                "No",
+                "No",
+                "No"
+            ],
+            "casts": [
+                true,
+                true,
+                true,
+                true,
+                false,
+                true
+            ],
+            "iterable": [
+                "mixed",
+                "mixed"
+            ]
+        },
+        {
+            "input": {
+                "template": "mixed",
+                "name": "T"
+            },
+            "descriptions": [
+                "T",
+                "T",
+                "T (function fixture(), parameter)"
+            ],
+            "phpdoc": "T",
+            "queries": [
+                "Maybe",
+                "Maybe",
+                "Yes",
+                "Maybe",
+                "Maybe",
+                "Maybe",
+                "Maybe",
+                "Maybe",
+                "Maybe"
+            ],
+            "casts": [
+                false,
+                false,
+                false,
+                false,
+                false,
+                true
+            ],
+            "iterable": [
+                "mixed",
+                "mixed"
+            ]
+        },
+        {
+            "input": {
+                "template": "mixed",
+                "name": "T",
+                "strict": true
+            },
+            "descriptions": [
+                "T of mixed",
+                "T of mixed",
+                "T of mixed (function fixture(), parameter)"
+            ],
+            "phpdoc": "T",
+            "queries": [
+                "No",
+                "No",
+                "No",
+                "No",
+                "No",
+                "No",
+                "No",
+                "No",
+                "No"
+            ],
+            "casts": [
+                true,
+                true,
+                true,
+                true,
+                false,
+                true
+            ],
+            "iterable": [
+                "T of mixed (function fixture(), parameter)",
+                "T of mixed (function fixture(), parameter)"
+            ]
+        },
+        {
+            "input": {
+                "template": "mixed",
+                "name": "T",
+                "argument": false,
+                "default": null,
+                "strict": true
+            },
+            "descriptions": [
+                "T of mixed",
+                "T of mixed",
+                "T of mixed (function fixture(), parameter)"
+            ],
+            "phpdoc": "T",
+            "queries": [
+                "No",
+                "No",
+                "No",
+                "No",
+                "No",
+                "No",
+                "No",
+                "No",
+                "No"
+            ],
+            "casts": [
+                true,
+                true,
+                true,
+                true,
+                false,
+                true
+            ],
+            "iterable": [
+                "T of mixed (function fixture(), parameter)",
+                "T of mixed (function fixture(), parameter)"
+            ]
+        },
+        {
+            "input": {
+                "template": "mixed",
+                "name": "T",
+                "argument": false,
+                "default": "string",
+                "strict": true
+            },
+            "descriptions": [
+                "T of mixed = string",
+                "T of mixed = string",
+                "T of mixed = string (function fixture(), parameter)"
+            ],
+            "phpdoc": "T",
+            "queries": [
+                "No",
+                "No",
+                "No",
+                "No",
+                "No",
+                "No",
+                "No",
+                "No",
+                "No"
+            ],
+            "casts": [
+                true,
+                true,
+                true,
+                true,
+                false,
+                true
+            ],
+            "iterable": [
+                "T of mixed = string (function fixture(), parameter)",
+                "T of mixed = string (function fixture(), parameter)"
+            ]
+        },
+        {
+            "input": {
+                "template": "mixed",
+                "name": "T",
+                "argument": false,
+                "default": {
+                    "template": "mixed",
+                    "name": "U",
+                    "default": "int"
+                },
+                "strict": true
+            },
+            "descriptions": [
+                "T of mixed = U = int",
+                "T of mixed = U = int",
+                "T of mixed = U = int (function fixture(), parameter) (function fixture(), parameter)"
+            ],
+            "phpdoc": "T",
+            "queries": [
+                "No",
+                "No",
+                "No",
+                "No",
+                "No",
+                "No",
+                "No",
+                "No",
+                "No"
+            ],
+            "casts": [
+                true,
+                true,
+                true,
+                true,
+                false,
+                true
+            ],
+            "iterable": [
+                "T of mixed = U = int (function fixture(), parameter) (function fixture(), parameter)",
+                "T of mixed = U = int (function fixture(), parameter) (function fixture(), parameter)"
+            ]
+        },
+        {
+            "input": {
+                "template": "explicit",
+                "name": "T",
+                "argument": false,
+                "default": null,
+                "strict": true
+            },
+            "descriptions": [
+                "T of mixed",
+                "T of mixed",
+                "T of mixed (function fixture(), parameter)"
+            ],
+            "phpdoc": "T",
+            "queries": [
+                "No",
+                "No",
+                "No",
+                "No",
+                "No",
+                "No",
+                "No",
+                "No",
+                "No"
+            ],
+            "casts": [
+                true,
+                true,
+                true,
+                true,
+                false,
+                true
+            ],
+            "iterable": [
+                "T of mixed (function fixture(), parameter)",
+                "T of mixed (function fixture(), parameter)"
+            ]
+        },
+        {
+            "input": {
+                "template": "explicit",
+                "name": "T",
+                "argument": false,
+                "default": "string",
+                "strict": true
+            },
+            "descriptions": [
+                "T of mixed = string",
+                "T of mixed = string",
+                "T of mixed = string (function fixture(), parameter)"
+            ],
+            "phpdoc": "T",
+            "queries": [
+                "No",
+                "No",
+                "No",
+                "No",
+                "No",
+                "No",
+                "No",
+                "No",
+                "No"
+            ],
+            "casts": [
+                true,
+                true,
+                true,
+                true,
+                false,
+                true
+            ],
+            "iterable": [
+                "T of mixed = string (function fixture(), parameter)",
+                "T of mixed = string (function fixture(), parameter)"
+            ]
+        },
+        {
+            "input": {
+                "template": "explicit",
+                "name": "T",
+                "argument": false,
+                "default": {
+                    "template": "mixed",
+                    "name": "U",
+                    "default": "int"
+                },
+                "strict": true
+            },
+            "descriptions": [
+                "T of mixed = U = int",
+                "T of mixed = U = int",
+                "T of mixed = U = int (function fixture(), parameter) (function fixture(), parameter)"
+            ],
+            "phpdoc": "T",
+            "queries": [
+                "No",
+                "No",
+                "No",
+                "No",
+                "No",
+                "No",
+                "No",
+                "No",
+                "No"
+            ],
+            "casts": [
+                true,
+                true,
+                true,
+                true,
+                false,
+                true
+            ],
+            "iterable": [
+                "T of mixed = U = int (function fixture(), parameter) (function fixture(), parameter)",
+                "T of mixed = U = int (function fixture(), parameter) (function fixture(), parameter)"
+            ]
+        },
+        {
+            "input": {
+                "template": {
+                    "excluded": "int"
+                },
+                "name": "T",
+                "argument": false,
+                "default": null,
+                "strict": true
+            },
+            "descriptions": [
+                "T of mixed",
+                "T of mixed",
+                "T of mixed (function fixture(), parameter)"
+            ],
+            "phpdoc": "T",
+            "queries": [
+                "No",
+                "No",
+                "No",
+                "No",
+                "No",
+                "No",
+                "No",
+                "No",
+                "No"
+            ],
+            "casts": [
+                true,
+                true,
+                true,
+                true,
+                false,
+                true
+            ],
+            "iterable": [
+                "T of mixed (function fixture(), parameter)",
+                "T of mixed (function fixture(), parameter)"
+            ]
+        },
+        {
+            "input": {
+                "template": {
+                    "excluded": "int"
+                },
+                "name": "T",
+                "argument": false,
+                "default": "string",
+                "strict": true
+            },
+            "descriptions": [
+                "T of mixed = string",
+                "T of mixed = string",
+                "T of mixed = string (function fixture(), parameter)"
+            ],
+            "phpdoc": "T",
+            "queries": [
+                "No",
+                "No",
+                "No",
+                "No",
+                "No",
+                "No",
+                "No",
+                "No",
+                "No"
+            ],
+            "casts": [
+                true,
+                true,
+                true,
+                true,
+                false,
+                true
+            ],
+            "iterable": [
+                "T of mixed = string (function fixture(), parameter)",
+                "T of mixed = string (function fixture(), parameter)"
+            ]
+        },
+        {
+            "input": {
+                "template": {
+                    "excluded": "int"
+                },
+                "name": "T",
+                "argument": false,
+                "default": {
+                    "template": "mixed",
+                    "name": "U",
+                    "default": "int"
+                },
+                "strict": true
+            },
+            "descriptions": [
+                "T of mixed = U = int",
+                "T of mixed = U = int",
+                "T of mixed = U = int (function fixture(), parameter) (function fixture(), parameter)"
+            ],
+            "phpdoc": "T",
+            "queries": [
+                "No",
+                "No",
+                "No",
+                "No",
+                "No",
+                "No",
+                "No",
+                "No",
+                "No"
+            ],
+            "casts": [
+                true,
+                true,
+                true,
+                true,
+                false,
+                true
+            ],
+            "iterable": [
+                "T of mixed = U = int (function fixture(), parameter) (function fixture(), parameter)",
+                "T of mixed = U = int (function fixture(), parameter) (function fixture(), parameter)"
+            ]
+        },
+        {
+            "input": {
+                "template": {
+                    "template": "mixed",
+                    "name": "T"
+                },
+                "name": "T",
+                "argument": false,
+                "default": null,
+                "strict": true
+            },
+            "descriptions": [
+                "T of mixed",
+                "T of mixed",
+                "T of mixed (function fixture(), parameter)"
+            ],
+            "phpdoc": "T",
+            "queries": [
+                "No",
+                "No",
+                "No",
+                "No",
+                "No",
+                "No",
+                "No",
+                "No",
+                "No"
+            ],
+            "casts": [
+                true,
+                true,
+                true,
+                true,
+                false,
+                true
+            ],
+            "iterable": [
+                "T of mixed (function fixture(), parameter)",
+                "T of mixed (function fixture(), parameter)"
+            ]
+        },
+        {
+            "input": {
+                "template": {
+                    "template": "mixed",
+                    "name": "T"
+                },
+                "name": "T",
+                "argument": false,
+                "default": "string",
+                "strict": true
+            },
+            "descriptions": [
+                "T of mixed = string",
+                "T of mixed = string",
+                "T of mixed = string (function fixture(), parameter)"
+            ],
+            "phpdoc": "T",
+            "queries": [
+                "No",
+                "No",
+                "No",
+                "No",
+                "No",
+                "No",
+                "No",
+                "No",
+                "No"
+            ],
+            "casts": [
+                true,
+                true,
+                true,
+                true,
+                false,
+                true
+            ],
+            "iterable": [
+                "T of mixed = string (function fixture(), parameter)",
+                "T of mixed = string (function fixture(), parameter)"
+            ]
+        },
+        {
+            "input": {
+                "template": {
+                    "template": "mixed",
+                    "name": "T"
+                },
+                "name": "T",
+                "argument": false,
+                "default": {
+                    "template": "mixed",
+                    "name": "U",
+                    "default": "int"
+                },
+                "strict": true
+            },
+            "descriptions": [
+                "T of mixed = U = int",
+                "T of mixed = U = int",
+                "T of mixed = U = int (function fixture(), parameter) (function fixture(), parameter)"
+            ],
+            "phpdoc": "T",
+            "queries": [
+                "No",
+                "No",
+                "No",
+                "No",
+                "No",
+                "No",
+                "No",
+                "No",
+                "No"
+            ],
+            "casts": [
+                true,
+                true,
+                true,
+                true,
+                false,
+                true
+            ],
+            "iterable": [
+                "T of mixed = U = int (function fixture(), parameter) (function fixture(), parameter)",
+                "T of mixed = U = int (function fixture(), parameter) (function fixture(), parameter)"
+            ]
+        },
+        {
+            "input": {
+                "template": "mixed",
+                "name": "T",
+                "argument": true,
+                "default": null,
+                "strict": true
+            },
+            "descriptions": [
+                "T of mixed",
+                "T of mixed",
+                "T of mixed (function fixture(), argument)"
+            ],
+            "phpdoc": "T",
+            "queries": [
+                "No",
+                "No",
+                "No",
+                "No",
+                "No",
+                "No",
+                "No",
+                "No",
+                "No"
+            ],
+            "casts": [
+                true,
+                true,
+                true,
+                true,
+                false,
+                true
+            ],
+            "iterable": [
+                "T of mixed (function fixture(), argument)",
+                "T of mixed (function fixture(), argument)"
+            ]
+        },
+        {
+            "input": {
+                "template": "mixed",
+                "name": "T",
+                "argument": true,
+                "default": "string",
+                "strict": true
+            },
+            "descriptions": [
+                "T of mixed = string",
+                "T of mixed = string",
+                "T of mixed = string (function fixture(), argument)"
+            ],
+            "phpdoc": "T",
+            "queries": [
+                "No",
+                "No",
+                "No",
+                "No",
+                "No",
+                "No",
+                "No",
+                "No",
+                "No"
+            ],
+            "casts": [
+                true,
+                true,
+                true,
+                true,
+                false,
+                true
+            ],
+            "iterable": [
+                "T of mixed = string (function fixture(), argument)",
+                "T of mixed = string (function fixture(), argument)"
+            ]
+        },
+        {
+            "input": {
+                "template": "mixed",
+                "name": "T",
+                "argument": true,
+                "default": {
+                    "template": "mixed",
+                    "name": "U",
+                    "default": "int"
+                },
+                "strict": true
+            },
+            "descriptions": [
+                "T of mixed = U = int",
+                "T of mixed = U = int",
+                "T of mixed = U = int (function fixture(), parameter) (function fixture(), argument)"
+            ],
+            "phpdoc": "T",
+            "queries": [
+                "No",
+                "No",
+                "No",
+                "No",
+                "No",
+                "No",
+                "No",
+                "No",
+                "No"
+            ],
+            "casts": [
+                true,
+                true,
+                true,
+                true,
+                false,
+                true
+            ],
+            "iterable": [
+                "T of mixed = U = int (function fixture(), parameter) (function fixture(), argument)",
+                "T of mixed = U = int (function fixture(), parameter) (function fixture(), argument)"
+            ]
+        },
+        {
+            "input": {
+                "template": "explicit",
+                "name": "T",
+                "argument": true,
+                "default": null,
+                "strict": true
+            },
+            "descriptions": [
+                "T of mixed",
+                "T of mixed",
+                "T of mixed (function fixture(), argument)"
+            ],
+            "phpdoc": "T",
+            "queries": [
+                "No",
+                "No",
+                "No",
+                "No",
+                "No",
+                "No",
+                "No",
+                "No",
+                "No"
+            ],
+            "casts": [
+                true,
+                true,
+                true,
+                true,
+                false,
+                true
+            ],
+            "iterable": [
+                "T of mixed (function fixture(), argument)",
+                "T of mixed (function fixture(), argument)"
+            ]
+        },
+        {
+            "input": {
+                "template": "explicit",
+                "name": "T",
+                "argument": true,
+                "default": "string",
+                "strict": true
+            },
+            "descriptions": [
+                "T of mixed = string",
+                "T of mixed = string",
+                "T of mixed = string (function fixture(), argument)"
+            ],
+            "phpdoc": "T",
+            "queries": [
+                "No",
+                "No",
+                "No",
+                "No",
+                "No",
+                "No",
+                "No",
+                "No",
+                "No"
+            ],
+            "casts": [
+                true,
+                true,
+                true,
+                true,
+                false,
+                true
+            ],
+            "iterable": [
+                "T of mixed = string (function fixture(), argument)",
+                "T of mixed = string (function fixture(), argument)"
+            ]
+        },
+        {
+            "input": {
+                "template": "explicit",
+                "name": "T",
+                "argument": true,
+                "default": {
+                    "template": "mixed",
+                    "name": "U",
+                    "default": "int"
+                },
+                "strict": true
+            },
+            "descriptions": [
+                "T of mixed = U = int",
+                "T of mixed = U = int",
+                "T of mixed = U = int (function fixture(), parameter) (function fixture(), argument)"
+            ],
+            "phpdoc": "T",
+            "queries": [
+                "No",
+                "No",
+                "No",
+                "No",
+                "No",
+                "No",
+                "No",
+                "No",
+                "No"
+            ],
+            "casts": [
+                true,
+                true,
+                true,
+                true,
+                false,
+                true
+            ],
+            "iterable": [
+                "T of mixed = U = int (function fixture(), parameter) (function fixture(), argument)",
+                "T of mixed = U = int (function fixture(), parameter) (function fixture(), argument)"
+            ]
+        },
+        {
+            "input": {
+                "template": {
+                    "excluded": "int"
+                },
+                "name": "T",
+                "argument": true,
+                "default": null,
+                "strict": true
+            },
+            "descriptions": [
+                "T of mixed",
+                "T of mixed",
+                "T of mixed (function fixture(), argument)"
+            ],
+            "phpdoc": "T",
+            "queries": [
+                "No",
+                "No",
+                "No",
+                "No",
+                "No",
+                "No",
+                "No",
+                "No",
+                "No"
+            ],
+            "casts": [
+                true,
+                true,
+                true,
+                true,
+                false,
+                true
+            ],
+            "iterable": [
+                "T of mixed (function fixture(), argument)",
+                "T of mixed (function fixture(), argument)"
+            ]
+        },
+        {
+            "input": {
+                "template": {
+                    "excluded": "int"
+                },
+                "name": "T",
+                "argument": true,
+                "default": "string",
+                "strict": true
+            },
+            "descriptions": [
+                "T of mixed = string",
+                "T of mixed = string",
+                "T of mixed = string (function fixture(), argument)"
+            ],
+            "phpdoc": "T",
+            "queries": [
+                "No",
+                "No",
+                "No",
+                "No",
+                "No",
+                "No",
+                "No",
+                "No",
+                "No"
+            ],
+            "casts": [
+                true,
+                true,
+                true,
+                true,
+                false,
+                true
+            ],
+            "iterable": [
+                "T of mixed = string (function fixture(), argument)",
+                "T of mixed = string (function fixture(), argument)"
+            ]
+        },
+        {
+            "input": {
+                "template": {
+                    "excluded": "int"
+                },
+                "name": "T",
+                "argument": true,
+                "default": {
+                    "template": "mixed",
+                    "name": "U",
+                    "default": "int"
+                },
+                "strict": true
+            },
+            "descriptions": [
+                "T of mixed = U = int",
+                "T of mixed = U = int",
+                "T of mixed = U = int (function fixture(), parameter) (function fixture(), argument)"
+            ],
+            "phpdoc": "T",
+            "queries": [
+                "No",
+                "No",
+                "No",
+                "No",
+                "No",
+                "No",
+                "No",
+                "No",
+                "No"
+            ],
+            "casts": [
+                true,
+                true,
+                true,
+                true,
+                false,
+                true
+            ],
+            "iterable": [
+                "T of mixed = U = int (function fixture(), parameter) (function fixture(), argument)",
+                "T of mixed = U = int (function fixture(), parameter) (function fixture(), argument)"
+            ]
+        },
+        {
+            "input": {
+                "template": {
+                    "template": "mixed",
+                    "name": "T"
+                },
+                "name": "T",
+                "argument": true,
+                "default": null,
+                "strict": true
+            },
+            "descriptions": [
+                "T of mixed",
+                "T of mixed",
+                "T of mixed (function fixture(), argument)"
+            ],
+            "phpdoc": "T",
+            "queries": [
+                "No",
+                "No",
+                "No",
+                "No",
+                "No",
+                "No",
+                "No",
+                "No",
+                "No"
+            ],
+            "casts": [
+                true,
+                true,
+                true,
+                true,
+                false,
+                true
+            ],
+            "iterable": [
+                "T of mixed (function fixture(), argument)",
+                "T of mixed (function fixture(), argument)"
+            ]
+        },
+        {
+            "input": {
+                "template": {
+                    "template": "mixed",
+                    "name": "T"
+                },
+                "name": "T",
+                "argument": true,
+                "default": "string",
+                "strict": true
+            },
+            "descriptions": [
+                "T of mixed = string",
+                "T of mixed = string",
+                "T of mixed = string (function fixture(), argument)"
+            ],
+            "phpdoc": "T",
+            "queries": [
+                "No",
+                "No",
+                "No",
+                "No",
+                "No",
+                "No",
+                "No",
+                "No",
+                "No"
+            ],
+            "casts": [
+                true,
+                true,
+                true,
+                true,
+                false,
+                true
+            ],
+            "iterable": [
+                "T of mixed = string (function fixture(), argument)",
+                "T of mixed = string (function fixture(), argument)"
+            ]
+        },
+        {
+            "input": {
+                "template": {
+                    "template": "mixed",
+                    "name": "T"
+                },
+                "name": "T",
+                "argument": true,
+                "default": {
+                    "template": "mixed",
+                    "name": "U",
+                    "default": "int"
+                },
+                "strict": true
+            },
+            "descriptions": [
+                "T of mixed = U = int",
+                "T of mixed = U = int",
+                "T of mixed = U = int (function fixture(), parameter) (function fixture(), argument)"
+            ],
+            "phpdoc": "T",
+            "queries": [
+                "No",
+                "No",
+                "No",
+                "No",
+                "No",
+                "No",
+                "No",
+                "No",
+                "No"
+            ],
+            "casts": [
+                true,
+                true,
+                true,
+                true,
+                false,
+                true
+            ],
+            "iterable": [
+                "T of mixed = U = int (function fixture(), parameter) (function fixture(), argument)",
+                "T of mixed = U = int (function fixture(), parameter) (function fixture(), argument)"
+            ]
+        },
+        {
+            "input": {
+                "kind": "union",
+                "parts": [
+                    "strict",
+                    "object"
+                ]
+            },
+            "descriptions": [
+                "mixed",
+                "mixed|object",
+                "mixed|object"
+            ],
+            "phpdoc": "mixed|object"
+        },
+        {
+            "input": {
+                "kind": "union",
+                "parts": [
+                    {
+                        "template": "mixed",
+                        "name": "T",
+                        "strict": true
+                    },
+                    "object"
+                ]
+            },
+            "descriptions": [
+                "object|T of mixed",
+                "object|T of mixed",
+                "object|T of mixed (function fixture(), parameter)"
+            ],
+            "phpdoc": "object|T"
+        },
+        {
+            "input": {
+                "kind": "union",
+                "parts": [
+                    {
+                        "template": "mixed",
+                        "name": "T",
+                        "strict": true
+                    },
+                    {
+                        "template": "mixed",
+                        "name": "U",
+                        "strict": true,
+                        "default": "int"
+                    }
+                ]
+            },
+            "descriptions": [
+                "(T of mixed)|U of mixed = int",
+                "(T of mixed)|U of mixed = int",
+                "T of mixed (function fixture(), parameter)|U of mixed = int (function fixture(), parameter)"
+            ],
+            "phpdoc": "T|U"
+        },
+        {
+            "input": {
+                "kind": "intersection",
+                "parts": [
+                    "strict",
+                    "object"
+                ]
+            },
+            "descriptions": [
+                "mixed&object",
+                "mixed&object",
+                "mixed&object"
+            ],
+            "phpdoc": "mixed&object"
+        },
+        {
+            "input": {
+                "kind": "intersection",
+                "parts": [
+                    {
+                        "template": "mixed",
+                        "name": "T",
+                        "strict": true
+                    },
+                    "object"
+                ]
+            },
+            "descriptions": [
+                "object&T of mixed",
+                "object&T of mixed",
+                "object&T of mixed (function fixture(), parameter)"
+            ],
+            "phpdoc": "object&T"
+        },
+        {
+            "input": {
+                "kind": "intersection",
+                "parts": [
+                    {
+                        "template": "mixed",
+                        "name": "T",
+                        "strict": true
+                    },
+                    {
+                        "template": "mixed",
+                        "name": "U",
+                        "strict": true,
+                        "default": "int"
+                    }
+                ]
+            },
+            "descriptions": [
+                "T of mixed&U of mixed = int",
+                "T of mixed&U of mixed = int",
+                "T of mixed (function fixture(), parameter)&U of mixed = int (function fixture(), parameter)"
+            ],
+            "phpdoc": "T&U"
+        },
+        {
+            "input": {
+                "kind": "combine-union",
+                "parts": [
+                    "strict",
+                    "object"
+                ]
+            },
+            "descriptions": [
+                "mixed",
+                "mixed",
+                "mixed"
+            ],
+            "phpdoc": "mixed"
+        },
+        {
+            "input": {
+                "kind": "combine-union",
+                "parts": [
+                    {
+                        "template": "mixed",
+                        "name": "T",
+                        "strict": true
+                    },
+                    "object"
+                ]
+            },
+            "descriptions": [
+                "object|T of mixed",
+                "object|T of mixed",
+                "object|T of mixed (function fixture(), parameter)"
+            ],
+            "phpdoc": "object|T"
+        },
+        {
+            "input": {
+                "kind": "combine-union",
+                "parts": [
+                    {
+                        "template": "mixed",
+                        "name": "T",
+                        "strict": true
+                    },
+                    {
+                        "template": "mixed",
+                        "name": "U",
+                        "strict": true,
+                        "default": "int"
+                    }
+                ]
+            },
+            "descriptions": [
+                "(T of mixed)|U of mixed = int",
+                "(T of mixed)|U of mixed = int",
+                "T of mixed (function fixture(), parameter)|U of mixed = int (function fixture(), parameter)"
+            ],
+            "phpdoc": "T|U"
+        },
+        {
+            "input": {
+                "kind": "combine-intersection",
+                "parts": [
+                    "strict",
+                    "object"
+                ]
+            },
+            "descriptions": [
+                "object",
+                "object",
+                "object"
+            ],
+            "phpdoc": "object"
+        },
+        {
+            "input": {
+                "kind": "combine-intersection",
+                "parts": [
+                    {
+                        "template": "mixed",
+                        "name": "T",
+                        "strict": true
+                    },
+                    "object"
+                ]
+            },
+            "descriptions": [
+                "object&T of mixed",
+                "object&T of mixed",
+                "object&T of mixed (function fixture(), parameter)"
+            ],
+            "phpdoc": "object&T"
+        },
+        {
+            "input": {
+                "kind": "combine-intersection",
+                "parts": [
+                    {
+                        "template": "mixed",
+                        "name": "T",
+                        "strict": true
+                    },
+                    {
+                        "template": "mixed",
+                        "name": "U",
+                        "strict": true,
+                        "default": "int"
+                    }
+                ]
+            },
+            "descriptions": [
+                "T of mixed&U of mixed = int",
+                "T of mixed&U of mixed = int",
+                "T of mixed (function fixture(), parameter)&U of mixed = int (function fixture(), parameter)"
+            ],
+            "phpdoc": "T&U"
+        }
+    ],
+    "pairs": [
+        [
+            "strict",
+            "mixed",
+            false,
+            "Yes",
+            "Yes",
+            "Yes",
+            "Yes"
+        ],
+        [
+            "strict",
+            "explicit",
+            false,
+            "Yes",
+            "Yes",
+            "Yes",
+            "Yes"
+        ],
+        [
+            "strict",
+            "strict",
+            true,
+            "Yes",
+            "Yes",
+            "Yes",
+            "Yes"
+        ],
+        [
+            "strict",
+            "int",
+            false,
+            "Yes",
+            "Maybe",
+            "Yes",
+            "Maybe"
+        ],
+        [
+            "strict",
+            {
+                "excluded": "int"
+            },
+            false,
+            "Yes",
+            "Maybe",
+            "Yes",
+            "Yes"
+        ],
+        [
+            "strict",
+            {
+                "template": "mixed",
+                "name": "T"
+            },
+            false,
+            "Yes",
+            "Maybe",
+            "Yes",
+            "Maybe"
+        ],
+        [
+            "strict",
+            {
+                "template": "mixed",
+                "name": "T",
+                "strict": true
+            },
+            true,
+            "Yes",
+            "Maybe",
+            "Yes",
+            "Yes"
+        ],
+        [
+            "strict",
+            {
+                "template": "mixed",
+                "name": "T",
+                "strict": true,
+                "scope": "other"
+            },
+            true,
+            "Yes",
+            "Maybe",
+            "Yes",
+            "Yes"
+        ],
+        [
+            "strict",
+            {
+                "template": "mixed",
+                "name": "T",
+                "strict": true,
+                "argument": true
+            },
+            true,
+            "Yes",
+            "Maybe",
+            "Yes",
+            "Yes"
+        ],
+        [
+            "strict",
+            {
+                "template": "mixed",
+                "name": "T",
+                "strict": true,
+                "default": "int"
+            },
+            true,
+            "Yes",
+            "Maybe",
+            "Yes",
+            "Yes"
+        ],
+        [
+            {
+                "template": "mixed",
+                "name": "T",
+                "strict": true
+            },
+            "mixed",
+            false,
+            "Maybe",
+            "Yes",
+            "Yes",
+            "Yes"
+        ],
+        [
+            {
+                "template": "mixed",
+                "name": "T",
+                "strict": true
+            },
+            "explicit",
+            false,
+            "Maybe",
+            "Yes",
+            "Yes",
+            "Yes"
+        ],
+        [
+            {
+                "template": "mixed",
+                "name": "T",
+                "strict": true
+            },
+            "strict",
+            false,
+            "Maybe",
+            "Yes",
+            "Yes",
+            "Yes"
+        ],
+        [
+            {
+                "template": "mixed",
+                "name": "T",
+                "strict": true
+            },
+            "int",
+            false,
+            "Maybe",
+            "Maybe",
+            "Yes",
+            "Maybe"
+        ],
+        [
+            {
+                "template": "mixed",
+                "name": "T",
+                "strict": true
+            },
+            {
+                "excluded": "int"
+            },
+            false,
+            "Maybe",
+            "Maybe",
+            "Yes",
+            "Yes"
+        ],
+        [
+            {
+                "template": "mixed",
+                "name": "T",
+                "strict": true
+            },
+            {
+                "template": "mixed",
+                "name": "T"
+            },
+            false,
+            "Yes",
+            "Yes",
+            "Yes",
+            "Yes"
+        ],
+        [
+            {
+                "template": "mixed",
+                "name": "T",
+                "strict": true
+            },
+            {
+                "template": "mixed",
+                "name": "T",
+                "strict": true
+            },
+            true,
+            "Yes",
+            "Yes",
+            "Yes",
+            "Yes"
+        ],
+        [
+            {
+                "template": "mixed",
+                "name": "T",
+                "strict": true
+            },
+            {
+                "template": "mixed",
+                "name": "T",
+                "strict": true,
+                "scope": "other"
+            },
+            false,
+            "Maybe",
+            "Maybe",
+            "Maybe",
+            "Maybe"
+        ],
+        [
+            {
+                "template": "mixed",
+                "name": "T",
+                "strict": true
+            },
+            {
+                "template": "mixed",
+                "name": "T",
+                "strict": true,
+                "argument": true
+            },
+            true,
+            "Yes",
+            "Yes",
+            "Yes",
+            "Yes"
+        ],
+        [
+            {
+                "template": "mixed",
+                "name": "T",
+                "strict": true
+            },
+            {
+                "template": "mixed",
+                "name": "T",
+                "strict": true,
+                "default": "int"
+            },
+            false,
+            "Yes",
+            "Yes",
+            "Yes",
+            "Yes"
+        ]
+    ]
+}

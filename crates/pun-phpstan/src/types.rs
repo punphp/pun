@@ -221,6 +221,8 @@ pub enum Type {
     Mixed {
         explicit: bool,
     },
+    /// RuleLevelHelper's checked mixed, never stored as a declaration or inferred scope value.
+    StrictMixed,
     /// MixedType with its excluded value set. Kept separate so existing plain-mixed constructors stay plain.
     SubtractedMixed { explicit: bool, excluded: Box<Type> },
     Never(NeverKind),
@@ -357,6 +359,7 @@ impl Type {
         matches!(
             self,
             Type::Mixed { .. }
+                | Type::StrictMixed
                 | Type::SubtractedMixed { .. }
                 | Type::Error
                 | Type::Never(_)
@@ -900,6 +903,8 @@ impl Type {
         match self {
             Type::Reasoned(t, _) => t.iterable_key_type(),
             Type::LateArrayShape(s) => s.resolve().iterable_key_type(),
+            Type::StrictMixed => self.clone(),
+            Type::Template(t) if matches!(t.bound, Type::StrictMixed) => self.clone(),
             _ if self.is_callable_array() => {
                 Type::Union(vec![Type::ConstInt(0), Type::ConstInt(1)])
             }
@@ -930,6 +935,8 @@ impl Type {
         match self {
             Type::Reasoned(t, _) => t.iterable_value_type(),
             Type::LateArrayShape(s) => s.resolve().iterable_value_type(),
+            Type::StrictMixed => self.clone(),
+            Type::Template(t) if matches!(t.bound, Type::StrictMixed) => self.clone(),
             Type::Intersection(types) if self.is_callable_array() => intersect(vec![
                 intersect(types.iter().map(Type::iterable_value_type).collect()),
                 Type::Union(vec![
@@ -971,7 +978,7 @@ impl Type {
         match self {
             Type::Reasoned(t, _) => t.describe(level),
             Type::LateArrayShape(s) => s.describe(),
-            Type::Mixed { .. } => "mixed".to_string(),
+            Type::Mixed { .. } | Type::StrictMixed => "mixed".to_string(),
             Type::SubtractedMixed { excluded, .. } => level.handle3(|| "mixed".into(), || "mixed".into(), || {
                 let description = excluded.describe(level);
                 // SubstractableTypeTrait groups unions and types with their own subtraction, not intersections.
@@ -1815,7 +1822,7 @@ pub fn to_phpdoc(t: &Type) -> String {
         {
             to_phpdoc(&intersect(types.iter().filter(|t| !matches!(t, Type::Accessory(Accessory::HasOffsetValue(..)))).cloned().collect()))
         }
-        Type::Mixed { .. } | Type::SubtractedMixed { .. } | Type::Error => "mixed".to_string(),
+        Type::Mixed { .. } | Type::StrictMixed | Type::SubtractedMixed { .. } | Type::Error => "mixed".to_string(),
         Type::Never(_) => "never".to_string(),
         Type::ConstInt(i) => i.to_string(),
         Type::ConstFloat(f) => float_to_string(*f),
@@ -1879,6 +1886,8 @@ pub fn to_phpdoc(t: &Type) -> String {
                 .collect();
             to_phpdoc(&intersect(printable))
         }
+        Type::Intersection(types) if types.iter().any(|t| matches!(t, Type::StrictMixed)
+            || matches!(t, Type::Template(t) if matches!(t.bound, Type::StrictMixed))) => join_phpdoc(&sort_types(types), "&"),
         Type::Intersection(_) => t.describe(Level::Precise),
         Type::Template(tpl) => tpl.name.clone(),
         Type::Callable(None) => "callable".to_string(),
@@ -2431,7 +2440,7 @@ pub fn is_super_type_of(a: &Type, b: &Type) -> Tri {
         T::LateArrayShape(s) => if b.is_never() { Tri::Yes } else { is_super_type_of(&s.resolve(), b).and(Tri::Maybe) },
         // `*` is a bivariant `mixed`
         // (a call-site variance is a generic argument's only, compared in `valid_variance()`)
-        T::Mixed { .. } | T::Error | T::Wildcard | T::OffsetAccess(..) | T::Projection(..) => Tri::Yes,
+        T::Mixed { .. } | T::StrictMixed | T::Error | T::Wildcard | T::OffsetAccess(..) | T::Projection(..) => Tri::Yes,
         T::SubtractedMixed { excluded, .. } => mixed::is_super(excluded, b),
         T::Never(_) => match b {
             T::Never(_) => Tri::Yes,
@@ -3062,6 +3071,7 @@ fn const_array_super(a: &ConstArray, b: &ConstArray) -> Tri {
 fn is_sub_type_of(a: &Type, b: &Type) -> Tri {
     use Type as T;
     match a {
+        T::StrictMixed => Tri::from(matches!(b, T::StrictMixed | T::Mixed { .. } | T::SubtractedMixed { .. } | T::Error)).or(Tri::Maybe),
         // (against a mixed `$b`, isSuperTypeOf() answers yes first)
         T::Mixed { .. } | T::Error => Tri::Maybe,
         T::SubtractedMixed { excluded, .. } => {

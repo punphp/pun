@@ -24,6 +24,7 @@ pub fn cast_is_error(t: &Type, cast: Cast, sm: StrictMixed) -> bool {
     match t {
         T::Reasoned(t, _) => rec(t),
         T::LateArrayShape(s) => rec(&s.resolve()),
+        T::StrictMixed => true,
         T::Mixed { .. } | T::SubtractedMixed { .. } | T::Wildcard if sm.applies(t) => true,
         T::Mixed { .. } | T::SubtractedMixed { .. } | T::Wildcard | T::Error => cast == C::BitwiseNot,
         T::Never(_) | T::OffsetAccess(..) | T::Projection(..) => false,

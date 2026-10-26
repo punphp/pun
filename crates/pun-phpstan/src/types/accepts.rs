@@ -49,7 +49,7 @@ pub fn accepts_with(a: &Type, b: &Type, strict: bool, sm: StrictMixed) -> Tri {
         T::Reasoned(t, _) => rec(t, b),
         T::LateArrayShape(s) => rec(&s.resolve(), b),
         // MixedType (ErrorType extends it) accepts anything
-        T::Mixed { .. } | T::SubtractedMixed { .. } | T::Error | T::Wildcard | T::OffsetAccess(..) => Tri::Yes,
+        T::Mixed { .. } | T::StrictMixed | T::SubtractedMixed { .. } | T::Error | T::Wildcard | T::OffsetAccess(..) => Tri::Yes,
         T::Never(NeverKind::NonAccepting) => Tri::from(matches!(b, T::Never(_))),
         T::Never(_) => Tri::Yes,
         T::Union(types) | T::Benevolent(types) => union(a, types, b, strict, sm),
@@ -356,6 +356,8 @@ fn accepted_by(a: &Type, b: &Type, strict: bool, sm: StrictMixed) -> Tri {
         };
     }
     match b {
+        T::StrictMixed => Tri::from(matches!(a, T::StrictMixed | T::Mixed { .. } | T::SubtractedMixed { .. } | T::Error)
+            || matches!(a, T::Template(t) if matches!(t.bound, T::StrictMixed))).or(Tri::Maybe),
         T::Union(types) => Tri::extreme_identity(types.iter().map(|t| rec(a, t))),
         T::Benevolent(types) => types.iter().map(|t| rec(a, t)).fold(Tri::No, Tri::or),
         T::Mixed { .. } | T::Error => Tri::Yes,
@@ -385,6 +387,8 @@ fn accepted_by(a: &Type, b: &Type, strict: bool, sm: StrictMixed) -> Tri {
         },
         // TemplateMixedType::isAcceptedBy(), as MixedType's
         T::Template(t) if matches!(t.bound, T::Mixed { .. }) => Tri::from(!is_super_type_of(b, a).no()),
+        // TemplateStrictMixedType::isAcceptedBy() uses the template's subtype relation, not the bound's accepts().
+        T::Template(t) if matches!(t.bound, T::StrictMixed) => is_super_type_of(a, b),
         // TemplateTypeTrait::isAcceptedBy(): a union or intersection reaches here only with a bound of its kind (their
         // accepts() ask the members first), so it compares with the bound like any other type
         T::Template(t) => match a {
