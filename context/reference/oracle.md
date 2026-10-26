@@ -12,6 +12,7 @@ by `scripts/oracle.sh`; corpus checkouts into `corpus/` by `scripts/corpus.sh`.
 | laravel/pint | 1.29.3, `dev-feat/blade-support` (what Pinkary's composer.lock pins) | `cef1b260c611f92e66902d678092e26932c9ea00` |
 | friendsofphp/php-cs-fixer | v3.95.17 (bundled in Pint's PHAR and its composer.lock) | `0ee88422118f3cc59c8c3def222ba7f1493b6d5b` |
 | rector/rector | 2.6.1 (what Pinkary's composer.lock pins; the released build in `.oracle/rector-bin`, locked by `scripts/oracle-rector/composer.lock`) | |
+| phpstan/phpstan for Rector | 2.2.7 (both Rector oracle locks and Pinkary's lock; separate from the analyse oracle's 2.3.1) | |
 | rectorphp/rector-src | 2.6.1 (source and `rules-tests/` fixtures in `.oracle/rector`) | `16be33c1c2364d51038752a299fce01043d42576` |
 | rector/rector-phpunit | dev-main@e68085d (bundled in rector/rector 2.6.1) | |
 | driftingly/rector-laravel | 2.5.0 (`.oracle/rector-ecosystem`, locked by `scripts/oracle-rector-ecosystem/composer.lock`) | |
@@ -47,6 +48,9 @@ The lint oracle (lint.md §6). A Pun lint rule ports one Rector rule; its tests 
 `crates/pun-lint/tests/rector/<Rule>/`. A fixture is the input, a `-----` line and the expected output, or only the
 input when the rule must leave it alone; the rule's `config/configured_rule.php` gives the PHP version. Parity is
 `format(pun lint --fix) == format(expected)`.
+
+Both Rector oracles pin PHPStan 2.2.7. Its trait, arrow-function, `preg_match()` and guard types differ from
+PHPStan 2.3.1, so use the Rector oracle rather than the analyse oracle for lint expectations.
 
 For an input the fixtures miss, run Rector on it and paste its output as the expectation
 (`crates/pun-lint/tests/oracle/`):
