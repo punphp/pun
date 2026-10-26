@@ -58,9 +58,11 @@ def compare(name: str, pun: str, env: dict) -> bool:
     ini.mkdir(parents=True, exist_ok=True)
     (ini / "memory.ini").write_text("max_memory_limit = -1\nmemory_limit = -1\n")
     env = {**env, "PHP_INI_SCAN_DIR": f"{env.get('PHP_INI_SCAN_DIR', '')}:{ini}"}
+    # Rector's bin skips the project's vendor/autoload.php when the project requires rector/rector itself (as
+    # Pinkary does), and then cannot reflect any vendor class: load it explicitly.
     rector = subprocess.run(["php", str(bench.RECTOR), "process", "--dry-run", "--clear-cache",
                              "--no-progress-bar", "--output-format=json", "--memory-limit=-1", "--config",
-                             "pun-bench-rector.php"],
+                             "pun-bench-rector.php", "--autoload-file", "vendor/autoload.php"],
                             cwd=work, env=env, capture_output=True, text=True)
     # `--fix --test` writes nothing and lists the rules of every fix round: Rector reports a rule that applies to
     # another rule's output (ThrowIfRector, then ThrowIfAndThrowUnlessExceptionsToUseClassStringRector), which a

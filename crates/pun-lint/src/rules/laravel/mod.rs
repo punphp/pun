@@ -83,12 +83,14 @@ pub(crate) fn all() -> Vec<Box<dyn Rule>> {
         Box::new(PreferAbortIf),
         Box::new(PreferReportIf),
         Box::new(PreferThrowIf),
+        // Before PreferFacadeOverApp, which also rewrites the `resolve()` this writes: Rector's sorted rule list runs
+        // AppToResolveRector first, so both report `app(X)`.
+        Box::new(PreferResolveHelper),
         Box::new(PreferFacadeOverApp),
         Box::new(NoRequestAll),
         Box::new(PreferCastsMethod),
         Box::new(PreferAnonymousMigration),
         Box::new(PreferNullsafe::default()),
-        Box::new(PreferResolveHelper),
         Box::new(PreferDateFacade),
         Box::new(PreferRequestFacade),
         Box::new(PreferDefaultArgument),
