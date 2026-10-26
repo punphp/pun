@@ -348,3 +348,28 @@ The source contracts are PHPStan 2.3.1's
 and [`ObjectType.php:1952–1968`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Type/ObjectType.php#L1952-L1968).
 Public controls and actual PHPStan captures are in
 `crates/pun-analyse/tests/fixtures/initializer-objects/`.
+
+## Finite canonical initializer holders
+
+The scanner's codebase-aware initializer query resolves a named constant selector across finite
+class-string and object holders. Exact class strings read raw initializers. Object holders retain
+PHPStan's final, native, PHPDoc, and overridable-untyped policies. Missing alternatives do not discard
+successful reads. Heterogeneous holders use the first definite reflection only when every alternative
+has the constant. The query does not load classes or evaluate declarations itself.
+
+`ttype::initializer` retains the order that reflection observes after the existing semantic union
+normalizer. Constant scalars follow other members. `preserve_initializer_union_order` keeps reference
+replacements in place without changing ordinary flow expansion. Parenthesized canonical operands
+retain their supplied types. Pun's initializer service resolves holder dependencies in postorder and
+supplies canonical children to its existing arithmetic and array analyzer.
+Trait initializer comparisons remain unordered for unions, including union-valued entries inside
+ordered constant arrays.
+
+These contracts come from PHPStan 2.3.1's
+[`InitializerExprTypeResolver.php:2665–2810`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Reflection/InitializerExprTypeResolver.php#L2665-L2810),
+[`UnionType.php:465–505`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Type/UnionType.php#L465-L505),
+[`UnionType.php:588–640`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Type/UnionType.php#L588-L640),
+and [`TypeCombinator.php:330–615`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Type/TypeCombinator.php#L330-L615).
+Public controls and actual captures are in `crates/pun-analyse/tests/fixtures/initializer-holders/`.
+Dynamic selectors retain the unsupported-expression mixed fallback. General object `::class`
+accessory types, new autoloading, and additional cycle semantics remain outside this patch.

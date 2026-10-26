@@ -103,6 +103,7 @@ pub mod display;
 pub mod error;
 pub mod expander;
 pub mod flags;
+pub(crate) mod initializer;
 pub mod resolution;
 pub mod shared;
 pub mod template;

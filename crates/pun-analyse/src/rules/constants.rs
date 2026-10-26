@@ -173,7 +173,7 @@ fn conflicting_trait_constants<'arena>(
             if let (Some(ours), Some(theirs)) = (
                 source_value(c, item.span(), class),
                 source_value(c, theirs.span, class),
-            ) && ours != theirs
+            ) && !initializer_values_equal(&ours, &theirs)
             {
                 let name = text(item.name.value);
                 c.report_non_ignorable(
@@ -189,6 +189,40 @@ fn conflicting_trait_constants<'arena>(
                 );
             }
         }
+    }
+}
+
+/// UnionType::equals is unordered, including inside ordered ConstantArrayType values. Reflection's
+/// member order is observable during getConstant(), but is not a trait initializer inequality.
+fn initializer_values_equal(left: &Type, right: &Type) -> bool {
+    match (left, right) {
+        (Type::Union(left), Type::Union(right)) => {
+            let mut unmatched: Vec<_> = right.iter().collect();
+            left.len() == right.len()
+                && left.iter().all(|value| {
+                    if let Some(index) = unmatched
+                        .iter()
+                        .position(|other| initializer_values_equal(value, other))
+                    {
+                        unmatched.remove(index);
+                        true
+                    } else {
+                        false
+                    }
+                })
+        }
+        (Type::ConstArray(left), Type::ConstArray(right)) => {
+            left.keys == right.keys
+                && left.optional == right.optional
+                && left.unsealed == right.unsealed
+                && left.values.len() == right.values.len()
+                && left
+                    .values
+                    .iter()
+                    .zip(&right.values)
+                    .all(|(left, right)| initializer_values_equal(left, right))
+        }
+        _ => left == right,
     }
 }
 

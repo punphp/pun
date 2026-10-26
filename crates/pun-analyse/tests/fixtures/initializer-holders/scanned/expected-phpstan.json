@@ -1,0 +1,56 @@
+{
+  "totals": {
+    "errors": 0,
+    "file_errors": 7
+  },
+  "files": {
+    "main.php": {
+      "errors": 7,
+      "messages": [
+        {
+          "message": "Dumped type: 'ScannedHolders\\\\A'|'ScannedHolders\\\\B'",
+          "line": 3,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: 1|2|4",
+          "line": 4,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: 1|2|4",
+          "line": 5,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: 1|2|4",
+          "line": 6,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: 1|2",
+          "line": 8,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: 1|2|4",
+          "line": 10,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Class ScannedHolders\\DifferentTargets is not an Attribute class.",
+          "line": 12,
+          "ignorable": true,
+          "identifier": "attribute.notAttribute"
+        }
+      ]
+    }
+  },
+  "errors": []
+}

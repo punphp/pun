@@ -170,6 +170,8 @@ pub struct TypeExpansionOptions {
     /// InitializerExprTypeResolver creates bare object identities, including literal self/parent/static.
     /// Their names and omitted arguments are values, not declaration types to instantiate.
     pub preserve_initializer_object_identity: bool,
+    /// Canonical initializer reflection observes union order; ordinary flow remains normalized.
+    pub preserve_initializer_union_order: bool,
 }
 
 /// Expands a type union, resolving special types like `self`, `static`, `parent`,
@@ -215,6 +217,18 @@ fn expand_shared_union(codebase: &CodebaseMetadata, return_type: &mut Arc<TUnion
 
 fn expand_union_inner(codebase: &CodebaseMetadata, return_type: &mut TUnion, options: &TypeExpansionOptions) {
     let mut types = std::mem::take(&mut return_type.types).into_owned();
+    if options.preserve_initializer_union_order {
+        let mut expanded = Vec::new();
+        for mut atomic in types {
+            let mut skip = false;
+            expand_atomic(&mut atomic, codebase, options, &mut skip, &mut expanded);
+            if !skip {
+                expanded.push(atomic);
+            }
+        }
+        return_type.types = crate::ttype::initializer::expanded(expanded, codebase).types;
+        return;
+    }
     let mut new_return_type_parts: Vec<TAtomic> = Vec::new();
     let mut skip_mask: u64 = 0;
 

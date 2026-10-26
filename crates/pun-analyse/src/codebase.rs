@@ -19,11 +19,14 @@ use mago_codex::metadata::flags::MetadataFlags;
 use mago_codex::metadata::ttype::TypeMetadata;
 use mago_codex::populator::populate_codebase_parallel;
 use mago_codex::reference::SymbolReferences;
+use mago_codex::scanner::inference::get_literal_constant_type;
 use mago_codex::scanner::inference::infer_initializer_with_codebase;
+use mago_codex::scanner::inference::initializer_class_names;
 use mago_codex::scanner::scan_program;
 use mago_codex::ttype::atomic::TAtomic;
 use mago_codex::ttype::atomic::scalar::TScalar;
 use mago_codex::ttype::get_empty;
+use mago_codex::ttype::get_error;
 use mago_codex::ttype::get_int_or_float;
 use mago_codex::ttype::get_mixed;
 use mago_codex::ttype::get_named_object;
@@ -678,6 +681,18 @@ struct ConstantInputs<'a, 'arena> {
     class: Option<mago_word::Word>,
 }
 
+fn selected_global<'a>(
+    metadata: &'a CodebaseMetadata,
+    names: &ResolvedNames<'_>,
+    access: &ConstantAccess<'_>,
+) -> Option<&'a ConstantMetadata> {
+    metadata.get_constant(names.get(access)).or_else(|| {
+        (!access.name.value().contains(&b'\\') && !names.is_imported(&access.name))
+            .then(|| metadata.get_constant(access.name.value()))
+            .flatten()
+    })
+}
+
 #[derive(Clone, Copy)]
 enum Initializer {
     Global(mago_word::Word),
@@ -735,14 +750,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for ConstantInputs<'_, 'arena> {
     fn walk_in_constant_access(&mut self, access: &'ast ConstantAccess<'arena>, _: &mut ()) {
         // The same selection as ConstantAccess::analyze: existence stops fallback, and imported or
         // qualified names can never accidentally select an unrelated global constant.
-        let selected = self
-            .metadata
-            .get_constant(self.names.get(access))
-            .or_else(|| {
-                (!access.name.value().contains(&b'\\') && !self.names.is_imported(&access.name))
-                    .then(|| self.metadata.get_constant(access.name.value()))
-                    .flatten()
-            });
+        let selected = selected_global(self.metadata, self.names, access);
         if let Some(selected) = selected.filter(|k| !k.flags.is_built_in()) {
             self.names_found.push(Initializer::Global(selected.name));
         }
@@ -926,8 +934,32 @@ impl Initializers<'_> {
             class,
         };
         inputs.walk_expression(expression, &mut ());
+        // Expression holders must discover their declarations after their own dependencies have
+        // canonical values. Postorder also handles a class constant whose value is another holder.
+        struct Holders<'ast, 'arena>(Vec<(&'ast Expression<'arena>, mago_word::Word)>);
+        impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Holders<'ast, 'arena> {
+            fn walk_out_class_constant_access(
+                &mut self,
+                access: &'ast cst::ClassConstantAccess<'arena>,
+                _: &mut (),
+            ) {
+                if !matches!(
+                    access.class.unparenthesized(),
+                    Expression::Identifier(_)
+                        | Expression::Self_(_)
+                        | Expression::Parent(_)
+                        | Expression::Static(_)
+                ) && let cst::ClassLikeConstantSelector::Identifier(name) = &access.constant
+                    && !name.value.eq_ignore_ascii_case(b"class")
+                {
+                    self.0.push((access.class, mago_word::word(name.value)));
+                }
+            }
+        }
+        let mut holders = Holders(Vec::new());
+        holders.walk_expression(expression, &mut ());
         // Literal/unsupported arguments without a constant dependency retain their scanner result.
-        if require_global && inputs.names_found.is_empty() {
+        if require_global && inputs.names_found.is_empty() && holders.0.is_empty() {
             return None;
         }
         let mut inherited_benevolence = false;
@@ -943,7 +975,43 @@ impl Initializers<'_> {
                     && value.type_union.ignore_falsable_issues();
             }
         }
-        let mut value = InitializerInference {
+        for (expression, name) in holders.0 {
+            let holder = self.inference(class).initializer_type(
+                &arena,
+                file,
+                program,
+                &names,
+                expression,
+                find.namespace.clone(),
+            );
+            for target in initializer_class_names(self.metadata, &holder) {
+                if self
+                    .metadata
+                    .get_class_constant(target.as_bytes(), name.as_bytes())
+                    .is_some_and(|constant| !constant.flags.is_built_in())
+                {
+                    self.resolve_class(target, name);
+                }
+            }
+        }
+        let mut value = self.inference(class).initializer_type(
+            &arena,
+            file,
+            program,
+            &names,
+            expression,
+            find.namespace,
+        );
+        if inherited_benevolence && value == get_int_or_float() {
+            // Keep the numeric union's existing marker across the full evaluator's arithmetic join.
+            value.set_ignore_nullable_issues(true);
+            value.set_ignore_falsable_issues(true);
+        }
+        Some(value)
+    }
+
+    fn inference(&self, class: Option<mago_word::Word>) -> InitializerInference<'_> {
+        InitializerInference {
             metadata: self.metadata,
             version: self.version,
             class,
@@ -953,13 +1021,6 @@ impl Initializers<'_> {
                 .and_then(|k| self.sources.get(&k.span.file_id))
                 .and_then(|f| f.path.clone()),
         }
-        .initializer_type(&arena, file, program, &names, expression, find.namespace);
-        if inherited_benevolence && value == get_int_or_float() {
-            // Keep the numeric union's existing marker across the full evaluator's arithmetic join.
-            value.set_ignore_nullable_issues(true);
-            value.set_ignore_falsable_issues(true);
-        }
-        Some(value)
     }
 }
 
@@ -1122,6 +1183,7 @@ pub(crate) fn trait_initializer_types(
             expression,
             find.namespace,
             false,
+            None,
         );
         types.extend(
             artifacts
@@ -1177,6 +1239,8 @@ impl InitializerInference<'_> {
                         Expression::Conditional(_)
                             | Expression::Call(_)
                             | Expression::Instantiation(_)
+                            | Expression::ConstantAccess(_)
+                            | Expression::Access(cst::Access::ClassConstant(_))
                             | Expression::Binary(cst::Binary {
                                 operator: cst::BinaryOperator::NullCoalesce(_),
                                 ..
@@ -1216,8 +1280,10 @@ impl InitializerInference<'_> {
                 .expressions
                 .iter()
                 .copied()
-                .filter(|(_, owned, parent)| {
+                .filter(|(expression, owned, parent)| {
                     !owned && parent.is_none_or(|parent| scanner_owned.contains(&parent))
+                        // Class holder names are syntax, not standalone value expressions.
+                        && !matches!(expression, Expression::Identifier(_) | Expression::Self_(_) | Expression::Parent(_) | Expression::Static(_))
                 })
         {
             if let Some(value) = self
@@ -1229,6 +1295,7 @@ impl InitializerInference<'_> {
                     expression,
                     namespace.clone(),
                     true,
+                    None,
                 )
                 .and_then(|artifacts| artifacts.get_expression_type(expression).cloned())
             {
@@ -1257,6 +1324,60 @@ impl InitializerInference<'_> {
                     }
                     _ => get_object(),
                 },
+                Expression::ConstantAccess(access) => {
+                    match selected_global(self.metadata, names, access) {
+                        Some(constant) if !constant.flags.is_built_in() => {
+                            constant.inferred_type.clone().unwrap_or_else(get_mixed)
+                        }
+                        Some(_) => self
+                            .expression_artifacts(
+                                arena,
+                                file,
+                                program,
+                                names,
+                                expression,
+                                namespace.clone(),
+                                true,
+                                None,
+                            )
+                            .and_then(|artifacts| {
+                                artifacts.get_expression_type(expression).cloned()
+                            })
+                            .unwrap_or_else(get_mixed),
+                        // InitializerExprTypeResolver::getType(ConstFetch) returns ErrorType when
+                        // reflection cannot find the constant. Ordinary expression flow stays separate.
+                        None => {
+                            get_literal_constant_type(access.name.value()).unwrap_or_else(get_error)
+                        }
+                    }
+                }
+                // The existing analyzer owns arithmetic, array keys and other enclosing syntax.
+                // Supply canonical children instead of reselecting their initializer branches.
+                _ if !matches!(
+                    expression,
+                    Expression::Conditional(_)
+                        | Expression::Parenthesized(_)
+                        | Expression::Call(_)
+                        | Expression::Access(cst::Access::ClassConstant(_))
+                        | Expression::Binary(cst::Binary {
+                            operator: cst::BinaryOperator::NullCoalesce(_),
+                            ..
+                        })
+                ) && !matches!(expression, Expression::Binary(binary) if binary.operator.is_bitwise()) =>
+                {
+                    self.expression_artifacts(
+                        arena,
+                        file,
+                        program,
+                        names,
+                        expression,
+                        namespace.clone(),
+                        true,
+                        Some(&types),
+                    )
+                    .and_then(|artifacts| artifacts.get_expression_type(expression).cloned())
+                    .unwrap_or_else(get_mixed)
+                }
                 _ => infer_initializer_with_codebase(
                     file,
                     names,
@@ -1302,6 +1423,7 @@ impl InitializerInference<'_> {
         expression: &'arena Expression<'arena>,
         namespace: Option<cst::Namespace<'arena>>,
         canonical: bool,
+        canonical_values: Option<&HashMap<Span, TUnion>>,
     ) -> Option<mago_analyzer::artifacts::AnalysisArtifacts> {
         let statement = cst::Statement::Expression(cst::ExpressionStatement {
             expression,
@@ -1325,6 +1447,9 @@ impl InitializerInference<'_> {
             ..program.clone()
         });
         let mut registry = PluginRegistry::with_library_providers();
+        if let Some(values) = canonical_values {
+            registry.register_expression_hook(InitializerValues(values.clone()));
+        }
         if let Some(class) = self.class {
             registry.register_expression_hook(InitializerScope {
                 class,
@@ -1347,6 +1472,25 @@ impl InitializerInference<'_> {
         }))
         .ok()?
         .ok()
+    }
+}
+
+/// Array inference consumes the same already-resolved initializer values as the scanner query.
+struct InitializerValues(HashMap<Span, TUnion>);
+
+impl mago_analyzer::plugin::ExpressionHook for InitializerValues {
+    fn before_expression(
+        &self,
+        expression: &Expression<'_>,
+        _: &mut mago_analyzer::plugin::HookContext<'_, '_>,
+    ) -> mago_analyzer::plugin::HookResult<mago_analyzer::plugin::ExpressionHookResult> {
+        use mago_analyzer::plugin::ExpressionHookResult;
+        Ok(self
+            .0
+            .get(&expression.span())
+            .map_or(ExpressionHookResult::Continue, |value| {
+                ExpressionHookResult::SkipWithType(value.clone())
+            }))
     }
 }
 
