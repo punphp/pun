@@ -36,7 +36,15 @@ pub(crate) fn errors(file: &File, program: &Program, version: PHPVersion) -> Vec
 }
 
 fn error(file: &File, at: Span, message: String) -> Error {
-    let line = i64::from(file.line_number(at.start.offset)) + 1;
+    // PHP's tokenizer counts CRLF, LF and bare CR even in a file with mixed line endings. Mago's line table
+    // chooses one convention from the first newline, so it cannot locate an InlineHTML after a bare CR.
+    let line = 1 + file.contents[..at.start.offset as usize]
+        .iter()
+        .enumerate()
+        .filter(|(index, byte)| {
+            **byte == b'\n' || (**byte == b'\r' && file.contents.get(index + 1) != Some(&b'\n'))
+        })
+        .count() as i64;
     Error {
         identifier: Some("phpstan.parse".into()),
         can_be_ignored: false,
@@ -77,7 +85,173 @@ struct Reserved<'a> {
     errors: Vec<Error>,
 }
 
+/// php.y's top_statement_list before handleNamespaces moves semicolon bodies. Keep the original CST nodes,
+/// but project PHP's dropped opening tags, close-tag semicolons/newlines and comment-bearing Nops. Mago also
+/// splits a leading shebang from adjacent HTML; PHP keeps them in one InlineHTML node.
+fn namespace_statements<'ast, 'arena>(
+    program: &'ast Program<'arena>,
+) -> Vec<(&'ast Statement<'arena>, Span)> {
+    let mut result: Vec<(&Statement<'arena>, Span)> = Vec::new();
+    let mut previous_end = 0;
+    let mut after_close = false;
+    let statements = program.statements.iter().flat_map(|statement| {
+        let body = match statement {
+            Statement::Namespace(Namespace {
+                body: NamespaceBody::Implicit(body),
+                ..
+            }) => body.statements.as_slice(),
+            _ => &[],
+        };
+        std::iter::once(statement).chain(body.iter())
+    });
+    for statement in statements {
+        if matches!(statement, Statement::OpeningTag(_)) {
+            after_close = false;
+            continue;
+        }
+        let mut at = statement.span();
+        // An implicit namespace is still just its header at this reduction; its body follows in this list.
+        let (end, closes) = match statement {
+            Statement::Namespace(Namespace {
+                body: NamespaceBody::Implicit(body),
+                ..
+            }) => (
+                body.terminator.span().end.offset,
+                body.terminator.is_closing_tag(),
+            ),
+            _ => (at.end.offset, statement.terminates_scripting()),
+        };
+        let before = previous_end;
+        previous_end = end;
+        let strip_newline = after_close;
+        after_close = closes;
+        match statement {
+            Statement::Inline(_) => {
+                if strip_newline {
+                    let skip = match &program.source_text
+                        [at.start.offset as usize..at.end.offset as usize]
+                    {
+                        [b'\r', b'\n', ..] => 2,
+                        [b'\r' | b'\n', ..] => 1,
+                        _ => 0,
+                    };
+                    at.start = at.start.forward(skip);
+                }
+                if at.start == at.end {
+                    continue;
+                }
+                if let Some((Statement::Inline(_), previous)) = result.last_mut()
+                    && previous.end == at.start
+                {
+                    previous.end = at.end;
+                    continue;
+                }
+            }
+            Statement::Noop(_) | Statement::ClosingTag(_) => {
+                // maybeCreateNop/getCommentBeforeToken retain only comments among the dropped tokens since
+                // the previous significant token. Even a discarded semicolon stops that backwards search.
+                if !program.trivia.comments().any(|comment| {
+                    comment.span.start.offset >= before
+                        && comment.span.end.offset <= at.start.offset
+                }) {
+                    continue;
+                }
+            }
+            Statement::HaltCompiler(_) => {
+                // handleHaltCompiler consumes the remaining InlineHTML as payload, not as another statement.
+                result.push((statement, at));
+                break;
+            }
+            Statement::Constant(node) => {
+                if let Some(attributes) = node.attribute_lists.first() {
+                    at.start = attributes.span().start;
+                }
+            }
+            _ => {}
+        }
+        result.push((statement, at));
+    }
+    result
+}
+
 impl Reserved<'_> {
+    /// ParserAbstract::getNamespacingStyle/getNamespaceErrorAttributes. A mixed style returns semicolon so
+    /// handleNamespaces does not also report outside code; only the first style mismatch is collected.
+    fn namespacing_style(
+        &mut self,
+        statements: &[(&Statement<'_>, Span)],
+        source: &[u8],
+    ) -> Option<bool> {
+        static HASHBANG: std::sync::LazyLock<pcre2::bytes::Regex> =
+            std::sync::LazyLock::new(|| {
+                pcre2::bytes::Regex::new(r"\A#!.*\r?\n\z").expect("upstream hashbang pattern")
+            });
+        let mut style = None;
+        let mut forbidden = false;
+        for (index, (statement, at)) in statements.iter().enumerate() {
+            match statement {
+                Statement::Namespace(node) => {
+                    let braced = matches!(node.body, NamespaceBody::BraceDelimited(_));
+                    if let Some(previous) = style {
+                        if previous != braced {
+                            self.errors.push(error(
+                                self.file,
+                                node.namespace.span,
+                                "Cannot mix bracketed namespace declarations with unbracketed namespace declarations".into(),
+                            ));
+                            return Some(false);
+                        }
+                    } else {
+                        style = Some(braced);
+                        if forbidden {
+                            self.errors.push(error(
+                                self.file,
+                                node.namespace.span,
+                                "Namespace declaration statement has to be the very first statement in the script".into(),
+                            ));
+                        }
+                    }
+                }
+                Statement::Declare(_)
+                | Statement::HaltCompiler(_)
+                | Statement::Noop(_)
+                | Statement::ClosingTag(_) => {}
+                Statement::Inline(_)
+                    if index == 0
+                        && HASHBANG
+                            .is_match(&source[at.start.offset as usize..at.end.offset as usize])
+                            .unwrap_or(false) => {}
+                _ => forbidden = true,
+            }
+        }
+        style
+    }
+
+    fn handle_namespaces(&mut self, program: &Program<'_>) {
+        let statements = namespace_statements(program);
+        if self.namespacing_style(&statements, program.source_text) != Some(true) {
+            return;
+        }
+        // handleNamespaces' braced pass permits Nops and HaltCompiler, but not declare(), after the first
+        // namespace. Mago already holds semicolon bodies, so its normalization needs no CST mutation here.
+        let mut after_namespace = false;
+        for (statement, at) in statements {
+            match statement {
+                Statement::Namespace(_) => after_namespace = true,
+                Statement::Noop(_) | Statement::ClosingTag(_) | Statement::HaltCompiler(_) => {}
+                _ if after_namespace => {
+                    self.errors.push(error(
+                        self.file,
+                        at,
+                        "No code may exist outside of namespace {}".into(),
+                    ));
+                    break;
+                }
+                _ => {}
+            }
+        }
+    }
+
     /// ParserAbstract::doParse/getErrorMessage: an unexpected token starts three-shift error recovery. Semantic
     /// checks still collect during recovery. The supplied follow set belongs to the owning php.y production;
     /// it is never inferred from Mago's error text.
@@ -241,6 +415,10 @@ impl Reserved<'_> {
 }
 
 impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Reserved<'_> {
+    fn walk_out_program(&mut self, node: &'ast Program<'arena>, _: &mut ()) {
+        // php.y's start production reduces only after every top-level body semantic check has collected.
+        self.handle_namespaces(node);
+    }
     fn walk_return(&mut self, node: &'ast Return<'arena>, context: &mut ()) {
         let saved = self.continuation;
         self.continuation = node.value.map(|value| (value.span(), ", expecting ';'"));

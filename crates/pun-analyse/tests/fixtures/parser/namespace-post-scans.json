@@ -1,0 +1,10 @@
+{
+  "placement": "<?php\nclass ScanBefore {} function scanFunction() {} const SCAN_CONSTANT = 1;\nnamespace InvalidPlacement {}\nnamespace { class ScanAfter {} }\n",
+  "mixed": "<?php\nnamespace { class ScanBefore {} function scanFunction() {} const SCAN_CONSTANT = 1; }\nnamespace Mixed;\nclass ScanAfter {}\n",
+  "outside": "<?php\nnamespace { class ScanBefore {} function scanFunction() {} const SCAN_CONSTANT = 1; }\nclass ScanAfter {}\n",
+  "comment-nop-shebang": "<?php /* comment */ ?>#!php\n<?php namespace { class ScanBefore {} function scanFunction() {} const SCAN_CONSTANT = 1; class ScanAfter {} }\n",
+  "positive-braced": "<?php\nnamespace { class ScanBefore {} function scanFunction() {} const SCAN_CONSTANT = 1; class ScanAfter {} }\n",
+  "positive-tags": "<?php ?>\n<?php ; namespace { class ScanBefore {} function scanFunction() {} const SCAN_CONSTANT = 1; class ScanAfter {} } ?>\r\n",
+  "positive-shebang": "#!php\n<?php namespace { class ScanBefore {} function scanFunction() {} const SCAN_CONSTANT = 1; class ScanAfter {} }\n",
+  "positive-halt": "<?php\nnamespace { class ScanBefore {} function scanFunction() {} const SCAN_CONSTANT = 1; class ScanAfter {} }\n__halt_compiler();namespace Payload; namespace Mixed {}\n"
+}

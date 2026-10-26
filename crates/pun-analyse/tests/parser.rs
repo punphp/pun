@@ -22,8 +22,12 @@ impl Inputs {
     }
 
     fn write(&self, name: &str, code: &str) -> PathBuf {
+        self.write_source(name, &format!("<?php\n{code}\n"))
+    }
+
+    fn write_source(&self, name: &str, source: &str) -> PathBuf {
         let path = self.0.join(format!("{name}.php"));
-        std::fs::write(&path, format!("<?php\n{code}\n")).unwrap();
+        std::fs::write(&path, source).unwrap();
         path
     }
 }
@@ -726,6 +730,72 @@ fn invalid_constant_attributes_in_scanned_files_export_no_symbols() {
                 .unwrap(),
         );
         let symbols = root.write("symbols", code.as_str().unwrap());
+        assert_eq!(
+            errors(&Project::new(vec![main], vec![symbols])),
+            expected["scanned"][name]["errors"],
+            "{name}"
+        );
+    }
+}
+
+#[test]
+fn namespace_postprocessing_preserves_placement_styles_tags_comments_and_statement_starts() {
+    let inputs: Value =
+        serde_json::from_str(include_str!("fixtures/parser/namespace-post-inputs.json")).unwrap();
+    let expected: Value =
+        serde_json::from_str(include_str!("fixtures/parser/namespace-post-expected.json")).unwrap();
+    let root = Inputs::new();
+    let files = inputs
+        .as_object()
+        .unwrap()
+        .iter()
+        .map(|(name, code)| root.write_source(name, code.as_str().unwrap()))
+        .collect();
+    assert_eq!(
+        errors(&Project::new(files, Vec::new())),
+        expected["analysed"]["errors"]
+    );
+}
+
+#[test]
+fn namespace_postprocessing_follows_body_checks_and_mixed_styles_suppress_outside_errors() {
+    use pun_phpstan::{Array, Key, Value as Php};
+    let inputs: Value =
+        serde_json::from_str(include_str!("fixtures/parser/namespace-post-order.json")).unwrap();
+    let expected: Value =
+        serde_json::from_str(include_str!("fixtures/parser/namespace-post-expected.json")).unwrap();
+    for (name, code) in inputs.as_object().unwrap() {
+        let root = Inputs::new();
+        let file = root.write_source("order", code.as_str().unwrap());
+        let mut project = Project::new(vec![file], Vec::new());
+        let mut entry = Array::new();
+        entry.set(Key::from("identifier"), Php::str("phpstan.parse"));
+        project.ignore_errors =
+            pun_phpstan::ignore::IgnoredErrors::new(&Array::list([Php::Array(entry)]), true);
+        // The configured-ignore messages preserve collection order before public diagnostics are sorted.
+        assert_eq!(
+            json!(analyse_project(&project).unwrap().general),
+            expected["order"][name]["general"],
+            "{name}"
+        );
+        assert_eq!(
+            errors(&project),
+            expected["order"][name]["errors"],
+            "{name}"
+        );
+    }
+}
+
+#[test]
+fn namespace_postprocessing_rejects_scanned_symbols_and_preserves_valid_neighbors() {
+    let inputs: Value =
+        serde_json::from_str(include_str!("fixtures/parser/namespace-post-scans.json")).unwrap();
+    let expected: Value =
+        serde_json::from_str(include_str!("fixtures/parser/namespace-post-expected.json")).unwrap();
+    for (name, code) in inputs.as_object().unwrap() {
+        let root = Inputs::new();
+        let main = root.write_source("main", include_str!("fixtures/parser/scan-main.php"));
+        let symbols = root.write_source("symbols", code.as_str().unwrap());
         assert_eq!(
             errors(&Project::new(vec![main], vec![symbols])),
             expected["scanned"][name]["errors"],
