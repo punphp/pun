@@ -1941,7 +1941,7 @@
         "rules": [
           "lint/phpunit/prefer-namespaced"
         ],
-        "note": "Same. Options: renamed for TOML: [options.\"lint/phpunit/prefer-namespaced\"]. Planned: not ported yet.",
+        "note": "Same. Options: renamed for TOML: [options.\"lint/phpunit/prefer-namespaced\"].",
         "unsupported": false
       },
       {
@@ -4927,7 +4927,7 @@
         "rules": [
           "lint/phpunit/prefer-namespaced"
         ],
-        "note": "Same. Options: renamed for TOML: [options.\"lint/phpunit/prefer-namespaced\"]. Planned: not ported yet.",
+        "note": "Same. Options: renamed for TOML: [options.\"lint/phpunit/prefer-namespaced\"].",
         "unsupported": false
       },
       {
