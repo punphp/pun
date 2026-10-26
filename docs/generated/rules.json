@@ -11987,7 +11987,7 @@
         "DataProviderAnnotationToAttributeRector",
         "Rector\\PHPUnit\\AnnotationsToAttributes\\Rector\\ClassMethod\\DataProviderAnnotationToAttributeRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/phpunit/prefer-dedicated-assertion",

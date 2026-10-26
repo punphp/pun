@@ -92,8 +92,8 @@ pub(crate) enum TagValue {
     /// A generic tag whose name resolves to a class, which `DoctrineAnnotationDecorator` turns into a
     /// `DoctrineAnnotationTagValueNode` whose original content is the generic value.
     Annotation(String),
-    /// `@name(...)`: phpdoc-parser's Doctrine tag.
-    Parenthesized,
+    /// `@name(...)`: phpdoc-parser's Doctrine tag; what follows the name.
+    Parenthesized(String),
 }
 
 /// `PhpDocParser::parseTagValue()`'s tags, whose value is not a `GenericTagValueNode`.
@@ -194,7 +194,8 @@ const TYPED_TAGS: &[&str] = &[
 
 /// The `@name` tags of `doc` (case-sensitive, as `getTagsByName()` compares), each with its child index, as Rector
 /// reads them once `DoctrineAnnotationDecorator` has run; the node the doc belongs to has the ancestors `ancestors`.
-/// `None` where that decorator changes the doc's children and Pun does not follow: an `@\Class` or `@_tag`, a text
+/// `None` where phpdoc-parser or that decorator draws the doc's children otherwise and Pun does not follow: a
+/// `"..."` over a line break, an `@\Class` or `@_tag`, a text
 /// with `})` (`mergeNestedDoctrineAnnotations()`), a generic tag with a further tag inside a line (phpdoc-parser
 /// starts a child there), or a generic tag whose brackets do not close before a later generic tag (which it takes
 /// in).
@@ -204,6 +205,13 @@ pub(crate) fn named_tags(
     doc: &Doc<'_>,
     name: &str,
 ) -> Option<Vec<(usize, TagValue)>> {
+    // A token that runs over a line break (a Doctrine annotation string `"..."`) moves the children's bounds.
+    if phpdoc_tokens(doc.text_all())
+        .iter()
+        .any(|t| !t.starts_with(['\r', '\n']) && t.contains('\n'))
+    {
+        return None;
+    }
     let mut generic: Vec<(usize, &str, String)> = Vec::new();
     let mut tags = Vec::new();
     for i in 0..doc.len() {
@@ -223,7 +231,7 @@ pub(crate) fn named_tags(
         let rest = &text[1 + tag.len()..];
         if rest.trim_start_matches([' ', '\t']).starts_with('(') {
             if tag == name {
-                tags.push((i, TagValue::Parenthesized));
+                tags.push((i, TagValue::Parenthesized(rest.to_string())));
             }
             continue;
         }

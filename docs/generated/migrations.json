@@ -12783,7 +12783,7 @@
         "rules": [
           "lint/phpunit/prefer-data-provider-attribute"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
