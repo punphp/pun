@@ -52,6 +52,9 @@ foreach ([
     ['int', ['1', 'int', 'null']],
     ["'duplicate'|'other'", ["'duplicate'", 'string', 'null']],
     ["__benevolent<'duplicate'|'other'>", ["'duplicate'", 'string', 'null']],
+    ['object', ['object', 'stdClass', 'null']],
+    ['stdClass', ['stdClass', 'object', 'null']],
+    ['mixed', ['mixed', 'int', 'null']],
 ] as [$bound, $others]) {
     foreach ([false, true] as $argument) {
         $direct = ['name' => 'T', 'bound' => $bound, 'argument' => $argument];

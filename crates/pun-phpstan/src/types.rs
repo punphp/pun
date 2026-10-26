@@ -3400,6 +3400,10 @@ fn compare_in_union_merge(a: &Type, b: &Type) -> Option<Merge> {
     }
     // SubtractableType (object and mixed types) keeps the first of two equivalent types
     let subtractable = |t: &Type| {
+        let mut t = t;
+        while let Type::Template(template) = t {
+            t = &template.bound;
+        }
         matches!(
             t,
             Type::Object(..)

@@ -5619,6 +5619,1788 @@
         "inputs": [
             {
                 "name": "T",
+                "bound": "object",
+                "argument": false
+            },
+            "object"
+        ],
+        "descriptions": [
+            "object",
+            "object",
+            "object"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            "object",
+            {
+                "name": "T",
+                "bound": "object",
+                "argument": false
+            }
+        ],
+        "descriptions": [
+            "object",
+            "object",
+            "object"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "object",
+                "argument": false
+            },
+            "stdClass"
+        ],
+        "descriptions": [
+            "stdClass|T of object (function fixture(), parameter)",
+            "stdClass|T of object",
+            "stdClass|T of object"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            "stdClass",
+            {
+                "name": "T",
+                "bound": "object",
+                "argument": false
+            }
+        ],
+        "descriptions": [
+            "stdClass|T of object (function fixture(), parameter)",
+            "stdClass|T of object",
+            "stdClass|T of object"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "object",
+                "argument": false
+            },
+            "null"
+        ],
+        "descriptions": [
+            "T of object (function fixture(), parameter)|null",
+            "(T of object)|null",
+            "(T of object)|null"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            "null",
+            {
+                "name": "T",
+                "bound": "object",
+                "argument": false
+            }
+        ],
+        "descriptions": [
+            "T of object (function fixture(), parameter)|null",
+            "(T of object)|null",
+            "(T of object)|null"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "object",
+                    "argument": false
+                },
+                "argument": false
+            },
+            "object"
+        ],
+        "descriptions": [
+            "object",
+            "object",
+            "object"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            "object",
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "object",
+                    "argument": false
+                },
+                "argument": false
+            }
+        ],
+        "descriptions": [
+            "object",
+            "object",
+            "object"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "object",
+                    "argument": false
+                },
+                "argument": false
+            },
+            "stdClass"
+        ],
+        "descriptions": [
+            "stdClass|U of T of object (function fixture(), parameter) (function fixture(), parameter)",
+            "stdClass|U of T of object",
+            "stdClass|U of T of object"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            "stdClass",
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "object",
+                    "argument": false
+                },
+                "argument": false
+            }
+        ],
+        "descriptions": [
+            "stdClass|U of T of object (function fixture(), parameter) (function fixture(), parameter)",
+            "stdClass|U of T of object",
+            "stdClass|U of T of object"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "object",
+                    "argument": false
+                },
+                "argument": false
+            },
+            "null"
+        ],
+        "descriptions": [
+            "U of T of object (function fixture(), parameter) (function fixture(), parameter)|null",
+            "(U of T of object)|null",
+            "(U of T of object)|null"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            "null",
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "object",
+                    "argument": false
+                },
+                "argument": false
+            }
+        ],
+        "descriptions": [
+            "U of T of object (function fixture(), parameter) (function fixture(), parameter)|null",
+            "(U of T of object)|null",
+            "(U of T of object)|null"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "object",
+                "argument": false
+            },
+            {
+                "name": "T",
+                "bound": "object",
+                "argument": false
+            }
+        ],
+        "descriptions": [
+            "T of object (function fixture(), parameter)",
+            "T of object",
+            "T of object"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "object",
+                "argument": false
+            },
+            {
+                "name": "T",
+                "bound": "object",
+                "argument": true
+            }
+        ],
+        "descriptions": [
+            "T of object (function fixture(), parameter)",
+            "T of object",
+            "T of object"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "object",
+                "argument": false
+            },
+            {
+                "name": "Other",
+                "bound": "object",
+                "argument": false
+            }
+        ],
+        "descriptions": [
+            "Other of object (function fixture(), parameter)|T of object (function fixture(), parameter)",
+            "(Other of object)|T of object",
+            "(Other of object)|T of object"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "object",
+                "argument": false
+            },
+            {
+                "name": "T",
+                "bound": "object",
+                "argument": false,
+                "function": "other"
+            }
+        ],
+        "descriptions": [
+            "T of object (function fixture(), parameter)|T of object (function other(), parameter)",
+            "(T of object)|T of object",
+            "(T of object)|T of object"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "object",
+                "argument": true
+            },
+            "object"
+        ],
+        "descriptions": [
+            "object",
+            "object",
+            "object"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            "object",
+            {
+                "name": "T",
+                "bound": "object",
+                "argument": true
+            }
+        ],
+        "descriptions": [
+            "object",
+            "object",
+            "object"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "object",
+                "argument": true
+            },
+            "stdClass"
+        ],
+        "descriptions": [
+            "stdClass|T of object (function fixture(), argument)",
+            "stdClass|T of object",
+            "stdClass|T of object"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            "stdClass",
+            {
+                "name": "T",
+                "bound": "object",
+                "argument": true
+            }
+        ],
+        "descriptions": [
+            "stdClass|T of object (function fixture(), argument)",
+            "stdClass|T of object",
+            "stdClass|T of object"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "object",
+                "argument": true
+            },
+            "null"
+        ],
+        "descriptions": [
+            "T of object (function fixture(), argument)|null",
+            "(T of object)|null",
+            "(T of object)|null"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            "null",
+            {
+                "name": "T",
+                "bound": "object",
+                "argument": true
+            }
+        ],
+        "descriptions": [
+            "T of object (function fixture(), argument)|null",
+            "(T of object)|null",
+            "(T of object)|null"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "object",
+                    "argument": true
+                },
+                "argument": true
+            },
+            "object"
+        ],
+        "descriptions": [
+            "object",
+            "object",
+            "object"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            "object",
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "object",
+                    "argument": true
+                },
+                "argument": true
+            }
+        ],
+        "descriptions": [
+            "object",
+            "object",
+            "object"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "object",
+                    "argument": true
+                },
+                "argument": true
+            },
+            "stdClass"
+        ],
+        "descriptions": [
+            "stdClass|U of T of object (function fixture(), argument) (function fixture(), argument)",
+            "stdClass|U of T of object",
+            "stdClass|U of T of object"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            "stdClass",
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "object",
+                    "argument": true
+                },
+                "argument": true
+            }
+        ],
+        "descriptions": [
+            "stdClass|U of T of object (function fixture(), argument) (function fixture(), argument)",
+            "stdClass|U of T of object",
+            "stdClass|U of T of object"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "object",
+                    "argument": true
+                },
+                "argument": true
+            },
+            "null"
+        ],
+        "descriptions": [
+            "U of T of object (function fixture(), argument) (function fixture(), argument)|null",
+            "(U of T of object)|null",
+            "(U of T of object)|null"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            "null",
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "object",
+                    "argument": true
+                },
+                "argument": true
+            }
+        ],
+        "descriptions": [
+            "U of T of object (function fixture(), argument) (function fixture(), argument)|null",
+            "(U of T of object)|null",
+            "(U of T of object)|null"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "object",
+                "argument": true
+            },
+            {
+                "name": "T",
+                "bound": "object",
+                "argument": true
+            }
+        ],
+        "descriptions": [
+            "T of object (function fixture(), argument)",
+            "T of object",
+            "T of object"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "object",
+                "argument": true
+            },
+            {
+                "name": "T",
+                "bound": "object",
+                "argument": false
+            }
+        ],
+        "descriptions": [
+            "T of object (function fixture(), argument)",
+            "T of object",
+            "T of object"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "object",
+                "argument": true
+            },
+            {
+                "name": "Other",
+                "bound": "object",
+                "argument": true
+            }
+        ],
+        "descriptions": [
+            "Other of object (function fixture(), argument)|T of object (function fixture(), argument)",
+            "(Other of object)|T of object",
+            "(Other of object)|T of object"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "object",
+                "argument": true
+            },
+            {
+                "name": "T",
+                "bound": "object",
+                "argument": true,
+                "function": "other"
+            }
+        ],
+        "descriptions": [
+            "T of object (function fixture(), argument)|T of object (function other(), argument)",
+            "(T of object)|T of object",
+            "(T of object)|T of object"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "stdClass",
+                "argument": false
+            },
+            "stdClass"
+        ],
+        "descriptions": [
+            "stdClass",
+            "stdClass",
+            "stdClass"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            "stdClass",
+            {
+                "name": "T",
+                "bound": "stdClass",
+                "argument": false
+            }
+        ],
+        "descriptions": [
+            "stdClass",
+            "stdClass",
+            "stdClass"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "stdClass",
+                "argument": false
+            },
+            "object"
+        ],
+        "descriptions": [
+            "object",
+            "object",
+            "object"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            "object",
+            {
+                "name": "T",
+                "bound": "stdClass",
+                "argument": false
+            }
+        ],
+        "descriptions": [
+            "object",
+            "object",
+            "object"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "stdClass",
+                "argument": false
+            },
+            "null"
+        ],
+        "descriptions": [
+            "T of stdClass (function fixture(), parameter)|null",
+            "(T of stdClass)|null",
+            "(T of stdClass)|null"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            "null",
+            {
+                "name": "T",
+                "bound": "stdClass",
+                "argument": false
+            }
+        ],
+        "descriptions": [
+            "T of stdClass (function fixture(), parameter)|null",
+            "(T of stdClass)|null",
+            "(T of stdClass)|null"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "stdClass",
+                    "argument": false
+                },
+                "argument": false
+            },
+            "stdClass"
+        ],
+        "descriptions": [
+            "stdClass",
+            "stdClass",
+            "stdClass"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            "stdClass",
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "stdClass",
+                    "argument": false
+                },
+                "argument": false
+            }
+        ],
+        "descriptions": [
+            "stdClass",
+            "stdClass",
+            "stdClass"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "stdClass",
+                    "argument": false
+                },
+                "argument": false
+            },
+            "object"
+        ],
+        "descriptions": [
+            "object",
+            "object",
+            "object"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            "object",
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "stdClass",
+                    "argument": false
+                },
+                "argument": false
+            }
+        ],
+        "descriptions": [
+            "object",
+            "object",
+            "object"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "stdClass",
+                    "argument": false
+                },
+                "argument": false
+            },
+            "null"
+        ],
+        "descriptions": [
+            "U of T of stdClass (function fixture(), parameter) (function fixture(), parameter)|null",
+            "(U of T of stdClass)|null",
+            "(U of T of stdClass)|null"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            "null",
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "stdClass",
+                    "argument": false
+                },
+                "argument": false
+            }
+        ],
+        "descriptions": [
+            "U of T of stdClass (function fixture(), parameter) (function fixture(), parameter)|null",
+            "(U of T of stdClass)|null",
+            "(U of T of stdClass)|null"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "stdClass",
+                "argument": false
+            },
+            {
+                "name": "T",
+                "bound": "stdClass",
+                "argument": false
+            }
+        ],
+        "descriptions": [
+            "T of stdClass (function fixture(), parameter)",
+            "T of stdClass",
+            "T of stdClass"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "stdClass",
+                "argument": false
+            },
+            {
+                "name": "T",
+                "bound": "stdClass",
+                "argument": true
+            }
+        ],
+        "descriptions": [
+            "T of stdClass (function fixture(), parameter)",
+            "T of stdClass",
+            "T of stdClass"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "stdClass",
+                "argument": false
+            },
+            {
+                "name": "Other",
+                "bound": "stdClass",
+                "argument": false
+            }
+        ],
+        "descriptions": [
+            "Other of stdClass (function fixture(), parameter)|T of stdClass (function fixture(), parameter)",
+            "(Other of stdClass)|T of stdClass",
+            "(Other of stdClass)|T of stdClass"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "stdClass",
+                "argument": false
+            },
+            {
+                "name": "T",
+                "bound": "stdClass",
+                "argument": false,
+                "function": "other"
+            }
+        ],
+        "descriptions": [
+            "T of stdClass (function fixture(), parameter)|T of stdClass (function other(), parameter)",
+            "(T of stdClass)|T of stdClass",
+            "(T of stdClass)|T of stdClass"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "stdClass",
+                "argument": true
+            },
+            "stdClass"
+        ],
+        "descriptions": [
+            "stdClass",
+            "stdClass",
+            "stdClass"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            "stdClass",
+            {
+                "name": "T",
+                "bound": "stdClass",
+                "argument": true
+            }
+        ],
+        "descriptions": [
+            "stdClass",
+            "stdClass",
+            "stdClass"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "stdClass",
+                "argument": true
+            },
+            "object"
+        ],
+        "descriptions": [
+            "object",
+            "object",
+            "object"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            "object",
+            {
+                "name": "T",
+                "bound": "stdClass",
+                "argument": true
+            }
+        ],
+        "descriptions": [
+            "object",
+            "object",
+            "object"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "stdClass",
+                "argument": true
+            },
+            "null"
+        ],
+        "descriptions": [
+            "T of stdClass (function fixture(), argument)|null",
+            "(T of stdClass)|null",
+            "(T of stdClass)|null"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            "null",
+            {
+                "name": "T",
+                "bound": "stdClass",
+                "argument": true
+            }
+        ],
+        "descriptions": [
+            "T of stdClass (function fixture(), argument)|null",
+            "(T of stdClass)|null",
+            "(T of stdClass)|null"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "stdClass",
+                    "argument": true
+                },
+                "argument": true
+            },
+            "stdClass"
+        ],
+        "descriptions": [
+            "stdClass",
+            "stdClass",
+            "stdClass"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            "stdClass",
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "stdClass",
+                    "argument": true
+                },
+                "argument": true
+            }
+        ],
+        "descriptions": [
+            "stdClass",
+            "stdClass",
+            "stdClass"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "stdClass",
+                    "argument": true
+                },
+                "argument": true
+            },
+            "object"
+        ],
+        "descriptions": [
+            "object",
+            "object",
+            "object"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            "object",
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "stdClass",
+                    "argument": true
+                },
+                "argument": true
+            }
+        ],
+        "descriptions": [
+            "object",
+            "object",
+            "object"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "stdClass",
+                    "argument": true
+                },
+                "argument": true
+            },
+            "null"
+        ],
+        "descriptions": [
+            "U of T of stdClass (function fixture(), argument) (function fixture(), argument)|null",
+            "(U of T of stdClass)|null",
+            "(U of T of stdClass)|null"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            "null",
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "stdClass",
+                    "argument": true
+                },
+                "argument": true
+            }
+        ],
+        "descriptions": [
+            "U of T of stdClass (function fixture(), argument) (function fixture(), argument)|null",
+            "(U of T of stdClass)|null",
+            "(U of T of stdClass)|null"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "stdClass",
+                "argument": true
+            },
+            {
+                "name": "T",
+                "bound": "stdClass",
+                "argument": true
+            }
+        ],
+        "descriptions": [
+            "T of stdClass (function fixture(), argument)",
+            "T of stdClass",
+            "T of stdClass"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "stdClass",
+                "argument": true
+            },
+            {
+                "name": "T",
+                "bound": "stdClass",
+                "argument": false
+            }
+        ],
+        "descriptions": [
+            "T of stdClass (function fixture(), argument)",
+            "T of stdClass",
+            "T of stdClass"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "stdClass",
+                "argument": true
+            },
+            {
+                "name": "Other",
+                "bound": "stdClass",
+                "argument": true
+            }
+        ],
+        "descriptions": [
+            "Other of stdClass (function fixture(), argument)|T of stdClass (function fixture(), argument)",
+            "(Other of stdClass)|T of stdClass",
+            "(Other of stdClass)|T of stdClass"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "stdClass",
+                "argument": true
+            },
+            {
+                "name": "T",
+                "bound": "stdClass",
+                "argument": true,
+                "function": "other"
+            }
+        ],
+        "descriptions": [
+            "T of stdClass (function fixture(), argument)|T of stdClass (function other(), argument)",
+            "(T of stdClass)|T of stdClass",
+            "(T of stdClass)|T of stdClass"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "mixed",
+                "argument": false
+            },
+            "mixed"
+        ],
+        "descriptions": [
+            "mixed",
+            "mixed",
+            "mixed"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            "mixed",
+            {
+                "name": "T",
+                "bound": "mixed",
+                "argument": false
+            }
+        ],
+        "descriptions": [
+            "mixed",
+            "mixed",
+            "mixed"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "mixed",
+                "argument": false
+            },
+            "int"
+        ],
+        "descriptions": [
+            "int|T (function fixture(), parameter)",
+            "int|T",
+            "int|T"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            "int",
+            {
+                "name": "T",
+                "bound": "mixed",
+                "argument": false
+            }
+        ],
+        "descriptions": [
+            "int|T (function fixture(), parameter)",
+            "int|T",
+            "int|T"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "mixed",
+                "argument": false
+            },
+            "null"
+        ],
+        "descriptions": [
+            "T (function fixture(), parameter)|null",
+            "T|null",
+            "T|null"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            "null",
+            {
+                "name": "T",
+                "bound": "mixed",
+                "argument": false
+            }
+        ],
+        "descriptions": [
+            "T (function fixture(), parameter)|null",
+            "T|null",
+            "T|null"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "mixed",
+                    "argument": false
+                },
+                "argument": false
+            },
+            "mixed"
+        ],
+        "descriptions": [
+            "mixed",
+            "mixed",
+            "mixed"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            "mixed",
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "mixed",
+                    "argument": false
+                },
+                "argument": false
+            }
+        ],
+        "descriptions": [
+            "mixed",
+            "mixed",
+            "mixed"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "mixed",
+                    "argument": false
+                },
+                "argument": false
+            },
+            "int"
+        ],
+        "descriptions": [
+            "int|U of T (function fixture(), parameter) (function fixture(), parameter)",
+            "int|U of T",
+            "int|U of T"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            "int",
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "mixed",
+                    "argument": false
+                },
+                "argument": false
+            }
+        ],
+        "descriptions": [
+            "int|U of T (function fixture(), parameter) (function fixture(), parameter)",
+            "int|U of T",
+            "int|U of T"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "mixed",
+                    "argument": false
+                },
+                "argument": false
+            },
+            "null"
+        ],
+        "descriptions": [
+            "U of T (function fixture(), parameter) (function fixture(), parameter)|null",
+            "(U of T)|null",
+            "(U of T)|null"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            "null",
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "mixed",
+                    "argument": false
+                },
+                "argument": false
+            }
+        ],
+        "descriptions": [
+            "U of T (function fixture(), parameter) (function fixture(), parameter)|null",
+            "(U of T)|null",
+            "(U of T)|null"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "mixed",
+                "argument": false
+            },
+            {
+                "name": "T",
+                "bound": "mixed",
+                "argument": false
+            }
+        ],
+        "descriptions": [
+            "T (function fixture(), parameter)",
+            "T",
+            "T"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "mixed",
+                "argument": false
+            },
+            {
+                "name": "T",
+                "bound": "mixed",
+                "argument": true
+            }
+        ],
+        "descriptions": [
+            "T (function fixture(), parameter)",
+            "T",
+            "T"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "mixed",
+                "argument": false
+            },
+            {
+                "name": "Other",
+                "bound": "mixed",
+                "argument": false
+            }
+        ],
+        "descriptions": [
+            "Other (function fixture(), parameter)|T (function fixture(), parameter)",
+            "Other|T",
+            "Other|T"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "mixed",
+                "argument": false
+            },
+            {
+                "name": "T",
+                "bound": "mixed",
+                "argument": false,
+                "function": "other"
+            }
+        ],
+        "descriptions": [
+            "T (function fixture(), parameter)|T (function other(), parameter)",
+            "T",
+            "T"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "mixed",
+                "argument": true
+            },
+            "mixed"
+        ],
+        "descriptions": [
+            "mixed",
+            "mixed",
+            "mixed"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            "mixed",
+            {
+                "name": "T",
+                "bound": "mixed",
+                "argument": true
+            }
+        ],
+        "descriptions": [
+            "mixed",
+            "mixed",
+            "mixed"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "mixed",
+                "argument": true
+            },
+            "int"
+        ],
+        "descriptions": [
+            "int|T (function fixture(), argument)",
+            "int|T",
+            "int|T"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            "int",
+            {
+                "name": "T",
+                "bound": "mixed",
+                "argument": true
+            }
+        ],
+        "descriptions": [
+            "int|T (function fixture(), argument)",
+            "int|T",
+            "int|T"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "mixed",
+                "argument": true
+            },
+            "null"
+        ],
+        "descriptions": [
+            "T (function fixture(), argument)|null",
+            "T|null",
+            "T|null"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            "null",
+            {
+                "name": "T",
+                "bound": "mixed",
+                "argument": true
+            }
+        ],
+        "descriptions": [
+            "T (function fixture(), argument)|null",
+            "T|null",
+            "T|null"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "mixed",
+                    "argument": true
+                },
+                "argument": true
+            },
+            "mixed"
+        ],
+        "descriptions": [
+            "mixed",
+            "mixed",
+            "mixed"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            "mixed",
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "mixed",
+                    "argument": true
+                },
+                "argument": true
+            }
+        ],
+        "descriptions": [
+            "mixed",
+            "mixed",
+            "mixed"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "mixed",
+                    "argument": true
+                },
+                "argument": true
+            },
+            "int"
+        ],
+        "descriptions": [
+            "int|U of T (function fixture(), argument) (function fixture(), argument)",
+            "int|U of T",
+            "int|U of T"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            "int",
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "mixed",
+                    "argument": true
+                },
+                "argument": true
+            }
+        ],
+        "descriptions": [
+            "int|U of T (function fixture(), argument) (function fixture(), argument)",
+            "int|U of T",
+            "int|U of T"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "mixed",
+                    "argument": true
+                },
+                "argument": true
+            },
+            "null"
+        ],
+        "descriptions": [
+            "U of T (function fixture(), argument) (function fixture(), argument)|null",
+            "(U of T)|null",
+            "(U of T)|null"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            "null",
+            {
+                "name": "U",
+                "bound": {
+                    "name": "T",
+                    "bound": "mixed",
+                    "argument": true
+                },
+                "argument": true
+            }
+        ],
+        "descriptions": [
+            "U of T (function fixture(), argument) (function fixture(), argument)|null",
+            "(U of T)|null",
+            "(U of T)|null"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "mixed",
+                "argument": true
+            },
+            {
+                "name": "T",
+                "bound": "mixed",
+                "argument": true
+            }
+        ],
+        "descriptions": [
+            "T (function fixture(), argument)",
+            "T",
+            "T"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "mixed",
+                "argument": true
+            },
+            {
+                "name": "T",
+                "bound": "mixed",
+                "argument": false
+            }
+        ],
+        "descriptions": [
+            "T (function fixture(), argument)",
+            "T",
+            "T"
+        ],
+        "members": 1
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "mixed",
+                "argument": true
+            },
+            {
+                "name": "Other",
+                "bound": "mixed",
+                "argument": true
+            }
+        ],
+        "descriptions": [
+            "Other (function fixture(), argument)|T (function fixture(), argument)",
+            "Other|T",
+            "Other|T"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
+                "bound": "mixed",
+                "argument": true
+            },
+            {
+                "name": "T",
+                "bound": "mixed",
+                "argument": true,
+                "function": "other"
+            }
+        ],
+        "descriptions": [
+            "T (function fixture(), argument)|T (function other(), argument)",
+            "T",
+            "T"
+        ],
+        "members": 2
+    },
+    {
+        "inputs": [
+            {
+                "name": "T",
                 "bound": "'duplicate'",
                 "argument": false
             },
