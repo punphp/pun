@@ -12674,7 +12674,7 @@
       "upstream": [
         "php_unit_test_class_requires_covers"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/phpunit/require-data-provider-naming",

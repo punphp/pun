@@ -1,0 +1,374 @@
+{
+    "fixer": "php_unit_test_class_requires_covers",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\PhpUnit\\PhpUnitTestClassRequiresCoversFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/PhpUnit/PhpUnitTestClassRequiresCoversFixerTest.php",
+    "case_count": 39,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\PhpUnit\\PhpUnitTestClassRequiresCoversFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": "already with annotation: @covers",
+                    "args": [
+                        "<?php\n                    /**\n                     * @covers Foo\n                     */\n                    class FooTest extends \\PHPUnit_Framework_TestCase {}\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "already with annotation: @coversDefaultClass",
+                    "args": [
+                        "<?php\n                    /**\n                     * @coversDefaultClass\n                     */\n                    class FooTest extends \\PHPUnit_Framework_TestCase {}\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "without docblock #1",
+                    "args": [
+                        "<?php\n\n                    /**\n                     * @coversNothing\n                     */\n                    class FooTest extends \\PHPUnit_Framework_TestCase {}\n                ",
+                        "<?php\n\n                    class FooTest extends \\PHPUnit_Framework_TestCase {}\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "without docblock #2 (class is final)",
+                    "args": [
+                        "<?php\n\n                    /**\n                     * @coversNothing\n                     */\n                    final class FooTest extends \\PHPUnit_Framework_TestCase {}\n                ",
+                        "<?php\n\n                    final class FooTest extends \\PHPUnit_Framework_TestCase {}\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "without docblock #2 (class is abstract)",
+                    "args": [
+                        "<?php\n                    abstract class FooTest extends \\PHPUnit_Framework_TestCase {}\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "with docblock but annotation is missing",
+                    "args": [
+                        "<?php\n\n                    /**\n                     * Description.\n                     *\n                     * @since v2.2\n                     * @coversNothing\n                     */\n                    final class FooTest extends \\PHPUnit_Framework_TestCase {}\n                ",
+                        "<?php\n\n                    /**\n                     * Description.\n                     *\n                     * @since v2.2\n                     */\n                    final class FooTest extends \\PHPUnit_Framework_TestCase {}\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "with one-line docblock but annotation is missing",
+                    "args": [
+                        "<?php\n\n                    /**\n                     * Description.\n                     * @coversNothing\n                     */\n                    final class FooTest extends \\PHPUnit_Framework_TestCase {}\n                ",
+                        "<?php\n\n                    /** Description. */\n                    final class FooTest extends \\PHPUnit_Framework_TestCase {}\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "with 2-lines docblock but annotation is missing #1",
+                    "args": [
+                        "<?php\n\n                    /** Description.\n                     * @coversNothing\n                     */\n                    final class FooTest extends \\PHPUnit_Framework_TestCase {}\n                ",
+                        "<?php\n\n                    /** Description.\n                     */\n                    final class FooTest extends \\PHPUnit_Framework_TestCase {}\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "with 2-lines docblock but annotation is missing #2",
+                    "args": [
+                        "<?php\n\n                    /**\n                     * @coversNothing\n                     * Description. */\n                    final class FooTest extends \\PHPUnit_Framework_TestCase {}\n                ",
+                        "<?php\n\n                    /**\n                     * Description. */\n                    final class FooTest extends \\PHPUnit_Framework_TestCase {}\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "with comment instead of docblock",
+                    "args": [
+                        "<?php\n                    /*\n                     * @covers Foo\n                     */\n                    /**\n                     * @coversNothing\n                     */\n                    class FooTest extends \\PHPUnit_Framework_TestCase {}\n                ",
+                        "<?php\n                    /*\n                     * @covers Foo\n                     */\n                    class FooTest extends \\PHPUnit_Framework_TestCase {}\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "not a test class",
+                    "args": [
+                        "<?php\n\n                    class Foo {}\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "multiple classes in one file",
+                    "args": [
+                        "<?php /** */\n\n                    use \\PHPUnit\\Framework\\TestCase;\n\n                    /**\n                     * Foo\n                     * @coversNothing\n                     */\n                    class FooTest extends \\PHPUnit_Framework_TestCase {}\n\n                    class Bar {}\n\n                    /**\n                     * @coversNothing\n                     */\n                    class Baz1 extends PHPUnit_Framework_TestCase {}\n\n                    /**\n                     * @coversNothing\n                     */\n                    class Baz2 extends \\PHPUnit_Framework_TestCase {}\n\n                    /**\n                     * @coversNothing\n                     */\n                    class Baz3 extends \\PHPUnit\\Framework\\TestCase {}\n\n                    /**\n                     * @coversNothing\n                     */\n                    class Baz4 extends TestCase {}\n                ",
+                        "<?php /** */\n\n                    use \\PHPUnit\\Framework\\TestCase;\n\n                    /**\n                     * Foo\n                     */\n                    class FooTest extends \\PHPUnit_Framework_TestCase {}\n\n                    class Bar {}\n\n                    class Baz1 extends PHPUnit_Framework_TestCase {}\n\n                    class Baz2 extends \\PHPUnit_Framework_TestCase {}\n\n                    class Baz3 extends \\PHPUnit\\Framework\\TestCase {}\n\n                    class Baz4 extends TestCase {}\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php /* comment */\n\n/**\n * @coversNothing\n */\nclass FooTest extends \\PHPUnit_Framework_TestCase {}\n                ",
+                        "<?php /* comment */class FooTest extends \\PHPUnit_Framework_TestCase {}\n                "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php /* comment */\n$test = new class extends PHPUnit_Framework_TestCase {};"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testWithWhitespacesConfig",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\PhpUnit\\PhpUnitTestClassRequiresCoversFixerTest",
+            "body": "    public function testWithWhitespacesConfig(string $expected, ?string $input = null): void\n    {\n        $expected = str_replace(['    ', \"\\n\"], [\"\\t\", \"\\r\\n\"], $expected);\n        if (null !== $input) {\n            $input = str_replace(['    ', \"\\n\"], [\"\\t\", \"\\r\\n\"], $input);\n        }\n\n        $this->fixer->setWhitespacesConfig(new WhitespacesFixerConfig(\"\\t\", \"\\r\\n\"));\n\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideWithWhitespacesConfigCases",
+                    "key": 0,
+                    "args": [
+                        "<?php\n\n                    /**\n                     * @coversNothing\n                     */\n                    class FooTest extends \\PHPUnit_Framework_TestCase {}\n                ",
+                        "<?php\n\n                    class FooTest extends \\PHPUnit_Framework_TestCase {}\n                "
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix80",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.0.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\PhpUnit\\PhpUnitTestClassRequiresCoversFixerTest",
+            "body": "    public function testFix80(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "already with attribute CoversClass",
+                    "args": [
+                        "<?php\n#[PHPUnit\\Framework\\Attributes\\CoversClass(Foo::class)]\nclass FooTest extends \\PHPUnit_Framework_TestCase {}"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "already with attribute CoversNothing",
+                    "args": [
+                        "<?php\n#[PHPUnit\\Framework\\Attributes\\CoversNothing]\nclass FooTest extends \\PHPUnit_Framework_TestCase {}"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "already with attribute CoversNothing with leading slash",
+                    "args": [
+                        "<?php\n#[\\PHPUnit\\Framework\\Attributes\\CoversNothing]\nclass FooTest extends \\PHPUnit_Framework_TestCase {}"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "already with imported attribute",
+                    "args": [
+                        "<?php\nuse PHPUnit\\Framework\\TestCase;\nuse PHPUnit\\Framework\\Attributes\\CoversClass;\n#[CoversClass(Foo::class)]\nclass FooTest extends TestCase {}"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "already with partially imported attribute",
+                    "args": [
+                        "<?php\nuse PHPUnit\\Framework\\Attributes;\n#[Attributes\\CoversClass(Foo::class)]\nclass FooTest extends \\PHPUnit_Framework_TestCase {}"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "already with aliased attribute",
+                    "args": [
+                        "<?php\nuse PHPUnit\\Framework\\Attributes\\CoversClass as PHPUnitCoversClass;\n#[PHPUnitCoversClass(Foo::class)]\nclass FooTest extends \\PHPUnit_Framework_TestCase {}"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "already with partially aliased attribute",
+                    "args": [
+                        "<?php\nuse PHPUnit\\Framework\\Attributes as PHPUnitAttributes;\n#[PHPUnitAttributes\\CoversClass(Foo::class)]\nclass FooTest extends \\PHPUnit_Framework_TestCase {}"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "with attribute from different namespace",
+                    "args": [
+                        "<?php\nuse Foo\\CoversClass;\nuse PHPUnit\\Framework\\Attributes\\CoversClass as PHPUnitCoversClass;\n/**\n * @coversNothing\n */\n#[CoversClass(Foo::class)]\nclass FooTest extends \\PHPUnit_Framework_TestCase {}",
+                        "<?php\nuse Foo\\CoversClass;\nuse PHPUnit\\Framework\\Attributes\\CoversClass as PHPUnitCoversClass;\n#[CoversClass(Foo::class)]\nclass FooTest extends \\PHPUnit_Framework_TestCase {}"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "with attribute on final class",
+                    "args": [
+                        "<?php\n#[PHPUnit\\Framework\\Attributes\\CoversNothing]\nfinal class FooTest extends \\PHPUnit_Framework_TestCase {}"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "already with attribute CoversMethod",
+                    "args": [
+                        "<?php\n#[PHPUnit\\Framework\\Attributes\\CoversMethod(Foo::class, 'bar')]\nclass FooTest extends \\PHPUnit_Framework_TestCase {}"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "already with imported CoversMethod attribute",
+                    "args": [
+                        "<?php\nuse PHPUnit\\Framework\\TestCase;\nuse PHPUnit\\Framework\\Attributes\\CoversMethod;\n#[CoversMethod(Foo::class, 'bar')]\nclass FooTest extends TestCase {}"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "already with partially imported CoversMethod attribute",
+                    "args": [
+                        "<?php\nuse PHPUnit\\Framework\\Attributes;\n#[Attributes\\CoversMethod(Foo::class, 'bar')]\nclass FooTest extends \\PHPUnit_Framework_TestCase {}"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "already with aliased CoversMethod attribute",
+                    "args": [
+                        "<?php\nuse PHPUnit\\Framework\\Attributes\\CoversMethod as PHPUnitCoversMethod;\n#[PHPUnitCoversMethod(Foo::class, 'bar')]\nclass FooTest extends \\PHPUnit_Framework_TestCase {}"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "already with partially aliased CoversMethod attribute",
+                    "args": [
+                        "<?php\nuse PHPUnit\\Framework\\Attributes as PHPUnitAttributes;\n#[PHPUnitAttributes\\CoversMethod(Foo::class, 'bar')]\nclass FooTest extends \\PHPUnit_Framework_TestCase {}"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "already with attribute CoversFunction",
+                    "args": [
+                        "<?php\n#[PHPUnit\\Framework\\Attributes\\CoversFunction('bar')]\nclass FooTest extends \\PHPUnit_Framework_TestCase {}"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "already with imported CoversFunction attribute",
+                    "args": [
+                        "<?php\nuse PHPUnit\\Framework\\TestCase;\nuse PHPUnit\\Framework\\Attributes\\CoversFunction;\n#[CoversFunction('bar')]\nclass FooTest extends TestCase {}"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "already with partially imported CoversFunction attribute",
+                    "args": [
+                        "<?php\nuse PHPUnit\\Framework\\Attributes;\n#[Attributes\\CoversFunction('bar')]\nclass FooTest extends \\PHPUnit_Framework_TestCase {}"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "already with aliased CoversFunction attribute",
+                    "args": [
+                        "<?php\nuse PHPUnit\\Framework\\Attributes\\CoversFunction as PHPUnitCoversFunction;\n#[PHPUnitCoversFunction('bar')]\nclass FooTest extends \\PHPUnit_Framework_TestCase {}"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "already with partially aliased CoversFunction attribute",
+                    "args": [
+                        "<?php\nuse PHPUnit\\Framework\\Attributes as PHPUnitAttributes;\n#[PHPUnitAttributes\\CoversFunction('bar')]\nclass FooTest extends \\PHPUnit_Framework_TestCase {}"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "already with attribute CoversTrait",
+                    "args": [
+                        "<?php\nuse PHPUnit\\Framework\\Attributes\\CoversTrait;\n#[CoversTrait('Bar')]\nclass FooTest extends \\PHPUnit_Framework_TestCase {}"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix82",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.2.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\PhpUnit\\PhpUnitTestClassRequiresCoversFixerTest",
+            "body": "    public function testFix82(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix82Cases",
+                    "key": "without docblock #2 (class is final)",
+                    "args": [
+                        "<?php\n\n                /**\n                 * @coversNothing\n                 */\n                readonly final class BarTest extends \\PHPUnit_Framework_TestCase {}\n            ",
+                        "<?php\n\n                readonly final class BarTest extends \\PHPUnit_Framework_TestCase {}\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFix82Cases",
+                    "key": "without docblock #2 (class is abstract)",
+                    "args": [
+                        "<?php\n                    abstract readonly class FooTest extends \\PHPUnit_Framework_TestCase {}\n            ",
+                        null
+                    ]
+                },
+                {
+                    "provider": "provideFix82Cases",
+                    "key": "with attribute on readonly class",
+                    "args": [
+                        "<?php\n#[PHPUnit\\Framework\\Attributes\\CoversNothing]\nreadonly class FooTest extends \\PHPUnit_Framework_TestCase {}"
+                    ]
+                },
+                {
+                    "provider": "provideFix82Cases",
+                    "key": "with attribute on final readonly class",
+                    "args": [
+                        "<?php\n#[PHPUnit\\Framework\\Attributes\\CoversNothing]\nfinal readonly class FooTest extends \\PHPUnit_Framework_TestCase {}"
+                    ]
+                }
+            ]
+        }
+    ]
+}

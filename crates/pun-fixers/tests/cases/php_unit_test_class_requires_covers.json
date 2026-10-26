@@ -1,0 +1,7 @@
+[
+    {
+        "fixer": "php_unit_test_class_requires_covers",
+        "input": "<?php\n/** @covers Foo */\nfinal class ATest extends \\PHPUnit\\Framework\\TestCase {}\nabstract class BTest extends \\PHPUnit\\Framework\\TestCase {}\n#[\\PHPUnit\\Framework\\Attributes\\CoversTrait(T::class)]\nclass CTest extends \\PHPUnit\\Framework\\TestCase {}\n/**\n * Doc.\n */\nreadonly class DTest extends \\PHPUnit\\Framework\\TestCase {}\n$x = new class extends \\PHPUnit\\Framework\\TestCase {};\n",
+        "expected": "<?php\n/** @covers Foo */\nfinal class ATest extends \\PHPUnit\\Framework\\TestCase {}\nabstract class BTest extends \\PHPUnit\\Framework\\TestCase {}\n#[\\PHPUnit\\Framework\\Attributes\\CoversTrait(T::class)]\nclass CTest extends \\PHPUnit\\Framework\\TestCase {}\n/**\n * Doc.\n * @coversNothing\n */\nreadonly class DTest extends \\PHPUnit\\Framework\\TestCase {}\n$x = new class extends \\PHPUnit\\Framework\\TestCase {};\n"
+    }
+]

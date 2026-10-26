@@ -2011,7 +2011,7 @@
         "rules": [
           "lint/phpunit/require-covers"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -4997,7 +4997,7 @@
         "rules": [
           "lint/phpunit/require-covers"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
