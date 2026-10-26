@@ -41,6 +41,7 @@ mod prefer_simple_mock_expectation;
 mod prefer_simple_with_matcher;
 mod prefer_specific_true_false_assertion;
 mod prefer_specific_will_method;
+mod prefer_test_prefix;
 mod prefer_this_call;
 mod prefer_with_is_instance_of;
 mod ptype;
@@ -83,6 +84,7 @@ pub use prefer_simple_mock_expectation::PreferSimpleMockExpectation;
 pub use prefer_simple_with_matcher::PreferSimpleWithMatcher;
 pub use prefer_specific_true_false_assertion::PreferSpecificTrueFalseAssertion;
 pub use prefer_specific_will_method::PreferSpecificWillMethod;
+pub use prefer_test_prefix::PreferTestPrefix;
 pub use prefer_this_call::PreferThisCall;
 pub use prefer_with_is_instance_of::PreferWithIsInstanceOf;
 pub use require_data_provider_newlines::RequireDataProviderNewlines;
@@ -146,6 +148,7 @@ pub(crate) fn all() -> Vec<Box<dyn Rule>> {
         Box::new(AddDependedTestReturnType),
         Box::new(NoTestConstructor),
         Box::new(PreferNamedDataProviderKeys),
+        Box::new(PreferTestPrefix),
     ]
 }
 
