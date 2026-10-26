@@ -386,3 +386,15 @@ fn ticket_annotation_to_attribute() {
     // prints their text twice; Pun leaves such a doc alone.
     check(PreferTicketAttribute, "TicketAnnotationToAttributeRector");
 }
+
+#[test]
+fn data_provider_annotation_to_attribute() {
+    // Pun/parenthesized: a Doctrine `@dataProvider(...)` whose brackets do not close on its line or that has more than
+    // one argument, whose content Rector rebuilds through phpdoc-parser's printer; Pun leaves such a doc alone.
+    // Pun/multiline_string: phpdoc-parser lexes a `"..."` over a line break as one token, which moves the doc's children;
+    // Pun leaves such a doc alone.
+    check(
+        PreferDataProviderAttribute,
+        "DataProviderAnnotationToAttributeRector",
+    );
+}

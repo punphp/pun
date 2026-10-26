@@ -34,6 +34,7 @@ mod prefer_assert_string_contains;
 mod prefer_assert_true_false;
 mod prefer_comparison_assertion;
 mod prefer_create_stub_in_coalesce;
+mod prefer_data_provider_attribute;
 mod prefer_merged_will_return_callback;
 mod prefer_named_data_provider_keys;
 mod prefer_narrow_will_return_callback;
@@ -81,6 +82,7 @@ pub use prefer_assert_string_contains::PreferAssertStringContains;
 pub use prefer_assert_true_false::PreferAssertTrueFalse;
 pub use prefer_comparison_assertion::PreferComparisonAssertion;
 pub use prefer_create_stub_in_coalesce::PreferCreateStubInCoalesce;
+pub use prefer_data_provider_attribute::PreferDataProviderAttribute;
 pub use prefer_merged_will_return_callback::PreferMergedWillReturnCallback;
 pub use prefer_named_data_provider_keys::PreferNamedDataProviderKeys;
 pub use prefer_narrow_will_return_callback::PreferNarrowWillReturnCallback;
@@ -162,6 +164,7 @@ pub(crate) fn all() -> Vec<Box<dyn Rule>> {
         Box::new(NoBareMockAssign),
         Box::new(PreferStandaloneAssertsOverCallback),
         Box::new(PreferTicketAttribute),
+        Box::new(PreferDataProviderAttribute),
     ]
 }
 
