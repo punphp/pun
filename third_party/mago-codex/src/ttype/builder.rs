@@ -64,6 +64,58 @@ fn get_nullable_union_from_type(
     })
 }
 
+fn get_union_from_union_type(
+    ttype: &Type<'_>,
+    scope: &NamespaceScope,
+    type_context: &TypeResolutionContext,
+    classname: Option<Word>,
+) -> Result<TUnion, TypeError> {
+    enum Task<'node, 'arena> {
+        Build(&'node Type<'arena>),
+        Nullable(&'node Type<'arena>),
+        AsNullable,
+        Join,
+    }
+
+    // Keep each binary reduction, not just its atoms: nullable operations preserve
+    // union metadata, whereas ordinary joins normalize atoms and reset that metadata.
+    let mut pending = vec![Task::Build(ttype)];
+    let mut built = Vec::<TUnion>::new();
+    while let Some(task) = pending.pop() {
+        match task {
+            Task::Build(Type::Union(UnionType { left, right, .. })) if matches!(**left, Type::Null(_)) => {
+                pending.push(Task::Nullable(right));
+            }
+            Task::Build(Type::Union(UnionType { left, right, .. })) if matches!(**right, Type::Null(_)) => {
+                pending.push(Task::Nullable(left));
+            }
+            Task::Build(Type::Union(union_type)) => {
+                pending.push(Task::Join);
+                pending.push(Task::Build(union_type.right));
+                pending.push(Task::Build(union_type.left));
+            }
+            Task::Build(inner) => built.push(get_union_from_type(inner, scope, type_context, classname)?),
+            Task::Nullable(inner) if matches!(inner, Type::Union(_)) => {
+                pending.push(Task::AsNullable);
+                pending.push(Task::Build(inner));
+            }
+            Task::Nullable(inner) => built.push(get_nullable_union_from_type(inner, scope, type_context, classname)?),
+            Task::AsNullable => {
+                let inner = built.pop().unwrap();
+                built.push(inner.as_nullable());
+            }
+            Task::Join => {
+                let right = built.pop().unwrap();
+                let left = built.pop().unwrap();
+                let combined_types = left.types.iter().chain(right.types.iter()).cloned().collect();
+                built.push(TUnion::from_vec(combined_types));
+            }
+        }
+    }
+
+    Ok(built.pop().unwrap())
+}
+
 /// Rejects a bare variable used as a docblock tag type when it cannot be resolved.
 ///
 /// Psalm-style parameter links (`@param $prototype $value`, `@return $value`) lower a
@@ -137,20 +189,7 @@ pub fn get_union_from_type(
         Type::Nullable(nullable_type) => {
             get_nullable_union_from_type(nullable_type.inner, scope, type_context, classname)?
         }
-        Type::Union(UnionType { left, right, .. }) if matches!(**left, Type::Null(_)) => {
-            get_nullable_union_from_type(right, scope, type_context, classname)?
-        }
-        Type::Union(UnionType { left, right, .. }) if matches!(**right, Type::Null(_)) => {
-            get_nullable_union_from_type(left, scope, type_context, classname)?
-        }
-        Type::Union(union_type) => {
-            let left = get_union_from_type(union_type.left, scope, type_context, classname)?;
-            let right = get_union_from_type(union_type.right, scope, type_context, classname)?;
-
-            let combined_types: Vec<TAtomic> = left.types.iter().chain(right.types.iter()).cloned().collect();
-
-            TUnion::from_vec(combined_types)
-        }
+        Type::Union(_) => get_union_from_union_type(ttype, scope, type_context, classname)?,
         Type::Intersection(intersection) => {
             let object_and_callable = (matches!(intersection.left, Type::Object(_))
                 && matches!(intersection.right, Type::Callable(_)))

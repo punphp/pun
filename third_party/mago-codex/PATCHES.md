@@ -373,3 +373,21 @@ and [`TypeCombinator.php:330–615`](https://github.com/phpstan/phpstan-src/blob
 Public controls and actual captures are in `crates/pun-analyse/tests/fixtures/initializer-holders/`.
 Dynamic selectors retain the unsupported-expression mixed fallback. General object `::class`
 accessory types, new autoloading, and additional cycle semantics remain outside this patch.
+
+## Stack-bounded PHPDoc union construction
+
+`builder::get_union_from_type()` evaluates union nodes with an explicit postorder work stack.
+Ordinary unions still build the left operand before the right operand and apply `TUnion::from_vec()`
+at each original binary node. This retains canonical ordering, never removal, and union metadata resets.
+
+The left-null branch still precedes the right-null branch. Nullable leaves use the existing specialized
+constructors. A nullable union applies `as_nullable()` only after its own operands finish, preserving
+mixed handling and metadata. The patch does not flatten atoms across nullable boundaries.
+Parsing and recursive lowering of non-union constructs remain unchanged. No stack size or provider
+budget changes.
+
+The public `pun-analyse/tests/phpdoc_unions.rs` regression checks an ungrouped 129-arm integer union
+against PHPStan 2.3.1. Its `strlen()` result is `3`, matching the earlier grouped capture in
+`tests/fixtures/strlen/`. Controls cover null positions, parentheses, nullable scalar constructors,
+mixed, never, template identity, and template-default member reads. The complete fresh oracle capture
+is in `crates/pun-analyse/tests/fixtures/phpdoc-unions/expected-phpstan.json`.
