@@ -1602,3 +1602,28 @@ with default selection in
 [`TemplateTypeHelper::resolveTemplateTypes()`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Type/Generic/TemplateTypeHelper.php#L64-L68).
 Public controls in `initializer-objects/` distinguish raw values, native and PHPDoc declarations,
 constructor flow, repeated property reads, and member return types.
+
+## Literal-array reads inside destructuring targets
+
+`expression/assignment/mod.rs` preserves PHPParser's target roles when preparing list values.
+`ParserAbstract::fixupArrayDestructuring()` recursively converts short and legacy arrays inside a
+short-array target, but stops at explicit `list()`. Arrays inside that explicit list remain literals.
+The item reference marker belongs to PHPParser's `ArrayItem`, not its value expression.
+
+PHPStan 2.3.1's `AssignHandler::doPrepareTarget()` defers List_ children. Its `applyWrite()` prepares
+each child after evaluating the RHS and earlier list items. A literal-array child takes the ordinary
+expression-read fallback, so its keys and nested values are evaluated without assigning its variables.
+Assignments within those literals retain their normal effects. Target keys are evaluated once.
+The owning sources are pinned at `cb3b7e99489b2e3789ee2eec10501cb7a72580ea`.
+
+Pun's `rules/infer.rs` adapter observes reference-item values when an array is actually evaluated as
+a literal, matching `ArrayHandler::processExpr()`. The broad undefined-allowed reference selection
+does not suppress those reads. Destructuring writes do not fire literal-array expression hooks.
+Call-result processing, canonical initializer inference and reference-alias storage are unchanged.
+
+Public controls are in `tests/assignment_target_reads.rs` and `fixtures/assignment-target-reads/`.
+The capture uses PHPStan's public Analyser at levels 0, 1, 2, 7, 8, 9 and 10. Reachable cases compare
+the variable, assignment, nullsafe, append-read, parser and type-dump diagnostics. Purity collectors
+are unchanged. Separate boundary controls compare read observations without claiming support for
+unreachable syntax-rule callbacks or dynamic-variable write identities. Complete oracle diagnostics,
+including those independent contracts, remain in the capture.

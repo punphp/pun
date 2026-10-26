@@ -25,14 +25,12 @@ use mago_reporting::Issue;
 use mago_span::HasSpan;
 use mago_span::Span;
 use mago_syntax::cst::Access;
-use mago_syntax::cst::Array;
 use mago_syntax::cst::ArrayElement;
 use mago_syntax::cst::Assignment;
 use mago_syntax::cst::AssignmentOperator;
 use mago_syntax::cst::Binary;
 use mago_syntax::cst::BinaryOperator;
 use mago_syntax::cst::Expression;
-use mago_syntax::cst::List;
 use mago_syntax::cst::UnaryPrefix;
 use mago_syntax::cst::UnaryPrefixOperator;
 use mago_syntax::cst::Variable;
@@ -440,6 +438,7 @@ where
                 source_expression,
                 &source_type,
                 array.elements.as_slice(),
+                true,
             )?;
         }
         Expression::List(list) => {
@@ -451,6 +450,7 @@ where
                 source_expression,
                 &source_type,
                 list.elements.as_slice(),
+                false,
             )?;
         }
         _ => {
@@ -764,6 +764,7 @@ fn analyze_destructuring<'ctx, 'ast, 'arena, A>(
     source_expression: Option<&'ast Expression<'arena>>, // the expression being destructured
     array_type: &TUnion, // the type of the array being destructured
     target_elements: &'ast [ArrayElement<'arena>], // the elements being destructured
+    convert_arrays: bool, // PHPParser::fixupArrayDestructuring stops at an explicit List_.
 ) -> Result<(), AnalysisError>
 where
     A: Arena,
@@ -981,15 +982,13 @@ where
                     if add_null { access_type.as_nullable() } else { access_type }
                 };
 
-                analyze_assignment(
+                analyze_destructuring_value(
                     context,
                     block_context,
                     artifacts,
-                    None,
                     key_value_element.value,
-                    None,
-                    Some(key_value_element.key),
-                    Some(access_type),
+                    access_type,
+                    convert_arrays,
                 )?;
             }
             ArrayElement::Value(value_element) => {
@@ -1021,15 +1020,13 @@ where
                     if add_null { access_type.as_nullable() } else { access_type }
                 };
 
-                analyze_assignment(
+                analyze_destructuring_value(
                     context,
                     block_context,
                     artifacts,
-                    None,
                     value_element.value,
-                    None,
-                    None,
-                    Some(access_type),
+                    access_type,
+                    convert_arrays,
                 )?;
             }
             ArrayElement::Variadic(variadic_element) => {
@@ -1175,6 +1172,43 @@ fn check_list_destructure_keys<'arena, A>(
     }
 }
 
+/// AssignHandler::applyWrite() prepares each List_ value after the RHS and preceding item writes.
+/// A literal Array_ uses prepareTarget()'s ordinary expression-read fallback, never a recursive write.
+fn analyze_destructuring_value<'ctx, 'ast, 'arena, A>(
+    context: &mut Context<'ctx, 'arena, A>,
+    block_context: &mut BlockContext<'ctx>,
+    artifacts: &mut AnalysisArtifacts,
+    value: &'ast Expression<'arena>,
+    source_type: TUnion,
+    convert_arrays: bool,
+) -> Result<(), AnalysisError>
+where
+    A: Arena,
+{
+    let target = unwrap_expression(value);
+    if !convert_arrays && matches!(target, Expression::Array(_) | Expression::LegacyArray(_)) {
+        return value.analyze(context, block_context, artifacts);
+    }
+    if convert_arrays && let Expression::LegacyArray(array) = target {
+        return analyze_destructuring(
+            context,
+            block_context,
+            artifacts,
+            array.span(),
+            None,
+            &source_type,
+            array.elements.as_slice(),
+            true,
+        );
+    }
+    // PHPParser stores a reference on ArrayItem; its value is the bare variable expression.
+    let target = match target {
+        Expression::UnaryPrefix(reference) if reference.operator.is_reference() => reference.operand,
+        target => target,
+    };
+    analyze_assignment(context, block_context, artifacts, None, target, None, None, Some(source_type))
+}
+
 fn analyze_assignment_target<'ctx, 'arena, A>(
     expression: &Expression<'arena>,
     context: &mut Context<'ctx, 'arena, A>,
@@ -1191,22 +1225,8 @@ where
         Expression::Variable(Variable::Indirect(indirect)) => {
             indirect.expression.analyze(context, block_context, artifacts)?;
         }
-        Expression::List(List { elements, .. }) | Expression::Array(Array { elements, .. }) => {
-            for element in elements {
-                match element {
-                    ArrayElement::KeyValue(key_value_array_element) => {
-                        analyze_assignment_target(key_value_array_element.value, context, block_context, artifacts)?;
-                    }
-                    ArrayElement::Value(value_array_element) => {
-                        analyze_assignment_target(value_array_element.value, context, block_context, artifacts)?;
-                    }
-                    ArrayElement::Variadic(variadic_array_element) => {
-                        analyze_assignment_target(variadic_array_element.value, context, block_context, artifacts)?;
-                    }
-                    ArrayElement::Missing(_) => {}
-                }
-            }
-        }
+        // List_ children are prepared during applyWrite(), not before the RHS.
+        Expression::List(_) | Expression::Array(_) => {}
         Expression::ArrayAccess(array_access) => {
             analyze_assignment_target(array_access.array, context, block_context, artifacts)?;
             analyze_assignment_target(array_access.index, context, block_context, artifacts)?;

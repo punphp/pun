@@ -329,6 +329,8 @@ impl ExpressionHook for Definedness {
                     }
                 }
                 Expression::Construct(Construct::Empty(e)) => super::unset::observe(e.value, context, &mut found.read),
+                Expression::Array(a) => literal_reference_reads(a.elements.as_slice(), &mut found.allowed),
+                Expression::LegacyArray(a) => literal_reference_reads(a.elements.as_slice(), &mut found.allowed),
                 Expression::Variable(v) => observe_variable(v, context, &mut found),
                 Expression::Access(Access::StaticProperty(p)) => {
                     if let Variable::Nested(v) = &p.property {
@@ -421,6 +423,25 @@ impl ExpressionHook for Definedness {
             }
         }
         Ok(())
+    }
+}
+
+/// ArrayHandler processes a reference item's value as a read. Only actual literal evaluation fires
+/// these array hooks; assigning a destructuring target never enters them.
+fn literal_reference_reads(elements: &[ArrayElement<'_>], allowed: &mut HashSet<Span>) {
+    for element in elements {
+        let value = match element {
+            ArrayElement::KeyValue(item) => item.value,
+            ArrayElement::Value(item) => item.value,
+            _ => continue,
+        };
+        if let Expression::UnaryPrefix(reference) = value
+            && reference.operator.is_reference()
+        {
+            let mut targets = HashSet::new();
+            variables::allow_target(reference.operand, &mut targets);
+            allowed.retain(|span| !targets.contains(span));
+        }
     }
 }
 
