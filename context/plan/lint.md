@@ -54,7 +54,7 @@ the `warn` / `error` difference are not applied at run time yet (lint 1-2).
 
 ## 4. Rules: what exists
 
-There are 703 lint rules in crates/pun-config/rules/mapping.toml; 428 are for 1.0 and 275 carry `later = true` (PHPUnit and Pest lint rules, and rules in no set; PLAN.md §2, 2026-10-18). Each has its group, fix safety, sets and upstream
+There are 703 lint rules in crates/pun-config/rules/mapping.toml; all 703 are for 1.0 (PLAN.md §2, 2026-10-26). Each has its group, fix safety, sets and upstream
 sources. Each maps to exactly one in-scope upstream rule (a Rector rule in one of the planned sets, a
 PHP-CS-Fixer fixer that is risky or moved from format, or a strict-rules class), or is Mago-derived (`origin = "mago"`); rules.md §7 has the reasons and
 the lists of what was removed and added on 2026-10-18.
@@ -126,8 +126,8 @@ Done: the rule catalogue (703 rules with names, groups, safety and upstream mapp
 6. **Mago's rules as normal lint rules** under their Pun names; the `--mago` flag and the `mago-lint` feature removed.
 7. **Rules in usage order,** each passing Rector's own fixtures: Pinkary's rector.php, then dead-code and modernize
    (init's default sets), then code-quality, types, early-return, privatization, naming, coding-style, then
-   rector-laravel and the PHP 8.4+ and Laravel 12+ upgrade groups (Pest's Rector plugin and PHPUnit after 1.0).
-   *Done when* the 428 rules for 1.0 are native (the 1.0 bar); the 275 `later` rules follow after 1.0.
+   rector-laravel and the PHP 8.4+ and Laravel 12+ upgrade groups then Pest's Rector plugin, PHPUnit and the rules in no set.
+   *Done when* all 703 lint rules are native (the 1.0 bar).
 8. **Type-aware rules** query analyse's index (analyse.md Build 3) instead of PHPStan.
 9. **`pun migrate` for rector.php** (migrate.md Build 4).
 
@@ -233,7 +233,7 @@ Answered 2026-10-17 (Pushpak):
   - `--deny-warnings` makes warnings fail the run, and `--max-warnings <n>` fails above n warnings.
   - `-A` / `-W` / `-D <rule or group>` (allow / warn / deny) set a level for one run from the command line.
   - `[[lint.overrides]]` with `files = ["tests/**"]` changes levels for some paths, like oxlint's `overrides`.
-- **Every lint rule for 1.0 runs natively before 1.0** (428 of 703, the rest after 1.0; Symfony, Doctrine and downgrade sets, upgrade sets below PHP
+- **Every lint rule for 1.0 runs natively before 1.0** (all 703; Symfony, Doctrine and downgrade sets, upgrade sets below PHP
   8.4 and Laravel 12, and rules Rector deprecated stay unsupported).
   Porting order follows usage (§7 item 7), but 1.0 waits for all of them.
 - **Mago's rules become normal lint rules** and `pun lint --mago` goes away (assistant's default, not objected to).

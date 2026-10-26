@@ -41,7 +41,7 @@ LINT_PREFIXES = ("no-", "prefer-", "require-", "add-")
 CODEMOD_PREFIXES = ("rename-", "replace-", "remove-", "change-", "wrap-")
 # Decided names that read the group word as part of a term (format.md §8).
 REPEATS_GROUP = {"format/whitespace/no-blank-line-whitespace"}
-GONE = ("aliases", "tier", "severity", "group")
+GONE = ("aliases", "tier", "severity", "group", "later")
 PHPSTAN_FAMILY = ("phpstan", "phpstan-strict-rules", "phpstan-deprecation-rules", "larastan")
 # [analyse] switches (PHPStan levels 7-10) are settings, not rules.
 SWITCH = re.compile(r"\[analyse\] [a-z-]+ = true")
@@ -132,9 +132,6 @@ def check(data):
                             err(f"{rid}: example needs before/after or code/message, with optional title")
                         if any(not isinstance(v, str) or not v.strip() for v in example.values()):
                             err(f"{rid}: example fields must be non-empty strings")
-            # `later = true`: after 1.0 (PLAN.md §2); only a lint rule that is not ported yet can wait.
-            if "later" in r and (c != "lint" or r["later"] is not True or r.get("ported")):
-                err(f"{rid}: `later = true` is only for lint rules that are not ported")
             for f in GONE:
                 if f in r:
                     err(f"{rid}: `{f}` is gone (the group is in the key; no aliases, tiers or severities)")
@@ -412,8 +409,6 @@ def selftest():
     bad(add("lint", "dead-code/no-y", examples=[{"before": "x"}]), "example needs before/after")
     bad(add("lint", "dead-code/no-y", examples=[{"code": "x", "message": 0}]), "example fields must be non-empty")
     bad(lambda d: d["rules"]["lint"]["dead-code/no-x"].update(status="tentative"), "tentative")
-    bad(lambda d: d["rules"]["lint"]["dead-code/no-x"].update(later=True, ported=True), "only for lint rules that are not ported")
-    bad(lambda d: d["rules"]["analyse"]["undefined/x"].update(later=True), "only for lint rules that are not ported")
     bad(add("lint", "dead-code/x-thing"), "lint names start")
     bad(add("lint", "dead-code/rename-x"), "lint names start")
     bad(add("analyse", "undefined/prefer-x"), "describe the problem")
@@ -550,9 +545,7 @@ if __name__ == "__main__":
         per = defaultdict(int)
         for key in data["rules"][c]:
             per[key.split("/")[0]] += 1
-        later = sum(1 for r in data["rules"][c].values() if r.get("later"))
-        print(f"{c}: {len(data['rules'][c])} rules in {len(per)} groups"
-              + (f" ({len(data['rules'][c]) - later} for 1.0, {later} later)" if later else ""))
+        print(f"{c}: {len(data['rules'][c])} rules in {len(per)} groups")
     print("format presets: " + ", ".join(
         f"{p} {sum(p in r.get('presets', []) for r in data['rules']['format'].values())}"
         for p in data["meta"]["presets"]["format"]))
