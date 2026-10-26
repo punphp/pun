@@ -794,7 +794,7 @@ fn restore_metadata(actual: Type, source: &Type, restore_list: bool) -> Type {
         source.iter().position(|s| {
             pun_phpstan::types::is_super_type_of(s, actual).yes()
                 || (matches!(actual, Type::Callable(Some(a)) if unspecified_callable(a))
-                    && declared_callable(s).is_some())
+                    && matches!(s, Type::Callable(Some(_))))
         })
     };
     match (actual, source) {
@@ -836,13 +836,11 @@ fn restore_metadata(actual: Type, source: &Type, restore_list: bool) -> Type {
         // Mago's PHPDoc parser reads an unnamed trailing `&` as an intersection and rejects the tag. The
         // surviving native callable is exactly TCallableSignature::mixed(false), not an inferred signature.
         (Type::Callable(Some(actual)), source) if unspecified_callable(&actual) => {
-            declared_callable(source).unwrap_or(Type::Callable(Some(actual)))
-        }
-        (Type::Union(parts), source)
-            if parts.iter().any(|t| matches!(t, Type::Callable(Some(s)) if unspecified_callable(s))) =>
-        {
-            // Restore only callable members: a narrowed callable must not regain the declaration's int/null.
-            union(parts.into_iter().map(|t| restore(t, source)).collect())
+            if matches!(source, Type::Callable(Some(_))) {
+                source.clone()
+            } else {
+                Type::Callable(Some(actual))
+            }
         }
         (Type::Object(name, actual), Type::Object(source_name, source))
             if name.eq_ignore_ascii_case(source_name) && actual.len() == source.len() =>
@@ -924,18 +922,6 @@ fn unspecified_callable(s: &Signature) -> bool {
     matches!(s.params.as_slice(), [p] if p.name.is_empty() && !p.by_ref && p.variadic && p.optional && p.ty == mixed())
         && s.ret == mixed()
         && s.templates.is_empty()
-}
-
-/// Only signatures on this value's source edge, excluding unrelated non-callable members of a union.
-fn declared_callable(source: &Type) -> Option<Type> {
-    match source {
-        Type::Callable(Some(_)) => Some(source.clone()),
-        Type::Union(parts) => {
-            let found: Vec<_> = parts.iter().filter_map(declared_callable).collect();
-            (!found.is_empty()).then(|| union(found))
-        }
-        _ => None,
-    }
 }
 
 /// A template's bound: an unbounded template's is the explicit `mixed` of `@template T`.

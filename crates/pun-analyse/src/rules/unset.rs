@@ -206,27 +206,20 @@ fn scope_type(c: &Checker, e: &Expression) -> Option<Type> {
             .variables
             .scopes
             .get(&e.span())
-            .map(|s| s.get(&name))
-            .or_else(|| {
-                c.variables
-                    .reads
-                    .get(&v.span)
-                    .map(|(_, certainty, _)| *certainty)
-            });
+            .map(|s| s.get(&name));
         if certainty == Some(Tri::No) {
             return c.phpstan_type(e);
         }
-        if let Some(entry) = c.variables.unset_entries.get(&e.span()) {
-            let entry = c.phpstan_type_from(e, entry);
-            let actual = c.phpstan_type(e)?;
-            // NodeCallbackScope keeps stored reads that are narrower than the asking
-            // entry scope. An incompatible virtual mutation must be priced on entry.
-            return Some(if declared::with_classes(c, || is_super_type_of(&entry, &actual).yes()) {
-                actual
-            } else {
-                entry
-            });
-        }
+        let entry = c.variables.unset_entries.get(&e.span())?;
+        let entry = c.phpstan_type_from(e, entry);
+        let actual = c.phpstan_type(e)?;
+        // NodeCallbackScope keeps stored reads that are narrower than the asking
+        // entry scope. An incompatible virtual mutation must be priced on entry.
+        return Some(if declared::with_classes(c, || is_super_type_of(&entry, &actual).yes()) {
+            actual
+        } else {
+            entry
+        });
     }
     if let Expression::ArrayAccess(a) = unparen(e)
         && let (Some(base), Some(index)) = (scope_type(c, a.array), scope_type(c, a.index))
