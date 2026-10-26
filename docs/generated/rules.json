@@ -12573,7 +12573,7 @@
         "TicketAnnotationToAttribute",
         "TicketAnnotationToAttributeRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/phpunit/prefer-will-return-callback",

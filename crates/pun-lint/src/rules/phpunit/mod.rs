@@ -7,6 +7,7 @@
 //! takes the type Mago gives it.
 
 mod add_depended_test_return_type;
+mod annotations;
 mod no_assert_contains_only;
 mod no_assert_is_type;
 mod no_assert_same_type_mismatch;
@@ -46,6 +47,7 @@ mod prefer_specific_will_method;
 mod prefer_standalone_asserts_over_callback;
 mod prefer_test_prefix;
 mod prefer_this_call;
+mod prefer_ticket_attribute;
 mod prefer_with_is_instance_of;
 mod ptype;
 mod require_data_provider_newlines;
@@ -92,6 +94,7 @@ pub use prefer_specific_will_method::PreferSpecificWillMethod;
 pub use prefer_standalone_asserts_over_callback::PreferStandaloneAssertsOverCallback;
 pub use prefer_test_prefix::PreferTestPrefix;
 pub use prefer_this_call::PreferThisCall;
+pub use prefer_ticket_attribute::PreferTicketAttribute;
 pub use prefer_with_is_instance_of::PreferWithIsInstanceOf;
 pub use require_data_provider_newlines::RequireDataProviderNewlines;
 pub use require_strict_types_in_tests::RequireStrictTypesInTests;
@@ -158,6 +161,7 @@ pub(crate) fn all() -> Vec<Box<dyn Rule>> {
         Box::new(NoValueObjectMock),
         Box::new(NoBareMockAssign),
         Box::new(PreferStandaloneAssertsOverCallback),
+        Box::new(PreferTicketAttribute),
     ]
 }
 

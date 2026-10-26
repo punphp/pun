@@ -13341,7 +13341,7 @@
         "rules": [
           "lint/phpunit/prefer-ticket-attribute"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {

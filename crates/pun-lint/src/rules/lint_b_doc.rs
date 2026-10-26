@@ -83,8 +83,17 @@ impl<'s> Doc<'s> {
         Edit::new(self.span, printed)
     }
 
+    /// The text of child `i`, from its first token to its last; `""` for a blank line.
+    pub fn text(&self, i: usize) -> &'s str {
+        let (from, to) = self.children[i];
+        if from == to {
+            return "";
+        }
+        &self.text[self.tokens[from].1..self.tokens[to - 1].2]
+    }
+
     /// `printFormatPreserving()` with no child changed but the removed ones.
-    fn print(&self, removed: &[bool]) -> String {
+    pub fn print(&self, removed: &[bool]) -> String {
         // `EmptyPhpDocDetector`: nothing but blank lines left.
         let kept: Vec<usize> = (0..self.children.len()).filter(|&i| !removed[i]).collect();
         if kept
