@@ -1350,6 +1350,11 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
     }
     /// A trait is analysed only in the context of each class using it (see [`in_trait_context()`]).
     fn walk_trait(&mut self, t: &'ast Trait<'arena>, c: &mut ()) {
+        // Sources also retains scanned global declarations for initializer resolution. Retention is
+        // not admission to ordinary trait-body analysis.
+        if self.file.file_type != mago_database::file::FileType::Host {
+            return;
+        }
         let start = i64::from(self.file.line_number(t.span().start.offset)) + 1;
         let end = i64::from(self.file.line_number(t.span().end.offset)) + 1;
         self.trait_lines.push((start, end));
@@ -1379,6 +1384,9 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         self.classes[saved].name = Some(class.clone());
         self.decls.push(decl);
         self.in_target = true;
+        self.types.extend(crate::codebase::trait_initializer_types(
+            self.codebase, self.file, t.span(), mago_word::word(&class), self.php_version,
+        ));
         let display = self
             .codebase
             .get_class_like(name.as_bytes())

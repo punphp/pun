@@ -13,6 +13,7 @@ use mago_analyzer::plugin::PluginRegistry;
 use mago_analyzer::settings::Settings;
 use mago_codex::metadata::CodebaseMetadata;
 use mago_codex::metadata::class_like::ClassLikeMetadata;
+use mago_codex::metadata::class_like_constant::ClassLikeConstantMetadata;
 use mago_codex::metadata::constant::ConstantMetadata;
 use mago_codex::metadata::flags::MetadataFlags;
 use mago_codex::metadata::ttype::TypeMetadata;
@@ -503,12 +504,78 @@ fn resolve_initializers(metadata: &mut CodebaseMetadata, sources: &Sources, proj
                 metadata,
                 names: &names,
                 names_found: Vec::new(),
+                class: None,
             };
             inputs.walk_program(program, &mut ());
             roots.extend(inputs.names_found);
             arena.reset();
         }
     }
+    // BetterReflection selects a non-private inherited constant before an explicitly reused trait.
+    // Normalize these copies before evaluating their source, without rebinding the selected owner.
+    let inherited: Vec<_> = metadata
+        .class_likes
+        .iter()
+        .flat_map(|(name, class)| {
+            class
+                .constants
+                .keys()
+                .filter_map(|member| {
+                    let mut seen = HashSet::new();
+                    let ancestors: Vec<_> = std::iter::successors(Some(class.as_ref()), |k| {
+                        k.direct_parent_class
+                            .and_then(|p| metadata.get_class_like_by_name(p))
+                    })
+                    .take_while(|k| seen.insert(k.name))
+                    .collect();
+                    let selected = ancestors.into_iter().rev().fold(
+                        None::<&ClassLikeConstantMetadata>,
+                        |inherited, k| {
+                            let current = k.constants.get(member);
+                            let own = current.is_some_and(|m| {
+                                k.span.file_id == m.span.file_id
+                                    && k.span.start.offset <= m.span.start.offset
+                                    && m.span.end.offset <= k.span.end.offset
+                            });
+                            if !own
+                                && let Some(inherited) = inherited.filter(|m| {
+                                    m.visibility != mago_codex::visibility::Visibility::Private
+                                })
+                            {
+                                Some(inherited)
+                            } else {
+                                current
+                            }
+                        },
+                    );
+                    selected
+                        .filter(|k| k.span != class.constants[member].span)
+                        .map(|k| (*name, *member, k.clone()))
+                })
+                .collect::<Vec<_>>()
+        })
+        .collect();
+    for (class, member, constant) in inherited {
+        metadata
+            .class_likes
+            .get_mut(&class)
+            .expect("selected class exists")
+            .constants
+            .insert(member, constant);
+    }
+    let trait_sources: Vec<_> = metadata
+        .class_likes
+        .iter()
+        .filter(|(_, class)| !class.kind.is_trait())
+        .flat_map(|(name, class)| {
+            class
+                .used_traits
+                .iter()
+                .filter_map(|t| metadata.get_class_like_by_name(*t))
+                .flat_map(|t| t.constants.values().map(|constant| (*name, constant.span)))
+                .collect::<Vec<_>>()
+        })
+        .collect();
     // Loaded declarations must expose one canonical value to every consumer, including wildcard
     // PHPDoc and existing class-string accesses whose member is not a static signature reference.
     roots.extend(metadata.class_likes.iter().flat_map(|(name, class)| {
@@ -557,6 +624,7 @@ fn resolve_initializers(metadata: &mut CodebaseMetadata, sources: &Sources, proj
                         .constants
                         .values()
                         .map(|constant| constant.span.file_id)
+                        .chain(std::iter::once(class.span.file_id))
                 }),
         )
         .filter(|id| !initializer_sources.contains_key(id))
@@ -575,12 +643,18 @@ fn resolve_initializers(metadata: &mut CodebaseMetadata, sources: &Sources, proj
         sources: initializer_sources,
         version: php_version(project.php_version),
         visited: HashSet::new(),
+        path_constants: project.use_path_constants_as_constant_string,
     };
     for name in roots {
         resolver.resolve(name);
     }
+    // Shadowed trait declarations are still checked independently. Resolve their source dependencies
+    // too; reading Consumer::VALUE would otherwise silently evaluate the overriding declaration.
+    for (class, at) in trait_sources {
+        resolver.evaluate(at, false, Some(class));
+    }
     for (name, attribute, argument, at) in arguments {
-        if let Some(value) = resolver.evaluate(at, true) {
+        if let Some(value) = resolver.evaluate(at, true, Some(name)) {
             resolver
                 .metadata
                 .class_likes
@@ -597,6 +671,7 @@ struct ConstantInputs<'a, 'arena> {
     metadata: &'a CodebaseMetadata,
     names: &'a ResolvedNames<'arena>,
     names_found: Vec<Initializer>,
+    class: Option<mago_word::Word>,
 }
 
 #[derive(Clone, Copy)]
@@ -621,6 +696,35 @@ pub(crate) fn initializer_class(
         })
         .min_by_key(|class| class.span.end.offset - class.span.start.offset)
         .map(Box::as_ref)
+}
+
+/// A trait copy is implemented by its consuming class, unless a non-private parent constant was
+/// already selected. BetterReflection merges parents before traits, even after an explicit reuse.
+pub(crate) fn initializer_owner(
+    metadata: &CodebaseMetadata,
+    class: mago_word::Word,
+    name: mago_word::Word,
+) -> Option<mago_word::Word> {
+    let constant = metadata.get_class_constant(class.as_bytes(), name.as_bytes())?;
+    let source = initializer_class(metadata, constant.span)?;
+    if !source.kind.is_trait() {
+        return Some(source.name);
+    }
+    let mut owner = metadata.get_class_like_by_name(class)?;
+    let mut seen = HashSet::new();
+    while seen.insert(owner.name)
+        && let Some(parent) = owner
+            .direct_parent_class
+            .and_then(|p| metadata.get_class_like_by_name(p))
+    {
+        if !parent.constants.get(&name).is_some_and(|k| {
+            k.span == constant.span && k.visibility != mago_codex::visibility::Visibility::Private
+        }) {
+            break;
+        }
+        owner = parent;
+    }
+    (!owner.kind.is_trait()).then_some(owner.name)
 }
 
 impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for ConstantInputs<'_, 'arena> {
@@ -651,13 +755,19 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for ConstantInputs<'_, 'arena> {
         let class = match access.class.unparenthesized() {
             Expression::Identifier(name) => mago_word::word(self.names.get(name)),
             Expression::Self_(_) | Expression::Static(_) => {
-                let Some(class) = initializer_class(self.metadata, access.span()) else {
+                let Some(class) = self
+                    .class
+                    .or_else(|| initializer_class(self.metadata, access.span()).map(|k| k.name))
+                else {
                     return;
                 };
-                class.name
+                class
             }
             Expression::Parent(_) => {
-                let Some(parent) = initializer_class(self.metadata, access.span())
+                let Some(parent) = self
+                    .class
+                    .and_then(|k| self.metadata.get_class_like_by_name(k))
+                    .or_else(|| initializer_class(self.metadata, access.span()))
                     .and_then(|class| class.direct_parent_class)
                 else {
                     return;
@@ -681,7 +791,8 @@ struct Initializers<'a> {
     metadata: &'a mut CodebaseMetadata,
     sources: HashMap<FileId, &'a File>,
     version: PHPVersion,
-    visited: HashSet<Span>,
+    visited: HashSet<(Span, Option<mago_word::Word>)>,
+    path_constants: bool,
 }
 
 impl Initializers<'_> {
@@ -703,13 +814,10 @@ impl Initializers<'_> {
         if !self.sources.contains_key(&at.file_id) {
             return;
         }
-        let Some(owner) =
-            initializer_class(self.metadata, at).filter(|class| !class.kind.is_trait())
-        else {
+        let Some(owner) = initializer_owner(self.metadata, class, name) else {
             return;
         };
-        let owner = owner.name;
-        if !self.visited.insert(at) {
+        if !self.visited.insert((at, Some(owner))) {
             return;
         }
         let declaration = self
@@ -729,18 +837,26 @@ impl Initializers<'_> {
             return;
         }
         let previous = declaration.inferred_type.take();
-        let value = self.evaluate(at, false).or(previous);
+        let value = self.evaluate(at, false, Some(owner)).or(previous);
         // Population copies ordinary class/interface constants. Publish one raw initializer to every
         // copy with that declaring source identity, without changing native/PHPDoc declarations.
-        for constant in self
+        let copies: Vec<_> = self
             .metadata
             .class_likes
-            .values_mut()
-            .flat_map(|class| class.constants.values_mut())
-        {
-            if constant.span == at {
-                constant.inferred_type.clone_from(&value);
-            }
+            .keys()
+            .copied()
+            .filter(|class| initializer_owner(self.metadata, *class, name) == Some(owner))
+            .collect();
+        for class in copies {
+            self.metadata
+                .class_likes
+                .get_mut(&class)
+                .expect("selected class exists")
+                .constants
+                .get_mut(&name)
+                .expect("selected constant exists")
+                .inferred_type
+                .clone_from(&value);
         }
     }
 
@@ -751,14 +867,14 @@ impl Initializers<'_> {
             .get_mut(&name)
             .expect("selected constant exists");
         let at = declaration.span;
-        if !self.visited.insert(at) {
+        if !self.visited.insert((at, None)) {
             return;
         }
         // ConstantResolver's currentlyResolving entry is mixed, not a copied scanner approximation.
         // A global constant reflection uses its value, not its PHPDoc @var annotation.
         let previous = declaration.inferred_type.take();
         let declared = declaration.type_metadata.take();
-        let mut value = self.evaluate(at, false);
+        let mut value = self.evaluate(at, false, None);
         if let Some(value) = value.as_mut()
             && value.is_mixed()
             && let Some(previous) = previous.as_ref()
@@ -782,51 +898,16 @@ impl Initializers<'_> {
         declaration.inferred_type = value.or(previous);
     }
 
-    fn evaluate(&mut self, at: Span, require_global: bool) -> Option<TUnion> {
-        struct Find<'ast, 'arena> {
-            at: Span,
-            argument: bool,
-            expression: Option<&'ast Expression<'arena>>,
-            namespace: Option<cst::Namespace<'arena>>,
-        }
-        impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Find<'ast, 'arena> {
-            fn walk_in_expression(&mut self, expression: &'ast Expression<'arena>, _: &mut ()) {
-                if expression.span() == self.at {
-                    self.expression = Some(expression);
-                }
-            }
-            fn walk_in_namespace(&mut self, namespace: &'ast cst::Namespace<'arena>, _: &mut ()) {
-                if namespace.span().start.offset <= self.at.start.offset
-                    && self.at.end.offset <= namespace.span().end.offset
-                {
-                    self.namespace = Some(namespace.clone());
-                }
-            }
-            fn walk_in_constant_item(&mut self, item: &'ast cst::ConstantItem<'arena>, _: &mut ()) {
-                if item.span() == self.at {
-                    self.expression = Some(item.value);
-                }
-            }
-            fn walk_in_class_like_constant_item(
-                &mut self,
-                item: &'ast cst::ClassLikeConstantItem<'arena>,
-                _: &mut (),
-            ) {
-                if item.span() == self.at {
-                    self.expression = Some(item.value);
-                }
-            }
-            fn walk_in_function_call(&mut self, call: &'ast cst::FunctionCall<'arena>, _: &mut ()) {
-                // A scanned define() has the invocation span rather than a ConstantItem span.
-                if !self.argument && call.span() == self.at {
-                    self.expression = call.argument_list.arguments.get(1).map(|arg| arg.value());
-                }
-            }
-        }
+    fn evaluate(
+        &mut self,
+        at: Span,
+        require_global: bool,
+        class: Option<mago_word::Word>,
+    ) -> Option<TUnion> {
         let file = *self.sources.get(&at.file_id)?;
         let arena = LocalArena::new();
         let (program, names) = parse(&arena, file);
-        let mut find = Find {
+        let mut find = FindInitializer {
             at,
             argument: require_global,
             expression: None,
@@ -838,6 +919,7 @@ impl Initializers<'_> {
             metadata: self.metadata,
             names: &names,
             names_found: Vec::new(),
+            class,
         };
         inputs.walk_expression(expression, &mut ());
         // Literal/unsupported arguments without a constant dependency retain their scanner result.
@@ -857,8 +939,17 @@ impl Initializers<'_> {
                     && value.type_union.ignore_falsable_issues();
             }
         }
-        let mut value =
-            self.initializer_type(&arena, file, program, &names, expression, find.namespace)?;
+        let mut value = InitializerInference {
+            metadata: self.metadata,
+            version: self.version,
+            class,
+            path_constants: self.path_constants,
+            path: class
+                .and_then(|k| self.metadata.get_class_like_by_name(k))
+                .and_then(|k| self.sources.get(&k.span.file_id))
+                .and_then(|f| f.path.clone()),
+        }
+        .initializer_type(&arena, file, program, &names, expression, find.namespace)?;
         if inherited_benevolence && value == get_int_or_float() {
             // Keep the numeric union's existing marker across the full evaluator's arithmetic join.
             value.set_ignore_nullable_issues(true);
@@ -866,7 +957,194 @@ impl Initializers<'_> {
         }
         Some(value)
     }
+}
 
+struct FindInitializer<'ast, 'arena> {
+    at: Span,
+    argument: bool,
+    expression: Option<&'ast Expression<'arena>>,
+    namespace: Option<cst::Namespace<'arena>>,
+}
+
+impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for FindInitializer<'ast, 'arena> {
+    fn walk_in_expression(&mut self, expression: &'ast Expression<'arena>, _: &mut ()) {
+        if expression.span() == self.at {
+            self.expression = Some(expression);
+        }
+    }
+    fn walk_in_namespace(&mut self, namespace: &'ast cst::Namespace<'arena>, _: &mut ()) {
+        if namespace.span().start.offset <= self.at.start.offset
+            && self.at.end.offset <= namespace.span().end.offset
+        {
+            self.namespace = Some(namespace.clone());
+        }
+    }
+    fn walk_in_constant_item(&mut self, item: &'ast cst::ConstantItem<'arena>, _: &mut ()) {
+        if item.span() == self.at {
+            self.expression = Some(item.value);
+        }
+    }
+    fn walk_in_class_like_constant_item(
+        &mut self,
+        item: &'ast cst::ClassLikeConstantItem<'arena>,
+        _: &mut (),
+    ) {
+        if item.span() == self.at {
+            self.expression = Some(item.value);
+        }
+    }
+    fn walk_in_function_call(&mut self, call: &'ast cst::FunctionCall<'arena>, _: &mut ()) {
+        if !self.argument && call.span() == self.at {
+            self.expression = call.argument_list.arguments.get(1).map(|arg| arg.value());
+        }
+    }
+}
+
+/// Compare a source initializer even when reflection selected a shadowing declaration. Dependencies
+/// were resolved at population time; this read-only entry point uses the same canonical engine.
+pub(crate) fn source_initializer(
+    metadata: &CodebaseMetadata,
+    file: &File,
+    at: Span,
+    class: mago_word::Word,
+    version: u32,
+    path_constants: bool,
+    path: Option<PathBuf>,
+) -> Option<TUnion> {
+    let arena = LocalArena::new();
+    let (program, names) = parse(&arena, file);
+    let mut find = FindInitializer {
+        at,
+        argument: false,
+        expression: None,
+        namespace: None,
+    };
+    find.walk_program(program, &mut ());
+    InitializerInference {
+        metadata,
+        version: php_version(version),
+        class: Some(class),
+        path_constants,
+        path,
+    }
+    .initializer_type(
+        &arena,
+        file,
+        program,
+        &names,
+        find.expression?,
+        find.namespace,
+    )
+}
+
+/// Declaration/attribute checks use ordinary expression flow in each consuming class, independently
+/// of the raw reflection union and of the original trait file's first inference pass.
+pub(crate) fn trait_initializer_types(
+    metadata: &CodebaseMetadata,
+    file: &File,
+    at: Span,
+    class: mago_word::Word,
+    version: u32,
+) -> HashMap<Span, TUnion> {
+    struct Inputs<'a> {
+        metadata: &'a CodebaseMetadata,
+        at: Span,
+        spans: Vec<Span>,
+    }
+    impl Inputs<'_> {
+        fn owns(&self, at: Span) -> bool {
+            // Nested anonymous/named classes keep their own lexical scope, not the trait consumer's.
+            self.at.start.offset <= at.start.offset
+                && at.end.offset <= self.at.end.offset
+                && initializer_class(self.metadata, at).is_some_and(|k| k.span == self.at)
+        }
+    }
+    impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Inputs<'_> {
+        fn walk_in_class_like_constant_item(
+            &mut self,
+            item: &'ast cst::ClassLikeConstantItem<'arena>,
+            _: &mut (),
+        ) {
+            if self.owns(item.span()) {
+                self.spans.push(item.value.span());
+            }
+        }
+        fn walk_in_attribute(&mut self, attribute: &'ast cst::Attribute<'arena>, _: &mut ()) {
+            if self.owns(attribute.span()) {
+                if let Some(arguments) = &attribute.argument_list {
+                    self.spans.extend(
+                        arguments
+                            .arguments
+                            .iter()
+                            .filter_map(|arg| arg.value())
+                            .map(HasSpan::span),
+                    );
+                }
+            }
+        }
+    }
+    let arena = LocalArena::new();
+    let (program, names) = parse(&arena, file);
+    let mut inputs = Inputs {
+        metadata,
+        at,
+        spans: Vec::new(),
+    };
+    inputs.walk_program(program, &mut ());
+    let inference = InitializerInference {
+        metadata,
+        version: php_version(version),
+        class: Some(class),
+        path_constants: true,
+        path: None,
+    };
+    let mut types = HashMap::new();
+    for at in inputs.spans {
+        let mut find = FindInitializer {
+            at,
+            argument: true,
+            expression: None,
+            namespace: None,
+        };
+        find.walk_program(program, &mut ());
+        let expression = find.expression.expect("collected expression exists");
+        let artifacts = inference.expression_artifacts(
+            &arena,
+            file,
+            program,
+            &names,
+            expression,
+            find.namespace,
+            false,
+        );
+        types.extend(
+            artifacts
+                .into_iter()
+                .flat_map(|artifacts| artifacts.expression_types)
+                .map(|((start, end), value)| {
+                    (
+                        Span::new(
+                            file.id,
+                            mago_span::Position::new(start),
+                            mago_span::Position::new(end),
+                        ),
+                        (*value).clone(),
+                    )
+                }),
+        );
+    }
+    types
+}
+
+struct InitializerInference<'a> {
+    metadata: &'a CodebaseMetadata,
+    version: PHPVersion,
+    class: Option<mago_word::Word>,
+    path_constants: bool,
+    path: Option<PathBuf>,
+}
+
+impl InitializerInference<'_> {
     fn initializer_type<'arena>(
         &self,
         arena: &'arena LocalArena,
@@ -934,8 +1212,17 @@ impl Initializers<'_> {
                 !owned && parent.is_none_or(|parent| scanner_owned.contains(&parent))
             })
         {
-            if let Some(value) =
-                self.expression_type(arena, file, program, names, expression, namespace.clone())
+            if let Some(value) = self
+                .expression_artifacts(
+                    arena,
+                    file,
+                    program,
+                    names,
+                    expression,
+                    namespace.clone(),
+                    true,
+                )
+                .and_then(|artifacts| artifacts.get_expression_type(expression).cloned())
             {
                 types.insert(expression.span(), value);
             }
@@ -946,12 +1233,12 @@ impl Initializers<'_> {
             &scope,
             expression,
             self.metadata,
-            initializer_class(self.metadata, expression.span()).map(|class| class.name),
+            self.class,
             &types,
         )
     }
 
-    fn expression_type<'arena>(
+    fn expression_artifacts<'arena>(
         &self,
         arena: &'arena LocalArena,
         file: &File,
@@ -959,7 +1246,8 @@ impl Initializers<'_> {
         names: &ResolvedNames<'arena>,
         expression: &'arena Expression<'arena>,
         namespace: Option<cst::Namespace<'arena>>,
-    ) -> Option<TUnion> {
+        canonical: bool,
+    ) -> Option<mago_analyzer::artifacts::AnalysisArtifacts> {
         let statement = cst::Statement::Expression(cst::ExpressionStatement {
             expression,
             terminator: cst::Terminator::Semicolon(expression.span()),
@@ -982,8 +1270,13 @@ impl Initializers<'_> {
             ..program.clone()
         });
         let mut registry = PluginRegistry::with_library_providers();
-        if let Some(class) = initializer_class(self.metadata, expression.span()) {
-            registry.register_expression_hook(InitializerScope(class.name));
+        if let Some(class) = self.class {
+            registry.register_expression_hook(InitializerScope {
+                class,
+                canonical,
+                path_constants: self.path_constants,
+                path: self.path.clone(),
+            });
         }
         let analyzer = Analyzer::new(
             arena,
@@ -994,26 +1287,66 @@ impl Initializers<'_> {
             Settings::new(self.version),
         );
         let mut result = AnalysisResult::new(SymbolReferences::new());
-        let artifacts = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
+        std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
             analyzer.analyze_with_artifacts(isolated, &mut result)
         }))
         .ok()?
-        .ok()?;
-        artifacts.get_expression_type(expression).cloned()
+        .ok()
     }
 }
 
 /// Isolated arithmetic islands need their lexical self/parent scope, not a synthetic global scope.
-struct InitializerScope(mago_word::Word);
+struct InitializerScope {
+    class: mago_word::Word,
+    canonical: bool,
+    path_constants: bool,
+    path: Option<PathBuf>,
+}
 
 impl mago_analyzer::plugin::ExpressionHook for InitializerScope {
     fn before_expression(
         &self,
-        _: &Expression<'_>,
+        expression: &Expression<'_>,
         context: &mut mago_analyzer::plugin::HookContext<'_, '_>,
     ) -> mago_analyzer::plugin::HookResult<mago_analyzer::plugin::ExpressionHookResult> {
-        let class = context.codebase().get_class_like_by_name(self.0);
+        let class = context.codebase().get_class_like_by_name(self.class);
         context.block_context_mut().scope.set_class_like(class);
+        if self.canonical
+            && let Expression::MagicConstant(magic) = expression
+        {
+            use mago_codex::ttype::get_literal_string;
+            let value = match magic {
+                cst::MagicConstant::Namespace(_) => {
+                    let name = class.expect("initializer class exists").original_name;
+                    get_literal_string(mago_word::word(
+                        name.as_bytes()
+                            .rsplitn(2, |b| *b == b'\\')
+                            .nth(1)
+                            .unwrap_or(b""),
+                    ))
+                }
+                cst::MagicConstant::File(_) | cst::MagicConstant::Directory(_) => {
+                    let path = self.path.as_deref().unwrap_or_else(|| Path::new(""));
+                    let path = if matches!(magic, cst::MagicConstant::Directory(_)) {
+                        path.parent().unwrap_or(path)
+                    } else {
+                        path
+                    };
+                    let string = mago_codex::ttype::atomic::scalar::string::TString::known_literal(
+                        mago_word::word(path.to_string_lossy().as_bytes()),
+                    );
+                    TUnion::from_atomic(TAtomic::Scalar(TScalar::String(if self.path_constants {
+                        string
+                    } else {
+                        string.with_unspecified_literal()
+                    })))
+                }
+                _ => return Ok(mago_analyzer::plugin::ExpressionHookResult::Continue),
+            };
+            return Ok(mago_analyzer::plugin::ExpressionHookResult::SkipWithType(
+                value,
+            ));
+        }
         Ok(mago_analyzer::plugin::ExpressionHookResult::Continue)
     }
 }

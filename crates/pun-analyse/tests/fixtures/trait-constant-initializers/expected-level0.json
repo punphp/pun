@@ -1,0 +1,234 @@
+{
+  "totals": {
+    "errors": 0,
+    "file_errors": 35
+  },
+  "files": {
+    "attributes.php": {
+      "errors": 2,
+      "messages": [
+        {
+          "message": "Attribute class TraitInitializers\\WrongTargetAttribute does not have the class target.",
+          "line": 14,
+          "ignorable": true,
+          "identifier": "attribute.target"
+        },
+        {
+          "message": "Constant TraitInitializers\\AnnotationNotInherited::SEED with value 4 overriding constant TraitInitializers\\AnnotatedTrait::SEED with different value 'trait' should have the same value.",
+          "line": 34,
+          "ignorable": false,
+          "identifier": "classConstant.value"
+        }
+      ]
+    },
+    "conflicts.php": {
+      "errors": 6,
+      "messages": [
+        {
+          "message": "Constant TraitInitializerConflicts\\DifferentUnion::VALUE with value 1|8 overriding constant TraitInitializerConflicts\\UnionValue::VALUE with different value 1|4 should have the same value.",
+          "line": 5,
+          "ignorable": false,
+          "identifier": "classConstant.value"
+        },
+        {
+          "message": "Constant TraitInitializerConflicts\\ScalarSubset::VALUE with value 1 overriding constant TraitInitializerConflicts\\UnionValue::VALUE with different value 1|4 should have the same value.",
+          "line": 6,
+          "ignorable": false,
+          "identifier": "classConstant.value"
+        },
+        {
+          "message": "Constant TraitInitializerConflicts\\ContextDifferent::VALUE with value 1|4 overriding constant TraitInitializerConflicts\\SelfValue::VALUE with different value 2|4 should have the same value.",
+          "line": 10,
+          "ignorable": false,
+          "identifier": "classConstant.value"
+        },
+        {
+          "message": "Constant TraitInitializerConflicts\\ArrayDifferent::VALUE with value array{flag: 1} overriding constant TraitInitializerConflicts\\ArrayValue::VALUE with different value array{flag: 1|4} should have the same value.",
+          "line": 13,
+          "ignorable": false,
+          "identifier": "classConstant.value"
+        },
+        {
+          "message": "Constant TraitInitializerConflicts\\DeclaredDifferent::VALUE with value 8 overriding constant TraitInitializerConflicts\\DeclaredValue::VALUE with different value 1|4 should have the same value.",
+          "line": 16,
+          "ignorable": false,
+          "identifier": "classConstant.value"
+        },
+        {
+          "message": "Constant TraitInitializerConflicts\\NativeDifferent::VALUE with value 1 overriding constant TraitInitializerConflicts\\NativeValue::VALUE with different value 1|4 should have the same value.",
+          "line": 18,
+          "ignorable": false,
+          "identifier": "classConstant.value"
+        }
+      ]
+    },
+    "values.php": {
+      "errors": 27,
+      "messages": [
+        {
+          "message": "Dumped type: 1",
+          "line": 23,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: 2",
+          "line": 24,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: 4",
+          "line": 25,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: 8",
+          "line": 26,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: 1|4",
+          "line": 27,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: 2|8",
+          "line": 28,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: 4",
+          "line": 29,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: 0|4",
+          "line": 30,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: array{self: 1, parent: 4}",
+          "line": 31,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: array{self: 2, parent: 8}",
+          "line": 32,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: 128|256",
+          "line": 33,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: 128|256",
+          "line": 34,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: 1",
+          "line": 35,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: 4",
+          "line": 36,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: 1|4",
+          "line": 37,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: 1",
+          "line": 38,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: 4",
+          "line": 39,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: 1|4",
+          "line": 40,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: 64",
+          "line": 41,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: 8",
+          "line": 42,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: 1|4",
+          "line": 52,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: int<1, max>",
+          "line": 53,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: 1|4",
+          "line": 54,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: int",
+          "line": 55,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: int",
+          "line": 56,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: 1|4",
+          "line": 59,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: 1|4",
+          "line": 60,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        }
+      ]
+    }
+  },
+  "errors": []
+}

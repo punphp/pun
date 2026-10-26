@@ -1,0 +1,73 @@
+{
+  "totals": {
+    "errors": 0,
+    "file_errors": 9
+  },
+  "files": {
+    "selection.php": {
+      "errors": 8,
+      "messages": [
+        {
+          "message": "Dumped type: 1",
+          "line": 8,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: 4",
+          "line": 9,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Constant TraitSelection\\Reordered::VALUE with value array{a: 2, z: 1|4} overriding constant TraitSelection\\Shape::VALUE with different value array{z: 1|4, a: 2} should have the same value.",
+          "line": 12,
+          "ignorable": false,
+          "identifier": "classConstant.value"
+        },
+        {
+          "message": "Constant TraitSelection\\NestedDifferent::VALUE with value array{3: array{z: 8, a: 2}, a: 5} overriding constant TraitSelection\\Nested::VALUE with different value array{3: array{z: 8, a: 2}, a: 4} should have the same value.",
+          "line": 14,
+          "ignorable": false,
+          "identifier": "classConstant.value"
+        },
+        {
+          "message": "Constant TraitSelection\\DifferentList::VALUE with value array{1, 2} overriding constant TraitSelection\\ListValue::VALUE with different value array{1|4, 2} should have the same value.",
+          "line": 20,
+          "ignorable": false,
+          "identifier": "classConstant.value"
+        },
+        {
+          "message": "Constant TraitSelection\\DifferentIndexed::VALUE with value array{1, 2} overriding constant TraitSelection\\Indexed::VALUE with different value array{1|4, 2} should have the same value.",
+          "line": 27,
+          "ignorable": false,
+          "identifier": "classConstant.value"
+        },
+        {
+          "message": "Constant TraitSelection\\DifferentScannedShape::VALUE with value array{z: 1, a: 2} overriding constant TraitSelection\\ScannedShape::VALUE with different value array{z: 1|4, a: 2} should have the same value.",
+          "line": 28,
+          "ignorable": false,
+          "identifier": "classConstant.value"
+        },
+        {
+          "message": "Constant TraitSelection\\DifferentConditionalShape::VALUE with value array{a: 2} overriding constant TraitSelection\\ConditionalShape::VALUE with different value array{a: 1} should have the same value.",
+          "line": 40,
+          "ignorable": false,
+          "identifier": "classConstant.value"
+        }
+      ]
+    },
+    "selection.php (in context of class TraitSelection\\SameDuplicate)": {
+      "errors": 1,
+      "messages": [
+        {
+          "message": "Array has 2 duplicate keys with value 'a' ('a', 'a').",
+          "line": 21,
+          "ignorable": true,
+          "identifier": "array.duplicateKey"
+        }
+      ]
+    }
+  },
+  "errors": []
+}

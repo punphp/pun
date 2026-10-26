@@ -168,23 +168,11 @@ fn conflicting_trait_constants<'arena>(
             let Some(theirs) = t.constants.get(&name) else {
                 continue;
             };
-            // the constant declared here: the class's own, or in a trait walked in its context that trait's
-            let owner = c.in_trait().unwrap_or(class_name.as_str());
-            // ponytail: values the codex cannot reduce to a constant scalar (arrays, floats, expressions) are not
-            // compared
-            // ponytail: of duplicate declarations (a PHP error) the codex keeps the first, PHP's reflection the last
-            let ours = c
-                .codebase
-                .get_class_constant(owner.as_bytes(), item.name.value)
-                .and_then(|m| m.inferred_type.as_ref().filter(|value| value.is_single()))
-                .and_then(|value| super::enums::constant_value(c, value.get_single()));
+            // Both expressions belong to the consuming context, including a trait expression hidden
+            // by an own declaration. Reflected Consumer::VALUE cannot stand in for that source.
             let (Some(ours), Some(theirs)) = (
-                ours,
-                theirs
-                    .inferred_type
-                    .as_ref()
-                    .filter(|value| value.is_single())
-                    .and_then(|value| super::enums::constant_value(c, value.get_single())),
+                source_value(c, item.span(), class),
+                source_value(c, theirs.span, class),
             ) else {
                 continue;
             };
@@ -205,6 +193,26 @@ fn conflicting_trait_constants<'arena>(
             );
         }
     }
+}
+
+fn source_value(c: &Checker, at: Span, class: &ClassLikeMetadata) -> Option<Type> {
+    let contents = c.file_contents(at.file_id)?;
+    let mut file = mago_database::file::File::ephemeral(
+        b"trait-initializer.php".as_slice().into(),
+        contents.into_owned().into(),
+    );
+    file.id = at.file_id;
+    file.path = c.files.get(&at.file_id).cloned();
+    crate::codebase::source_initializer(
+        c.codebase,
+        &file,
+        at,
+        class.name,
+        c.php_version,
+        c.include_settings.path_constants,
+        c.files.get(&class.span.file_id).cloned(),
+    )
+    .map(|value| super::arrays::initializer_order(c, at, class, c.to_phpstan(&value)))
 }
 
 /// ConflictingTraitConstantsRule::processSingleConstant().

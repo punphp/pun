@@ -1,0 +1,6 @@
+includes:
+    - phpstan.neon
+parameters:
+    paths:
+        - edges.php
+    tmpDir: cache-edges

@@ -1,0 +1,8 @@
+parameters:
+    level: 0
+    phpVersion: 80400
+    paths:
+        - flags.php
+    scanFiles:
+        - flags-scanned.php
+    tmpDir: cache-flags
