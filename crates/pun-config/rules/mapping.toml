@@ -660,12 +660,12 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "phpunit/no-entity-mock" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Move from entity mock, to direct use of class instance and setters" }
 "phpunit/no-expected-exception-annotation" = { fix = "unsafe", sets = ["code-quality"], ported = false, status = "decided", summary = "Replace @expectedException annotations with expectException() calls." }
 "phpunit/no-expects-any" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Remove `expect($this->any())` from mocks as it has no added value" }
-"phpunit/no-final-constructor-override" = { fix = "safe", ported = false, status = "decided", summary = "Remove override final construct test case" }
+"phpunit/no-final-constructor-override" = { fix = "safe", ported = true, status = "decided", summary = "Remove override final construct test case" }
 "phpunit/no-flipped-assertion" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Turns accidentally flipped assert order to right one, with expected expr to left" }
 "phpunit/no-float-delta-parameter" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Change assertEquals()/assertSame() method using float on expected argument to new specific alternatives." }
 "phpunit/no-mock-intersection-property" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Make properties in tests with intersection mock object either object type or mock type" }
 "phpunit/no-negated-assertion" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Turns not-operator comparisons to their method name alternatives in PHPUnit TestCase" }
-"phpunit/no-setup-override-attribute" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Remove override attribute, if setUp()/tearDown() references parent call to improve readability" }
+"phpunit/no-setup-override-attribute" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Remove override attribute, if setUp()/tearDown() references parent call to improve readability" }
 "phpunit/no-stub-with-expectations" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Change createStub() to createMock(), when the created variable is passed to a method that requires MockObject type" }
 "phpunit/no-test-constructor" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Replace or remove __construct() in PHPUnit test cases; use setUp()." }
 "phpunit/no-unused-mock" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Remove standalone method calls with no effect" }
@@ -719,7 +719,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "phpunit/prefer-test-attribute" = { fix = "safe", sets = ["code-quality"], ported = false, origin = "mago", status = "decided", summary = "Suggests using PHPUnit's `#[Test]` attribute instead of the `test` method name prefix." }
 "phpunit/prefer-test-prefix" = { fix = "unsafe", sets = ["code-quality"], ported = false, status = "decided", summary = "Replace @test with prefixed function" }
 "phpunit/prefer-test-with-attribute" = { fix = "safe", ported = false, status = "decided", summary = "Change @testWith() annotation to #[TestWith] attribute" }
-"phpunit/prefer-this-call" = { fix = "unsafe", sets = ["code-quality"], ported = false, status = "decided", summary = "Changes PHPUnit calls from self::assert*() to $this->assert*()" }
+"phpunit/prefer-this-call" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "Changes PHPUnit calls from self::assert*() to $this->assert*()" }
 "phpunit/prefer-ticket-attribute" = { fix = "safe", ported = false, status = "decided", summary = "Change annotations with value to attribute" }
 "phpunit/prefer-will-return-callback" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Merge ->with($this->callback()) and ->willReturn() into willReturnCallback()." }
 "phpunit/prefer-with-is-instance-of" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Replaces use of with, callable and instance assert to simple isInstanceOf() method" }
@@ -738,7 +738,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "phpunit/require-protected-setup" = { fix = "unsafe", ported = true, status = "decided", summary = "Changes the visibility of the `setUp()` and `tearDown()` functions of PHPUnit to `protected`, to match the PHPUnit TestCase.", note = "Pint laravel preset; moved out of format because CS-Fixer marks it risky" }
 "phpunit/require-size" = { fix = "safe", ported = false, status = "decided", summary = "All PHPUnit test cases should have `@small`, `@medium` or `@large` annotation to enable run time limits." }
 "phpunit/require-static-data-provider" = { fix = "unsafe", sets = ["code-quality"], ported = false, status = "decided", summary = "Make PHPUnit data providers static." }
-"phpunit/require-strict-types-in-tests" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Add `declare(strict_types=1)` to PHPUnit test class file" }
+"phpunit/require-strict-types-in-tests" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Add `declare(strict_types=1)` to PHPUnit test class file" }
 "phpunit/require-string-assert-argument" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Cast 2nd argument in assertStringContainsString() to a string if not yet" }
 "phpunit/require-test-annotation-style" = { fix = "unsafe", sets = ["code-quality"], ported = false, status = "decided", summary = "Mark tests consistently: a `test` prefix or a @test annotation." }
 "refactor/add-override-attribute" = { fix = "unsafe", ported = false, status = "decided", summary = "Add #[Override] to methods and properties that override a parent member." }

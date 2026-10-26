@@ -1,0 +1,10 @@
+<?php
+/** doc */
+class XTest extends \PHPUnit\Framework\TestCase {}
+-----
+<?php
+
+declare(strict_types=1);
+
+/** doc */
+class XTest extends \PHPUnit\Framework\TestCase {}

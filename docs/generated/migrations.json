@@ -12803,7 +12803,7 @@
         "rules": [
           "lint/phpunit/require-strict-types-in-tests"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -13023,7 +13023,7 @@
         "rules": [
           "lint/phpunit/no-setup-override-attribute"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -13049,7 +13049,7 @@
         "rules": [
           "lint/phpunit/prefer-this-call"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -13147,7 +13147,7 @@
         "rules": [
           "lint/phpunit/no-final-constructor-override"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {

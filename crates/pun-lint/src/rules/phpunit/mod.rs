@@ -11,9 +11,11 @@ mod no_assert_is_type;
 mod no_assert_same_type_mismatch;
 mod no_empty_test;
 mod no_expects_any;
+mod no_final_constructor_override;
 mod no_flipped_assertion;
 mod no_float_delta_parameter;
 mod no_negated_assertion;
+mod no_setup_override_attribute;
 mod prefer_assert_array_has_key;
 mod prefer_assert_count;
 mod prefer_assert_instanceof;
@@ -28,7 +30,9 @@ mod prefer_simple_mock_expectation;
 mod prefer_simple_with_matcher;
 mod prefer_specific_true_false_assertion;
 mod prefer_specific_will_method;
+mod prefer_this_call;
 mod ptype;
+mod require_strict_types_in_tests;
 mod require_string_assert_argument;
 
 pub use no_assert_contains_only::NoAssertContainsOnly;
@@ -36,9 +40,11 @@ pub use no_assert_is_type::NoAssertIsType;
 pub use no_assert_same_type_mismatch::NoAssertSameTypeMismatch;
 pub use no_empty_test::NoEmptyTest;
 pub use no_expects_any::NoExpectsAny;
+pub use no_final_constructor_override::NoFinalConstructorOverride;
 pub use no_flipped_assertion::NoFlippedAssertion;
 pub use no_float_delta_parameter::NoFloatDeltaParameter;
 pub use no_negated_assertion::NoNegatedAssertion;
+pub use no_setup_override_attribute::NoSetupOverrideAttribute;
 pub use prefer_assert_array_has_key::PreferAssertArrayHasKey;
 pub use prefer_assert_count::PreferAssertCount;
 pub use prefer_assert_instanceof::PreferAssertInstanceof;
@@ -53,6 +59,8 @@ pub use prefer_simple_mock_expectation::PreferSimpleMockExpectation;
 pub use prefer_simple_with_matcher::PreferSimpleWithMatcher;
 pub use prefer_specific_true_false_assertion::PreferSpecificTrueFalseAssertion;
 pub use prefer_specific_will_method::PreferSpecificWillMethod;
+pub use prefer_this_call::PreferThisCall;
+pub use require_strict_types_in_tests::RequireStrictTypesInTests;
 pub use require_string_assert_argument::RequireStringAssertArgument;
 
 use mago_codex::ttype::atomic::TAtomic;
@@ -95,6 +103,10 @@ pub(crate) fn all() -> Vec<Box<dyn Rule>> {
         Box::new(PreferSpecificWillMethod),
         Box::new(PreferSimpleMockExpectation),
         Box::new(PreferNarrowWithConsecutive),
+        Box::new(NoFinalConstructorOverride),
+        Box::new(NoSetupOverrideAttribute),
+        Box::new(RequireStrictTypesInTests),
+        Box::new(PreferThisCall),
     ]
 }
 
@@ -809,4 +821,227 @@ pub(crate) fn inner_without_equal_to(ctx: &Context<'_>, expr: &Expression<'_>) -
         return replaced_equal_to(ctx, m);
     }
     without_equal_to(ctx, value)
+}
+
+/// `pStmt_ClassMethod` for a method php-parser prints anew without its attributes: the modifiers in php-parser's
+/// order, the parameters joined with `, ` (a line each, without a trailing comma, when one has comments), and the
+/// statements of its body `block` a line each (blank lines between them go).
+pub(crate) fn method_anew(
+    source: &str,
+    method: &Method<'_>,
+    block: &mago_syntax::cst::Block<'_>,
+) -> String {
+    use crate::rules::rector_stmts::{block_list, line_indent};
+    let indent = line_indent(source, node_span(method).start);
+    let mut out = crate::rules::rector_batch5::modifiers_text(&method.modifiers);
+    out.push_str("function ");
+    if method.ampersand.is_some() {
+        out.push('&');
+    }
+    out.push_str(std::str::from_utf8(method.name.value).unwrap_or_default());
+    let list = &method.parameter_list;
+    let params: Vec<Span> = list.parameters.iter().map(node_span).collect();
+    out.push('(');
+    out.push_str(&maybe_multiline(
+        source,
+        list.left_parenthesis.end.offset as usize,
+        &params,
+        indent,
+    ));
+    out.push(')');
+    if let Some(hint) = &method.return_type_hint {
+        let s = node_span(&hint.hint);
+        out.push_str(": ");
+        out.push_str(&source[s.start..s.end]);
+    }
+    out.push('\n');
+    out.push_str(indent);
+    out.push_str(&block_anew(source, &block_list(source, block), indent));
+    out
+}
+
+/// A block php-parser prints anew at the indent `indent` (`pStmts`): `{`, each statement on a line one level deeper
+/// after its comments (a line each; the blank lines between go), the comments after the last statement (the `Nop`),
+/// and `}` on a line of its own.
+pub(crate) fn block_anew(
+    source: &str,
+    list: &crate::rules::rector_stmts::List<'_>,
+    indent: &str,
+) -> String {
+    use crate::rules::rector_stmts::{line_indent, reindent, tokens};
+    let inner = format!("{indent}    ");
+    let mut lines = Vec::new();
+    let comments = |from: usize, to: usize, lines: &mut Vec<String>| {
+        for t in tokens(source, from, to)
+            .into_iter()
+            .filter(|t| t.kind.is_comment())
+        {
+            let span = Span::new(t.start, t.end);
+            lines.push(reindent(source, span, line_indent(source, t.start), &inner));
+        }
+    };
+    for (i, statement) in list.stmts.iter().enumerate() {
+        let span = node_span(*statement);
+        comments(list.before(source, i), span.start, &mut lines);
+        lines.push(reindent(
+            source,
+            span,
+            line_indent(source, span.start),
+            &inner,
+        ));
+    }
+    if let Some(nop) = list.nop_span(source) {
+        comments(nop.start, nop.end, &mut lines);
+    }
+    if lines.is_empty() {
+        return format!("{{\n{indent}}}");
+    }
+    format!(
+        "{{\n{inner}{}\n{indent}}}",
+        lines.join(&format!("\n{inner}"))
+    )
+}
+
+/// php-parser's `pMaybeMultiline` over items whose source spans are `items` (the first starts after `from`), printed
+/// at the indent `indent`: the items joined with `, `, or, when one has comments before it, each item on a line of its
+/// own one level deeper after its comments, without a trailing comma, and a line break before the closing token.
+pub(crate) fn maybe_multiline(source: &str, from: usize, items: &[Span], indent: &str) -> String {
+    use crate::rules::rector_stmts::{previous_token_end, tokens};
+    let mut from = from;
+    let mut printed = Vec::new();
+    for span in items {
+        let before: Vec<&str> = tokens(
+            source,
+            previous_token_end(source, from, span.start),
+            span.start,
+        )
+        .into_iter()
+        .filter(|t| t.kind.is_comment())
+        .map(|t| &source[t.start..t.end])
+        .collect();
+        printed.push((before, &source[span.start..span.end]));
+        from = span.end;
+    }
+    if printed.iter().all(|(c, _)| c.is_empty()) {
+        let texts: Vec<&str> = printed.iter().map(|(_, p)| *p).collect();
+        return texts.join(", ");
+    }
+    let inner = format!("\n{indent}    ");
+    let lines: Vec<String> = printed
+        .iter()
+        .map(|(comments, item)| {
+            let mut line = String::new();
+            for comment in comments {
+                line.push_str(&inner);
+                line.push_str(comment);
+            }
+            line.push_str(&inner);
+            line.push_str(item);
+            line
+        })
+        .collect();
+    format!("{}\n{indent}", lines.join(","))
+}
+
+/// The edits for removing the members `removed` flags from a class, an anonymous class or a trait, as php-parser
+/// prints them: with a member kept, [`remove_members`]; with only the comments after the last member kept
+/// (php-parser's `Nop`), the members go up to those comments; with nothing kept, the class-like is printed anew
+/// (`pClassCommon`): its attributes a line each, then its modifiers, name or arguments, `extends` and `implements`
+/// lists on one line, and an empty body on the next. Another class-like keeps its members.
+pub(crate) fn remove_class_members(
+    source: &str,
+    node: Node<'_, '_>,
+    removed: &[bool],
+) -> Vec<Edit> {
+    use crate::rules::rector_batch5::{modifiers_text, remove_members};
+    use crate::rules::rector_stmts::{first_comment, line_indent};
+    use mago_span::HasSpan;
+    use mago_syntax::cst::{AttributeList, Extends, Implements, Sequence};
+    let text = |s: mago_span::Span| &source[s.start.offset as usize..s.end.offset as usize];
+    let span = node_span(&node);
+    let indent = line_indent(source, span.start);
+    type Parts<'n, 'a> = (
+        &'n Sequence<'a, AttributeList<'a>>,
+        String,
+        Option<&'n Extends<'a>>,
+        Option<&'n Implements<'a>>,
+    );
+    let (lists, head, extends, implements): Parts<'_, '_> = match node {
+        Node::Class(c) => (
+            &c.attribute_lists,
+            format!(
+                "{}class {}",
+                modifiers_text(&c.modifiers),
+                text(c.name.span)
+            ),
+            c.extends.as_ref(),
+            c.implements.as_ref(),
+        ),
+        Node::AnonymousClass(c) => {
+            // Rector's oracle prints the arguments of an anonymous class without their comments, on one line
+            let args: Vec<&str> = c
+                .argument_list
+                .iter()
+                .flat_map(|a| a.arguments.iter())
+                .map(|a| text(a.span()))
+                .collect();
+            let args = if args.is_empty() {
+                String::new()
+            } else {
+                format!("({})", args.join(", "))
+            };
+            (
+                &c.attribute_lists,
+                format!("{}class{args}", modifiers_text(&c.modifiers)),
+                c.extends.as_ref(),
+                c.implements.as_ref(),
+            )
+        }
+        Node::Trait(t) => (
+            &t.attribute_lists,
+            format!("trait {}", text(t.name.span)),
+            None,
+            None,
+        ),
+        _ => return Vec::new(),
+    };
+    let (members, left, right) = class_body(node).expect("a class-like");
+    if removed.contains(&false) {
+        return remove_members(source, members, left, right, removed);
+    }
+    let spans: Vec<Span> = members.iter().map(node_span).collect();
+    let (open, close) = (left.end.offset as usize, right.start.offset as usize);
+    let first = first_comment(source, open, spans[0].start).unwrap_or(spans[0].start);
+    if let Some(nop) = first_comment(source, spans[spans.len() - 1].end, close) {
+        return vec![Edit::new(Span::new(first, nop), "")];
+    }
+    // PHPStan names an anonymous class, so `pAttrGroups` puts its attributes on lines of their own too
+    let mut out = String::from(if matches!(node, Node::AnonymousClass(_)) {
+        "new "
+    } else {
+        ""
+    });
+    for list in lists.iter() {
+        out.push_str(text(list.span()));
+        out.push('\n');
+        out.push_str(indent);
+    }
+    out.push_str(&head);
+    let names = |types: &mago_syntax::cst::TokenSeparatedSequence<'_, Identifier<'_>>| {
+        types
+            .iter()
+            .map(|t| text(t.span()))
+            .collect::<Vec<_>>()
+            .join(", ")
+    };
+    if let Some(extends) = extends {
+        out.push_str(" extends ");
+        out.push_str(&names(&extends.types));
+    }
+    if let Some(implements) = implements {
+        out.push_str(" implements ");
+        out.push_str(&names(&implements.types));
+    }
+    out.push_str(&format!("\n{indent}{{\n{indent}}}"));
+    vec![Edit::new(span, out)]
 }

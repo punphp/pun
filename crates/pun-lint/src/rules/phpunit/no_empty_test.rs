@@ -7,8 +7,7 @@
 use mago_syntax::cst::{ClassLikeMember, MethodBody, Node, NodeKind};
 use pun_problem::Safety;
 
-use super::{CLASS_LIKES, class_body, is_in_test_class, report};
-use crate::rules::rector_batch5::remove_members;
+use super::{CLASS_LIKES, class_body, is_in_test_class, remove_class_members, report};
 use crate::syntax::node_span;
 use crate::{Context, Report, Rule};
 
@@ -30,7 +29,7 @@ impl Rule for NoEmptyTest {
         ctx: &Context<'_>,
         out: &mut Vec<Report>,
     ) {
-        let Some((members, left, right)) = class_body(node) else {
+        let Some((members, _, _)) = class_body(node) else {
             return;
         };
         let mut scope = ancestors.to_vec();
@@ -60,7 +59,7 @@ impl Rule for NoEmptyTest {
                     node_span(&method.name),
                     "Remove the empty test method.",
                     Safety::Safe,
-                    remove_members(ctx.source, members, left, right, &only),
+                    remove_class_members(ctx.source, node, &only),
                 ));
             }
         }

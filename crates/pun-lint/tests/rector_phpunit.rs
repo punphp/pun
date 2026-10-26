@@ -242,3 +242,29 @@ fn narrow_identical_with_consecutive() {
         "NarrowIdenticalWithConsecutiveRector",
     );
 }
+
+#[test]
+fn remove_override_final_construct_test_case() {
+    check(
+        NoFinalConstructorOverride,
+        "RemoveOverrideFinalConstructTestCaseRector",
+    );
+}
+
+#[test]
+fn no_setup_with_parent_call_override() {
+    check(
+        NoSetupOverrideAttribute,
+        "NoSetupWithParentCallOverrideRector",
+    );
+}
+
+#[test]
+fn declare_strict_types_tests() {
+    check(RequireStrictTypesInTests, "DeclareStrictTypesTestsRector");
+}
+
+#[test]
+fn prefer_p_h_p_unit_this_call() {
+    check(PreferThisCall, "PreferPHPUnitThisCallRector");
+}

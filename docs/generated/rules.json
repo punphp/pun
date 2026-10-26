@@ -11348,7 +11348,7 @@
         "RemoveOverrideFinalConstructTestCase",
         "RemoveOverrideFinalConstructTestCaseRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/phpunit/no-flipped-assertion",
@@ -11453,7 +11453,7 @@
         "NoSetupWithParentCallOverrideRector",
         "Rector\\PHPUnit\\CodeQuality\\Rector\\ClassMethod\\NoSetupWithParentCallOverrideRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/phpunit/no-stub-with-expectations",
@@ -12554,7 +12554,7 @@
         "PreferPHPUnitThisCallRector",
         "Rector\\PHPUnit\\CodeQuality\\Rector\\Class_\\PreferPHPUnitThisCallRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/phpunit/prefer-ticket-attribute",
@@ -12922,7 +12922,7 @@
         "DeclareStrictTypesTestsRector",
         "Rector\\PHPUnit\\CodeQuality\\Rector\\StmtsAwareInterface\\DeclareStrictTypesTestsRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/phpunit/require-string-assert-argument",
