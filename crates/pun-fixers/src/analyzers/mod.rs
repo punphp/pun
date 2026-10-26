@@ -15,6 +15,7 @@ pub(crate) mod classy_analyzer;
 pub(crate) mod comments_analyzer;
 pub(crate) mod constant_invocation;
 pub(crate) mod control_case_structures_analyzer;
+pub(crate) mod data_provider_analyzer;
 pub(crate) mod docblock;
 pub(crate) mod doctrine_annotation;
 pub(crate) mod final_internal_class;

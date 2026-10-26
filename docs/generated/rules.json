@@ -12901,7 +12901,7 @@
       "upstream": [
         "php_unit_data_provider_static"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/phpunit/require-strict-types-in-tests",

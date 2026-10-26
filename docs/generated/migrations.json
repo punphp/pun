@@ -1851,7 +1851,7 @@
         "rules": [
           "lint/phpunit/require-static-data-provider"
         ],
-        "note": "Same. Options: renamed for TOML: [options.\"lint/phpunit/require-static-data-provider\"]. Planned: not ported yet.",
+        "note": "Same. Options: renamed for TOML: [options.\"lint/phpunit/require-static-data-provider\"].",
         "unsupported": false
       },
       {
@@ -4837,7 +4837,7 @@
         "rules": [
           "lint/phpunit/require-static-data-provider"
         ],
-        "note": "Same. Options: renamed for TOML: [options.\"lint/phpunit/require-static-data-provider\"]. Planned: not ported yet.",
+        "note": "Same. Options: renamed for TOML: [options.\"lint/phpunit/require-static-data-provider\"].",
         "unsupported": false
       },
       {

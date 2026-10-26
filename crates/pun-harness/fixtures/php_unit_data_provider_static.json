@@ -1,0 +1,138 @@
+{
+    "fixer": "php_unit_data_provider_static",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\PhpUnit\\PhpUnitDataProviderStaticFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/PhpUnit/PhpUnitDataProviderStaticFixerTest.php",
+    "case_count": 10,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": []
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\PhpUnit\\PhpUnitDataProviderStaticFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null, array $configuration = []): void\n    {\n        $this->fixer->configure($configuration);\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": "do not fix when containing dynamic calls by default",
+                    "args": [
+                        "<?php\nclass FooTest extends TestCase {\n    /**\n     * @dataProvider provideFoo1Cases\n     */\n    public function testFoo1() {}\n    public function provideFoo1Cases() { $this->init(); }\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "fix single",
+                    "args": [
+                        "<?php\nclass FooTest extends TestCase {\n    /**\n     * @dataProvider provideFooCases\n     */\n    public function testFoo() {}\n    public static function provideFooCases() { $x->getData(); }\n}",
+                        "<?php\nclass FooTest extends TestCase {\n    /**\n     * @dataProvider provideFooCases\n     */\n    public function testFoo() {}\n    public function provideFooCases() { $x->getData(); }\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "fix multiple",
+                    "args": [
+                        "<?php\nclass FooTest extends TestCase {\n    /** @dataProvider provider1 */\n    public function testFoo1() {}\n    /** @dataProvider provider2 */\n    public function testFoo2() {}\n    /** @dataProvider provider3 */\n    public function testFoo3() {}\n    /** @dataProvider provider4 */\n    public function testFoo4() {}\n    public static function provider1() {}\n    public function provider2() { $this->init(); }\n    public static function provider3() {}\n    public static function provider4() {}\n}",
+                        "<?php\nclass FooTest extends TestCase {\n    /** @dataProvider provider1 */\n    public function testFoo1() {}\n    /** @dataProvider provider2 */\n    public function testFoo2() {}\n    /** @dataProvider provider3 */\n    public function testFoo3() {}\n    /** @dataProvider provider4 */\n    public function testFoo4() {}\n    public function provider1() {}\n    public function provider2() { $this->init(); }\n    public function provider3() {}\n    public static function provider4() {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "fix with multilines",
+                    "args": [
+                        "<?php\nclass FooTest extends TestCase {\n    /**\n     * @dataProvider provideFooCases\n     */\n    public function testFoo() {}\n    public\n        static function\n            provideFooCases() { $x->getData(); }\n}",
+                        "<?php\nclass FooTest extends TestCase {\n    /**\n     * @dataProvider provideFooCases\n     */\n    public function testFoo() {}\n    public\n        function\n            provideFooCases() { $x->getData(); }\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "fix when data provider is abstract",
+                    "args": [
+                        "<?php\nabstract class FooTest extends TestCase {\n    /**\n     * @dataProvider provideFooCases\n     */\n    public function testFoo() {}\n    abstract public static function provideFooCases();\n}",
+                        "<?php\nabstract class FooTest extends TestCase {\n    /**\n     * @dataProvider provideFooCases\n     */\n    public function testFoo() {}\n    abstract public function provideFooCases();\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "fix when containing dynamic calls and with `force` disabled",
+                    "args": [
+                        "<?php\nclass FooTest extends TestCase {\n    /**\n     * @dataProvider provideFooCases1\n     * @dataProvider provideFooCases2\n     */\n    public function testFoo() {}\n    public function provideFooCases1() { return $this->getFoo(); }\n    public static function provideFooCases2() { /* no dynamic calls */ }\n}",
+                        "<?php\nclass FooTest extends TestCase {\n    /**\n     * @dataProvider provideFooCases1\n     * @dataProvider provideFooCases2\n     */\n    public function testFoo() {}\n    public function provideFooCases1() { return $this->getFoo(); }\n    public function provideFooCases2() { /* no dynamic calls */ }\n}",
+                        {
+                            "force": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "fix when containing dynamic calls and with `force` enabled",
+                    "args": [
+                        "<?php\nclass FooTest extends TestCase {\n    /**\n     * @dataProvider provideFooCases1\n     * @dataProvider provideFooCases2\n     */\n    public function testFoo() {}\n    public static function provideFooCases1() { return $this->getFoo(); }\n    public static function provideFooCases2() { /* no dynamic calls */ }\n}",
+                        "<?php\nclass FooTest extends TestCase {\n    /**\n     * @dataProvider provideFooCases1\n     * @dataProvider provideFooCases2\n     */\n    public function testFoo() {}\n    public function provideFooCases1() { return $this->getFoo(); }\n    public function provideFooCases2() { /* no dynamic calls */ }\n}",
+                        {
+                            "force": true
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix80",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": "^8.0.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\PhpUnit\\PhpUnitDataProviderStaticFixerTest",
+            "body": "    public function testFix80(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "with an attribute between PHPDoc and test method",
+                    "args": [
+                        "<?php\nclass FooTest extends TestCase {\n    /**\n     * @dataProvider provideFooCases\n     */\n    #[CustomAttribute]\n    public function testFoo(): void {}\n    public static function provideFooCases(): iterable {}\n}",
+                        "<?php\nclass FooTest extends TestCase {\n    /**\n     * @dataProvider provideFooCases\n     */\n    #[CustomAttribute]\n    public function testFoo(): void {}\n    public function provideFooCases(): iterable {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "with data provider as an attribute",
+                    "args": [
+                        "<?php\nclass FooTest extends TestCase {\n    #[\\PHPUnit\\Framework\\Attributes\\DataProvider('addStaticToMe')]\n    public function testFoo(): void {}\n    public static function addStaticToMe() {}\n}",
+                        "<?php\nclass FooTest extends TestCase {\n    #[\\PHPUnit\\Framework\\Attributes\\DataProvider('addStaticToMe')]\n    public function testFoo(): void {}\n    public function addStaticToMe() {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "with multiple data providers as an attributes",
+                    "args": [
+                        "<?php\nnamespace N;\nuse PHPUnit\\Framework as PphUnitAlias;\nuse PHPUnit\\Framework\\Attributes;\nclass FooTest extends TestCase {\n    #[\\PHPUnit\\Framework\\Attributes\\DataProvider('provider1')]\n    #[\\PHPUnit\\Framework\\Attributes\\DataProvider('doNotGetFooledByConcatenation' . 'notProvider1')]\n    #[PHPUnit\\Framework\\Attributes\\DataProvider('notProvider2')]\n    #[\n        \\PHPUnit\\Framework\\Attributes\\BackupGlobals(true),\n        \\PHPUnit\\Framework\\Attributes\\DataProvider('provider2'),\n        \\PHPUnit\\Framework\\Attributes\\Group('foo'),\n    ]\n    #[Attributes\\DataProvider('provider3')]\n    #[PphUnitAlias\\Attributes\\DataProvider('provider4')]\n    #[\\PHPUnit\\Framework\\Attributes\\DataProvider]\n    #[\\PHPUnit\\Framework\\Attributes\\DataProvider('provider5')]\n    #[\\PHPUnit\\Framework\\Attributes\\DataProvider(123)]\n    public function testSomething(int $x): void {}\n    public static function provider1() {}\n    public static function provider2() {}\n    public static function provider3() {}\n    public static function provider4() {}\n    public static function provider5() {}\n    public function notProvider1() {}\n    public function notProvider2() {}\n}",
+                        "<?php\nnamespace N;\nuse PHPUnit\\Framework as PphUnitAlias;\nuse PHPUnit\\Framework\\Attributes;\nclass FooTest extends TestCase {\n    #[\\PHPUnit\\Framework\\Attributes\\DataProvider('provider1')]\n    #[\\PHPUnit\\Framework\\Attributes\\DataProvider('doNotGetFooledByConcatenation' . 'notProvider1')]\n    #[PHPUnit\\Framework\\Attributes\\DataProvider('notProvider2')]\n    #[\n        \\PHPUnit\\Framework\\Attributes\\BackupGlobals(true),\n        \\PHPUnit\\Framework\\Attributes\\DataProvider('provider2'),\n        \\PHPUnit\\Framework\\Attributes\\Group('foo'),\n    ]\n    #[Attributes\\DataProvider('provider3')]\n    #[PphUnitAlias\\Attributes\\DataProvider('provider4')]\n    #[\\PHPUnit\\Framework\\Attributes\\DataProvider]\n    #[\\PHPUnit\\Framework\\Attributes\\DataProvider('provider5')]\n    #[\\PHPUnit\\Framework\\Attributes\\DataProvider(123)]\n    public function testSomething(int $x): void {}\n    public function provider1() {}\n    public function provider2() {}\n    public function provider3() {}\n    public function provider4() {}\n    public function provider5() {}\n    public function notProvider1() {}\n    public function notProvider2() {}\n}"
+                    ]
+                }
+            ]
+        }
+    ]
+}
