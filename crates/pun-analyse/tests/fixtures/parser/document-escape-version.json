@@ -1,0 +1,6 @@
+{
+  "double": "<?php\n$x = \"\\u{110000}\";\n",
+  "interpolated": "<?php\n$x = \"$value\\u{110000}\";\n",
+  "backtick": "<?php\n$x = `\\u{110000}`;\n",
+  "document": "<?php\n$x = <<<TXT\n  \\u{110000}\n  TXT;\n"
+}

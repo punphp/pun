@@ -77,9 +77,16 @@ pub(crate) fn errors(file: &File, program: &Program, version: PHPVersion) -> Vec
         version,
         continuation: None,
         created_arrays: Vec::new(),
+        assignment_arrays: HashSet::new(),
+        fatal: None,
+        lines: EscapeLines {
+            file,
+            skipped: Vec::new(),
+        },
         errors: Vec::new(),
     };
     reserved.walk_program(program, &mut ());
+    reserved.lines.adjust(&mut reserved.errors);
     if !reserved.errors.is_empty() {
         return reserved.errors;
     }
@@ -89,6 +96,7 @@ pub(crate) fn errors(file: &File, program: &Program, version: PHPVersion) -> Vec
         aliases: Default::default(),
     };
     names.walk_program(program, &mut ());
+    reserved.lines.adjust(&mut names.errors);
     names.errors
 }
 
@@ -141,7 +149,108 @@ struct Reserved<'a> {
     continuation: Option<(Span, &'static str)>,
     /// ParserAbstract's createdArrays registry: array reduction order, then empty item token locations.
     created_arrays: Vec<(Span, Vec<Span>)>,
+    /// array_short_syntax '=' expr never registers its direct LHS, even if RHS reduction aborts.
+    assignment_arrays: HashSet<Span>,
+    /// doParse retains errors through the first throwing reduction, but never reduces enclosing nodes.
+    fatal: Option<usize>,
+    lines: EscapeLines<'a>,
     errors: Vec<Error>,
+}
+
+/// Contiguous PHP encapsed tokens, not Mago's line-split literals or decoded Option values. Gaps retain
+/// indentation/newlines moved into trivia; a zero-length first gap models parseDocString's phantom part.
+fn string_literals(open: Span, close: Span, parts: &Sequence<StringPart<'_>>) -> Vec<Span> {
+    let mut result = Vec::new();
+    let mut start = open.end;
+    for part in parts
+        .iter()
+        .filter(|part| !matches!(part, StringPart::Literal(_)))
+    {
+        let at = part.span();
+        if start < at.start || start == open.end {
+            result.push(Span::new(open.file_id, start, at.start));
+        }
+        start = at.end;
+    }
+    if start < close.start {
+        result.push(Span::new(open.file_id, start, close.start));
+    }
+    result
+}
+
+fn oversized_codepoint(digits: &[u8]) -> bool {
+    digits.iter().fold(0_u32, |value, digit| {
+        value
+            .saturating_mul(16)
+            .saturating_add(char::from(*digit).to_digit(16).unwrap())
+    }) > 0x10ffff
+}
+
+/// zend_scan_escape_string returns early on malformed as well as oversized Unicode escapes. Its
+/// uncounted newlines affect PHPParser token attributes, independently of semantic escape decoding.
+struct EscapeLines<'a> {
+    file: &'a File,
+    skipped: Vec<Span>,
+}
+
+impl EscapeLines<'_> {
+    fn string(&mut self, at: Span) {
+        static UNICODE: std::sync::LazyLock<pcre2::bytes::Regex> = std::sync::LazyLock::new(|| {
+            pcre2::bytes::Regex::new(r"\\(?:\\|u\{([0-9a-fA-F]*)(\})?)")
+                .expect("Unicode lexer pattern")
+        });
+        let source = &self.file.contents[at.start.offset as usize..at.end.offset as usize];
+        for matches in UNICODE.captures_iter(source) {
+            let matches = matches.expect("Unicode lexer match");
+            if let Some(digits) = matches.get(1)
+                && (digits.as_bytes().is_empty()
+                    || matches.get(2).is_none()
+                    || oversized_codepoint(digits.as_bytes()))
+            {
+                self.skipped.push(Span::new(
+                    at.file_id,
+                    at.start.forward(matches.get(0).unwrap().start() as u32),
+                    at.end,
+                ));
+                break;
+            }
+        }
+    }
+
+    fn adjust(&self, errors: &mut [Error]) {
+        if self.skipped.is_empty() || errors.is_empty() {
+            return;
+        }
+        let mut line = 1;
+        let mut skipped_lines = Vec::new();
+        for (offset, byte) in self.file.contents.iter().enumerate() {
+            if *byte == b'\n'
+                || (*byte == b'\r' && self.file.contents.get(offset + 1) != Some(&b'\n'))
+            {
+                if self
+                    .skipped
+                    .iter()
+                    .any(|at| at.start.offset as usize <= offset && offset < at.end.offset as usize)
+                {
+                    skipped_lines.push(line);
+                }
+                line += 1;
+            }
+        }
+        for error in errors {
+            let line = error.line.unwrap();
+            let adjusted = line
+                - skipped_lines
+                    .iter()
+                    .filter(|skipped| **skipped < line)
+                    .count() as i64;
+            error.message = format!(
+                "{} on line {adjusted}",
+                error.message.rsplit_once(" on line ").unwrap().0
+            );
+            error.line = Some(adjusted);
+        }
+    }
 }
 
 /// php.y's top_statement_list before handleNamespaces moves semicolon bodies. Keep the original CST nodes,
@@ -471,6 +580,9 @@ impl Reserved<'_> {
     }
 
     fn array(&mut self, at: Span, elements: &TokenSeparatedSequence<ArrayElement>) {
+        if self.fatal.is_some() || self.assignment_arrays.contains(&at) {
+            return;
+        }
         self.created_arrays.push((
             at,
             elements
@@ -488,6 +600,9 @@ impl Reserved<'_> {
         at: Span,
         elements: &TokenSeparatedSequence<ArrayElement>,
     ) {
+        if self.fatal.is_some() {
+            return;
+        }
         self.created_arrays.retain(|(array, _)| *array != at);
         // fixupArrayDestructuring recurses only into direct item values, not keys, accesses or List_.
         // PHPParser erases parentheses before this check and treats short and legacy Array_ alike.
@@ -503,6 +618,117 @@ impl Reserved<'_> {
                     self.fixup_array_destructuring(array.span(), &array.elements);
                 }
                 _ => {}
+            }
+        }
+    }
+
+    /// String_::parseEscapeSequences/codePointToUtf8: malformed escapes remain literal; only a complete
+    /// hexadecimal Unicode escape above 0x10ffff throws. Saturation matches PHP's overflowing hexdec float.
+    fn escapes(&mut self, string: &[u8], at: Span) -> bool {
+        static ESCAPES: std::sync::LazyLock<pcre2::bytes::Regex> = std::sync::LazyLock::new(|| {
+            pcre2::bytes::Regex::new(
+                r"\\([\\$nrtfve]|[xX][0-9a-fA-F]{1,2}|[0-7]{1,3}|u\{([0-9a-fA-F]+)\})",
+            )
+            .expect("upstream escape pattern")
+        });
+        for matches in ESCAPES.captures_iter(string) {
+            let matches = matches.expect("upstream escape match");
+            if let Some(digits) = matches.get(2)
+                && oversized_codepoint(digits.as_bytes())
+            {
+                self.errors.push(error(
+                    self.file,
+                    at,
+                    "Invalid UTF-8 codepoint escape sequence: Codepoint too large".into(),
+                ));
+                self.fatal = Some(self.errors.len());
+                return true;
+            }
+        }
+        false
+    }
+
+    fn encapsed(&mut self, open: Span, close: Span, parts: &Sequence<StringPart<'_>>) {
+        for part in string_literals(open, close, parts) {
+            self.lines.string(part);
+            if self.fatal.is_none() && self.version >= PHPVersion::PHP70 {
+                self.escapes(
+                    &self.file.contents[part.start.offset as usize..part.end.offset as usize],
+                    close,
+                );
+            }
+        }
+    }
+
+    /// ParserAbstract::stripIndentation's callback order and original part attributes. Indentation is
+    /// removed before decoding, but removing spaces/tabs at line starts cannot change Unicode escapes.
+    fn strip_indentation(
+        &mut self,
+        string: &[u8],
+        indent_len: usize,
+        indent_char: u8,
+        newline_at_start: bool,
+        newline_at_end: bool,
+        at: Span,
+    ) {
+        if indent_len == 0 {
+            return;
+        }
+        static INDENTATION: std::sync::LazyLock<[[pcre2::bytes::Regex; 2]; 2]> =
+            std::sync::LazyLock::new(|| {
+                [r"(?<=\n)", r"(?:(?<=\n)|\A)"].map(|start| {
+                    [r"(?=[\r\n])", r"(?:(?=[\r\n])|\z)"].map(|end| {
+                        pcre2::bytes::Regex::new(&format!("{start}([ \\t]*)({end})?"))
+                            .expect("upstream indentation pattern")
+                    })
+                })
+            });
+        for matches in INDENTATION[usize::from(newline_at_start)][usize::from(newline_at_end)]
+            .captures_iter(string)
+        {
+            let matches = matches.expect("upstream indentation match");
+            let indentation = matches.get(1).unwrap().as_bytes();
+            let prefix = &indentation[..indentation.len().min(indent_len)];
+            if prefix.contains(&if indent_char == b' ' { b'\t' } else { b' ' }) {
+                self.errors.push(error(
+                    self.file,
+                    at,
+                    "Invalid indentation - tabs and spaces cannot be mixed".into(),
+                ));
+            } else if prefix.len() < indent_len && matches.get(2).is_none() {
+                self.errors.push(error(
+                    self.file,
+                    at,
+                    format!("Invalid body indentation level (expecting an indentation level of at least {indent_len})"),
+                ));
+            }
+        }
+    }
+
+    /// parseDocString validates and decodes one scalar body or each literal part, aborting before later
+    /// parts on a throwing escape. Embedded expressions have already reduced before this callback.
+    fn document_body(&mut self, node: &DocumentString<'_>) {
+        let (indent_len, indent_char) = match node.indentation {
+            DocumentIndentation::Whitespace(len) => (len, b' '),
+            DocumentIndentation::Tab(len) => (len, b'\t'),
+            DocumentIndentation::None | DocumentIndentation::Mixed(_, _) => (0, b' '),
+        };
+        let scalar = node
+            .parts
+            .iter()
+            .all(|part| matches!(part, StringPart::Literal(_)));
+        for part in string_literals(node.open, node.close, &node.parts) {
+            let string = &self.file.contents[part.start.offset as usize..part.end.offset as usize];
+            self.strip_indentation(
+                string,
+                indent_len,
+                indent_char,
+                part.start == node.open.end,
+                part.end == node.close.start,
+                if scalar { node.span() } else { part },
+            );
+            if matches!(node.kind, DocumentKind::Heredoc) && self.escapes(string, node.close) {
+                break;
             }
         }
     }
@@ -524,7 +750,11 @@ impl Reserved<'_> {
 impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Reserved<'_> {
     fn walk_out_program(&mut self, node: &'ast Program<'arena>, _: &mut ()) {
         // php.y's start production reduces only after every top-level body semantic check has collected.
-        self.handle_namespaces(node);
+        if let Some(end) = self.fatal {
+            self.errors.truncate(end);
+        } else {
+            self.handle_namespaces(node);
+        }
         // ParserAbstract::parse checks surviving arrays only after doParse (including handleNamespaces).
         for (_, items) in &self.created_arrays {
             for at in items {
@@ -536,7 +766,28 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Reserved<'_> {
             }
         }
     }
+    fn walk_out_literal_string(&mut self, node: &'ast LiteralString<'arena>, _: &mut ()) {
+        if matches!(node.kind, LiteralStringKind::DoubleQuoted) {
+            self.lines.string(node.span);
+            if self.fatal.is_none() && self.version >= PHPVersion::PHP70 {
+                self.escapes(node.raw, node.span);
+            }
+        }
+    }
+    fn walk_out_interpolated_string(&mut self, node: &'ast InterpolatedString<'arena>, _: &mut ()) {
+        self.encapsed(node.left_double_quote, node.right_double_quote, &node.parts);
+    }
+    fn walk_out_shell_execute_string(
+        &mut self,
+        node: &'ast ShellExecuteString<'arena>,
+        _: &mut (),
+    ) {
+        self.encapsed(node.left_backtick, node.right_backtick, &node.parts);
+    }
     fn walk_out_document_string(&mut self, node: &'ast DocumentString<'arena>, _: &mut ()) {
+        if self.fatal.is_some() {
+            return;
+        }
         // ParserAbstract::parseDocString checks the closing token after embedded expressions reduce.
         if matches!(node.indentation, DocumentIndentation::Mixed(_, _)) {
             self.errors.push(error(
@@ -545,6 +796,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Reserved<'_> {
                 "Invalid indentation - tabs and spaces cannot be mixed".into(),
             ));
         }
+        self.document_body(node);
     }
     fn walk_out_array(&mut self, node: &'ast Array<'arena>, _: &mut ()) {
         self.array(node.span(), &node.elements);
@@ -695,9 +947,15 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Reserved<'_> {
             ));
         }
     }
+    fn walk_in_assignment(&mut self, node: &'ast Assignment<'arena>, _: &mut ()) {
+        if node.operator.is_assign()
+            && let Expression::Array(array) = node.lhs
+        {
+            self.assignment_arrays.insert(array.span());
+        }
+    }
     fn walk_out_assignment(&mut self, node: &'ast Assignment<'arena>, _: &mut ()) {
-        // Only array_short_syntax '=' expr invokes fixupArrayDestructuring at the root. Registering
-        // then removing its short array is equivalent to PHPParser never registering that root.
+        // Only successful array_short_syntax '=' expr reductions fix up the nested arrays.
         if node.operator.is_assign()
             && let Expression::Array(array) = node.lhs
         {

@@ -1495,3 +1495,236 @@ fn mixed_document_closing_leaves_other_literal_and_recovery_contracts_open() {
         );
     }
 }
+
+#[test]
+fn document_body_indentation_matches_part_locations_blank_lines_and_valid_neighbors() {
+    let inputs: Value = serde_json::from_str(include_str!(
+        "fixtures/parser/document-body-indentation-inputs.json"
+    ))
+    .unwrap();
+    let expected: Value = serde_json::from_str(include_str!(
+        "fixtures/parser/document-body-indentation-expected.json"
+    ))
+    .unwrap();
+    let root = Inputs::new();
+    let files = inputs
+        .as_object()
+        .unwrap()
+        .iter()
+        .map(|(name, source)| root.write_source(name, source.as_str().unwrap()))
+        .collect();
+    let mut project = Project::new(files, Vec::new());
+    project.php_version = 80500;
+    assert_eq!(errors(&project), expected["analysed"]["errors"]);
+}
+
+#[test]
+fn document_body_indentation_preserves_per_part_collection_and_parser_precedence() {
+    use pun_phpstan::{Array, Key, Value as Php};
+    let inputs: Value = serde_json::from_str(include_str!(
+        "fixtures/parser/document-body-indentation-order.json"
+    ))
+    .unwrap();
+    let expected: Value = serde_json::from_str(include_str!(
+        "fixtures/parser/document-body-indentation-expected.json"
+    ))
+    .unwrap();
+    for (name, source) in inputs.as_object().unwrap() {
+        let root = Inputs::new();
+        let file = root.write_source("order", source.as_str().unwrap());
+        let mut project = Project::new(vec![file], Vec::new());
+        project.php_version = 80500;
+        project.reported = Some(std::sync::Arc::new(|_| false));
+        let mut entry = Array::new();
+        entry.set(Key::from("identifier"), Php::str("phpstan.parse"));
+        project.ignore_errors =
+            pun_phpstan::ignore::IgnoredErrors::new(&Array::list([Php::Array(entry)]), true);
+        // Configured-ignore messages retain raw collection order, including duplicate part locations.
+        assert_eq!(
+            json!(analyse_project(&project).unwrap().general),
+            expected["order"][name]["general"],
+            "{name}"
+        );
+        assert_eq!(
+            errors(&project),
+            expected["order"][name]["errors"],
+            "{name}"
+        );
+    }
+}
+
+#[test]
+fn document_body_indentation_rejects_scanned_symbols_and_preserves_valid_files() {
+    let inputs: Value = serde_json::from_str(include_str!(
+        "fixtures/parser/document-body-indentation-scans.json"
+    ))
+    .unwrap();
+    let expected: Value = serde_json::from_str(include_str!(
+        "fixtures/parser/document-body-indentation-expected.json"
+    ))
+    .unwrap();
+    for (name, source) in inputs.as_object().unwrap() {
+        let root = Inputs::new();
+        let main = root.write_source("main", include_str!("fixtures/parser/scan-main.php"));
+        let symbols = root.write_source("symbols", source.as_str().unwrap());
+        let mut project = Project::new(vec![main], vec![symbols]);
+        project.php_version = 80500;
+        assert_eq!(
+            errors(&project),
+            expected["scanned"][name]["errors"],
+            "{name}"
+        );
+    }
+}
+
+#[test]
+fn document_body_indentation_has_no_target_version_gate() {
+    let expected: Value = serde_json::from_str(include_str!(
+        "fixtures/parser/document-body-indentation-expected.json"
+    ))
+    .unwrap();
+    let source: String = serde_json::from_str(include_str!(
+        "fixtures/parser/document-body-indentation-version.json"
+    ))
+    .unwrap();
+    let root = Inputs::new();
+    let file = root.write_source("input", &source);
+    for version in [70100, 70300, 70400, 80000, 80100, 80200, 80400, 80500] {
+        let mut project = Project::new(vec![file.clone()], Vec::new());
+        project.php_version = version;
+        assert_eq!(
+            errors(&project),
+            expected["versions"][version.to_string()]["errors"],
+            "PHP {version}"
+        );
+    }
+}
+
+#[test]
+fn document_body_indentation_does_not_invent_other_literal_or_recovery_errors() {
+    let inputs: Value = serde_json::from_str(include_str!(
+        "fixtures/parser/document-body-indentation-boundaries.json"
+    ))
+    .unwrap();
+    let expected: Value = serde_json::from_str(include_str!(
+        "fixtures/parser/document-body-indentation-expected.json"
+    ))
+    .unwrap();
+    for (name, source) in inputs.as_object().unwrap() {
+        let root = Inputs::new();
+        let file = root.write_source("input", source.as_str().unwrap());
+        let mut project = Project::new(vec![file], Vec::new());
+        project.php_version = 80500;
+        let actual = errors(&project);
+        let allowed = expected["boundaries"][name]["errors"].as_array().unwrap();
+        // Other owners may add their captured errors, but this check must not invent diagnostics.
+        assert!(
+            actual
+                .as_array()
+                .unwrap()
+                .iter()
+                .filter(|error| error["identifier"] == "phpstan.parse")
+                .all(|error| allowed.contains(error)),
+            "{name}: {actual}; upstream: {allowed:?}"
+        );
+    }
+}
+
+#[test]
+fn document_escape_failures_distinguish_oversized_codepoints_from_nonfatal_none_parts() {
+    let inputs: Value =
+        serde_json::from_str(include_str!("fixtures/parser/document-escape-inputs.json")).unwrap();
+    let expected: Value = serde_json::from_str(include_str!(
+        "fixtures/parser/document-body-indentation-expected.json"
+    ))
+    .unwrap();
+    let root = Inputs::new();
+    let files = inputs
+        .as_object()
+        .unwrap()
+        .iter()
+        .map(|(name, source)| {
+            root.write_source(&format!("escape-{name}"), source.as_str().unwrap())
+        })
+        .collect();
+    let mut project = Project::new(files, Vec::new());
+    project.php_version = 80500;
+    assert_eq!(errors(&project), expected["escapes"]["errors"]);
+}
+
+#[test]
+fn document_escape_fatal_reductions_preserve_prior_errors_and_array_postprocessing() {
+    use pun_phpstan::{Array, Key, Value as Php};
+    let inputs: Value =
+        serde_json::from_str(include_str!("fixtures/parser/document-escape-order.json")).unwrap();
+    let expected: Value = serde_json::from_str(include_str!(
+        "fixtures/parser/document-body-indentation-expected.json"
+    ))
+    .unwrap();
+    for (name, source) in inputs.as_object().unwrap() {
+        let root = Inputs::new();
+        let file = root.write_source("order", source.as_str().unwrap());
+        let mut project = Project::new(vec![file], Vec::new());
+        project.php_version = 80500;
+        project.reported = Some(std::sync::Arc::new(|_| false));
+        let mut entry = Array::new();
+        entry.set(Key::from("identifier"), Php::str("phpstan.parse"));
+        project.ignore_errors =
+            pun_phpstan::ignore::IgnoredErrors::new(&Array::list([Php::Array(entry)]), true);
+        assert_eq!(
+            json!(analyse_project(&project).unwrap().general),
+            expected["escape_order"][name]["general"],
+            "{name}"
+        );
+        assert_eq!(
+            errors(&project),
+            expected["escape_order"][name]["errors"],
+            "{name}"
+        );
+    }
+}
+
+#[test]
+fn document_escape_failures_reject_whole_scan_files_without_rejecting_nonfatal_escapes() {
+    let inputs: Value =
+        serde_json::from_str(include_str!("fixtures/parser/document-escape-scans.json")).unwrap();
+    let expected: Value = serde_json::from_str(include_str!(
+        "fixtures/parser/document-body-indentation-expected.json"
+    ))
+    .unwrap();
+    for (name, source) in inputs.as_object().unwrap() {
+        let root = Inputs::new();
+        let main = root.write_source("main", include_str!("fixtures/parser/scan-main.php"));
+        let symbols = root.write_source("symbols", source.as_str().unwrap());
+        let mut project = Project::new(vec![main], vec![symbols]);
+        project.php_version = 80500;
+        assert_eq!(
+            errors(&project),
+            expected["escape_scanned"][name]["errors"],
+            "{name}"
+        );
+    }
+}
+
+#[test]
+fn document_escape_version_policy_matches_every_admitted_public_target() {
+    let inputs: Value =
+        serde_json::from_str(include_str!("fixtures/parser/document-escape-version.json")).unwrap();
+    let expected: Value = serde_json::from_str(include_str!(
+        "fixtures/parser/document-body-indentation-expected.json"
+    ))
+    .unwrap();
+    for version in [70100, 70300, 70400, 80000, 80100, 80200, 80400, 80500] {
+        for (name, source) in inputs.as_object().unwrap() {
+            let root = Inputs::new();
+            let file = root.write_source("input", source.as_str().unwrap());
+            let mut project = Project::new(vec![file], Vec::new());
+            project.php_version = version;
+            assert_eq!(
+                errors(&project),
+                expected["escape_versions"][version.to_string()][name]["errors"],
+                "PHP {version}: {name}"
+            );
+        }
+    }
+}
