@@ -1828,7 +1828,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         }
         if !has_else {
             let mut outgoing = self.expression_guards();
-            outgoing.extend(previous_false.iter().filter(|g| matches!(g, Guard::Expr(_))).cloned());
+            outgoing.extend(previous_false.iter().filter(|g| scope::definite_expression(g)).cloned());
             expressions.push(outgoing);
             survivors.push(previous_false);
         }
@@ -1836,7 +1836,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         if let Some((first, rest)) = survivors.split_first() {
             let after: Vec<Guard> = first
                 .iter()
-                .filter(|g| !matches!(g, Guard::Expr(_)) && rest.iter().all(|r| r.contains(g)))
+                .filter(|g| !scope::definite_expression(g) && rest.iter().all(|r| r.contains(g)))
                 .cloned()
                 .collect();
             self.guards.extend(after);
@@ -1851,7 +1851,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         let yes = if let Some(then) = cond.then {
             self.guarded_expression(t, then)
         } else {
-            self.expression_guards().into_iter().chain(t.into_iter().filter(|g| matches!(g, Guard::Expr(_)))).collect()
+            self.expression_guards().into_iter().chain(t.into_iter().filter(scope::definite_expression)).collect()
         };
         let f = self.falsy(cond.condition);
         let no = self.guarded_expression(f, cond.r#else);
@@ -2003,6 +2003,8 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
     }
     fn walk_out_function_call(&mut self, call: &'ast FunctionCall<'arena>, _: &mut ()) {
         self.in_exists_call -= usize::from(calls::is_class_exists_family(self, call));
+        let references = assign::by_ref_arguments(self, call);
+        self.invalidate_call_references(&call.argument_list, references);
     }
 
     fn walk_in_instantiation(&mut self, new: &'ast Instantiation<'arena>, _: &mut ()) {
@@ -2052,6 +2054,11 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
             types::dynamic_names::check(self, name, false, "Method", call.object, false, "method.nameNotString");
         }
         assign::arguments(self, assign::Callee::Method(call));
+    }
+    fn walk_out_method_call(&mut self, call: &'ast MethodCall<'arena>, _: &mut ()) {
+        self.invalidate_called_receiver(call.object, &call.method);
+        let references = assign::by_ref_call_arguments(self, assign::Callee::Method(call), &call.argument_list);
+        self.invalidate_call_references(&call.argument_list, references);
     }
     fn walk_in_pipe(&mut self, p: &'ast Pipe<'arena>, _: &mut ()) {
         self.piped.insert(p.callable.span());
@@ -2117,6 +2124,9 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         assign::arguments(self, assign::Callee::StaticMethod(call));
     }
     fn walk_out_static_method_call(&mut self, call: &'ast StaticMethodCall<'arena>, _: &mut ()) {
+        self.invalidate_static_call(call);
+        let references = assign::by_ref_call_arguments(self, assign::Callee::StaticMethod(call), &call.argument_list);
+        self.invalidate_call_references(&call.argument_list, references);
         if self.is_closure_bind(call) {
             self.closure_bind -= 1;
         }

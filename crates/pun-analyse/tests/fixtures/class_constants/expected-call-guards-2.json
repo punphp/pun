@@ -1,0 +1,579 @@
+{
+  "general": [],
+  "errors": [
+    {
+      "file": "call-guards.php",
+      "message": "Function ConstantCallGuards\\impureReceiver() is marked as impure but does not have any side effects.",
+      "line": 14,
+      "ignorable": true,
+      "identifier": "impureFunction.pure"
+    },
+    {
+      "file": "call-guards.php",
+      "message": "Function ConstantCallGuards\\noise() is marked as impure but does not have any side effects.",
+      "line": 17,
+      "ignorable": true,
+      "identifier": "impureFunction.pure"
+    },
+    {
+      "file": "call-guards.php",
+      "message": "Method ConstantCallGuards\\Factory::pureVoid() is marked as pure but returns void.",
+      "line": 36,
+      "ignorable": true,
+      "identifier": "pureMethod.void"
+    },
+    {
+      "file": "call-guards.php",
+      "message": "Access to undefined constant ConstantCallGuards\\Receiver::LEXICAL.",
+      "line": 47,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "call-guards.php",
+      "message": "Access to undefined constant ConstantCallGuards\\Receiver::LEXICAL.",
+      "line": 50,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "call-guards.php",
+      "message": "Access to undefined constant ConstantCallGuards\\Receiver::EXPLICIT.",
+      "line": 52,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "call-guards.php",
+      "message": "Access to undefined constant ConstantCallGuards\\Receiver::EXPLICIT.",
+      "line": 54,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "call-guards.php",
+      "message": "Access to undefined constant ConstantCallGuards\\Receiver::CASE_NAME.",
+      "line": 56,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "call-guards.php",
+      "message": "Class ConstantCallGuards\\Factory referenced with incorrect case: ConstantCallGuards\\FACTORY.",
+      "line": 56,
+      "ignorable": true,
+      "identifier": "class.nameCase"
+    },
+    {
+      "file": "call-guards.php",
+      "message": "Class ConstantCallGuards\\Factory referenced with incorrect case: ConstantCallGuards\\FACTORY.",
+      "line": 58,
+      "ignorable": true,
+      "identifier": "class.nameCase"
+    },
+    {
+      "file": "call-guards.php",
+      "message": "Access to undefined constant ConstantCallGuards\\Receiver::MISSING.",
+      "line": 64,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "call-guards.php",
+      "message": "Access to undefined constant ConstantCallGuards\\Receiver::MISSING.",
+      "line": 66,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "call-guards.php",
+      "message": "Access to undefined constant ConstantCallGuards\\Receiver::MISSING.",
+      "line": 70,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "call-guards.php",
+      "message": "Access to undefined constant ConstantCallGuards\\Receiver::MISSING.",
+      "line": 71,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "call-guards.php",
+      "message": "Access to private constant PRIVATE_NAME of class ConstantCallGuards\\Receiver.",
+      "line": 72,
+      "ignorable": true,
+      "identifier": "classConstant.private"
+    },
+    {
+      "file": "call-guards.php",
+      "message": "Access to undefined constant ConstantCallGuards\\Receiver::OTHER.",
+      "line": 73,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "call-guards.php",
+      "message": "Access to undefined constant ConstantCallGuards\\Receiver::OTHER.",
+      "line": 73,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "call-guards.php",
+      "message": "Access to undefined constant ConstantCallGuards\\Receiver::MISSING.",
+      "line": 77,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "call-guards.php",
+      "message": "Access to undefined constant ConstantCallGuards\\Receiver::MISSING.",
+      "line": 82,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "call-guards.php",
+      "message": "Access to undefined constant ConstantCallGuards\\Receiver::MISSING.",
+      "line": 84,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "call-guards.php",
+      "message": "Access to undefined constant ConstantCallGuards\\Receiver::MISSING.",
+      "line": 84,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "call-guards.php",
+      "message": "Access to undefined constant ConstantCallGuards\\Receiver::MISSING.",
+      "line": 85,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "call-guards.php",
+      "message": "Access to undefined constant ConstantCallGuards\\Receiver::OTHER.",
+      "line": 86,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "call-guards.php",
+      "message": "Access to undefined constant ConstantCallGuards\\Receiver::OTHER.",
+      "line": 86,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "call-guards.php",
+      "message": "Access to undefined constant ConstantCallGuards\\Receiver::MISSING.",
+      "line": 90,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "call-guards.php",
+      "message": "Access to undefined constant ConstantCallGuards\\Receiver::MISSING.",
+      "line": 91,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "call-guards.php",
+      "message": "Access to undefined constant ConstantCallGuards\\Receiver::MISSING.",
+      "line": 92,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "call-guards.php",
+      "message": "Access to undefined constant ConstantCallGuards\\Receiver::MISSING.",
+      "line": 96,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "call-guards.php",
+      "message": "Access to undefined constant ConstantCallGuards\\Receiver::MISSING.",
+      "line": 99,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "call-guards.php",
+      "message": "Access to undefined constant ConstantCallGuards\\Receiver::MISSING.",
+      "line": 101,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "call-guards.php",
+      "message": "Access to undefined constant ConstantCallGuards\\Receiver::MISSING.",
+      "line": 103,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "call-guards.php",
+      "message": "Access to undefined constant ConstantCallGuards\\Receiver::MISSING.",
+      "line": 104,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "call-guards.php",
+      "message": "Access to undefined constant ConstantCallGuards\\Receiver::MISSING.",
+      "line": 106,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "call-guards.php",
+      "message": "Access to undefined constant ConstantCallGuards\\Receiver::MISSING.",
+      "line": 108,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "call-guards.php",
+      "message": "Access to undefined constant ConstantCallGuards\\Receiver::MISSING.",
+      "line": 110,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "call-guards.php",
+      "message": "Access to undefined constant ConstantCallGuards\\Receiver::REFERENCE.",
+      "line": 115,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "call-guards.php",
+      "message": "Access to undefined constant ConstantCallGuards\\Receiver::REFERENCE.",
+      "line": 117,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "call-guards.php",
+      "message": "Access to undefined constant ConstantCallGuards\\Receiver::VOID_RETURN.",
+      "line": 119,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "call-guards.php",
+      "message": "Access to undefined constant ConstantCallGuards\\Receiver::VOID_RETURN.",
+      "line": 121,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "call-guards.php",
+      "message": "Access to undefined constant ConstantCallGuards\\Receiver::CONSTRUCTOR.",
+      "line": 123,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "call-guards.php",
+      "message": "Access to undefined constant ConstantCallGuards\\Receiver::CONSTRUCTOR.",
+      "line": 125,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "call-guards.php",
+      "message": "Access to undefined constant ConstantCallGuards\\Factory::FLUENT.",
+      "line": 127,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "call-guards.php",
+      "message": "Access to undefined constant ConstantCallGuards\\Factory::PURE_FLUENT.",
+      "line": 131,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "call-guards.php",
+      "message": "Access to undefined constant ConstantCallGuards\\Receiver::BOOL.",
+      "line": 138,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "call-guards.php",
+      "message": "Access to undefined constant ConstantCallGuards\\Receiver::BOOL.",
+      "line": 138,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "call-guards.php",
+      "message": "Access to undefined constant ConstantCallGuards\\Receiver::NULL_VALUE.",
+      "line": 139,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "call-guards.php",
+      "message": "Access to undefined constant ConstantCallGuards\\Receiver::STRING_VALUE.",
+      "line": 140,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "call-guards.php",
+      "message": "Access to undefined constant ArrayIterator<(int|string), mixed>::BUILTIN.",
+      "line": 147,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "call-guards.php",
+      "message": "Access to undefined constant ArrayIterator<(int|string), mixed>::BUILTIN.",
+      "line": 150,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "call-guards.php",
+      "message": "Access to undefined constant ConstantCallGuards\\Receiver::ALIASED.",
+      "line": 155,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "call-guards.php",
+      "message": "Access to undefined constant ConstantCallGuards\\Receiver::ALIASED.",
+      "line": 157,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "call-guards.php",
+      "message": "Access to undefined constant ConstantCallGuards\\Receiver::FALLBACK.",
+      "line": 159,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "call-guards.php",
+      "message": "Access to undefined constant ConstantCallGuards\\Receiver::FALLBACK.",
+      "line": 160,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "call-guards.php",
+      "message": "Access to undefined constant ConstantCallGuards\\Receiver::QUALIFIED.",
+      "line": 162,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "call-guards.php",
+      "message": "Access to undefined constant ConstantCallGuards\\Receiver::METHOD_REFERENCE.",
+      "line": 168,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "call-guards.php",
+      "message": "Access to undefined constant ConstantCallGuards\\Receiver::METHOD_REFERENCE.",
+      "line": 170,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "call-guards.php",
+      "message": "Access to undefined constant ConstantCallGuards\\Receiver::STATIC_REFERENCE.",
+      "line": 172,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "call-guards.php",
+      "message": "Access to undefined constant ConstantCallGuards\\Receiver::STATIC_REFERENCE.",
+      "line": 174,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "call-guards.php",
+      "message": "Access to undefined constant ConstantCallGuards\\Factory::THIS_FLUENT.",
+      "line": 176,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "call-guards.php",
+      "message": "Access to undefined constant ConstantCallGuards\\Factory::THIS_FLUENT.",
+      "line": 178,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "call-guards.php",
+      "message": "Access to undefined constant ConstantCallGuards\\Receiver::FIRST.",
+      "line": 184,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "call-guards.php",
+      "message": "Access to undefined constant ConstantCallGuards\\Receiver::SECOND.",
+      "line": 184,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "call-guards.php",
+      "message": "Access to undefined constant ConstantCallGuards\\Receiver::FIRST.",
+      "line": 188,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "call-guards.php",
+      "message": "Access to undefined constant ConstantCallGuards\\Receiver::SECOND.",
+      "line": 188,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "call-guards.php",
+      "message": "Access to undefined constant ConstantCallGuards\\Receiver::JOINED.",
+      "line": 194,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "call-guards.php",
+      "message": "Access to undefined constant ConstantCallGuards\\Receiver::JOINED.",
+      "line": 196,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "call-guards.php",
+      "message": "Access to undefined constant ConstantCallGuards\\Receiver::ONE_PATH.",
+      "line": 199,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "call-guards.php",
+      "message": "Access to undefined constant ConstantCallGuards\\Receiver::ONE_PATH.",
+      "line": 200,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "call-guards.php",
+      "message": "Access to undefined constant ConstantCallGuards\\Receiver::COMPARISON.",
+      "line": 201,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "call-guards.php",
+      "message": "Access to undefined constant ConstantCallGuards\\Receiver::REVERSED.",
+      "line": 202,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "call-guards.php",
+      "message": "Access to undefined constant ConstantCallGuards\\Receiver::READONLY_NESTED.",
+      "line": 211,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "call-guards.php",
+      "message": "Access to undefined constant ConstantCallGuards\\Receiver::READONLY_NESTED.",
+      "line": 213,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "call-guards.php",
+      "message": "Access to undefined constant ConstantCallGuards\\Receiver::LONG_NAME.",
+      "line": 215,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "call-guards.php",
+      "message": "Access to undefined constant ConstantCallGuards\\Receiver::UNPACKED.",
+      "line": 226,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "call-guards.php",
+      "message": "Access to undefined constant ConstantCallGuards\\Receiver::UNPACKED.",
+      "line": 228,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "call-guards.php",
+      "message": "Access to undefined constant ConstantCallGuards\\Receiver::UNPACKED.",
+      "line": 230,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "call-guards.php",
+      "message": "Access to undefined constant ConstantCallGuards\\Receiver::PARENT_NAME.",
+      "line": 236,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "call-guards.php",
+      "message": "Access to undefined constant ConstantCallGuards\\Receiver::PARENT_NAME.",
+      "line": 238,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "call-guards.php",
+      "message": "Access to undefined constant ConstantCallGuards\\Receiver::PARENT_CASE.",
+      "line": 240,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "call-guards.php",
+      "message": "Class ConstantCallGuards\\Factory referenced with incorrect case: ConstantCallGuards\\FACTORY.",
+      "line": 240,
+      "ignorable": true,
+      "identifier": "class.nameCase"
+    },
+    {
+      "file": "call-guards.php",
+      "message": "Access to undefined constant ConstantCallGuards\\Receiver::PARENT_CASE.",
+      "line": 242,
+      "ignorable": true,
+      "identifier": "classConstant.notFound"
+    },
+    {
+      "file": "call-guards.php",
+      "message": "Class ConstantCallGuards\\Factory referenced with incorrect case: ConstantCallGuards\\FACTORY.",
+      "line": 242,
+      "ignorable": true,
+      "identifier": "class.nameCase"
+    }
+  ]
+}

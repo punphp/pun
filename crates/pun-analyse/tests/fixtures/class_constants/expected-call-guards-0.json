@@ -1,0 +1,33 @@
+{
+  "general": [],
+  "errors": [
+    {
+      "file": "call-guards.php",
+      "message": "Class ConstantCallGuards\\Factory referenced with incorrect case: ConstantCallGuards\\FACTORY.",
+      "line": 56,
+      "ignorable": true,
+      "identifier": "class.nameCase"
+    },
+    {
+      "file": "call-guards.php",
+      "message": "Class ConstantCallGuards\\Factory referenced with incorrect case: ConstantCallGuards\\FACTORY.",
+      "line": 58,
+      "ignorable": true,
+      "identifier": "class.nameCase"
+    },
+    {
+      "file": "call-guards.php",
+      "message": "Class ConstantCallGuards\\Factory referenced with incorrect case: ConstantCallGuards\\FACTORY.",
+      "line": 240,
+      "ignorable": true,
+      "identifier": "class.nameCase"
+    },
+    {
+      "file": "call-guards.php",
+      "message": "Class ConstantCallGuards\\Factory referenced with incorrect case: ConstantCallGuards\\FACTORY.",
+      "line": 242,
+      "ignorable": true,
+      "identifier": "class.nameCase"
+    }
+  ]
+}
