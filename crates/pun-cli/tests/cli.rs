@@ -656,7 +656,7 @@ fn pun_only_behaviour() {
         )
     );
     // A named lint rule Pun can't run yet stops the run too; a set skips the rules Pun can't run yet (code-quality
-    // has `later = true` rules).
+    // has unported rules).
     std::fs::write(
         dir.join("pun.toml"),
         "[format]\npreset = \"empty\"\n[lint]\nsets = [\"code-quality\"]\n[lint.rules]\n\"complexity/no-empty-file\" = \"error\"\n",
