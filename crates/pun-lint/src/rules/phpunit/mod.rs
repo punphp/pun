@@ -32,6 +32,7 @@ mod prefer_assert_instances_of;
 mod prefer_assert_null_true_false;
 mod prefer_assert_string_contains;
 mod prefer_assert_true_false;
+mod prefer_attribute_over_annotation;
 mod prefer_comparison_assertion;
 mod prefer_covers_attribute;
 mod prefer_create_stub_in_coalesce;
@@ -84,6 +85,7 @@ pub use prefer_assert_instances_of::PreferAssertInstancesOf;
 pub use prefer_assert_null_true_false::PreferAssertNullTrueFalse;
 pub use prefer_assert_string_contains::PreferAssertStringContains;
 pub use prefer_assert_true_false::PreferAssertTrueFalse;
+pub use prefer_attribute_over_annotation::PreferAttributeOverAnnotation;
 pub use prefer_comparison_assertion::PreferComparisonAssertion;
 pub use prefer_covers_attribute::PreferCoversAttribute;
 pub use prefer_create_stub_in_coalesce::PreferCreateStubInCoalesce;
@@ -177,6 +179,7 @@ pub(crate) fn all() -> Vec<Box<dyn Rule>> {
         Box::new(PreferDependsAttribute),
         Box::new(PreferCoversAttribute),
         Box::new(PreferTestWithAttribute),
+        Box::new(PreferAttributeOverAnnotation::default()),
     ]
 }
 
