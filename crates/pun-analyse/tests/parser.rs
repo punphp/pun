@@ -1232,3 +1232,132 @@ fn expression_list_commas_leave_other_productions_and_recovery_to_their_own_cont
         );
     }
 }
+
+#[test]
+fn empty_array_elements_match_comma_locations_and_recursive_destructuring_roles() {
+    let inputs: Value = serde_json::from_str(include_str!(
+        "fixtures/parser/empty-array-elements-inputs.json"
+    ))
+    .unwrap();
+    let expected: Value = serde_json::from_str(include_str!(
+        "fixtures/parser/empty-array-elements-expected.json"
+    ))
+    .unwrap();
+    let root = Inputs::new();
+    let files = inputs
+        .as_object()
+        .unwrap()
+        .iter()
+        .map(|(name, source)| root.write_source(name, source.as_str().unwrap()))
+        .collect();
+    let mut project = Project::new(files, Vec::new());
+    project.php_version = 80500;
+    assert_eq!(errors(&project), expected["analysed"]["errors"]);
+}
+
+#[test]
+fn empty_array_elements_follow_namespace_checks_in_array_creation_and_item_order() {
+    use pun_phpstan::{Array, Key, Value as Php};
+    let root = Inputs::new();
+    let file = root.write_source(
+        "order",
+        include_str!("fixtures/parser/empty-array-elements-order.php"),
+    );
+    let mut project = Project::new(vec![file], Vec::new());
+    project.php_version = 80500;
+    project.reported = Some(std::sync::Arc::new(|_| false));
+    let mut entry = Array::new();
+    entry.set(Key::from("identifier"), Php::str("phpstan.parse"));
+    project.ignore_errors =
+        pun_phpstan::ignore::IgnoredErrors::new(&Array::list([Php::Array(entry)]), true);
+    let expected: Value = serde_json::from_str(include_str!(
+        "fixtures/parser/empty-array-elements-expected.json"
+    ))
+    .unwrap();
+    // Configured-ignore messages expose unsorted parser order: parameter, comma, root namespace,
+    // then inner short/long arrays before the outer array's two slots. Names/rules never execute.
+    assert_eq!(
+        json!(analyse_project(&project).unwrap().general),
+        expected["order"]["general"]
+    );
+    assert_eq!(errors(&project), expected["order"]["errors"]);
+}
+
+#[test]
+fn empty_array_elements_reject_all_scanned_symbols_but_keep_destructuring_neighbors() {
+    let inputs: Value = serde_json::from_str(include_str!(
+        "fixtures/parser/empty-array-elements-scans.json"
+    ))
+    .unwrap();
+    let expected: Value = serde_json::from_str(include_str!(
+        "fixtures/parser/empty-array-elements-expected.json"
+    ))
+    .unwrap();
+    // Legacy-array children and reference items are valid parser admission controls. Analyzing those
+    // assignments also reaches separate InvalidAssignVarRule gaps, which this parser port does not fix.
+    for (name, source) in inputs.as_object().unwrap() {
+        let root = Inputs::new();
+        let main = root.write_source("main", include_str!("fixtures/parser/scan-main.php"));
+        let symbols = root.write_source("symbols", source.as_str().unwrap());
+        let mut project = Project::new(vec![main], vec![symbols]);
+        project.php_version = 80500;
+        assert_eq!(
+            errors(&project),
+            expected["scanned"][name]["errors"],
+            "{name}"
+        );
+    }
+}
+
+#[test]
+fn empty_array_elements_have_no_php_version_gate() {
+    let expected: Value = serde_json::from_str(include_str!(
+        "fixtures/parser/empty-array-elements-expected.json"
+    ))
+    .unwrap();
+    let root = Inputs::new();
+    let file = root.write_source(
+        "input",
+        include_str!("fixtures/parser/empty-array-elements-version.php"),
+    );
+    for version in [70100, 70400, 80000, 80100, 80200, 80400, 80500] {
+        let mut project = Project::new(vec![file.clone()], Vec::new());
+        project.php_version = version;
+        assert_eq!(
+            errors(&project),
+            expected["versions"][version.to_string()]["errors"],
+            "PHP {version}"
+        );
+    }
+}
+
+#[test]
+fn empty_array_elements_leave_other_grammar_and_recovery_to_their_own_contracts() {
+    let inputs: Value = serde_json::from_str(include_str!(
+        "fixtures/parser/empty-array-elements-boundaries.json"
+    ))
+    .unwrap();
+    let upstream: Value = serde_json::from_str(include_str!(
+        "fixtures/parser/empty-array-elements-expected.json"
+    ))
+    .unwrap();
+    for (name, source) in inputs.as_object().unwrap() {
+        let root = Inputs::new();
+        let file = root.write_source("input", source.as_str().unwrap());
+        let mut project = Project::new(vec![file], Vec::new());
+        project.php_version = 80500;
+        let actual = errors(&project);
+        let allowed = upstream["boundaries"][name]["errors"].as_array().unwrap();
+        // Mago admits additional assignment/foreach shapes and recovers other arrays. This slice
+        // must not invent diagnostics there, but later grammar ports may add their captured errors.
+        assert!(
+            actual
+                .as_array()
+                .unwrap()
+                .iter()
+                .filter(|error| error["identifier"] == "phpstan.parse")
+                .all(|error| allowed.contains(error)),
+            "{name}: {actual}; upstream: {allowed:?}"
+        );
+    }
+}

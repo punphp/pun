@@ -1,0 +1,12 @@
+{
+  "unclosed-array": "<?php\n$value = [,;\n",
+  "missing-value": "<?php\n$value = ['key' => ,];\n",
+  "foreach-key-array": "<?php\nforeach ([[1, 2]] as [, $item] => $value) {}\n",
+  "foreach-reference-array": "<?php\nforeach ([[1, 2]] as &[, $item]) {}\n",
+  "foreach-legacy-array": "<?php\nforeach ([[1, 2]] as array(, $item)) {}\n",
+  "reference-assignment": "<?php\n[, $item] =& $source;\n",
+  "nested-reference-assignment": "<?php\n[[, $item]] =& $source;\n",
+  "compound-assignment": "<?php\n[, $item] += [1, 2];\n",
+  "parenthesized-lhs": "<?php\n([, $item]) = [1, 2];\n",
+  "reference-array-item": "<?php\n[&[, $item]] = [[1, 2]];\n"
+}

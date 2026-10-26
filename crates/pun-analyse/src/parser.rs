@@ -76,6 +76,7 @@ pub(crate) fn errors(file: &File, program: &Program, version: PHPVersion) -> Vec
         file,
         version,
         continuation: None,
+        created_arrays: Vec::new(),
         errors: Vec::new(),
     };
     reserved.walk_program(program, &mut ());
@@ -138,6 +139,8 @@ struct Reserved<'a> {
     /// anonymous headers. Other expression contexts and grammar recovery inside anonymous bodies are not a
     /// general older-version parser. Header errors after attributes or other modifiers are context-independent.
     continuation: Option<(Span, &'static str)>,
+    /// ParserAbstract's createdArrays registry: array reduction order, then empty item token locations.
+    created_arrays: Vec<(Span, Vec<Span>)>,
     errors: Vec<Error>,
 }
 
@@ -467,6 +470,43 @@ impl Reserved<'_> {
         }
     }
 
+    fn array(&mut self, at: Span, elements: &TokenSeparatedSequence<ArrayElement>) {
+        self.created_arrays.push((
+            at,
+            elements
+                .iter()
+                .filter_map(|element| match element {
+                    ArrayElement::Missing(missing) => Some(missing.comma),
+                    _ => None,
+                })
+                .collect(),
+        ));
+    }
+
+    fn fixup_array_destructuring(
+        &mut self,
+        at: Span,
+        elements: &TokenSeparatedSequence<ArrayElement>,
+    ) {
+        self.created_arrays.retain(|(array, _)| *array != at);
+        // fixupArrayDestructuring recurses only into direct item values, not keys, accesses or List_.
+        // PHPParser erases parentheses before this check and treats short and legacy Array_ alike.
+        for mut value in elements.iter().filter_map(ArrayElement::get_value) {
+            while let Expression::Parenthesized(inner) = value {
+                value = inner.expression;
+            }
+            match value {
+                Expression::Array(array) => {
+                    self.fixup_array_destructuring(array.span(), &array.elements);
+                }
+                Expression::LegacyArray(array) => {
+                    self.fixup_array_destructuring(array.span(), &array.elements);
+                }
+                _ => {}
+            }
+        }
+    }
+
     fn parents(&mut self, extends: Option<&Extends>, implements: Option<&Implements>) {
         if let Some(extends) = extends {
             for id in &extends.types {
@@ -485,6 +525,31 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Reserved<'_> {
     fn walk_out_program(&mut self, node: &'ast Program<'arena>, _: &mut ()) {
         // php.y's start production reduces only after every top-level body semantic check has collected.
         self.handle_namespaces(node);
+        // ParserAbstract::parse checks surviving arrays only after doParse (including handleNamespaces).
+        for (_, items) in &self.created_arrays {
+            for at in items {
+                self.errors.push(error(
+                    self.file,
+                    *at,
+                    "Cannot use empty array elements in arrays".into(),
+                ));
+            }
+        }
+    }
+    fn walk_out_array(&mut self, node: &'ast Array<'arena>, _: &mut ()) {
+        self.array(node.span(), &node.elements);
+    }
+    fn walk_out_legacy_array(&mut self, node: &'ast LegacyArray<'arena>, _: &mut ()) {
+        self.array(node.span(), &node.elements);
+    }
+    fn walk_out_foreach_target(&mut self, node: &'ast ForeachTarget<'arena>, _: &mut ()) {
+        let value = match node {
+            ForeachTarget::Value(target) => target.value,
+            ForeachTarget::KeyValue(target) => target.value,
+        };
+        if let Expression::Array(array) = value {
+            self.fixup_array_destructuring(array.span(), &array.elements);
+        }
     }
     fn walk_for(&mut self, node: &'ast For<'arena>, context: &mut ()) {
         self.walk_keyword(&node.r#for, context);
@@ -621,6 +686,13 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Reserved<'_> {
         }
     }
     fn walk_out_assignment(&mut self, node: &'ast Assignment<'arena>, _: &mut ()) {
+        // Only array_short_syntax '=' expr invokes fixupArrayDestructuring at the root. Registering
+        // then removing its short array is equivalent to PHPParser never registering that root.
+        if node.operator.is_assign()
+            && let Expression::Array(array) = node.lhs
+        {
+            self.fixup_array_destructuring(array.span(), &array.elements);
+        }
         // php.y's variable '=' ampersand new_expr production checks after both sides reduce. Do not
         // unwrap parentheses: a parenthesized LHS or new, and a dereferenced new, use other productions.
         if self.version >= PHPVersion::PHP70

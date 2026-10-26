@@ -1,0 +1,807 @@
+{
+    "analysed": {
+        "errors": [
+            {
+                "file": "constant-value.php",
+                "line": 2,
+                "identifier": "phpstan.parse",
+                "message": "Cannot use empty array elements in arrays on line 2",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "destructuring-key-array.php",
+                "line": 2,
+                "identifier": "phpstan.parse",
+                "message": "Cannot use empty array elements in arrays on line 2",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "destructuring-rhs-array.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Cannot use empty array elements in arrays on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "destructuring-value-access.php",
+                "line": 2,
+                "identifier": "phpstan.parse",
+                "message": "Cannot use empty array elements in arrays on line 2",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "foreach-list-nested-array.php",
+                "line": 2,
+                "identifier": "phpstan.parse",
+                "message": "Cannot use empty array elements in arrays on line 2",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "foreach-source-array.php",
+                "line": 2,
+                "identifier": "phpstan.parse",
+                "message": "Cannot use empty array elements in arrays on line 2",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "legacy-leading.php",
+                "line": 2,
+                "identifier": "phpstan.parse",
+                "message": "Cannot use empty array elements in arrays on line 2",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "legacy-list-nested-long.php",
+                "line": 2,
+                "identifier": "phpstan.parse",
+                "message": "Cannot use empty array elements in arrays on line 2",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "legacy-list-nested-short.php",
+                "line": 2,
+                "identifier": "phpstan.parse",
+                "message": "Cannot use empty array elements in arrays on line 2",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "legacy-middle.php",
+                "line": 2,
+                "identifier": "phpstan.parse",
+                "message": "Cannot use empty array elements in arrays on line 2",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "legacy-only-holes.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Cannot use empty array elements in arrays on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "legacy-only-holes.php",
+                "line": 4,
+                "identifier": "phpstan.parse",
+                "message": "Cannot use empty array elements in arrays on line 4",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "nested-key-and-value-arrays.php",
+                "line": 2,
+                "identifier": "phpstan.parse",
+                "message": "Cannot use empty array elements in arrays on line 2",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "nested-key-and-value-arrays.php",
+                "line": 2,
+                "identifier": "phpstan.parse",
+                "message": "Cannot use empty array elements in arrays on line 2",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "nested-mixed-arrays.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Cannot use empty array elements in arrays on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "nested-mixed-arrays.php",
+                "line": 5,
+                "identifier": "phpstan.parse",
+                "message": "Cannot use empty array elements in arrays on line 5",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "nested-mixed-arrays.php",
+                "line": 7,
+                "identifier": "phpstan.parse",
+                "message": "Cannot use empty array elements in arrays on line 7",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "parameter-default.php",
+                "line": 2,
+                "identifier": "phpstan.parse",
+                "message": "Cannot use empty array elements in arrays on line 2",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "property-default.php",
+                "line": 2,
+                "identifier": "phpstan.parse",
+                "message": "Cannot use empty array elements in arrays on line 2",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "property-default.php",
+                "line": 2,
+                "identifier": "phpstan.parse",
+                "message": "Cannot use empty array elements in arrays on line 2",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "resolver-and-rule-suppression.php",
+                "line": 2,
+                "identifier": "phpstan.parse",
+                "message": "Cannot use empty array elements in arrays on line 2",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "short-comma-lines.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Cannot use empty array elements in arrays on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "short-comma-lines.php",
+                "line": 5,
+                "identifier": "phpstan.parse",
+                "message": "Cannot use empty array elements in arrays on line 5",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "short-leading.php",
+                "line": 2,
+                "identifier": "phpstan.parse",
+                "message": "Cannot use empty array elements in arrays on line 2",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "short-list-nested-array.php",
+                "line": 2,
+                "identifier": "phpstan.parse",
+                "message": "Cannot use empty array elements in arrays on line 2",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "short-middle.php",
+                "line": 2,
+                "identifier": "phpstan.parse",
+                "message": "Cannot use empty array elements in arrays on line 2",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "short-only-holes.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Cannot use empty array elements in arrays on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "short-only-holes.php",
+                "line": 4,
+                "identifier": "phpstan.parse",
+                "message": "Cannot use empty array elements in arrays on line 4",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "valid-neighbor-diagnostic.php",
+                "line": 3,
+                "identifier": "function.notFound",
+                "message": "Function missing_valid_array_neighbor not found.",
+                "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                "ignorable": true
+            }
+        ],
+        "general": []
+    },
+    "scanned": {
+        "short": {
+            "errors": [
+                {
+                    "file": "main.php",
+                    "line": 2,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class ScanBefore not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 3,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class ScanAfter not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 4,
+                    "identifier": "function.notFound",
+                    "message": "Function scanFunction not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 5,
+                    "identifier": "constant.notFound",
+                    "message": "Used constant SCAN_CONSTANT not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                }
+            ],
+            "general": []
+        },
+        "legacy-body": {
+            "errors": [
+                {
+                    "file": "main.php",
+                    "line": 2,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class ScanBefore not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 3,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class ScanAfter not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 4,
+                    "identifier": "function.notFound",
+                    "message": "Function scanFunction not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 5,
+                    "identifier": "constant.notFound",
+                    "message": "Used constant SCAN_CONSTANT not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                }
+            ],
+            "general": []
+        },
+        "destructuring-rhs": {
+            "errors": [
+                {
+                    "file": "main.php",
+                    "line": 2,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class ScanBefore not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 3,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class ScanAfter not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 4,
+                    "identifier": "function.notFound",
+                    "message": "Function scanFunction not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 5,
+                    "identifier": "constant.notFound",
+                    "message": "Used constant SCAN_CONSTANT not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                }
+            ],
+            "general": []
+        },
+        "legacy-list-child": {
+            "errors": [
+                {
+                    "file": "main.php",
+                    "line": 2,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class ScanBefore not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 3,
+                    "identifier": "class.notFound",
+                    "message": "Instantiated class ScanAfter not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 4,
+                    "identifier": "function.notFound",
+                    "message": "Function scanFunction not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                },
+                {
+                    "file": "main.php",
+                    "line": 5,
+                    "identifier": "constant.notFound",
+                    "message": "Used constant SCAN_CONSTANT not found.",
+                    "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+                    "ignorable": true
+                }
+            ],
+            "general": []
+        },
+        "valid-destructuring": {
+            "errors": [],
+            "general": []
+        },
+        "valid-reference-item": {
+            "errors": [],
+            "general": []
+        },
+        "valid-foreach": {
+            "errors": [],
+            "general": []
+        }
+    },
+    "order": {
+        "errors": [
+            {
+                "file": "order.php",
+                "line": 3,
+                "identifier": "phpstan.parse",
+                "message": "Cannot use empty array elements in arrays on line 3",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "order.php",
+                "line": 5,
+                "identifier": "phpstan.parse",
+                "message": "Cannot use empty array elements in arrays on line 5",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "order.php",
+                "line": 8,
+                "identifier": "phpstan.parse",
+                "message": "Cannot use empty array elements in arrays on line 8",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "order.php",
+                "line": 10,
+                "identifier": "phpstan.parse",
+                "message": "Cannot use empty array elements in arrays on line 10",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "order.php",
+                "line": 12,
+                "identifier": "phpstan.parse",
+                "message": "void cannot be used as a parameter type on line 12",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "order.php",
+                "line": 13,
+                "identifier": "phpstan.parse",
+                "message": "A trailing comma is not allowed here on line 13",
+                "tip": null,
+                "ignorable": false
+            },
+            {
+                "file": "order.php",
+                "line": 15,
+                "identifier": "phpstan.parse",
+                "message": "Namespace declaration statement has to be the very first statement in the script on line 15",
+                "tip": null,
+                "ignorable": false
+            }
+        ],
+        "general": [
+            "Error message \"void cannot be used as a parameter type on line 12\" cannot be ignored, use excludePaths instead.",
+            "Error message \"A trailing comma is not allowed here on line 13\" cannot be ignored, use excludePaths instead.",
+            "Error message \"Namespace declaration statement has to be the very first statement in the script on line 15\" cannot be ignored, use excludePaths instead.",
+            "Error message \"Cannot use empty array elements in arrays on line 5\" cannot be ignored, use excludePaths instead.",
+            "Error message \"Cannot use empty array elements in arrays on line 8\" cannot be ignored, use excludePaths instead.",
+            "Error message \"Cannot use empty array elements in arrays on line 3\" cannot be ignored, use excludePaths instead.",
+            "Error message \"Cannot use empty array elements in arrays on line 10\" cannot be ignored, use excludePaths instead."
+        ]
+    },
+    "versions": {
+        "70100": {
+            "errors": [
+                {
+                    "file": "input.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "Cannot use empty array elements in arrays on line 2",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "input.php",
+                    "line": 3,
+                    "identifier": "phpstan.parse",
+                    "message": "Cannot use empty array elements in arrays on line 3",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": []
+        },
+        "70400": {
+            "errors": [
+                {
+                    "file": "input.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "Cannot use empty array elements in arrays on line 2",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "input.php",
+                    "line": 3,
+                    "identifier": "phpstan.parse",
+                    "message": "Cannot use empty array elements in arrays on line 3",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": []
+        },
+        "80000": {
+            "errors": [
+                {
+                    "file": "input.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "Cannot use empty array elements in arrays on line 2",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "input.php",
+                    "line": 3,
+                    "identifier": "phpstan.parse",
+                    "message": "Cannot use empty array elements in arrays on line 3",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": []
+        },
+        "80100": {
+            "errors": [
+                {
+                    "file": "input.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "Cannot use empty array elements in arrays on line 2",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "input.php",
+                    "line": 3,
+                    "identifier": "phpstan.parse",
+                    "message": "Cannot use empty array elements in arrays on line 3",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": []
+        },
+        "80200": {
+            "errors": [
+                {
+                    "file": "input.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "Cannot use empty array elements in arrays on line 2",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "input.php",
+                    "line": 3,
+                    "identifier": "phpstan.parse",
+                    "message": "Cannot use empty array elements in arrays on line 3",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": []
+        },
+        "80400": {
+            "errors": [
+                {
+                    "file": "input.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "Cannot use empty array elements in arrays on line 2",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "input.php",
+                    "line": 3,
+                    "identifier": "phpstan.parse",
+                    "message": "Cannot use empty array elements in arrays on line 3",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": []
+        },
+        "80500": {
+            "errors": [
+                {
+                    "file": "input.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "Cannot use empty array elements in arrays on line 2",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "input.php",
+                    "line": 3,
+                    "identifier": "phpstan.parse",
+                    "message": "Cannot use empty array elements in arrays on line 3",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": []
+        }
+    },
+    "boundaries": {
+        "unclosed-array": {
+            "errors": [
+                {
+                    "file": "input.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "Syntax error, unexpected ';', expecting ',' or ']' or ')' on line 2",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": []
+        },
+        "missing-value": {
+            "errors": [
+                {
+                    "file": "input.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "Syntax error, unexpected ',' on line 2",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": []
+        },
+        "foreach-key-array": {
+            "errors": [
+                {
+                    "file": "input.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "Cannot use empty array elements in arrays on line 2",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "input.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "Syntax error, unexpected T_DOUBLE_ARROW, expecting '[' or T_OBJECT_OPERATOR or T_NULLSAFE_OBJECT_OPERATOR on line 2",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": []
+        },
+        "foreach-reference-array": {
+            "errors": [
+                {
+                    "file": "input.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "Cannot use empty array elements in arrays on line 2",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "input.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "Syntax error, unexpected ')', expecting '[' or T_OBJECT_OPERATOR or T_NULLSAFE_OBJECT_OPERATOR on line 2",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": []
+        },
+        "foreach-legacy-array": {
+            "errors": [
+                {
+                    "file": "input.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "Cannot use empty array elements in arrays on line 2",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "input.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "Syntax error, unexpected ')', expecting '[' or T_OBJECT_OPERATOR or T_NULLSAFE_OBJECT_OPERATOR on line 2",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": []
+        },
+        "reference-assignment": {
+            "errors": [
+                {
+                    "file": "input.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "Syntax error, unexpected T_AMPERSAND_FOLLOWED_BY_VAR_OR_VARARG on line 2",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": []
+        },
+        "nested-reference-assignment": {
+            "errors": [
+                {
+                    "file": "input.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "Cannot use empty array elements in arrays on line 2",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "input.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "Syntax error, unexpected T_AMPERSAND_FOLLOWED_BY_VAR_OR_VARARG on line 2",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": []
+        },
+        "compound-assignment": {
+            "errors": [
+                {
+                    "file": "input.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "Cannot use empty array elements in arrays on line 2",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "input.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "Syntax error, unexpected T_PLUS_EQUAL on line 2",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": []
+        },
+        "parenthesized-lhs": {
+            "errors": [
+                {
+                    "file": "input.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "Cannot use empty array elements in arrays on line 2",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "input.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "Syntax error, unexpected '=' on line 2",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": []
+        },
+        "reference-array-item": {
+            "errors": [
+                {
+                    "file": "input.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "Cannot use empty array elements in arrays on line 2",
+                    "tip": null,
+                    "ignorable": false
+                },
+                {
+                    "file": "input.php",
+                    "line": 2,
+                    "identifier": "phpstan.parse",
+                    "message": "Syntax error, unexpected ']', expecting '[' or T_OBJECT_OPERATOR or T_NULLSAFE_OBJECT_OPERATOR on line 2",
+                    "tip": null,
+                    "ignorable": false
+                }
+            ],
+            "general": []
+        }
+    }
+}
