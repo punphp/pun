@@ -52,8 +52,11 @@ Trait constant conflicts compare complete initializer unions and array shapes.
 Unsupported initializer expressions retain `mixed` in reflection, including trait conflicts and nested arrays. Ordinary calls retain their flow-inferred types.
 Named `new` initializers retain bare class identities without constructor-inferred generic arguments. Member lookups use template defaults and bounds without changing those identities.
 Expression-class initializers such as `new (Box::class)(1)` retain `object`. Ordinary construction still infers constructor arguments.
+Finite class-string and object initializer holders resolve named constants across their possible classes, including forward and scanned dependencies.
+Exact class strings retain raw initializers. Object holders respect final classes and native or PHPDoc declarations.
+Canonical joins preserve reflection order, including the first mixed or error value. Trait constant equality ignores union member order within values.
 Reflected initializer magic constants use PHPStan's reflection context. Ordinary trait declaration and attribute checks use the consuming class's scope.
-Named class-constant reads preserve keyed initializer array order. General mixed and spread array ordering, expanded initializer cycles and dynamic initializer holders remain incomplete.
+Named class-constant reads preserve keyed initializer array order. General mixed and spread array ordering, expanded initializer cycles and dynamic initializer selectors remain incomplete.
 Trait constructors retain adapted visibility, named-argument policies and parameter types in the consuming class's scope.
 Constructor template checks use the reflected return type, including implicit `void`, rather than the raw `@return` tag.
 Attribute rule support remains incomplete.
@@ -82,6 +85,7 @@ General PHP syntax-error translation remains incomplete.
 
 Assignment checks allow references on individual destructuring targets and nested `array(...)` targets inside short-array destructuring.
 Arrays nested directly inside an explicit `list()` remain literal expressions, not destructuring targets.
+Their keys and values are read after the right-hand side and preceding targets, including reference-item values.
 
 The `compact()` check preserves resolved function-import names and reads variable certainty before evaluating arguments.
 Benevolent unions and callable-array intersections retain their literal variable names.
