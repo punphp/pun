@@ -1,0 +1,13 @@
+{
+    "valid-same-eof": "#!php<?php class ScanBefore {} class ScanAfter {} function scanFunction(): int { return 1; } const SCAN_CONSTANT = 1;",
+    "valid-same-lf": "#!php<?php class ScanBefore {} class ScanAfter {} function scanFunction(): int { return 1; } const SCAN_CONSTANT = 1;\n",
+    "valid-same-crlf": "#!php<?php class ScanBefore {} class ScanAfter {} function scanFunction(): int { return 1; } const SCAN_CONSTANT = 1;\r\n",
+    "valid-same-cr": "#!php<?php class ScanBefore {} class ScanAfter {} function scanFunction(): int { return 1; } const SCAN_CONSTANT = 1;\r",
+    "valid-next-line": "#!php<?php\nclass ScanBefore {} class ScanAfter {} function scanFunction(): int { return 1; } const SCAN_CONSTANT = 1;",
+    "valid-before-lf": "#!php\n<?php class ScanBefore {} class ScanAfter {} function scanFunction(): int { return 1; } const SCAN_CONSTANT = 1;",
+    "valid-before-crlf": "#!php\r\n<?php class ScanBefore {} class ScanAfter {} function scanFunction(): int { return 1; } const SCAN_CONSTANT = 1;",
+    "valid-before-cr": "#!php\r<?php class ScanBefore {} class ScanAfter {} function scanFunction(): int { return 1; } const SCAN_CONSTANT = 1;",
+    "valid-namespace": "#!php\n<?php namespace { class ScanBefore {} class ScanAfter {} function scanFunction(): int { return 1; } const SCAN_CONSTANT = 1; }",
+    "invalid-parameter": "#!php<?php class ScanBefore {} class ScanAfter {} function scanFunction(void $value): int { return 1; } const SCAN_CONSTANT = 1;",
+    "invalid-namespace": "#!php<?php namespace { class ScanBefore {} class ScanAfter {} function scanFunction(): int { return 1; } const SCAN_CONSTANT = 1; }"
+}
