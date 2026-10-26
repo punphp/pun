@@ -1,0 +1,276 @@
+{
+    "fixer": "php_unit_internal_class",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\PhpUnit\\PhpUnitInternalClassFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/PhpUnit/PhpUnitInternalClassFixerTest.php",
+    "case_count": 23,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": []
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\PhpUnit\\PhpUnitInternalClassFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null, array $configuration = []): void\n    {\n        $this->fixer->configure($configuration);\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": "It does not change normal classes",
+                    "args": [
+                        "<?php\n\nclass Hello\n{\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "It marks a test class as internal",
+                    "args": [
+                        "<?php\n\n/**\n * @internal\n */\nclass Test extends TestCase\n{\n}\n",
+                        "<?php\n\nclass Test extends TestCase\n{\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "It adds an internal tag to a class that already has a doc block",
+                    "args": [
+                        "<?php\n\n/**\n * @coversNothing\n * @internal\n */\nclass Test extends TestCase\n{\n}\n",
+                        "<?php\n\n/**\n * @coversNothing\n */\nclass Test extends TestCase\n{\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "It does not change a class that is already internal",
+                    "args": [
+                        "<?php\n\n/**\n * @internal\n */\nclass Test extends TestCase\n{\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "It does not change a class that is already internal and has other annotations",
+                    "args": [
+                        "<?php\n\n/**\n * @author me\n * @coversNothing\n * @internal\n * @group large\n */\nclass Test extends TestCase\n{\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "It works on other indentation levels",
+                    "args": [
+                        "<?php\n\nif (class_exists(\"Foo\\Bar\")) {\n    /**\n     * @internal\n     */\n    class Test Extends TestCase\n    {\n    }\n}\n",
+                        "<?php\n\nif (class_exists(\"Foo\\Bar\")) {\n    class Test Extends TestCase\n    {\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "It works on other indentation levels when the class has other annotations",
+                    "args": [
+                        "<?php\n\nif (class_exists(\"Foo\\Bar\")) {\n    /**\n     * @author me again\n     *\n     *\n     * @covers \\Other\\Class\n     * @internal\n     */\n    class Test Extends TestCase\n    {\n    }\n}\n",
+                        "<?php\n\nif (class_exists(\"Foo\\Bar\")) {\n    /**\n     * @author me again\n     *\n     *\n     * @covers \\Other\\Class\n     */\n    class Test Extends TestCase\n    {\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "It works for tab ident",
+                    "args": [
+                        "<?php\n\nif (class_exists(\"Foo\\Bar\")) {\n\t/**\n\t * @author me again\n\t *\n\t *\n\t * @covers \\Other\\Class\n\t * @internal\n\t */\n\tclass Test Extends TestCase\n\t{\n\t}\n}\n",
+                        "<?php\n\nif (class_exists(\"Foo\\Bar\")) {\n\t/**\n\t * @author me again\n\t *\n\t *\n\t * @covers \\Other\\Class\n\t */\n\tclass Test Extends TestCase\n\t{\n\t}\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "It always adds @internal to the bottom of the doc block",
+                    "args": [
+                        "<?php\n\n/**\n * @coversNothing\n *\n *\n *\n *\n *\n *\n *\n *\n *\n *\n *\n *\n *\n *\n * @internal\n */\nclass Test extends TestCase\n{\n}\n",
+                        "<?php\n\n/**\n * @coversNothing\n *\n *\n *\n *\n *\n *\n *\n *\n *\n *\n *\n *\n *\n *\n */\nclass Test extends TestCase\n{\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "It does not change a class with a single line internal doc block",
+                    "args": [
+                        "<?php\n\n/** @internal */\nclass Test extends TestCase\n{\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "It adds an internal tag to a class that already has a one linedoc block",
+                    "args": [
+                        "<?php\n\n/**\n * @coversNothing\n * @internal\n */\nclass Test extends TestCase\n{\n}\n",
+                        "<?php\n\n/** @coversNothing */\nclass Test extends TestCase\n{\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "By default it will not mark an abstract class as internal",
+                    "args": [
+                        "<?php\n\nabstract class Test extends TestCase\n{\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "If abstract is added as an option, abstract classes will be marked internal",
+                    "args": [
+                        "<?php\n\n/**\n * @internal\n */\nabstract class Test extends TestCase\n{\n}\n",
+                        "<?php\n\nabstract class Test extends TestCase\n{\n}\n",
+                        {
+                            "types": [
+                                "abstract"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "If final is not added as an option, final classes will not be marked internal",
+                    "args": [
+                        "<?php\n\nfinal class Test extends TestCase\n{\n}\n",
+                        null,
+                        {
+                            "types": [
+                                "abstract"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "If normal is not added as an option, normal classes will not be marked internal",
+                    "args": [
+                        "<?php\n\nclass Test extends TestCase\n{\n}\n",
+                        null,
+                        {
+                            "types": [
+                                "abstract"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "It works correctly with multiple classes in one file, even when one of them is not allowed",
+                    "args": [
+                        "<?php\n\n/**\n * @internal\n */\nclass Test extends TestCase\n{\n}\n\nabstract class Test2 extends TestCase\n{\n}\n\nclass FooBar\n{\n}\n\n/**\n * @internal\n */\nclass Test extends TestCase\n{\n}\n",
+                        "<?php\n\nclass Test extends TestCase\n{\n}\n\nabstract class Test2 extends TestCase\n{\n}\n\nclass FooBar\n{\n}\n\nclass Test extends TestCase\n{\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "It skips instantiation of anonymous class as it is not a class declaration",
+                    "args": [
+                        "<?php\n\n$test = new class ('test') extends AbstractSomethingTestCase {\n    public function getSomething(): string\n    {\n        return 'something';\n    }\n};"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix80",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.0.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\PhpUnit\\PhpUnitInternalClassFixerTest",
+            "body": "    public function testFix80(string $expected, string $input): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "it adds a docblock above when there is an attribute",
+                    "args": [
+                        "<?php\n\n            /**\n             * @internal\n             */\n            #[SimpleTest]\n            class Test extends TestCase\n            {\n            }\n            ",
+                        "<?php\n\n            #[SimpleTest]\n            class Test extends TestCase\n            {\n            }\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "it adds the internal tag along other tags when there is an attribute",
+                    "args": [
+                        "<?php\n\n            /**\n             * @coversNothing\n             * @internal\n             */\n            #[SimpleTest]\n            class Test extends TestCase\n            {\n            }\n            ",
+                        "<?php\n\n            /**\n             * @coversNothing\n             */\n            #[SimpleTest]\n            class Test extends TestCase\n            {\n            }\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "it adds a docblock above when there are attributes",
+                    "args": [
+                        "<?php\n\n            /**\n             * @internal\n             */\n            #[SimpleTest]\n            #[Annotated]\n            class Test extends TestCase\n            {\n            }\n            ",
+                        "<?php\n\n            #[SimpleTest]\n            #[Annotated]\n            class Test extends TestCase\n            {\n            }\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "it adds the internal tag along other tags when there are attributes",
+                    "args": [
+                        "<?php\n\n            /**\n             * @coversNothing\n             * @internal\n             */\n            #[SimpleTest]\n            #[Annotated]\n            class Test extends TestCase\n            {\n            }\n            ",
+                        "<?php\n\n            /**\n             * @coversNothing\n             */\n            #[SimpleTest]\n            #[Annotated]\n            class Test extends TestCase\n            {\n            }\n            "
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix82",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": []
+                }
+            ],
+            "requires_php": ">= 8.2.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\PhpUnit\\PhpUnitInternalClassFixerTest",
+            "body": "    public function testFix82(string $expected, ?string $input = null, array $configuration = []): void\n    {\n        $this->fixer->configure($configuration);\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix82Cases",
+                    "key": "If final is not added as an option, final classes will not be marked internal",
+                    "args": [
+                        "<?php\nfinal readonly class Test extends TestCase\n{}\n",
+                        null,
+                        {
+                            "types": [
+                                "normal"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix82Cases",
+                    "key": 0,
+                    "args": [
+                        "<?php\n\n/**\n * @internal\n */\nreadonly final class Test extends TestCase {}",
+                        "<?php\nreadonly final class Test extends TestCase {}"
+                    ]
+                }
+            ]
+        }
+    ]
+}

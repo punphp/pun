@@ -1,0 +1,10 @@
+[
+    {
+        "fixer": "php_unit_size_class",
+        "config": {
+            "group": "medium"
+        },
+        "input": "<?php\nnamespace App;\nuse PHPUnit\\Framework\\Attributes\\Medium;\n/** Doc. */\nfinal class ATest extends \\PHPUnit\\Framework\\TestCase {}\n#[Medium]\nclass BTest extends \\PHPUnit\\Framework\\TestCase {}\nabstract class CTest extends \\PHPUnit\\Framework\\TestCase {}\n/**\n * @large\n */\n#[\\Foo]\nreadonly class DTest extends \\PHPUnit\\Framework\\TestCase {}\n",
+        "expected": "<?php\nnamespace App;\nuse PHPUnit\\Framework\\Attributes\\Medium;\n/**\n * Doc.\n * @medium\n */\nfinal class ATest extends \\PHPUnit\\Framework\\TestCase {}\n#[Medium]\nclass BTest extends \\PHPUnit\\Framework\\TestCase {}\nabstract class CTest extends \\PHPUnit\\Framework\\TestCase {}\n/**\n * @large\n */\n#[\\Foo]\nreadonly class DTest extends \\PHPUnit\\Framework\\TestCase {}\n"
+    }
+]
