@@ -19,6 +19,7 @@ mod prefer_defer;
 mod prefer_each_modifier;
 mod prefer_filesystem_matchers;
 mod prefer_not_modifier;
+mod prefer_sequence;
 mod prefer_strict_equality_matchers;
 mod prefer_to_be_alpha;
 mod prefer_to_be_alpha_numeric;
@@ -54,6 +55,8 @@ mod prefer_to_have_properties;
 mod prefer_to_have_property;
 mod prefer_to_have_same_size;
 mod prefer_to_match;
+mod prefer_to_match_array;
+mod prefer_to_match_object;
 mod prefer_to_start_with;
 mod prefer_to_throw;
 mod prefer_type_matchers;
@@ -70,6 +73,7 @@ pub use prefer_defer::PreferDefer;
 pub use prefer_each_modifier::PreferEachModifier;
 pub use prefer_filesystem_matchers::PreferFilesystemMatchers;
 pub use prefer_not_modifier::PreferNotModifier;
+pub use prefer_sequence::PreferSequence;
 pub use prefer_strict_equality_matchers::PreferStrictEqualityMatchers;
 pub use prefer_to_be_alpha::PreferToBeAlpha;
 pub use prefer_to_be_alpha_numeric::PreferToBeAlphaNumeric;
@@ -105,6 +109,8 @@ pub use prefer_to_have_properties::PreferToHaveProperties;
 pub use prefer_to_have_property::PreferToHaveProperty;
 pub use prefer_to_have_same_size::PreferToHaveSameSize;
 pub use prefer_to_match::PreferToMatch;
+pub use prefer_to_match_array::PreferToMatchArray;
+pub use prefer_to_match_object::PreferToMatchObject;
 pub use prefer_to_start_with::PreferToStartWith;
 pub use prefer_to_throw::PreferToThrow;
 pub use prefer_type_matchers::PreferTypeMatchers;
@@ -138,6 +144,7 @@ pub(crate) fn all() -> Vec<Box<dyn Rule>> {
         Box::new(PreferEachModifier),
         Box::new(PreferFilesystemMatchers),
         Box::new(PreferNotModifier),
+        Box::new(PreferSequence),
         Box::new(PreferStrictEqualityMatchers),
         Box::new(PreferToBeAlpha),
         Box::new(PreferToBeAlphaNumeric),
@@ -173,6 +180,8 @@ pub(crate) fn all() -> Vec<Box<dyn Rule>> {
         Box::new(PreferToHaveProperty),
         Box::new(PreferToHaveSameSize),
         Box::new(PreferToMatch),
+        Box::new(PreferToMatchArray),
+        Box::new(PreferToMatchObject),
         Box::new(PreferToStartWith),
         Box::new(PreferToThrow),
         Box::new(PreferTypeMatchers),
@@ -1290,16 +1299,18 @@ fn shift_text(text: &str, delta: isize) -> String {
     }
 }
 
-/// Rector's rewrite of the statement list `list` of `holder` (whose parent is `parent`) into `items`: the list
-/// printed again in place, or, where php-parser's printer gives up on the list, its parent printed again. Only a
-/// closure and a file without a namespace are printed again; elsewhere the rewrite is refused.
+/// Rector's rewrite of the statement list `list` of `holder` (under `ancestors`) into `items`: the list printed
+/// again in place, or, where php-parser's printer gives up on the list, its parent printed again. Only a closure, a
+/// function, a method and a file without a namespace are printed again; elsewhere the rewrite is refused.
 pub(crate) fn rewrite_list(
     ctx: &Context<'_>,
     holder: Node<'_, '_>,
-    parent: Option<Node<'_, '_>>,
+    ancestors: &[Node<'_, '_>],
     list: &super::php_parser::List<'_, '_>,
     items: &[Item<'_>],
 ) -> Option<Vec<Edit>> {
+    let parent = ancestors.last().copied();
+    let grandparent = ancestors.len().checked_sub(2).map(|i| ancestors[i]);
     use super::php_parser::Frame;
     let olds = old_statements(ctx, list);
     let braces = matches!(list.frame, Frame::Braces { .. });
@@ -1320,6 +1331,10 @@ pub(crate) fn rewrite_list(
         }
         return Some(edits);
     }
+    let parent = match parent {
+        Some(Node::MethodBody(_)) => grandparent,
+        p => p,
+    };
     match (holder, parent) {
         (Node::Block(_), Some(Node::Closure(closure))) => {
             let span = node_span(closure);
@@ -1337,7 +1352,7 @@ pub(crate) fn rewrite_list(
                 out.push('&');
             }
             out.push('(');
-            out.push_str(&print_params(ctx, closure, indent));
+            out.push_str(&print_params(ctx, &closure.parameter_list, indent));
             out.push(')');
             if let Some(uses) = &closure.use_clause {
                 let vars: Vec<&str> = uses.variables.iter().map(|v| text(ctx, v)).collect();
@@ -1352,6 +1367,63 @@ pub(crate) fn rewrite_list(
             out.push('\n');
             out.push_str(&" ".repeat(indent));
             out.push('}');
+            Some(vec![Edit::new(span, out)])
+        }
+        (Node::Block(_), Some(Node::Function(function))) => {
+            let span = node_span(function);
+            let indent = indent_at(ctx, span.start);
+            let head = format!(
+                "function {}{}",
+                if function.ampersand.is_some() {
+                    "&"
+                } else {
+                    ""
+                },
+                text(ctx, &function.name)
+            );
+            let out = print_function(
+                ctx,
+                &olds,
+                items,
+                indent,
+                (&function.attribute_lists, head),
+                &function.parameter_list,
+                function.return_type_hint.as_ref(),
+            );
+            Some(vec![Edit::new(span, out)])
+        }
+        (Node::Block(_), Some(Node::Method(method))) => {
+            let span = node_span(method);
+            let indent = indent_at(ctx, span.start);
+            use mago_syntax::cst::Modifier as M;
+            let has = |f: fn(&M<'_>) -> bool| method.modifiers.iter().any(f);
+            let mut head = String::new();
+            for (present, word) in [
+                (has(|m| matches!(m, M::Final(_))), "final "),
+                (has(|m| matches!(m, M::Abstract(_))), "abstract "),
+                (has(|m| matches!(m, M::Public(_))), "public "),
+                (has(|m| matches!(m, M::Protected(_))), "protected "),
+                (has(|m| matches!(m, M::Private(_))), "private "),
+                (has(|m| matches!(m, M::Static(_))), "static "),
+            ] {
+                if present {
+                    head.push_str(word);
+                }
+            }
+            head.push_str("function ");
+            if method.ampersand.is_some() {
+                head.push('&');
+            }
+            head.push_str(text(ctx, &method.name));
+            let out = print_function(
+                ctx,
+                &olds,
+                items,
+                indent,
+                (&method.attribute_lists, head),
+                &method.parameter_list,
+                method.return_type_hint.as_ref(),
+            );
             Some(vec![Edit::new(span, out)])
         }
         (Node::Program(_), _) => {
@@ -1383,15 +1455,14 @@ pub(crate) fn rewrite_list(
     }
 }
 
-/// `pParams` of a closure printed again: its parameters' text, joined by `, `, or a line each when one owns a
+/// `pParams` of a function-like printed again: its parameters' text, joined by `, `, or a line each when one owns a
 /// comment.
-fn print_params(ctx: &Context<'_>, closure: &Closure<'_>, indent: usize) -> String {
-    let params: Vec<Span> = closure
-        .parameter_list
-        .parameters
-        .iter()
-        .map(|p| node_span(p))
-        .collect();
+fn print_params(
+    ctx: &Context<'_>,
+    list: &mago_syntax::cst::FunctionLikeParameterList<'_>,
+    indent: usize,
+) -> String {
+    let params: Vec<Span> = list.parameters.iter().map(|p| node_span(p)).collect();
     if !params.iter().any(|p| has_comments(ctx, p.start)) {
         return params
             .iter()
@@ -1450,4 +1521,40 @@ pub(crate) fn statement_expression<'a>(statement: &'a Statement<'a>) -> Option<&
         Statement::Expression(s) => Some(s.expression),
         _ => None,
     }
+}
+
+/// `pStmt_Function` / `pStmt_ClassMethod` printed again at `indent`: the attributes a line each, `head` (modifiers,
+/// `function` and the name), the parameters, the return type, and the body with its `{` on a line of its own.
+fn print_function(
+    ctx: &Context<'_>,
+    olds: &[OldStmt],
+    items: &[Item<'_>],
+    indent: usize,
+    (attributes, head): (
+        &mago_syntax::cst::Sequence<'_, mago_syntax::cst::AttributeList<'_>>,
+        String,
+    ),
+    params: &mago_syntax::cst::FunctionLikeParameterList<'_>,
+    return_type: Option<&mago_syntax::cst::FunctionLikeReturnTypeHint<'_>>,
+) -> String {
+    let nl = format!("\n{}", " ".repeat(indent));
+    let mut out = String::new();
+    for list in attributes.iter() {
+        out.push_str(&kept_text(ctx, node_span(list), indent));
+        out.push_str(&nl);
+    }
+    out.push_str(&head);
+    out.push('(');
+    out.push_str(&print_params(ctx, params, indent));
+    out.push(')');
+    if let Some(hint) = return_type {
+        out.push_str(": ");
+        out.push_str(&kept_text(ctx, node_span(&hint.hint), indent));
+    }
+    out.push_str(&nl);
+    out.push('{');
+    out.push_str(&p_stmts(ctx, olds, items, indent + 4));
+    out.push_str(&nl);
+    out.push('}');
+    out
 }

@@ -92,7 +92,7 @@ impl Rule for NoExpectException {
         if !changed {
             return;
         }
-        let Some(edits) = rewrite_list(ctx, node, ancestors.last().copied(), &list, &items) else {
+        let Some(edits) = rewrite_list(ctx, node, ancestors, &list, &items) else {
             return;
         };
         out.push(report(

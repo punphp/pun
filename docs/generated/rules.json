@@ -9271,7 +9271,7 @@
         "UseSequenceMatcher",
         "UseSequenceMatcherRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/pest/prefer-simpler-expectation",
@@ -10065,7 +10065,7 @@
         "UseToMatchArray",
         "UseToMatchArrayRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/pest/prefer-to-match-object",
@@ -10086,7 +10086,7 @@
         "UseToMatchObject",
         "UseToMatchObjectRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/pest/prefer-to-start-with",

@@ -558,7 +558,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "pest/prefer-extend" = { fix = "safe", sets = ["coding-style"], ported = false, status = "decided", summary = "Converts uses() and pest()->uses() to pest()->extend() for classes and pest()->use() for traits" }
 "pest/prefer-filesystem-matchers" = { fix = "unsafe", sets = ["coding-style"], ported = true, status = "decided", summary = "Simplifies combined filesystem checks to single Pest matchers" }
 "pest/prefer-not-modifier" = { fix = "safe", sets = ["coding-style"], ported = true, status = "decided", summary = "Simplifies negated expectations by flipping the matcher (e.g., expect(!$x)->toBeTrue() becomes expect($x)->toBeFalse())" }
-"pest/prefer-sequence" = { fix = "safe", sets = ["coding-style"], ported = false, status = "decided", summary = "Converts consecutive indexed expect() calls to sequence()" }
+"pest/prefer-sequence" = { fix = "safe", sets = ["coding-style"], ported = true, status = "decided", summary = "Converts consecutive indexed expect() calls to sequence()" }
 "pest/prefer-simpler-expectation" = { fix = "safe", sets = ["coding-style"], ported = true, origin = "mago", status = "decided", summary = "Simplify Pest expectations: expect($a > $b)->toBeTrue() becomes expect($a)->toBeGreaterThan($b), and similar." }
 "pest/prefer-specific-expectations" = { fix = "safe", sets = ["coding-style"], ported = true, origin = "mago", status = "decided", summary = "Use toBeTrue()/toBeFalse()/toBeNull() instead of toBe(true|false|null)." }
 "pest/prefer-strict-equality-matchers" = { fix = "safe", sets = ["coding-style"], ported = true, status = "decided", summary = "Converts strict equality expressions to toBe() matcher" }
@@ -596,8 +596,8 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "pest/prefer-to-have-property" = { fix = "unsafe", sets = ["coding-style"], ported = true, status = "decided", summary = "Converts property_exists() checks to toHaveProperty() matcher" }
 "pest/prefer-to-have-same-size" = { fix = "unsafe", sets = ["coding-style"], ported = true, status = "decided", summary = "Converts expect(count($a))->toBe(count($b)) to expect($a)->toHaveSameSize($b)" }
 "pest/prefer-to-match" = { fix = "unsafe", sets = ["coding-style"], ported = true, status = "decided", summary = "Converts expect(preg_match(\"/pattern/\", $str))->toBe(1) to expect($str)->toMatch(\"/pattern/\")" }
-"pest/prefer-to-match-array" = { fix = "safe", sets = ["coding-style"], ported = false, status = "decided", summary = "Converts multiple array element assertions to toMatchArray() matcher" }
-"pest/prefer-to-match-object" = { fix = "safe", sets = ["coding-style"], ported = false, status = "decided", summary = "Converts consecutive toHaveProperty() with values to toMatchObject() matcher" }
+"pest/prefer-to-match-array" = { fix = "safe", sets = ["coding-style"], ported = true, status = "decided", summary = "Converts multiple array element assertions to toMatchArray() matcher" }
+"pest/prefer-to-match-object" = { fix = "safe", sets = ["coding-style"], ported = true, status = "decided", summary = "Converts consecutive toHaveProperty() with values to toMatchObject() matcher" }
 "pest/prefer-to-start-with" = { fix = "unsafe", sets = ["coding-style"], ported = true, status = "decided", summary = "Converts str_starts_with() checks to toStartWith() matcher" }
 "pest/prefer-to-throw" = { fix = "safe", sets = ["coding-style"], ported = true, status = "decided", summary = "Use expect()->toThrow() instead of expectException() or try/catch in Pest tests." }
 "pest/prefer-type-matchers" = { fix = "unsafe", sets = ["coding-style"], ported = true, status = "decided", summary = "Converts expect(is_array($x))->toBeTrue() to expect($x)->toBeArray()" }
