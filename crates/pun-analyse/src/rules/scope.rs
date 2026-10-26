@@ -200,8 +200,8 @@ fn contains_call(e: &Expression) -> bool {
 /// ExprPrinter identities for the value expressions used as class-constant receivers/selectors. Unlike
 /// inferred types, these identities distinguish two variables holding the same class and a dynamic selector
 /// from its current finite values. Parentheses and imported names do not change the identity.
-/// Named calls keep ExprPrinter's resolved names and argument syntax, not their return types or acceptors.
-/// Dynamic callees, indirect variables and dynamic property selectors remain unavailable identities.
+/// Calls keep ExprPrinter's selector and argument syntax, not their return types or acceptors. Dynamic
+/// function callees, nullsafe calls, indirect variables and dynamic property selectors remain unavailable.
 fn expression_key(e: &Expression, resolve: &dyn Fn(&Identifier) -> String, function: &dyn Fn(&Identifier) -> String) -> Option<String> {
     let key = |e| expression_key(e, resolve, function);
     Some(match super::types::flow::unparen(e) {
@@ -224,12 +224,27 @@ fn expression_key(e: &Expression, resolve: &dyn Fn(&Identifier) -> String, funct
                     (function(id), &f.argument_list)
                 }
                 Call::Method(m) => {
-                    let ClassLikeMemberSelector::Identifier(id) = &m.method else { return None };
-                    (format!("{}->{}", key(m.object)?, String::from_utf8_lossy(id.value)), &m.argument_list)
+                    let method = match &m.method {
+                        ClassLikeMemberSelector::Identifier(id) => String::from_utf8_lossy(id.value).into_owned(),
+                        ClassLikeMemberSelector::Variable(Variable::Direct(v)) => format!("{{{}}}", String::from_utf8_lossy(v.name)),
+                        ClassLikeMemberSelector::Expression(e) => object_property_key(e.expression, resolve, function)?,
+                        _ => return None,
+                    };
+                    (format!("{}->{method}", key(m.object)?), &m.argument_list)
                 }
                 Call::StaticMethod(m) => {
-                    let ClassLikeMemberSelector::Identifier(id) = &m.method else { return None };
-                    (format!("{}::{}", key(m.class)?, String::from_utf8_lossy(id.value)), &m.argument_list)
+                    // Standard::pExpr_StaticCall does not use pObjectProperty: literal strings keep their
+                    // braces, but a variable prints without them, even when the source used `::{$method}`.
+                    let method = match &m.method {
+                        ClassLikeMemberSelector::Identifier(id) => String::from_utf8_lossy(id.value).into_owned(),
+                        ClassLikeMemberSelector::Variable(Variable::Direct(v)) => String::from_utf8_lossy(v.name).into_owned(),
+                        ClassLikeMemberSelector::Expression(e) => match super::types::flow::unparen(e.expression) {
+                            Expression::Variable(Variable::Direct(v)) => String::from_utf8_lossy(v.name).into_owned(),
+                            e => format!("{{{}}}", key(e)?),
+                        },
+                        _ => return None,
+                    };
+                    (format!("{}::{method}", key(m.class)?), &m.argument_list)
                 }
                 _ => return None,
             };
@@ -256,22 +271,24 @@ fn expression_key(e: &Expression, resolve: &dyn Fn(&Identifier) -> String, funct
     })
 }
 
+/// Printer::pObjectProperty(): only identifier-shaped literal strings become barewords. Neither a variable
+/// nor a class constant with that inferred string value is the same expression as the literal selector.
+fn object_property_key(e: &Expression, resolve: &dyn Fn(&Identifier) -> String, function: &dyn Fn(&Identifier) -> String) -> Option<String> {
+    static IDENTIFIER: std::sync::LazyLock<pcre2::bytes::Regex> = std::sync::LazyLock::new(|| {
+        pcre2::bytes::Regex::new(r"^[a-zA-Z_\x80-\xff][a-zA-Z0-9_\x80-\xff]*$").expect("identifier regexp")
+    });
+    Some(match super::types::flow::unparen(e) {
+        Expression::Literal(Literal::String(s)) if IDENTIFIER.is_match(s.value?).expect("byte regexp") => {
+            String::from_utf8_lossy(s.value?).into_owned()
+        }
+        e => format!("{{{}}}", expression_key(e, resolve, function)?),
+    })
+}
+
 fn constant_key(a: &ClassConstantAccess, resolve: &dyn Fn(&Identifier) -> String, function: &dyn Fn(&Identifier) -> String) -> Option<String> {
     let name = match &a.constant {
         ClassLikeConstantSelector::Identifier(id) => String::from_utf8_lossy(id.value).into_owned(),
-        ClassLikeConstantSelector::Expression(e) => {
-            // PHPStan's Printer::pObjectProperty() normalizes only identifier-shaped literal strings, not a
-            // variable or a class constant which happens to have that same inferred value.
-            static IDENTIFIER: std::sync::LazyLock<pcre2::bytes::Regex> = std::sync::LazyLock::new(|| {
-                pcre2::bytes::Regex::new(r"^[a-zA-Z_\x80-\xff][a-zA-Z0-9_\x80-\xff]*$").expect("identifier regexp")
-            });
-            match super::types::flow::unparen(e.expression) {
-                Expression::Literal(Literal::String(s)) if IDENTIFIER.is_match(s.value?).expect("byte regexp") => {
-                    String::from_utf8_lossy(s.value?).into_owned()
-                }
-                _ => format!("{{{}}}", expression_key(e.expression, resolve, function)?),
-            }
-        }
+        ClassLikeConstantSelector::Expression(e) => object_property_key(e.expression, resolve, function)?,
         ClassLikeConstantSelector::Missing(_) => return None,
     };
     Some(format!("{}::{name}", expression_key(a.class, resolve, function)?))

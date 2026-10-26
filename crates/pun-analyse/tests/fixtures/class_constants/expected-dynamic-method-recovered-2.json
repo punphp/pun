@@ -1,0 +1,19 @@
+{
+  "general": [],
+  "errors": [
+    {
+      "file": "dynamic-method-recovered.php",
+      "message": "Syntax error, unexpected '(', expecting T_STRING or T_VARIABLE or '{' or '$' on line 4",
+      "line": 4,
+      "ignorable": false,
+      "identifier": "phpstan.parse"
+    },
+    {
+      "file": "dynamic-method-recovered.php",
+      "message": "Syntax error, unexpected '(' on line 5",
+      "line": 5,
+      "ignorable": false,
+      "identifier": "phpstan.parse"
+    }
+  ]
+}
