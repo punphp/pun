@@ -678,7 +678,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "phpunit/prefer-assert-instanceof-over-empty" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Change assertNotEmpty() and assertNotNull() on an object to more clear assertInstanceof()" }
 "phpunit/prefer-assert-instances-of" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Simplify unnecessary foreach check of instances" }
 "phpunit/prefer-assert-null-true-false" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "Turns same bool and null comparisons to their method name alternatives in PHPUnit TestCase" }
-"phpunit/prefer-assert-same" = { fix = "unsafe", sets = ["code-quality"], ported = false, status = "decided", summary = "PHPUnit methods like `assertSame` should be used instead of `assertEquals`." }
+"phpunit/prefer-assert-same" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "PHPUnit methods like `assertSame` should be used instead of `assertEquals`." }
 "phpunit/prefer-assert-string-contains" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Turns `strpos`/`stripos` comparisons to their method name alternatives in PHPUnit TestCase" }
 "phpunit/prefer-assert-true-false" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "Change $this->assertSame(true, ...) to assertTrue()" }
 "phpunit/prefer-attribute-over-annotation" = { fix = "safe", ported = false, status = "decided", summary = "Change annotations with value to attribute" }

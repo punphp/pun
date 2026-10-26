@@ -1981,7 +1981,7 @@
         "rules": [
           "lint/phpunit/prefer-assert-same"
         ],
-        "note": "Same. Options: renamed for TOML: [options.\"lint/phpunit/prefer-assert-same\"]. Planned: not ported yet.",
+        "note": "Same. Options: renamed for TOML: [options.\"lint/phpunit/prefer-assert-same\"].",
         "unsupported": false
       },
       {
@@ -4967,7 +4967,7 @@
         "rules": [
           "lint/phpunit/prefer-assert-same"
         ],
-        "note": "Same. Options: renamed for TOML: [options.\"lint/phpunit/prefer-assert-same\"]. Planned: not ported yet.",
+        "note": "Same. Options: renamed for TOML: [options.\"lint/phpunit/prefer-assert-same\"].",
         "unsupported": false
       },
       {
@@ -26507,7 +26507,7 @@
         "rules": [
           "lint/phpunit/prefer-assert-same"
         ],
-        "note": "Same. Options: none (Mago options do not carry; Pun uses the CS-Fixer rule options). Planned: not ported yet.",
+        "note": "Same. Options: none (Mago options do not carry; Pun uses the CS-Fixer rule options).",
         "unsupported": false
       },
       {
