@@ -50,6 +50,8 @@ Named, `self` and `parent` dependencies resolve in the declaring class's scope b
 Trait constants use the selected implementing class's scope. Inherited non-private constants retain that identity even when a subclass explicitly reuses the trait.
 Trait constant conflicts compare complete initializer unions and array shapes.
 Unsupported initializer expressions retain `mixed` in reflection, including trait conflicts and nested arrays. Ordinary calls retain their flow-inferred types.
+Named `new` initializers retain bare class identities without constructor-inferred generic arguments. Member lookups use template defaults and bounds without changing those identities.
+Expression-class initializers such as `new (Box::class)(1)` retain `object`. Ordinary construction still infers constructor arguments.
 Reflected initializer magic constants use PHPStan's reflection context. Ordinary trait declaration and attribute checks use the consuming class's scope.
 Named class-constant reads preserve keyed initializer array order. General mixed and spread array ordering, expanded initializer cycles and dynamic initializer holders remain incomplete.
 Trait constructors retain adapted visibility, named-argument policies and parameter types in the consuming class's scope.
@@ -72,6 +74,8 @@ PHP opening tags inside leading shebang text remain visible to analysis and symb
 An unmatched `}` at PHP compilation-unit entry reports a parser error and rejects declarations after it.
 PHP 8.5 targets require parentheses around an arrow function used directly on the right-hand side of `|>`.
 Assignments such as `$value =& new Thing()` report a parser error at the assignment's start.
+Trailing commas in `for` clauses and echo lists report a parser error at the comma, including short echo tags.
+Empty array elements report parser errors after namespace checks. Parser checks permit omitted destructuring targets, including nested array targets.
 Named classes and direct anonymous-class expressions respect pre-8.1 `readonly` tokenization.
 Invalid files contribute no scanned symbols; command output contains only the severe parser errors.
 General PHP syntax-error translation remains incomplete.
