@@ -1,0 +1,44 @@
+[
+  {
+    "message": "Dumped type: 1",
+    "line": 5,
+    "ignorable": false,
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "message": "Dumped type: bool",
+    "line": 8,
+    "ignorable": false,
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "message": "Dumped type: 1",
+    "line": 17,
+    "ignorable": false,
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "message": "Dumped type: true",
+    "line": 18,
+    "ignorable": false,
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "message": "Dumped type: 2",
+    "line": 24,
+    "ignorable": false,
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "message": "Dumped type: mixed",
+    "line": 35,
+    "ignorable": false,
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "message": "Dumped type: 1|2",
+    "line": 53,
+    "ignorable": false,
+    "identifier": "phpstan.dumpNativeType"
+  }
+]

@@ -1,0 +1,320 @@
+[
+  {
+    "message": "Dumped type: bool",
+    "line": 4,
+    "ignorable": false,
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "message": "Dumped type: true",
+    "line": 6,
+    "ignorable": false,
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "message": "Dumped type: false",
+    "line": 9,
+    "ignorable": false,
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "message": "Dumped type: 1",
+    "line": 12,
+    "ignorable": false,
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "message": "Dumped type: true",
+    "line": 17,
+    "ignorable": false,
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "message": "Dumped type: false",
+    "line": 20,
+    "ignorable": false,
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "message": "Dumped type: 2",
+    "line": 23,
+    "ignorable": false,
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "message": "Dumped type: true",
+    "line": 27,
+    "ignorable": false,
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "message": "Dumped type: false",
+    "line": 30,
+    "ignorable": false,
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "message": "Dumped type: bool",
+    "line": 33,
+    "ignorable": false,
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "message": "Dumped type: 1|2",
+    "line": 34,
+    "ignorable": false,
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "message": "Dumped type: 11|22",
+    "line": 35,
+    "ignorable": false,
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "message": "Dumped type: 33|true",
+    "line": 36,
+    "ignorable": false,
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "message": "Dumped type: 3|4",
+    "line": 40,
+    "ignorable": false,
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "message": "Dumped type: 3",
+    "line": 41,
+    "ignorable": false,
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "message": "Dumped type: true",
+    "line": 42,
+    "ignorable": false,
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "message": "Dumped type: 33|true",
+    "line": 46,
+    "ignorable": false,
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "message": "Dumped type: true",
+    "line": 47,
+    "ignorable": false,
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "message": "Dumped type: false",
+    "line": 52,
+    "ignorable": false,
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "message": "Dumped type: *NEVER*",
+    "line": 54,
+    "ignorable": false,
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "message": "Dumped type: false",
+    "line": 57,
+    "ignorable": false,
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "message": "Dumped type: 1",
+    "line": 60,
+    "ignorable": false,
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "message": "Dumped type: 2",
+    "line": 66,
+    "ignorable": false,
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "message": "Dumped type: 1",
+    "line": 67,
+    "ignorable": false,
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "message": "Dumped type: *NEVER*",
+    "line": 68,
+    "ignorable": false,
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "message": "Dumped type: 3|4",
+    "line": 72,
+    "ignorable": false,
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "message": "Dumped type: 3|4",
+    "line": 73,
+    "ignorable": false,
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "message": "Dumped type: int",
+    "line": 74,
+    "ignorable": false,
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "message": "Dumped type: 3",
+    "line": 79,
+    "ignorable": false,
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "message": "Dumped type: int<min, -1>|int<1, max>",
+    "line": 80,
+    "ignorable": false,
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "message": "Dumped type: 3",
+    "line": 83,
+    "ignorable": false,
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "message": "Dumped type: 3|4",
+    "line": 84,
+    "ignorable": false,
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "message": "Dumped type: false",
+    "line": 90,
+    "ignorable": false,
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "message": "Dumped type: true",
+    "line": 91,
+    "ignorable": false,
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "message": "Dumped type: false",
+    "line": 94,
+    "ignorable": false,
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "message": "Dumped type: false",
+    "line": 95,
+    "ignorable": false,
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "message": "Dumped type: 1",
+    "line": 98,
+    "ignorable": false,
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "message": "Dumped type: 1|2|3",
+    "line": 104,
+    "ignorable": false,
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "message": "Dumped type: bool",
+    "line": 105,
+    "ignorable": false,
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "message": "Dumped type: bool",
+    "line": 106,
+    "ignorable": false,
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "message": "Dumped type: 1|2",
+    "line": 113,
+    "ignorable": false,
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "message": "Dumped type: 0|1",
+    "line": 118,
+    "ignorable": false,
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "message": "Dumped type: 2",
+    "line": 119,
+    "ignorable": false,
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "message": "Dumped type: bool",
+    "line": 120,
+    "ignorable": false,
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "message": "Dumped type: 3|4",
+    "line": 122,
+    "ignorable": false,
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "message": "Dumped type: true",
+    "line": 126,
+    "ignorable": false,
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "message": "Dumped type: bool",
+    "line": 127,
+    "ignorable": false,
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "message": "Dumped type: false",
+    "line": 129,
+    "ignorable": false,
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "message": "Dumped type: bool",
+    "line": 130,
+    "ignorable": false,
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "message": "Dumped type: bool",
+    "line": 132,
+    "ignorable": false,
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "message": "Dumped type: false",
+    "line": 136,
+    "ignorable": false,
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "message": "Dumped type: false",
+    "line": 141,
+    "ignorable": false,
+    "identifier": "phpstan.dumpNativeType"
+  },
+  {
+    "message": "Dumped type: 2",
+    "line": 142,
+    "ignorable": false,
+    "identifier": "phpstan.dumpNativeType"
+  }
+]

@@ -38,6 +38,9 @@ pub(crate) fn analyze<'ctx, 'arena, A>(
 where
     A: Arena,
 {
+    if !crate::native::condition_shape(condition, true) {
+        outer_context.native_locals = None;
+    }
     let mut entry_clauses = vec![];
 
     if !if_scope.negated_clauses.is_empty() {
@@ -208,6 +211,9 @@ where
     {
         if_body_context.add_class_type_relation(source, target);
     }
+
+    if_body_context.native_locals =
+        crate::native::branch(condition, &post_if_context.native_locals, artifacts, true, context.codebase);
 
     Ok(IfConditionalScope {
         if_body_context,

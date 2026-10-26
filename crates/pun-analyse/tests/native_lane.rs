@@ -161,9 +161,18 @@ fn oracle_mago_id(phpstan: &str) -> String {
         format!("int({phpstan})")
     } else if let Ok(value) = phpstan.parse::<f64>() {
         format!("float({value})")
+    } else if let Some(range) = match phpstan {
+        "positive-int" => Some("int<1,max>"),
+        "negative-int" => Some("int<min,-1>"),
+        "non-positive-int" => Some("int<min,0>"),
+        "non-negative-int" => Some("int<0,max>"),
+        _ => None,
+    } {
+        range.to_owned()
     } else {
         phpstan
             .replace("non-falsy-string", "truthy-string")
+            .replace("*NEVER*", "never")
             .replace(", ", ",")
     }
 }
@@ -191,6 +200,47 @@ fn cast_native_values_match_phpstan_and_do_not_change_the_full_walk() {
         include_bytes!("fixtures/native-lane/casts.php"),
         include_str!("fixtures/native-lane/expected-casts-phpstan.json"),
     );
+}
+
+#[test]
+fn conditional_native_values_and_continuations_match_phpstan_without_another_walk() {
+    check_native_fixture(
+        include_bytes!("fixtures/native-lane/conditions.php"),
+        include_str!("fixtures/native-lane/expected-conditions-phpstan.json"),
+    );
+}
+
+#[test]
+fn scalar_native_guards_match_phpstan_without_changing_full_assertions() {
+    check_native_fixture(
+        include_bytes!("fixtures/native-lane/condition-guards.php"),
+        include_str!("fixtures/native-lane/expected-condition-guards-phpstan.json"),
+    );
+}
+
+#[test]
+fn scalar_native_conditional_edges_match_phpstan() {
+    check_native_fixture(
+        include_bytes!("fixtures/native-lane/condition-edges.php"),
+        include_str!("fixtures/native-lane/expected-condition-edges-phpstan.json"),
+    );
+}
+
+#[test]
+fn conditional_native_unavailability_is_edge_local_and_does_not_recover_by_assignment() {
+    check_native_fixture(
+        include_bytes!("fixtures/native-lane/condition-boundaries.php"),
+        include_str!("fixtures/native-lane/expected-condition-boundaries-phpstan.json"),
+    );
+}
+
+#[test]
+fn pure_condition_wrappers_retain_the_full_walks_existing_visits() {
+    let observed = check_native_fixture_walk(
+        include_bytes!("fixtures/native-lane/condition-wrappers.php"),
+        include_str!("fixtures/native-lane/expected-condition-wrappers-phpstan.json"),
+    );
+    assert!(observed.visits.values().any(|count| *count > 1));
 }
 
 fn assert_full_artifacts_equal(enabled: &AnalysisArtifacts, disabled: &AnalysisArtifacts) {
@@ -271,13 +321,17 @@ fn assert_full_artifacts_equal(enabled: &AnalysisArtifacts, disabled: &AnalysisA
 }
 
 fn check_native_fixture(code: &[u8], oracle: &str) {
+    let observed = check_native_fixture_walk(code, oracle);
+    assert!(observed.visits.values().all(|count| *count == 1));
+}
+
+fn check_native_fixture_walk(code: &[u8], oracle: &str) -> Observed {
     let expected: serde_json::Value = serde_json::from_str(oracle).unwrap();
     let (enabled, observed, issues) = analyze(code, true, PluginRegistry::new());
     let (disabled, off_observed, off_issues) = analyze(code, false, PluginRegistry::new());
     assert_eq!(issues, off_issues);
     assert_full_artifacts_equal(&enabled, &disabled);
     assert_eq!(observed.visits, off_observed.visits);
-    assert!(observed.visits.values().all(|count| *count == 1));
     let marked = marked_ranges(code, "// native");
     assert_eq!(marked.len(), expected.as_array().unwrap().len());
     for ((line, range), expected) in marked.into_iter().zip(expected.as_array().unwrap()) {
@@ -303,12 +357,25 @@ fn check_native_fixture(code: &[u8], oracle: &str) {
         );
         assert!(disabled.get_native_expression_type(&span(range)).is_none());
     }
+    for (line, range) in marked_ranges(code, "// unavailable") {
+        assert!(
+            enabled.get_native_expression_type(&span(range)).is_none(),
+            "line {line}"
+        );
+        assert!(
+            observed.native.get(&range).is_none_or(Option::is_none),
+            "observer line {line}"
+        );
+    }
+    observed
 }
 
 #[test]
 fn unsupported_transfers_poison_the_scope_before_children_and_never_recover_by_assignment() {
     let bodies = [
-        "if ($flag) { $value = 2; } else { $value = 3; }",
+        "if ($flag && true) { $value = 2; } else { $value = 3; }",
+        "if ($value === ($value + 1)) { $value = 2; }",
+        "if ($value + 1) { $value = 2; }",
         "while ($flag) { $value = 2; break; }",
         "for (; $flag;) { $value = 2; break; }",
         "do { $value = 2; } while ($flag);",
@@ -325,7 +392,7 @@ fn unsupported_transfers_poison_the_scope_before_children_and_never_recover_by_a
         "$callback = fn () => $value;",
         "$callback = function () use ($value) { return $value; };",
         "$value = $value << 1;",
-        "$value = $flag ? 2 : 3;",
+        "$value = ($flag && true) ? 2 : 3;",
         "$value = missingFunction();",
         "$name = 'missingFunction'; $value = $name();",
         "$value = $missing;",
@@ -385,8 +452,8 @@ fn unsupported_operator_shapes_invalidate_without_changing_the_full_walk() {
         "1e308 * 1e308",
         "+1e999",
         "$unknown === 2",
-        "$nullable === 2",
-        "($integer % 2) === 1",
+        "$nullable == 2",
+        "($integer % 2) == 1",
         "('prefix' . $text) === '0'",
         "$text == '1'",
         "$text < 2",
@@ -678,10 +745,19 @@ fn dynamic_full_return_providers_are_called_once_and_do_not_replace_native_decla
     let calls = Arc::new(AtomicUsize::new(0));
     let mut registry = PluginRegistry::new();
     registry.register_function_provider(Return(Arc::clone(&calls)));
-    let code = b"<?php function documented(): string { return 'body'; }\n$value = documented();\n$value; // native\n";
-    let (artifacts, _, _) = analyze(code, true, registry);
+    let code = b"<?php function documented(): string { return 'body'; }\n$value = documented();\n$value; // native\nfunction branches(bool $flag): void {\nif ($flag) { $value = documented(); } else { $value = documented(); }\n$flag ? documented() : documented();\n}\n";
+    let (artifacts, observed, issues) = analyze(code, true, registry);
+    let off_calls = Arc::new(AtomicUsize::new(0));
+    let mut registry = PluginRegistry::new();
+    registry.register_function_provider(Return(Arc::clone(&off_calls)));
+    let (disabled, off_observed, off_issues) = analyze(code, false, registry);
+    assert_full_artifacts_equal(&artifacts, &disabled);
+    assert_eq!(issues, off_issues);
+    assert_eq!(observed.visits, off_observed.visits);
     let value = span(marked_ranges(code, "// native")[0].1);
-    assert_eq!(calls.load(Ordering::SeqCst), 1);
+    // One straight-line call and two calls in each conditional, on the existing full walk.
+    assert_eq!(calls.load(Ordering::SeqCst), 5);
+    assert_eq!(off_calls.load(Ordering::SeqCst), 5);
     assert_eq!(
         artifacts
             .get_expression_type(&value)

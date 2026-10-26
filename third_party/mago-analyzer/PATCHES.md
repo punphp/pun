@@ -249,7 +249,8 @@ types, constructors, and truthiness queries.
 
 Implicit arithmetic coercion from strings, booleans, or null is unsupported. So are arithmetic on ranges
 or unions, float modulo, modulo with an unknown divisor, comparisons of refined non-literal strings or
-unions, and non-numeric loose comparisons. Short-circuit operators, coalesce, exponentiation, bitwise operators,
+unions except the literal guards below, and non-numeric loose comparisons. Short-circuit operators,
+coalesce, exponentiation, bitwise operators,
 increments, decrements, and compound assignments remain unsupported. These cases return no native
 value and invalidate the live native scope. They never fall back to the full value or guessed `mixed`.
 Explicit scalar casts have the separate bounded contract below.
@@ -262,7 +263,7 @@ Completed operand artifacts remain valid records of their earlier evaluations. S
 do not recover that scope. This scope-wide rule avoids claiming that an unsupported operation left
 aliases or locals unchanged. Each separately analyzed named function can initialize its own native scope.
 
-Branches, loops, joins, exceptional control flow, references, arrays, members, class scopes, methods,
+Loops, exceptional control flow, references, arrays, members, class scopes, methods,
 closures, arrows, captures, globals, statics, unset, dynamic calls, and undefined local reads
 are unsupported. Functions with by-reference returns or parameters, variadics, output parameters,
 assertions, generators, accessed globals, or non-scalar parameter declarations do not initialize native
@@ -275,7 +276,7 @@ native availability and cached native values. Their effects have no native trans
 Opaque mutation preserves the paired checkpoint history even when a hook replaces all artifacts.
 The existing limitation on speculative stateful statement, declaration, and call hooks still applies.
 
-These choices leave condition filtering and joining, reference effects, member state, callback scope
+These choices leave general condition filtering and joining, reference effects, member state, callback scope
 entry, native invocation specialization, and explicit native-aware semantic hook contracts for later
 slices. They do not settle the separate architecture choice between a maintained Mago patch and a
 separate scope engine.
@@ -459,6 +460,86 @@ Fresh LCOV export from those five executables, intersected with added or replace
 `11a57541`, measures **152/152 changed analyzer executable lines** and **39/39 changed test executable
 lines**. There are no exclusions, gap entries, or private-helper tests. This is changed-line coverage,
 not branch coverage or whole-analyzer coverage.
+
+### Scalar conditional state
+
+The conditional slice supports `if`, `elseif`, `else`, and ternaries with direct scalar guards,
+negation, strict literal comparisons, and ordered integer comparisons. It uses the existing body walk.
+`utils/conditional.rs` supplies native true-branch state after that walk visits the condition.
+`statement/if.rs` carries false-branch state through the ordered `elseif` chain and records native
+snapshots beside the existing continuing variable scopes. Bare and scalar-valued returns do not
+contribute a continuing snapshot. Missing variables on one edge retain their when-defined type.
+An unsupported contributing edge makes the joined native state unavailable.
+
+Full PHPDoc-aware types still choose which `if` edges continue, including pruned branches that the
+full walk visits for diagnostics. Those visits retain their native observations. A body skipped by
+the full reconciler does not acquire synthetic observations or a guessed native continuation.
+The supported policy is PHPStan's default `treatPhpDocTypesAsCertain=true`.
+
+Ternaries have two distinct rules. Their native result selects values by native condition truthiness.
+Their continuation selects one edge only for a full literal boolean, not for a truthy integer or string.
+For native `false` with PHPDoc `true`, `flag ? (value = 1) : (value = 2)` therefore has native result
+`2` but continuing native `value` equal to `1`. `expression/conditional.rs` publishes the native result
+after the full result setter, which invalidates any previous native artifact at that span.
+
+`native.rs` filters the bounded scalar maps without changing full locals or assertions. Strict integer
+and string comparisons preserve PHPStan's decided-comparison behavior: an equal edge intersects with
+the literal, while a full-decided unequal edge becomes `never` or leaves native state unchanged.
+Ordered integer guards intersect ranges using checked boundaries. Native joins normalize the complete
+truthy and falsy string partition without changing Mago's full-type combiner.
+
+The authority is PHPStan 2.3.1 at `cb3b7e99489b2e3789ee2eec10501cb7a72580ea`:
+`Analyser/StmtHandler/IfHandler.php`, `Analyser/ExprHandler/TernaryHandler.php`,
+`Analyser/ExprHandler/Helper/IdenticalNarrowingHelper.php`, `MutatingScope::applySpecifiedTypes()`,
+and `ScopeOps::finishMerge()`. The `native-lane/conditions.php`, `condition-guards.php`,
+`condition-edges.php`, `condition-boundaries.php`, and `condition-wrappers.php` fixtures have fresh
+`dumpNativeType` captures.
+Public Analyzer tests compare artifact and observer queries against those captures. They also compare
+full artifacts, diagnostics, observer visits, and return-provider counts with native tracking disabled.
+Pure wrappers retain any repeated operand visits already made by the full conditional analyzer.
+
+Mixed truthiness, floating-point guard subtraction, additional numeric or casing refinements on native
+string guards, effectful wrapped conditions, short-circuit conditions, general arithmetic conditions,
+loops, arrays, objects, and exceptional effects remain unsupported. Existing supported named-call
+transfers are unchanged. No second walk, provider call,
+observer call, native-dependent rule activation, or coverage exclusion is added.
+
+On unchanged native source `632c633a`, the first public regression fails at `conditions.php:6`:
+the true branch reports no native type instead of PHPStan's `true`. The five new fixtures retain
+**178 actual PHPStan native records**. The original scalar, operator, and cast captures are unchanged.
+For each fixture, the oracle replaces only `expression; // native` with
+`\PHPStan\dumpNativeType(expression);`, preserving source lines. From the repository root, its command is:
+
+```sh
+timeout 900 nice php .oracle/phpstan/vendor/phpstan/phpstan/phpstan.phar analyse \
+	--configuration=/tmp/pun-native-conditional-research/phpstan.neon --level=3 \
+	--error-format=json --no-progress --memory-limit=1G --debug \
+	/tmp/pun-native-conditions-evidence/conditions.php
+```
+
+The disposable configuration sets `phpVersion: 80400` and a scratch `tmpDir` only.
+The final JSON line supplies unmodified `phpstan.dumpNativeType` records. Exit 1 is expected.
+The other four fixtures use the same command with their respective scratch filenames.
+
+The clean-profile run passes **60 focused public tests**: native lane 16, callback gather 10,
+array slice 6, debug 10, variables 4, dead code 4, mixed subtraction 9, and integer-division overflow 1.
+Scoped rule sweeps pass Operators (12 cases) and Variables (51 cases). Scoped level sweeps pass
+Comparison (404 cases), DeadCode (114 cases), and Variables (94 cases), retaining their existing gaps.
+These sweeps are regression checks, not complete PHPStan parity.
+
+The instrumented native command above also selects `--test variables --test dead_code
+--test mixed_subtraction`. The separate arithmetic command selects
+`--test coverage -- literal_integer_division_overflow_matches_php_and_phpstan`.
+Rule and level runs select `--test rules` or `--test levels`, with `PUN_RULES_FILTER` or
+`PUN_LEVELS_FILTER` set to the named directory and a trailing slash. All use the private target
+`/home/user/workspace/target-native-conditions`, one Cargo job, two Rayon threads, and
+`cargo llvm-cov --dep-coverage mago-analyzer --no-report` under `timeout 900 nice`.
+
+Fresh LCOV export from those executables covers **397/397 changed analyzer executable lines**
+against `632c633a`: native transfers 356, if statements 22, ternaries 13, conditional utility 5,
+and if-scope initialization 1. Changed public test executable lines are **61/61**.
+The measurement uses fresh profiles and unfiltered LLVM records, with no exclusions or private-helper
+tests. This is changed-line coverage, not branch coverage or whole-analyzer coverage.
 
 ## Literal integer division overflow
 

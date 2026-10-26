@@ -3,14 +3,18 @@
 use std::cmp::Ordering;
 use std::rc::Rc;
 
+use mago_codex::metadata::CodebaseMetadata;
 use mago_codex::metadata::function_like::{FunctionLikeKind, FunctionLikeMetadata};
 use mago_codex::ttype::atomic::TAtomic;
 use mago_codex::ttype::atomic::scalar::string::TStringCasing;
 use mago_codex::ttype::atomic::scalar::{TScalar, float::TFloat, int::TInteger, string::TString};
+use mago_codex::ttype::combine_union_types;
+use mago_codex::ttype::combiner::CombinerOptions;
 use mago_codex::ttype::union::TUnion;
 use mago_codex::ttype::{
     get_bool, get_false, get_float, get_int, get_int_or_float, get_int_range, get_literal_float,
-    get_literal_int, get_literal_string, get_mixed, get_string, get_string_with_props, get_true,
+    get_literal_int, get_literal_string, get_mixed, get_never, get_string, get_string_with_props,
+    get_true, wrap_atomic,
 };
 use mago_syntax::cst::{
     AssignmentOperator, Binary, BinaryOperator, Call, Expression, Literal, Statement, UnaryPrefix,
@@ -83,6 +87,12 @@ pub(crate) fn before_statement(statement: &Statement<'_>, block: &mut BlockConte
     if block.native_locals.is_none() {
         return;
     }
+    if let Statement::If(statement) = statement {
+        if !condition_shape(statement.condition, true) {
+            block.native_locals = None;
+        }
+        return;
+    }
     if !matches!(
         statement,
         Statement::OpeningTag(_)
@@ -95,7 +105,7 @@ pub(crate) fn before_statement(statement: &Statement<'_>, block: &mut BlockConte
             | Statement::Expression(_)
             | Statement::Return(_)
     ) {
-        // Branch, loop, reference and exceptional transfers are not implemented. Invalidation
+        // Loop, reference and exceptional transfers are not implemented. Invalidation
         // happens BEFORE their children, so neither inner nor subsequent queries use stale state.
         block.native_locals = None;
     }
@@ -132,6 +142,7 @@ pub(crate) fn before_expression(expression: &Expression<'_>, block: &mut BlockCo
                 && matches!(assignment.lhs, Expression::Variable(Variable::Direct(variable))
                     if variable.name != b"$this" && variable.name != b"$GLOBALS" && !variable.name.starts_with(b"$_"))
         }
+        Expression::Conditional(conditional) => condition_shape(conditional.condition, true),
         // The resolved target is checked before arguments in function_call.rs.
         Expression::Call(Call::Function(call)) => {
             matches!(call.function, Expression::Identifier(_))
@@ -148,6 +159,11 @@ pub(crate) fn after_expression(
     block: &mut BlockContext<'_>,
     artifacts: &mut AnalysisArtifacts,
 ) {
+    // A ternary value can be unavailable while its full-selected continuation is supported.
+    // The conditional analyzer owns both transfers independently.
+    if matches!(expression, Expression::Conditional(_)) {
+        return;
+    }
     let Some(locals) = &block.native_locals else {
         return;
     };
@@ -172,6 +188,393 @@ pub(crate) fn after_expression(
         artifacts.set_rc_native_expression_type(expression, ty);
     } else {
         block.native_locals = None;
+    }
+}
+
+pub(crate) type Locals = WordMap<Rc<TUnion>>;
+
+// Do not enter conditional::analyze's re-evaluation path with an effectful wrapped condition.
+// Short circuit, calls, and general expression constraints remain outside this bounded transfer.
+pub(crate) fn condition_shape(expression: &Expression<'_>, assignment: bool) -> bool {
+    match expression {
+        Expression::Literal(_) | Expression::Variable(Variable::Direct(_)) => true,
+        Expression::Parenthesized(value) => condition_shape(value.expression, false),
+        Expression::UnaryPrefix(value) if value.operator.is_not() => {
+            condition_shape(value.operand, false)
+        }
+        Expression::Assignment(value) => {
+            assignment && value.operator.is_assign() && direct_local(value.lhs).is_some()
+        }
+        Expression::Binary(value) => {
+            (value.operator.is_identity() || ordered(&value.operator))
+                && ((direct_local(value.lhs).is_some() && literal_shape(value.rhs))
+                    || (direct_local(value.rhs).is_some() && literal_shape(value.lhs)))
+        }
+        _ => false,
+    }
+}
+
+fn literal_shape(expression: &Expression<'_>) -> bool {
+    match expression {
+        Expression::Literal(_) => true,
+        Expression::UnaryPrefix(value) => {
+            matches!(value.operand, Expression::Literal(_))
+                && matches!(value.operator, UnaryPrefixOperator::Negation(_))
+        }
+        _ => false,
+    }
+}
+
+fn ordered(operator: &BinaryOperator<'_>) -> bool {
+    matches!(
+        operator,
+        BinaryOperator::LessThan(_)
+            | BinaryOperator::LessThanOrEqual(_)
+            | BinaryOperator::GreaterThan(_)
+            | BinaryOperator::GreaterThanOrEqual(_)
+    )
+}
+
+/// PHPStan applies the ordinary condition's specifications to both holder maps. In particular,
+/// full-type decided scalar comparisons can impose never on a native-reachable branch.
+/// Callers validate condition_shape before evaluation; an unsupported condition has no live map.
+pub(crate) fn branch(
+    condition: &Expression<'_>,
+    locals: &Option<Locals>,
+    artifacts: &AnalysisArtifacts,
+    positive: bool,
+    codebase: &CodebaseMetadata,
+) -> Option<Locals> {
+    let mut locals = locals.clone()?;
+    match condition {
+        Expression::Parenthesized(value) => {
+            return branch(
+                value.expression,
+                &Some(locals),
+                artifacts,
+                positive,
+                codebase,
+            );
+        }
+        Expression::UnaryPrefix(value) if value.operator.is_not() => {
+            return branch(value.operand, &Some(locals), artifacts, !positive, codebase);
+        }
+        Expression::Variable(Variable::Direct(variable)) => {
+            let name = word(variable.name);
+            let narrowed = truthy_type(locals.get(&name)?, positive, codebase)?;
+            locals.insert(name, Rc::new(narrowed));
+        }
+        Expression::Assignment(value) => {
+            let name = word(direct_local(value.lhs)?);
+            let narrowed = truthy_type(locals.get(&name)?, positive, codebase)?;
+            locals.insert(name, Rc::new(narrowed));
+        }
+        Expression::Binary(value) => {
+            let (name, literal, reversed) = if let Some(name) = direct_local(value.lhs) {
+                (word(name), value.rhs, false)
+            } else {
+                (word(direct_local(value.rhs)?), value.lhs, true)
+            };
+            // The shape gate allows only scalar literal operands here.
+            let literal = artifacts.get_native_expression_type(literal)?;
+            let current = locals.get(&name)?;
+            let narrowed = if value.operator.is_identity() {
+                let equal = positive ^ value.operator.is_negated_equality();
+                let decided_scalar = matches!(
+                    literal.get_single(),
+                    TAtomic::Scalar(TScalar::Integer(_) | TScalar::String(_))
+                ) && !equal;
+                let decided = artifacts.get_expression_type(value).and_then(truth);
+                if let Some(known) = decided.filter(|_| decided_scalar) {
+                    if known != positive {
+                        get_never()
+                    } else {
+                        (**current).clone()
+                    }
+                } else {
+                    literal_type(current, literal.get_single(), equal, codebase)?
+                }
+            } else {
+                let TAtomic::Scalar(TScalar::Integer(TInteger::Literal(limit))) =
+                    literal.get_single()
+                else {
+                    return None;
+                };
+                let greater = matches!(
+                    value.operator,
+                    BinaryOperator::GreaterThan(_) | BinaryOperator::GreaterThanOrEqual(_)
+                ) ^ reversed;
+                let inclusive = matches!(
+                    value.operator,
+                    BinaryOperator::LessThanOrEqual(_) | BinaryOperator::GreaterThanOrEqual(_)
+                );
+                let above = greater == positive;
+                let include_limit = inclusive == positive;
+                let boundary = if include_limit {
+                    Some(*limit)
+                } else if above {
+                    limit.checked_add(1)
+                } else {
+                    limit.checked_sub(1)
+                };
+                match boundary {
+                    Some(boundary) => range_type(
+                        current,
+                        if above { boundary } else { i64::MIN },
+                        if above { i64::MAX } else { boundary },
+                        codebase,
+                    )?,
+                    None => get_never(),
+                }
+            };
+            locals.insert(name, Rc::new(narrowed));
+        }
+        _ => {} // Literal conditions do not constrain a local.
+    }
+    Some(locals)
+}
+
+/// Only continuing, full-selected edges contribute. An unavailable contributing edge poisons the
+/// result; an absent variable on an edge does not replace its when-defined type with mixed.
+pub(crate) fn join(branches: &[Option<Locals>], codebase: &CodebaseMetadata) -> Option<Locals> {
+    let mut merged = branches.first()?.clone()?;
+    for branch in &branches[1..] {
+        for (name, ty) in branch.as_ref()? {
+            let value = merged
+                .get(name)
+                .map_or_else(|| ty.clone(), |old| Rc::new(union(old, ty, codebase)));
+            merged.insert(*name, value);
+        }
+    }
+    Some(merged)
+}
+
+fn union(left: &TUnion, right: &TUnion, codebase: &CodebaseMetadata) -> TUnion {
+    let mut result = combine_union_types(left, right, codebase, CombinerOptions::default());
+    // Mago retains falsy literals beside a truthy string. PHPStan collapses the complete
+    // truthy/falsy partition back to string; keep this normalization out of the full lane.
+    let has_literal = |want: &[u8]| {
+        result.types.iter().any(|atomic| {
+            matches!(atomic,
+        TAtomic::Scalar(TScalar::String(value)) if value.get_known_literal_value() == Some(want))
+        })
+    };
+    let has_empty = has_literal(b"");
+    let has_zero = has_literal(b"0");
+    if (has_empty || has_zero)
+        && result.types.iter().any(|atomic| {
+            let TAtomic::Scalar(TScalar::String(value)) = atomic else {
+                return false;
+            };
+            let mut general = value.clone();
+            general.is_truthy = false;
+            general.is_non_empty = false;
+            general == TString::general() && value.is_non_empty && (!value.is_truthy || has_zero)
+        })
+    {
+        result
+            .types
+            .to_mut()
+            .retain(|atomic| !matches!(atomic, TAtomic::Scalar(TScalar::String(_))));
+        let mut string = TString::general();
+        string.is_non_empty = !has_empty;
+        result
+            .types
+            .to_mut()
+            .push(TAtomic::Scalar(TScalar::String(string)));
+    }
+    result
+}
+
+fn interval(min: i64, max: i64) -> TUnion {
+    if min > max {
+        get_never()
+    } else if min == max {
+        get_literal_int(min)
+    } else {
+        get_int_range(
+            (min != i64::MIN).then_some(min),
+            (max != i64::MAX).then_some(max),
+        )
+    }
+}
+
+fn range_type(ty: &TUnion, min: i64, max: i64, codebase: &CodebaseMetadata) -> Option<TUnion> {
+    let mut result = get_never();
+    for atomic in ty.types.iter() {
+        let part = match atomic {
+            TAtomic::Scalar(TScalar::Integer(value)) => interval(
+                min.max(value.get_minimum_value().unwrap_or(i64::MIN)),
+                max.min(value.get_maximum_value().unwrap_or(i64::MAX)),
+            ),
+            _ => return None,
+        };
+        result = union(&result, &part, codebase);
+    }
+    Some(result)
+}
+
+fn integer_literal(
+    value: &TInteger,
+    want: i64,
+    equal: bool,
+    codebase: &CodebaseMetadata,
+) -> TUnion {
+    let min = value.get_minimum_value().unwrap_or(i64::MIN);
+    let max = value.get_maximum_value().unwrap_or(i64::MAX);
+    if equal {
+        interval(min.max(want), max.min(want))
+    } else if want < min || want > max {
+        wrap_atomic(TAtomic::Scalar(TScalar::Integer(*value)))
+    } else {
+        let left = want
+            .checked_sub(1)
+            .map_or_else(get_never, |end| interval(min, end));
+        let right = want
+            .checked_add(1)
+            .map_or_else(get_never, |start| interval(start, max));
+        union(&left, &right, codebase)
+    }
+}
+
+fn literal_type(
+    ty: &TUnion,
+    literal: &TAtomic,
+    equal: bool,
+    codebase: &CodebaseMetadata,
+) -> Option<TUnion> {
+    let mut result = get_never();
+    for atomic in ty.types.iter() {
+        let part = match (atomic, literal) {
+            (
+                TAtomic::Scalar(TScalar::Integer(value)),
+                TAtomic::Scalar(TScalar::Integer(TInteger::Literal(want))),
+            ) => integer_literal(value, *want, equal, codebase),
+            (TAtomic::Scalar(TScalar::Bool(value)), TAtomic::Scalar(TScalar::Bool(want))) => {
+                let want = want.value?;
+                match value.value {
+                    Some(value) if (value == want) != equal => get_never(),
+                    Some(_) => wrap_atomic(atomic.clone()),
+                    None => boolean(Some(want == equal)),
+                }
+            }
+            (TAtomic::Scalar(TScalar::String(value)), TAtomic::Scalar(TScalar::String(want))) => {
+                let want_literal = want.get_known_literal_value()?;
+                if let Some(value) = value.get_known_literal_value() {
+                    if (value == want_literal) == equal {
+                        wrap_atomic(atomic.clone())
+                    } else {
+                        get_never()
+                    }
+                } else {
+                    // comparison_type admitted only a general or known-literal string.
+                    if equal {
+                        wrap_atomic(literal.clone())
+                    } else {
+                        wrap_atomic(atomic.clone())
+                    }
+                }
+            }
+            (TAtomic::Null, TAtomic::Null) => {
+                if equal {
+                    wrap_atomic(TAtomic::Null)
+                } else {
+                    get_never()
+                }
+            }
+            (
+                TAtomic::Null
+                | TAtomic::Scalar(TScalar::Bool(_) | TScalar::Integer(_) | TScalar::String(_)),
+                TAtomic::Null
+                | TAtomic::Scalar(TScalar::Bool(_) | TScalar::Integer(_) | TScalar::String(_)),
+            ) => {
+                if equal {
+                    get_never()
+                } else {
+                    wrap_atomic(atomic.clone())
+                }
+            }
+            _ => return None,
+        };
+        result = union(&result, &part, codebase);
+    }
+    Some(result)
+}
+
+fn truthy_type(ty: &TUnion, positive: bool, codebase: &CodebaseMetadata) -> Option<TUnion> {
+    let mut result = get_never();
+    for atomic in ty.types.iter() {
+        let part = match atomic {
+            TAtomic::Never => get_never(),
+            TAtomic::Null => {
+                if positive {
+                    get_never()
+                } else {
+                    wrap_atomic(atomic.clone())
+                }
+            }
+            TAtomic::Scalar(TScalar::Bool(value)) => match value.value {
+                Some(value) if value != positive => get_never(),
+                _ => boolean(Some(positive)),
+            },
+            TAtomic::Scalar(TScalar::Integer(value)) => {
+                integer_literal(value, 0, !positive, codebase)
+            }
+            TAtomic::Scalar(TScalar::String(value)) => {
+                if let Some(literal) = value.get_known_literal_value() {
+                    if (literal != b"" && literal != b"0") == positive {
+                        wrap_atomic(atomic.clone())
+                    } else {
+                        get_never()
+                    }
+                } else {
+                    let mut general = value.clone();
+                    general.is_truthy = false;
+                    general.is_non_empty = false;
+                    if general != TString::general() {
+                        return None;
+                    }
+                    if positive {
+                        let mut value = value.clone();
+                        value.is_truthy = true;
+                        value.is_non_empty = true;
+                        wrap_atomic(TAtomic::Scalar(TScalar::String(value)))
+                    } else {
+                        let mut values = get_never();
+                        if !value.is_non_empty {
+                            values = get_literal_string(word(""));
+                        }
+                        if !value.is_truthy {
+                            values = union(&values, &get_literal_string(word("0")), codebase);
+                        }
+                        values
+                    }
+                }
+            }
+            _ => return None,
+        };
+        result = union(&result, &part, codebase);
+    }
+    Some(result)
+}
+
+pub(crate) fn conditional_value(
+    condition: &Expression<'_>,
+    then: Option<&Expression<'_>>,
+    otherwise: &Expression<'_>,
+    artifacts: &AnalysisArtifacts,
+    codebase: &CodebaseMetadata,
+) -> Option<TUnion> {
+    let condition_type = artifacts.get_native_expression_type(condition)?;
+    let positive = || match then {
+        Some(then) => artifacts.get_native_expression_type(then).cloned(),
+        None => truthy_type(condition_type, true, codebase),
+    };
+    let negative = || artifacts.get_native_expression_type(otherwise).cloned();
+    match truth(condition_type) {
+        Some(true) => positive(),
+        Some(false) => negative(),
+        None => Some(union(&positive()?, &negative()?, codebase)),
     }
 }
 
@@ -597,6 +1000,12 @@ fn comparison_type(binary: &Binary<'_>, left: &TUnion, right: &TUnion) -> Option
     let same_local =
         direct_local(binary.lhs).is_some_and(|name| direct_local(binary.rhs) == Some(name));
     if operator.is_identity() {
+        if let Some(value) = literal_identity(left, right).or_else(|| literal_identity(right, left))
+        {
+            return Some(boolean(
+                value.map(|value| value ^ operator.is_negated_equality()),
+            ));
+        }
         let (left_kind, left_constant) = identity_shape(left)?;
         let (right_kind, right_constant) = identity_shape(right)?;
         let identical = if left_kind != right_kind {
@@ -609,6 +1018,50 @@ fn comparison_type(binary: &Binary<'_>, left: &TUnion, right: &TUnion) -> Option
         return Some(boolean(
             identical.map(|value| value ^ operator.is_negated_equality()),
         ));
+    }
+    if ordered(operator)
+        && let (Some((left_min, left_max)), Some((right_min, right_max))) =
+            (integer_bounds(left), integer_bounds(right))
+    {
+        let value = match operator {
+            BinaryOperator::LessThan(_) => {
+                if left_max < right_min {
+                    Some(true)
+                } else if left_min >= right_max {
+                    Some(false)
+                } else {
+                    None
+                }
+            }
+            BinaryOperator::LessThanOrEqual(_) => {
+                if left_max <= right_min {
+                    Some(true)
+                } else if left_min > right_max {
+                    Some(false)
+                } else {
+                    None
+                }
+            }
+            BinaryOperator::GreaterThan(_) => {
+                if left_min > right_max {
+                    Some(true)
+                } else if left_max <= right_min {
+                    Some(false)
+                } else {
+                    None
+                }
+            }
+            _ => {
+                if left_min >= right_max {
+                    Some(true)
+                } else if left_max < right_min {
+                    Some(false)
+                } else {
+                    None
+                }
+            }
+        };
+        return Some(boolean(value));
     }
     let left = Number::from_type(left)?;
     let right = Number::from_type(right)?;
@@ -644,6 +1097,62 @@ fn comparison_type(binary: &Binary<'_>, left: &TUnion, right: &TUnion) -> Option
         })
     };
     Some(boolean(value))
+}
+
+fn integer_bounds(ty: &TUnion) -> Option<(i64, i64)> {
+    let mut min = i64::MAX;
+    let mut max = i64::MIN;
+    for atomic in ty.types.iter() {
+        let TAtomic::Scalar(TScalar::Integer(value)) = atomic else {
+            return None;
+        };
+        min = min.min(value.get_minimum_value().unwrap_or(i64::MIN));
+        max = max.max(value.get_maximum_value().unwrap_or(i64::MAX));
+    }
+    Some((min, max))
+}
+
+fn literal_identity(ty: &TUnion, literal: &TUnion) -> Option<Option<bool>> {
+    let (kind, true) = identity_shape(literal)? else {
+        return None;
+    };
+    let mut possible = false;
+    let mut definite = true;
+    for atomic in ty.types.iter() {
+        let value = if let (
+            TAtomic::Scalar(TScalar::Integer(value)),
+            TAtomic::Scalar(TScalar::Integer(TInteger::Literal(want))),
+        ) = (atomic, literal.get_single())
+        {
+            let min = value.get_minimum_value().unwrap_or(i64::MIN);
+            let max = value.get_maximum_value().unwrap_or(i64::MAX);
+            if *want < min || *want > max {
+                Some(false)
+            } else if min == max {
+                Some(true)
+            } else {
+                None
+            }
+        } else {
+            let (atomic_kind, constant) = identity_shape(&wrap_atomic(atomic.clone()))?;
+            if atomic_kind != kind {
+                Some(false)
+            } else if constant {
+                Some(atomic == literal.get_single())
+            } else {
+                None
+            }
+        };
+        possible |= value != Some(false);
+        definite &= value == Some(true);
+    }
+    Some(if definite {
+        Some(true)
+    } else if !possible {
+        Some(false)
+    } else {
+        None
+    })
 }
 
 fn concat_type(binary: &Binary<'_>, artifacts: &AnalysisArtifacts) -> Option<TUnion> {
