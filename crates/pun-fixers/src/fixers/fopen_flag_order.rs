@@ -47,9 +47,7 @@ fn fix_fopen_flag_token(tokens: &mut Tokens, start: usize, end: usize) {
 
 /// `sortFlags`' comparator: `b` last, `t` before it, the rest by byte order.
 fn sort_flags(flag1: &[u8], flag2: &[u8]) -> Ordering {
-    if flag1 == flag2 {
-        return Ordering::Equal;
-    }
+    // A valid mode holds each flag once, so two flags are never equal (upstream's `0` branch).
     for last in [b"b", b"t"] {
         if flag1 == last {
             return Ordering::Greater;
@@ -58,11 +56,7 @@ fn sort_flags(flag1: &[u8], flag2: &[u8]) -> Ordering {
             return Ordering::Less;
         }
     }
-    if flag1 < flag2 {
-        Ordering::Less
-    } else {
-        Ordering::Greater
-    }
+    flag1.cmp(flag2)
 }
 
 impl Fixer for FopenFlagOrderFixer {

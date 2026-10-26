@@ -63,5 +63,12 @@
         },
         "input": "<?php\necho \\M_PI;\nnamespace B;\nuse const Foo\\PHP_EOL;\necho M_PI, PHP_EOL, \\FOO;\n",
         "expected": "<?php\necho \\M_PI;\nnamespace B;\nuse const Foo\\PHP_EOL;\necho \\M_PI, PHP_EOL, FOO;\n"
+    },
+    {
+        "fixer": "native_constant_invocation",
+        "config": {
+            "foo": "bar"
+        },
+        "error": "[native_constant_invocation] Invalid configuration: The option \"foo\" does not exist. Defined options are: \"exclude\", \"fix_built_in\", \"include\", \"scope\", \"strict\"."
     }
 ]
