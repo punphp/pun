@@ -98,10 +98,12 @@ fn determine_attribute_fully_qualified_name(
         if name == first_token_of_name {
             return namespace;
         }
-        name = match name.iter().position(|&b| b == b'\\') {
-            Some(at) => name[at + 1..].to_vec(),
-            None => vec![],
-        };
+        // `substr((string) strstr($name, '\\'), 1)`: empty when there is no `\`.
+        let after = name
+            .iter()
+            .position(|&b| b == b'\\')
+            .map_or(name.len(), |at| at + 1);
+        name = name[after..].to_vec();
     }
     [namespace, b"\\".to_vec(), name].concat()
 }

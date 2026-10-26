@@ -1,0 +1,7 @@
+[
+    {
+        "fixer": "ternary_to_elvis_operator",
+        "input": "<?php\n$a = ((($b))) ? ((($b))) : 1;\n$c = f(g($d)) ? f(g($d)) : 2;\n",
+        "expected": "<?php\n$a = ((($b))) ?  : 1;\n$c = f(g($d)) ?  : 2;\n"
+    }
+]

@@ -1,0 +1,7 @@
+[
+    {
+        "fixer": "comment_to_phpdoc",
+        "input": "<?php\n$b = 1;\n// @var int $a\n# foo\n$a = 1;\n",
+        "expected": "<?php\n$b = 1;\n/** @var int $a */\n# foo\n$a = 1;\n"
+    }
+]
