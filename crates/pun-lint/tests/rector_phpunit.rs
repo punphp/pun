@@ -414,3 +414,11 @@ fn depends_annotation_with_value_to_attribute() {
         "DependsAnnotationWithValueToAttributeRector",
     );
 }
+
+#[test]
+fn covers_annotation_with_value_to_attribute() {
+    check(
+        PreferCoversAttribute,
+        "CoversAnnotationWithValueToAttributeRector",
+    );
+}

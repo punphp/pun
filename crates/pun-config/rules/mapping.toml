@@ -684,7 +684,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "phpunit/prefer-attribute-over-annotation" = { fix = "safe", ported = false, status = "decided", summary = "Change annotations with value to attribute" }
 "phpunit/prefer-attributes" = { fix = "safe", ported = true, status = "decided", summary = "PHPUnit attributes must be used over their respective PHPDoc-based annotations." }
 "phpunit/prefer-comparison-assertion" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Replace assertTrue()/assertFalse() on a comparison, instanceof, isset, count or strpos with the specific assertion." }
-"phpunit/prefer-covers-attribute" = { fix = "safe", ported = false, status = "decided", summary = "Change covers annotations with value to attribute" }
+"phpunit/prefer-covers-attribute" = { fix = "safe", ported = true, status = "decided", summary = "Change covers annotations with value to attribute" }
 "phpunit/prefer-create-mock" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "Replace getMock*() with createMock()." }
 "phpunit/prefer-create-stub" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Use createStub() instead of createMock() when no expectations are set." }
 "phpunit/prefer-create-stub-argument" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Use createStub() over createMock() when used as argument or array value and does not add any mock requirements" }
