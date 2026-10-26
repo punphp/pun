@@ -1,0 +1,9 @@
+{
+  "bare": "class ScanBefore {} function scanFunction() {} const SCAN_CONSTANT = 1; try {} class ScanAfter {}",
+  "function-body": "class ScanBefore {} function scanFunction() { try {} } const SCAN_CONSTANT = 1; class ScanAfter {}",
+  "nested": "class ScanBefore {} function scanFunction() {} const SCAN_CONSTANT = 1; try { try {} } class ScanAfter {}",
+  "invalid-inside-finally": "class ScanBefore {} function scanFunction() {} const SCAN_CONSTANT = 1; try {} finally { try {} } class ScanAfter {}",
+  "positive-catch": "class ScanBefore {} function scanFunction() {} const SCAN_CONSTANT = 1; try {} catch (\\Throwable) {} class ScanAfter {}",
+  "positive-finally": "class ScanBefore {} function scanFunction() {} const SCAN_CONSTANT = 1; try {} finally {} class ScanAfter {}",
+  "positive-both": "class ScanBefore {} function scanFunction() {} const SCAN_CONSTANT = 1; try {} catch (\\Throwable $e) {} finally {} class ScanAfter {}"
+}

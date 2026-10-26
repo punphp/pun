@@ -426,3 +426,80 @@ fn reverse_readonly_keyword_failures_reject_all_scanned_symbols() {
         }
     }
 }
+
+#[test]
+fn try_parser_failures_preserve_keyword_lines_and_precede_names_and_rules() {
+    let inputs: Value =
+        serde_json::from_str(include_str!("fixtures/parser/try-inputs.json")).unwrap();
+    let expected: Value =
+        serde_json::from_str(include_str!("fixtures/parser/try-expected.json")).unwrap();
+    let root = Inputs::new();
+    let files = inputs
+        .as_object()
+        .unwrap()
+        .iter()
+        .map(|(name, code)| {
+            let namespace = name.replace('-', "_");
+            root.write(
+                name,
+                &format!(
+                    "namespace TryParser_{namespace};\n{}",
+                    code.as_str().unwrap()
+                ),
+            )
+        })
+        .collect();
+    assert_eq!(
+        errors(&Project::new(files, Vec::new())),
+        expected["analysed"]["errors"]
+    );
+}
+
+#[test]
+fn try_checks_collect_after_body_parameters_and_nested_tries() {
+    use pun_phpstan::{Array, Key, Value as Php};
+    let root = Inputs::new();
+    let file = root.write(
+        "try-order",
+        include_str!("fixtures/parser/try-order.php")
+            .strip_prefix("<?php\n")
+            .unwrap(),
+    );
+    let mut project = Project::new(vec![file], Vec::new());
+    let mut entry = Array::new();
+    entry.set(Key::from("identifier"), Php::str("phpstan.parse"));
+    project.ignore_errors =
+        pun_phpstan::ignore::IgnoredErrors::new(&Array::list([Php::Array(entry)]), true);
+    let expected: Value =
+        serde_json::from_str(include_str!("fixtures/parser/try-expected.json")).unwrap();
+    // The public error list sorts by line, but non-ignorable configured-ignore messages retain collection
+    // order. An entry-hook try check would produce the same sorted errors and the wrong ignore messages.
+    assert_eq!(
+        json!(analyse_project(&project).unwrap().general),
+        expected["order"]["general"]
+    );
+    assert_eq!(errors(&project), expected["order"]["errors"]);
+}
+
+#[test]
+fn invalid_tries_in_scanned_files_export_no_symbols() {
+    let inputs: Value =
+        serde_json::from_str(include_str!("fixtures/parser/try-scans.json")).unwrap();
+    let expected: Value =
+        serde_json::from_str(include_str!("fixtures/parser/try-expected.json")).unwrap();
+    for (name, code) in inputs.as_object().unwrap() {
+        let root = Inputs::new();
+        let main = root.write(
+            "main",
+            include_str!("fixtures/parser/scan-main.php")
+                .strip_prefix("<?php\n")
+                .unwrap(),
+        );
+        let symbols = root.write("symbols", code.as_str().unwrap());
+        assert_eq!(
+            errors(&Project::new(vec![main], vec![symbols])),
+            expected["scanned"][name]["errors"],
+            "{name}"
+        );
+    }
+}

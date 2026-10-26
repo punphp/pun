@@ -1,4 +1,4 @@
-//! php-parser 5.9's name, modifier and parameter failures, before reflection scanning or rule callbacks. RichParser and
+//! php-parser 5.9's name, modifier, parameter and try failures, before reflection scanning or rule callbacks. RichParser and
 //! SimpleParser collect parser-stage errors first, then stop at the first NameResolver error. This is not a
 //! translation of Mago's grammar errors: a recovered CST remains outside this validation contract.
 
@@ -65,7 +65,7 @@ fn special(value: &[u8]) -> bool {
         || value.eq_ignore_ascii_case(b"static")
 }
 
-/// ParserAbstract's reserved-name, modifier and parameter checks. Modifiers are checked as tokens arrive;
+/// ParserAbstract's reserved-name, modifier, parameter and try checks. Modifiers are checked as tokens arrive;
 /// declaration checks run on reduction (after their bodies). Every parser-stage error wins over NameResolver.
 struct Reserved<'a> {
     file: &'a File,
@@ -326,6 +326,16 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Reserved<'_> {
                 self.file,
                 hint.span(),
                 "void cannot be used as a parameter type".into(),
+            ));
+        }
+    }
+    fn walk_out_try(&mut self, node: &'ast Try<'arena>, _: &mut ()) {
+        // ParserAbstract::checkTryCatch runs after the body, catches and finally have reduced.
+        if node.catch_clauses.is_empty() && node.finally_clause.is_none() {
+            self.errors.push(error(
+                self.file,
+                node.r#try.span,
+                "Cannot use try without catch or finally".into(),
             ));
         }
     }
