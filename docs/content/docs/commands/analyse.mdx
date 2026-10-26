@@ -39,6 +39,8 @@ Ordinary method calls retain unknown-class diagnostics and their discovery tips.
 Unresolved named function calls retain PHPStan's error type after argument evaluation, including inside `function_exists()` guards.
 Dynamic callable result inference remains incomplete.
 
+Inherited PHPStan API signatures resolve PHPDoc names using the embedded declaration's namespace and imports.
+
 Argument-count checks distinguish empty arrays from non-empty open array shapes passed with `...`.
 
 When argument type checks are enabled, calls respect `@no-named-arguments` on functions, methods and constructors, including inherited policies. Named arguments and string-keyed unpacking produce PHPStan's `argument.named` diagnostic after argument binding. Unknown arguments retain their binding diagnostics.
@@ -90,6 +92,8 @@ Heredoc and nowdoc closing markers cannot mix tabs and spaces, regardless of the
 Document bodies validate indentation before escape decoding.
 Fatal Unicode escape errors stop later parser reductions; malformed escapes remain nonfatal.
 Parser diagnostic locations preserve PHP's string-escape newline accounting.
+Malformed legacy octals such as `08` report PHPStan's non-ignorable `Invalid numeric literal` error over the complete literal.
+Analysis preserves PHP's overflowing-octal-prefix float classification. Lint and format keep strict PHP syntax checks.
 Invalid files contribute no scanned symbols; command output contains only the severe parser errors.
 General PHP syntax-error translation remains incomplete.
 
@@ -138,6 +142,13 @@ Property writes use the reflected writable type, including compatible PHPDoc ann
 `array_rand()` inference preserves possible array keys and returns a non-empty list when the requested count is at least two.
 `rand()`, `mt_rand()` and `random_int()` preserve inferred integer bounds.
 Reversed bounds are swapped only for `rand()`, matching PHPStan.
+
+`strlen()` inference uses PHP scalar casts and byte lengths, including binary strings.
+Literal alternatives produce exact lengths or a contiguous integer range. General integer ranges are not enumerated.
+Stored callable signatures retain the declared return type rather than specializing it from invocation arguments.
+
+From level 2, `analyse/functions/invalid-pure` reports `void.pure` for supported functions and private methods whose bodies provably have no side effects.
+Unknown effect producers remain unchecked. Full pure-function and pure-method validation remains incomplete.
 
 Array writes distinguish definite literal keys from literal alternatives within a general string or integer key.
 Straight-through `foreach` loops over sealed constant lists of up to 16 required entries retain sequential array mutation state.

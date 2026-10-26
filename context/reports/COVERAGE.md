@@ -4,12 +4,12 @@
 | crate | lines | hit | line % | tests |
 |---|---:|---:|---:|---|
 | punphp | 5457 | 5457 | 100.00% | ok |
-| punphp-analyse | 41656 | 41656 | 100.00% | ok |
+| punphp-analyse | 42173 | 42173 | 100.00% | ok |
 | punphp-config | 2604 | 2604 | 100.00% | ok |
 | punphp-fixers | 36563 | 36563 | 100.00% | ok |
 | punphp-format | 1022 | 1022 | 100.00% | ok |
 | punphp-harness | 235 | 235 | 100.00% | ok |
-| punphp-lint | 21973 | 21973 | 100.00% | ok |
+| punphp-lint | 22064 | 22064 | 100.00% | ok |
 | punphp-phpstan | 10406 | 10406 | 100.00% | ok |
 | punphp-problem | 105 | 105 | 100.00% | ok |
 | punphp-tokens | 3897 | 3897 | 100.00% | ok |
@@ -34,9 +34,9 @@ Uncovered lines:
 - `crates/pun-phpstan/src/resolve.rs:39` a global type alias whose definition refers to itself: PHPStan's UsefulTypeAliasResolver throws ShouldNotHappenException ("Circular definition for type alias"); Pun resolves `*ERROR*` instead of recursing forever.
 - `crates/pun-phpstan/src/resolve.rs:983` a `true`/`false`/`null`/array constant expression as a type: phpdoc-parser reads only `@var null ::X`-like tag values so, and PHPStan's TypeNodeResolver throws ShouldNotHappenException on them; Pun resolves `*ERROR*` instead of crashing.
 - `crates/pun-cli/src/migrate.rs:557` closest_preset's "nothing to switch" return: every PHPStan level leaves some rules of its closest Pun preset off (level 0: the basic preset's 11-12 non-level-0 rules, with or without bleedingEdge), so a migrated `[analyse]` always has on/off lines.
-- `crates/pun-analyse/src/rules/return_types.rs:60-62` `Provider::meta()` of the built-in return provider: as for the Laravel hook, `PluginRegistry` reads `meta()` only for its own library plugins.
-- `crates/pun-analyse/src/rules/return_types.rs:509-511` the same for the benevolent-return provider.
-- `crates/pun-analyse/src/rules/return_types.rs:550-552` the same for the Closure method return provider.
+- `crates/pun-analyse/src/rules/return_types.rs:69-71` `Provider::meta()` of the built-in return provider: as for the Laravel hook, `PluginRegistry` reads `meta()` only for its own library plugins.
+- `crates/pun-analyse/src/rules/return_types.rs:662-664` the same for the benevolent-return provider.
+- `crates/pun-analyse/src/rules/return_types.rs:703-705` the same for the Closure method return provider.
 - `crates/pun-analyse/src/rules/larastan/relations.rs:180` RelationExistenceRule's relation method declared by one of PHP's own classes: a model extends Eloquent's Model, which extends none of them, so its methods are always the user's.
 - `crates/pun-analyse/src/laravel/mod.rs:506-513` `Provider::meta()` of the model-attribute hook: Mago's `Provider` trait requires it, but `PluginRegistry` reads `meta()` only for its own library plugins, never for a registered expression hook, and the hook struct is private.
 - `crates/pun-analyse/src/rules/infer.rs:280-283` `Provider::meta()` of the definedness hook: as for the model-attribute hook's above, `PluginRegistry` never reads it for a registered expression hook.
@@ -94,7 +94,7 @@ Uncovered lines:
 - `crates/pun-lint/src/rules/types/declare.rs:164` `void` as a declaration: callers drop `void` (no value) before asking for a declaration.
 - `crates/pun-lint/src/rules/types/declare.rs:198` an intersection with a non-object member: Mago builds intersections only of object types.
 - `crates/pun-lint/src/rules/types/declare.rs:315` `void`, `mixed` or `null` (below 7.1) in a union: `add_union_return` refuses `mixed`/`void` before, and the union rule needs PHP 8.0.
-- `crates/pun-lint/src/rules/types/facts.rs:634` Mago's analyser failing or panicking (then no `get_class()` is typed): no known input.
+- `crates/pun-lint/src/rules/types/facts.rs:684` Mago's analyser failing or panicking (then no `get_class()` call, cast or arithmetic on `mixed` is typed): no known input.
 - `crates/pun-lint/src/rules/types/mod.rs:369` `unreachable!()` after the class-like kinds `rposition` matched.
 - `crates/pun-lint/src/rules/types/never.rs:190` a method with no class scope (see add_method_void_return).
 - `crates/pun-lint/src/rules/types/never.rs:197` a named class the codebase lacks: the codebase is built from this file, which declares it.
