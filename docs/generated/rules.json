@@ -11844,7 +11844,7 @@
         "CoversAnnotationWithValueToAttributeRector",
         "Rector\\PHPUnit\\AnnotationsToAttributes\\Rector\\Class_\\CoversAnnotationWithValueToAttributeRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/phpunit/prefer-create-mock",

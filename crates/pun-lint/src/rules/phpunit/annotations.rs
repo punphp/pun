@@ -684,15 +684,10 @@ pub(crate) fn generic_tag_value(tag: &str, name: &str) -> String {
 /// (`ClassConstFetchAnnotationToAttributeMapper`), else a string (`StringAnnotationToAttributeMapper`, its outer
 /// `"` gone), double-quoted when it has a `'` and no line break (`NamedArgsFactory::normalizeStringDoubleQuote()`).
 pub(crate) fn map_item(value: &str) -> String {
+    if is_class_constant_item(value) {
+        return value.to_string();
+    }
     if value.contains("::") && !value.starts_with('"') {
-        let parts: Vec<&str> = value.split("::").collect();
-        if let [class, constant] = parts[..]
-            && !class.is_empty()
-            && is_class_name(class.trim_start_matches('\\'))
-            && is_constant_name(constant)
-        {
-            return format!("{class}::{constant}");
-        }
         return print_str(value);
     }
     let value = if value.starts_with('"') && value.ends_with('"') {
@@ -701,6 +696,18 @@ pub(crate) fn map_item(value: &str) -> String {
         value
     };
     print_str(value)
+}
+
+/// Whether [`map_item`] maps `value` to a `ClassConstFetch`: `Class::CONSTANT`, both names valid.
+pub(crate) fn is_class_constant_item(value: &str) -> bool {
+    if value.starts_with('"') {
+        return false;
+    }
+    let parts: Vec<&str> = value.split("::").collect();
+    matches!(parts[..], [class, constant]
+        if !class.is_empty()
+            && is_class_name(class.trim_start_matches('\\'))
+            && is_constant_name(constant))
 }
 
 /// A `String_` as php-parser prints it, its kind as the mappers set it.
