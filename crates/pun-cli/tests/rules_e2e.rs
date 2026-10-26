@@ -9,6 +9,7 @@ mod common;
 #[path = "common/prettier.rs"]
 mod prettier;
 
+use rayon::prelude::*;
 use serde_json::Value;
 use std::path::{Path, PathBuf};
 use std::process::Command;
@@ -52,8 +53,8 @@ fn pun(dir: &Path, args: &[&str]) -> (i32, String) {
 fn every_rule_matches_pint() {
     let cases: Vec<Value> = serde_json::from_str(include_str!("e2e/rules.json")).unwrap();
     let node_modules = prettier::node_modules();
-    let mut failures = Vec::new();
-    for (i, case) in cases.iter().enumerate() {
+    let failures: Vec<_> = cases.par_iter().enumerate().flat_map(|(i, case)| {
+        let mut failures = Vec::new();
         let rule = case["rule"].as_str().unwrap();
         let dir = project(case, i);
         if rule == "Pint/laravel_blade" {
@@ -61,7 +62,7 @@ fn every_rule_matches_pint() {
                 eprintln!(
                     "skipping {rule}: no prettier in crates/pun-fixers/node_modules (bun install there)"
                 );
-                continue;
+                return failures;
             };
             #[cfg(unix)]
             std::os::unix::fs::symlink(modules, dir.join("node_modules")).unwrap();
@@ -111,7 +112,8 @@ fn every_rule_matches_pint() {
             ));
         }
         let _ = std::fs::remove_dir_all(&dir);
-    }
+        failures
+    }).collect();
     assert!(
         failures.is_empty(),
         "{} of {} rules differ:\n{}",
