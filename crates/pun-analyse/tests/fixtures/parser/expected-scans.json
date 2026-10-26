@@ -1,0 +1,139 @@
+{
+    "attribute": [
+        {
+            "file": "main.php",
+            "line": 2,
+            "identifier": "class.notFound",
+            "message": "Instantiated class ScanBefore not found.",
+            "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+            "ignorable": true
+        },
+        {
+            "file": "main.php",
+            "line": 3,
+            "identifier": "class.notFound",
+            "message": "Instantiated class ScanAfter not found.",
+            "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+            "ignorable": true
+        },
+        {
+            "file": "main.php",
+            "line": 4,
+            "identifier": "function.notFound",
+            "message": "Function scanFunction not found.",
+            "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+            "ignorable": true
+        },
+        {
+            "file": "main.php",
+            "line": 5,
+            "identifier": "constant.notFound",
+            "message": "Used constant SCAN_CONSTANT not found.",
+            "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+            "ignorable": true
+        }
+    ],
+    "body": [
+        {
+            "file": "main.php",
+            "line": 2,
+            "identifier": "class.notFound",
+            "message": "Instantiated class ScanBefore not found.",
+            "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+            "ignorable": true
+        },
+        {
+            "file": "main.php",
+            "line": 3,
+            "identifier": "class.notFound",
+            "message": "Instantiated class ScanAfter not found.",
+            "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+            "ignorable": true
+        },
+        {
+            "file": "main.php",
+            "line": 4,
+            "identifier": "function.notFound",
+            "message": "Function scanFunction not found.",
+            "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+            "ignorable": true
+        },
+        {
+            "file": "main.php",
+            "line": 5,
+            "identifier": "constant.notFound",
+            "message": "Used constant SCAN_CONSTANT not found.",
+            "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+            "ignorable": true
+        }
+    ],
+    "signature": [
+        {
+            "file": "main.php",
+            "line": 2,
+            "identifier": "class.notFound",
+            "message": "Instantiated class ScanBefore not found.",
+            "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+            "ignorable": true
+        },
+        {
+            "file": "main.php",
+            "line": 3,
+            "identifier": "class.notFound",
+            "message": "Instantiated class ScanAfter not found.",
+            "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+            "ignorable": true
+        },
+        {
+            "file": "main.php",
+            "line": 4,
+            "identifier": "function.notFound",
+            "message": "Function scanFunction not found.",
+            "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+            "ignorable": true
+        },
+        {
+            "file": "main.php",
+            "line": 5,
+            "identifier": "constant.notFound",
+            "message": "Used constant SCAN_CONSTANT not found.",
+            "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+            "ignorable": true
+        }
+    ],
+    "duplicate": [
+        {
+            "file": "main.php",
+            "line": 2,
+            "identifier": "class.notFound",
+            "message": "Instantiated class ScanBefore not found.",
+            "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+            "ignorable": true
+        },
+        {
+            "file": "main.php",
+            "line": 3,
+            "identifier": "class.notFound",
+            "message": "Instantiated class ScanAfter not found.",
+            "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+            "ignorable": true
+        },
+        {
+            "file": "main.php",
+            "line": 4,
+            "identifier": "function.notFound",
+            "message": "Function scanFunction not found.",
+            "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+            "ignorable": true
+        },
+        {
+            "file": "main.php",
+            "line": 5,
+            "identifier": "constant.notFound",
+            "message": "Used constant SCAN_CONSTANT not found.",
+            "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+            "ignorable": true
+        }
+    ],
+    "valid": []
+}

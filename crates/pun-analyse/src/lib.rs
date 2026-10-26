@@ -6,6 +6,7 @@ mod codebase;
 mod larastan;
 mod laravel;
 mod mago;
+mod parser;
 mod project;
 mod relative_path;
 mod rules;

@@ -1,0 +1,147 @@
+//! php-parser's name-resolution failure boundary, captured from PHPStan 2.3.1's public Analyser by
+//! fixtures/parser/capture.php. The CLI's severe-only presentation would hide the neighboring valid files.
+
+use std::path::PathBuf;
+use std::sync::atomic::{AtomicUsize, Ordering};
+
+use pun_analyse::{Project, analyse_project};
+use serde_json::{Value, json};
+
+struct Inputs(PathBuf);
+
+impl Inputs {
+    fn new() -> Self {
+        static NEXT: AtomicUsize = AtomicUsize::new(0);
+        let root = std::env::temp_dir().join(format!(
+            "pun-parser-{}-{}",
+            std::process::id(),
+            NEXT.fetch_add(1, Ordering::Relaxed)
+        ));
+        std::fs::create_dir_all(&root).unwrap();
+        Self(root)
+    }
+
+    fn write(&self, name: &str, code: &str) -> PathBuf {
+        let path = self.0.join(format!("{name}.php"));
+        std::fs::write(&path, format!("<?php\n{code}\n")).unwrap();
+        path
+    }
+}
+
+impl Drop for Inputs {
+    fn drop(&mut self) {
+        std::fs::remove_dir_all(&self.0).unwrap();
+    }
+}
+
+fn errors(project: &Project) -> Value {
+    Value::Array(
+        analyse_project(project)
+            .unwrap()
+            .errors
+            .into_iter()
+            .map(|e| {
+                json!({
+                    "file": std::path::Path::new(&e.file).file_name().unwrap().to_str().unwrap(),
+                    "line": e.line, "identifier": e.identifier, "message": e.message,
+                    "tip": e.tip, "ignorable": e.can_be_ignored,
+                })
+            })
+            .collect(),
+    )
+}
+
+#[test]
+fn name_roles_parser_precedence_and_resolver_visit_order() {
+    let inputs: Value = serde_json::from_str(include_str!("fixtures/parser/inputs.json")).unwrap();
+    let root = Inputs::new();
+    let files = inputs
+        .as_object()
+        .unwrap()
+        .iter()
+        .map(|(name, code)| root.write(name, code.as_str().unwrap()))
+        .collect();
+    let expected: Value =
+        serde_json::from_str(include_str!("fixtures/parser/expected.json")).unwrap();
+    let project = Project::new(files, Vec::new());
+    assert_eq!(errors(&project), expected);
+}
+
+#[test]
+fn invalid_scanned_files_export_no_classes_functions_or_constants() {
+    let inputs: Value = serde_json::from_str(include_str!("fixtures/parser/scans.json")).unwrap();
+    let expected: Value =
+        serde_json::from_str(include_str!("fixtures/parser/expected-scans.json")).unwrap();
+    for (name, code) in inputs.as_object().unwrap() {
+        let root = Inputs::new();
+        let main = root.write(
+            "main",
+            include_str!("fixtures/parser/scan-main.php")
+                .strip_prefix("<?php\n")
+                .unwrap(),
+        );
+        let symbols = root.write("symbols", code.as_str().unwrap());
+        assert_eq!(
+            errors(&Project::new(vec![main], vec![symbols])),
+            expected[name],
+            "{name}"
+        );
+    }
+}
+
+#[test]
+fn parser_errors_survive_rule_filters_and_configured_ignores() {
+    use pun_phpstan::{Array, Key, Value as Php};
+    let root = Inputs::new();
+    let invalid = root.write(
+        "attribute",
+        "#[\\self] class Invalid {} // @phpstan-ignore phpstan.parse\n// @phpstan-ignore",
+    );
+    let valid = root.write("valid", "function duplicate($x, $x) {} missing_control();");
+    let mut project = Project::new(vec![invalid, valid], Vec::new());
+    project.reported = Some(std::sync::Arc::new(|_| false));
+    project.report_ignores_without_comments = true;
+    let mut entry = Array::new();
+    entry.set(Key::from("identifier"), Php::str("phpstan.parse"));
+    project.ignore_errors = pun_phpstan::ignore::IgnoredErrors::new(
+        &Array::list([Php::Array(entry), Php::str("#^NoSuchError$#")]),
+        true,
+    );
+    let analysis = analyse_project(&project).unwrap();
+    assert!(pun_analyse::reports("phpstan.parse"));
+    assert_eq!(analysis.errors.len(), 1);
+    let error = &analysis.errors[0];
+    assert_eq!(
+        (error.identifier.as_str(), error.line, error.can_be_ignored),
+        ("phpstan.parse", 2, false)
+    );
+    assert_eq!(
+        analysis.general,
+        [
+            "Error message \"'\\self' is an invalid class name on line 2\" cannot be ignored, use excludePaths instead.",
+            "Ignored error pattern #^NoSuchError$# was not matched in reported errors."
+        ]
+    );
+}
+
+#[test]
+fn recovered_grammar_does_not_fabricate_a_name_resolution_failure() {
+    // PHPStan 2.3.1 --level=0 --error-format=raw grammar.php reports only:
+    // Syntax error, unexpected EOF, expecting T_VARIABLE on line 4 [identifier=phpstan.parse]
+    // Grammar-message translation is not implemented. In particular, do not misreport the earlier \self
+    // instead: RichParser never starts its NameResolver after the collecting parser has failed.
+    let root = Inputs::new();
+    let file = root.write(
+        "grammar",
+        include_str!("fixtures/parser/grammar.php")
+            .strip_prefix("<?php\n")
+            .unwrap(),
+    );
+    let analysis = analyse_project(&Project::new(vec![file], Vec::new())).unwrap();
+    assert!(
+        analysis
+            .errors
+            .iter()
+            .all(|e| e.identifier != "phpstan.parse")
+    );
+}

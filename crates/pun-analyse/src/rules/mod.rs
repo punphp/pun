@@ -286,6 +286,7 @@ pub const IDENTIFIERS: &[&str] = &[
     "ignore.unmatched",
     "ignore.count",
     "ignore.allLineErrors",
+    "phpstan.parse",
     "enum.constructor",
     "enum.destructor",
     "enum.magicMethod",

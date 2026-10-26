@@ -106,9 +106,13 @@ fn scan(
     version: PHPVersion,
     reachable: Option<(&autoload::Index, &mut Vec<usize>, &mut Vec<usize>)>,
 ) -> CodebaseMetadata {
-    let mut scanned = {
+    let mut scanned = 'scan: {
         let arena = &*arena;
         let (program, names) = parse(arena, file);
+        // FileNodesFetcher rejects the whole file before exporting any reflection or autoload roots.
+        if !crate::parser::errors(file, program).is_empty() {
+            break 'scan CodebaseMetadata::default();
+        }
         if let Some((index, wanted, declarations)) = reachable {
             index.wanted(&file.contents, program, &names, wanted, declarations);
         }

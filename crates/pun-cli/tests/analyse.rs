@@ -120,6 +120,36 @@ fn unknown_format_is_a_run_error() {
 }
 
 #[test]
+fn parser_failures_are_severe_not_configurable_rule_errors() {
+    let Some(phar) = phpstan() else { return };
+    let phar = phar.to_str().unwrap();
+    let d = sample("parser-severe", "<?php\n#[\\self] class InvalidA {}\n");
+    common::write_files(&d, &[
+        ("src/b.php", "<?php\n#[\\self] class InvalidB {}\n"),
+        ("src/c.php", "<?php\nnew \\parent;\n"),
+        ("src/control.php", ERRORS),
+        ("phpstan.neon", "parameters:\n    level: 0\n    paths: [src]\n    ignoreErrors:\n        - '#^never matches$#'\n        -\n            identifier: phpstan.parse\n"),
+        ("pun.toml", "[analyse]\npaths = [\"src\"]\n[[analyse.ignore]]\nmessage = \"#^never matches$#\"\n[[analyse.ignore]]\nidentifier = \"phpstan.parse\"\n[analyse.rules]\n\"analyse/undefined/function\" = \"off\"\n"),
+    ]);
+    for format in FORMATS {
+        let arg = format!("--error-format={format}");
+        let want = run(&d, &["php", phar, "analyse", "--no-progress", "-c", "phpstan.neon"], &[&arg]);
+        assert_eq!(want.1, Some(1));
+        assert_eq!(run(&d, &[PUN, "analyse"], &[&arg]), want, "{format}");
+    }
+    std::fs::write(d.join("src/a.php"), "<?php\n#[\\self] // @pun-ignore\nclass InvalidA {}\n").unwrap();
+    let (out, code) = run(&d, &[PUN, "analyse"], &["--format=json"]);
+    let json: serde_json::Value = serde_json::from_str(&out).unwrap();
+    assert_eq!(code, Some(1));
+    assert_eq!(json["totals"]["file_errors"], 2, "{out}");
+    assert_eq!(json["totals"]["errors"], 0, "{out}");
+    let (_, code) = run(&d, &[PUN, "analyse"], &["--generate-baseline", "--quiet"]);
+    assert_eq!(code, Some(1));
+    assert!(!d.join("pun-baseline.toml").exists());
+    std::fs::remove_dir_all(d).unwrap();
+}
+
+#[test]
 fn non_ignorable_errors_survive_comments_and_baselines() {
     let d = sample("non-ignorable-baseline", NON_IGNORABLE);
     let source = NON_IGNORABLE

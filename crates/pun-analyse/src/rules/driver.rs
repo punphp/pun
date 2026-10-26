@@ -91,7 +91,10 @@ impl Checks {
     /// Drops the errors of identifiers the run doesn't report.
     pub(crate) fn keep_reported(&self, errors: &mut Vec<Error>) {
         if let Some(reported) = &self.reported {
-            errors.retain(|e| reported(e.identifier.as_deref().unwrap_or_default()));
+            errors.retain(|e| {
+                let id = e.identifier.as_deref().unwrap_or_default();
+                id == "phpstan.parse" || reported(id)
+            });
         }
     }
 }
@@ -289,6 +292,10 @@ pub(crate) fn check_file(
     };
     let arena = LocalArena::new();
     let (program, names) = parse(&arena, file);
+    let errors = crate::parser::errors(file, program);
+    if !errors.is_empty() {
+        return errors;
+    }
     let mut checker = checker(
         &arena, file, program, &names, codebase, project, files, sources,
     );
