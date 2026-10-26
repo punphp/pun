@@ -12743,7 +12743,7 @@
         "rules": [
           "lint/phpunit/no-test-constructor"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {

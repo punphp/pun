@@ -335,3 +335,11 @@ fn merge_with_callable_and_will_return() {
 fn add_return_type_to_depended() {
     check(AddDependedTestReturnType, "AddReturnTypeToDependedRector");
 }
+
+#[test]
+fn construct_class_method_to_set_up_test_case() {
+    check(
+        NoTestConstructor,
+        "ConstructClassMethodToSetUpTestCaseRector",
+    );
+}
