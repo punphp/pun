@@ -143,6 +143,9 @@ Property writes use the reflected writable type, including compatible PHPDoc ann
 `rand()`, `mt_rand()` and `random_int()` preserve inferred integer bounds.
 Reversed bounds are swapped only for `rand()`, matching PHPStan.
 
+PHPDoc union lowering preserves literal alternatives and nullable boundaries without recursive stack growth over flat unions.
+Parsing and nested non-union types retain their existing stack limits.
+
 `strlen()` inference uses PHP scalar casts and byte lengths, including binary strings.
 Literal alternatives produce exact lengths or a contiguous integer range. General integer ranges are not enumerated.
 Stored callable signatures retain the declared return type rather than specializing it from invocation arguments.
