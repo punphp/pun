@@ -118,7 +118,6 @@ pub(super) fn infer<'arena>(
     wanted.walk_program(program, &mut ());
     let mut wanted = wanted.spans;
     wanted.extend(extra);
-    wanted.extend(variables::typed_expressions(program));
     wanted.extend(super::unset::expressions(program).0);
     wanted.extend(dead_code::flow_types(program, level));
     let (typed, watched) = dead_code::coalesce_types(program, level);
@@ -152,11 +151,18 @@ fn analyse_observed<'arena>(
     watched: Vec<Span>,
     variables: Option<&mut variables::Observations>,
 ) -> (HashMap<Span, TUnion>, HashMap<Span, Tri>, Origins) {
+    let mut wanted = wanted;
+    let compact_calls = if variables.is_some() {
+        let (typed, compact_calls) = variables::typed_expressions(program, names);
+        wanted.extend(typed);
+        compact_calls
+    } else {
+        HashSet::new()
+    };
     if wanted.is_empty() {
         return Default::default();
     }
     let origins = origins::collect(file, program, names, codebase);
-    let mut wanted = wanted;
     wanted.extend(origins::dependencies(&origins, &wanted));
     // Array conversion needs each key/value's actual inferred type, not just the enclosing wanted span.
     // Retain only literals inside requested expressions; unrelated declarations must stay prunable.
@@ -182,6 +188,7 @@ fn analyse_observed<'arena>(
         registry.register_expression_hook(Definedness {
             ids,
             wanted: wanted.iter().copied().collect(),
+            compact_calls,
             builtins: super::reflection::builtins(php_version),
             unset_scopes,
             unset_roots,
@@ -250,6 +257,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for ArrayChildren<'_> {
 struct Definedness {
     ids: HashMap<Span, Vec<u8>>,
     wanted: HashSet<Span>,
+    compact_calls: HashSet<Span>,
     builtins: &'static pun_phpstan::symbols::Symbols,
     unset_scopes: HashSet<Span>,
     unset_roots: HashMap<Span, Vec<(Span, Vec<u8>)>>,
@@ -319,8 +327,8 @@ impl ExpressionHook for Definedness {
                         observe_variable(v.variable, context, &mut found);
                     }
                 }
-                Expression::Call(Call::Function(f)) if variables::is_compact(f) => {
-                    found.variables.scopes.insert(span, variables::Certainty::of(context));
+                Expression::Call(Call::Function(_)) if self.compact_calls.contains(&span) => {
+                    found.variables.compact_scopes.insert(span, variables::Certainty::of(context));
                 }
                 Expression::Closure(c) => {
                     if let Some(uses) = &c.use_clause {

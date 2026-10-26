@@ -1,0 +1,294 @@
+{
+  "default": [
+    {
+      "message": "Call to function compact() contains undefined variable $aliasMissing.",
+      "line": 10,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Call to function compact() contains undefined variable $absoluteMissing.",
+      "line": 11,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Call to function compact() contains undefined variable $caseMissing.",
+      "line": 12,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Call to function compact() contains undefined variable $fullyMissing.",
+      "line": 13,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Call to function compact() contains undefined variable $typedMissing.",
+      "line": 14,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Call to function compact() contains undefined variable $arrayMissing.",
+      "line": 15,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Call to function compact() contains undefined variable $nestedMissing.",
+      "line": 15,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Call to function compact() contains undefined variable $assigned.",
+      "line": 16,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Call to function compact() contains undefined variable $later.",
+      "line": 18,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Call to function compact() contains undefined variable $later.",
+      "line": 18,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Call to function compact() contains undefined variable $absoluteSelected.",
+      "line": 39,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Call to function compact() contains undefined variable $localMissing.",
+      "line": 65,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Call to function compact() contains undefined variable $localCaseMissing.",
+      "line": 66,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Call to function compact() contains undefined variable $globalMissing.",
+      "line": 69,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Call to function compact() contains undefined variable $defaultImportMissing.",
+      "line": 84,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Call to function compact() contains undefined variable $importedMissing.",
+      "line": 92,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Call to function compact() contains undefined variable $importedCaseMissing.",
+      "line": 93,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Call to function compact() contains undefined variable $resetMissing.",
+      "line": 100,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Call to function compact() contains undefined variable $globalUnqualifiedMissing.",
+      "line": 111,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Call to function compact() contains undefined variable $globalAbsoluteMissing.",
+      "line": 112,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Call to function compact() contains undefined variable $globalRelativeMissing.",
+      "line": 113,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Call to function compact() contains undefined variable $globalCaseMissing.",
+      "line": 114,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Call to function compact() contains undefined variable $assigned.",
+      "line": 115,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    }
+  ],
+  "maybe": [
+    {
+      "message": "Call to function compact() contains undefined variable $aliasMissing.",
+      "line": 10,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Call to function compact() contains undefined variable $absoluteMissing.",
+      "line": 11,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Call to function compact() contains undefined variable $caseMissing.",
+      "line": 12,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Call to function compact() contains undefined variable $fullyMissing.",
+      "line": 13,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Call to function compact() contains undefined variable $typedMissing.",
+      "line": 14,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Call to function compact() contains undefined variable $arrayMissing.",
+      "line": 15,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Call to function compact() contains undefined variable $nestedMissing.",
+      "line": 15,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Call to function compact() contains undefined variable $assigned.",
+      "line": 16,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Call to function compact() contains undefined variable $later.",
+      "line": 18,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Call to function compact() contains undefined variable $later.",
+      "line": 18,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Call to function compact() contains possibly undefined variable $maybe.",
+      "line": 23,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Call to function compact() contains undefined variable $absoluteSelected.",
+      "line": 39,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Call to function compact() contains undefined variable $localMissing.",
+      "line": 65,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Call to function compact() contains undefined variable $localCaseMissing.",
+      "line": 66,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Call to function compact() contains undefined variable $globalMissing.",
+      "line": 69,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Call to function compact() contains undefined variable $defaultImportMissing.",
+      "line": 84,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Call to function compact() contains undefined variable $importedMissing.",
+      "line": 92,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Call to function compact() contains undefined variable $importedCaseMissing.",
+      "line": 93,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Call to function compact() contains undefined variable $resetMissing.",
+      "line": 100,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Call to function compact() contains undefined variable $globalUnqualifiedMissing.",
+      "line": 111,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Call to function compact() contains undefined variable $globalAbsoluteMissing.",
+      "line": 112,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Call to function compact() contains undefined variable $globalRelativeMissing.",
+      "line": 113,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Call to function compact() contains undefined variable $globalCaseMissing.",
+      "line": 114,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Call to function compact() contains undefined variable $assigned.",
+      "line": 115,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    },
+    {
+      "message": "Call to function compact() contains possibly undefined variable $maybe.",
+      "line": 122,
+      "ignorable": true,
+      "identifier": "variable.undefined"
+    }
+  ]
+}

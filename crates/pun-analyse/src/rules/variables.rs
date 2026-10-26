@@ -20,6 +20,7 @@ use super::{Checker, declared};
 pub(super) struct Observations {
     pub reads: HashMap<Span, (String, Tri, bool)>,
     pub scopes: HashMap<Span, Certainty>,
+    pub compact_scopes: HashMap<Span, Certainty>,
     pub unset_entries: HashMap<Span, TUnion>,
     pub property_selectors: HashSet<Span>,
 }
@@ -213,28 +214,40 @@ pub(super) fn defined(context: &HookContext<'_, '_>, name: &str) -> Tri {
 }
 
 /// This walk only selects expressions for the inference run; it never guesses their control-flow state.
-pub(super) fn typed_expressions(program: &Program) -> Vec<Span> {
-    struct Wanted(Vec<Span>);
-    impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Wanted {
+pub(super) fn typed_expressions(
+    program: &Program,
+    names: &mago_names::ResolvedNames,
+) -> (Vec<Span>, HashSet<Span>) {
+    struct Wanted<'n, 'arena> {
+        spans: Vec<Span>,
+        compact_calls: HashSet<Span>,
+        names: &'n mago_names::ResolvedNames<'arena>,
+    }
+    impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Wanted<'_, '_> {
         fn walk_in_variable(&mut self, v: &'ast Variable<'arena>, _: &mut ()) {
-            self.0.push(v.span());
-            self.0
+            self.spans.push(v.span());
+            self.spans
                 .extend(super::types::dynamic_names::static_property(v));
         }
         fn walk_in_closure(&mut self, c: &'ast Closure<'arena>, _: &mut ()) {
-            self.0.push(c.span());
+            self.spans.push(c.span());
         }
         fn walk_in_function_call(&mut self, f: &'ast FunctionCall<'arena>, _: &mut ()) {
-            if is_compact(f) {
-                self.0.push(f.span());
-                self.0
+            if is_compact(f, self.names) {
+                self.compact_calls.insert(f.span());
+                self.spans.push(f.span());
+                self.spans
                     .extend(f.argument_list.arguments.iter().map(|a| a.value().span()));
             }
         }
     }
-    let mut wanted = Wanted(Vec::new());
+    let mut wanted = Wanted {
+        spans: Vec::new(),
+        compact_calls: HashSet::new(),
+        names,
+    };
     wanted.walk_program(program, &mut ());
-    wanted.0
+    (wanted.spans, wanted.compact_calls)
 }
 
 /// NodeScopeResolver::lookForExpressionCallback() selects only the target chain, not name/index expressions.
@@ -399,8 +412,20 @@ pub(super) fn allow_arguments(
     }
 }
 
-pub(super) fn is_compact(call: &FunctionCall) -> bool {
-    matches!(call.function, Expression::Identifier(id) if id.value().eq_ignore_ascii_case(b"compact") || id.value().eq_ignore_ascii_case(b"\\compact"))
+/// CompactVariablesRule reads php-parser's post-NameResolver name, not the runtime function reflection.
+/// Only an unimported local name stays written; imports and qualified/relative names are resolved.
+fn is_compact(call: &FunctionCall, names: &mago_names::ResolvedNames) -> bool {
+    let Expression::Identifier(id) = call.function else {
+        return false;
+    };
+    let name = match id {
+        Identifier::Local(local) if !names.is_imported(&local.span) => local.value,
+        _ => names.get(&id.span()),
+    };
+    // Mago retains a leading separator for `namespace\compact` in an empty namespace.
+    name.strip_prefix(b"\\")
+        .unwrap_or(name)
+        .eq_ignore_ascii_case(b"compact")
 }
 
 /// DefinedVariableRule::processNode(). Name castability is checked even in assignment/undefined-allowed contexts.
@@ -483,10 +508,8 @@ fn single_variable(
 /// CompactVariablesRule::processNode(). Its scope precedes argument evaluation, even though argument types can
 /// describe assignments made by their evaluation.
 pub(super) fn compact(c: &mut Checker, call: &FunctionCall) {
-    if !is_compact(call) {
-        return;
-    }
-    let Some(scope) = c.variables.scopes.get(&call.span()) else {
+    // Only calls selected by the name-resolution pass can have a compact scope observation.
+    let Some(scope) = c.variables.compact_scopes.get(&call.span()) else {
         return;
     };
     let mut errors = Vec::new();

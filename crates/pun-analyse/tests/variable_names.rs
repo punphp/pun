@@ -73,3 +73,9 @@ fn template_union_source_keeps_each_distinct_constant_type() {
 fn template_scalar_unions_keep_container_annotation_and_narrowed_names() {
     check("template-containers");
 }
+
+#[test]
+fn compact_uses_name_resolver_names_and_pre_argument_scope() {
+    // Fresh PHPStan 2.3.1 analyse captures at PHP 8.4, level 0, with both maybe-undefined settings.
+    check("compact-names");
+}
