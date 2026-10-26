@@ -12047,7 +12047,7 @@
         "rules": [
           "lint/pest/prefer-to-be-empty"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -12087,7 +12087,7 @@
         "rules": [
           "lint/pest/prefer-to-be-json"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -12145,7 +12145,7 @@
         "rules": [
           "lint/pest/prefer-to-be-url"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -12155,7 +12155,7 @@
         "rules": [
           "lint/pest/prefer-to-be-uuid"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -12205,7 +12205,7 @@
         "rules": [
           "lint/pest/prefer-to-equal-canonicalizing"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -12215,7 +12215,7 @@
         "rules": [
           "lint/pest/prefer-to-equal-with-delta"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -12285,7 +12285,7 @@
         "rules": [
           "lint/pest/prefer-to-have-same-size"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -12295,7 +12295,7 @@
         "rules": [
           "lint/pest/prefer-to-match"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
