@@ -9,7 +9,7 @@
 | punphp-fixers | 36563 | 36563 | 100.00% | ok |
 | punphp-format | 1022 | 1022 | 100.00% | ok |
 | punphp-harness | 235 | 235 | 100.00% | ok |
-| punphp-lint | 22092 | 22092 | 100.00% | ok |
+| punphp-lint | 21969 | 21968 | 100.00% | ok |
 | punphp-phpstan | 10259 | 10259 | 100.00% | ok |
 | punphp-problem | 105 | 105 | 100.00% | ok |
 | punphp-tokens | 3897 | 3897 | 100.00% | ok |
@@ -83,7 +83,7 @@ Uncovered lines:
 - `crates/pun-lint/src/rules/lint_b_helpers.rs:260` a scope without a Program ancestor: `known()` walks up to the file, which is always there.
 - `crates/pun-lint/src/rules/lint_b_helpers.rs:273` `top_level()` of a scope `known()` never passes (it asks only for functions, concrete methods and the file).
 - `crates/pun-lint/src/rules/rector_batch5.rs:392` a scope without a Program ancestor: class-name lookups start inside the file's walk, whose first ancestor is Program.
-- `crates/pun-lint/src/rules/syntax_types.rs:120` `parameter()`'s `unreachable!()` arm: `rposition` selects only Function, Method, Closure, or ArrowFunction, and the match handles all four.
+- `crates/pun-lint/src/rules/syntax_types.rs:114` `parameter()`'s `unreachable!()` arm: `rposition` selects only Function, Method, Closure, or ArrowFunction, and the match handles all four.
 - `crates/pun-lint/src/rules/types/names.rs:20` a scope without a Program ancestor.
 - `crates/pun-lint/src/rules/prefer_boolean_and_or.rs:95` the end of the walk up: it stops at the first ancestor that is not a `&&`/`||` operand, before running out of ancestors (the file is a Program).
 - `crates/pun-lint/src/rules/prefer_boolean_and_or.rs:162` `instanceof` as an operator text: an operand `instanceof` binds tighter than every operator the rule rewrites, so it is printed with its operand, never re-joined infix.
@@ -95,7 +95,7 @@ Uncovered lines:
 - `crates/pun-lint/src/rules/types/declare.rs:164` `void` as a declaration: callers drop `void` (no value) before asking for a declaration.
 - `crates/pun-lint/src/rules/types/declare.rs:198` an intersection with a non-object member: Mago builds intersections only of object types.
 - `crates/pun-lint/src/rules/types/declare.rs:315` `void`, `mixed` or `null` (below 7.1) in a union: `add_union_return` refuses `mixed`/`void` before, and the union rule needs PHP 8.0.
-- `crates/pun-lint/src/rules/types/facts.rs:564` Mago's analyser failing or panicking (then no `get_class()` is typed): no known input.
+- `crates/pun-lint/src/rules/types/facts.rs:633` Mago's analyser failing or panicking (then no `get_class()` is typed): no known input.
 - `crates/pun-lint/src/rules/types/mod.rs:369` `unreachable!()` after the class-like kinds `rposition` matched.
 - `crates/pun-lint/src/rules/types/never.rs:190` a method with no class scope (see add_method_void_return).
 - `crates/pun-lint/src/rules/types/never.rs:197` a named class the codebase lacks: the codebase is built from this file, which declares it.

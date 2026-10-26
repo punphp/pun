@@ -867,7 +867,7 @@ fn function_like<'a>(
 
 /// The number of writes of an array literal to the variable `name` in `node` (outside nested function-likes and
 /// classes), `None` when another write may change its type: any other assignment, a reference to it, a `foreach`,
-/// `list()`, `global` or `static` target, `unset()`, a closure's `use`, or a variable variable.
+/// `list()`, `global` or `static` target, `unset()`, or a closure's `use`.
 fn variable_writes(node: Node<'_, '_>, name: &[u8]) -> Option<usize> {
     let is_var = |e: &Expression<'_>| matches!(unparenthesize(e), Expression::Variable(Variable::Direct(v)) if v.name == name);
     let mut count = 0;
@@ -916,14 +916,7 @@ fn variable_writes(node: Node<'_, '_>, name: &[u8]) -> Option<usize> {
                 return None;
             }
         }
-        Node::Global(_)
-        | Node::Static(_)
-        | Node::Unset(_)
-        | Node::IndirectVariable(_)
-        | Node::NestedVariable(_)
-            if uses_variable(node, name)
-                || matches!(node, Node::IndirectVariable(_) | Node::NestedVariable(_)) =>
-        {
+        Node::Global(_) | Node::Static(_) | Node::Unset(_) if uses_variable(node, name) => {
             return None;
         }
         Node::Closure(c) => {

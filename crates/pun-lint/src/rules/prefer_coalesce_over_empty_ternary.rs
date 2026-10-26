@@ -1,13 +1,14 @@
 //! `lint/complexity/prefer-coalesce-over-empty-ternary`, ported from Rector 2.6.1's
 //! `TernaryEmptyArrayArrayDimFetchToCoalesceRector` (rules/CodeQuality/Rector/Ternary).
 //!
-//! `! empty($items) ? $items[0] : 'default'` becomes `$items[0] ?? 'default'` when `$items` is an array.
+//! `! empty($items) ? $items[0] : 'default'` becomes `$items[0] ?? 'default'` when `$items` is an array (PHPStan's
+//! `getType()`, read from the docblocks too).
 
 use mago_syntax::cst::{Construct, Expression, Node, NodeKind};
 use pun_problem::{Edit, Fix, Safety};
 
 use super::rector_code_quality::{Prec, in_parent, infix};
-use super::syntax_types::is_array;
+use super::types::facts::facts;
 use crate::syntax::{node_span, same_expression, unparenthesize};
 use crate::{Context, Report, Rule};
 
@@ -45,9 +46,10 @@ impl Rule for PreferCoalesceOverEmptyTernary {
         let Expression::ArrayAccess(fetch) = unparenthesize(then) else {
             return;
         };
-        if !is_array(ctx.source, ancestors, empty.value)
-            || !same_expression(ctx.source, empty.value, fetch.array)
-        {
+        let array = facts(ctx)
+            .full_type(node_span(empty.value))
+            .is_some_and(|t| !t.types.is_empty() && t.is_array());
+        if !array || !same_expression(ctx.source, empty.value, fetch.array) {
             return;
         }
         let span = node_span(ternary);

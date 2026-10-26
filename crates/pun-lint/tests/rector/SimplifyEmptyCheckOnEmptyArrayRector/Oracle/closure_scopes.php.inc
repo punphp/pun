@@ -33,8 +33,8 @@ final class ClosureScopes
 
             return $items === [];
         };
-        $arrow = fn (array $items) => ! ($items === []);
-        $untypedArrow = fn ($items) => is_array($items) && empty($items);
+        $arrow = fn (array $items) => $items !== [];
+        $untypedArrow = fn ($items) => is_array($items) && $items === [];
 
         return [$typed, $reassigned, $arrow, $untypedArrow];
     }

@@ -5,7 +5,7 @@ use std::sync::OnceLock;
 
 use mago_syntax::cst::*;
 
-use super::rector_batch5::{called_function_name, doc_comment, member_from};
+use super::rector_batch5::called_function_name;
 use crate::syntax::{node_span, unparenthesize};
 
 const BOOL_FUNCTIONS: &str = include_str!("../../data/bool-functions.txt");
@@ -14,9 +14,6 @@ const BOOL_FUNCTIONS: &str = include_str!("../../data/bool-functions.txt");
 /// `!`, `(bool)`, `isset`, `empty`, `instanceof`, a call of a built-in function that returns `bool`, or a `bool`
 /// parameter of the enclosing function that it never assigns.
 pub(crate) fn is_bool(ancestors: &[Node<'_, '_>], expr: &Expression<'_>) -> bool {
-    if in_trait(ancestors) {
-        return false;
-    }
     if let Expression::Variable(Variable::Direct(v)) = unparenthesize(expr) {
         return match parameter_hint(ancestors, v.name) {
             Some(hint) => matches!(hint, Hint::Bool(_)),
@@ -102,9 +99,6 @@ fn parameter<'ast, 'arena>(
     ancestors: &[Node<'ast, 'arena>],
     name: &[u8],
 ) -> Option<&'ast FunctionLikeParameter<'arena>> {
-    if in_trait(ancestors) {
-        return None;
-    }
     let at = ancestors.iter().rposition(|n| {
         matches!(
             n,
@@ -217,9 +211,6 @@ const INT_FUNCTIONS: &str = include_str!("../../data/int-functions.txt");
 /// Whether `expr` is an `int`: an integer literal (or its negation), a call of a built-in function that returns an
 /// `int`, an own method declared `: int`, an `int` parameter never written, or a local only assigned one of those.
 pub(crate) fn is_int(ancestors: &[Node<'_, '_>], expr: &Expression<'_>) -> bool {
-    if in_trait(ancestors) {
-        return false;
-    }
     if let Expression::Variable(Variable::Direct(v)) = unparenthesize(expr) {
         return match parameter_hint(ancestors, v.name) {
             Some(hint) => matches!(hint, Hint::Integer(_)),
@@ -272,74 +263,53 @@ fn int_value(ancestors: &[Node<'_, '_>], expr: &Expression<'_>) -> bool {
     }
 }
 
-/// Whether `expr` is an `array`: an `array` parameter never written, a local only assigned array literals, or a
-/// property of the enclosing class (`$this->p`, `self::$p`, `static::$p`) declared `array`.
-pub(crate) fn is_array(source: &str, ancestors: &[Node<'_, '_>], expr: &Expression<'_>) -> bool {
-    if in_trait(ancestors) {
-        return false;
-    }
-    match unparenthesize(expr) {
-        // A variadic parameter is an array whatever its type.
-        Expression::Variable(Variable::Direct(v))
-            if parameter(ancestors, v.name).is_some_and(|p| p.ellipsis.is_some()) =>
-        {
-            true
-        }
-        Expression::Variable(Variable::Direct(v)) => match parameter_hint(ancestors, v.name) {
-            Some(hint) => matches!(hint, Hint::Array(_)),
-            None => {
-                local_of(ancestors, v.name, &array_literal) && assigned_first(ancestors, v.name)
-            }
-        },
-        Expression::Access(Access::Property(p)) if is_this(p.object) => match &p.property {
-            ClassLikeMemberSelector::Identifier(id) => {
-                own_property_is_array(source, ancestors, id.value)
-            }
-            _ => false,
-        },
-        Expression::Access(Access::StaticProperty(p))
-            if matches!(p.class, Expression::Self_(_) | Expression::Static(_)) =>
-        {
-            match &p.property {
-                Variable::Direct(v) => own_property_is_array(source, ancestors, &v.name[1..]),
-                _ => false,
-            }
-        }
-        _ => false,
-    }
+/// Whether a variable that sets an element of a property may be an untyped parameter (`isNonTypedFromParam`),
+/// given the method it is in.
+pub(crate) type NonTyped<'f> = &'f dyn Fn(&Expression<'_>, Option<&Method<'_>>) -> bool;
+
+/// Whether `expr` is a property of the enclosing class (`$this->p`, `self::$p`, `static::$p`) declared `array`, or
+/// untyped and only ever assigned arrays (`non_typed` judges the variables that set its elements).
+pub(crate) fn is_array_property(
+    ancestors: &[Node<'_, '_>],
+    expr: &Expression<'_>,
+    non_typed: NonTyped<'_>,
+) -> bool {
+    let name = match unparenthesize(expr) {
+        Expression::Access(Access::Property(PropertyAccess {
+            object,
+            property: ClassLikeMemberSelector::Identifier(id),
+            ..
+        })) if is_this(object) => id.value,
+        Expression::Access(Access::StaticProperty(StaticPropertyAccess {
+            class: Expression::Self_(_) | Expression::Static(_),
+            property: Variable::Direct(v),
+            ..
+        })) => &v.name[1..],
+        _ => return false,
+    };
+    own_property_is_array(ancestors, name, non_typed)
 }
 
-fn array_literal(e: &Expression<'_>) -> bool {
-    matches!(
-        unparenthesize(e),
-        Expression::Array(_) | Expression::LegacyArray(_)
-    )
-}
-
-fn own_property_is_array(source: &str, ancestors: &[Node<'_, '_>], name: &[u8]) -> bool {
-    let Some((class, members, left_brace)) = ancestors.iter().rev().find_map(|n| match n {
-        Node::Class(c) => Some((*n, &c.members, c.left_brace)),
-        Node::AnonymousClass(c) => Some((*n, &c.members, c.left_brace)),
+fn own_property_is_array(ancestors: &[Node<'_, '_>], name: &[u8], non_typed: NonTyped<'_>) -> bool {
+    let Some((class, members)) = ancestors.iter().rev().find_map(|n| match n {
+        Node::Class(c) => Some((*n, &c.members)),
+        Node::AnonymousClass(c) => Some((*n, &c.members)),
         _ => None,
     }) else {
         return false;
     };
-    members.iter().enumerate().any(|(index, m)| match m {
+    members.iter().any(|m| match m {
         ClassLikeMember::Property(Property::Plain(p)) => {
             let Some(item) = p.items.iter().find(|i| &i.variable().name[1..] == name) else {
                 return false;
             };
             match &p.hint {
                 Some(hint) => matches!(hint, Hint::Array(_)),
-                // Untyped: the scope reads an array `@var`, and `AllAssignNodePropertyTypeInferer` the default and
-                // every assignment in the class.
+                // Untyped: `AllAssignNodePropertyTypeInferer` reads the default and every assignment in the class.
                 None => {
-                    let from = member_from(members, left_brace, index);
-                    doc_comment(source, from, node_span(m).start)
-                        .is_some_and(|doc| var_is_array(&source[doc.start..doc.end]))
-                        && matches!(item, PropertyItem::Concrete(c)
+                    matches!(item, PropertyItem::Concrete(c)
                             if matches!(unparenthesize(c.value), Expression::Array(_) | Expression::LegacyArray(_)))
-                        && only_array_assigned(class, name)
+                        && only_array_assigned(class, name, non_typed)
                 }
             }
         }
@@ -355,42 +325,12 @@ fn own_property_is_array(source: &str, ancestors: &[Node<'_, '_>], name: &[u8]) 
     })
 }
 
-/// Whether the doc comment's `@var` type is an array type alone: `array`, `list`, `T[]`, or one of those with
-/// parameters or a shape, and no union.
-fn var_is_array(doc: &str) -> bool {
-    let Some(at) = doc.find("@var") else {
-        return false;
-    };
-    let rest = doc[at + 4..].trim_start();
-    let mut depth = 0i32;
-    let mut end = rest.len();
-    for (i, c) in rest.char_indices() {
-        match c {
-            '<' | '{' | '(' => depth += 1,
-            '>' | '}' | ')' => depth -= 1,
-            '|' | '&' if depth == 0 => return false,
-            c if c.is_whitespace() && depth == 0 => {
-                end = i;
-                break;
-            }
-            _ => {}
-        }
-    }
-    let ty = rest[..end].to_ascii_lowercase();
-    let head = ty.split(['<', '{']).next().unwrap_or("");
-    ty.ends_with("[]")
-        || matches!(
-            head,
-            "array" | "list" | "non-empty-array" | "non-empty-list"
-        )
-}
-
 /// `AssignToPropertyTypeInferer` on an untyped property: every plain assignment of `$this->name` (or `self::$name`,
 /// `static::$name`) in the class sets an array literal, an assignment of one of its elements (`$this->name[] = $v`)
 /// never takes a variable that may be an untyped parameter, and the class writes no dynamic property
 /// (`$this->$x = ...`).
-fn only_array_assigned(class: Node<'_, '_>, name: &[u8]) -> bool {
-    !breaks_array(class, None, name)
+fn only_array_assigned(class: Node<'_, '_>, name: &[u8], non_typed: NonTyped<'_>) -> bool {
+    !breaks_array(class, None, name, non_typed)
 }
 
 /// Whether `node` holds a write of the property that [`only_array_assigned`] refuses; `method` is the method around
@@ -399,19 +339,20 @@ fn breaks_array<'ast, 'arena>(
     node: Node<'ast, 'arena>,
     method: Option<&'ast Method<'arena>>,
     name: &[u8],
+    non_typed: NonTyped<'_>,
 ) -> bool {
     let method = match node {
         Node::Method(m) => Some(m),
         _ => method,
     };
     if let Node::Assignment(a) = node
-        && breaks_with(a, method, name)
+        && breaks_with(a, method, name, non_typed)
     {
         return true;
     }
     let mut found = false;
     node.visit_children(|child| {
-        if !found && breaks_array(child, method, name) {
+        if !found && breaks_array(child, method, name, non_typed) {
             found = true;
         }
     });
@@ -419,7 +360,12 @@ fn breaks_array<'ast, 'arena>(
 }
 
 /// [`breaks_array`] for one assignment.
-fn breaks_with(a: &Assignment<'_>, method: Option<&Method<'_>>, name: &[u8]) -> bool {
+fn breaks_with(
+    a: &Assignment<'_>,
+    method: Option<&Method<'_>>,
+    name: &[u8],
+    non_typed: NonTyped<'_>,
+) -> bool {
     let mut target = unparenthesize(a.lhs);
     let mut element = false;
     loop {
@@ -449,19 +395,9 @@ fn breaks_with(a: &Assignment<'_>, method: Option<&Method<'_>>, name: &[u8]) -> 
         return named && !element;
     }
     if element {
-        // `isNonTypedFromParam`: a variable may be an untyped parameter unless it is one declared with a type.
+        // `isNonTypedFromParam` on the value of an element.
         match unparenthesize(a.rhs) {
-            Expression::Variable(Variable::Direct(v)) => !method.is_some_and(|method| {
-                !written(Node::Method(method), v.name, usize::MAX)
-                    && method.parameter_list.parameters.iter().any(|p| {
-                        p.variable.name == v.name
-                            && p.ampersand.is_none()
-                            && p.ellipsis.is_none()
-                            && p.hint
-                                .as_ref()
-                                .is_some_and(|h| !matches!(h, Hint::Mixed(_)))
-                    })
-            }),
+            Expression::Variable(Variable::Direct(_)) => non_typed(a.rhs, method),
             Expression::Variable(_) => true,
             _ => false,
         }
@@ -486,7 +422,7 @@ fn written(body: Node<'_, '_>, name: &[u8], until: usize) -> bool {
                     matches!(u.operator, UnaryPrefixOperator::Reference(_))
                         && matches!(u.operand, Expression::Variable(Variable::Direct(d)) if d.name == name)
                 }
-                Node::Foreach(_) | Node::Global(_) | Node::Static(_) | Node::List(_) => {
+                Node::ForeachTarget(_) | Node::Global(_) | Node::Static(_) | Node::List(_) => {
                     super::side_effect::any_node(
                         n,
                         &|m| matches!(m, Node::DirectVariable(d) if d.name == name),
@@ -495,40 +431,4 @@ fn written(body: Node<'_, '_>, name: &[u8], until: usize) -> bool {
                 _ => false,
             }
     })
-}
-
-/// Whether the code sits in a trait: Rector analyses a trait's methods without a class, so PHPStan knows no type
-/// there.
-pub(crate) fn in_trait(ancestors: &[Node<'_, '_>]) -> bool {
-    ancestors.iter().any(|n| matches!(n, Node::Trait(_)))
-}
-
-/// Whether the enclosing function's own statement list assigns `name` (`$name = ...;`) before anything else
-/// mentions it, so the variable is defined wherever it is read. Only asked after [`local_of`], which found that
-/// function.
-fn assigned_first(ancestors: &[Node<'_, '_>], name: &[u8]) -> bool {
-    let statements = ancestors.iter().rev().find_map(|n| match n {
-        Node::Function(f) => Some(&f.body.statements),
-        Node::Method(Method {
-            body: MethodBody::Concrete(b),
-            ..
-        }) => Some(&b.statements),
-        Node::Closure(c) => Some(&c.body.statements),
-        _ => None,
-    });
-    // The first statement that mentions it (the one being read, at the latest) must be the assignment.
-    statements
-        .unwrap()
-        .iter()
-        .find(|statement| {
-            super::side_effect::any_node(
-                Node::Statement(statement),
-                &|n| matches!(n, Node::DirectVariable(d) if d.name == name),
-            )
-        })
-        .is_some_and(|statement| {
-            matches!(statement, Statement::Expression(e)
-                if matches!(unparenthesize(e.expression), Expression::Assignment(a)
-                    if matches!(unparenthesize(a.lhs), Expression::Variable(Variable::Direct(l)) if l.name == name)))
-        })
 }

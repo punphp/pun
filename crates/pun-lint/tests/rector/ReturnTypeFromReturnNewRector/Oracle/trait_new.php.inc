@@ -46,7 +46,7 @@ class Coll
 
 trait T
 {
-    public function a()
+    public function a(): \App\Coll
     {
         $c = new Coll;
 

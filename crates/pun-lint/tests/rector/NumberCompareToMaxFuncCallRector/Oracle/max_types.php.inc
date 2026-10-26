@@ -84,7 +84,7 @@ trait T
 {
     public function run(int $p)
     {
-        return $p > 1 ? $p : 1;
+        return max($p, 1);
     }
 }
 

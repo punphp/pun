@@ -375,12 +375,7 @@ function variable_variable($x)
 {
     $items = [1];
     $$x = 1;
-    foreach ($items as $item) {
-        if ($item === $x) {
-            return true;
-        }
-    }
-    return false;
+    return in_array($x, $items, true);
 }
 
 function closure($x)
