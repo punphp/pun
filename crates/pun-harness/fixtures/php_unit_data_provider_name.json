@@ -1,0 +1,378 @@
+{
+    "fixer": "php_unit_data_provider_name",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\PhpUnit\\PhpUnitDataProviderNameFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/PhpUnit/PhpUnitDataProviderNameFixerTest.php",
+    "case_count": 36,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": []
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\PhpUnit\\PhpUnitDataProviderNameFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null, array $configuration = []): void\n    {\n        $this->fixer->configure($configuration);\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": "data provider named with different casing",
+                    "args": [
+                        "<?php\nclass FooTest extends TestCase {\n    /**\n     * @dataProvider provideFooCases\n     */\n    public function testFoo() {}\n    public function provideFooCases() {}\n}",
+                        "<?php\nclass FooTest extends TestCase {\n    /**\n     * @dataProvider provideFooCases\n     */\n    public function testFoo() {}\n    public function PROVIDEFOOCASES() {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "fixing simple scenario with test class prefixed",
+                    "args": [
+                        "<?php\nclass FooTest extends TestCase {\n    /**\n     * @dataProvider provideFooCases\n     */\n    public function testFoo() {}\n    public function provideFooCases() {}\n}",
+                        "<?php\nclass FooTest extends TestCase {\n    /**\n     * @dataProvider fooDataProvider\n     */\n    public function testFoo() {}\n    public function fooDataProvider() {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "fixing simple scenario with test class annotated",
+                    "args": [
+                        "<?php\nclass FooTest extends TestCase {\n    /**\n     * @test\n     * @dataProvider provideFooCases\n     */\n    public function foo() {}\n    public function provideFooCases() {}\n}",
+                        "<?php\nclass FooTest extends TestCase {\n    /**\n     * @test\n     * @dataProvider fooDataProvider\n     */\n    public function foo() {}\n    public function fooDataProvider() {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "data provider not found",
+                    "args": [
+                        "<?php\nclass FooTest extends TestCase {\n    /**\n     * @dataProvider notExistingFunction\n     */\n    public function testFoo() {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "data provider used multiple times",
+                    "args": [
+                        "<?php\nclass FooTest extends TestCase {\n    /**\n     * @dataProvider reusedDataProvider\n     */\n    public function testFoo() {}\n    /**\n     * @dataProvider reusedDataProvider\n     */\n    public function testBar() {}\n    public function reusedDataProvider() {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "data provider call without function",
+                    "args": [
+                        "<?php\nclass FooTest extends TestCase {\n    /**\n     * @dataProvider fooDataProvider\n     */\n    private $prop;\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "data provider target name already used",
+                    "args": [
+                        "<?php\nclass FooTest extends TestCase {\n    /**\n     * @dataProvider dataProvider\n     */\n    public function testFoo() {}\n    public function dataProvider() {}\n    public function provideFooCases() {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "data provider defined for anonymous function",
+                    "args": [
+                        "<?php\nclass FooTest extends TestCase {\n    public function testFoo()\n    {\n        /**\n         * @dataProvider notDataProvider\n         */\n        function () { return true; };\n    }\n    public function notDataProvider() {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "multiple data providers for one test function",
+                    "args": [
+                        "<?php\nclass FooTest extends TestCase {\n    /**\n     * @dataProvider foo1DataProvider\n     * @dataProvider foo2DataProvider\n     */\n    public function testFoo() {}\n    public function foo1DataProvider() {}\n    public function foo2DataProvider() {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "data provider with new name being part of FQCN used in the code",
+                    "args": [
+                        "<?php\nclass FooTest extends TestCase {\n    /**\n     * @dataProvider provideFooCases\n     */\n    public function testFoo() {\n        $x = Foo\\ProvideFooCases::X_DEFAULT;\n    }\n    public function provideFooCases() {}\n}",
+                        "<?php\nclass FooTest extends TestCase {\n    /**\n     * @dataProvider foo\n     */\n    public function testFoo() {\n        $x = Foo\\ProvideFooCases::X_DEFAULT;\n    }\n    public function foo() {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "complex example",
+                    "args": [
+                        "<?php\nclass FooTest extends TestCase {\n    /** @dataProvider notExistingFunction */\n    public function testClosure()\n    {\n        /** Preparing data */\n        $x = 0;\n        /** @dataProvider notDataProvider */\n        function () { return true; };\n    }\n\n    /**\n     * @dataProvider reusedDataProvider\n     * @dataProvider testFooProvider\n     */\n    public function testFoo() {}\n\n    /**\n     * @dataProvider reusedDataProvider\n     * @dataProvider testBarProvider\n     */\n    public function testBar() {}\n\n    public function reusedDataProvider() {}\n\n    /** @dataProvider provideBazCases */\n    public function testBaz() {}\n    public function provideBazCases() {}\n\n    /** @dataProvider provideSomethingCases */\n    public function testSomething() {}\n    public function provideSomethingCases() {}\n    public function testFooProvider() {}\n    public function testBarProvider() {}\n}",
+                        "<?php\nclass FooTest extends TestCase {\n    /** @dataProvider notExistingFunction */\n    public function testClosure()\n    {\n        /** Preparing data */\n        $x = 0;\n        /** @dataProvider notDataProvider */\n        function () { return true; };\n    }\n\n    /**\n     * @dataProvider reusedDataProvider\n     * @dataProvider testFooProvider\n     */\n    public function testFoo() {}\n\n    /**\n     * @dataProvider reusedDataProvider\n     * @dataProvider testBarProvider\n     */\n    public function testBar() {}\n\n    public function reusedDataProvider() {}\n\n    /** @dataProvider provideBazCases */\n    public function testBaz() {}\n    public function provideBazCases() {}\n\n    /** @dataProvider someDataProvider */\n    public function testSomething() {}\n    public function someDataProvider() {}\n    public function testFooProvider() {}\n    public function testBarProvider() {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "fixing when string like expected data provider name is present",
+                    "args": [
+                        "<?php\nclass FooTest extends TestCase {\n    /**\n     * @dataProvider provideFooCases\n     */\n    public function testFoo() {\n        $foo->provideFooCases(); // do not get fooled that data provider name is already taken\n    }\n    public function provideFooCases() {}\n}",
+                        "<?php\nclass FooTest extends TestCase {\n    /**\n     * @dataProvider fooDataProvider\n     */\n    public function testFoo() {\n        $foo->provideFooCases(); // do not get fooled that data provider name is already taken\n    }\n    public function fooDataProvider() {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "test function with abstract modifier",
+                    "args": [
+                        "<?php\n                abstract class FooTest extends TestCase {\n                    /**\n                     * @dataProvider provideFooCases\n                     */\n                    abstract function testFoo() ;\n                    public function provideFooCases() {}\n                }",
+                        "<?php\n                abstract class FooTest extends TestCase {\n                    /**\n                     * @dataProvider fooDataProvider\n                     */\n                    abstract function testFoo() ;\n                    public function fooDataProvider() {}\n                }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "test function with final modifier",
+                    "args": [
+                        "<?php\n                abstract class FooTest extends TestCase {\n                    /**\n                     * @dataProvider provideFooCases\n                     */\n                    final function testFoo() {}\n                    public function provideFooCases() {}\n                }",
+                        "<?php\n                abstract class FooTest extends TestCase {\n                    /**\n                     * @dataProvider fooDataProvider\n                     */\n                    final function testFoo() {}\n                    public function fooDataProvider() {}\n                }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "test function with private modifier",
+                    "args": [
+                        "<?php\n                abstract class FooTest extends TestCase {\n                    /**\n                     * @dataProvider provideFooCases\n                     */\n                    private function testFoo() {}\n                    public function provideFooCases() {}\n                }",
+                        "<?php\n                abstract class FooTest extends TestCase {\n                    /**\n                     * @dataProvider fooDataProvider\n                     */\n                    private function testFoo() {}\n                    public function fooDataProvider() {}\n                }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "test function with protected modifier",
+                    "args": [
+                        "<?php\n                abstract class FooTest extends TestCase {\n                    /**\n                     * @dataProvider provideFooCases\n                     */\n                    protected function testFoo() {}\n                    public function provideFooCases() {}\n                }",
+                        "<?php\n                abstract class FooTest extends TestCase {\n                    /**\n                     * @dataProvider fooDataProvider\n                     */\n                    protected function testFoo() {}\n                    public function fooDataProvider() {}\n                }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "test function with static modifier",
+                    "args": [
+                        "<?php\n                abstract class FooTest extends TestCase {\n                    /**\n                     * @dataProvider provideFooCases\n                     */\n                    static function testFoo() {}\n                    public function provideFooCases() {}\n                }",
+                        "<?php\n                abstract class FooTest extends TestCase {\n                    /**\n                     * @dataProvider fooDataProvider\n                     */\n                    static function testFoo() {}\n                    public function fooDataProvider() {}\n                }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "test function with /* private */ modifier",
+                    "args": [
+                        "<?php\n                abstract class FooTest extends TestCase {\n                    /**\n                     * @dataProvider provideFooCases\n                     */\n                    /* private */ function testFoo() {}\n                    public function provideFooCases() {}\n                }",
+                        "<?php\n                abstract class FooTest extends TestCase {\n                    /**\n                     * @dataProvider fooDataProvider\n                     */\n                    /* private */ function testFoo() {}\n                    public function fooDataProvider() {}\n                }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "custom prefix",
+                    "args": [
+                        "<?php\n                    class FooTest extends TestCase {\n                        /**\n                         * @dataProvider theBestPrefixFooCases\n                         */\n                        public function testFoo() {}\n                        public function theBestPrefixFooCases() {}\n                    }",
+                        "<?php\n                    class FooTest extends TestCase {\n                        /**\n                         * @dataProvider dtPrvdr\n                         */\n                        public function testFoo() {}\n                        public function dtPrvdr() {}\n                    }",
+                        {
+                            "prefix": "theBestPrefix"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "custom suffix",
+                    "args": [
+                        "<?php\n                    class FooTest extends TestCase {\n                        /**\n                         * @dataProvider provideFooTheBestSuffix\n                         */\n                        public function testFoo() {}\n                        public function provideFooTheBestSuffix() {}\n                    }",
+                        "<?php\n                    class FooTest extends TestCase {\n                        /**\n                         * @dataProvider dtPrvdr\n                         */\n                        public function testFoo() {}\n                        public function dtPrvdr() {}\n                    }",
+                        {
+                            "suffix": "TheBestSuffix"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "custom prefix and suffix",
+                    "args": [
+                        "<?php\n                    class FooTest extends TestCase {\n                        /**\n                         * @dataProvider theBestPrefixFooTheBestSuffix\n                         */\n                        public function testFoo() {}\n                        public function theBestPrefixFooTheBestSuffix() {}\n                    }",
+                        "<?php\n                    class FooTest extends TestCase {\n                        /**\n                         * @dataProvider dtPrvdr\n                         */\n                        public function testFoo() {}\n                        public function dtPrvdr() {}\n                    }",
+                        {
+                            "prefix": "theBestPrefix",
+                            "suffix": "TheBestSuffix"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "empty prefix",
+                    "args": [
+                        "<?php\n                    class FooTest extends TestCase {\n                        /**\n                         * @dataProvider fooDataProvider\n                         */\n                        public function testFoo() {}\n                        public function fooDataProvider() {}\n                    }",
+                        "<?php\n                    class FooTest extends TestCase {\n                        /**\n                         * @dataProvider dtPrvdr\n                         */\n                        public function testFoo() {}\n                        public function dtPrvdr() {}\n                    }",
+                        {
+                            "prefix": "",
+                            "suffix": "DataProvider"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "empty suffix",
+                    "args": [
+                        "<?php\n                    class FooTest extends TestCase {\n                        /**\n                         * @dataProvider dataProviderForFoo\n                         */\n                        public function testFoo() {}\n                        public function dataProviderForFoo() {}\n                    }",
+                        "<?php\n                    class FooTest extends TestCase {\n                        /**\n                         * @dataProvider dtPrvdr\n                         */\n                        public function testFoo() {}\n                        public function dtPrvdr() {}\n                    }",
+                        {
+                            "prefix": "dataProviderFor",
+                            "suffix": ""
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "prefix and suffix with underscores",
+                    "args": [
+                        "<?php\n                    class FooTest extends TestCase {\n                        /**\n                         * @dataProvider provide_foo_data\n                         */\n                        public function test_foo() {}\n                        public function provide_foo_data() {}\n                    }",
+                        "<?php\n                    class FooTest extends TestCase {\n                        /**\n                         * @dataProvider dtPrvdr\n                         */\n                        public function test_foo() {}\n                        public function dtPrvdr() {}\n                    }",
+                        {
+                            "prefix": "provide_",
+                            "suffix": "_data"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "empty prefix and suffix with underscores",
+                    "args": [
+                        "<?php\n                    class FooTest extends TestCase {\n                        /**\n                         * @dataProvider foo_data_provider\n                         */\n                        public function test_foo() {}\n                        public function foo_data_provider() {}\n                    }",
+                        "<?php\n                    class FooTest extends TestCase {\n                        /**\n                         * @dataProvider dtPrvdr\n                         */\n                        public function test_foo() {}\n                        public function dtPrvdr() {}\n                    }",
+                        {
+                            "prefix": "",
+                            "suffix": "_data_provider"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "prefix with underscores and empty suffix",
+                    "args": [
+                        "<?php\n                    class FooTest extends TestCase {\n                        /**\n                         * @dataProvider data_provider_foo\n                         */\n                        public function test_foo() {}\n                        public function data_provider_foo() {}\n                    }",
+                        "<?php\n                    class FooTest extends TestCase {\n                        /**\n                         * @dataProvider dtPrvdr\n                         */\n                        public function test_foo() {}\n                        public function dtPrvdr() {}\n                    }",
+                        {
+                            "prefix": "data_provider_",
+                            "suffix": ""
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "prefix with underscores and empty suffix and test function starting with uppercase",
+                    "args": [
+                        "<?php\n                    class FooTest extends TestCase {\n                        /**\n                         * @dataProvider data_provider_Foo\n                         */\n                        public function test_Foo() {}\n                        public function data_provider_Foo() {}\n                    }",
+                        "<?php\n                    class FooTest extends TestCase {\n                        /**\n                         * @dataProvider dtPrvdr\n                         */\n                        public function test_Foo() {}\n                        public function dtPrvdr() {}\n                    }",
+                        {
+                            "prefix": "data_provider_",
+                            "suffix": ""
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "prefix and suffix with underscores and test function having multiple consecutive underscores",
+                    "args": [
+                        "<?php\n                    class FooTest extends TestCase {\n                        /**\n                         * @dataProvider provide_foo_data\n                         */\n                        public function test___foo() {}\n                        public function provide_foo_data() {}\n                    }",
+                        "<?php\n                    class FooTest extends TestCase {\n                        /**\n                         * @dataProvider dtPrvdr\n                         */\n                        public function test___foo() {}\n                        public function dtPrvdr() {}\n                    }",
+                        {
+                            "prefix": "provide_",
+                            "suffix": "_data"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "uppercase naming",
+                    "args": [
+                        "<?php\n                    class FooTest extends TestCase {\n                        /**\n                         * @dataProvider PROVIDE_FOO_DATA\n                         */\n                        public function TEST_FOO() {}\n                        public function PROVIDE_FOO_DATA() {}\n                    }",
+                        "<?php\n                    class FooTest extends TestCase {\n                        /**\n                         * @dataProvider dtPrvdr\n                         */\n                        public function TEST_FOO() {}\n                        public function dtPrvdr() {}\n                    }",
+                        {
+                            "prefix": "PROVIDE_",
+                            "suffix": "_DATA"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "camelCase test function and prefix with underscores",
+                    "args": [
+                        "<?php\n                    class FooTest extends TestCase {\n                        /**\n                         * @dataProvider data_provider_FooBar\n                         */\n                        public function testFooBar() {}\n                        public function data_provider_FooBar() {}\n                    }",
+                        "<?php\n                    class FooTest extends TestCase {\n                        /**\n                         * @dataProvider dtPrvdr\n                         */\n                        public function testFooBar() {}\n                        public function dtPrvdr() {}\n                    }",
+                        {
+                            "prefix": "data_provider_",
+                            "suffix": ""
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix80",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": "^8.0.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\PhpUnit\\PhpUnitDataProviderNameFixerTest",
+            "body": "    public function testFix80(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "with an attribute between PHPDoc and test method",
+                    "args": [
+                        "<?php\nclass FooTest extends TestCase {\n    /**\n     * @dataProvider provideFooCases\n     */\n    #[CustomAttribute]\n    public function testFoo(): void {}\n    public function provideFooCases(): iterable {}\n}",
+                        "<?php\nclass FooTest extends TestCase {\n    /**\n     * @dataProvider f\n     */\n    #[CustomAttribute]\n    public function testFoo(): void {}\n    public function f(): iterable {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "with data provider as an attribute",
+                    "args": [
+                        "<?php\nclass FooTest extends TestCase {\n    #[\\PHPUnit\\Framework\\Attributes\\DataProvider('provideFooCases')]\n    public function testFoo(): void {}\n    public function provideFooCases() {}\n    #[\\PHPUnit\\Framework\\Attributes\\DataProvider(\"provideBarCases\")]\n    public function testBar(): void {}\n    public function provideBarCases() {}\n}",
+                        "<?php\nclass FooTest extends TestCase {\n    #[\\PHPUnit\\Framework\\Attributes\\DataProvider('renameMe')]\n    public function testFoo(): void {}\n    public function renameMe() {}\n    #[\\PHPUnit\\Framework\\Attributes\\DataProvider(\"renameMeToo\")]\n    public function testBar(): void {}\n    public function renameMeToo() {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "data provider defined by both annotation and attribute for the same test",
+                    "args": [
+                        "<?php\nuse PHPUnit\\Framework\\Attributes\\DataProvider;\nclass FooTest extends TestCase {\n    /**\n     * @dataProvider provideFooCases\n     */\n    #[DataProvider('provideFooCases')]\n    public function testFoo(): void {}\n    public function provideFooCases(): iterable {}\n}",
+                        "<?php\nuse PHPUnit\\Framework\\Attributes\\DataProvider;\nclass FooTest extends TestCase {\n    /**\n     * @dataProvider the_provider_of_the_data\n     */\n    #[DataProvider('the_provider_of_the_data')]\n    public function testFoo(): void {}\n    public function the_provider_of_the_data(): iterable {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "data provider defined by annotation and attribute for different tests",
+                    "args": [
+                        "<?php\nuse PHPUnit\\Framework\\Attributes\\DataProvider;\nclass FooTest extends TestCase {\n    /**\n     * @dataProvider the_provider_of_the_data\n     */\n    public function testFoo(): void {}\n    #[DataProvider('the_provider_of_the_data')]\n    public function testBar(): void {}\n    public function the_provider_of_the_data(): iterable {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "multiple data providers defined by attributes for one test method",
+                    "args": [
+                        "<?php\nuse PHPUnit\\Framework\\Attributes\\DataProvider;\nclass PersistenceTest extends TestCase\n{\n    #[DataProvider('provideTypecastBidirectionalCases')]\n    #[DataProvider('provideTypecastLoadOnlyCases')]\n    public function testTypecast($v): void {}\n    public static function provideTypecastBidirectionalCases(): iterable {}\n    public static function provideTypecastLoadOnlyCases(): iterable {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "multiple data providers defined by annotation and attributes for one test method",
+                    "args": [
+                        "<?php\nuse PHPUnit\\Framework\\Attributes\\DataProvider;\nclass PersistenceTest extends TestCase\n{\n    /**\n     * @dataProvider provideTypecastBidirectionalCases\n     * @dataProvider provideTypecastLoadOnlyCases\n     */\n    #[DataProvider('provideTypecastBidirectionalCases')]\n    #[DataProvider('provideTypecastLoadOnlyCases')]\n    public function testTypecast($v): void {}\n    public static function provideTypecastBidirectionalCases(): iterable {}\n    public static function provideTypecastLoadOnlyCases(): iterable {}\n}"
+                    ]
+                }
+            ]
+        }
+    ]
+}

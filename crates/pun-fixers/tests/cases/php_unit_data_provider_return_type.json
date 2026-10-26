@@ -1,0 +1,7 @@
+[
+    {
+        "fixer": "php_unit_data_provider_return_type",
+        "input": "<?php\nuse PHPUnit\\Framework\\Attributes\\DataProvider;\nfinal class FooTest extends \\PHPUnit\\Framework\\TestCase\n{\n    /**\n     * @dataProvider dataA\n     */\n    public function test_one() {}\n    #[DataProvider(\"dataB\")]\n    public function TestTwo() {}\n    /** @dataProvider dataC */\n    #[\\Foo]\n    public function testThree() {}\n    /** @dataProvider dataShared */\n    public function testFour() {}\n    /** @dataProvider dataShared */\n    public function testFive() {}\n    public function dataA() {}\n    public function dataB(): array { return []; }\n    public function dataC(): ?array { return []; }\n    public function dataShared(): \\Generator { yield []; }\n}\n",
+        "expected": "<?php\nuse PHPUnit\\Framework\\Attributes\\DataProvider;\nfinal class FooTest extends \\PHPUnit\\Framework\\TestCase\n{\n    /**\n     * @dataProvider dataA\n     */\n    public function test_one() {}\n    #[DataProvider(\"dataB\")]\n    public function TestTwo() {}\n    /** @dataProvider dataC */\n    #[\\Foo]\n    public function testThree() {}\n    /** @dataProvider dataShared */\n    public function testFour() {}\n    /** @dataProvider dataShared */\n    public function testFive() {}\n    public function dataA(): iterable {}\n    public function dataB(): iterable { return []; }\n    public function dataC(): ?array { return []; }\n    public function dataShared(): iterable { yield []; }\n}\n"
+    }
+]

@@ -1,0 +1,25 @@
+[
+    {
+        "fixer": "php_unit_data_provider_name",
+        "input": "<?php\nuse PHPUnit\\Framework\\Attributes\\DataProvider;\nfinal class FooTest extends \\PHPUnit\\Framework\\TestCase\n{\n    /**\n     * @dataProvider dataA\n     */\n    public function test_one() {}\n    #[DataProvider(\"dataB\")]\n    public function TestTwo() {}\n    /** @dataProvider dataC */\n    #[\\Foo]\n    public function testThree() {}\n    /** @dataProvider dataShared */\n    public function testFour() {}\n    /** @dataProvider dataShared */\n    public function testFive() {}\n    public function dataA() {}\n    public function dataB(): array { return []; }\n    public function dataC(): ?array { return []; }\n    public function dataShared(): \\Generator { yield []; }\n}\n",
+        "expected": "<?php\nuse PHPUnit\\Framework\\Attributes\\DataProvider;\nfinal class FooTest extends \\PHPUnit\\Framework\\TestCase\n{\n    /**\n     * @dataProvider provideOneCases\n     */\n    public function test_one() {}\n    #[DataProvider(\"provideTwoCases\")]\n    public function TestTwo() {}\n    /** @dataProvider provideThreeCases */\n    #[\\Foo]\n    public function testThree() {}\n    /** @dataProvider dataShared */\n    public function testFour() {}\n    /** @dataProvider dataShared */\n    public function testFive() {}\n    public function provideOneCases() {}\n    public function provideTwoCases(): array { return []; }\n    public function provideThreeCases(): ?array { return []; }\n    public function dataShared(): \\Generator { yield []; }\n}\n"
+    },
+    {
+        "fixer": "php_unit_data_provider_name",
+        "config": {
+            "prefix": "",
+            "suffix": ""
+        },
+        "input": "<?php\nuse PHPUnit\\Framework\\Attributes\\DataProvider;\nfinal class FooTest extends \\PHPUnit\\Framework\\TestCase\n{\n    /**\n     * @dataProvider dataA\n     */\n    public function test_one() {}\n    #[DataProvider(\"dataB\")]\n    public function TestTwo() {}\n    /** @dataProvider dataC */\n    #[\\Foo]\n    public function testThree() {}\n    /** @dataProvider dataShared */\n    public function testFour() {}\n    /** @dataProvider dataShared */\n    public function testFive() {}\n    public function dataA() {}\n    public function dataB(): array { return []; }\n    public function dataC(): ?array { return []; }\n    public function dataShared(): \\Generator { yield []; }\n}\n",
+        "expected": "<?php\nuse PHPUnit\\Framework\\Attributes\\DataProvider;\nfinal class FooTest extends \\PHPUnit\\Framework\\TestCase\n{\n    /**\n     * @dataProvider one\n     */\n    public function test_one() {}\n    #[DataProvider(\"two\")]\n    public function TestTwo() {}\n    /** @dataProvider three */\n    #[\\Foo]\n    public function testThree() {}\n    /** @dataProvider dataShared */\n    public function testFour() {}\n    /** @dataProvider dataShared */\n    public function testFive() {}\n    public function one() {}\n    public function two(): array { return []; }\n    public function three(): ?array { return []; }\n    public function dataShared(): \\Generator { yield []; }\n}\n"
+    },
+    {
+        "fixer": "php_unit_data_provider_name",
+        "config": {
+            "prefix": "data_",
+            "suffix": "_x"
+        },
+        "input": "<?php\nuse PHPUnit\\Framework\\Attributes\\DataProvider;\nfinal class FooTest extends \\PHPUnit\\Framework\\TestCase\n{\n    /**\n     * @dataProvider dataA\n     */\n    public function test_one() {}\n    #[DataProvider(\"dataB\")]\n    public function TestTwo() {}\n    /** @dataProvider dataC */\n    #[\\Foo]\n    public function testThree() {}\n    /** @dataProvider dataShared */\n    public function testFour() {}\n    /** @dataProvider dataShared */\n    public function testFive() {}\n    public function dataA() {}\n    public function dataB(): array { return []; }\n    public function dataC(): ?array { return []; }\n    public function dataShared(): \\Generator { yield []; }\n}\n",
+        "expected": "<?php\nuse PHPUnit\\Framework\\Attributes\\DataProvider;\nfinal class FooTest extends \\PHPUnit\\Framework\\TestCase\n{\n    /**\n     * @dataProvider data_one_x\n     */\n    public function test_one() {}\n    #[DataProvider(\"data_Two_x\")]\n    public function TestTwo() {}\n    /** @dataProvider data_Three_x */\n    #[\\Foo]\n    public function testThree() {}\n    /** @dataProvider dataShared */\n    public function testFour() {}\n    /** @dataProvider dataShared */\n    public function testFive() {}\n    public function data_one_x() {}\n    public function data_Two_x(): array { return []; }\n    public function data_Three_x(): ?array { return []; }\n    public function dataShared(): \\Generator { yield []; }\n}\n"
+    }
+]
