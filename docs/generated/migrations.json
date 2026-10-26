@@ -12355,7 +12355,7 @@
         "rules": [
           "lint/pest/prefer-extend"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
