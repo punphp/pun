@@ -53,14 +53,8 @@ fn types(c: &mut Checker, operand: &Expression, kind: &str, operator: &str) {
         c.find_type_to_check(operand, &ok).ty.filter(|t| !ok(t))
     });
     let Some(t) = found else { return };
-    // a `mixed` here is a StrictMixedType, which is no string, null or bool
-    // ponytail: convert.rs types every `mixed` implicit, so only the template of mixed reaches here today
-    let strict = match &t {
-        Type::Template(tt) if matches!(tt.bound, Type::Mixed { .. }) => Some(Some(tt.name.clone())),
-        t => matches!(t, Type::Mixed { .. }).then_some(None),
-    };
     let mut tips = Vec::new();
-    let may = |is: fn(&Type) -> pun_phpstan::types::Tri| strict.is_none() && !is(&t).no();
+    let may = |is: fn(&Type) -> pun_phpstan::types::Tri| !is(&t).no();
     if deprecated_string && may(Type::is_string) {
         let f = if dec { "str_decrement" } else { "str_increment" };
         tips.push(format!(
@@ -79,10 +73,7 @@ fn types(c: &mut Checker, operand: &Expression, kind: &str, operator: &str) {
         [one] => Some(one.clone()),
         many => Some(many.iter().map(|t| format!("• {t}")).collect::<Vec<_>>().join("\n")),
     };
-    let described = match strict {
-        Some(Some(name)) => format!("{name} of mixed"),
-        _ => declared::with_classes(c, || t.describe(Level::Value)),
-    };
+    let described = declared::with_classes(c, || t.describe(Level::Value));
     c.report(operand, &format!("{kind}.type"), format!("Cannot use {operator} on {described}."), tip.as_deref());
 }
 

@@ -70,7 +70,7 @@ impl Tri {
         }
     }
     /// `TrinaryLogic::lazyMaxMin()`: any yes → yes, else the minimum.
-    fn max_min(results: impl IntoIterator<Item = Tri>) -> Tri {
+    pub fn max_min(results: impl IntoIterator<Item = Tri>) -> Tri {
         let mut min = Tri::Yes;
         for r in results {
             if r.yes() {
@@ -303,6 +303,9 @@ impl Type {
     pub fn array(key: Type, item: Type) -> Type {
         let key = if key.is_benevolent_array_key() {
             mixed()
+        } else if matches!(key, Type::StrictMixed) {
+            // ArrayType::__construct(): StrictMixedType keys become the PHP array-key domain.
+            Type::Union(vec![Type::String, Type::Int])
         } else {
             key
         };
@@ -378,16 +381,26 @@ impl Type {
     }
 
     fn query(&self, f: &dyn Fn(&Type) -> Tri) -> Tri {
+        self.query_mixed(f, Tri::Maybe)
+    }
+
+    /// Member capabilities/existence use unionResults too, but MixedType answers Yes rather than Maybe.
+    /// The visitor supplies reflection-dependent leaf answers; StrictMixedType remains an ordinary No leaf.
+    pub fn query_members(&self, f: &dyn Fn(&Type) -> Tri) -> Tri {
+        self.query_mixed(f, Tri::Yes)
+    }
+
+    fn query_mixed(&self, f: &dyn Fn(&Type) -> Tri, mixed: Tri) -> Tri {
         match self {
-            Type::Reasoned(t, _) => t.query(f),
-            Type::LateArrayShape(s) => s.resolve().query(f),
-            Type::Union(types) => Tri::extreme_identity(types.iter().map(|t| t.query(f))),
-            Type::Benevolent(types) => types.iter().map(|t| t.query(f)).fold(Tri::No, Tri::or),
-            Type::Intersection(types) => Tri::max_min(types.iter().map(|t| t.query(f))),
-            Type::Template(t) => t.bound.query(f),
+            Type::Reasoned(t, _) => t.query_mixed(f, mixed),
+            Type::LateArrayShape(s) => s.resolve().query_mixed(f, mixed),
+            Type::Union(types) => Tri::extreme_identity(types.iter().map(|t| t.query_mixed(f, mixed))),
+            Type::Benevolent(types) => types.iter().map(|t| t.query_mixed(f, mixed)).fold(Tri::No, Tri::or),
+            Type::Intersection(types) => Tri::max_min(types.iter().map(|t| t.query_mixed(f, mixed))),
+            Type::Template(t) => t.bound.query_mixed(f, mixed),
             // LateResolvableTypeTrait
-            Type::Conditional(c) => c.resolve().query(f),
-            Type::Mixed { .. } | Type::SubtractedMixed { .. } | Type::Error => Tri::Maybe,
+            Type::Conditional(c) => c.resolve().query_mixed(f, mixed),
+            Type::Mixed { .. } | Type::SubtractedMixed { .. } | Type::Error => mixed,
             Type::Never(_) => Tri::No,
             _ => f(self),
         }
@@ -1209,10 +1222,16 @@ impl Type {
             Type::Static(class, args) if !args.is_empty() => {
                 Type::Static(class.clone(), args.iter().map(f).collect())
             }
-            Type::Template(t) => Type::Template(Box::new(Template {
-                bound: f(&t.bound),
-                ..(**t).clone()
-            })),
+            Type::Template(t) => {
+                let mut bound = f(&t.bound);
+                let default = t.default.as_ref().map(f);
+                // TemplateTypeTrait::traverse() rebuilds through TemplateTypeFactory only when changed.
+                // The factory has no StrictMixedType case: that bound falls back to explicit MixedType.
+                if matches!(bound, Type::StrictMixed) && (bound != t.bound || default != t.default) {
+                    bound = Type::Mixed { explicit: true };
+                }
+                Type::Template(Box::new(Template { bound, default, ..(**t).clone() }))
+            }
             Type::Conditional(c) => Type::Conditional(Box::new(Conditional {
                 subject: match &c.subject {
                     Subject::Type(t) => Subject::Type(f(t)),

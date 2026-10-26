@@ -9,8 +9,11 @@ use super::*;
 /// The reasons of `$a->accepts($b, $strictTypes)`.
 pub fn accepts_reasons(a: &Type, b: &Type, strict: bool, sm: StrictMixed) -> Vec<String> {
     use Type as T;
+    if sm.explicit || sm.implicit {
+        return accepts_reasons(a, &sm.transform(b), strict, StrictMixed::default());
+    }
     let rec = |x: &Type, y: &Type| accepts_reasons(x, y, strict, StrictMixed::default());
-    let compound = b.is_compound() || sm.applies(b);
+    let compound = b.is_compound();
     match a {
         T::Reasoned(t, _) => rec(t, b),
         T::LateArrayShape(s) => rec(&s.resolve(), b),
@@ -39,7 +42,7 @@ pub fn accepts_reasons(a: &Type, b: &Type, strict: bool, sm: StrictMixed) -> Vec
             _ => vec![],
         },
         T::ConstArray(c) if c.unsealed.is_none() && (!compound || matches!(b, T::Intersection(_))) => our_keys(c, b, strict),
-        T::Mixed { .. } | T::SubtractedMixed { .. } | T::Error | T::Wildcard | T::OffsetAccess(..) | T::Never(_) | T::ObjectShape(_) => vec![],
+        T::Mixed { .. } | T::StrictMixed | T::SubtractedMixed { .. } | T::Error | T::Wildcard | T::OffsetAccess(..) | T::Never(_) | T::ObjectShape(_) => vec![],
         _ if compound => accepted_by(a, b, strict, sm),
         T::Array(key, item) => match b {
             T::ConstArray(c) => merged(c.keys.iter().zip(&c.values).flat_map(|(k, v)| [rec(key, k), rec(item, v)])),
@@ -86,7 +89,7 @@ fn union(a: &Type, types: &[Type], b: &Type, strict: bool, sm: StrictMixed) -> V
     if !common.is_empty() {
         reasons = (0..inner.len()).flat_map(|i| common.iter().map(move |r| decorate(i, r))).collect();
     }
-    if (b.is_compound() || sm.applies(b)) && !matches!(b, T::Callable(_) | T::Template(_) | T::Intersection(_)) {
+    if b.is_compound() && !matches!(b, T::Callable(_) | T::Template(_) | T::Intersection(_)) {
         return accepted_by(a, b, strict, sm);
     }
     if matches!(b, T::Template(t) if matches!(t.bound, T::Union(_) | T::Benevolent(_))) {
@@ -101,7 +104,7 @@ fn accepted_by(a: &Type, b: &Type, strict: bool, sm: StrictMixed) -> Vec<String>
     // (a StrictMixedType answers `mixed`, which gives no reasons)
     let rec = |t: &Type| accepts_reasons(a, t, strict, sm);
     match b {
-        T::SubtractedMixed { excluded, .. } if !sm.applies(b) && is_super_type_of(excluded, a).yes() => vec![format!(
+        T::SubtractedMixed { excluded, .. } if is_super_type_of(excluded, a).yes() => vec![format!(
             "Type {} has already been eliminated from mixed.", excluded.describe(Level::Precise)
         )],
         T::Union(types) | T::Benevolent(types) => merged(types.iter().map(rec)),

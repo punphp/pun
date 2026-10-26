@@ -4,7 +4,7 @@
 
 use mago_span::HasSpan;
 use mago_syntax::cst::*;
-use pun_phpstan::types::{Cast, Level, Type, cast_is_error, is_super_type_of};
+use pun_phpstan::types::{Cast, Level, StrictMixed, Type, cast_is_error, is_super_type_of};
 
 use super::super::{Checker, declared};
 
@@ -29,7 +29,7 @@ pub(super) fn part<'s, 'arena>(p: &'s StringPart<'arena>) -> Option<&'s Expressi
 
 /// `findTypeToCheck()` with the conversion as the union criteria: the type to report, `None` when fine.
 fn invalid(c: &Checker, e: &Expression, cast: Cast) -> Option<Type> {
-    let sm = c.levels().strict_mixed();
+    let sm = StrictMixed::default();
     declared::with_classes(c, || {
         let found = c.find_type_to_check(e, &|t| !cast_is_error(t, cast, sm)).ty?;
         cast_is_error(&found, cast, sm).then_some(found)
@@ -107,7 +107,7 @@ pub(in super::super) fn unary(c: &mut Checker, u: &UnaryPrefix) {
         return;
     };
     let unary = matches!(cast, Cast::Number | Cast::BitwiseNot);
-    let sm = c.levels().strict_mixed();
+    let sm = StrictMixed::default();
     let error = declared::with_classes(c, || {
         let Some(t) = c.find_type_to_check(u.operand, &|t| !cast_is_error(t, cast, sm)).ty else {
             return false;

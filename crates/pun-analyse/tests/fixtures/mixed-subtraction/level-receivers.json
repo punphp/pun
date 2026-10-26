@@ -1,0 +1,185 @@
+{
+  "2": [
+    [
+      43,
+      "classConstant.nonObject",
+      "Cannot access constant CONCRETE on int.",
+      null,
+      true
+    ],
+    [
+      44,
+      "method.nonObject",
+      "Cannot call method run() on int.",
+      null,
+      true
+    ],
+    [
+      45,
+      "property.nonObject",
+      "Cannot access property $property on int.",
+      null,
+      true
+    ]
+  ],
+  "8": [
+    [
+      43,
+      "classConstant.nonObject",
+      "Cannot access constant CONCRETE on int.",
+      null,
+      true
+    ],
+    [
+      44,
+      "method.nonObject",
+      "Cannot call method run() on int.",
+      null,
+      true
+    ],
+    [
+      45,
+      "property.nonObject",
+      "Cannot access property $property on int.",
+      null,
+      true
+    ]
+  ],
+  "9": [
+    [
+      7,
+      "classConstant.nonObject",
+      "Cannot access constant EXPLICIT on mixed.",
+      null,
+      true
+    ],
+    [
+      8,
+      "method.nonObject",
+      "Cannot call method run() on mixed.",
+      null,
+      true
+    ],
+    [
+      9,
+      "property.nonObject",
+      "Cannot access property $property on mixed.",
+      null,
+      true
+    ],
+    [
+      27,
+      "classConstant.nonObject",
+      "Cannot access constant TEMPLATE on T of mixed.",
+      null,
+      true
+    ],
+    [
+      37,
+      "classConstant.nonObject",
+      "Cannot access constant BOUNDED on T of mixed.",
+      null,
+      true
+    ],
+    [
+      43,
+      "classConstant.nonObject",
+      "Cannot access constant CONCRETE on int.",
+      null,
+      true
+    ],
+    [
+      44,
+      "method.nonObject",
+      "Cannot call method run() on int.",
+      null,
+      true
+    ],
+    [
+      45,
+      "property.nonObject",
+      "Cannot access property $property on int.",
+      null,
+      true
+    ]
+  ],
+  "10": [
+    [
+      7,
+      "classConstant.nonObject",
+      "Cannot access constant EXPLICIT on mixed.",
+      null,
+      true
+    ],
+    [
+      8,
+      "method.nonObject",
+      "Cannot call method run() on mixed.",
+      null,
+      true
+    ],
+    [
+      9,
+      "property.nonObject",
+      "Cannot access property $property on mixed.",
+      null,
+      true
+    ],
+    [
+      15,
+      "classConstant.nonObject",
+      "Cannot access constant IMPLICIT on mixed.",
+      null,
+      true
+    ],
+    [
+      16,
+      "method.nonObject",
+      "Cannot call method run() on mixed.",
+      null,
+      true
+    ],
+    [
+      17,
+      "property.nonObject",
+      "Cannot access property $property on mixed.",
+      null,
+      true
+    ],
+    [
+      27,
+      "classConstant.nonObject",
+      "Cannot access constant TEMPLATE on T of mixed.",
+      null,
+      true
+    ],
+    [
+      37,
+      "classConstant.nonObject",
+      "Cannot access constant BOUNDED on T of mixed.",
+      null,
+      true
+    ],
+    [
+      43,
+      "classConstant.nonObject",
+      "Cannot access constant CONCRETE on int.",
+      null,
+      true
+    ],
+    [
+      44,
+      "method.nonObject",
+      "Cannot call method run() on int.",
+      null,
+      true
+    ],
+    [
+      45,
+      "property.nonObject",
+      "Cannot access property $property on int.",
+      null,
+      true
+    ]
+  ]
+}

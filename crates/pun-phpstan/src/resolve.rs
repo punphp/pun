@@ -984,10 +984,14 @@ fn constant(c: &ConstExpr, scope: &dyn Scope) -> Type {
         ConstExpr::Fetch(class_name, name) => {
             let is_static = class.is_some() && class_name.eq_ignore_ascii_case("static");
             let class_name = match (class, class_name.to_ascii_lowercase().as_str()) {
-                (Some(c), "self" | "static") => c,
-                _ => &scope.resolve_name(class_name),
+                (Some(c), "self" | "static") => c.to_string(),
+                (Some(c), "parent") if symbols::lookup(c).is_some() => match scope.parent() {
+                    Some(parent) => parent,
+                    None => return Type::Error,
+                },
+                _ => scope.resolve_name(class_name),
             };
-            let Some(reflection) = symbols::lookup(class_name) else {
+            let Some(reflection) = symbols::lookup(&class_name) else {
                 return Type::Error;
             };
             if name.eq_ignore_ascii_case("class") {

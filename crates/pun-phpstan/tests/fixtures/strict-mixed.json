@@ -8,6 +8,7 @@
                 "mixed"
             ],
             "phpdoc": "mixed",
+            "members": "Yes",
             "queries": [
                 "Maybe",
                 "Maybe",
@@ -40,6 +41,7 @@
                 "mixed"
             ],
             "phpdoc": "mixed",
+            "members": "Yes",
             "queries": [
                 "Maybe",
                 "Maybe",
@@ -72,6 +74,7 @@
                 "mixed"
             ],
             "phpdoc": "mixed",
+            "members": "No",
             "queries": [
                 "No",
                 "No",
@@ -107,6 +110,7 @@
                 "T (function fixture(), parameter)"
             ],
             "phpdoc": "T",
+            "members": "Yes",
             "queries": [
                 "Maybe",
                 "Maybe",
@@ -143,6 +147,7 @@
                 "T of mixed (function fixture(), parameter)"
             ],
             "phpdoc": "T",
+            "members": "No",
             "queries": [
                 "No",
                 "No",
@@ -181,6 +186,7 @@
                 "T of mixed (function fixture(), parameter)"
             ],
             "phpdoc": "T",
+            "members": "No",
             "queries": [
                 "No",
                 "No",
@@ -219,6 +225,7 @@
                 "T of mixed = string (function fixture(), parameter)"
             ],
             "phpdoc": "T",
+            "members": "No",
             "queries": [
                 "No",
                 "No",
@@ -261,6 +268,7 @@
                 "T of mixed = U = int (function fixture(), parameter) (function fixture(), parameter)"
             ],
             "phpdoc": "T",
+            "members": "No",
             "queries": [
                 "No",
                 "No",
@@ -299,6 +307,7 @@
                 "T of mixed (function fixture(), parameter)"
             ],
             "phpdoc": "T",
+            "members": "No",
             "queries": [
                 "No",
                 "No",
@@ -337,6 +346,7 @@
                 "T of mixed = string (function fixture(), parameter)"
             ],
             "phpdoc": "T",
+            "members": "No",
             "queries": [
                 "No",
                 "No",
@@ -379,6 +389,7 @@
                 "T of mixed = U = int (function fixture(), parameter) (function fixture(), parameter)"
             ],
             "phpdoc": "T",
+            "members": "No",
             "queries": [
                 "No",
                 "No",
@@ -419,6 +430,7 @@
                 "T of mixed (function fixture(), parameter)"
             ],
             "phpdoc": "T",
+            "members": "No",
             "queries": [
                 "No",
                 "No",
@@ -459,6 +471,7 @@
                 "T of mixed = string (function fixture(), parameter)"
             ],
             "phpdoc": "T",
+            "members": "No",
             "queries": [
                 "No",
                 "No",
@@ -503,6 +516,7 @@
                 "T of mixed = U = int (function fixture(), parameter) (function fixture(), parameter)"
             ],
             "phpdoc": "T",
+            "members": "No",
             "queries": [
                 "No",
                 "No",
@@ -544,6 +558,7 @@
                 "T of mixed (function fixture(), parameter)"
             ],
             "phpdoc": "T",
+            "members": "No",
             "queries": [
                 "No",
                 "No",
@@ -585,6 +600,7 @@
                 "T of mixed = string (function fixture(), parameter)"
             ],
             "phpdoc": "T",
+            "members": "No",
             "queries": [
                 "No",
                 "No",
@@ -630,6 +646,7 @@
                 "T of mixed = U = int (function fixture(), parameter) (function fixture(), parameter)"
             ],
             "phpdoc": "T",
+            "members": "No",
             "queries": [
                 "No",
                 "No",
@@ -668,6 +685,7 @@
                 "T of mixed (function fixture(), argument)"
             ],
             "phpdoc": "T",
+            "members": "No",
             "queries": [
                 "No",
                 "No",
@@ -706,6 +724,7 @@
                 "T of mixed = string (function fixture(), argument)"
             ],
             "phpdoc": "T",
+            "members": "No",
             "queries": [
                 "No",
                 "No",
@@ -748,6 +767,7 @@
                 "T of mixed = U = int (function fixture(), parameter) (function fixture(), argument)"
             ],
             "phpdoc": "T",
+            "members": "No",
             "queries": [
                 "No",
                 "No",
@@ -786,6 +806,7 @@
                 "T of mixed (function fixture(), argument)"
             ],
             "phpdoc": "T",
+            "members": "No",
             "queries": [
                 "No",
                 "No",
@@ -824,6 +845,7 @@
                 "T of mixed = string (function fixture(), argument)"
             ],
             "phpdoc": "T",
+            "members": "No",
             "queries": [
                 "No",
                 "No",
@@ -866,6 +888,7 @@
                 "T of mixed = U = int (function fixture(), parameter) (function fixture(), argument)"
             ],
             "phpdoc": "T",
+            "members": "No",
             "queries": [
                 "No",
                 "No",
@@ -906,6 +929,7 @@
                 "T of mixed (function fixture(), argument)"
             ],
             "phpdoc": "T",
+            "members": "No",
             "queries": [
                 "No",
                 "No",
@@ -946,6 +970,7 @@
                 "T of mixed = string (function fixture(), argument)"
             ],
             "phpdoc": "T",
+            "members": "No",
             "queries": [
                 "No",
                 "No",
@@ -990,6 +1015,7 @@
                 "T of mixed = U = int (function fixture(), parameter) (function fixture(), argument)"
             ],
             "phpdoc": "T",
+            "members": "No",
             "queries": [
                 "No",
                 "No",
@@ -1031,6 +1057,7 @@
                 "T of mixed (function fixture(), argument)"
             ],
             "phpdoc": "T",
+            "members": "No",
             "queries": [
                 "No",
                 "No",
@@ -1072,6 +1099,7 @@
                 "T of mixed = string (function fixture(), argument)"
             ],
             "phpdoc": "T",
+            "members": "No",
             "queries": [
                 "No",
                 "No",
@@ -1117,6 +1145,7 @@
                 "T of mixed = U = int (function fixture(), parameter) (function fixture(), argument)"
             ],
             "phpdoc": "T",
+            "members": "No",
             "queries": [
                 "No",
                 "No",
@@ -1154,7 +1183,8 @@
                 "mixed|object",
                 "mixed|object"
             ],
-            "phpdoc": "mixed|object"
+            "phpdoc": "mixed|object",
+            "members": "Maybe"
         },
         {
             "input": {
@@ -1173,7 +1203,8 @@
                 "object|T of mixed",
                 "object|T of mixed (function fixture(), parameter)"
             ],
-            "phpdoc": "object|T"
+            "phpdoc": "object|T",
+            "members": "Maybe"
         },
         {
             "input": {
@@ -1197,7 +1228,69 @@
                 "(T of mixed)|U of mixed = int",
                 "T of mixed (function fixture(), parameter)|U of mixed = int (function fixture(), parameter)"
             ],
-            "phpdoc": "T|U"
+            "phpdoc": "T|U",
+            "members": "No"
+        },
+        {
+            "input": {
+                "kind": "benevolent",
+                "parts": [
+                    "strict",
+                    "object"
+                ]
+            },
+            "descriptions": [
+                "(mixed)",
+                "(mixed|object)",
+                "(mixed|object)"
+            ],
+            "phpdoc": "mixed|object",
+            "members": "Yes"
+        },
+        {
+            "input": {
+                "kind": "benevolent",
+                "parts": [
+                    {
+                        "template": "mixed",
+                        "name": "T",
+                        "strict": true
+                    },
+                    "object"
+                ]
+            },
+            "descriptions": [
+                "(object|T of mixed)",
+                "(object|T of mixed)",
+                "(object|T of mixed (function fixture(), parameter))"
+            ],
+            "phpdoc": "object|T",
+            "members": "Yes"
+        },
+        {
+            "input": {
+                "kind": "benevolent",
+                "parts": [
+                    {
+                        "template": "mixed",
+                        "name": "T",
+                        "strict": true
+                    },
+                    {
+                        "template": "mixed",
+                        "name": "U",
+                        "strict": true,
+                        "default": "int"
+                    }
+                ]
+            },
+            "descriptions": [
+                "((T of mixed)|U of mixed = int)",
+                "((T of mixed)|U of mixed = int)",
+                "(T of mixed (function fixture(), parameter)|U of mixed = int (function fixture(), parameter))"
+            ],
+            "phpdoc": "T|U",
+            "members": "No"
         },
         {
             "input": {
@@ -1212,7 +1305,8 @@
                 "mixed&object",
                 "mixed&object"
             ],
-            "phpdoc": "mixed&object"
+            "phpdoc": "mixed&object",
+            "members": "Yes"
         },
         {
             "input": {
@@ -1231,7 +1325,8 @@
                 "object&T of mixed",
                 "object&T of mixed (function fixture(), parameter)"
             ],
-            "phpdoc": "object&T"
+            "phpdoc": "object&T",
+            "members": "Yes"
         },
         {
             "input": {
@@ -1255,7 +1350,8 @@
                 "T of mixed&U of mixed = int",
                 "T of mixed (function fixture(), parameter)&U of mixed = int (function fixture(), parameter)"
             ],
-            "phpdoc": "T&U"
+            "phpdoc": "T&U",
+            "members": "No"
         },
         {
             "input": {
@@ -1270,7 +1366,8 @@
                 "mixed",
                 "mixed"
             ],
-            "phpdoc": "mixed"
+            "phpdoc": "mixed",
+            "members": "No"
         },
         {
             "input": {
@@ -1289,7 +1386,8 @@
                 "object|T of mixed",
                 "object|T of mixed (function fixture(), parameter)"
             ],
-            "phpdoc": "object|T"
+            "phpdoc": "object|T",
+            "members": "Maybe"
         },
         {
             "input": {
@@ -1313,7 +1411,8 @@
                 "(T of mixed)|U of mixed = int",
                 "T of mixed (function fixture(), parameter)|U of mixed = int (function fixture(), parameter)"
             ],
-            "phpdoc": "T|U"
+            "phpdoc": "T|U",
+            "members": "No"
         },
         {
             "input": {
@@ -1328,7 +1427,8 @@
                 "object",
                 "object"
             ],
-            "phpdoc": "object"
+            "phpdoc": "object",
+            "members": "Yes"
         },
         {
             "input": {
@@ -1347,7 +1447,8 @@
                 "object&T of mixed",
                 "object&T of mixed (function fixture(), parameter)"
             ],
-            "phpdoc": "object&T"
+            "phpdoc": "object&T",
+            "members": "Yes"
         },
         {
             "input": {
@@ -1371,7 +1472,8 @@
                 "T of mixed&U of mixed = int",
                 "T of mixed (function fixture(), parameter)&U of mixed = int (function fixture(), parameter)"
             ],
-            "phpdoc": "T&U"
+            "phpdoc": "T&U",
+            "members": "No"
         }
     ],
     "pairs": [
@@ -1643,5 +1745,1662 @@
             "Yes",
             "Yes"
         ]
+    ],
+    "copies": [
+        {
+            "input": "mixed",
+            "tree": [
+                "strict"
+            ]
+        },
+        {
+            "input": "explicit",
+            "tree": [
+                "strict"
+            ]
+        },
+        {
+            "input": "strict",
+            "tree": [
+                "strict"
+            ]
+        },
+        {
+            "input": "error",
+            "tree": [
+                "strict"
+            ]
+        },
+        {
+            "input": {
+                "excluded": "int"
+            },
+            "tree": [
+                "strict"
+            ]
+        },
+        {
+            "input": {
+                "excluded": "int",
+                "explicit": true
+            },
+            "tree": [
+                "strict"
+            ]
+        },
+        {
+            "input": {
+                "template": "mixed",
+                "name": "T",
+                "strict": true,
+                "default": "explicit"
+            },
+            "tree": [
+                "template",
+                "T",
+                "function fixture()",
+                false,
+                [
+                    "strict"
+                ],
+                [
+                    "mixed",
+                    true
+                ]
+            ]
+        },
+        {
+            "input": {
+                "template": {
+                    "template": "mixed",
+                    "name": "T"
+                },
+                "name": "Nested",
+                "default": {
+                    "template": "mixed",
+                    "name": "Default"
+                }
+            },
+            "tree": [
+                "template",
+                "Nested",
+                "function fixture()",
+                false,
+                [
+                    "strict"
+                ],
+                [
+                    "template",
+                    "Default",
+                    "function fixture()",
+                    false,
+                    [
+                        "mixed",
+                        false
+                    ],
+                    null
+                ]
+            ]
+        },
+        {
+            "input": {
+                "template": "int",
+                "name": "Concrete",
+                "default": "explicit"
+            },
+            "tree": [
+                "template",
+                "Concrete",
+                "function fixture()",
+                false,
+                [
+                    "int"
+                ],
+                [
+                    "mixed",
+                    true
+                ]
+            ]
+        },
+        {
+            "input": {
+                "template": {
+                    "kind": "array",
+                    "parts": [
+                        "int",
+                        "explicit"
+                    ]
+                },
+                "name": "Items",
+                "default": "mixed"
+            },
+            "tree": [
+                "template",
+                "Items",
+                "function fixture()",
+                false,
+                [
+                    "array",
+                    [
+                        "int"
+                    ],
+                    [
+                        "mixed",
+                        true
+                    ]
+                ],
+                [
+                    "mixed",
+                    false
+                ]
+            ]
+        },
+        {
+            "input": {
+                "kind": "array",
+                "parts": [
+                    "mixed",
+                    {
+                        "kind": "iterable",
+                        "parts": [
+                            "explicit",
+                            {
+                                "template": "mixed",
+                                "name": "T",
+                                "strict": true
+                            }
+                        ]
+                    }
+                ]
+            },
+            "tree": [
+                "array",
+                [
+                    "mixed",
+                    false
+                ],
+                [
+                    "iterable",
+                    [
+                        "mixed",
+                        true
+                    ],
+                    [
+                        "template",
+                        "T",
+                        "function fixture()",
+                        false,
+                        [
+                            "strict"
+                        ],
+                        null
+                    ]
+                ]
+            ]
+        },
+        {
+            "input": {
+                "kind": "generic",
+                "parts": [
+                    "mixed",
+                    {
+                        "template": "mixed",
+                        "name": "T",
+                        "default": "explicit"
+                    }
+                ]
+            },
+            "tree": [
+                "generic",
+                "ArrayObject",
+                [
+                    [
+                        "mixed",
+                        false
+                    ],
+                    [
+                        "template",
+                        "T",
+                        "function fixture()",
+                        false,
+                        [
+                            "mixed",
+                            false
+                        ],
+                        [
+                            "mixed",
+                            true
+                        ]
+                    ]
+                ]
+            ]
+        },
+        {
+            "input": {
+                "kind": "union",
+                "parts": [
+                    "object",
+                    {
+                        "template": "mixed",
+                        "name": "T",
+                        "strict": true
+                    }
+                ]
+            },
+            "tree": [
+                "union",
+                [
+                    [
+                        "object"
+                    ],
+                    [
+                        "template",
+                        "T",
+                        "function fixture()",
+                        false,
+                        [
+                            "strict"
+                        ],
+                        null
+                    ]
+                ]
+            ]
+        },
+        {
+            "input": {
+                "kind": "intersection",
+                "parts": [
+                    {
+                        "template": "mixed",
+                        "name": "T",
+                        "strict": true
+                    },
+                    {
+                        "template": "mixed",
+                        "name": "U"
+                    }
+                ]
+            },
+            "tree": [
+                "intersection",
+                [
+                    [
+                        "template",
+                        "T",
+                        "function fixture()",
+                        false,
+                        [
+                            "strict"
+                        ],
+                        null
+                    ],
+                    [
+                        "template",
+                        "U",
+                        "function fixture()",
+                        false,
+                        [
+                            "mixed",
+                            false
+                        ],
+                        null
+                    ]
+                ]
+            ]
+        }
+    ],
+    "transforms": [
+        {
+            "input": "mixed",
+            "explicit": false,
+            "implicit": false,
+            "tree": [
+                "mixed",
+                false
+            ]
+        },
+        {
+            "input": "explicit",
+            "explicit": false,
+            "implicit": false,
+            "tree": [
+                "mixed",
+                true
+            ]
+        },
+        {
+            "input": "strict",
+            "explicit": false,
+            "implicit": false,
+            "tree": [
+                "strict"
+            ]
+        },
+        {
+            "input": "error",
+            "explicit": false,
+            "implicit": false,
+            "tree": [
+                "error"
+            ]
+        },
+        {
+            "input": {
+                "excluded": "int"
+            },
+            "explicit": false,
+            "implicit": false,
+            "tree": [
+                "subtracted",
+                false,
+                [
+                    "int"
+                ]
+            ]
+        },
+        {
+            "input": {
+                "excluded": "int",
+                "explicit": true
+            },
+            "explicit": false,
+            "implicit": false,
+            "tree": [
+                "subtracted",
+                true,
+                [
+                    "int"
+                ]
+            ]
+        },
+        {
+            "input": {
+                "template": "mixed",
+                "name": "T",
+                "strict": true,
+                "default": "explicit"
+            },
+            "explicit": false,
+            "implicit": false,
+            "tree": [
+                "template",
+                "T",
+                "function fixture()",
+                false,
+                [
+                    "strict"
+                ],
+                [
+                    "mixed",
+                    true
+                ]
+            ]
+        },
+        {
+            "input": {
+                "template": {
+                    "template": "mixed",
+                    "name": "T"
+                },
+                "name": "Nested",
+                "default": {
+                    "template": "mixed",
+                    "name": "Default"
+                }
+            },
+            "explicit": false,
+            "implicit": false,
+            "tree": [
+                "template",
+                "Nested",
+                "function fixture()",
+                false,
+                [
+                    "template",
+                    "T",
+                    "function fixture()",
+                    false,
+                    [
+                        "mixed",
+                        false
+                    ],
+                    null
+                ],
+                [
+                    "template",
+                    "Default",
+                    "function fixture()",
+                    false,
+                    [
+                        "mixed",
+                        false
+                    ],
+                    null
+                ]
+            ]
+        },
+        {
+            "input": {
+                "template": "int",
+                "name": "Concrete",
+                "default": "explicit"
+            },
+            "explicit": false,
+            "implicit": false,
+            "tree": [
+                "template",
+                "Concrete",
+                "function fixture()",
+                false,
+                [
+                    "int"
+                ],
+                [
+                    "mixed",
+                    true
+                ]
+            ]
+        },
+        {
+            "input": {
+                "template": {
+                    "kind": "array",
+                    "parts": [
+                        "int",
+                        "explicit"
+                    ]
+                },
+                "name": "Items",
+                "default": "mixed"
+            },
+            "explicit": false,
+            "implicit": false,
+            "tree": [
+                "template",
+                "Items",
+                "function fixture()",
+                false,
+                [
+                    "array",
+                    [
+                        "int"
+                    ],
+                    [
+                        "mixed",
+                        true
+                    ]
+                ],
+                [
+                    "mixed",
+                    false
+                ]
+            ]
+        },
+        {
+            "input": {
+                "kind": "array",
+                "parts": [
+                    "mixed",
+                    {
+                        "kind": "iterable",
+                        "parts": [
+                            "explicit",
+                            {
+                                "template": "mixed",
+                                "name": "T",
+                                "strict": true
+                            }
+                        ]
+                    }
+                ]
+            },
+            "explicit": false,
+            "implicit": false,
+            "tree": [
+                "array",
+                [
+                    "mixed",
+                    false
+                ],
+                [
+                    "iterable",
+                    [
+                        "mixed",
+                        true
+                    ],
+                    [
+                        "template",
+                        "T",
+                        "function fixture()",
+                        false,
+                        [
+                            "strict"
+                        ],
+                        null
+                    ]
+                ]
+            ]
+        },
+        {
+            "input": {
+                "kind": "generic",
+                "parts": [
+                    "mixed",
+                    {
+                        "template": "mixed",
+                        "name": "T",
+                        "default": "explicit"
+                    }
+                ]
+            },
+            "explicit": false,
+            "implicit": false,
+            "tree": [
+                "generic",
+                "ArrayObject",
+                [
+                    [
+                        "mixed",
+                        false
+                    ],
+                    [
+                        "template",
+                        "T",
+                        "function fixture()",
+                        false,
+                        [
+                            "mixed",
+                            false
+                        ],
+                        [
+                            "mixed",
+                            true
+                        ]
+                    ]
+                ]
+            ]
+        },
+        {
+            "input": {
+                "kind": "union",
+                "parts": [
+                    "object",
+                    {
+                        "template": "mixed",
+                        "name": "T",
+                        "strict": true
+                    }
+                ]
+            },
+            "explicit": false,
+            "implicit": false,
+            "tree": [
+                "union",
+                [
+                    [
+                        "object"
+                    ],
+                    [
+                        "template",
+                        "T",
+                        "function fixture()",
+                        false,
+                        [
+                            "strict"
+                        ],
+                        null
+                    ]
+                ]
+            ]
+        },
+        {
+            "input": {
+                "kind": "intersection",
+                "parts": [
+                    {
+                        "template": "mixed",
+                        "name": "T",
+                        "strict": true
+                    },
+                    {
+                        "template": "mixed",
+                        "name": "U"
+                    }
+                ]
+            },
+            "explicit": false,
+            "implicit": false,
+            "tree": [
+                "intersection",
+                [
+                    [
+                        "template",
+                        "T",
+                        "function fixture()",
+                        false,
+                        [
+                            "strict"
+                        ],
+                        null
+                    ],
+                    [
+                        "template",
+                        "U",
+                        "function fixture()",
+                        false,
+                        [
+                            "mixed",
+                            false
+                        ],
+                        null
+                    ]
+                ]
+            ]
+        },
+        {
+            "input": "mixed",
+            "explicit": false,
+            "implicit": true,
+            "tree": [
+                "strict"
+            ]
+        },
+        {
+            "input": "explicit",
+            "explicit": false,
+            "implicit": true,
+            "tree": [
+                "mixed",
+                true
+            ]
+        },
+        {
+            "input": "strict",
+            "explicit": false,
+            "implicit": true,
+            "tree": [
+                "strict"
+            ]
+        },
+        {
+            "input": "error",
+            "explicit": false,
+            "implicit": true,
+            "tree": [
+                "strict"
+            ]
+        },
+        {
+            "input": {
+                "excluded": "int"
+            },
+            "explicit": false,
+            "implicit": true,
+            "tree": [
+                "strict"
+            ]
+        },
+        {
+            "input": {
+                "excluded": "int",
+                "explicit": true
+            },
+            "explicit": false,
+            "implicit": true,
+            "tree": [
+                "subtracted",
+                true,
+                [
+                    "int"
+                ]
+            ]
+        },
+        {
+            "input": {
+                "template": "mixed",
+                "name": "T",
+                "strict": true,
+                "default": "explicit"
+            },
+            "explicit": false,
+            "implicit": true,
+            "tree": [
+                "template",
+                "T",
+                "function fixture()",
+                false,
+                [
+                    "strict"
+                ],
+                [
+                    "mixed",
+                    true
+                ]
+            ]
+        },
+        {
+            "input": {
+                "template": {
+                    "template": "mixed",
+                    "name": "T"
+                },
+                "name": "Nested",
+                "default": {
+                    "template": "mixed",
+                    "name": "Default"
+                }
+            },
+            "explicit": false,
+            "implicit": true,
+            "tree": [
+                "template",
+                "Nested",
+                "function fixture()",
+                false,
+                [
+                    "template",
+                    "T",
+                    "function fixture()",
+                    false,
+                    [
+                        "mixed",
+                        true
+                    ],
+                    null
+                ],
+                [
+                    "template",
+                    "Default",
+                    "function fixture()",
+                    false,
+                    [
+                        "mixed",
+                        true
+                    ],
+                    null
+                ]
+            ]
+        },
+        {
+            "input": {
+                "template": "int",
+                "name": "Concrete",
+                "default": "explicit"
+            },
+            "explicit": false,
+            "implicit": true,
+            "tree": [
+                "template",
+                "Concrete",
+                "function fixture()",
+                false,
+                [
+                    "int"
+                ],
+                [
+                    "mixed",
+                    true
+                ]
+            ]
+        },
+        {
+            "input": {
+                "template": {
+                    "kind": "array",
+                    "parts": [
+                        "int",
+                        "explicit"
+                    ]
+                },
+                "name": "Items",
+                "default": "mixed"
+            },
+            "explicit": false,
+            "implicit": true,
+            "tree": [
+                "template",
+                "Items",
+                "function fixture()",
+                false,
+                [
+                    "array",
+                    [
+                        "int"
+                    ],
+                    [
+                        "mixed",
+                        true
+                    ]
+                ],
+                [
+                    "strict"
+                ]
+            ]
+        },
+        {
+            "input": {
+                "kind": "array",
+                "parts": [
+                    "mixed",
+                    {
+                        "kind": "iterable",
+                        "parts": [
+                            "explicit",
+                            {
+                                "template": "mixed",
+                                "name": "T",
+                                "strict": true
+                            }
+                        ]
+                    }
+                ]
+            },
+            "explicit": false,
+            "implicit": true,
+            "tree": [
+                "array",
+                [
+                    "union",
+                    [
+                        [
+                            "string"
+                        ],
+                        [
+                            "int"
+                        ]
+                    ]
+                ],
+                [
+                    "iterable",
+                    [
+                        "mixed",
+                        true
+                    ],
+                    [
+                        "template",
+                        "T",
+                        "function fixture()",
+                        false,
+                        [
+                            "strict"
+                        ],
+                        null
+                    ]
+                ]
+            ]
+        },
+        {
+            "input": {
+                "kind": "generic",
+                "parts": [
+                    "mixed",
+                    {
+                        "template": "mixed",
+                        "name": "T",
+                        "default": "explicit"
+                    }
+                ]
+            },
+            "explicit": false,
+            "implicit": true,
+            "tree": [
+                "generic",
+                "ArrayObject",
+                [
+                    [
+                        "strict"
+                    ],
+                    [
+                        "template",
+                        "T",
+                        "function fixture()",
+                        false,
+                        [
+                            "mixed",
+                            true
+                        ],
+                        [
+                            "mixed",
+                            true
+                        ]
+                    ]
+                ]
+            ]
+        },
+        {
+            "input": {
+                "kind": "union",
+                "parts": [
+                    "object",
+                    {
+                        "template": "mixed",
+                        "name": "T",
+                        "strict": true
+                    }
+                ]
+            },
+            "explicit": false,
+            "implicit": true,
+            "tree": [
+                "union",
+                [
+                    [
+                        "object"
+                    ],
+                    [
+                        "template",
+                        "T",
+                        "function fixture()",
+                        false,
+                        [
+                            "strict"
+                        ],
+                        null
+                    ]
+                ]
+            ]
+        },
+        {
+            "input": {
+                "kind": "intersection",
+                "parts": [
+                    {
+                        "template": "mixed",
+                        "name": "T",
+                        "strict": true
+                    },
+                    {
+                        "template": "mixed",
+                        "name": "U"
+                    }
+                ]
+            },
+            "explicit": false,
+            "implicit": true,
+            "tree": [
+                "intersection",
+                [
+                    [
+                        "template",
+                        "T",
+                        "function fixture()",
+                        false,
+                        [
+                            "strict"
+                        ],
+                        null
+                    ],
+                    [
+                        "template",
+                        "U",
+                        "function fixture()",
+                        false,
+                        [
+                            "mixed",
+                            true
+                        ],
+                        null
+                    ]
+                ]
+            ]
+        },
+        {
+            "input": "mixed",
+            "explicit": true,
+            "implicit": false,
+            "tree": [
+                "mixed",
+                false
+            ]
+        },
+        {
+            "input": "explicit",
+            "explicit": true,
+            "implicit": false,
+            "tree": [
+                "strict"
+            ]
+        },
+        {
+            "input": "strict",
+            "explicit": true,
+            "implicit": false,
+            "tree": [
+                "strict"
+            ]
+        },
+        {
+            "input": "error",
+            "explicit": true,
+            "implicit": false,
+            "tree": [
+                "error"
+            ]
+        },
+        {
+            "input": {
+                "excluded": "int"
+            },
+            "explicit": true,
+            "implicit": false,
+            "tree": [
+                "subtracted",
+                false,
+                [
+                    "int"
+                ]
+            ]
+        },
+        {
+            "input": {
+                "excluded": "int",
+                "explicit": true
+            },
+            "explicit": true,
+            "implicit": false,
+            "tree": [
+                "strict"
+            ]
+        },
+        {
+            "input": {
+                "template": "mixed",
+                "name": "T",
+                "strict": true,
+                "default": "explicit"
+            },
+            "explicit": true,
+            "implicit": false,
+            "tree": [
+                "template",
+                "T",
+                "function fixture()",
+                false,
+                [
+                    "mixed",
+                    true
+                ],
+                [
+                    "strict"
+                ]
+            ]
+        },
+        {
+            "input": {
+                "template": {
+                    "template": "mixed",
+                    "name": "T"
+                },
+                "name": "Nested",
+                "default": {
+                    "template": "mixed",
+                    "name": "Default"
+                }
+            },
+            "explicit": true,
+            "implicit": false,
+            "tree": [
+                "template",
+                "Nested",
+                "function fixture()",
+                false,
+                [
+                    "strict"
+                ],
+                [
+                    "template",
+                    "Default",
+                    "function fixture()",
+                    false,
+                    [
+                        "mixed",
+                        false
+                    ],
+                    null
+                ]
+            ]
+        },
+        {
+            "input": {
+                "template": "int",
+                "name": "Concrete",
+                "default": "explicit"
+            },
+            "explicit": true,
+            "implicit": false,
+            "tree": [
+                "template",
+                "Concrete",
+                "function fixture()",
+                false,
+                [
+                    "int"
+                ],
+                [
+                    "strict"
+                ]
+            ]
+        },
+        {
+            "input": {
+                "template": {
+                    "kind": "array",
+                    "parts": [
+                        "int",
+                        "explicit"
+                    ]
+                },
+                "name": "Items",
+                "default": "mixed"
+            },
+            "explicit": true,
+            "implicit": false,
+            "tree": [
+                "template",
+                "Items",
+                "function fixture()",
+                false,
+                [
+                    "array",
+                    [
+                        "int"
+                    ],
+                    [
+                        "strict"
+                    ]
+                ],
+                [
+                    "mixed",
+                    false
+                ]
+            ]
+        },
+        {
+            "input": {
+                "kind": "array",
+                "parts": [
+                    "mixed",
+                    {
+                        "kind": "iterable",
+                        "parts": [
+                            "explicit",
+                            {
+                                "template": "mixed",
+                                "name": "T",
+                                "strict": true
+                            }
+                        ]
+                    }
+                ]
+            },
+            "explicit": true,
+            "implicit": false,
+            "tree": [
+                "array",
+                [
+                    "mixed",
+                    false
+                ],
+                [
+                    "iterable",
+                    [
+                        "strict"
+                    ],
+                    [
+                        "template",
+                        "T",
+                        "function fixture()",
+                        false,
+                        [
+                            "strict"
+                        ],
+                        null
+                    ]
+                ]
+            ]
+        },
+        {
+            "input": {
+                "kind": "generic",
+                "parts": [
+                    "mixed",
+                    {
+                        "template": "mixed",
+                        "name": "T",
+                        "default": "explicit"
+                    }
+                ]
+            },
+            "explicit": true,
+            "implicit": false,
+            "tree": [
+                "generic",
+                "ArrayObject",
+                [
+                    [
+                        "mixed",
+                        false
+                    ],
+                    [
+                        "template",
+                        "T",
+                        "function fixture()",
+                        false,
+                        [
+                            "strict"
+                        ],
+                        [
+                            "mixed",
+                            true
+                        ]
+                    ]
+                ]
+            ]
+        },
+        {
+            "input": {
+                "kind": "union",
+                "parts": [
+                    "object",
+                    {
+                        "template": "mixed",
+                        "name": "T",
+                        "strict": true
+                    }
+                ]
+            },
+            "explicit": true,
+            "implicit": false,
+            "tree": [
+                "union",
+                [
+                    [
+                        "object"
+                    ],
+                    [
+                        "template",
+                        "T",
+                        "function fixture()",
+                        false,
+                        [
+                            "strict"
+                        ],
+                        null
+                    ]
+                ]
+            ]
+        },
+        {
+            "input": {
+                "kind": "intersection",
+                "parts": [
+                    {
+                        "template": "mixed",
+                        "name": "T",
+                        "strict": true
+                    },
+                    {
+                        "template": "mixed",
+                        "name": "U"
+                    }
+                ]
+            },
+            "explicit": true,
+            "implicit": false,
+            "tree": [
+                "intersection",
+                [
+                    [
+                        "template",
+                        "T",
+                        "function fixture()",
+                        false,
+                        [
+                            "strict"
+                        ],
+                        null
+                    ],
+                    [
+                        "template",
+                        "U",
+                        "function fixture()",
+                        false,
+                        [
+                            "strict"
+                        ],
+                        null
+                    ]
+                ]
+            ]
+        },
+        {
+            "input": "mixed",
+            "explicit": true,
+            "implicit": true,
+            "tree": [
+                "strict"
+            ]
+        },
+        {
+            "input": "explicit",
+            "explicit": true,
+            "implicit": true,
+            "tree": [
+                "strict"
+            ]
+        },
+        {
+            "input": "strict",
+            "explicit": true,
+            "implicit": true,
+            "tree": [
+                "strict"
+            ]
+        },
+        {
+            "input": "error",
+            "explicit": true,
+            "implicit": true,
+            "tree": [
+                "strict"
+            ]
+        },
+        {
+            "input": {
+                "excluded": "int"
+            },
+            "explicit": true,
+            "implicit": true,
+            "tree": [
+                "strict"
+            ]
+        },
+        {
+            "input": {
+                "excluded": "int",
+                "explicit": true
+            },
+            "explicit": true,
+            "implicit": true,
+            "tree": [
+                "strict"
+            ]
+        },
+        {
+            "input": {
+                "template": "mixed",
+                "name": "T",
+                "strict": true,
+                "default": "explicit"
+            },
+            "explicit": true,
+            "implicit": true,
+            "tree": [
+                "template",
+                "T",
+                "function fixture()",
+                false,
+                [
+                    "mixed",
+                    true
+                ],
+                [
+                    "strict"
+                ]
+            ]
+        },
+        {
+            "input": {
+                "template": {
+                    "template": "mixed",
+                    "name": "T"
+                },
+                "name": "Nested",
+                "default": {
+                    "template": "mixed",
+                    "name": "Default"
+                }
+            },
+            "explicit": true,
+            "implicit": true,
+            "tree": [
+                "template",
+                "Nested",
+                "function fixture()",
+                false,
+                [
+                    "strict"
+                ],
+                [
+                    "template",
+                    "Default",
+                    "function fixture()",
+                    false,
+                    [
+                        "mixed",
+                        false
+                    ],
+                    null
+                ]
+            ]
+        },
+        {
+            "input": {
+                "template": "int",
+                "name": "Concrete",
+                "default": "explicit"
+            },
+            "explicit": true,
+            "implicit": true,
+            "tree": [
+                "template",
+                "Concrete",
+                "function fixture()",
+                false,
+                [
+                    "int"
+                ],
+                [
+                    "strict"
+                ]
+            ]
+        },
+        {
+            "input": {
+                "template": {
+                    "kind": "array",
+                    "parts": [
+                        "int",
+                        "explicit"
+                    ]
+                },
+                "name": "Items",
+                "default": "mixed"
+            },
+            "explicit": true,
+            "implicit": true,
+            "tree": [
+                "template",
+                "Items",
+                "function fixture()",
+                false,
+                [
+                    "array",
+                    [
+                        "int"
+                    ],
+                    [
+                        "strict"
+                    ]
+                ],
+                [
+                    "strict"
+                ]
+            ]
+        },
+        {
+            "input": {
+                "kind": "array",
+                "parts": [
+                    "mixed",
+                    {
+                        "kind": "iterable",
+                        "parts": [
+                            "explicit",
+                            {
+                                "template": "mixed",
+                                "name": "T",
+                                "strict": true
+                            }
+                        ]
+                    }
+                ]
+            },
+            "explicit": true,
+            "implicit": true,
+            "tree": [
+                "array",
+                [
+                    "union",
+                    [
+                        [
+                            "string"
+                        ],
+                        [
+                            "int"
+                        ]
+                    ]
+                ],
+                [
+                    "iterable",
+                    [
+                        "strict"
+                    ],
+                    [
+                        "template",
+                        "T",
+                        "function fixture()",
+                        false,
+                        [
+                            "strict"
+                        ],
+                        null
+                    ]
+                ]
+            ]
+        },
+        {
+            "input": {
+                "kind": "generic",
+                "parts": [
+                    "mixed",
+                    {
+                        "template": "mixed",
+                        "name": "T",
+                        "default": "explicit"
+                    }
+                ]
+            },
+            "explicit": true,
+            "implicit": true,
+            "tree": [
+                "generic",
+                "ArrayObject",
+                [
+                    [
+                        "strict"
+                    ],
+                    [
+                        "template",
+                        "T",
+                        "function fixture()",
+                        false,
+                        [
+                            "strict"
+                        ],
+                        [
+                            "mixed",
+                            true
+                        ]
+                    ]
+                ]
+            ]
+        },
+        {
+            "input": {
+                "kind": "union",
+                "parts": [
+                    "object",
+                    {
+                        "template": "mixed",
+                        "name": "T",
+                        "strict": true
+                    }
+                ]
+            },
+            "explicit": true,
+            "implicit": true,
+            "tree": [
+                "union",
+                [
+                    [
+                        "object"
+                    ],
+                    [
+                        "template",
+                        "T",
+                        "function fixture()",
+                        false,
+                        [
+                            "strict"
+                        ],
+                        null
+                    ]
+                ]
+            ]
+        },
+        {
+            "input": {
+                "kind": "intersection",
+                "parts": [
+                    {
+                        "template": "mixed",
+                        "name": "T",
+                        "strict": true
+                    },
+                    {
+                        "template": "mixed",
+                        "name": "U"
+                    }
+                ]
+            },
+            "explicit": true,
+            "implicit": true,
+            "tree": [
+                "intersection",
+                [
+                    [
+                        "template",
+                        "T",
+                        "function fixture()",
+                        false,
+                        [
+                            "strict"
+                        ],
+                        null
+                    ],
+                    [
+                        "template",
+                        "U",
+                        "function fixture()",
+                        false,
+                        [
+                            "strict"
+                        ],
+                        null
+                    ]
+                ]
+            ]
+        }
     ]
 }

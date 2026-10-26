@@ -23,17 +23,6 @@ const GAPS: &[(&str, &str, i64, &str)] = &[
     ("types", "offsets.php", 216, "nullCoalesce.variable"),
     // Mago loses `$this` after `$this?->$this?->$name`, so the nullsafe rule misses this fetch
     ("dynamic-names", "dynamic-stringable-nullsafe-access.php", 16, "nullsafe.neverNull"),
-    // a native `mixed` parameter is explicit mixed, which level 9 checks; Mago's mixed does not tell it apart
-    ("dynamic-names", "dynamic-constant-stringable-access.php", 14, "classConstant.nameNotString"),
-    ("dynamic-names", "dynamic-constant-stringable-access.php", 14, "classConstant.nameType"),
-    ("dynamic-names", "dynamic-constant-stringable-access.php", 32, "classConstant.nameNotString"),
-    ("dynamic-names", "dynamic-constant-stringable-access.php", 32, "classConstant.nameType"),
-    ("dynamic-names", "dynamic-constant-stringable-access.php", 33, "classConstant.nameNotString"),
-    ("dynamic-names", "dynamic-constant-stringable-access.php", 33, "classConstant.nameType"),
-    ("dynamic-names", "dynamic-constant-stringable-access.php", 38, "classConstant.nameNotString"),
-    ("dynamic-names", "dynamic-constant-stringable-access.php", 38, "classConstant.nameType"),
-    ("dynamic-names", "dynamic-constant-stringable-access.php", 39, "classConstant.nameNotString"),
-    ("dynamic-names", "dynamic-constant-stringable-access.php", 39, "classConstant.nameType"),
 ];
 
 fn check(dir: &Path, neon: &str) -> Result<(), String> {

@@ -3,7 +3,7 @@
 
 use mago_syntax::cst::*;
 use pun_phpstan::symbols;
-use pun_phpstan::types::{StrictMixed, Type, accepts_reasons, ancestor_args, accepts_with, to_benevolent, union};
+use pun_phpstan::types::{StrictMixed, Type, accepts_reasons, ancestor_args, accepts_with, intersect, to_benevolent, union};
 
 use super::super::Checker;
 
@@ -74,7 +74,8 @@ impl Levels {
     /// `RuleLevelHelper::accepts()->result`: below level 7 a union is accepted when any member is.
     pub fn accepts(self, accepting: &Type, accepted: &Type, strict_types: bool) -> bool {
         let accepted = self.transform_accepted(accepting, accepted);
-        let r = accepts_with(accepting, &accepted, strict_types, self.strict_mixed());
+        let accepting = self.strict_mixed().transform(accepting);
+        let r = accepts_with(&accepting, &accepted, strict_types, self.strict_mixed());
         if self.check_union_types { r.yes() } else { !r.no() }
     }
 
@@ -82,7 +83,8 @@ impl Levels {
     /// bullet list).
     pub fn accepts_tip(self, accepting: &Type, accepted: &Type, strict_types: bool) -> Option<String> {
         let accepted = self.transform_accepted(accepting, accepted);
-        match accepts_reasons(accepting, &accepted, strict_types, self.strict_mixed()).as_slice() {
+        let accepting = self.strict_mixed().transform(accepting);
+        match accepts_reasons(&accepting, &accepted, strict_types, self.strict_mixed()).as_slice() {
             [] => None,
             [one] => Some(one.clone()),
             all => Some(all.iter().map(|r| format!("• {r}")).collect::<Vec<_>>().join("\n")),
@@ -117,28 +119,16 @@ impl<'a, 'arena> Checker<'a, 'arena> {
         ty.and_then(|t| self.find_in(self.levels(), t, criteria, Some(&mut Vec::new())))
     }
 
-    /// `findTypeToCheckImplementation()`: `None` for an ErrorType. A strict `mixed` stays `mixed`, which
-    /// [`Levels::strict_mixed`] tells apart.
+    /// `findTypeToCheckImplementation()`: `None` for an ErrorType. The checked copy is StrictMixedType,
+    /// never a replacement for the expression's stored/inferred type.
     pub(super) fn find_in(&self, l: Levels, mut t: Type, criteria: &dyn Fn(&Type) -> bool, top: Option<&mut Vec<String>>) -> Option<Type> {
         if !l.check_nullables && !t.is_null().yes() && !criteria(&Type::Null) {
             t = t.remove_null();
         }
-        // ErrorType extends implicit MixedType: strict mixed transformation precedes the error fallback.
-        if matches!(t, Type::Error) {
-            return l.check_implicit_mixed.then(pun_phpstan::types::mixed);
-        }
-        let mixed = match &t {
-            Type::Mixed { explicit } => Some(*explicit),
-            Type::Template(tt) => match tt.bound {
-                Type::Mixed { explicit } => Some(explicit),
-                _ => None,
-            },
-            _ => None,
-        };
-        if let Some(explicit) = mixed {
+        // ErrorType and SubtractedMixed are MixedType too. A mixed template is always explicitly mixed.
+        if let Some(explicit) = t.mixed_explicitness() {
             let strict = if explicit { l.check_explicit_mixed } else { l.check_implicit_mixed };
-            // a template of `mixed` stays the template (`T of mixed` in messages)
-            return strict.then_some(t);
+            return strict.then(|| t.to_strict_mixed());
         }
         if matches!(t, Type::Never(_)) {
             return None;
@@ -158,24 +148,34 @@ impl<'a, 'arena> Checker<'a, 'arena> {
         if !l.check_union_types && matches!(t, Type::ObjectWithoutClass | Type::ObjectShape(_)) {
             return None;
         }
-        // a TemplateUnionType is a UnionType (TemplateBenevolentUnionType a benevolent one): filtered by its members
-        let template_union = match &t {
-            Type::Template(tt) if matches!(tt.bound, Type::Union(_) | Type::Benevolent(_)) => Some(tt.bound.clone()),
+        // TemplateUnionType/TemplateIntersectionType inherit their bound's compound dispatch.
+        let template_compound = match &t {
+            Type::Template(tt) if matches!(tt.bound, Type::Union(_) | Type::Benevolent(_) | Type::Intersection(_)) => Some(tt.bound.clone()),
             _ => None,
         };
-        if let Type::Union(types) | Type::Benevolent(types) = template_union.as_ref().unwrap_or(&t) {
-            let t = template_union.as_ref().unwrap_or(&t);
+        if let Type::Union(types) | Type::Benevolent(types) = template_compound.as_ref().unwrap_or(&t) {
+            let t = template_compound.as_ref().unwrap_or(&t);
             // checkBenevolentUnionTypes is off: a benevolent union is always filtered
             let filter = !l.check_union_types || matches!(t, Type::Benevolent(_));
             let kept: Vec<Type> = types
                 .iter()
                 .filter(|i| !filter || criteria(i))
-                .filter_map(|i| self.find_in(l, i.clone(), criteria, None))
+                // Filter the original members first, then retain recursive ErrorTypes during recombination.
+                .map(|i| self.find_in(l, i.clone(), criteria, None).unwrap_or(Type::Error))
                 .collect();
             if !kept.is_empty() {
                 let u = union(kept);
-                return Some(if matches!(t, Type::Benevolent(_)) { to_benevolent(u) } else { u });
+                return (!matches!(u, Type::Error)).then(|| if matches!(t, Type::Benevolent(_)) { to_benevolent(u) } else { u });
             }
+        }
+        if let Type::Intersection(parts) = template_compound.as_ref().unwrap_or(&t)
+            && parts.iter().any(|t| matches!(t, Type::Template(_)) && t.mixed_explicitness().is_some())
+        {
+            // Only direct TemplateMixedType members are converted, even below level 9. Do not descend into
+            // unrelated array/generic arguments, defaults or arbitrary intersection members.
+            return Some(intersect(parts.iter().map(|t| {
+                if matches!(t, Type::Template(_)) { t.to_strict_mixed() } else { t.clone() }
+            }).collect()));
         }
         Some(t)
     }

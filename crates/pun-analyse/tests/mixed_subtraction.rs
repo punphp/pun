@@ -475,6 +475,25 @@ fn mixed_metadata_restoration_keeps_both_explicit_origins_and_concrete_narrowing
 }
 
 #[test]
+fn guarded_mixed_receivers_follow_explicit_implicit_and_template_level_thresholds() {
+    let root = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("tests/fixtures/mixed-subtraction");
+    let oracle: Value = serde_json::from_str(include_str!("fixtures/mixed-subtraction/level-receivers.json")).unwrap();
+    for level in [2, 8, 9, 10] {
+        let mut project = pun_analyse::Project::new(vec![root.join("level-receivers.php")], Vec::new());
+        project.php_version = 80400;
+        project.level = level;
+        let got: Vec<_> = pun_analyse::run(&project)
+            .unwrap()
+            .into_iter()
+            .filter(|e| matches!(e.identifier.as_str(), "classConstant.nonObject" | "method.nonObject" | "property.nonObject"))
+            .map(|e| serde_json::json!([e.line, e.identifier, e.message, e.tip, e.can_be_ignored]))
+            .collect();
+        assert_eq!(serde_json::json!(got), oracle[level.to_string()], "level {level}");
+    }
+}
+
+#[test]
 fn call_assertions_require_declared_contracts_not_guessed_predicates() {
     guard_oracle("call-assertions.php", include_str!("fixtures/mixed-subtraction/call-assertions.json"));
 }

@@ -208,8 +208,7 @@ fn invoke(c: &mut Checker, callee: &Expression, counts: &params::Counts, at: Spa
     let Some(t) = found.ty else {
         return;
     };
-    // (a `mixed` left by findTypeToCheck() is a StrictMixedType, never callable)
-    let callable = if matches!(t, Type::Mixed { .. }) { pun_phpstan::types::Tri::No } else { declared::with_classes(c, || t.is_callable()) };
+    let callable = declared::with_classes(c, || t.is_callable());
     let value = declared::with_classes(c, || t.describe(Level::Value));
     if callable.no() || c.level >= 7 && callable.maybe() {
         let not = if callable.no() { "it's not" } else { "it might not be" };

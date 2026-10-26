@@ -20,12 +20,14 @@ pub fn cast_is_error(t: &Type, cast: Cast, sm: StrictMixed) -> bool {
     if cast == C::Boolean {
         return false;
     }
+    if sm.explicit || sm.implicit {
+        return cast_is_error(&sm.transform(t), cast, StrictMixed::default());
+    }
     let rec = |t: &Type| cast_is_error(t, cast, sm);
     match t {
         T::Reasoned(t, _) => rec(t),
         T::LateArrayShape(s) => rec(&s.resolve()),
         T::StrictMixed => true,
-        T::Mixed { .. } | T::SubtractedMixed { .. } | T::Wildcard if sm.applies(t) => true,
         T::Mixed { .. } | T::SubtractedMixed { .. } | T::Wildcard | T::Error => cast == C::BitwiseNot,
         T::Never(_) | T::OffsetAccess(..) | T::Projection(..) => false,
         T::Void => true,

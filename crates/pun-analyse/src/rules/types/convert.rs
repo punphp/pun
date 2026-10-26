@@ -33,6 +33,15 @@ impl<'a, 'arena> Checker<'a, 'arena> {
         Some(self.phpstan_type_from(e, self.type_of(e)?))
     }
 
+    /// Selectors are stored as spans rather than Expression nodes, but have the same scope-owned metadata.
+    pub(super) fn phpstan_type_at(&self, at: Span) -> Option<Type> {
+        let actual = self.types.get(&at)?;
+        Some(declared::with_classes(self, || {
+            let source = self.source_type(at, &self.origins);
+            self.restore_inferred(at, self.to_phpstan(actual), source.as_ref())
+        }))
+    }
+
     /// Convert an observed scope value using the expression's own source metadata.
     pub(in super::super) fn phpstan_type_from(&self, e: &mago_syntax::cst::Expression, t: &TUnion) -> Type {
         use mago_syntax::cst::Expression as E;
@@ -55,12 +64,16 @@ impl<'a, 'arena> Checker<'a, 'arena> {
             let ty = source.as_ref().and_then(|s| self.source_template(e.span(), &ty, s))
                 .unwrap_or(ty);
             let ty = self.refine_method_guards(e, ty);
-            // MutatingScope::enterFunction/enterClassMethod converts PHPDoc parameter/return values to arguments.
-            // An inline @var annotation does not: its source metadata can restore that distinct template strategy.
-            let ty = inferred_argument(&ty);
-            source.map_or(ty.clone(), |source| {
-                restore_metadata(ty, &source, !self.source_is_mutated(e.span(), &self.origins))
-            })
+            self.restore_inferred(e.span(), ty, source.as_ref())
+        })
+    }
+
+    fn restore_inferred(&self, at: Span, actual: Type, source: Option<&Type>) -> Type {
+        // MutatingScope::enterFunction/enterClassMethod converts parameter/return values to arguments.
+        // An inline @var annotation does not: its source restores that distinct template strategy.
+        let ty = inferred_argument(&actual);
+        source.map_or(ty.clone(), |source| {
+            restore_metadata(ty, source, !self.source_is_mutated(at, &self.origins))
         })
     }
 
@@ -216,7 +229,8 @@ impl<'a, 'arena> Checker<'a, 'arena> {
                 let classes = actual.object_class_names();
                 // An annotation or magic fallback is not evidence for the invoked PHP signature. Every
                 // native alternative/variant must be known and reference-free, including unpacked calls.
-                let safe = !classes.is_empty()
+                // With no arguments no local can be passed by reference, even for an unknown receiver.
+                let safe = !call.has_arguments || !classes.is_empty()
                     && classes.iter().all(|name| {
                         self.codebase
                             .get_class_like(name.as_bytes())
@@ -501,11 +515,25 @@ impl<'a, 'arena> Checker<'a, 'arena> {
     }
 
     fn generic_parameter(&self, g: &TGenericParameter, bound: Type) -> Type {
+        let scope = self.template_scope(&g.defining_entity);
+        let name = text(g.parameter_name.as_bytes());
+        // Mago drops defaults from inferred generics. Resolve the exact defining entity, not a same-named
+        // template in the current caller's scope; this also works inside unions and nested containers.
+        let source = match &g.defining_entity {
+            GenericParent::FunctionLike(key) => self.codebase.function_likes.get(key)
+                .map(|f| declared::value_scope(self, f, self.codebase.get_class_like(key.0.as_bytes()))),
+            GenericParent::ClassLike(n) => self.codebase.get_class_like(n.as_bytes())
+                .map(|k| declared::class_scope(self, k.span, k)),
+        };
+        let default = source.and_then(|s| s.templates.into_values().find_map(|t| match t {
+            Type::Template(t) if t.name == name && t.scope == scope => t.default,
+            _ => None,
+        }));
         let t = Type::Template(Box::new(Template {
-            name: text(g.parameter_name.as_bytes()),
-            scope: self.template_scope(&g.defining_entity),
+            name,
+            scope,
             bound,
-            default: None,
+            default,
             argument: false,
         }));
         self.with_intersections(t, g.intersection_types.as_deref())
@@ -802,6 +830,7 @@ fn restore_metadata(actual: Type, source: &Type, restore_list: bool) -> Type {
             if actual.name == source.name && actual.scope == source.scope =>
         {
             actual.argument = source.argument;
+            actual.default = source.default.clone();
             // A matching template identity proves which bound was erased. A concrete narrowed bound still
             // wins; only Mago's unconstrained fallback can regain the source's callable-array intersection.
             actual.bound = if matches!(actual.bound, Type::Mixed { .. }) {
@@ -833,6 +862,10 @@ fn restore_metadata(actual: Type, source: &Type, restore_list: bool) -> Type {
         (Type::Mixed { explicit: inferred }, Type::Mixed { explicit }) => Type::Mixed {
             // Recover erased declaration metadata without erasing an assertion's source-owned identity.
             explicit: inferred || *explicit,
+        },
+        (Type::SubtractedMixed { explicit: inferred, excluded }, Type::Mixed { explicit }) => Type::SubtractedMixed {
+            explicit: inferred || *explicit,
+            excluded,
         },
         // Mago's PHPDoc parser reads an unnamed trailing `&` as an intersection and rejects the tag. The
         // surviving native callable is exactly TCallableSignature::mixed(false), not an inferred signature.

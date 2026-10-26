@@ -196,7 +196,7 @@ fn check(c: &mut Checker, op: Op, left: &Expression, right: &Expression, sigil: 
         return;
     }
     let error = declared::with_classes(c, || {
-        let sm = c.levels().strict_mixed();
+        let sm = StrictMixed::default();
         let (Some(l), Some(r)) = (checked(c, left, op, sm), checked(c, right, op, sm)) else { return false };
         // the GMP and BcMath\Number operator extensions type the operations of those objects
         let extension = |t: &Type| {

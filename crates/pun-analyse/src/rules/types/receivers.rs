@@ -15,17 +15,6 @@ use super::super::{Checker, calls, declared, members, params};
 
 pub const IDENTIFIERS: &[&str] = &["method.nonObject", "staticMethod.nonObject"];
 
-fn all(results: impl IntoIterator<Item = Tri>) -> Tri {
-    // `TrinaryLogic::extremeIdentity()`: yes or no when all agree, else maybe
-    let mut it = results.into_iter();
-    let Some(first) = it.next() else { return Tri::No };
-    it.fold(first, |a, b| if a == b { a } else { Tri::Maybe })
-}
-
-fn any(results: impl IntoIterator<Item = Tri>) -> Tri {
-    results.into_iter().fold(Tri::No, Tri::or)
-}
-
 impl<'a> Checker<'a, '_> {
     /// Restore the literal method accessory Mago does not carry. Called by `phpstan_type()` after conversion;
     /// the existing branch guards determine where it holds, rather than the debug rule's rendering.
@@ -76,18 +65,18 @@ impl<'a> Checker<'a, '_> {
         ty
     }
 
-    /// `Type::canCallMethods()`; `strict` says a `mixed` is the StrictMixedType findTypeToCheck() leaves.
-    pub(super) fn can_call_methods(&self, t: &Type, strict: bool) -> Tri {
-        self.capable(t, strict, true)
+    /// `Type::canCallMethods()`: ordinary mixed answers yes, checked StrictMixedType answers no.
+    pub(super) fn can_call_methods(&self, t: &Type) -> Tri {
+        self.capable(t, true)
     }
 
     /// `Type::canAccessProperties()`.
-    pub(super) fn can_access_properties(&self, t: &Type, strict: bool) -> Tri {
-        self.capable(t, strict, false)
+    pub(super) fn can_access_properties(&self, t: &Type) -> Tri {
+        self.capable(t, false)
     }
 
-    fn capable(&self, t: &Type, strict: bool, methods: bool) -> Tri {
-        match t {
+    fn capable(&self, t: &Type, methods: bool) -> Tri {
+        t.query_members(&|t| match t {
             // ObjectType::canCallMethods(): not on a plain `stdClass`
             Type::Object(n, _) if methods && n.eq_ignore_ascii_case("stdClass") => Tri::No,
             Type::Object(..)
@@ -97,13 +86,10 @@ impl<'a> Checker<'a, '_> {
             | Type::ObjectWithoutClass
             | Type::ObjectShape(_)
             | Type::Closure(_) => Tri::Yes,
-            Type::Union(ts) => all(ts.iter().map(|t| self.capable(t, strict, methods))),
-            Type::Benevolent(ts) | Type::Intersection(ts) => any(ts.iter().map(|t| self.capable(t, strict, methods))),
-            Type::Template(tt) => self.capable(&tt.bound, strict, methods),
             Type::Accessory(Accessory::HasMethod(_)) if methods => Tri::Yes,
-            Type::Mixed { .. } | Type::Callable(None) | Type::Iterable(..) | Type::Error => Tri::Maybe,
+            Type::Callable(_) | Type::Iterable(..) => Tri::Maybe,
             _ => Tri::No,
-        }
+        })
     }
 
     /// The class a receiver type names, for its methods.
@@ -155,20 +141,12 @@ impl<'a> Checker<'a, '_> {
 
     /// `Type::hasMethod()`.
     fn has_method(&self, t: &Type, name: &[u8]) -> Tri {
-        match t {
-            Type::Union(ts) => all(ts.iter().map(|t| self.has_method(t, name))),
-            Type::Benevolent(ts) | Type::Intersection(ts) => any(ts.iter().map(|t| self.has_method(t, name))),
-            Type::Template(tt) => self.has_method(&tt.bound, name),
+        t.query_members(&|t| match t {
             Type::Accessory(Accessory::HasMethod(_)) => t.has_method(&String::from_utf8_lossy(name)),
-            // (`Callable(None)` as a nested pattern leaves an uncovered region on the `match` line)
-            t if matches!(t, Type::Mixed { .. } | Type::ObjectWithoutClass | Type::Iterable(..) | Type::Error)
-                || matches!(t, Type::Callable(None)) =>
-            {
-                Tri::Maybe
-            }
+            Type::ObjectWithoutClass | Type::Iterable(..) | Type::Callable(_) => Tri::Maybe,
             // (what Pun does not see is taken as there: the call is not checked further)
             t => Self::class_of(t).map_or(Tri::No, |n| if matches!(self.method_of(n, name), Ok(None)) { Tri::No } else { Tri::Yes }),
-        }
+        })
     }
 
     /// How many of the type's classes have method `name`.
@@ -312,14 +290,14 @@ pub(in super::super) fn check_method<'arena>(
     } else {
         let c = &*c;
         c.find_type_to_check_of(ty, &|t| {
-            c.can_call_methods(t, false).yes() && c.has_method(t, name.value).yes()
+            c.can_call_methods(t).yes() && c.has_method(t, name.value).yes()
         })
     };
     let Some(t) = found else {
         return;
     };
     let method_name = String::from_utf8_lossy(name.value).into_owned();
-    if !c.can_call_methods(&t, true).yes() || t.is_string().yes() {
+    if !c.can_call_methods(&t).yes() || t.is_string().yes() {
         let message = format!("Cannot call method {method_name}() on {}.", describe(c, &t));
         c.report(name, "method.nonObject", message, None);
         return;
@@ -418,14 +396,14 @@ pub(in super::super) fn check_static<'arena>(
     } else {
         let c = &*c;
         c.find_type_to_check_of(ty, &|t| {
-            c.can_call_methods(t, false).yes() && c.has_method(t, name.value).yes()
+            c.can_call_methods(t).yes() && c.has_method(t, name.value).yes()
         })
     };
     let Some(mut t) = found else {
         return;
     };
     if let Type::ClassString(Some(g)) = &t {
-        if !c.can_call_methods(g, false).yes() {
+        if !c.can_call_methods(g).yes() {
             return;
         }
         t = (**g).clone();
@@ -438,7 +416,7 @@ pub(in super::super) fn check_static<'arena>(
         t = pun_phpstan::types::union(ts.iter().filter(|t| !t.is_string().yes()).cloned().collect());
     }
     let method_name = String::from_utf8_lossy(name.value).into_owned();
-    if !c.can_call_methods(&t, true).yes() {
+    if !c.can_call_methods(&t).yes() {
         let message = format!("Cannot call static method {method_name}() on {described}.");
         c.report(name, "staticMethod.nonObject", message, None);
         return;
@@ -519,7 +497,7 @@ fn callable_receiver(c: &mut Checker, e: &Expression, name: &LocalIdentifier, st
     }
     let mut unknown = Vec::new();
     let found = c.find_in(c.levels(), ty, &|t| {
-        c.can_call_methods(t, false).yes() && c.has_method(t, name.value).yes()
+        c.can_call_methods(t).yes() && c.has_method(t, name.value).yes()
     }, Some(&mut unknown));
     for class in unknown {
         let method = String::from_utf8_lossy(name.value);

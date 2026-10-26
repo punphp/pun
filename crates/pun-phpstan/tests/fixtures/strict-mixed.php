@@ -36,19 +36,23 @@ $input = function (string|array $spec) use (&$input): Type {
         return new MixedType($spec['explicit'] ?? false, $input($spec['excluded']));
     }
     if (isset($spec['template'])) {
-        $template = new TemplateMixedType(
+        $template = PHPStan\Type\Generic\TemplateTypeFactory::create(
             TemplateTypeScope::createWithFunction($spec['scope'] ?? 'fixture'),
-            ($spec['argument'] ?? false) ? new TemplateTypeArgumentStrategy() : new TemplateTypeParameterStrategy(),
-            TemplateTypeVariance::createInvariant(),
             $spec['name'],
             $input($spec['template']),
+            TemplateTypeVariance::createInvariant(),
+            ($spec['argument'] ?? false) ? new TemplateTypeArgumentStrategy() : new TemplateTypeParameterStrategy(),
             isset($spec['default']) ? $input($spec['default']) : null,
         );
         return ($spec['strict'] ?? false) ? $template->toStrictMixedType() : $template;
     }
     $parts = array_map($input, $spec['parts']);
     return match ($spec['kind']) {
+        'array' => new PHPStan\Type\ArrayType(...$parts),
+        'iterable' => new PHPStan\Type\IterableType(...$parts),
+        'generic' => new PHPStan\Type\Generic\GenericObjectType('ArrayObject', $parts),
         'union' => new UnionType($parts),
+        'benevolent' => new PHPStan\Type\BenevolentUnionType($parts),
         'intersection' => new IntersectionType($parts),
         'combine-union' => TypeCombinator::union(...$parts),
         'combine-intersection' => TypeCombinator::intersect(...$parts),
@@ -64,7 +68,7 @@ foreach ([false, true] as $argument) {
         }
     }
 }
-foreach (['union', 'intersection', 'combine-union', 'combine-intersection'] as $kind) {
+foreach (['union', 'benevolent', 'intersection', 'combine-union', 'combine-intersection'] as $kind) {
     foreach ([['strict', 'object'], [$strict, 'object'], [$strict, ['template' => 'mixed', 'name' => 'U', 'strict' => true, 'default' => 'int']]] as $parts) {
         $specs[] = compact('kind', 'parts');
     }
@@ -78,6 +82,7 @@ foreach ($specs as $spec) {
         'input' => $spec,
         'descriptions' => array_map(fn ($level) => $type->describe($level), [VerbosityLevel::typeOnly(), VerbosityLevel::value(), VerbosityLevel::precise()]),
         'phpdoc' => (new PHPStan\PhpDocParser\Printer\Printer())->print($type->toPhpDocNode()),
+        'members' => $type->canAccessProperties()->describe(),
     ];
     // Compound rows exercise combinator identity and descriptions, not unrelated object reflection queries.
     if (!is_array($spec) || !isset($spec['kind'])) {
@@ -95,4 +100,49 @@ foreach (['strict', $strict] as $a) {
         $pairs[] = [$a, $b, $left->equals($right), $left->isSuperTypeOf($right)->result->describe(), $right->isSuperTypeOf($left)->result->describe(), $left->accepts($right, true)->result->describe(), $right->accepts($left, true)->result->describe()];
     }
 }
-echo json_encode(compact('rows', 'pairs'), JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)."\n";
+$tree = function (Type $type) use (&$tree): array {
+    if ($type instanceof PHPStan\Type\Generic\TemplateType) {
+        return ['template', $type->getName(), $type->getScope()->describe(), $type->isArgument(), $tree($type->getBound()), $type->getDefault() === null ? null : $tree($type->getDefault())];
+    }
+    if ($type instanceof ErrorType) return ['error'];
+    if ($type instanceof StrictMixedType) return ['strict'];
+    if ($type instanceof MixedType) {
+        return $type->getSubtractedType() === null ? ['mixed', $type->isExplicitMixed()] : ['subtracted', $type->isExplicitMixed(), $tree($type->getSubtractedType())];
+    }
+    if ($type instanceof PHPStan\Type\ArrayType) return ['array', $tree($type->getKeyType()), $tree($type->getItemType())];
+    if ($type instanceof PHPStan\Type\IterableType) return ['iterable', $tree($type->getIterableKeyType()), $tree($type->getIterableValueType())];
+    if ($type instanceof PHPStan\Type\Generic\GenericObjectType) return ['generic', $type->getClassName(), array_map($tree, $type->getTypes())];
+    if ($type instanceof UnionType) return ['union', array_map($tree, $type->getTypes())];
+    if ($type instanceof IntersectionType) return ['intersection', array_map($tree, $type->getTypes())];
+    return [$type->describe(VerbosityLevel::precise())];
+};
+$transformSpecs = ['mixed', 'explicit', 'strict', 'error', ['excluded' => 'int'], ['excluded' => 'int', 'explicit' => true],
+    [...$strict, 'default' => 'explicit'],
+    ['template' => $template, 'name' => 'Nested', 'default' => ['template' => 'mixed', 'name' => 'Default']],
+    ['template' => 'int', 'name' => 'Concrete', 'default' => 'explicit'],
+    ['template' => ['kind' => 'array', 'parts' => ['int', 'explicit']], 'name' => 'Items', 'default' => 'mixed'],
+    ['kind' => 'array', 'parts' => ['mixed', ['kind' => 'iterable', 'parts' => ['explicit', $strict]]]],
+    ['kind' => 'generic', 'parts' => ['mixed', ['template' => 'mixed', 'name' => 'T', 'default' => 'explicit']]],
+    ['kind' => 'union', 'parts' => ['object', $strict]],
+    ['kind' => 'intersection', 'parts' => [$strict, ['template' => 'mixed', 'name' => 'U']]],
+];
+$reflection = new ReflectionClass(PHPStan\Rules\RuleLevelHelper::class);
+$helper = $reflection->newInstanceWithoutConstructor();
+$copies = [];
+foreach ($transformSpecs as $spec) {
+    $type = $input($spec);
+    $checked = $type instanceof TemplateMixedType ? $type->toStrictMixedType() : ($type instanceof MixedType ? new StrictMixedType() : $type);
+    $copies[] = ['input' => $spec, 'tree' => $tree($checked)];
+}
+$transforms = [];
+foreach ([false, true] as $explicit) {
+    foreach ([false, true] as $implicit) {
+        $reflection->getProperty('checkExplicitMixed')->setValue($helper, $explicit);
+        $reflection->getProperty('checkImplicitMixed')->setValue($helper, $implicit);
+        foreach ($transformSpecs as $spec) {
+            $type = $reflection->getMethod('transformCommonType')->invoke($helper, $input($spec));
+            $transforms[] = ['input' => $spec, 'explicit' => $explicit, 'implicit' => $implicit, 'tree' => $tree($type)];
+        }
+    }
+}
+echo json_encode(compact('rows', 'pairs', 'copies', 'transforms'), JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)."\n";

@@ -808,10 +808,6 @@ pub fn check<'arena>(
 fn reference_type(ty: &Type, seen: &RefCell<HashSet<String>>) {
     if let Type::Template(t) = ty {
         seen.borrow_mut().insert(t.name.clone());
-        // Type::traverse visits the bound, but PHPStan's TemplateTypeTrait also visits the default.
-        if let Some(default) = &t.default {
-            reference_type(default, seen);
-        }
     }
     ty.traverse(&|inner| {
         reference_type(inner, seen);

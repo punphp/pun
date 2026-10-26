@@ -5,7 +5,7 @@
 
 use mago_span::{HasSpan, Span};
 use mago_syntax::cst::*;
-use pun_phpstan::types::{Cast, Level, Type, cast_is_error};
+use pun_phpstan::types::{Cast, Level, StrictMixed, Type, cast_is_error};
 
 use super::super::{Checker, declared};
 use super::flow::unparen;
@@ -65,7 +65,7 @@ pub(super) fn typed(e: &Expression, out: &mut Vec<Span>) {
 /// The type at `span`. Mago leaves both `$this` of `$this->$this->name` untyped (the outer fetch reads the inner
 /// one's name from the block's locals).
 fn type_at(c: &Checker, span: Span) -> Option<Type> {
-    c.types.get(&span).map(|t| c.to_phpstan(t)).or_else(|| {
+    c.phpstan_type_at(span).or_else(|| {
         (c.written(span) == "$this" && c.this_defined())
             .then(|| c.class_scope().map(|k| Type::This(k.original_name.to_string())))
             .flatten()
@@ -79,7 +79,7 @@ pub(in super::super) fn not_string(c: &Checker, name: Span, castable: bool) -> O
         return None;
     }
     let ty = type_at(c, name)?;
-    let sm = c.levels().strict_mixed();
+    let sm = StrictMixed::default();
     let fine = |t: &Type| if castable { !cast_is_error(t, Cast::String, sm) } else { t.is_string().yes() };
     let found = c.find_type_to_check_of(Some(ty.clone()), &fine)?;
     (!fine(&found)).then_some((ty, found))

@@ -41,8 +41,6 @@ pub(super) fn typed(e: &Expression, level: u8, spans: &mut Vec<Span>) {
 /// `findTypeToCheck()` of `e` and whether the type found is `ok` (`None`: nothing to report), reporting the unknown
 /// classes it names with `unknown` (`%s` the class) when there is one.
 fn invalid(c: &mut Checker, e: &Expression, ok: &dyn Fn(&Type) -> bool, unknown: Option<&str>) -> Option<String> {
-    // a `mixed` found is a StrictMixedType (findTypeToCheck() keeps it only then): nothing is of a kind
-    let ok = |t: &Type| !matches!(t, Type::Mixed { .. }) && ok(t);
     let (found, names) = declared::with_classes(c, || {
         let found = c.find_type_to_check(e, &ok);
         let described = found.ty.filter(|t| !ok(t)).map(|t| t.describe(Level::TypeOnly));

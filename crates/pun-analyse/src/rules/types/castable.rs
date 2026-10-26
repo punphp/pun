@@ -4,7 +4,7 @@
 
 use mago_span::HasSpan;
 use mago_syntax::cst::*;
-use pun_phpstan::types::{Cast, Level, Type, cast_is_error, is_super_type_of, union};
+use pun_phpstan::types::{Cast, Level, StrictMixed, Type, cast_is_error, is_super_type_of, union};
 
 pub const IDENTIFIERS: &[&str] = &[
     "arrayFilter.empty",
@@ -89,7 +89,7 @@ pub(in super::super) fn function_call(c: &mut Checker, call: &FunctionCall) {
         return;
     };
     let args = written(call);
-    let sm = c.levels().strict_mixed();
+    let sm = StrictMixed::default();
     let to_string = |t: &Type| cast_is_error(t, Cast::String, sm);
     let mut errors = Vec::new();
     match name.as_str() {

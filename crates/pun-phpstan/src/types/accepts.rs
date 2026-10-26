@@ -12,17 +12,16 @@ pub struct StrictMixed {
 }
 
 impl StrictMixed {
-    pub(super) fn applies(self, t: &Type) -> bool {
-        match t {
-            Type::Mixed { explicit } | Type::SubtractedMixed { explicit, .. } => {
-                if *explicit {
-                    self.explicit
-                } else {
-                    self.implicit
-                }
-            }
-            Type::Template(t) => self.explicit && matches!(t.bound, Type::Mixed { .. }),
-            _ => false,
+    /// RuleLevelHelper::transformCommonType(): unlike findTypeToCheck this traverses containers, but a
+    /// mixed template stops traversal before its default or nested bound can be rewritten.
+    pub fn transform(self, t: &Type) -> Type {
+        if !self.explicit && !self.implicit {
+            return t.clone();
+        }
+        if t.mixed_explicitness().is_some_and(|explicit| if explicit { self.explicit } else { self.implicit }) {
+            t.to_strict_mixed()
+        } else {
+            t.traverse(&|t| self.transform(t))
         }
     }
 }
@@ -34,11 +33,14 @@ pub fn accepts(a: &Type, b: &Type, strict_types: bool) -> Tri {
 
 pub fn accepts_with(a: &Type, b: &Type, strict: bool, sm: StrictMixed) -> Tri {
     use Type as T;
+    if sm.explicit || sm.implicit {
+        return accepts_with(a, &sm.transform(b), strict, StrictMixed::default());
+    }
     if let T::Reasoned(t, _) = b { return accepts_with(a, t, strict, sm); }
     if let T::LateArrayShape(s) = b { return accepts_with(a, &s.resolve(), strict, sm); }
     let rec = |x: &Type, y: &Type| accepts_with(x, y, strict, sm);
     // a CompoundType `$b` answers through its `isAcceptedBy()`, a StrictMixedType too
-    let compound = b.is_compound() || sm.applies(b);
+    let compound = b.is_compound();
     let by = || accepted_by(a, b, strict, sm);
     // `$type instanceof StringType` (and IntegerType for an int)
     let string = matches!(b, T::String | T::ConstString(_) | T::ClassString(_) | T::StringAcceptingStringable | T::StringNotAcceptingStringable);
@@ -202,8 +204,7 @@ pub fn accepts_with(a: &Type, b: &Type, strict: bool, sm: StrictMixed) -> Tri {
         T::Accessory(Accessory::NumericString) => accessory(b.is_numeric_string()),
         T::Accessory(Accessory::LiteralString) => {
             // `$type instanceof MixedType`, a template of mixed (TemplateMixedType) too
-            let mixed = matches!(b, T::Mixed { .. }) || matches!(b, T::Template(t) if matches!(t.bound, T::Mixed { .. }));
-            if mixed && !sm.applies(b) {
+            if b.mixed_explicitness().is_some() {
                 return Tri::No;
             }
             accessory(b.is_literal_string())
@@ -330,7 +331,7 @@ fn union(a: &Type, types: &[Type], b: &Type, strict: bool, sm: StrictMixed) -> T
     if result.yes() {
         return result;
     }
-    if (b.is_compound() || sm.applies(b)) && !matches!(b, T::Callable(_) | T::Template(_) | T::Intersection(_)) {
+    if b.is_compound() && !matches!(b, T::Callable(_) | T::Template(_) | T::Intersection(_)) {
         return accepted_by(a, b, strict, sm);
     }
     if matches!(b, T::Template(t) if matches!(t.bound, T::Union(_) | T::Benevolent(_))) {
@@ -343,18 +344,6 @@ fn union(a: &Type, types: &[Type], b: &Type, strict: bool, sm: StrictMixed) -> T
 fn accepted_by(a: &Type, b: &Type, strict: bool, sm: StrictMixed) -> Tri {
     use Type as T;
     let rec = |x: &Type, y: &Type| accepts_with(x, y, strict, sm);
-    if sm.applies(b) {
-        // StrictMixedType::isAcceptedBy(): anything but a mixed (accepts_with() answers it) maybe; a
-        // TemplateStrictMixedType's (isSubTypeOf()) is yes for the same template of mixed
-        return match (a, b) {
-            (T::Template(at), T::Template(bt))
-                if matches!(at.bound, T::Mixed { .. }) && at.name == bt.name && at.scope == bt.scope =>
-            {
-                Tri::Yes
-            }
-            _ => Tri::Maybe,
-        };
-    }
     match b {
         T::StrictMixed => Tri::from(matches!(a, T::StrictMixed | T::Mixed { .. } | T::SubtractedMixed { .. } | T::Error)
             || matches!(a, T::Template(t) if matches!(t.bound, T::StrictMixed))).or(Tri::Maybe),

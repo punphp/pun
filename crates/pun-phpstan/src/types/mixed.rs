@@ -3,6 +3,33 @@
 use super::{NeverKind, Tri, Type, bx, intersect, is_super_type_of, union};
 
 impl Type {
+    /// `instanceof MixedType`, including ErrorType and nested TemplateMixedType bounds. A template is
+    /// explicitly mixed independently of the bound's explicitness (`TemplateMixedType::__construct()`).
+    pub fn mixed_explicitness(&self) -> Option<bool> {
+        match self {
+            Type::Mixed { explicit } | Type::SubtractedMixed { explicit, .. } => Some(*explicit),
+            Type::Error => Some(false),
+            Type::Template(t) if t.bound.mixed_explicitness().is_some() => Some(true),
+            _ => None,
+        }
+    }
+
+    /// RuleLevelHelper's checked copy. TemplateMixedType::toStrictMixedType replaces the entire bound,
+    /// including a nested template or subtraction, but retains scope, name, strategy and the ordinary default.
+    pub fn to_strict_mixed(&self) -> Type {
+        if self.mixed_explicitness().is_none() {
+            return self.clone();
+        }
+        match self {
+            Type::Template(t) => {
+                let mut t = t.clone();
+                t.bound = Type::StrictMixed;
+                Type::Template(t)
+            }
+            _ => Type::StrictMixed,
+        }
+    }
+
     /// MixedType::__construct(): a never exclusion is equivalent to no exclusion.
     pub fn mixed_subtracted(explicit: bool, excluded: Type) -> Type {
         if excluded.is_never() {

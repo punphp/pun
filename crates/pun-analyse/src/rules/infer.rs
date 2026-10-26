@@ -321,6 +321,14 @@ impl ExpressionHook for Definedness {
                 super::unset::observe(expr, context, &mut found.read);
             }
             match expr {
+                // Isset/empty can inspect a property without analysing its receiver expression. Preserve the
+                // real incoming root read, as for unset, so allowed-undefined accesses still see No vs Maybe.
+                Expression::Construct(Construct::Isset(i)) => {
+                    for value in i.values.iter() {
+                        super::unset::observe(value, context, &mut found.read);
+                    }
+                }
+                Expression::Construct(Construct::Empty(e)) => super::unset::observe(e.value, context, &mut found.read),
                 Expression::Variable(v) => observe_variable(v, context, &mut found),
                 Expression::Access(Access::StaticProperty(p)) => {
                     if let Variable::Nested(v) = &p.property {

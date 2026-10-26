@@ -130,6 +130,12 @@ fn class_templates(c: &Reflected) -> Vec<Type> {
 /// `getReferencedClasses()`
 pub(super) fn referenced_classes(ty: &Type) -> Vec<String> {
     fn walk(t: &Type, out: &RefCell<Vec<String>>) {
+        // Template subclasses inherit getReferencedClasses() from the bound, not TemplateTypeTrait::traverse().
+        // Defaults participate in type traversal, but are not referenced classes of this type.
+        if let Type::Template(t) = t {
+            walk(&t.bound, out);
+            return;
+        }
         if let Type::Object(name, _)
         | Type::Static(name, _)
         | Type::This(name)
