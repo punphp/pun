@@ -11787,7 +11787,7 @@
         "AnnotationWithValueToAttributeRector",
         "Rector\\PHPUnit\\AnnotationsToAttributes\\Rector\\Class_\\AnnotationWithValueToAttributeRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/phpunit/prefer-attributes",

@@ -432,3 +432,19 @@ fn test_with_annotation_to_attribute() {
         "TestWithAnnotationToAttributeRector",
     );
 }
+
+#[test]
+fn annotation_with_value_to_attribute() {
+    // config/configured_rule.php, as `pun migrate` writes its `AnnotationWithValueToAttribute` objects.
+    let mut rule = PreferAttributeOverAnnotation::default();
+    rule.configure(&serde_json::json!({ "items": [
+        { "annotation-name": "backupGlobals", "attribute-class": "PHPUnit\\Framework\\Attributes\\BackupGlobals",
+          "value-map": { "enabled": true, "disabled": false }, "is-on-class-level": false },
+        { "annotation-name": "dataProvider", "attribute-class": "PHPUnit\\Framework\\Attributes\\DataProvider",
+          "value-map": [], "is-on-class-level": false },
+        { "annotation-name": "uses", "attribute-class": "PHPUnit\\Framework\\Attributes\\UsesClass",
+          "value-map": [], "is-on-class-level": true },
+    ]}))
+    .unwrap();
+    check(rule, "AnnotationWithValueToAttributeRector");
+}
