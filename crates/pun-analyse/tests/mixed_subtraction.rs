@@ -470,6 +470,11 @@ fn array_guards_preserve_explicit_parameters_copies_joins_and_falsey_intersectio
 }
 
 #[test]
+fn mixed_metadata_restoration_keeps_both_explicit_origins_and_concrete_narrowings() {
+    guard_oracle("metadata-restoration.php", include_str!("fixtures/mixed-subtraction/metadata-restoration.json"));
+}
+
+#[test]
 fn call_assertions_require_declared_contracts_not_guessed_predicates() {
     guard_oracle("call-assertions.php", include_str!("fixtures/mixed-subtraction/call-assertions.json"));
 }

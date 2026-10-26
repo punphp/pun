@@ -830,8 +830,9 @@ fn restore_metadata(actual: Type, source: &Type, restore_list: bool) -> Type {
             matching(&actual, source)
                 .map_or_else(|| actual.clone(), |i| restore_metadata(actual.clone(), &source[i], restore_list))
         }
-        (Type::Mixed { .. }, Type::Mixed { explicit }) => Type::Mixed {
-            explicit: *explicit,
+        (Type::Mixed { explicit: inferred }, Type::Mixed { explicit }) => Type::Mixed {
+            // Recover erased declaration metadata without erasing an assertion's source-owned identity.
+            explicit: inferred || *explicit,
         },
         // Mago's PHPDoc parser reads an unnamed trailing `&` as an intersection and rejects the tag. The
         // surviving native callable is exactly TCallableSignature::mixed(false), not an inferred signature.
