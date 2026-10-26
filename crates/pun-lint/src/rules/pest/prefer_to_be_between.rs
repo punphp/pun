@@ -6,8 +6,7 @@ use mago_syntax::cst::{BinaryOperator, Expression, Node, NodeKind};
 use pun_problem::Safety;
 
 use super::{
-    Is, Trinary, is_expect_chain, is_name, matcher_subject, report, set_call_arguments,
-    subject_holder, texts, type_is,
+    Is, Trinary, first_value, is_name, report, set_call_arguments, subject_holder, texts, type_is,
 };
 use crate::syntax::same_expression;
 use crate::syntax::{node_span, unparenthesize};
@@ -34,13 +33,14 @@ impl Rule for PreferToBeBetween {
         let Node::MethodCall(call) = node else {
             return;
         };
-        if !is_expect_chain(call) || !is_name(&call.method, "toBeTrue") {
+        if !is_name(&call.method, "toBeTrue") {
             return;
         }
         let Some(holder) = subject_holder(call) else {
             return;
         };
-        let Some(Expression::Binary(and)) = matcher_subject(call).map(unparenthesize) else {
+        let Some(Expression::Binary(and)) = first_value(holder.arguments).map(unparenthesize)
+        else {
             return;
         };
         if !matches!(and.operator, BinaryOperator::And(_)) {

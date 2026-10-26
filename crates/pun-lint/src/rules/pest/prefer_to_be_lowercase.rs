@@ -6,8 +6,7 @@ use mago_syntax::cst::{BinaryOperator, Expression, Node, NodeKind};
 use pun_problem::Safety;
 
 use super::{
-    Is, Trinary, first_value, func_call, is_expect_chain, is_name, matcher_subject, rename, report,
-    subject_holder, type_is,
+    Is, Trinary, first_value, func_call, is_name, rename, report, subject_holder, type_is,
 };
 use crate::rules::rector_code_quality::named;
 use crate::syntax::same_expression;
@@ -35,13 +34,14 @@ impl Rule for PreferToBeLowercase {
         let Node::MethodCall(call) = node else {
             return;
         };
-        if !is_expect_chain(call) || !is_name(&call.method, "toBeTrue") {
+        if !is_name(&call.method, "toBeTrue") {
             return;
         }
         let Some(holder) = subject_holder(call) else {
             return;
         };
-        let Some(Expression::Binary(identical)) = matcher_subject(call).map(unparenthesize) else {
+        let Some(Expression::Binary(identical)) = first_value(holder.arguments).map(unparenthesize)
+        else {
             return;
         };
         if !matches!(identical.operator, BinaryOperator::Identical(_)) {

@@ -2,14 +2,18 @@
 //! 1a4b6b7 (tests/Rules/...) into tests/rector/<Rector class>/Fixture. Oracle/ holds extra inputs with what Rector
 //! 2.6.1 and the plugin at that commit (`.oracle/rector-ecosystem`, the rule alone, `withPhpVersion(80400)`) wrote for
 //! them. Pun/ holds the inputs where Rector's one pass over the file leaves code that the same rule changes again (a
-//! double negation is undone one `!` at a time, a type matcher becomes redundant once the one before it goes); Pun's
-//! fix rounds go on until the rule has nothing left, so the expected code is the oracle's output run through the oracle
-//! again until it stops changing. A fixture is `input -----\n expected`, or only the input when the rule must not
-//! change it. Each one must pass as `pun lint --fix == expected` and `format(pun lint --fix) == format(expected)`,
-//! format being the laravel preset.
+//! double negation is undone one `!` at a time, a type matcher becomes redundant once the one before it goes, a value
+//! check before two type checks moves one statement a pass); Pun's fix rounds go on until the rule has nothing left, so
+//! the expected code is the oracle's output run through the oracle again until it stops changing. The one other Pun/
+//! case, RemoveRedundantPestUsesRector/Pun/InlineHtmlProject, is a file with inline HTML whose statement list
+//! php-parser gives up on: Rector prints the whole file again (`<?php\n\n?>\nhtml\n<?php `), which Pun does not port,
+//! so Pun leaves the file alone. A fixture is `input -----\n expected`, or only the input when the rule must not change
+//! it. Each one must pass as `pun lint --fix == expected` and `format(pun lint --fix) == format(expected)`, format
+//! being the laravel preset.
 
 use std::path::{Path, PathBuf};
 
+use mago_syntax::cst::Node;
 use pun_format::Pipeline;
 use pun_lint::rules::*;
 use pun_lint::{Linter, Rule};
@@ -422,6 +426,25 @@ fn chain_expect_calls_without_merge_different_variables() {
     check(rule, "ChainExpectCallsRectorWithoutMergeDifferentVariables");
 }
 
+/// No options keep the plugin's default (merging different variables); an unknown option, a value that is not a
+/// boolean, and options that are not a table are config errors.
+#[test]
+fn chain_expect_calls_options() {
+    let mut rule = PreferChainedExpect::default();
+    rule.configure(&serde_json::Value::Null).unwrap();
+    check(rule, "ChainExpectCallsRector");
+    for options in [
+        serde_json::json!({ "merge_different_variables": false }),
+        serde_json::json!({ "merge-different-variables": "no" }),
+        serde_json::json!(false),
+    ] {
+        assert!(
+            PreferChainedExpect::default().configure(&options).is_err(),
+            "{options}"
+        );
+    }
+}
+
 #[test]
 fn chain_expect_calls_and_use_to_be_empty() {
     run_class(
@@ -462,6 +485,23 @@ fn ensure_type_checks_first() {
     check(RequireTypeMatcherFirst, "EnsureTypeChecksFirstRector");
 }
 
+/// Broken/tag.php.inc: swapping a statement that ends in `?>` makes php-parser print the closure again, and Rector
+/// writes the file shown there, which loses the `<?php` and does not parse. Pun's rewrite is the same, so the linter
+/// refuses it instead of writing it.
+#[test]
+fn ensure_type_checks_first_refuses_rectors_broken_reprint() {
+    let path = Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("tests/rector/EnsureTypeChecksFirstRector/Broken/tag.php.inc");
+    let content = std::fs::read_to_string(&path).unwrap();
+    let (input, _) = content.split_once("-----\n").unwrap();
+    let linter = Linter::new(vec![Box::new(RequireTypeMatcherFirst)], 80400);
+    let err = linter.fix(&path, input).unwrap_err();
+    assert!(
+        matches!(&err, pun_lint::LintError::FixBrokeSyntax { rules, .. } if rules == &["lint/pest/require-type-matcher-first"]),
+        "{err:?}"
+    );
+}
+
 #[test]
 fn convert_assert_to_expect() {
     check(PreferExpect, "ConvertAssertToExpectRector");
@@ -493,7 +533,7 @@ fn remove_redundant_pest_uses() {
         Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/rector/RemoveRedundantPestUsesRector");
     let scratch = std::env::temp_dir().join(format!("pun-redundant-uses-{}", std::process::id()));
     let mut count = 0;
-    for sub in ["Fixture", "Oracle"] {
+    for sub in ["Fixture", "Oracle", "Pun"] {
         for project in std::fs::read_dir(root.join(sub)).unwrap() {
             let project = project.unwrap().path();
             let copy = scratch.join(sub).join(project.file_name().unwrap());
@@ -557,5 +597,140 @@ fn remove_redundant_pest_uses() {
         }
     }
     std::fs::remove_dir_all(&scratch).unwrap();
-    assert_eq!(count, 27);
+    assert_eq!(count, 34);
+}
+
+/// Every test directory of this file.
+const DIRECTORIES: [&str; 62] = [
+    "ChainExpectCallsAndMatchers",
+    "ChainExpectCallsAndUseEachModifier",
+    "ChainExpectCallsRector",
+    "ChainExpectCallsRectorAndUseToBeEmpty",
+    "ChainExpectCallsRectorWithoutMergeDifferentVariables",
+    "ConvertAssertToExpectRector",
+    "ConvertBeforeAllInDescribeRector",
+    "ConvertExpectExceptionToThrowRector",
+    "EnsureTypeChecksFirstRector",
+    "FixInvalidRepeatValueRector",
+    "RemoveOnlyRector",
+    "RemoveRedundantLiteralTypeExpectationRector",
+    "RemoveRedundantPestUsesRector",
+    "RemoveStaticTestClosureRector",
+    "SimplifyComparisonExpectationsRector",
+    "SimplifyExpectNotRector",
+    "SimplifyFilesystemMatchersRector",
+    "SimplifyToBeTruthyFalsyRector",
+    "SimplifyToLiteralBooleanRector",
+    "TapToDeferRector",
+    "ToBeTrueNotFalseRector",
+    "ToHaveMethodOnClassRector",
+    "UseEachModifierRector",
+    "UseInstanceOfMatcherRector",
+    "UseSequenceMatcherRector",
+    "UseStrictEqualityMatchersRector",
+    "UseToBeAlphaNumericRector",
+    "UseToBeAlphaRector",
+    "UseToBeBetweenRector",
+    "UseToBeDigitsRector",
+    "UseToBeDirectoryRector",
+    "UseToBeEmptyRector",
+    "UseToBeFileRector",
+    "UseToBeInRector",
+    "UseToBeInfiniteRector",
+    "UseToBeJsonRector",
+    "UseToBeListRector",
+    "UseToBeLowercaseRector",
+    "UseToBeNanRector",
+    "UseToBeUppercaseRector",
+    "UseToBeUrlRector",
+    "UseToBeUuidRector",
+    "UseToContainEqualRector",
+    "UseToContainOnlyInstancesOfRector",
+    "UseToContainRector",
+    "UseToEndWithRector",
+    "UseToEqualCanonicalizingRector",
+    "UseToEqualWithDeltaRector",
+    "UseToHaveCountRector",
+    "UseToHaveKeyRector",
+    "UseToHaveKeysRector",
+    "UseToHaveLengthRector",
+    "UseToHavePropertiesRector",
+    "UseToHavePropertyRector",
+    "UseToHaveSameSizeRector",
+    "UseToMatchArrayRector",
+    "UseToMatchObjectRector",
+    "UseToMatchRector",
+    "UseToStartWithRector",
+    "UseToThrowRector",
+    "UseTypeMatchersRector",
+    "UsesToExtendRector",
+];
+
+/// A rule that the engine calls on every node, not only on its `targets()`.
+struct Everywhere(Box<dyn Rule>);
+
+impl Rule for Everywhere {
+    fn id(&self) -> &'static str {
+        self.0.id()
+    }
+
+    fn visit<'ast, 'arena>(
+        &self,
+        node: Node<'ast, 'arena>,
+        ancestors: &[Node<'ast, 'arena>],
+        ctx: &pun_lint::Context<'_>,
+        out: &mut Vec<pun_lint::Report>,
+    ) {
+        self.0.visit(node, ancestors, ctx, out);
+    }
+}
+
+/// The pest rules together over every input of this file's fixtures: called on every node, each rule reports what
+/// it reports on its targets (`targets()` only spares the engine work), and none trips on another rule's code.
+#[test]
+fn pest_rules_ignore_nodes_outside_their_targets() {
+    let pest = || {
+        pun_lint::rules::all()
+            .into_iter()
+            .filter(|r| r.id().starts_with("lint/pest/"))
+    };
+    assert_eq!(pest().count(), 58);
+    let targeted = Linter::new(pest().collect(), 80400);
+    let everywhere = Linter::new(
+        pest()
+            .map(|r| Box::new(Everywhere(r)) as Box<dyn Rule>)
+            .collect(),
+        80400,
+    );
+    let mut stack: Vec<PathBuf> = DIRECTORIES
+        .iter()
+        .map(|d| {
+            Path::new(env!("CARGO_MANIFEST_DIR"))
+                .join("tests/rector")
+                .join(d)
+        })
+        .collect();
+    let mut count = 0;
+    while let Some(dir) = stack.pop() {
+        for entry in std::fs::read_dir(&dir).unwrap() {
+            let path = entry.unwrap().path();
+            if path.is_dir() {
+                stack.push(path);
+                continue;
+            }
+            if !path.to_string_lossy().ends_with(".php.inc") {
+                continue;
+            }
+            let content = std::fs::read_to_string(&path).unwrap();
+            let input = content.split("-----\n").next().unwrap();
+            assert_eq!(
+                everywhere.check(&path, input).unwrap(),
+                targeted.check(&path, input).unwrap(),
+                "{}",
+                path.display()
+            );
+            count += 1;
+        }
+    }
+    assert!(count > 250, "{count}");
 }

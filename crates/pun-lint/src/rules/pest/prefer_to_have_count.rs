@@ -6,8 +6,8 @@ use mago_syntax::cst::{Node, NodeKind};
 use pun_problem::Safety;
 
 use super::{
-    Is, Trinary, argument_value, func_call, is_expect_chain, is_name, matcher_subject, rename,
-    report, set_first_argument, subject_holder, type_is,
+    Is, Trinary, argument_value, func_call, is_name, matcher_subject, rename, report,
+    set_first_argument, subject_holder, type_is,
 };
 use crate::rules::rector_code_quality::named;
 use crate::syntax::node_span;
@@ -34,8 +34,7 @@ impl Rule for PreferToHaveCount {
         let Node::MethodCall(call) = node else {
             return;
         };
-        if !is_expect_chain(call)
-            || !(is_name(&call.method, "toBe") || is_name(&call.method, "toEqual"))
+        if !(is_name(&call.method, "toBe") || is_name(&call.method, "toEqual"))
             || call.argument_list.arguments.len() != 1
         {
             return;
@@ -56,14 +55,13 @@ impl Rule for PreferToHaveCount {
         {
             return;
         }
-        let Some(edit) = set_first_argument(ctx, holder.arguments, value) else {
-            return;
-        };
+        let mut edits = set_first_argument(ctx, holder.arguments, value);
+        edits.push(rename(call, "toHaveCount"));
         out.push(report(
             node_span(call),
             "Use `toHaveCount()` instead of comparing `count()`.".to_string(),
             Safety::Unsafe,
-            vec![edit, rename(call, "toHaveCount")],
+            edits,
         ));
     }
 }

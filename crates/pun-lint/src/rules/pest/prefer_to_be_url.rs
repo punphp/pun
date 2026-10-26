@@ -6,8 +6,8 @@ use mago_syntax::cst::{BinaryOperator, Expression, FunctionCall, MethodCall, Nod
 use pun_problem::{Edit, Safety, Span};
 
 use super::{
-    Is, Trinary, first_value, func_call, is_bool_constant, is_expect_chain, is_name,
-    matcher_subject, property_fetch, rename, report, subject_holder, type_is,
+    Is, Trinary, first_value, func_call, is_bool_constant, is_name, property_fetch, rename, report,
+    subject_holder, type_is,
 };
 use crate::rules::rector_code_quality::named;
 use crate::syntax::{node_span, unparenthesize};
@@ -34,13 +34,10 @@ impl Rule for PreferToBeUrl {
         let Node::MethodCall(call) = node else {
             return;
         };
-        if !is_expect_chain(call) {
-            return;
-        }
         let Some(holder) = subject_holder(call) else {
             return;
         };
-        let subject = matcher_subject(call);
+        let subject = first_value(holder.arguments);
         let mut edits = Vec::new();
         let url = if is_name(&call.method, "toBeFalse") && is_not_chain(call) {
             let Some(url) = subject

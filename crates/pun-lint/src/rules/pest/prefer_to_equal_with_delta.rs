@@ -6,8 +6,8 @@ use mago_syntax::cst::{BinaryOperator, Expression, Node, NodeKind};
 use pun_problem::{Edit, Safety, Span};
 
 use super::{
-    argument_value, arguments_text, expect_argument, expect_call, func_call, has_not, identifier,
-    is_expect_chain, report, set_first_argument,
+    argument_value, arguments_text, expect_call, first_value, func_call, has_not, identifier,
+    report, set_first_argument,
 };
 use crate::rules::rector_code_quality::named;
 use crate::syntax::{node_span, unparenthesize};
@@ -34,10 +34,15 @@ impl Rule for PreferToEqualWithDelta {
         let Node::MethodCall(call) = node else {
             return;
         };
-        if !is_expect_chain(call) || identifier(&call.method) != Some(b"toBeTrue") {
+        if identifier(&call.method) != Some(b"toBeTrue") {
             return;
         }
-        let Some(Expression::Binary(comparison)) = expect_argument(call).map(unparenthesize) else {
+        let Some(expect) = expect_call(call) else {
+            return;
+        };
+        let Some(Expression::Binary(comparison)) =
+            first_value(&expect.argument_list).map(unparenthesize)
+        else {
             return;
         };
         if !matches!(
@@ -58,27 +63,20 @@ impl Rule for PreferToEqualWithDelta {
         if !matches!(minus.operator, BinaryOperator::Subtraction(_)) {
             return;
         }
-        let Some(expect) = expect_call(call) else {
-            return;
-        };
-        let Some(first) = set_first_argument(ctx, &expect.argument_list, minus.lhs) else {
-            return;
-        };
+        let mut edits = set_first_argument(ctx, &expect.argument_list, minus.lhs);
         let not = if has_not(call) { "->not" } else { "" };
+        edits.push(Edit::new(
+            Span::new(node_span(expect).end, node_span(call).end),
+            format!(
+                "{not}->toEqualWithDelta({})",
+                arguments_text(ctx, &[minus.rhs, comparison.rhs])
+            ),
+        ));
         out.push(report(
             node_span(call),
             "Use `toEqualWithDelta()` instead of comparing the difference.".to_string(),
             Safety::Safe,
-            vec![
-                first,
-                Edit::new(
-                    Span::new(node_span(expect).end, node_span(call).end),
-                    format!(
-                        "{not}->toEqualWithDelta({})",
-                        arguments_text(ctx, &[minus.rhs, comparison.rhs])
-                    ),
-                ),
-            ],
+            edits,
         ));
     }
 }

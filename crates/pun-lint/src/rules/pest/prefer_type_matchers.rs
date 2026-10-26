@@ -6,8 +6,8 @@ use mago_syntax::cst::{Node, NodeKind};
 use pun_problem::Safety;
 
 use super::{
-    argument_value, func_call, function_name, is_expect_chain, is_name, matcher_subject, rename,
-    report, subject_holder,
+    argument_value, func_call, function_name, is_name, matcher_subject, rename, report,
+    subject_holder,
 };
 use crate::syntax::node_span;
 use crate::{Context, Report, Rule};
@@ -33,7 +33,7 @@ impl Rule for PreferTypeMatchers {
         let Node::MethodCall(call) = node else {
             return;
         };
-        if !is_expect_chain(call) || !is_name(&call.method, "toBeTrue") {
+        if !is_name(&call.method, "toBeTrue") {
             return;
         }
         let (Some(holder), Some(subject)) = (subject_holder(call), matcher_subject(call)) else {

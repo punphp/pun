@@ -1,0 +1,17 @@
+<?php
+
+use function Foo\bar;
+use const Foo\X;
+use const Foo\x;
+use Foo\{A, function f, const C};
+use function Foo\{g, h};
+use Foo\Bar as Baz;
+use Tests\TestCase;
+
+uses(TestCase::class)->group('x');
+foo()->use(Tests\Other::class)->in('Feature');
+pest()->group('a')->in('Feature');
+pest()->use(Tests\Concerns\T::class)->in(<<<TXT
+Feature{$x}
+TXT);
+uses(TestCase::class, Baz::class)->in('Feature');

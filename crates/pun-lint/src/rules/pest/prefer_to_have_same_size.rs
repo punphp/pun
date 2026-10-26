@@ -6,8 +6,8 @@ use mago_syntax::cst::{Expression, Node, NodeKind};
 use pun_problem::Safety;
 
 use super::{
-    Is, Trinary, argument_value, first_value, func_call, is_expect_chain, is_name, matcher_subject,
-    report, set_call_arguments, subject_holder, texts, type_is,
+    Is, Trinary, argument_value, first_value, func_call, is_name, report, set_call_arguments,
+    subject_holder, texts, type_is,
 };
 use crate::rules::rector_code_quality::named;
 use crate::syntax::node_span;
@@ -34,9 +34,6 @@ impl Rule for PreferToHaveSameSize {
         let Node::MethodCall(call) = node else {
             return;
         };
-        if !is_expect_chain(call) {
-            return;
-        }
         let Some(holder) = subject_holder(call) else {
             return;
         };
@@ -56,7 +53,7 @@ impl Rule for PreferToHaveSameSize {
         };
         if is_name(&call.method, "toBe") || is_name(&call.method, "toEqual") {
             let (Some(first), Some(second)) = (
-                counted(matcher_subject(call)),
+                counted(first_value(holder.arguments)),
                 counted(Some(argument_value(argument))),
             ) else {
                 return;
@@ -78,7 +75,7 @@ impl Rule for PreferToHaveSameSize {
             let Some(Some(second)) = counted(Some(argument_value(argument))) else {
                 return;
             };
-            if matcher_subject(call).is_some_and(|s| !countable(s)) {
+            if first_value(holder.arguments).is_some_and(|s| !countable(s)) {
                 return;
             }
             out.push(report(

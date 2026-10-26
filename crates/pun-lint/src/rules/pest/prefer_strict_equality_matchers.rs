@@ -6,8 +6,7 @@ use mago_syntax::cst::{BinaryOperator, Expression, Node, NodeKind};
 use pun_problem::{Edit, Safety, Span};
 
 use super::{
-    arguments_text, expect_call, first_value, has_not, identifier, is_expect_chain, report,
-    set_first_argument,
+    arguments_text, expect_call, first_value, has_not, identifier, report, set_first_argument,
 };
 use crate::syntax::{node_span, unparenthesize};
 use crate::{Context, Report, Rule};
@@ -33,9 +32,6 @@ impl Rule for PreferStrictEqualityMatchers {
         let Node::MethodCall(call) = node else {
             return;
         };
-        if !is_expect_chain(call) {
-            return;
-        }
         let method = match identifier(&call.method) {
             Some(m @ (b"toBeTrue" | b"toBeFalse")) => m,
             _ => return,
@@ -53,20 +49,19 @@ impl Rule for PreferStrictEqualityMatchers {
             BinaryOperator::NotIdentical(_) => false,
             _ => return,
         };
-        let Some(argument) = set_first_argument(ctx, &expect.argument_list, comparison.lhs) else {
-            return;
-        };
+        let mut edits = set_first_argument(ctx, &expect.argument_list, comparison.lhs);
         let not = (identical == (method == b"toBeFalse")) != has_not(call);
         let not = if not { "->not" } else { "" };
         let tail = Edit::new(
             Span::new(node_span(expect).end, node_span(call).end),
             format!("{not}->toBe({})", arguments_text(ctx, &[comparison.rhs])),
         );
+        edits.push(tail);
         out.push(report(
             node_span(call),
             "Use `toBe()` instead of checking a strict comparison.".to_string(),
             Safety::Safe,
-            vec![argument, tail],
+            edits,
         ));
     }
 }

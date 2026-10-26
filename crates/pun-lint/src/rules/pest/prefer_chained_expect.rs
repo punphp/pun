@@ -88,7 +88,9 @@ impl Rule for PreferChainedExpect {
         ctx: &Context<'_>,
         out: &mut Vec<Report>,
     ) {
-        let list = statement_list(ctx, node);
+        let Some(list) = statement_list(ctx, node) else {
+            return;
+        };
         // php-parser's statements, with what refactor() asks of them: an expression statement whose expression is a
         // method call. The others only stop a run.
         let mut stmts: Vec<Option<Stmt<'_>>> = list
@@ -184,15 +186,14 @@ impl Rule for PreferChainedExpect {
         if list.nop {
             items.push(Item::Old(list.stmts.len()));
         }
-        let Some(edits) = rewrite_list(ctx, node, ancestors, &list, &items) else {
-            return;
-        };
-        out.push(report(
-            node_span(list.stmts[0]),
-            "Chain consecutive `expect()` calls.".to_string(),
-            Safety::Safe,
-            edits,
-        ));
+        if let Some(edits) = rewrite_list(ctx, node, ancestors, &list, &items) {
+            out.push(report(
+                node_span(list.stmts[0]),
+                "Chain consecutive `expect()` calls.".to_string(),
+                Safety::Safe,
+                edits,
+            ));
+        }
     }
 }
 

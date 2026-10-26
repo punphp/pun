@@ -2,12 +2,12 @@
 //! `->toHaveProperty('a')->toHaveProperty('b')` with literal strings becomes `->toHaveProperties(['a', 'b'])`, when
 //! the checked value may be an object.
 
-use mago_syntax::cst::{Expression, Literal, MethodCall, Node, NodeKind};
+use mago_syntax::cst::{Expression, Literal, Node, NodeKind};
 use pun_problem::{Edit, Safety, Span};
 
 use super::{
-    Is, Trinary, argument_value, has_not, is_expect_chain, is_name, matcher_subject, method_call,
-    rename, report, type_is, value_text,
+    Is, Trinary, argument_value, has_not, is_name, matcher_subject, method_call, rename, report,
+    type_is, value_text,
 };
 use crate::syntax::{node_span, unparenthesize};
 use crate::{Context, Report, Rule};
@@ -33,14 +33,14 @@ impl Rule for PreferToHaveProperties {
         let Node::MethodCall(call) = node else {
             return;
         };
-        if !is_expect_chain(call) || !is_name(&call.method, "toHaveProperty") {
+        if !is_name(&call.method, "toHaveProperty") {
             return;
         }
         if matcher_subject(call).is_none_or(|s| type_is(ctx, s, Is::Object) == Trinary::No) {
             return;
         }
         let mut keys = Vec::new();
-        let mut first: &MethodCall<'_> = call;
+        let mut first = None;
         let mut current = Some(call);
         while let Some(c) = current.filter(|c| is_name(&c.method, "toHaveProperty")) {
             if has_not(c) {
@@ -54,13 +54,10 @@ impl Rule for PreferToHaveProperties {
                 return;
             }
             keys.insert(0, value_text(ctx, key));
-            first = c;
+            first = Some((c, argument));
             current = method_call(c.object);
         }
-        if keys.len() < 2 {
-            return;
-        }
-        let [argument] = first.argument_list.arguments.as_slice() else {
+        let (Some((first, argument)), 2..) = (first, keys.len()) else {
             return;
         };
         out.push(report(

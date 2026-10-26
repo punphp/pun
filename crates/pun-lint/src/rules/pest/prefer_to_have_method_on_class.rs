@@ -6,10 +6,7 @@
 use mago_syntax::cst::{Access, Call, Expression, Literal, Node, NodeKind};
 use pun_problem::{Edit, Safety};
 
-use super::{
-    Is, Trinary, expect_argument, expect_call, is_expect_chain, is_name, report,
-    set_first_argument, type_is, value_text,
-};
+use super::{Is, Trinary, argument_value, expect_call, is_name, report, type_is, value_text};
 use crate::syntax::{node_span, unparenthesize};
 use crate::{Context, Report, Rule};
 
@@ -34,15 +31,13 @@ impl Rule for PreferToHaveMethodOnClass {
         let Node::MethodCall(call) = node else {
             return;
         };
-        if !is_expect_chain(call)
-            || !(is_name(&call.method, "toHaveMethod") || is_name(&call.method, "toHaveMethods"))
-        {
+        if !(is_name(&call.method, "toHaveMethod") || is_name(&call.method, "toHaveMethods")) {
             return;
         }
-        let (Some(expect), Some(value)) = (expect_call(call), expect_argument(call)) else {
+        let Some(first) = expect_call(call).and_then(|e| e.argument_list.arguments.first()) else {
             return;
         };
-        let value = unparenthesize(value);
+        let value = unparenthesize(argument_value(first));
         if matches!(
             value,
             Expression::Access(Access::ClassConstant(_)) | Expression::Literal(Literal::String(_))
@@ -74,14 +69,11 @@ impl Rule for PreferToHaveMethodOnClass {
         } else {
             format!("({class})::class")
         };
-        let Some(Edit { span, .. }) = set_first_argument(ctx, &expect.argument_list, value) else {
-            return;
-        };
         out.push(report(
             node_span(call),
             "Check the methods of the object's class, as Pest 3 does.".to_string(),
             Safety::Safe,
-            vec![Edit::new(span, class)],
+            vec![Edit::new(node_span(first), class)],
         ));
     }
 }

@@ -7,7 +7,7 @@ use pun_problem::{Edit, Safety, Span};
 
 use super::{
     Is, Trinary, expect_call, first_value, func_call, function_name, has_not, identifier,
-    is_bool_constant, is_expect_chain, report, set_first_argument, type_is,
+    is_bool_constant, report, set_first_argument, type_is,
 };
 use crate::syntax::{node_span, unparenthesize};
 use crate::{Context, Report, Rule};
@@ -33,9 +33,6 @@ impl Rule for PreferToBeJson {
         let Node::MethodCall(call) = node else {
             return;
         };
-        if !is_expect_chain(call) {
-            return;
-        }
         let method = match identifier(&call.method) {
             Some(m @ (b"toBeTrue" | b"toBeFalse")) => m,
             _ => return,
@@ -63,21 +60,17 @@ impl Rule for PreferToBeJson {
             return;
         }
         let valid = (not_identical == (method == b"toBeTrue")) != has_not(call);
-        let Some(argument) = set_first_argument(ctx, &expect.argument_list, string) else {
-            return;
-        };
+        let mut edits = set_first_argument(ctx, &expect.argument_list, string);
         let not = if valid { "" } else { "->not" };
+        edits.push(Edit::new(
+            Span::new(node_span(expect).end, node_span(call).end),
+            format!("{not}->toBeJson()"),
+        ));
         out.push(report(
             node_span(call),
             "Use `toBeJson()` instead of checking `json_decode()` against null.".to_string(),
             Safety::Unsafe,
-            vec![
-                argument,
-                Edit::new(
-                    Span::new(node_span(expect).end, node_span(call).end),
-                    format!("{not}->toBeJson()"),
-                ),
-            ],
+            edits,
         ));
     }
 }

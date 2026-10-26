@@ -53,9 +53,7 @@ impl Rule for PreferNotModifier {
         if node_span(var) != node_span(expect) {
             return;
         }
-        let Some(argument) = set_first_argument(ctx, &expect.argument_list, not.operand) else {
-            return;
-        };
+        let mut edits = set_first_argument(ctx, &expect.argument_list, not.operand);
         let toggled = match identifier(&call.method) {
             Some(b"toBeTrue" | b"toBeFalse") => {
                 if type_is(ctx, not.operand, Is::Boolean) != Trinary::Yes {
@@ -84,11 +82,12 @@ impl Rule for PreferNotModifier {
             },
             _ => return,
         };
+        edits.push(toggled);
         out.push(report(
             node_span(call),
             "Negate the expectation instead of its value.".to_string(),
             Safety::Safe,
-            vec![argument, toggled],
+            edits,
         ));
     }
 }
