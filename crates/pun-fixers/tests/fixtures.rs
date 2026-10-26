@@ -219,6 +219,13 @@ fn upstream_fixtures() {
                     expected = expected.replace('\n', eol);
                     input = input.map(|i| i.replace('\n', eol));
                 }
+                // `str_replace(['    ', "\n"], ["\t", "\r\n"], $expected)` (PhpUnitExpectationFixerTest): array
+                // replacements apply one after the other.
+                if body.contains(r#"str_replace(['    ', "\n"], ["\t", "\r\n"], $expected)"#) {
+                    let tabs = |s: &str| s.replace("    ", "\t").replace('\n', "\r\n");
+                    expected = tabs(&expected);
+                    input = input.map(|i| tabs(&i));
+                }
                 let mut config = arg(&["configuration", "config"]);
                 // `if ([] === $configuration) { doTest($expected, $input); configure([...]); doTest($input, $expected); }`
                 // (EmptyLoopBodyFixerTest): the default first, then the literal configuration the other way round.

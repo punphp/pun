@@ -1881,7 +1881,7 @@
         "rules": [
           "lint/phpunit/prefer-expect-exception"
         ],
-        "note": "Same. Options: renamed for TOML: [options.\"lint/phpunit/prefer-expect-exception\"]. Planned: not ported yet.",
+        "note": "Same. Options: renamed for TOML: [options.\"lint/phpunit/prefer-expect-exception\"].",
         "unsupported": false
       },
       {
@@ -4867,7 +4867,7 @@
         "rules": [
           "lint/phpunit/prefer-expect-exception"
         ],
-        "note": "Same. Options: renamed for TOML: [options.\"lint/phpunit/prefer-expect-exception\"]. Planned: not ported yet.",
+        "note": "Same. Options: renamed for TOML: [options.\"lint/phpunit/prefer-expect-exception\"].",
         "unsupported": false
       },
       {

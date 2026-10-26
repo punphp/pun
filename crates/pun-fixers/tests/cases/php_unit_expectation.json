@@ -1,0 +1,23 @@
+[
+    {
+        "fixer": "php_unit_expectation",
+        "input": "<?php\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    public function testA() {\n        $this->setExpectedException(Foo::class, null);\n        $this->setExpectedException(Foo::class, 'msg', 3,);\n        $this?->setExpectedExceptionRegExp(Foo::class, '/x/', 5);\n        $this->expectExceptionMessageRegExp('/y/');\n        $this->setExpectedException(\n            Foo::class,\n            'msg'\n        );\n        $this->other(1, 2);\n    }\n}\n",
+        "expected": "<?php\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    public function testA() {\n        $this->expectException(Foo::class);\n        $this->expectException(Foo::class);\n        $this->expectExceptionMessage('msg');\n        $this->expectExceptionCode(3);\n        $this?->expectException(Foo::class);\n        $this->expectExceptionMessageMatches('/x/');\n        $this->expectExceptionCode(5);\n        $this->expectExceptionMessageMatches('/y/');\n        $this->expectException(\n            Foo::class\n        );\n        $this->expectExceptionMessage(\n            'msg'\n        );\n        $this->other(1, 2);\n    }\n}\n"
+    },
+    {
+        "fixer": "php_unit_expectation",
+        "config": {
+            "target": "5.2"
+        },
+        "input": "<?php\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    public function testA() {\n        $this->setExpectedException(Foo::class, null);\n        $this->setExpectedException(Foo::class, 'msg', 3,);\n        $this?->setExpectedExceptionRegExp(Foo::class, '/x/', 5);\n        $this->expectExceptionMessageRegExp('/y/');\n        $this->setExpectedException(\n            Foo::class,\n            'msg'\n        );\n        $this->other(1, 2);\n    }\n}\n",
+        "expected": "<?php\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    public function testA() {\n        $this->expectException(Foo::class);\n        $this->expectException(Foo::class);\n        $this->expectExceptionMessage('msg');\n        $this->expectExceptionCode(3);\n        $this?->setExpectedExceptionRegExp(Foo::class, '/x/', 5);\n        $this->expectExceptionMessageRegExp('/y/');\n        $this->expectException(\n            Foo::class\n        );\n        $this->expectExceptionMessage(\n            'msg'\n        );\n        $this->other(1, 2);\n    }\n}\n"
+    },
+    {
+        "fixer": "php_unit_expectation",
+        "config": {
+            "target": "5.6"
+        },
+        "input": "<?php\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    public function testA() {\n        $this->setExpectedException(Foo::class, null);\n        $this->setExpectedException(Foo::class, 'msg', 3,);\n        $this?->setExpectedExceptionRegExp(Foo::class, '/x/', 5);\n        $this->expectExceptionMessageRegExp('/y/');\n        $this->setExpectedException(\n            Foo::class,\n            'msg'\n        );\n        $this->other(1, 2);\n    }\n}\n",
+        "expected": "<?php\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    public function testA() {\n        $this->expectException(Foo::class);\n        $this->expectException(Foo::class);\n        $this->expectExceptionMessage('msg');\n        $this->expectExceptionCode(3);\n        $this?->expectException(Foo::class);\n        $this->expectExceptionMessageRegExp('/x/');\n        $this->expectExceptionCode(5);\n        $this->expectExceptionMessageRegExp('/y/');\n        $this->expectException(\n            Foo::class\n        );\n        $this->expectExceptionMessage(\n            'msg'\n        );\n        $this->other(1, 2);\n    }\n}\n"
+    }
+]

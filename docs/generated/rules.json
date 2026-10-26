@@ -12044,7 +12044,7 @@
       "upstream": [
         "php_unit_expectation"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/phpunit/prefer-inline-create-stub",
