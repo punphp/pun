@@ -11787,7 +11787,7 @@
         "rules": [
           "lint/pest/no-before-all-in-describe"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -11817,7 +11817,7 @@
         "rules": [
           "lint/pest/no-invalid-repeat"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -11897,7 +11897,7 @@
         "rules": [
           "lint/pest/prefer-filesystem-matchers"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -12245,7 +12245,7 @@
         "rules": [
           "lint/pest/prefer-to-have-keys"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -12265,7 +12265,7 @@
         "rules": [
           "lint/pest/prefer-to-have-properties"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {

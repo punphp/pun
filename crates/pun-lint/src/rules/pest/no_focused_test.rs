@@ -1,10 +1,10 @@
 //! `lint/pest/no-focused-test`, ported from pest-plugin-rector's `RemoveOnlyRector`: `->only()` on a Pest test
 //! (`test()`, `it()`, `describe()`, `todo()` or a hook) is removed, so the whole suite runs.
 
-use mago_syntax::cst::{Expression, MethodCall, Node, NodeKind};
+use mago_syntax::cst::{MethodCall, Node, NodeKind};
 use pun_problem::{Edit, Safety, Span};
 
-use super::{func_call, identifier, method_call, property_fetch, report};
+use super::{identifier, report, root_func_call};
 use crate::rules::rector_code_quality::named;
 use crate::syntax::{node_span, unparenthesize};
 use crate::{Context, Report, Rule};
@@ -60,15 +60,7 @@ const PEST_TEST_FUNCTIONS: [&str; 8] = [
     "afterAll",
 ];
 
-/// `isPestTestChain`: the chain's root (`PestChainAnalyzer::getRootFuncCall`, under its method calls and then its
-/// property fetches) is a call of one of `PEST_TEST_FUNCTIONS`.
+/// `isPestTestChain`: the chain's root is a call of one of `PEST_TEST_FUNCTIONS`.
 fn is_pest_test_chain(call: &MethodCall<'_>) -> bool {
-    let mut current: &Expression<'_> = call.object;
-    while let Some(m) = method_call(current) {
-        current = m.object;
-    }
-    while let Some(p) = property_fetch(current) {
-        current = p.object;
-    }
-    func_call(current).is_some_and(|f| PEST_TEST_FUNCTIONS.iter().any(|name| named(f, name)))
+    root_func_call(call).is_some_and(|f| PEST_TEST_FUNCTIONS.iter().any(|name| named(f, name)))
 }

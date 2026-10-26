@@ -8897,7 +8897,7 @@
         "ConvertBeforeAllInDescribeRector",
         "Pest\\Rector\\Rules\\ConvertBeforeAllInDescribeRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/pest/no-expect-exception",
@@ -8960,7 +8960,7 @@
         "FixInvalidRepeatValueRector",
         "Pest\\Rector\\Rules\\FixInvalidRepeatValueRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/pest/no-negated-boolean-matcher",
@@ -9229,7 +9229,7 @@
         "SimplifyFilesystemMatchers",
         "SimplifyFilesystemMatchersRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/pest/prefer-not-modifier",
@@ -9918,7 +9918,7 @@
         "UseToHaveKeys",
         "UseToHaveKeysRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/pest/prefer-to-have-length",
@@ -9981,7 +9981,7 @@
         "UseToHaveProperties",
         "UseToHavePropertiesRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/pest/prefer-to-have-property",

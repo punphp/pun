@@ -211,12 +211,18 @@ fn simplify_expect_not() {
 
 #[test]
 fn simplify_comparison_expectations() {
-    check(PreferComparisonMatchers, "SimplifyComparisonExpectationsRector");
+    check(
+        PreferComparisonMatchers,
+        "SimplifyComparisonExpectationsRector",
+    );
 }
 
 #[test]
 fn use_strict_equality_matchers() {
-    check(PreferStrictEqualityMatchers, "UseStrictEqualityMatchersRector");
+    check(
+        PreferStrictEqualityMatchers,
+        "UseStrictEqualityMatchersRector",
+    );
 }
 
 #[test]
@@ -231,7 +237,10 @@ fn use_instance_of_matcher() {
 
 #[test]
 fn use_to_contain_only_instances_of() {
-    check(PreferToContainOnlyInstancesOf, "UseToContainOnlyInstancesOfRector");
+    check(
+        PreferToContainOnlyInstancesOf,
+        "UseToContainOnlyInstancesOfRector",
+    );
 }
 
 #[test]
@@ -301,7 +310,10 @@ fn use_to_match() {
 
 #[test]
 fn use_to_equal_canonicalizing() {
-    check(PreferToEqualCanonicalizing, "UseToEqualCanonicalizingRector");
+    check(
+        PreferToEqualCanonicalizing,
+        "UseToEqualCanonicalizingRector",
+    );
 }
 
 #[test]
@@ -312,4 +324,29 @@ fn use_to_equal_with_delta() {
 #[test]
 fn use_to_have_same_size() {
     check(PreferToHaveSameSize, "UseToHaveSameSizeRector");
+}
+
+#[test]
+fn fix_invalid_repeat_value() {
+    check(NoInvalidRepeat, "FixInvalidRepeatValueRector");
+}
+
+#[test]
+fn convert_before_all_in_describe() {
+    check(NoBeforeAllInDescribe, "ConvertBeforeAllInDescribeRector");
+}
+
+#[test]
+fn use_to_have_keys() {
+    check(PreferToHaveKeys, "UseToHaveKeysRector");
+}
+
+#[test]
+fn use_to_have_properties() {
+    check(PreferToHaveProperties, "UseToHavePropertiesRector");
+}
+
+#[test]
+fn simplify_filesystem_matchers() {
+    check(PreferFilesystemMatchers, "SimplifyFilesystemMatchersRector");
 }
