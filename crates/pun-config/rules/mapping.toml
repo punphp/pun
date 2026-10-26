@@ -658,7 +658,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "phpunit/no-bare-mock-builder" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Remove getMockBuilder() to createMock()" }
 "phpunit/no-empty-test" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Remove empty test methods" }
 "phpunit/no-entity-mock" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Move from entity mock, to direct use of class instance and setters" }
-"phpunit/no-expected-exception-annotation" = { fix = "unsafe", sets = ["code-quality"], ported = false, status = "decided", summary = "Replace @expectedException annotations with expectException() calls." }
+"phpunit/no-expected-exception-annotation" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "Replace @expectedException annotations with expectException() calls." }
 "phpunit/no-expects-any" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Remove `expect($this->any())` from mocks as it has no added value" }
 "phpunit/no-final-constructor-override" = { fix = "safe", ported = true, status = "decided", summary = "Remove override final construct test case" }
 "phpunit/no-flipped-assertion" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Turns accidentally flipped assert order to right one, with expected expr to left" }

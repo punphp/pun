@@ -1951,7 +1951,7 @@
         "rules": [
           "lint/phpunit/no-expected-exception-annotation"
         ],
-        "note": "Same. Options: renamed for TOML: [options.\"lint/phpunit/no-expected-exception-annotation\"]. Planned: not ported yet.",
+        "note": "Same. Options: renamed for TOML: [options.\"lint/phpunit/no-expected-exception-annotation\"].",
         "unsupported": false
       },
       {
@@ -4937,7 +4937,7 @@
         "rules": [
           "lint/phpunit/no-expected-exception-annotation"
         ],
-        "note": "Same. Options: renamed for TOML: [options.\"lint/phpunit/no-expected-exception-annotation\"]. Planned: not ported yet.",
+        "note": "Same. Options: renamed for TOML: [options.\"lint/phpunit/no-expected-exception-annotation\"].",
         "unsupported": false
       },
       {

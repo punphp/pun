@@ -11308,7 +11308,7 @@
       "upstream": [
         "php_unit_no_expectation_annotation"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/phpunit/no-expects-any",

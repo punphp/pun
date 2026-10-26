@@ -1,0 +1,24 @@
+[
+    {
+        "fixer": "php_unit_no_expectation_annotation",
+        "input": "<?php\nabstract class FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     * @expectedException \\Foo\\Bar * comment\n     * @expectedExceptionCode 42\n     */\n    public function testA() {$f = function () {};}\n    /** @expectedException Baz */\n    final public function testB() {}\n    /**\n     * @expectedException Qux\n     * @expectedExceptionMessageRegExp /a\n     *   b/\n     */\n    // note\n    protected function testC()\n    {\n        foo();\n    }\n    /**\n     * @expectedExceptionCode 1\n     */\n    public function testD() {}\n    /** @expectedException X */\n    abstract function testE();\n}\n",
+        "expected": "<?php\nabstract class FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     */\n    public function testA() {\n        $this->setExpectedException(\\Foo\\Bar::class, null, 42);\n$f = function () {};}\n    /** */\n    final public function testB() {\n        $this->setExpectedException(\\Baz::class);\n}\n    /**\n     */\n    // note\n    protected function testC()\n    {\n        $this->setExpectedExceptionRegExp(\\Qux::class, '/a b/');\n\n        foo();\n    }\n    /**\n     * @expectedExceptionCode 1\n     */\n    public function testD() {}\n    /** @expectedException X */\n    abstract function testE();\n}\n"
+    },
+    {
+        "fixer": "php_unit_no_expectation_annotation",
+        "config": {
+            "target": "3.2",
+            "use_class_const": false
+        },
+        "input": "<?php\nabstract class FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     * @expectedException \\Foo\\Bar * comment\n     * @expectedExceptionCode 42\n     */\n    public function testA() {$f = function () {};}\n    /** @expectedException Baz */\n    final public function testB() {}\n    /**\n     * @expectedException Qux\n     * @expectedExceptionMessageRegExp /a\n     *   b/\n     */\n    // note\n    protected function testC()\n    {\n        foo();\n    }\n    /**\n     * @expectedExceptionCode 1\n     */\n    public function testD() {}\n    /** @expectedException X */\n    abstract function testE();\n}\n",
+        "expected": "<?php\nabstract class FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     */\n    public function testA() {\n        $this->setExpectedException('Foo\\Bar', null, 42);\n$f = function () {};}\n    /** */\n    final public function testB() {\n        $this->setExpectedException('Baz');\n}\n    /**\n     * @expectedException Qux\n     * @expectedExceptionMessageRegExp /a\n     *   b/\n     */\n    // note\n    protected function testC()\n    {\n        foo();\n    }\n    /**\n     * @expectedExceptionCode 1\n     */\n    public function testD() {}\n    /** @expectedException X */\n    abstract function testE();\n}\n"
+    },
+    {
+        "fixer": "php_unit_no_expectation_annotation",
+        "config": {
+            "use_class_const": false
+        },
+        "input": "<?php\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     * @expectedException\n     */\n    public function testA() {\n        foo();\n    }\n}\n",
+        "expected": "<?php\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     */\n    public function testA() {\n        $this->setExpectedException('');\n\n        foo();\n    }\n}\n"
+    }
+]
