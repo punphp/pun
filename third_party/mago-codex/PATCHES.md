@@ -255,3 +255,13 @@ The source remains PHPStan 2.3.1 at `cb3b7e99489b2e3789ee2eec10501cb7a72580ea`.
 `pun-analyse/tests/fixtures/mixed-subtraction/guard-types.php` records the PHAR's explicitness and
 array-domain results. `tests/mixed_subtraction.rs` checks these shared APIs, serde compatibility,
 public guard diagnostics, and passive native tracking. No dependency or lockfile changes are needed.
+
+## Inherit declared assertions, not parent body predicates
+
+`populator/docblock.rs` excludes body-inferred conditional assertions from PHPDoc inheritance.
+Copying those assertions used to clear `assertions_inferred` on an overriding method, turning
+the parent's implementation detail into a declared child contract. A child without its own
+predicate could also receive inferred parent assertions while keeping a false origin flag.
+Declared parent assertions still override inferred child assertions and remain inheritable.
+The PHPStan 2.3.1 controls in `mixed-subtraction/inherited-assertions.php` cover both inferred
+parent cases. `call-assertions.php` covers the declared-parent control.

@@ -1435,3 +1435,29 @@ type reporter adds parentheses around a single non-empty-array exclusion at arra
 and Mago infers a string assertion from an unannotated user function at line 137, which PHPStan
 does not infer. This patch does not change `restore_metadata`, the shared type reporter, or
 inferred function assertions.
+
+## Declared assertions at invocation boundaries
+
+`invocation/post_process.rs` does not publish body-inferred conditional assertions as call-site
+contracts. It checks `FunctionLikeMetadata::assertions_inferred`, which the scanner sets only
+when no explicit assertions exist. The populator clears that flag when a method inherits a
+declared assertion. It does not inherit a parent's body predicate as a declared child contract.
+Body-inferred metadata remains available to callback providers.
+
+PHPStan's `FuncCallHandler::specifyTypes()` checks registered type-specifying extensions,
+conditional return types, and reflected PHPDoc assertions. It does not inspect the callee's
+body for an argument predicate. `BetterReflectionProvider` builds those assertions from the
+resolved PHPDoc. Both paths are pinned at `cb3b7e99489b2e3789ee2eec10501cb7a72580ea`.
+
+Only the inferred conditional maps are omitted. Argument evaluation, reference output,
+exception processing, unconditional assertions, and plugin assertions keep their existing paths.
+Declared `@phpstan-assert`, `@phpstan-assert-if-true`, and `@phpstan-assert-if-false` contracts
+still apply, including inherited method contracts and opposite-branch exclusions.
+
+`mixed-subtraction/call-assertions.php` records 28 fresh PHPStan 2.3.1 diagnostics for functions,
+methods, closures, assignments inside arguments, and reference output. Public analyzer controls
+compare those records with native tracking enabled and disabled. `inherited-assertions.php`
+adds four oracle records for an overriding method with its own inferred predicate and an
+overriding method without one. Neither inherits the parent's inferred assertion.
+The existing strict record at `array-guards.php:137` now matches mixed. Its line 74
+type-description mismatch is unchanged.

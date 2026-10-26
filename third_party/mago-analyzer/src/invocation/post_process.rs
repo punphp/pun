@@ -201,13 +201,22 @@ where
 
     let range = (invoication.span.start.offset, invoication.span.end.offset);
 
+    // PHPStan narrows arguments from declared contracts or extensions, not a callee's body.
+    // The scanner/populator distinguish inferred predicates from declared/inherited assertions.
+    let empty_assertions = BTreeMap::new();
+    let (if_true_assertions, if_false_assertions) = if metadata.assertions_inferred {
+        (&empty_assertions, &empty_assertions)
+    } else {
+        (&metadata.if_true_assertions, &metadata.if_false_assertions)
+    };
+
     let resolved_if_true_assertions = resolve_invocation_assertion(
         context,
         block_context,
         artifacts,
         invoication,
         this_variable,
-        &metadata.if_true_assertions,
+        if_true_assertions,
         template_result,
         parameters,
         false,
@@ -227,7 +236,7 @@ where
         artifacts,
         invoication,
         this_variable,
-        &metadata.if_false_assertions,
+        if_false_assertions,
         template_result,
         parameters,
         false,
