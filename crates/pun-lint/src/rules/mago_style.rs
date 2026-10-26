@@ -50,6 +50,9 @@ impl Rule for NoInlineHtml {
         _ctx: &Context<'_>,
         out: &mut Vec<Report>,
     ) {
+        if !matches!(node, Node::Inline(_)) {
+            return;
+        }
         out.push(report(
             node_span(&node),
             "Inline content is not allowed outside of PHP tags.".into(),

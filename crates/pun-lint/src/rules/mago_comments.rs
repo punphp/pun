@@ -74,9 +74,8 @@ fn is_untagged(trivia: &Trivia<'_>, tag: &str) -> bool {
         {
             return false;
         }
-        let Ok(lower) = String::from_utf8(stripped.to_ascii_lowercase()) else {
-            return false;
-        };
+        // A comment line of a `&str` source split at ASCII bytes is UTF-8, so nothing is lost.
+        let lower = String::from_utf8_lossy(&stripped.to_ascii_lowercase()).into_owned();
         !is_tagged(&lower, tag)
     })
 }

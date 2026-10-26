@@ -203,8 +203,9 @@ fn prefer_concatenation(node: Node<'_, '_>, out: &mut Vec<Report>) {
                 StringPart::Expression(e) => e.span().start.offset,
                 StringPart::BracedExpression(b) => b.left_brace.end.offset,
             };
+            // Mago also has a `(Literal, Literal)` arm, but the lexer emits one literal part per run of text in a
+            // double-quoted string, so two literal parts are never adjacent.
             let glue = match (pair[0], pair[1]) {
-                (StringPart::Literal(_), StringPart::Literal(_)) => "\" . \"",
                 (StringPart::Literal(_), _) => "\" . ",
                 (_, StringPart::Literal(_)) => " . \"",
                 _ => " . ",

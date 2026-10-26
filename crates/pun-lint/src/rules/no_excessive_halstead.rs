@@ -71,7 +71,8 @@ impl Rule for NoExcessiveHalstead {
             Node::Method(_) => "Method",
             Node::Function(_) => "Function",
             Node::Closure(_) => "Closure",
-            _ => "Arrow function",
+            Node::ArrowFunction(_) => "Arrow function",
+            _ => return,
         };
         let (volume, difficulty, effort) = halstead(node);
         let mut metrics = Vec::new();

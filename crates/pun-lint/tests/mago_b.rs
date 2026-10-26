@@ -8,7 +8,8 @@
 
 use std::path::{Path, PathBuf};
 
-use pun_lint::{Linter, rules};
+use mago_syntax::cst::Node;
+use pun_lint::{Linter, Rule, rules};
 
 fn cases(dir: &str) -> Vec<PathBuf> {
     let root = Path::new(env!("CARGO_MANIFEST_DIR"))
@@ -28,37 +29,66 @@ fn cases(dir: &str) -> Vec<PathBuf> {
     paths
 }
 
-/// Runs every case of `dir` through the rule `id`, configured with the case's options.
+/// A rule called on every node, not only the kinds of its `targets()`.
+struct Everywhere(Box<dyn Rule>);
+
+impl Rule for Everywhere {
+    fn id(&self) -> &'static str {
+        self.0.id()
+    }
+
+    fn min_php_version(&self) -> u32 {
+        self.0.min_php_version()
+    }
+
+    fn visit<'ast, 'arena>(
+        &self,
+        node: Node<'ast, 'arena>,
+        ancestors: &[Node<'ast, 'arena>],
+        ctx: &pun_lint::Context<'_>,
+        out: &mut Vec<pun_lint::Report>,
+    ) {
+        self.0.visit(node, ancestors, ctx, out);
+    }
+}
+
+/// Runs every case of `dir` through the rule `id`, configured with the case's options. `targets()` only spares the
+/// engine work, so the rule also runs on every node and must report the same.
 fn run(id: &str, dir: &str) {
     for path in cases(dir) {
         let name = path.file_name().unwrap().to_string_lossy().into_owned();
-        let mut rule = rules::all()
-            .into_iter()
-            .find(|r| r.id() == id)
-            .unwrap_or_else(|| panic!("{id} is not registered"));
-        let options = std::fs::read_to_string(path.with_extension("json"))
-            .map_or(serde_json::Value::Null, |s| {
-                serde_json::from_str(&s).unwrap()
-            });
-        rule.configure(&options).unwrap();
-        let linter = Linter::new(vec![rule], 80400);
-        let file = std::fs::read_to_string(path.with_extension("filename"))
-            .map_or(path.clone(), |f| PathBuf::from(f.trim()));
-        let input = std::fs::read_to_string(&path).unwrap();
-        let expected = std::fs::read_to_string(path.with_extension("expect")).unwrap();
-        let got: String = linter
-            .check(&file, &input)
-            .unwrap()
-            .iter()
-            .map(|p| format!("{} {} {}\n", p.span.start, p.span.end, p.message))
-            .collect();
-        assert_eq!(got, expected, "{dir}/{name}");
-        if let Ok(fixed) = std::fs::read_to_string(path.with_extension("fixed")) {
-            assert_eq!(
-                linter.fix(&file, &input).unwrap().source,
-                fixed,
-                "{dir}/{name}: fix"
-            );
+        for everywhere in [false, true] {
+            let mut rule = rules::all()
+                .into_iter()
+                .find(|r| r.id() == id)
+                .unwrap_or_else(|| panic!("{id} is not registered"));
+            let options = std::fs::read_to_string(path.with_extension("json"))
+                .map_or(serde_json::Value::Null, |s| {
+                    serde_json::from_str(&s).unwrap()
+                });
+            rule.configure(&options).unwrap();
+            if everywhere {
+                rule = Box::new(Everywhere(rule));
+            }
+            let linter = Linter::new(vec![rule], 80400);
+            let file = std::fs::read_to_string(path.with_extension("filename"))
+                .map_or(path.clone(), |f| PathBuf::from(f.trim()));
+            let input = std::fs::read_to_string(&path).unwrap();
+            let expected = std::fs::read_to_string(path.with_extension("expect")).unwrap();
+            let got: String = linter
+                .check(&file, &input)
+                .unwrap()
+                .iter()
+                .map(|p| format!("{} {} {}\n", p.span.start, p.span.end, p.message))
+                .collect();
+            assert_eq!(got, expected, "{dir}/{name} (everywhere: {everywhere})");
+            if let Ok(fixed) = std::fs::read_to_string(path.with_extension("fixed")) {
+                assert_eq!(
+                    linter.fix(&file, &input).unwrap().source,
+                    fixed,
+                    "{dir}/{name}: fix (everywhere: {everywhere})"
+                );
+            }
         }
     }
 }
@@ -159,7 +189,10 @@ fn options_are_checked() {
         &[json!({"exclude-setters": 1}), json!({"x": true})],
     );
     rejects("lint/complexity/no-goto", &[json!({"x": true})]);
-    rejects("lint/style/no-isset", &[json!({"allow-array-checks": 1})]);
+    rejects(
+        "lint/style/no-isset",
+        &[json!({"allow-array-checks": 1}), json!({"x": true})],
+    );
     rejects(
         "lint/style/require-phpdoc",
         &[
