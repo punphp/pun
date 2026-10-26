@@ -1,0 +1,13 @@
+[
+    {
+        "fixer": "php_unit_internal_class",
+        "config": {
+            "types": [
+                "abstract",
+                "normal"
+            ]
+        },
+        "input": "<?php\nnamespace App;\nuse PHPUnit\\Framework\\Attributes\\Medium;\n/** Doc. */\nfinal class ATest extends \\PHPUnit\\Framework\\TestCase {}\n#[Medium]\nclass BTest extends \\PHPUnit\\Framework\\TestCase {}\nabstract class CTest extends \\PHPUnit\\Framework\\TestCase {}\n/**\n * @large\n */\n#[\\Foo]\nreadonly class DTest extends \\PHPUnit\\Framework\\TestCase {}\n",
+        "expected": "<?php\nnamespace App;\nuse PHPUnit\\Framework\\Attributes\\Medium;\n/** Doc. */\nfinal class ATest extends \\PHPUnit\\Framework\\TestCase {}\n/**\n * @internal\n */\n#[Medium]\nclass BTest extends \\PHPUnit\\Framework\\TestCase {}\n/**\n * @internal\n */\nabstract class CTest extends \\PHPUnit\\Framework\\TestCase {}\n/**\n * @large\n * @internal\n */\n#[\\Foo]\nreadonly class DTest extends \\PHPUnit\\Framework\\TestCase {}\n"
+    }
+]

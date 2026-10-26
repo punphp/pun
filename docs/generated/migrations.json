@@ -1901,7 +1901,7 @@
         "rules": [
           "lint/phpunit/require-internal"
         ],
-        "note": "Same. Options: renamed for TOML: [options.\"lint/phpunit/require-internal\"]. Planned: not ported yet.",
+        "note": "Same. Options: renamed for TOML: [options.\"lint/phpunit/require-internal\"].",
         "unsupported": false
       },
       {
@@ -1971,7 +1971,7 @@
         "rules": [
           "lint/phpunit/require-size"
         ],
-        "note": "Same. Options: renamed for TOML: [options.\"lint/phpunit/require-size\"]. Planned: not ported yet.",
+        "note": "Same. Options: renamed for TOML: [options.\"lint/phpunit/require-size\"].",
         "unsupported": false
       },
       {
@@ -4887,7 +4887,7 @@
         "rules": [
           "lint/phpunit/require-internal"
         ],
-        "note": "Same. Options: renamed for TOML: [options.\"lint/phpunit/require-internal\"]. Planned: not ported yet.",
+        "note": "Same. Options: renamed for TOML: [options.\"lint/phpunit/require-internal\"].",
         "unsupported": false
       },
       {
@@ -4957,7 +4957,7 @@
         "rules": [
           "lint/phpunit/require-size"
         ],
-        "note": "Same. Options: renamed for TOML: [options.\"lint/phpunit/require-size\"]. Planned: not ported yet.",
+        "note": "Same. Options: renamed for TOML: [options.\"lint/phpunit/require-size\"].",
         "unsupported": false
       },
       {

@@ -1,0 +1,208 @@
+{
+    "fixer": "php_unit_size_class",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\PhpUnit\\PhpUnitSizeClassFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/PhpUnit/PhpUnitSizeClassFixerTest.php",
+    "case_count": 20,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": []
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\PhpUnit\\PhpUnitSizeClassFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null, array $configuration = []): void\n    {\n        $this->fixer->configure($configuration);\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": "It does not change normal classes",
+                    "args": [
+                        "<?php\n\nclass Hello\n{\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "It marks a test class as @small by default",
+                    "args": [
+                        "<?php\n\n/**\n * @small\n */\nclass Test extends TestCase\n{\n}\n",
+                        "<?php\n\nclass Test extends TestCase\n{\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "It marks a test class as specified in the configuration",
+                    "args": [
+                        "<?php\n\n/**\n * @large\n */\nclass Test extends TestCase\n{\n}\n",
+                        "<?php\n\nclass Test extends TestCase\n{\n}\n",
+                        {
+                            "group": "large"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "It adds an @small tag to a class that already has a doc block",
+                    "args": [
+                        "<?php\n\n/**\n * @coversNothing\n * @small\n */\nclass Test extends TestCase\n{\n}\n",
+                        "<?php\n\n/**\n * @coversNothing\n */\nclass Test extends TestCase\n{\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "It does not change a class that is already @small",
+                    "args": [
+                        "<?php\n\n/**\n * @small\n */\nclass Test extends TestCase\n{\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "It does not change a class that is already @small and has other annotations",
+                    "args": [
+                        "<?php\n\n/**\n * @author malukenho\n * @coversNothing\n * @large\n * @group large\n */\nclass Test extends TestCase\n{\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "It works on other indentation levels",
+                    "args": [
+                        "<?php\n\nif (class_exists(\"Foo\\Bar\")) {\n    /**\n     * @small\n     */\n    class Test Extends TestCase\n    {\n    }\n}\n",
+                        "<?php\n\nif (class_exists(\"Foo\\Bar\")) {\n    class Test Extends TestCase\n    {\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "It works on other indentation levels when the class has other annotations",
+                    "args": [
+                        "<?php\n\nif (class_exists(\"Foo\\Bar\")) {\n    /**\n     * @author malukenho again\n     *\n     *\n     * @covers \\Other\\Class\n     * @small\n     */\n    class Test Extends TestCase\n    {\n    }\n}\n",
+                        "<?php\n\nif (class_exists(\"Foo\\Bar\")) {\n    /**\n     * @author malukenho again\n     *\n     *\n     * @covers \\Other\\Class\n     */\n    class Test Extends TestCase\n    {\n    }\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "It always adds @small to the bottom of the doc block",
+                    "args": [
+                        "<?php\n\n/**\n * @coversNothing\n *\n *\n *\n *\n *\n *\n *\n *\n *\n *\n *\n *\n *\n *\n * @small\n */\nclass Test extends TestCase\n{\n}\n",
+                        "<?php\n\n/**\n * @coversNothing\n *\n *\n *\n *\n *\n *\n *\n *\n *\n *\n *\n *\n *\n *\n */\nclass Test extends TestCase\n{\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "It does not change a class with a single line @{size} doc block",
+                    "args": [
+                        "<?php\n\n/** @medium */\nclass Test extends TestCase\n{\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "It adds an @small tag to a class that already has a one linedoc block",
+                    "args": [
+                        "<?php\n\n/**\n * @coversNothing\n * @small\n */\nclass Test extends TestCase\n{\n}\n",
+                        "<?php\n\n/** @coversNothing */\nclass Test extends TestCase\n{\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "By default it will not mark an abstract class as @small",
+                    "args": [
+                        "<?php\n\nabstract class Test\n{\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "It works correctly with multiple classes in one file, even when one of them is not allowed",
+                    "args": [
+                        "<?php\n\n/**\n * @small\n */\nclass Test extends TestCase\n{\n}\n\nabstract class Test2 extends TestCase\n{\n}\n\nclass FooBar\n{\n}\n\n/**\n * @small\n */\nclass Test3 extends TestCase\n{\n}\n",
+                        "<?php\n\nclass Test extends TestCase\n{\n}\n\nabstract class Test2 extends TestCase\n{\n}\n\nclass FooBar\n{\n}\n\nclass Test3 extends TestCase\n{\n}\n"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix80",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.0.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\PhpUnit\\PhpUnitSizeClassFixerTest",
+            "body": "    public function testFix80(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "it adds a docblock above when there is an attribute",
+                    "args": [
+                        "<?php\n\n            /**\n             * @small\n             */\n            #[SimpleTest]\n            class Test extends TestCase\n            {\n            }\n            ",
+                        "<?php\n\n            #[SimpleTest]\n            class Test extends TestCase\n            {\n            }\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "it adds the internal tag along other tags when there is an attribute",
+                    "args": [
+                        "<?php\n\n            /**\n             * @coversNothing\n             * @small\n             */\n            #[SimpleTest]\n            class Test extends TestCase\n            {\n            }\n            ",
+                        "<?php\n\n            /**\n             * @coversNothing\n             */\n            #[SimpleTest]\n            class Test extends TestCase\n            {\n            }\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "it adds a docblock above when there are attributes",
+                    "args": [
+                        "<?php\n\n            /**\n             * @small\n             */\n            #[SimpleTest]\n            #[AnotherAttribute]\n            #[Annotated]\n            class Test extends TestCase\n            {\n            }\n            ",
+                        "<?php\n\n            #[SimpleTest]\n            #[AnotherAttribute]\n            #[Annotated]\n            class Test extends TestCase\n            {\n            }\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "it adds the internal tag along other tags when there are attributes",
+                    "args": [
+                        "<?php\n\n            /**\n             * @coversNothing\n             * @small\n             */\n            #[SimpleTest]\n            #[AnotherAttribute]\n            #[Annotated]\n            class Test extends TestCase\n            {\n            }\n            ",
+                        "<?php\n\n            /**\n             * @coversNothing\n             */\n            #[SimpleTest]\n            #[AnotherAttribute]\n            #[Annotated]\n            class Test extends TestCase\n            {\n            }\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "already with attribute Small",
+                    "args": [
+                        "<?php\n#[PHPUnit\\Framework\\Attributes\\Small]\nclass FooTest extends \\PHPUnit_Framework_TestCase {}"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "already with attribute Medium",
+                    "args": [
+                        "<?php\nuse PHPUnit\\Framework\\Attributes\\Medium;\n#[Medium]\nclass FooTest extends \\PHPUnit_Framework_TestCase {}"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": "already with attribute Large",
+                    "args": [
+                        "<?php\nnamespace Tests;\nuse PHPUnit\\Framework\\Attributes as PHPUnitAttributes;\n#[PHPUnitAttributes\\Large]\nclass FooTest extends \\PHPUnit_Framework_TestCase {}"
+                    ]
+                }
+            ]
+        }
+    ]
+}

@@ -135,3 +135,153 @@ pub(crate) fn target_fulfills(candidate: &str, target: &str) -> bool {
     let parts = |v: &str| -> Vec<u32> { v.split('.').map(|p| p.parse().unwrap_or(0)).collect() };
     parts(candidate) >= parts(target)
 }
+
+/// `DocBlockAnnotationTrait::ensureIsDocBlockWithAnnotation`: the class-like at `index` gets `@annotation` in its doc
+/// comment (a new one when it has none), unless the doc has one of `preventing_annotations` or the class one of
+/// `preventing_attributes` (lower-cased fully qualified names).
+pub(crate) fn ensure_is_doc_block_with_annotation(
+    tokens: &mut Tokens,
+    index: usize,
+    annotation: &str,
+    preventing_annotations: &[&str],
+    preventing_attributes: &[&str],
+    line_end: &[u8],
+) {
+    let doc_block_index = get_doc_block_index(tokens, index);
+    if is_prevented_by_attribute(tokens, index, preventing_attributes) {
+        return;
+    }
+    if tokens[doc_block_index].is_kind(T_DOC_COMMENT) {
+        update_doc_block_if_needed(
+            tokens,
+            doc_block_index,
+            annotation,
+            preventing_annotations,
+            line_end,
+        );
+    } else {
+        create_doc_block(tokens, doc_block_index, annotation, line_end);
+    }
+}
+
+/// `DocBlockAnnotationTrait::createDocBlock`.
+fn create_doc_block(
+    tokens: &mut Tokens,
+    doc_block_index: usize,
+    annotation: &str,
+    line_end: &[u8],
+) {
+    use crate::analyzers::whitespaces_analyzer::WhitespacesAnalyzer;
+    use pun_tokens::Token;
+    let next = tokens
+        .get_next_non_whitespace(doc_block_index, None)
+        .unwrap();
+    let original_indent = WhitespacesAnalyzer::detect_indent(tokens, next);
+    let doc = [
+        b"/**",
+        line_end,
+        &original_indent,
+        b" * @",
+        annotation.as_bytes(),
+        line_end,
+        &original_indent,
+        b" */",
+    ]
+    .concat();
+    let index = tokens.get_next_meaningful_token(doc_block_index).unwrap();
+    tokens.insert_at(
+        index,
+        vec![
+            Token::new(T_DOC_COMMENT, doc),
+            Token::new(T_WHITESPACE, [line_end, &original_indent].concat()),
+        ],
+    );
+    if !tokens[index - 1].is_kind(T_WHITESPACE) {
+        let mut extra_new_lines = line_end.to_vec();
+        if !tokens[index - 1].is_kind(T_OPEN_TAG) {
+            extra_new_lines.extend_from_slice(line_end);
+        }
+        extra_new_lines.extend(WhitespacesAnalyzer::detect_indent(tokens, index));
+        tokens.insert_at(index, vec![Token::new(T_WHITESPACE, extra_new_lines)]);
+    }
+}
+
+/// `DocBlockAnnotationTrait::updateDocBlockIfNeeded`, with `makeDocBlockMultiLineIfNeeded` and `addAnnotation`.
+fn update_doc_block_if_needed(
+    tokens: &mut Tokens,
+    doc_block_index: usize,
+    annotation: &str,
+    preventing_annotations: &[&str],
+    line_end: &[u8],
+) {
+    use crate::analyzers::docblock::DocBlock;
+    use crate::analyzers::whitespaces_analyzer::WhitespacesAnalyzer;
+    use pun_tokens::Token;
+    let mut doc = DocBlock::new(tokens[doc_block_index].get_content());
+    for preventing in preventing_annotations {
+        if !doc.get_annotations_of_type(&[*preventing]).is_empty() {
+            return;
+        }
+    }
+    if doc.get_lines().len() == 1 && doc.get_annotations_of_type(&[annotation]).is_empty() {
+        let next = tokens
+            .get_next_non_whitespace(doc_block_index, None)
+            .unwrap();
+        let indent = WhitespacesAnalyzer::detect_indent(tokens, next);
+        doc.make_multi_line(&indent, line_end);
+    }
+    let original_indent = WhitespacesAnalyzer::detect_indent(tokens, doc_block_index);
+    let mut lines: Vec<Vec<u8>> = doc
+        .get_lines()
+        .iter()
+        .map(|l| l.borrow().get_content().to_vec())
+        .collect();
+    let at = lines.len() - 1;
+    lines.insert(
+        at,
+        [
+            &original_indent[..],
+            b" * @",
+            annotation.as_bytes(),
+            line_end,
+        ]
+        .concat(),
+    );
+    tokens.set(doc_block_index, Token::new(T_DOC_COMMENT, lines.concat()));
+}
+
+/// `DocBlockAnnotationTrait::isPreventedByAttribute`.
+fn is_prevented_by_attribute(
+    tokens: &Tokens,
+    mut index: usize,
+    preventing_attributes: &[&str],
+) -> bool {
+    if preventing_attributes.is_empty() {
+        return false;
+    }
+    loop {
+        index = tokens.get_prev_meaningful_token(index).unwrap();
+        if !tokens[index].is_given_kind(&[T_FINAL, T_READONLY]) {
+            break;
+        }
+    }
+    if !tokens[index].is_kind(CT_ATTRIBUTE_CLOSE) {
+        return false;
+    }
+    let index = tokens.find_block_start(Tokens::BLOCK_TYPE_ATTRIBUTE, index);
+    let fqn = FullyQualifiedNameAnalyzer::new(tokens);
+    AttributeAnalyzer::collect(tokens, index)
+        .iter()
+        .any(|analysis| {
+            analysis.attributes.iter().any(|attribute| {
+                let name = fqn.get_fully_qualified_name(
+                    &attribute.name,
+                    attribute.start,
+                    NamespaceUseType::Class,
+                );
+                preventing_attributes
+                    .iter()
+                    .any(|p| p.as_bytes() == pun_tokens::php_compat::strtolower(&name))
+            })
+        })
+}

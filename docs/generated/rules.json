@@ -12789,7 +12789,7 @@
       "upstream": [
         "php_unit_internal_class"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/phpunit/require-iterable-data-provider",
@@ -12882,7 +12882,7 @@
       "upstream": [
         "php_unit_size_class"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/phpunit/require-static-data-provider",
