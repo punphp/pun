@@ -1,0 +1,8 @@
+parameters:
+    level: 2
+    phpVersion: 80400
+    paths:
+        - matrix.php
+        - relative.php
+        - boundaries.php
+        - never.php

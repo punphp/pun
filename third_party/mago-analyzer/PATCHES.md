@@ -1627,3 +1627,53 @@ the variable, assignment, nullsafe, append-read, parser and type-dump diagnostic
 are unchanged. Separate boundary controls compare read observations without claiming support for
 unreachable syntax-rule callbacks or dynamic-variable write identities. Complete oracle diagnostics,
 including those independent contracts, remain in the capture.
+
+## Failed method-call results
+
+`expression/call/method_call.rs` stores `ErrorType` when method analysis leaves no result.
+The fallback runs after argument analysis, callable-signature providers, and magic return providers.
+It does not replace a resolved result, including private methods and real `never` returns.
+Unknown dynamic selectors instead produce mixed. Existing nullsafe short circuits retain their results.
+The ordinary method resolver marks unresolved `method_exists` assertions as mixed: PHPStan's
+[`HasMethodType`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Type/Accessory/HasMethodType.php#L160-L174)
+provides a permissive dummy reflection rather than a failed lookup. Actual reflected methods keep their signatures.
+
+`expression/call/static_method_call.rs` uses the same missing-reflection fallback. An invalid class operand
+instead produces mixed: PHPStan first converts that operand to `ErrorType`, whose method reflection is permissive.
+The shared invocation owner stays unchanged. Dynamic function and callable resolution have separate fallback
+contracts, so a missing invocation artifact alone cannot select a universal call result.
+
+The source contracts are PHPStan 2.3.1 at `cb3b7e99489b2e3789ee2eec10501cb7a72580ea`:
+
+- [`MethodCallHandler::resolveReturnType()`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Analyser/ExprHandler/MethodCallHandler.php#L453-L505)
+  distinguishes failed reflection, dynamic names, and nullsafe propagation.
+- [`MethodCallReturnTypeHelper::methodCallReturnType()`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Analyser/ExprHandler/Helper/MethodCallReturnTypeHelper.php#L43-L58)
+  filters union members by method availability before selecting a reflected return.
+- [`StaticCallHandler::resolveReturnType()`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Analyser/ExprHandler/StaticCallHandler.php#L497-L580)
+  converts expression receivers to object or class-string object types before method lookup.
+- [`MethodCallCheck::check()`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Rules/Methods/MethodCallCheck.php#L51-L61)
+  retains unknown-class errors. Pun's ordinary receiver check now retains them too.
+
+The public `analyse()` regressions in `crates/pun-analyse/tests/failed_methods.rs` compare complete diagnostics,
+tips, and ignorable flags against fresh PHPStan JSON in `fixtures/failed-methods/`. Only capture paths are shortened.
+The original matrix changes from 18 diagnostics, with 17 exact matches, to all 28 PHPStan diagnostics.
+Raw relative initializer calls change from 3 to all 11 diagnostics without changing their receiver identities.
+The boundary fixture checks copied failures, overwritten values, mixed and object receivers, unions, dynamic names,
+documented magic methods, static operands, callable controls, nullsafe short circuits, terminating calls,
+and `method_exists` assertions on named and unnamed objects.
+
+The dependency's public-Analyzer test `failed_method_fallback_preserves_active_signature_and_return_providers`
+uses a real framed PHP worker. It checks callable-signature providers on otherwise absent instance and static
+methods, magic return providers, a native Rust return provider, and a first-class callable invocation.
+
+Fresh LLVM instrumentation covers all 23 added executable production lines without exclusions: eight in
+Pun's receiver check, four in instance calls, seven in static calls, and four in the ordinary method resolver.
+The instrumented public regressions compare 80 complete diagnostics and the engine's actual `never` result
+against 81 PHPStan records. Pun's separate `never` display is deliberately not used as an engine expectation.
+The final snapshot passes 59 selected public tests, the active-provider test, and all Methods, Functions,
+and Operators rule and level partitions: 764 rule cases and 1,508 level cases. Existing gap allowances are
+unchanged; no executed gap became stale.
+
+This patch does not change function-call fallback, constant-string dynamic method diagnostics, general nullsafe
+chain reconstruction, undocumented magic reflection, or Pun's `never` display. Those independent contracts
+remain outside this patch.

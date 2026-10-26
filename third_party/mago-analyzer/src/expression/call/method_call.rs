@@ -10,6 +10,7 @@ use mago_codex::ttype::add_optional_union_type;
 use mago_codex::ttype::atomic::TAtomic;
 use mago_codex::ttype::atomic::object::TObject;
 use mago_codex::ttype::expander::StaticClassType;
+use mago_codex::ttype::get_error;
 use mago_codex::ttype::get_mixed;
 use mago_codex::ttype::get_never;
 use mago_codex::ttype::get_null;
@@ -415,6 +416,13 @@ where
         )?;
     }
 
+    // MethodCallHandler::resolveReturnType(): no reflected method is ErrorType, not an absent result.
+    // Dynamic selectors remain mixed; resolved, magic and provider results have already been stored.
+    if artifacts.get_expression_type(&span).is_none() {
+        let return_type = if method_resolution.has_dynamic_selector { get_mixed() } else { get_error() };
+        artifacts.set_expression_type(&span, return_type);
+    }
+
     Ok(())
 }
 
@@ -692,6 +700,116 @@ mod tests {
 
     use crate::code::IssueCode;
     use crate::test_analysis;
+
+    #[test]
+    fn failed_method_fallback_preserves_active_signature_and_return_providers() {
+        use std::borrow::Cow;
+        use std::num::NonZeroUsize;
+        use std::sync::Arc;
+
+        use mago_allocator::LocalArena;
+        use mago_codex::populator::populate_codebase;
+        use mago_codex::reference::SymbolReferences;
+        use mago_codex::scanner::scan_program;
+        use mago_codex::ttype::{TType, get_literal_int};
+        use mago_database::file::{File, FileType};
+        use mago_extension::{WorkerCommand, WorkerPool, WorkerPoolOptions};
+        use mago_names::resolver::NameResolver;
+        use mago_php_version::PHPVersion;
+        use mago_span::{Position, Span};
+        use mago_syntax::parser::parse_file;
+
+        use crate::Analyzer;
+        use crate::analysis_result::AnalysisResult;
+        use crate::external::{ExternalAnalyzer, ExternalAnalyzerHandle};
+        use crate::plugin::PluginRegistry;
+        use crate::plugin::context::{InvocationInfo, ProviderContext};
+        use crate::plugin::provider::{MethodReturnTypeProvider, MethodTarget, Provider, ProviderMeta};
+        use crate::settings::Settings;
+
+        struct Return;
+        impl Provider for Return {
+            fn meta() -> &'static ProviderMeta {
+                static META: ProviderMeta = ProviderMeta::new("failed-method-return", "Return", "Real method return");
+                &META
+            }
+        }
+        impl MethodReturnTypeProvider for Return {
+            fn targets() -> &'static [MethodTarget] {
+                static TARGETS: [MethodTarget; 1] = [MethodTarget::exact(b"ProviderTarget", b"real")];
+                &TARGETS
+            }
+
+            fn get_return_type(
+                &self,
+                _: &ProviderContext<'_, '_, '_>,
+                _: &[u8],
+                _: &[u8],
+                _: &InvocationInfo<'_, '_, '_>,
+            ) -> Option<mago_codex::ttype::union::TUnion> {
+                Some(get_literal_int(91))
+            }
+        }
+
+        let worker = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/failed-method-provider.php");
+        let pool = WorkerPool::spawn(
+            WorkerCommand::new("php").with_argument(worker),
+            NonZeroUsize::new(1).unwrap(),
+            WorkerPoolOptions::default(),
+        ).unwrap();
+        let external = ExternalAnalyzer::initialize([Arc::new(pool)], PHPVersion::PHP84, &[], false).unwrap();
+        let mut plugins = PluginRegistry::new();
+        plugins.set_external_analyzer(Arc::new(ExternalAnalyzerHandle::ready(external)));
+        plugins.register_method_provider(Return);
+        plugins.prepare_external_analyzer().unwrap();
+        let code = indoc! {r#"
+            <?php
+            class SignatureTarget {}
+            class ProviderTarget {
+                public function real(): string { return 'native'; }
+                public function __call(string $name, array $arguments): string { return 'magic'; }
+            }
+            $signature = new SignatureTarget();
+            $signature->provided();
+            $object = new ProviderTarget();
+            $object->provided();
+            ProviderTarget::provided();
+            $object->magic();
+            $object->real();
+            $callable = $object->real(...);
+            $callable();
+            $object->withoutProvider();
+        "#};
+        let arena = LocalArena::new();
+        let file = Arc::new(File::new(
+            Cow::Borrowed(b"failed-method-providers.php"), FileType::Host, None, Cow::Borrowed(code.as_bytes()),
+        ));
+        let program = parse_file(&arena, &file);
+        let names = NameResolver::new(&arena).resolve(program);
+        let mut codebase = scan_program(&arena, &file, program, &names, PHPVersion::PHP84);
+        let mut references = SymbolReferences::new();
+        populate_codebase(&mut codebase, &mut references, Default::default(), Default::default());
+        let session = plugins.create_external_analysis_session([Arc::clone(&file)]).unwrap();
+        let analyzer = Analyzer::new(&arena, &file, &names, &codebase, &plugins, Settings::new(PHPVersion::PHP84))
+            .with_external_analysis_session(&session);
+        let mut result = AnalysisResult::new(references);
+        let artifacts = analyzer.analyze_with_artifacts(program, &mut result).unwrap();
+        for (call, expected) in [
+            ("$signature->provided()", "int(73)"),
+            ("$object->provided()", "int(73)"),
+            ("ProviderTarget::provided()", "int(73)"),
+            ("$object->magic()", "int(73)"),
+            ("$object->real()", "int(91)"),
+            ("$callable()", "int(91)"),
+            ("$object->withoutProvider()", "string"),
+        ] {
+            let start = code.find(call).unwrap() as u32;
+            let span = Span::new(file.id, Position::new(start), Position::new(start + call.len() as u32));
+            let ty = artifacts.get_expression_type(&span).unwrap();
+            assert_eq!(ty.get_id().as_str(), Some(expected), "{call}");
+            assert!(!ty.is_error(), "the fallback must not replace {call}");
+        }
+    }
 
     test_analysis! {
         name = nullsafe_method_call_on_null,

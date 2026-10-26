@@ -1,5 +1,7 @@
 use mago_allocator::Arena;
 use mago_codex::identifier::function_like::FunctionLikeIdentifier;
+use mago_codex::ttype::get_error;
+use mago_codex::ttype::get_mixed;
 use mago_span::HasSpan;
 use mago_syntax::cst::ClassLikeMemberSelector;
 use mago_syntax::cst::Expression;
@@ -179,6 +181,19 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for StaticMethodCall<'arena> {
                 MethodInvocationKind::Static,
                 !has_resolved_methods,
             )?;
+        }
+
+        // StaticCallHandler resolves a failed object/class-string method to ErrorType. Invalid class
+        // operands first become ErrorType themselves, whose permissive method reflection returns mixed.
+        if artifacts.get_expression_type(&self.span()).is_none() {
+            let return_type = if method_resolution.has_dynamic_selector
+                || (method_resolution.has_ambiguous_target && method_resolution.has_invalid_target)
+            {
+                get_mixed()
+            } else {
+                get_error()
+            };
+            artifacts.set_expression_type(&self.span(), return_type);
         }
 
         if context.plugin_registry.has_static_method_call_hooks() {

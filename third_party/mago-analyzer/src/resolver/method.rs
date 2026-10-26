@@ -285,6 +285,11 @@ where
                 }
 
                 if resolved_methods.is_empty() {
+                    if type_has_method_assertion(obj_type, method_name.as_ref()) {
+                        // PHPStan's HasMethodType reflects a permissive dummy method, not a failed lookup.
+                        result.encountered_mixed = true;
+                    }
+
                     if let Some(classname) = obj_type.get_name() {
                         let method_name_bytes: &[u8] = method_name.as_ref();
                         let has_method_assertion = type_has_method_assertion(obj_type, method_name_bytes);

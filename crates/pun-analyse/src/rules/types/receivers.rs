@@ -288,10 +288,15 @@ pub(in super::super) fn check_method<'arena>(
     let found = if arguments.is_none() {
         callable_receiver(c, object, name, false)
     } else {
-        let c = &*c;
-        c.find_type_to_check_of(ty, &|t| {
+        let mut unknown = Vec::new();
+        let found = ty.and_then(|ty| c.find_in(c.levels(), ty, &|t| {
             c.can_call_methods(t).yes() && c.has_method(t, name.value).yes()
-        })
+        }, Some(&mut unknown)));
+        for class in unknown {
+            let method = String::from_utf8_lossy(name.value);
+            c.report(name, "class.notFound", format!("Call to method {method}() on an unknown class {class}."), Some(super::super::DISCOVERING_SYMBOLS_TIP));
+        }
+        found
     };
     let Some(t) = found else {
         return;

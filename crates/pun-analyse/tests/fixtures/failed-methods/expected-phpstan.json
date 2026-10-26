@@ -1,0 +1,525 @@
+{
+  "totals": {
+    "errors": 0,
+    "file_errors": 81
+  },
+  "files": {
+    "boundaries.php": {
+      "errors": 41,
+      "messages": [
+        {
+          "message": "Call to an undefined method FailedMethodBoundaries\\Known::absent().",
+          "line": 21,
+          "ignorable": true,
+          "identifier": "method.notFound"
+        },
+        {
+          "message": "Dumped type: int",
+          "line": 21,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: *ERROR*",
+          "line": 22,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: mixed",
+          "line": 23,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: 41",
+          "line": 25,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: *ERROR*",
+          "line": 26,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: mixed",
+          "line": 27,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Call to private method hidden() of class FailedMethodBoundaries\\Known.",
+          "line": 28,
+          "ignorable": true,
+          "identifier": "method.private"
+        },
+        {
+          "message": "Dumped type: string",
+          "line": 28,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: int|null",
+          "line": 31,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: int|null",
+          "line": 32,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Call to an undefined method FailedMethodBoundaries\\Known::absent().",
+          "line": 33,
+          "ignorable": true,
+          "identifier": "method.notFound"
+        },
+        {
+          "message": "Dumped type: *ERROR*",
+          "line": 33,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Cannot call method absent() on null.",
+          "line": 34,
+          "ignorable": true,
+          "identifier": "method.nonObject"
+        },
+        {
+          "message": "Dumped type: null",
+          "line": 34,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Parameter $missing of function FailedMethodBoundaries\\unions() has invalid type FailedMethodBoundaries\\Unknown.",
+          "line": 36,
+          "ignorable": true,
+          "identifier": "class.notFound"
+        },
+        {
+          "message": "Dumped type: int",
+          "line": 37,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Call to method value() on an unknown class FailedMethodBoundaries\\Unknown.",
+          "line": 38,
+          "ignorable": true,
+          "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+          "identifier": "class.notFound"
+        },
+        {
+          "message": "Dumped type: *ERROR*",
+          "line": 38,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: int",
+          "line": 39,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: mixed",
+          "line": 42,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: mixed",
+          "line": 43,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: mixed",
+          "line": 44,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: mixed",
+          "line": 45,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: string",
+          "line": 48,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: int",
+          "line": 49,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: *ERROR*",
+          "line": 52,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: *ERROR*",
+          "line": 53,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Cannot call static method absent() on int.",
+          "line": 54,
+          "ignorable": true,
+          "identifier": "staticMethod.nonObject"
+        },
+        {
+          "message": "Dumped type: mixed",
+          "line": 54,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: *ERROR*",
+          "line": 55,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: mixed",
+          "line": 60,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: mixed",
+          "line": 61,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: mixed",
+          "line": 62,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: mixed",
+          "line": 63,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: 3",
+          "line": 64,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: int",
+          "line": 67,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: *ERROR*",
+          "line": 73,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: mixed",
+          "line": 79,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: mixed",
+          "line": 83,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: int",
+          "line": 84,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        }
+      ]
+    },
+    "matrix.php": {
+      "errors": 28,
+      "messages": [
+        {
+          "message": "Parameter $receiver of function FailedMethodsProbe\\missingNamed() has invalid type FailedMethodsProbe\\Unknown.",
+          "line": 8,
+          "ignorable": true,
+          "identifier": "class.notFound"
+        },
+        {
+          "message": "Call to method value() on an unknown class FailedMethodsProbe\\Unknown.",
+          "line": 9,
+          "ignorable": true,
+          "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+          "identifier": "class.notFound"
+        },
+        {
+          "message": "Dumped type: *ERROR*",
+          "line": 9,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Call to method value() on an unknown class FailedMethodsProbe\\Unknown.",
+          "line": 10,
+          "ignorable": true,
+          "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+          "identifier": "class.notFound"
+        },
+        {
+          "message": "Dumped type: *ERROR*",
+          "line": 11,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: int",
+          "line": 12,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Call to an undefined method FailedMethodsProbe\\Known::absent().",
+          "line": 15,
+          "ignorable": true,
+          "identifier": "method.notFound"
+        },
+        {
+          "message": "Dumped type: *ERROR*",
+          "line": 15,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Call to private method hidden() of class FailedMethodsProbe\\Known.",
+          "line": 16,
+          "ignorable": true,
+          "identifier": "method.private"
+        },
+        {
+          "message": "Dumped type: string",
+          "line": 16,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: int",
+          "line": 17,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Cannot call method value() on int.",
+          "line": 20,
+          "ignorable": true,
+          "identifier": "method.nonObject"
+        },
+        {
+          "message": "Dumped type: *ERROR*",
+          "line": 20,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Cannot call method value() on null.",
+          "line": 21,
+          "ignorable": true,
+          "identifier": "method.nonObject"
+        },
+        {
+          "message": "Dumped type: *ERROR*",
+          "line": 21,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: int|null",
+          "line": 22,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: int",
+          "line": 23,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Parameter $receiver of function FailedMethodsProbe\\unknownAndKnown() has invalid type FailedMethodsProbe\\Unknown.",
+          "line": 25,
+          "ignorable": true,
+          "identifier": "class.notFound"
+        },
+        {
+          "message": "Call to method value() on an unknown class FailedMethodsProbe\\Unknown.",
+          "line": 26,
+          "ignorable": true,
+          "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+          "identifier": "class.notFound"
+        },
+        {
+          "message": "Dumped type: int",
+          "line": 26,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: int",
+          "line": 29,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: *ERROR*",
+          "line": 32,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: mixed",
+          "line": 35,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Call to static method value() on an unknown class FailedMethodsProbe\\Unknown.",
+          "line": 38,
+          "ignorable": true,
+          "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+          "identifier": "class.notFound"
+        },
+        {
+          "message": "Dumped type: *ERROR*",
+          "line": 38,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Call to an undefined static method FailedMethodsProbe\\Known::absent().",
+          "line": 39,
+          "ignorable": true,
+          "identifier": "staticMethod.notFound"
+        },
+        {
+          "message": "Dumped type: *ERROR*",
+          "line": 39,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: string",
+          "line": 40,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        }
+      ]
+    },
+    "never.php": {
+      "errors": 1,
+      "messages": [
+        {
+          "message": "Dumped type: never",
+          "line": 7,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        }
+      ]
+    },
+    "relative.php": {
+      "errors": 11,
+      "messages": [
+        {
+          "message": "Unsafe usage of new static().",
+          "line": 9,
+          "ignorable": true,
+          "tip": "See: https://phpstan.org/blog/solving-phpstan-error-unsafe-usage-of-new-static",
+          "identifier": "new.static"
+        },
+        {
+          "message": "Dumped type: self",
+          "line": 11,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Call to method value() on an unknown class self.",
+          "line": 12,
+          "ignorable": true,
+          "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+          "identifier": "class.notFound"
+        },
+        {
+          "message": "Dumped type: *ERROR*",
+          "line": 12,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Call to method value() on an unknown class parent.",
+          "line": 13,
+          "ignorable": true,
+          "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+          "identifier": "class.notFound"
+        },
+        {
+          "message": "Dumped type: *ERROR*",
+          "line": 13,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Call to method value() on an unknown class static.",
+          "line": 14,
+          "ignorable": true,
+          "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+          "identifier": "class.notFound"
+        },
+        {
+          "message": "Dumped type: *ERROR*",
+          "line": 14,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: string",
+          "line": 20,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Call to method value() on an unknown class self.",
+          "line": 21,
+          "ignorable": true,
+          "tip": "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+          "identifier": "class.notFound"
+        },
+        {
+          "message": "Dumped type: *ERROR*",
+          "line": 21,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        }
+      ]
+    }
+  },
+  "errors": []
+}
