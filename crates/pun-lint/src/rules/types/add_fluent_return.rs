@@ -54,14 +54,7 @@ impl Rule for AddFluentReturn {
         let Some(kinds) = returned_kinds(&place, f.body, &returns) else {
             return;
         };
-        let [
-            Kind::Object {
-                name,
-                is_static,
-                is_this,
-            },
-        ] = kinds.as_slice()
-        else {
+        let Some((name, is_static, is_this)) = one_class(&kinds) else {
             return;
         };
         let same_class = scope
@@ -73,7 +66,7 @@ impl Rule for AddFluentReturn {
         } else {
             "static"
         };
-        let r#type = if *is_this || (*is_static && same_class) {
+        let r#type = if is_this || (is_static && same_class) {
             self_or_static
         } else if same_class {
             "self"
@@ -82,4 +75,26 @@ impl Rule for AddFluentReturn {
         };
         out.push(add_return_type(f.span, f.at, r#type));
     }
+}
+
+/// The returned objects as PHPStan's `TypeCombinator::union` joins them, when they are all of one class: `$this`
+/// and `static` of it make `static` (`$this` alone stays `$this`), and the class itself with either makes the class.
+fn one_class(kinds: &[Kind]) -> Option<(&str, bool, bool)> {
+    let mut objects = kinds.iter().map(|k| match k {
+        Kind::Object {
+            name,
+            is_static,
+            is_this,
+        } => Some((name.as_str(), *is_static, *is_this)),
+        _ => None,
+    });
+    let first = objects.next()??;
+    objects.try_fold(first, |(name, is_static, is_this), next| {
+        let (other, other_static, other_this) = next?;
+        name.eq_ignore_ascii_case(other).then_some((
+            name,
+            is_static && other_static,
+            is_this && other_this,
+        ))
+    })
 }

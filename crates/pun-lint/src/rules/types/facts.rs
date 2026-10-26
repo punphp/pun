@@ -26,8 +26,11 @@ use mago_codex::reference::SymbolReferences;
 use mago_codex::scanner::scan_program;
 use mago_codex::ttype::atomic::TAtomic;
 use mago_codex::ttype::atomic::object::TObject;
+use mago_codex::ttype::atomic::scalar::TScalar;
 use mago_codex::ttype::union::TUnion;
-use mago_codex::ttype::{get_int_or_float, get_string};
+use mago_codex::ttype::{
+    get_float, get_int, get_int_or_float, get_int_or_string, get_mixed_keyed_array, get_string,
+};
 use mago_database::file::{File, FileId, FileType};
 use mago_names::ResolvedNames;
 use mago_names::resolver::NameResolver;
@@ -379,10 +382,13 @@ impl Facts {
                 let span = n.span();
                 functions.push((span.start.offset, span.end.offset));
             }
-            Node::Assignment(a) if a.operator.is_assign() => {
+            // a compound assignment (`$s .= 'x'`) ends the declared type too
+            Node::Assignment(a) => {
                 if let Expression::Variable(Variable::Direct(v)) = a.lhs {
                     let declared = match a.rhs {
-                        Expression::Call(Call::Function(call)) => self.builtin_return(&names, call),
+                        Expression::Call(Call::Function(call)) if a.operator.is_assign() => {
+                            self.builtin_return(&names, call)
+                        }
                         _ => None,
                     };
                     assigned.push((v.name, a.span().end.offset, declared));
@@ -411,8 +417,19 @@ impl Facts {
                 }
             }
             Node::Trait(_) => {
+                // an anonymous class in the trait has its own `$this`, which PHPStan types
+                let mut anonymous = Vec::new();
+                any_node(n, &mut |c| {
+                    if let Node::AnonymousClass(c) = c {
+                        anonymous.push((c.span().start.offset, c.span().end.offset));
+                    }
+                });
+                let own = |s: mago_span::Span| {
+                    !(anonymous.iter()).any(|(a, b)| *a <= s.start.offset && s.end.offset <= *b)
+                };
                 any_node(n, &mut |e| {
                     if let Node::Expression(e) = e
+                        && own(e.span())
                         && from_this(e)
                     {
                         let span = e.span();
@@ -421,13 +438,16 @@ impl Facts {
                 });
                 // a variable whose latest assignment in the method takes such a value has none either
                 any_node(n, &mut |m| {
-                    if let Node::Method(_) = m {
+                    if let Node::Method(_) = m
+                        && own(m.span())
+                    {
                         let mut writes: Vec<(&[u8], u32, bool)> = Vec::new();
                         any_node(m, &mut |a| {
                             if let Node::Assignment(a) = a
                                 && let Expression::Variable(Variable::Direct(v)) = a.lhs
                             {
-                                let this = a.operator.is_assign() && from_this(a.rhs);
+                                let this =
+                                    a.operator.is_assign() && own(a.span()) && from_this(a.rhs);
                                 writes.push((v.name, a.span().end.offset, this));
                             }
                         });
@@ -630,6 +650,36 @@ impl Facts {
                     }
                 }
             });
+            // arithmetic and bitwise operators on a `mixed` operand, where Mago keeps `mixed` and PHPStan's
+            // `InitializerExprTypeResolver` gives a number type, innermost first
+            let mut operations = Vec::new();
+            any_node(Node::Program(program), &mut |n| {
+                if let Node::Binary(b) = n
+                    && (b.operator.is_arithmetic() || b.operator.is_bitwise())
+                {
+                    operations.push(b);
+                }
+            });
+            for b in operations.into_iter().rev() {
+                let key = |e: &Expression<'_>| {
+                    let s = crate::syntax::unparenthesize(e).span();
+                    (s.start.offset, s.end.offset)
+                };
+                let kind = |e: &Expression<'_>| -> Option<Operand> {
+                    if untyped.contains(&key(e)) {
+                        return None;
+                    }
+                    let t = (declared.get(&key(e)))
+                        .or_else(|| artifacts.expression_types.get(&key(e)).map(|t| t.as_ref()))?;
+                    operand(t)
+                };
+                let (Some(left), Some(right)) = (kind(b.lhs), kind(b.rhs)) else {
+                    continue;
+                };
+                if let Some(t) = mixed_math(&b.operator, left, right) {
+                    declared.insert((b.span().start.offset, b.span().end.offset), t);
+                }
+            }
         }
         // `getNativeType` takes the full type, docblocks read, of a call of a built-in function
         if let Some(documented) = (!builtin_calls.is_empty())
@@ -695,6 +745,69 @@ impl Facts {
             declared,
         }
     }
+}
+
+/// What [`mixed_math`] needs of an operand's native type.
+#[derive(Clone, Copy, PartialEq)]
+enum Operand {
+    Mixed,
+    /// `int|float`, which only [`mixed_math`] gives (Mago types the operation `mixed`)
+    Number,
+    Int,
+    Float,
+}
+
+fn operand(t: &TUnion) -> Option<Operand> {
+    let all =
+        |f: fn(&TScalar) -> bool| (t.types.iter()).all(|a| matches!(a, TAtomic::Scalar(s) if f(s)));
+    if t.is_mixed() {
+        Some(Operand::Mixed)
+    } else if all(TScalar::is_int) {
+        Some(Operand::Int)
+    } else if all(TScalar::is_float) {
+        Some(Operand::Float)
+    } else if all(|s| s.is_int() || s.is_float()) {
+        Some(Operand::Number)
+    } else {
+        None
+    }
+}
+
+/// PHPStan's native type of `left <operator> right` when an operand is `mixed` or a number that only this gave
+/// (`getPlusType`, `getPowType`, `resolveCommonMath` and the bitwise types), each union in the order PHPStan builds
+/// it; `None` otherwise, or when the result is not a plain number type.
+fn mixed_math(operator: &BinaryOperator<'_>, left: Operand, right: Operand) -> Option<TUnion> {
+    use Operand::*;
+    if ![left, right].iter().any(|o| matches!(o, Mixed | Number)) {
+        return None;
+    }
+    let float = left == Float || right == Float;
+    // in this order, unsorted (`TUnion::from_vec` sorts)
+    let union = |types: Vec<TUnion>| {
+        TUnion::new(Cow::Owned(
+            types
+                .into_iter()
+                .flat_map(|t| t.types.into_owned())
+                .collect(),
+        ))
+    };
+    Some(match operator {
+        BinaryOperator::Addition(_) if left == Mixed && right == Mixed => {
+            union(vec![get_float(), get_int(), get_mixed_keyed_array()])
+        }
+        BinaryOperator::Exponentiation(_) if left == Mixed => union(vec![get_float(), get_int()]),
+        BinaryOperator::Exponentiation(_) => return None,
+        BinaryOperator::Modulo(_) => get_int(),
+        BinaryOperator::LeftShift(_) | BinaryOperator::RightShift(_) if float => get_int(),
+        BinaryOperator::BitwiseAnd(_)
+        | BinaryOperator::BitwiseOr(_)
+        | BinaryOperator::BitwiseXor(_) => match (left, right) {
+            (Mixed, Mixed) => get_int_or_string(),
+            _ => get_int(),
+        },
+        _ if float => get_float(),
+        _ => get_int_or_float(),
+    })
 }
 
 /// Whether PHPStan, inside a trait, leaves the value of `expr` untyped: `$this`, or a property, method call, offset or clone

@@ -226,9 +226,10 @@ fn always_returned_variable_new(
         };
         let class = match native_type(facts, value)?.types.as_ref() {
             [TAtomic::Object(TObject::Any)] => "object".to_string(),
-            // PHPStan types an anonymous class's object as `object`; Mago names the class `{anonymous-class:...}`
+            // PHPStan types an anonymous class's object as `object`; Mago names the class `{anonymous-class:...}`.
+            // `$this` inside one is PHPStan's `ThisType`, which is neither.
             [TAtomic::Object(TObject::Named(named))]
-                if named.name.as_bytes().starts_with(b"{anonymous-class:") =>
+                if !named.is_this && named.name.as_bytes().starts_with(b"{anonymous-class:") =>
             {
                 "object".to_string()
             }
