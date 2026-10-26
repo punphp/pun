@@ -95,7 +95,16 @@ impl<'arena> Analyzable<'_, 'arena> for ConstantAccess<'arena> {
 
         crate::utils::availability::check_constant_availability(context, constant_metadata, &name, self.span());
 
-        let mut constant_type = if let Some(t) = &constant_metadata.type_metadata
+        let mut constant_type = if !constant_metadata.flags.is_built_in()
+            && let Some(t) = context.constant_types.get(&constant_metadata.span)
+            && constant_metadata.type_metadata.as_ref().is_none_or(|canonical| {
+                canonical.from_docblock || canonical.type_union.types != t.types
+            })
+        {
+            // Encountered declarations carry flow-selected values. Forward and other-file reads
+            // instead use canonical initializer metadata. Equal atoms retain its union markers.
+            t.clone()
+        } else if let Some(t) = &constant_metadata.type_metadata
             && !t.from_docblock
         {
             // Explicit authoritative metadata (including configured platform unions) wins over

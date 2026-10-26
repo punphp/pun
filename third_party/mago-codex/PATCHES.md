@@ -282,3 +282,24 @@ and different branches, falsey and null removal, zero flags, unsupported targets
 repeatability, and built-in, global, and class constant references. Unsupported operand expressions
 remain unavailable. This patch does not add calls, object construction, comparisons, boolean
 operators, precise float initializers, or removal constraints on deferred constant references.
+
+## Resolved global initializer inputs
+
+`scanner/inference/mod.rs::infer_initializer()` exposes the existing inference dispatcher with resolved
+global constants and exact independently evaluated operand types. Global lookup selects the resolved
+name first. Only an unqualified, unimported name can fall back to the global namespace, and an existing
+declaration stops that fallback even when its type is unavailable. Ternary falsey removal and coalesce
+null removal therefore operate on dependency values rather than deferred reference atoms.
+
+Pun's global initializer resolver supplies full arithmetic inference for subtrees without ternaries,
+coalescing, calls, or construction. The shared scanner combines canonical control-flow trees and
+supported arrays. No runtime evaluation of an enclosing tree can replace their reflection unions.
+Class attribute arguments with global dependencies use this same initializer service, including
+symbol-only declaration files. Other class-scoped initializer behavior remains unchanged.
+
+The public regressions and PHPStan 2.3.1 captures are under
+`crates/pun-analyse/tests/fixtures/attributes/phpstan-global-initializer*.neon`.
+They distinguish canonical reflection values from file-local values after a declaration, preserve
+precise float arithmetic and array values, and check namespace fallback, explicit aliases, unresolved
+inputs, target flags, and unsupported calls. Class-constant union storage, arbitrary declaring scopes,
+and new cycle semantics are outside this patch.

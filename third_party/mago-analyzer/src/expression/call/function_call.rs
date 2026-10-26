@@ -110,6 +110,18 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for FunctionCall<'arena> {
             }
         }
 
+        // Only an already-scanned define() declaration owns this invocation span. Keep its visited
+        // value in the same file-local overlay as const, without changing canonical reflection types.
+        if let [name, value] = self.argument_list.arguments.as_slice()
+            && let Some(name) = artifacts.get_expression_type(name.value())
+                .and_then(|ty| ty.get_single_literal_string_value())
+            && let Some(constant) = context.codebase.get_constant(name)
+            && constant.span == self.span()
+            && let Some(value) = artifacts.get_expression_type(value.value())
+        {
+            context.constant_types.insert(constant.span, value.clone());
+        }
+
         Ok(())
     }
 }

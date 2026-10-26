@@ -470,6 +470,10 @@ fn key_type(
             }
         }
         Expression::ConstantAccess(a) => {
+            if let Some(value) = c.phpstan_type(key) {
+                // An observed local declaration may have a flow-selected value unlike reflection.
+                return Some(value);
+            }
             let resolved = names.get(&a.name);
             let fallback = match &a.name {
                 Identifier::Local(l) if !names.is_imported(&l.span) => Some(l.value),
@@ -648,7 +652,13 @@ fn initializer(c: &Checker, at: Span, inferred: Option<Type>) -> Option<Type> {
         .lock()
         .expect("array constants")
         .insert(at, None);
-    let value = if inferred.as_ref().is_some_and(|t| {
+    // Global initializers already have one canonical value, including unions and arrays. Replaying
+    // their source through runtime inference would select a ternary/coalesce branch a second time.
+    let canonical = c.codebase.constants.values().find(|k| k.span == at)
+        .and_then(|k| k.inferred_type.as_ref()).map(|t| c.to_phpstan(t));
+    let value = if canonical.is_some() {
+        canonical
+    } else if inferred.as_ref().is_some_and(|t| {
         matches!(
             t,
             Type::ConstInt(_)

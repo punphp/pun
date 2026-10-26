@@ -1461,3 +1461,19 @@ adds four oracle records for an overriding method with its own inferred predicat
 overriding method without one. Neither inherits the parent's inferred assertion.
 The existing strict record at `array-guards.php:137` now matches mixed. Its line 74
 type-description mismatch is unchanged.
+
+## File-local global constant values
+
+`expression/constant_access.rs` prefers an encountered user declaration's local value when its atoms
+differ from canonical initializer metadata. Forward reads and reads from other files retain reflection
+unions. Equal atoms keep the canonical union markers, including existing benevolent numeric bounds.
+Built-in constants keep their authoritative metadata and platform handling.
+
+`expression/call/function_call.rs` records an already-scanned `define()` declaration's visited value
+in that same overlay. The declaration span must match the call, so another two-argument call cannot
+define or refine a constant. This reuses existing argument artifacts without a second observer walk.
+
+The public `pun-analyse/tests/attributes.rs` regressions compare both reflection and local-flow results
+with PHPStan 2.3.1. Global initializer arrays, duplicate keys, reassigned copies, namespace lookup,
+scanned declarations, and precise arithmetic share the same controls. This patch does not change
+class-constant union storage or add cycle resolution semantics.

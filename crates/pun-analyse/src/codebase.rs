@@ -17,6 +17,7 @@ use mago_codex::metadata::flags::MetadataFlags;
 use mago_codex::metadata::ttype::TypeMetadata;
 use mago_codex::populator::populate_codebase_parallel;
 use mago_codex::reference::SymbolReferences;
+use mago_codex::scanner::inference::infer_initializer;
 use mago_codex::scanner::scan_program;
 use mago_codex::ttype::atomic::TAtomic;
 use mago_codex::ttype::atomic::scalar::TScalar;
@@ -25,6 +26,7 @@ use mago_codex::ttype::union::TUnion;
 use mago_database::file::{File, FileId, FileType};
 use mago_names::ResolvedNames;
 use mago_names::resolver::NameResolver;
+use mago_names::scope::NamespaceScope;
 use mago_php_version::PHPVersion;
 use mago_prelude::Prelude;
 use mago_span::HasSpan;
@@ -492,6 +494,10 @@ fn resolve_initializers(metadata: &mut CodebaseMetadata, sources: &Sources, proj
     for path in &project.analysed {
         if let Some(file) = sources.get(path) {
             let (program, names) = parse(&arena, file);
+            if !crate::parser::errors(file, program).is_empty() {
+                arena.reset();
+                continue;
+            }
             let mut inputs = ConstantInputs {
                 metadata,
                 names: &names,
@@ -502,17 +508,40 @@ fn resolve_initializers(metadata: &mut CodebaseMetadata, sources: &Sources, proj
             arena.reset();
         }
     }
+    let arguments: Vec<_> = metadata.class_likes.iter().flat_map(|(name, class)| {
+        class.attributes.iter().enumerate().flat_map(move |(attribute, value)| {
+            value.arguments.iter().enumerate().filter_map(move |(argument, value)| {
+                value.value_span.map(|at| (*name, attribute, argument, at))
+            })
+        })
+    }).collect();
+    let mut initializer_sources: HashMap<_, _> = sources.values()
+        .map(|file| (file.id, file.as_ref())).collect();
+    // Symbol-only files without global declarations are not retained in Sources. Reopen only loaded
+    // attribute declarations, not arbitrary autoload files or their unrelated executable bodies.
+    let missing: HashSet<_> = arguments.iter()
+        .map(|(_, _, _, at)| at.file_id)
+        .filter(|id| !initializer_sources.contains_key(id)).collect();
+    let attribute_sources: Vec<_> = project.scanned.iter().chain(&project.stubs)
+        .chain(project.autoloaded.iter().map(|file| &file.path))
+        .filter(|path| missing.contains(&FileId::new(path.to_string_lossy().as_bytes())))
+        .filter_map(|path| read(path, FileType::Vendored).ok().flatten()).collect();
+    initializer_sources.extend(attribute_sources.iter().map(|file| (file.id, file)));
     let mut resolver = Initializers {
         metadata,
-        sources: sources
-            .values()
-            .map(|file| (file.id, file.as_ref()))
-            .collect(),
+        sources: initializer_sources,
         version: php_version(project.php_version),
         visited: HashSet::new(),
     };
     for name in roots {
         resolver.resolve(name);
+    }
+    for (name, attribute, argument, at) in arguments {
+        if let Some(value) = resolver.evaluate(at, true) {
+            resolver.metadata.class_likes.get_mut(&name)
+                .expect("selected class exists")
+                .attributes[attribute].arguments[argument].value_type = Some(value);
+        }
     }
 }
 
@@ -562,7 +591,7 @@ impl Initializers<'_> {
         // A global constant reflection uses its value, not its PHPDoc @var annotation.
         let previous = declaration.inferred_type.take();
         let declared = declaration.type_metadata.take();
-        let mut value = self.evaluate(at);
+        let mut value = self.evaluate(at, false);
         if let Some(value) = value.as_mut()
             && value.is_mixed()
             && let Some(previous) = previous.as_ref()
@@ -586,13 +615,19 @@ impl Initializers<'_> {
         declaration.inferred_type = value.or(previous);
     }
 
-    fn evaluate(&mut self, at: Span) -> Option<TUnion> {
+    fn evaluate(&mut self, at: Span, require_global: bool) -> Option<TUnion> {
         struct Find<'ast, 'arena> {
             at: Span,
+            argument: bool,
             expression: Option<&'ast Expression<'arena>>,
             namespace: Option<cst::Namespace<'arena>>,
         }
         impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Find<'ast, 'arena> {
+            fn walk_in_expression(&mut self, expression: &'ast Expression<'arena>, _: &mut ()) {
+                if expression.span() == self.at {
+                    self.expression = Some(expression);
+                }
+            }
             fn walk_in_namespace(&mut self, namespace: &'ast cst::Namespace<'arena>, _: &mut ()) {
                 if namespace.span().start.offset <= self.at.start.offset
                     && self.at.end.offset <= namespace.span().end.offset
@@ -607,7 +642,7 @@ impl Initializers<'_> {
             }
             fn walk_in_function_call(&mut self, call: &'ast cst::FunctionCall<'arena>, _: &mut ()) {
                 // A scanned define() has the invocation span rather than a ConstantItem span.
-                if call.span() == self.at {
+                if !self.argument && call.span() == self.at {
                     self.expression = call.argument_list.arguments.get(1).map(|arg| arg.value());
                 }
             }
@@ -617,6 +652,7 @@ impl Initializers<'_> {
         let (program, names) = parse(&arena, file);
         let mut find = Find {
             at,
+            argument: require_global,
             expression: None,
             namespace: None,
         };
@@ -628,6 +664,10 @@ impl Initializers<'_> {
             names_found: Vec::new(),
         };
         inputs.walk_expression(expression, &mut ());
+        // Class-only inputs retain the scanner's declaring-class scope; they are not global initializers.
+        if require_global && inputs.names_found.is_empty() {
+            return None;
+        }
         let mut inherited_benevolence = false;
         for name in inputs.names_found {
             self.resolve(name);
@@ -640,13 +680,88 @@ impl Initializers<'_> {
                     && value.type_union.ignore_falsable_issues();
             }
         }
+        let mut value = self.initializer_type(&arena, file, program, &names, expression, find.namespace)?;
+        if inherited_benevolence && value == get_int_or_float() {
+            // Keep the numeric union's existing marker across the full evaluator's arithmetic join.
+            value.set_ignore_nullable_issues(true);
+            value.set_ignore_falsable_issues(true);
+        }
+        Some(value)
+    }
+
+    fn initializer_type<'arena>(
+        &self,
+        arena: &'arena LocalArena,
+        file: &File,
+        program: &'arena Program<'arena>,
+        names: &ResolvedNames<'arena>,
+        expression: &'arena Expression<'arena>,
+        namespace: Option<cst::Namespace<'arena>>,
+    ) -> Option<TUnion> {
+        // Full inference supplies exact arithmetic only for independent subtrees without canonical
+        // control flow. Never evaluate such an operand inside its parent's condition: narrowing there
+        // would replace reflection unions with flow-selected values again. Calls and construction
+        // remain the scanner's unsupported inputs, not new runtime-only initializer transfers.
+        struct Islands<'ast, 'arena> {
+            stack: Vec<(Span, bool)>,
+            expressions: Vec<(&'ast Expression<'arena>, bool, Option<Span>)>,
+        }
+        impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Islands<'ast, 'arena> {
+            fn walk_in_expression(&mut self, expression: &'ast Expression<'arena>, _: &mut ()) {
+                self.stack.push((
+                    expression.span(),
+                    matches!(expression,
+                        Expression::Conditional(_) | Expression::Call(_) | Expression::Instantiation(_)
+                        | Expression::Binary(cst::Binary {
+                            operator: cst::BinaryOperator::NullCoalesce(_), ..
+                        })
+                    ),
+                ));
+            }
+            fn walk_out_expression(&mut self, expression: &'ast Expression<'arena>, _: &mut ()) {
+                let (_, scanner_owned) = self.stack.pop().expect("entered expression");
+                let parent = self.stack.last_mut().map(|parent| {
+                    parent.1 |= scanner_owned;
+                    parent.0
+                });
+                self.expressions.push((expression, scanner_owned, parent));
+            }
+        }
+        let mut islands = Islands { stack: Vec::new(), expressions: Vec::new() };
+        islands.walk_expression(expression, &mut ());
+        let scanner_owned: HashSet<_> = islands.expressions.iter()
+            .filter(|(_, owned, _)| *owned)
+            .map(|(expression, _, _)| expression.span()).collect();
+        let scope = NamespaceScope::new(
+            namespace.as_ref().and_then(|n| n.name.as_ref()).map(|n| n.value().to_vec()),
+        );
+        let mut types = HashMap::new();
+        for (expression, _, _) in islands.expressions.into_iter().filter(|(_, owned, parent)| {
+            !owned && parent.is_none_or(|parent| scanner_owned.contains(&parent))
+        }) {
+            if let Some(value) = self.expression_type(arena, file, program, names, expression, namespace.clone()) {
+                types.insert(expression.span(), value);
+            }
+        }
+        infer_initializer(file, names, &scope, expression, &self.metadata.constants, &types)
+    }
+
+    fn expression_type<'arena>(
+        &self,
+        arena: &'arena LocalArena,
+        file: &File,
+        program: &'arena Program<'arena>,
+        names: &ResolvedNames<'arena>,
+        expression: &'arena Expression<'arena>,
+        namespace: Option<cst::Namespace<'arena>>,
+    ) -> Option<TUnion> {
         let statement = cst::Statement::Expression(cst::ExpressionStatement {
             expression,
             terminator: cst::Terminator::Semicolon(expression.span()),
         });
         let statements =
             cst::Sequence::from_slice(arena.alloc_slice_fill_iter([statement].into_iter()));
-        let statement = if let Some(mut namespace) = find.namespace {
+        let statement = if let Some(mut namespace) = namespace {
             match &mut namespace.body {
                 cst::NamespaceBody::Implicit(body) => body.statements = statements,
                 cst::NamespaceBody::BraceDelimited(body) => body.statements = statements,
@@ -663,9 +778,9 @@ impl Initializers<'_> {
         });
         let registry = PluginRegistry::with_library_providers();
         let analyzer = Analyzer::new(
-            &arena,
+            arena,
             file,
-            &names,
+            names,
             self.metadata,
             &registry,
             Settings::new(self.version),
@@ -676,12 +791,6 @@ impl Initializers<'_> {
         }))
         .ok()?
         .ok()?;
-        let mut value = artifacts.get_expression_type(expression)?.clone();
-        if inherited_benevolence && value == get_int_or_float() {
-            // Keep the numeric union's existing marker across the full evaluator's arithmetic join.
-            value.set_ignore_nullable_issues(true);
-            value.set_ignore_falsable_issues(true);
-        }
-        Some(value)
+        artifacts.get_expression_type(expression).cloned()
     }
 }

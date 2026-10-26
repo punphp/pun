@@ -1,0 +1,77 @@
+{
+  "general": [],
+  "errors": [
+    {
+      "file": "global-initializer-defines.php",
+      "line": 7,
+      "identifier": "phpstan.dumpType",
+      "message": "Dumped type: 1|4",
+      "tip": null,
+      "ignorable": false
+    },
+    {
+      "file": "global-initializer-defines.php",
+      "line": 8,
+      "identifier": "phpstan.dumpType",
+      "message": "Dumped type: 0|1",
+      "tip": null,
+      "ignorable": false
+    },
+    {
+      "file": "global-initializer-defines.php",
+      "line": 9,
+      "identifier": "phpstan.dumpType",
+      "message": "Dumped type: 1",
+      "tip": null,
+      "ignorable": false
+    },
+    {
+      "file": "global-initializer-defines.php",
+      "line": 18,
+      "identifier": "phpstan.dumpType",
+      "message": "Dumped type: 1",
+      "tip": null,
+      "ignorable": false
+    },
+    {
+      "file": "global-initializer-defines.php",
+      "line": 19,
+      "identifier": "phpstan.dumpType",
+      "message": "Dumped type: 0",
+      "tip": null,
+      "ignorable": false
+    },
+    {
+      "file": "global-initializer-defines.php",
+      "line": 20,
+      "identifier": "phpstan.dumpType",
+      "message": "Dumped type: 0",
+      "tip": null,
+      "ignorable": false
+    },
+    {
+      "file": "global-initializer-defines.php",
+      "line": 22,
+      "identifier": "phpstan.dumpType",
+      "message": "Dumped type: 1",
+      "tip": null,
+      "ignorable": false
+    },
+    {
+      "file": "global-initializer-defines.php",
+      "line": 31,
+      "identifier": "attribute.notAttribute",
+      "message": "Class GlobalInitializerDefines\\InvalidCoalesce is not an Attribute class.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "global-initializer-defines.php",
+      "line": 31,
+      "identifier": "attribute.notAttribute",
+      "message": "Class GlobalInitializerDefines\\InvalidSplit is not an Attribute class.",
+      "tip": null,
+      "ignorable": true
+    }
+  ]
+}

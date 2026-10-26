@@ -1,0 +1,93 @@
+{
+  "general": [],
+  "errors": [
+    {
+      "file": "global-initializer-arrays.php",
+      "line": 7,
+      "identifier": "phpstan.dumpType",
+      "message": "Dumped type: array{1|4, 1, 1, 1}",
+      "tip": null,
+      "ignorable": false
+    },
+    {
+      "file": "global-initializer-arrays.php",
+      "line": 8,
+      "identifier": "phpstan.dumpType",
+      "message": "Dumped type: array{flag: 1|4, null: 1}",
+      "tip": null,
+      "ignorable": false
+    },
+    {
+      "file": "global-initializer-arrays.php",
+      "line": 9,
+      "identifier": "phpstan.dumpType",
+      "message": "Dumped type: 1|null",
+      "tip": null,
+      "ignorable": false
+    },
+    {
+      "file": "global-initializer-arrays.php",
+      "line": 10,
+      "identifier": "phpstan.dumpType",
+      "message": "Dumped type: 0|1",
+      "tip": null,
+      "ignorable": false
+    },
+    {
+      "file": "global-initializer-arrays.php",
+      "line": 29,
+      "identifier": "phpstan.dumpType",
+      "message": "Dumped type: array{1, 1, 0, 1}",
+      "tip": null,
+      "ignorable": false
+    },
+    {
+      "file": "global-initializer-arrays.php",
+      "line": 30,
+      "identifier": "phpstan.dumpType",
+      "message": "Dumped type: array{flag: 1, null: 1}",
+      "tip": null,
+      "ignorable": false
+    },
+    {
+      "file": "global-initializer-arrays.php",
+      "line": 31,
+      "identifier": "phpstan.dumpType",
+      "message": "Dumped type: null",
+      "tip": null,
+      "ignorable": false
+    },
+    {
+      "file": "global-initializer-arrays.php",
+      "line": 32,
+      "identifier": "phpstan.dumpType",
+      "message": "Dumped type: 0",
+      "tip": null,
+      "ignorable": false
+    },
+    {
+      "file": "global-initializer-arrays.php",
+      "line": 34,
+      "identifier": "array.duplicateKey",
+      "message": "Array has 2 duplicate keys with value 1 (\\GlobalInitializerArrays\\Keys::EXACT, 1).",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "global-initializer-arrays.php",
+      "line": 47,
+      "identifier": "attribute.notAttribute",
+      "message": "Class GlobalInitializerArrays\\ArrayIsNotFlags is not an Attribute class.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "global-initializer-arrays.php",
+      "line": 47,
+      "identifier": "attribute.notAttribute",
+      "message": "Class GlobalInitializerArrays\\RetainZero is not an Attribute class.",
+      "tip": null,
+      "ignorable": true
+    }
+  ]
+}

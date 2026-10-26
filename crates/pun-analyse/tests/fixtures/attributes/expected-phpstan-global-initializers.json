@@ -1,0 +1,245 @@
+{
+  "general": [],
+  "errors": [
+    {
+      "file": "global-initializers.php",
+      "line": 15,
+      "identifier": "phpstan.dumpType",
+      "message": "Dumped type: 1|4",
+      "tip": null,
+      "ignorable": false
+    },
+    {
+      "file": "global-initializers.php",
+      "line": 16,
+      "identifier": "phpstan.dumpType",
+      "message": "Dumped type: 0|1",
+      "tip": null,
+      "ignorable": false
+    },
+    {
+      "file": "global-initializers.php",
+      "line": 17,
+      "identifier": "phpstan.dumpType",
+      "message": "Dumped type: 1",
+      "tip": null,
+      "ignorable": false
+    },
+    {
+      "file": "global-initializers.php",
+      "line": 18,
+      "identifier": "phpstan.dumpType",
+      "message": "Dumped type: array{0: 1|4, coalesce: 0|1, precise: 1}",
+      "tip": null,
+      "ignorable": false
+    },
+    {
+      "file": "global-initializers.php",
+      "line": 42,
+      "identifier": "phpstan.dumpType",
+      "message": "Dumped type: 1",
+      "tip": null,
+      "ignorable": false
+    },
+    {
+      "file": "global-initializers.php",
+      "line": 43,
+      "identifier": "phpstan.dumpType",
+      "message": "Dumped type: 0",
+      "tip": null,
+      "ignorable": false
+    },
+    {
+      "file": "global-initializers.php",
+      "line": 44,
+      "identifier": "phpstan.dumpType",
+      "message": "Dumped type: 0",
+      "tip": null,
+      "ignorable": false
+    },
+    {
+      "file": "global-initializers.php",
+      "line": 45,
+      "identifier": "phpstan.dumpType",
+      "message": "Dumped type: array{0: 1, coalesce: 0, precise: 1}",
+      "tip": null,
+      "ignorable": false
+    },
+    {
+      "file": "global-initializers.php",
+      "line": 46,
+      "identifier": "phpstan.dumpType",
+      "message": "Dumped type: 1|4",
+      "tip": null,
+      "ignorable": false
+    },
+    {
+      "file": "global-initializers.php",
+      "line": 47,
+      "identifier": "phpstan.dumpType",
+      "message": "Dumped type: 1",
+      "tip": null,
+      "ignorable": false
+    },
+    {
+      "file": "global-initializers.php",
+      "line": 48,
+      "identifier": "phpstan.dumpType",
+      "message": "Dumped type: 1",
+      "tip": null,
+      "ignorable": false
+    },
+    {
+      "file": "global-initializers.php",
+      "line": 49,
+      "identifier": "phpstan.dumpType",
+      "message": "Dumped type: 1",
+      "tip": null,
+      "ignorable": false
+    },
+    {
+      "file": "global-initializers.php",
+      "line": 50,
+      "identifier": "phpstan.dumpType",
+      "message": "Dumped type: 1",
+      "tip": null,
+      "ignorable": false
+    },
+    {
+      "file": "global-initializers.php",
+      "line": 52,
+      "identifier": "phpstan.dumpType",
+      "message": "Dumped type: 1",
+      "tip": null,
+      "ignorable": false
+    },
+    {
+      "file": "global-initializers.php",
+      "line": 54,
+      "identifier": "phpstan.dumpType",
+      "message": "Dumped type: 9",
+      "tip": null,
+      "ignorable": false
+    },
+    {
+      "file": "global-initializers.php",
+      "line": 55,
+      "identifier": "array.duplicateKey",
+      "message": "Array has 2 duplicate keys with value 1 (SPLIT, 1).",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "global-initializers.php",
+      "line": 56,
+      "identifier": "phpstan.dumpType",
+      "message": "Dumped type: 1",
+      "tip": null,
+      "ignorable": false
+    },
+    {
+      "file": "global-initializers.php",
+      "line": 57,
+      "identifier": "phpstan.dumpType",
+      "message": "Dumped type: 0",
+      "tip": null,
+      "ignorable": false
+    },
+    {
+      "file": "global-initializers.php",
+      "line": 58,
+      "identifier": "phpstan.dumpType",
+      "message": "Dumped type: 0",
+      "tip": null,
+      "ignorable": false
+    },
+    {
+      "file": "global-initializers.php",
+      "line": 92,
+      "identifier": "attribute.notAttribute",
+      "message": "Class GlobalInitializerReflection\\NamespaceStopsFallback is not an Attribute class.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "global-initializers.php",
+      "line": 92,
+      "identifier": "attribute.notAttribute",
+      "message": "Class GlobalInitializerReflection\\ScannedDistinct is not an Attribute class.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "global-initializers.php",
+      "line": 92,
+      "identifier": "attribute.notAttribute",
+      "message": "Class GlobalInitializerReflection\\SplitReflectionNotFlow is not an Attribute class.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "global-initializers.php",
+      "line": 92,
+      "identifier": "attribute.notAttribute",
+      "message": "Class GlobalInitializerReflection\\ZeroReflectionNotFlow is not an Attribute class.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "global-initializers.php",
+      "line": 93,
+      "identifier": "attribute.target",
+      "message": "Attribute class GlobalInitializerReflection\\MethodOnly does not have the class target.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "global-initializers.php",
+      "line": 93,
+      "identifier": "attribute.target",
+      "message": "Attribute class GlobalInitializerReflection\\ZeroFlags does not have the class target.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "global-initializers.php",
+      "line": 93,
+      "identifier": "attribute.notAttribute",
+      "message": "Class GlobalInitializerReflection\\NonInteger is not an Attribute class.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "global-initializers.php",
+      "line": 93,
+      "identifier": "attribute.notAttribute",
+      "message": "Class GlobalInitializerReflection\\ZeroNotNull is not an Attribute class.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "global-initializers.php",
+      "line": 94,
+      "identifier": "attribute.notAttribute",
+      "message": "Class GlobalInitializerReflection\\DoNotNarrowReflection is not an Attribute class.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "global-initializers.php",
+      "line": 94,
+      "identifier": "attribute.notAttribute",
+      "message": "Class GlobalInitializerReflection\\Unresolved is not an Attribute class.",
+      "tip": null,
+      "ignorable": true
+    },
+    {
+      "file": "global-initializers.php",
+      "line": 96,
+      "identifier": "attribute.notAttribute",
+      "message": "Class GlobalInitializerScannedAttributes\\ScannedInvalid is not an Attribute class.",
+      "tip": null,
+      "ignorable": true
+    }
+  ]
+}

@@ -1,13 +1,15 @@
 use mago_allocator::Arena;
 use std::borrow::Cow;
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, HashMap};
 use std::sync::Arc;
 use std::sync::LazyLock;
 
+use mago_database::file::File;
 use mago_names::ResolvedNames;
 use mago_names::scope::NamespaceScope;
 use mago_span::HasPosition;
 use mago_span::HasSpan;
+use mago_span::Span;
 use mago_syntax::cst::Access;
 use mago_syntax::cst::Array;
 use mago_syntax::cst::ArrayElement;
@@ -232,7 +234,12 @@ pub(super) fn infer<'arena, A>(
 where
     A: Arena,
 {
-    infer_with_constant_sources(context, scope, expression, enclosing_class, None, None)
+    let context = InferenceContext {
+        file: context.file,
+        resolved_names: context.resolved_names,
+        expression_types: None,
+    };
+    infer_with_constant_sources(&context, scope, expression, enclosing_class, None, None)
 }
 
 #[inline]
@@ -246,7 +253,12 @@ pub(super) fn infer_with_constants<'arena, A>(
 where
     A: Arena,
 {
-    infer_with_constant_sources(context, scope, expression, enclosing_class, constants, None)
+    let context = InferenceContext {
+        file: context.file,
+        resolved_names: context.resolved_names,
+        expression_types: None,
+    };
+    infer_with_constant_sources(&context, scope, expression, enclosing_class, constants, None)
 }
 
 #[inline]
@@ -260,21 +272,47 @@ pub(super) fn infer_with_class_constants<'arena, A>(
 where
     A: Arena,
 {
-    infer_with_constant_sources(context, scope, expression, enclosing_class, None, Some(class_constants))
+    let context = InferenceContext {
+        file: context.file,
+        resolved_names: context.resolved_names,
+        expression_types: None,
+    };
+    infer_with_constant_sources(&context, scope, expression, enclosing_class, None, Some(class_constants))
+}
+
+/// Re-infer a global initializer with resolved dependencies. Exact independently evaluated subexpressions may
+/// supply richer arithmetic types, but must not include a ternary/coalesce or any ancestor containing one:
+/// those trees must retain the initializer resolver's unions, never the runtime analyzer's selected branch.
+pub fn infer_initializer(
+    file: &File,
+    names: &ResolvedNames<'_>,
+    scope: &NamespaceScope,
+    expression: &Expression<'_>,
+    constants: &WordMap<ConstantMetadata>,
+    expression_types: &HashMap<Span, TUnion>,
+) -> Option<TUnion> {
+    let context = InferenceContext { file, resolved_names: names, expression_types: Some(expression_types) };
+    infer_with_constant_sources(&context, scope, expression, None, Some(constants), None)
+}
+
+struct InferenceContext<'ctx, 'arena> {
+    file: &'ctx File,
+    resolved_names: &'ctx ResolvedNames<'arena>,
+    expression_types: Option<&'ctx HashMap<Span, TUnion>>,
 }
 
 #[inline]
-fn infer_with_constant_sources<'arena, A>(
-    context: &Context<'_, 'arena, A>,
+fn infer_with_constant_sources<'arena>(
+    context: &InferenceContext<'_, 'arena>,
     scope: &NamespaceScope,
     expression: &'arena Expression<'arena>,
     enclosing_class: Option<Word>,
     constants: Option<&WordMap<ConstantMetadata>>,
     class_constants: Option<&WordMap<ClassLikeConstantMetadata>>,
-) -> Option<TUnion>
-where
-    A: Arena,
-{
+) -> Option<TUnion> {
+    if let Some(value) = context.expression_types.and_then(|types| types.get(&expression.span())) {
+        return Some(value.clone());
+    }
     let expression = unwrap_parens(expression);
     match expression {
         Expression::MagicConstant(magic_constant) => Some(match magic_constant {
@@ -782,6 +820,18 @@ fn infer_constant<'ctx, 'arena>(
     } else {
         (constant.value(), names.get(constant))
     };
+
+    if let Some(constants) = constants_map {
+        let selected = constants.get(&ascii_lowercase_constant_name_word(fqn)).or_else(|| {
+            (!constant.value().contains(&b'\\') && !names.is_imported(constant))
+                .then(|| constants.get(&ascii_lowercase_constant_name_word(constant.value())))
+                .flatten()
+        });
+        if let Some(selected) = selected.filter(|k| !k.flags.is_built_in()) {
+            // Existence stops namespace fallback, including a dependency currently being resolved.
+            return Some(selected.inferred_type.clone().unwrap_or_else(get_mixed));
+        }
+    }
 
     if let Some(t) = get_literal_constant_type(short_name) {
         return Some(t);

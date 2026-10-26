@@ -98,27 +98,61 @@ fn control_flow_attribute_flags_follow_initializer_types_not_runtime_branches() 
     check("phpstan-control-flow");
 }
 
+#[test]
+fn global_initializer_reflection_is_distinct_from_file_local_flow() {
+    check("phpstan-global-initializers");
+}
+
+#[test]
+fn global_initializer_arrays_and_filtered_unions_keep_canonical_values() {
+    check("phpstan-global-initializer-arrays");
+}
+
+#[test]
+fn defined_global_initializer_reflection_and_local_flow_stay_distinct() {
+    check("phpstan-global-initializer-defines");
+}
+
+#[test]
+fn global_initializer_dependencies_resolve_before_filtering() {
+    check("phpstan-global-initializer-dependencies");
+    scanner_flags(
+        include_str!("fixtures/attributes/global-initializer-dependencies.php"),
+        include_str!("fixtures/attributes/expected-phpstan-global-initializer-dependencies.json"),
+        true,
+    );
+}
+
 /// Check the scanner's public metadata too: the rule must not be repairing missing initializer types.
 #[test]
 fn scanner_control_flow_flags_match_the_attribute_oracle() {
+    scanner_flags(
+        include_str!("fixtures/attributes/control-flow.php"),
+        include_str!("fixtures/attributes/expected-phpstan-control-flow.json"),
+        false,
+    );
+}
+
+fn scanner_flags(source: &'static str, oracle: &str, resolved_globals: bool) {
     use std::borrow::Cow;
-    use std::collections::BTreeSet;
+    use std::collections::{BTreeSet, HashMap};
 
     use mago_allocator::LocalArena;
     use mago_codex::populator::populate_codebase;
     use mago_codex::reference::SymbolReferences;
+    use mago_codex::scanner::inference::infer_initializer;
     use mago_codex::scanner::scan_program;
     use mago_codex::ttype::expander::{TypeExpansionOptions, expand_union};
     use mago_database::file::{File, FileType};
     use mago_names::resolver::NameResolver;
+    use mago_names::scope::NamespaceScope;
     use mago_php_version::PHPVersion;
+    use mago_span::{HasSpan, Span};
+    use mago_syntax::cst::Expression;
     use mago_syntax::parser::parse_file;
+    use mago_syntax::walker::MutWalker;
 
-    let source = include_str!("fixtures/attributes/control-flow.php");
-    let oracle: Value = serde_json::from_str(include_str!(
-        "fixtures/attributes/expected-phpstan-control-flow.json"
-    ))
-    .unwrap();
+    let oracle: Value = serde_json::from_str(oracle).unwrap();
     let invalid: BTreeSet<_> = oracle["errors"]
         .as_array()
         .unwrap()
@@ -144,6 +178,14 @@ fn scanner_control_flow_flags_match_the_attribute_oracle() {
     let program = parse_file(&arena, &file);
     assert!(!program.has_errors());
     let names = NameResolver::new(&arena).resolve(program);
+    struct Expressions<'ast, 'arena>(HashMap<Span, &'ast Expression<'arena>>);
+    impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Expressions<'ast, 'arena> {
+        fn walk_in_expression(&mut self, expression: &'ast Expression<'arena>, _: &mut ()) {
+            self.0.insert(expression.span(), expression);
+        }
+    }
+    let mut expressions = Expressions(HashMap::new());
+    expressions.walk_program(program, &mut ());
     let mut codebase = scan_program(&arena, &file, program, &names, PHPVersion::new(8, 4, 0));
     populate_codebase(
         &mut codebase,
@@ -160,10 +202,15 @@ fn scanner_control_flow_flags_match_the_attribute_oracle() {
         else {
             continue;
         };
-        let flags = attribute.arguments[0]
-            .value_type
-            .clone()
-            .and_then(|mut flags| {
+        let argument = &attribute.arguments[0];
+        let flags = if resolved_globals {
+            infer_initializer(
+                &file, &names, &NamespaceScope::global(),
+                expressions.0[&argument.value_span.unwrap()], &codebase.constants, &HashMap::new(),
+            )
+        } else {
+            argument.value_type.clone()
+        }.and_then(|mut flags| {
                 expand_union(&codebase, &mut flags, &TypeExpansionOptions::default());
                 flags.get_single_literal_int_value()
             });
