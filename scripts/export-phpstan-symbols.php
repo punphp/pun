@@ -728,7 +728,7 @@ if (($argv[1] ?? '') === 'probes') {
     foreach (['PunProbe\\Child', 'PunProbe\\Coll', 'PunProbe\\Missing', null] as $class) {
         $scope = new NameScope('PunProbe', [], $class);
         foreach (['static', 'static<string>', 'self', 'parent', 'Coll', 'Coll<int, string>', 'Child<string>', 'SORT_REGULAR',
-            'int-mask-of<SORT_REGULAR|SORT_NUMERIC>', '\\SORT_NUMERIC', 'self::A', 'self::*', 'Child::C', 'Coll::*', 'class-string<static>',
+            'int-mask-of<SORT_REGULAR|SORT_NUMERIC>', '\\SORT_NUMERIC', 'self::A', 'self::*', 'parent::A', 'Child::C', 'Coll::*', 'class-string<static>',
             'Nope::A', 'Coll::NOPE', 'Defaults<string>', 'Defaults<string, string, string, string>', 'value-of<Backed>',
             'value-of<One>', 'value-of<Suit>', 'value-of<Backed::A>', 'key-of<Backed>', 'key-of<array<int, string>>',
             'value-of<list<string>>', 'value-of<int>', 'value-of<int, int>', 'pure-callable(): void',

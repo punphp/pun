@@ -61,6 +61,11 @@
     ],
     [
         "PunProbe\\Child",
+        "parent::A",
+        "1"
+    ],
+    [
+        "PunProbe\\Child",
         "Child::C",
         "2"
     ],
@@ -328,6 +333,11 @@
         "PunProbe\\Coll",
         "self::*",
         "1|'b'"
+    ],
+    [
+        "PunProbe\\Coll",
+        "parent::A",
+        "*ERROR*"
     ],
     [
         "PunProbe\\Coll",
@@ -601,6 +611,11 @@
     ],
     [
         "PunProbe\\Missing",
+        "parent::A",
+        "*ERROR*"
+    ],
+    [
+        "PunProbe\\Missing",
         "Child::C",
         "2"
     ],
@@ -867,6 +882,11 @@
     [
         null,
         "self::*",
+        "*ERROR*"
+    ],
+    [
+        null,
+        "parent::A",
         "*ERROR*"
     ],
     [
