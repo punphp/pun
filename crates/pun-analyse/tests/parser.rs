@@ -647,3 +647,89 @@ fn invalid_nested_namespaces_in_scanned_files_export_no_symbols() {
         );
     }
 }
+
+#[test]
+fn constant_attribute_parser_failures_preserve_first_group_location_and_valid_declarations() {
+    let inputs: Value = serde_json::from_str(include_str!(
+        "fixtures/parser/constant-attribute-inputs.json"
+    ))
+    .unwrap();
+    let expected: Value = serde_json::from_str(include_str!(
+        "fixtures/parser/constant-attribute-expected.json"
+    ))
+    .unwrap();
+    let root = Inputs::new();
+    let files = inputs
+        .as_object()
+        .unwrap()
+        .iter()
+        .map(|(name, code)| {
+            let namespace = name.replace('-', "_");
+            root.write(
+                name,
+                &format!(
+                    "namespace ConstantAttribute_{namespace};\n{}",
+                    code.as_str().unwrap()
+                ),
+            )
+        })
+        .collect();
+    assert_eq!(
+        errors(&Project::new(files, Vec::new())),
+        expected["analysed"]["errors"]
+    );
+}
+
+#[test]
+fn constant_attribute_checks_follow_value_expressions_and_precede_name_resolution() {
+    use pun_phpstan::{Array, Key, Value as Php};
+    let root = Inputs::new();
+    let file = root.write(
+        "constant-attribute-order",
+        include_str!("fixtures/parser/constant-attribute-order.php")
+            .strip_prefix("<?php\n")
+            .unwrap(),
+    );
+    let mut project = Project::new(vec![file], Vec::new());
+    let mut entry = Array::new();
+    entry.set(Key::from("identifier"), Php::str("phpstan.parse"));
+    project.ignore_errors =
+        pun_phpstan::ignore::IgnoredErrors::new(&Array::list([Php::Array(entry)]), true);
+    let expected: Value = serde_json::from_str(include_str!(
+        "fixtures/parser/constant-attribute-expected.json"
+    ))
+    .unwrap();
+    // Ignoring a non-ignorable parser error exposes its collection order, before the public error sorting.
+    assert_eq!(
+        json!(analyse_project(&project).unwrap().general),
+        expected["order"]["general"]
+    );
+    assert_eq!(errors(&project), expected["order"]["errors"]);
+}
+
+#[test]
+fn invalid_constant_attributes_in_scanned_files_export_no_symbols() {
+    let inputs: Value = serde_json::from_str(include_str!(
+        "fixtures/parser/constant-attribute-scans.json"
+    ))
+    .unwrap();
+    let expected: Value = serde_json::from_str(include_str!(
+        "fixtures/parser/constant-attribute-expected.json"
+    ))
+    .unwrap();
+    for (name, code) in inputs.as_object().unwrap() {
+        let root = Inputs::new();
+        let main = root.write(
+            "main",
+            include_str!("fixtures/parser/scan-main.php")
+                .strip_prefix("<?php\n")
+                .unwrap(),
+        );
+        let symbols = root.write("symbols", code.as_str().unwrap());
+        assert_eq!(
+            errors(&Project::new(vec![main], vec![symbols])),
+            expected["scanned"][name]["errors"],
+            "{name}"
+        );
+    }
+}

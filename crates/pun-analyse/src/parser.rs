@@ -276,6 +276,19 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Reserved<'_> {
             }
         }
     }
+    fn walk_out_constant(&mut self, node: &'ast Constant<'arena>, _: &mut ()) {
+        // ParserAbstract::checkConstantAttributes runs after every value expression has reduced. PHPParser's
+        // declaration attributes start at the first attribute group, unlike Mago's const-keyword span.
+        if let Some(attributes) = node.attribute_lists.first()
+            && node.items.len() > 1
+        {
+            self.errors.push(error(
+                self.file,
+                attributes.span(),
+                "Cannot use attributes on multiple constants at once".into(),
+            ));
+        }
+    }
     fn walk_in_class(&mut self, node: &'ast Class<'arena>, _: &mut ()) {
         self.class_modifiers(
             &node.modifiers,

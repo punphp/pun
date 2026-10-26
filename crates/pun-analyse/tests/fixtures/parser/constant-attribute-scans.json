@@ -1,0 +1,7 @@
+{
+  "multiple": "class ScanBefore {} function scanFunction() {} const SCAN_CONSTANT = 1;\n#[\\Deprecated] const A = 1, B = 2;\nclass ScanAfter {}",
+  "first-attribute": "class ScanBefore {} function scanFunction() {} const SCAN_CONSTANT = 1;\n#[\\self]\n#[\\Deprecated] const A = 1, B = 2;\nclass ScanAfter {}",
+  "positive-single": "class ScanBefore {} function scanFunction() {} #[\\Deprecated] const SCAN_CONSTANT = 1; class ScanAfter {}",
+  "positive-unattributed-multiple": "class ScanBefore {} function scanFunction() {} const SCAN_CONSTANT = 1, B = 2; class ScanAfter {}",
+  "positive-class-multiple": "class ScanBefore { #[\\Deprecated] public const A = 1, B = 2; } function scanFunction() {} const SCAN_CONSTANT = 1; class ScanAfter {}"
+}
