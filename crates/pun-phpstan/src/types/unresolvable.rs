@@ -48,7 +48,7 @@ impl PartialEq for Type {
             (T::Never(a), T::Never(b)) => a == b,
             (T::ConstBool(a), T::ConstBool(b)) => a == b,
             (T::ConstInt(a), T::ConstInt(b)) => a == b,
-            (T::ConstFloat(a), T::ConstFloat(b)) => a == b,
+            (T::ConstFloat(a), T::ConstFloat(b)) => a == b || (a.is_nan() && b.is_nan()),
             (T::ConstString(a), T::ConstString(b)) | (T::This(a), T::This(b)) => a == b,
             (T::IntRange(a, x), T::IntRange(b, y)) => a == b && x == y,
             (T::ClassString(a), T::ClassString(b)) => a == b,

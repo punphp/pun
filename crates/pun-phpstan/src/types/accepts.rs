@@ -75,8 +75,8 @@ pub fn accepts_with(a: &Type, b: &Type, strict: bool, sm: StrictMixed) -> Tri {
             }
         }
         // ConstantScalarTypeTrait: the same constant, else the parent's answer and maybe
-        T::ConstFloat(x) => match b {
-            T::ConstFloat(y) => Tri::from(x.to_bits() == y.to_bits()),
+        T::ConstFloat(_) => match b {
+            T::ConstFloat(_) => Tri::from(a == b),
             _ if compound => by(),
             _ => Tri::from(matches!(b, T::Float) || b.is_integer().yes()).and(Tri::Maybe),
         },

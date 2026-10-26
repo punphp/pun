@@ -2551,8 +2551,8 @@ pub fn is_super_type_of(a: &Type, b: &Type) -> Tri {
             _ => Tri::No,
         },
         T::Float => Tri::from(matches!(b, T::Float | T::ConstFloat(_))),
-        T::ConstFloat(x) => match b {
-            T::ConstFloat(y) => Tri::from(x == y),
+        T::ConstFloat(_) => match b {
+            T::ConstFloat(_) => Tri::from(a == b),
             T::Float => Tri::Maybe,
             _ => Tri::No,
         },

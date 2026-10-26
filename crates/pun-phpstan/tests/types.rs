@@ -483,3 +483,36 @@ fn generic_comparisons() {
     }
     assert!(failures.is_empty(), "{}", failures.join("\n"));
 }
+
+/// PHPStan 2.3.1 ConstantFloatType::equals(), isSuperTypeOf() and accepts(), including nested shapes.
+#[test]
+fn constant_float_identity() {
+    use pun_phpstan::types::{ConstArray, Tri, Type, accepts};
+    let shape = |value| {
+        Type::ConstArray(Box::new(ConstArray {
+            keys: vec![Type::ConstInt(0)],
+            values: vec![value],
+            next_auto_indexes: vec![1],
+            ..ConstArray::empty()
+        }))
+    };
+    for (x, y, equal) in [
+        (f64::NAN, f64::NAN, true),
+        (f64::NAN, -f64::NAN, true),
+        (f64::NAN, 1.0, false),
+        (0.0, -0.0, true),
+        (f64::INFINITY, f64::INFINITY, true),
+        (f64::INFINITY, f64::NEG_INFINITY, false),
+    ] {
+        let a = Type::ConstFloat(x);
+        let b = Type::ConstFloat(y);
+        let want = Tri::from(equal);
+        assert_eq!(
+            (a == b, is_super_type_of(&a, &b), accepts(&a, &b, true)),
+            (equal, want, want)
+        );
+        let (a, b) = (shape(a), shape(b));
+        assert_eq!((a == b, is_super_type_of(&a, &b)), (equal, want));
+        assert_eq!(accepts(&Type::Union(vec![Type::Int, a]), &b, true), want);
+    }
+}
