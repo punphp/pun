@@ -722,12 +722,12 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "phpunit/prefer-this-call" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "Changes PHPUnit calls from self::assert*() to $this->assert*()" }
 "phpunit/prefer-ticket-attribute" = { fix = "safe", ported = false, status = "decided", summary = "Change annotations with value to attribute" }
 "phpunit/prefer-will-return-callback" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Merge ->with($this->callback()) and ->willReturn() into willReturnCallback()." }
-"phpunit/prefer-with-is-instance-of" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Replaces use of with, callable and instance assert to simple isInstanceOf() method" }
+"phpunit/prefer-with-is-instance-of" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Replaces use of with, callable and instance assert to simple isInstanceOf() method" }
 "phpunit/prefer-yield-data-provider" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Turns array return to yield in data providers" }
 "phpunit/require-assertion-style" = { fix = "unsafe", sets = ["code-quality"], ported = false, status = "decided", summary = "Calls to `PHPUnit\\Framework\\TestCase` static methods (like assertions) must all be of the same type, either `$this->`, `self::` or `static::`." }
 "phpunit/require-covers" = { fix = "safe", ported = false, status = "decided", summary = "Adds a default `@coversNothing` annotation to PHPUnit test classes that have no `@covers*` annotation." }
 "phpunit/require-data-provider-naming" = { fix = "unsafe", ported = false, status = "decided", summary = "Data provider names must match the name of the test." }
-"phpunit/require-data-provider-newlines" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Change data provider in PHPUnit test case to newline per item" }
+"phpunit/require-data-provider-newlines" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Change data provider in PHPUnit test case to newline per item" }
 "phpunit/require-data-provider-order" = { fix = "safe", sets = ["coding-style"], ported = false, status = "decided", summary = "Data provider method must be placed after/before the last/first test where used." }
 "phpunit/require-exact-test-argument-type" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Correct expected type in setter of tests, if param type is strictly defined" }
 "phpunit/require-final-test-case" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Make PHPUnit test case final" }
