@@ -1,0 +1,7 @@
+[
+    {
+        "fixer": "php_unit_mock_short_will_return",
+        "input": "<?php\nfinal class FooTest extends \\PHPUnit\\Framework\\TestCase\n{\n    public function testA()\n    {\n        $m->will( $this->returnValue( 1 ) );\n        $m->WILL(self::RETURNSELF());\n        $m->will(static::returnCallback(fn () => 1,));\n        $m->will($other->returnValue(1));\n        $m->will($this->returnValue(...));\n        $m->will($this->onConsecutiveCalls(1, 2));\n        $m->will($this /* c */ -> returnArgument(0));\n    }\n}\n",
+        "expected": "<?php\nfinal class FooTest extends \\PHPUnit\\Framework\\TestCase\n{\n    public function testA()\n    {\n        $m->willReturn(  1  );\n        $m->willReturnSelf();\n        $m->willReturnCallback(fn () => 1,);\n        $m->will($other->returnValue(1));\n        $m->will($this->returnValue(...));\n        $m->will($this->onConsecutiveCalls(1, 2));\n        $m->willReturnArgument( /* c */  0);\n    }\n}\n"
+    }
+]
