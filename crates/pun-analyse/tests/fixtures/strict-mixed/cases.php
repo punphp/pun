@@ -195,3 +195,63 @@ class MissingParentDefault {
 function unknownObjectMethod(object $value): void {
     $value->run();
 }
+
+/**
+ * @template A
+ * @param A $value
+ * @return A
+ */
+function identity(mixed $value): mixed {
+    return $value;
+}
+
+/** @param callable(int): int $callback */
+function intIdentity(callable $callback): void {}
+
+/** @param callable(string): string $callback */
+function stringIdentity(callable $callback): void {}
+
+/** @param callable(int): string $callback */
+function intToString(callable $callback): void {}
+
+function mixedResult(int $value): mixed {
+    return $value;
+}
+
+intIdentity(identity(...));
+stringIdentity(identity(...));
+intToString(identity(...));
+intIdentity(mixedResult(...));
+
+/** @template-covariant T */
+class Covariant {}
+
+/** @template-contravariant T */
+class Contravariant {}
+
+/** @param Covariant<mixed> $value */
+function covariantMixed(Covariant $value): void {}
+
+/** @param Covariant<int> $value */
+function covariantInt(Covariant $value): void {}
+
+/** @param Contravariant<int> $value */
+function contravariantInt(Contravariant $value): void {}
+
+/**
+ * @param Covariant<int> $ints
+ * @param Covariant<string> $strings
+ * @param Covariant<mixed> $mixed
+ * @param Contravariant<mixed> $consumer
+ */
+function variance(Covariant $ints, Covariant $strings, Covariant $mixed, Contravariant $consumer): void {
+    covariantMixed($ints);
+    covariantInt($strings);
+    covariantInt($mixed);
+    contravariantInt($consumer);
+}
+
+/** @param \Traversable<mixed, \DateTime> $value */
+function traversableMixed(\Traversable $value): void {}
+
+traversableMixed(new \ArrayIterator([new \DateTime()]));

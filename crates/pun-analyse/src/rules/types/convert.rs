@@ -437,7 +437,7 @@ impl<'a, 'arena> Checker<'a, 'arena> {
     }
 
     fn signature(&self, s: &mago_codex::ttype::atomic::callable::TCallableSignature) -> Box<Signature> {
-        Box::new(Signature {
+        let mut signature = Signature {
             params: s
                 .parameters
                 .iter()
@@ -451,7 +451,27 @@ impl<'a, 'arena> Checker<'a, 'arena> {
                 .collect(),
             ret: s.return_type.as_deref().map_or_else(mixed, |t| self.to_phpstan(t)),
             templates: vec![],
-        })
+        };
+        if let Some(id) = s.get_source()
+            && let Some(f) = self.codebase.get_function_like(&id)
+        {
+            let class = match id {
+                mago_codex::identifier::function_like::FunctionLikeIdentifier::Method(class, _) => self.codebase.get_class_like(class.as_bytes()),
+                _ => None,
+            };
+            let scope = declared::value_scope(self, f, class);
+            signature.templates = f.template_types.keys().filter_map(|name| match scope.templates.get(&text(name.as_bytes())) {
+                Some(Type::Template(t)) => Some((**t).clone()),
+                _ => None,
+            }).collect();
+            // Callable expansion erases declaration metadata too. Restore only matching source identities and
+            // explicitness, so an instantiated receiver or a narrower inferred value is never widened.
+            for (param, source) in signature.params.iter_mut().zip(declared::codex_params(self, f, class)) {
+                param.ty = restore(param.ty.clone(), &source);
+            }
+            signature.ret = restore(signature.ret, &declared::codex_return_type(self, f, class, &text(f.original_name.as_bytes())));
+        }
+        Box::new(signature)
     }
 
     /// A class name as its reflection names it (the declaration's case, an anonymous class's display name).
@@ -965,14 +985,23 @@ fn explicit_mixed(t: Type) -> Type {
 
 /// Value-level templates, recursively through class strings, shapes, bounds and other inferred containers.
 fn inferred_argument(t: &Type) -> Type {
+    inferred_argument_in(t, &[])
+}
+
+/// TemplateTypeHelper::toArgument(): templates owned by a callable remain parameters of that callable.
+fn inferred_argument_in(t: &Type, owned: &[Template]) -> Type {
     match t {
         Type::Template(t) => Type::Template(Box::new(Template {
-            bound: inferred_argument(&t.bound),
-            default: t.default.as_ref().map(inferred_argument),
-            argument: t.scope != "anonymous function",
+            bound: inferred_argument_in(&t.bound, owned),
+            default: t.default.as_ref().map(|t| inferred_argument_in(t, owned)),
+            argument: t.scope != "anonymous function" && !owned.iter().any(|o| o.name == t.name && o.scope == t.scope),
             ..(**t).clone()
         })),
-        t => t.traverse(&inferred_argument),
+        Type::Callable(Some(s)) | Type::Closure(s) => {
+            let owned: Vec<_> = owned.iter().chain(&s.templates).cloned().collect();
+            t.traverse(&|t| inferred_argument_in(t, &owned))
+        }
+        t => t.traverse(&|t| inferred_argument_in(t, owned)),
     }
 }
 

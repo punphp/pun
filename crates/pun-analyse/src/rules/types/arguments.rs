@@ -305,7 +305,7 @@ fn returns_by_ref(c: &Checker, class: Option<&str>, name: &[u8]) -> bool {
 
 impl Checker<'_, '_> {
     fn type_at(&self, span: Span) -> Option<Type> {
-        self.types.get(&span).map(|t| self.to_phpstan(t))
+        self.phpstan_type_at(span)
     }
 }
 

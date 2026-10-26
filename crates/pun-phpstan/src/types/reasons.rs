@@ -124,6 +124,7 @@ fn accepted_by(a: &Type, b: &Type, strict: bool, sm: StrictMixed) -> Vec<String>
 
 /// CallableTypeHelper::isParametersAcceptorSuperTypeOf() with `$treatMixedAsAny`: `ours` accepting `theirs`.
 fn signature(ours: &Signature, theirs: &Signature, strict: bool) -> Vec<String> {
+    let theirs = specialize_signature(ours, theirs);
     let mut params: Vec<&Param> = theirs.params.iter().collect();
     if let Some(last) = theirs.params.last().filter(|p| p.variadic) {
         while params.len() < ours.params.len() {
@@ -226,8 +227,7 @@ pub(super) fn generic(class: &str, args: &[Type], b: &Type) -> Vec<String> {
         if t.variance != "invariant" || matches!(ours, Type::Projection(..)) {
             continue;
         }
-        let trivial = matches!(theirs, Type::Never(_) | Type::Mixed { .. }) || matches!(ours, Type::Mixed { .. });
-        if !trivial && ours != theirs && is_super_type_of(ours, theirs).yes() {
+        if !valid_variance(ours, theirs, t.variance, false).yes() && is_super_type_of(ours, theirs).yes() {
             reasons.push(format!(
                 "Template type {} on class {} is not covariant. Learn more: <fg=cyan>https://phpstan.org/blog/whats-up-with-template-covariant</>",
                 t.name, c.name

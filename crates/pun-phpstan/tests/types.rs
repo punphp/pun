@@ -461,3 +461,23 @@ fn accepts_reasons() {
     eprintln!("type-reasons.json: {}/{} match", rows.len() - failures.len(), rows.len());
     assert!(failures.is_empty(), "{}", failures.join("\n"));
 }
+
+/// Pinned public type comparisons: callable specialization, gradual accepts versus strict variance, and
+/// negative controls with checked mixed nested in generic arguments.
+#[test]
+fn generic_comparisons() {
+    use pun_phpstan::types::{StrictMixed, accepts, accepts_reasons};
+    let fixture = fixture("generic-comparisons.json");
+    let mut failures = Vec::new();
+    for row in fixture.as_array().unwrap() {
+        let a = resolve_str(row[0].as_str().unwrap(), None);
+        let b = resolve_str(row[1].as_str().unwrap(), None);
+        let b = if row[2].as_bool().unwrap() { StrictMixed { explicit: true, implicit: true }.transform(&b) } else { b };
+        let got = serde_json::json!([
+            row[0], row[1], row[2], format!("{:?}", is_super_type_of(&a, &b)),
+            format!("{:?}", accepts(&a, &b, true)), accepts_reasons(&a, &b, true, StrictMixed::default()),
+        ]);
+        if got != *row { failures.push(format!("expected {row}\nreceived {got}")); }
+    }
+    assert!(failures.is_empty(), "{}", failures.join("\n"));
+}

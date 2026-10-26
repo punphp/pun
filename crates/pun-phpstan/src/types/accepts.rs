@@ -170,6 +170,7 @@ pub fn accepts_with(a: &Type, b: &Type, strict: bool, sm: StrictMixed) -> Tri {
         T::Object(class, _) if matches!(b, T::Object(bc, bargs) if bargs.is_empty() && canonical_class(bc) == canonical_class(class)) => {
             is_super_type_of(&T::Object(class.clone(), vec![]), b)
         }
+        T::Object(class, args) => super::object_super(class, args, b, false),
         T::ObjectWithoutClass => Tri::from(
             matches!(b, T::ObjectWithoutClass | T::ObjectShape(_)) || !b.object_class_names().is_empty(),
         ),

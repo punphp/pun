@@ -11,7 +11,7 @@ fn selected(id: &str) -> bool {
         | "classConstant.nonObject" | "callable.nonCallable" | "foreach.nonIterable"
         | "clone.nonObject" | "preInc.type" | "method.nameNotString" | "property.nameNotString"
         | "classConstant.nameNotString" | "phpstan.dumpType" | "binaryOp.invalid" | "class.notFound"
-        | "property.unresolvableType")
+        | "property.unresolvableType" | "argument.type")
 }
 
 #[test]

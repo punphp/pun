@@ -2614,7 +2614,7 @@ pub fn is_super_type_of(a: &Type, b: &Type) -> Tri {
             T::ObjectWithoutClass | T::ObjectShape(_) => Tri::Yes,
             _ => Tri::from(!b.object_class_names().is_empty()),
         },
-        T::Object(class, args) => object_super(class, args, b),
+        T::Object(class, args) => object_super(class, args, b, true),
         T::This(class) if !matches!(b, T::This(_)) => {
             is_super_type_of(&T::Static(class.clone(), vec![]), b).and(Tri::Maybe)
         }
@@ -2678,7 +2678,7 @@ pub fn is_super_type_of(a: &Type, b: &Type) -> Tri {
         T::Closure(ours) => match b {
             T::Closure(_) => signature_super(ours, b, None),
             T::Object(c, _) if canonical_class(c) == "Closure" => Tri::Maybe,
-            _ => object_super("Closure", &[], b),
+            _ => object_super("Closure", &[], b, true),
         },
         T::EnumCase(class, _) => match b {
             T::EnumCase(..) => Tri::from(a == b),
@@ -2782,9 +2782,34 @@ fn signature_super(ours: &Signature, b: &Type, accept: Option<bool>) -> Tri {
     let variants = callable_signatures(b);
     variants
         .iter()
-        .map(|theirs| variant_super(ours, theirs, accept))
+        .map(|theirs| variant_super(ours, &specialize_signature(ours, theirs), accept))
         .reduce(Tri::or)
         .expect("a variant")
+}
+
+/// `ParametersAcceptorSelector::selectFromTypes()` of one variant: infer its templates from the accepting
+/// callable's parameter types before comparing either parameters or return type.
+fn specialize_signature(ours: &Signature, theirs: &Signature) -> Signature {
+    let mut map = TemplateMap::default();
+    for (i, param) in theirs.params.iter().enumerate() {
+        let received = if param.variadic {
+            Some(union(ours.params.iter().skip(i).map(|p| p.ty.clone()).collect()))
+        } else {
+            ours.params.get(i).map(|p| p.ty.clone())
+        };
+        if let Some(received) = received {
+            map = map.union(infer_template_types(&param.ty, &received));
+        }
+    }
+    let map = map.with_errors(&theirs.templates.iter().collect::<Vec<_>>());
+    Signature {
+        params: theirs.params.iter().map(|p| Param {
+            ty: resolve_template_types(&p.ty, &map),
+            ..p.clone()
+        }).collect(),
+        ret: resolve_template_types(&theirs.ret, &map),
+        templates: theirs.templates.clone(),
+    }
 }
 
 /// `getCallableParametersAcceptors()`: a callable without a signature, or a method Pun knows no signature of, is
@@ -2954,7 +2979,7 @@ fn int_range_super(a: &Type, b: &Type) -> Tri {
     if lower && upper { Tri::Yes } else { Tri::Maybe }
 }
 
-fn object_super(class: &str, args: &[Type], b: &Type) -> Tri {
+fn object_super(class: &str, args: &[Type], b: &Type, strict: bool) -> Tri {
     let names = match b {
         Type::Closure(_) => vec!["Closure".to_string()],
         b => b.object_class_names(),
@@ -2998,6 +3023,7 @@ fn object_super(class: &str, args: &[Type], b: &Type) -> Tri {
     let Type::Object(b_class, b_args) = b else {
         return result;
     };
+    let strict = strict && !b_args.is_empty();
     let (Some(c), class) = (symbols::lookup(b_class), canonical_class(class)) else {
         return result;
     };
@@ -3024,15 +3050,17 @@ fn object_super(class: &str, args: &[Type], b: &Type) -> Tri {
     if ancestor.len() != args.len() {
         return Tri::No;
     }
+    let declared = symbols::lookup(&class);
     args.iter()
         .zip(&ancestor)
-        .map(|(x, y)| valid_variance(x, y))
+        .enumerate()
+        .map(|(i, (x, y))| valid_variance(x, y, declared.as_ref().and_then(|c| c.templates.get(i)).map_or("invariant", |t| t.variance), strict))
         .fold(Tri::Yes, Tri::and)
 }
 
-/// `TemplateTypeVariance::isValidVariance()` + `validPosition()` of an invariant template, `*` being bivariant and
-/// a `covariant` / `contravariant` argument its call-site variance.
-fn valid_variance(a: &Type, b: &Type) -> Tri {
+/// `TemplateTypeVariance::isValidVariance()` + `validPosition()`: call-site variance overrides the declaration;
+/// ordinary mixed arguments are gradual only in an accepts context, not a strict generic subtype comparison.
+fn valid_variance(a: &Type, b: &Type, declared: &str, strict: bool) -> Tri {
     match (a, b) {
         (Type::Wildcard, _) => Tri::Yes,
         (_, Type::Wildcard) => Tri::No,
@@ -3043,15 +3071,23 @@ fn valid_variance(a: &Type, b: &Type) -> Tri {
                 Type::Projection(_, b) => &**b,
                 b => b,
             };
-            if matches!(b, Type::Never(_)) || matches!(**a, Type::Mixed { .. }) || matches!(b, Type::Mixed { .. }) {
+            if matches!(b, Type::Never(_)) || (!strict && (matches!(**a, Type::Mixed { .. }) || matches!(b, Type::Mixed { .. }))) {
                 return Tri::Yes;
             }
             if *c { is_super_type_of(a, b) } else { is_super_type_of(b, a) }
         }
         (_, Type::Projection(..)) => Tri::No,
-        (_, Type::Never(_)) | (Type::Mixed { .. }, _) | (_, Type::Mixed { .. }) => Tri::Yes,
+        (_, Type::Never(_)) => Tri::Yes,
+        (Type::Mixed { .. }, _) | (_, Type::Mixed { .. }) if !strict => Tri::Yes,
+        (Type::Benevolent(_), _) if !strict && !is_super_type_of(a, b).no() => Tri::Yes,
+        (_, Type::Benevolent(_)) if !strict && !is_super_type_of(b, a).no() => Tri::Yes,
+        _ if declared == "covariant" => is_super_type_of(a, b),
+        _ if declared == "contravariant" => is_super_type_of(b, a),
+        (Type::Template(a), Type::Template(b)) if a.name == b.name && a.scope == b.scope => Tri::Yes,
+        (Type::Mixed { .. }, _) => Tri::Yes,
         (Type::Benevolent(_), _) if !is_super_type_of(a, b).no() => Tri::Yes,
-        (_, Type::Benevolent(_)) if !is_super_type_of(b, a).no() => Tri::Yes,
+        (_, Type::Benevolent(_)) if !is_super_type_of(b, a).no() => Tri::Maybe,
+        (_, Type::Mixed { .. }) => Tri::Maybe,
         _ => Tri::from(a == b),
     }
 }
