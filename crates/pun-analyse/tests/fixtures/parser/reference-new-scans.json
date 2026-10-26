@@ -1,0 +1,6 @@
+{
+  "direct": "class ScanBefore {}\n$value =& new stdClass;\nclass ScanAfter {}\nfunction scanFunction() {}\nconst SCAN_CONSTANT = 1;",
+  "nested": "class ScanBefore {}\nfunction scanFunction() { $value =& new class {}; }\nclass ScanAfter {}\nconst SCAN_CONSTANT = 1;",
+  "valid-reference": "class ScanBefore {}\n$source = 1; $value =& $source;\nclass ScanAfter {}\nfunction scanFunction() {}\nconst SCAN_CONSTANT = 1;",
+  "valid-new": "class ScanBefore {}\n$value = new stdClass;\nclass ScanAfter {}\nfunction scanFunction() {}\nconst SCAN_CONSTANT = 1;"
+}

@@ -591,6 +591,38 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Reserved<'_> {
             ));
         }
     }
+    fn walk_out_assignment(&mut self, node: &'ast Assignment<'arena>, _: &mut ()) {
+        // php.y's variable '=' ampersand new_expr production checks after both sides reduce. Do not
+        // unwrap parentheses: a parenthesized LHS or new, and a dereferenced new, use other productions.
+        if self.version >= PHPVersion::PHP70
+            && node.operator.is_assign()
+            && matches!(
+                node.lhs,
+                Expression::Variable(_)
+                    | Expression::ArrayAccess(_)
+                    | Expression::ArrayAppend(_)
+                    | Expression::Call(_)
+                    | Expression::PartialApplication(_)
+                    | Expression::Access(
+                        Access::Property(_)
+                            | Access::NullSafeProperty(_)
+                            | Access::StaticProperty(_)
+                    )
+            )
+            && let Expression::UnaryPrefix(reference) = node.rhs
+            && reference.operator.is_reference()
+            && matches!(
+                reference.operand,
+                Expression::Instantiation(_) | Expression::AnonymousClass(_)
+            )
+        {
+            self.errors.push(error(
+                self.file,
+                node.span(),
+                "Cannot assign new by reference".into(),
+            ));
+        }
+    }
     fn walk_out_pipe(&mut self, node: &'ast Pipe<'arena>, _: &mut ()) {
         // checkPipeOperatorParentheses runs after the RHS reduces. Mago retains parentheses explicitly,
         // unlike PHPParser's parenthesizedArrowFunctions registry. Earlier targets do not tokenize T_PIPE.

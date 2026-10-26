@@ -979,3 +979,129 @@ fn pipe_parentheses_do_not_translate_older_target_pipe_grammar() {
         );
     }
 }
+
+#[test]
+fn reference_new_assignment_matches_direct_grammar_roles_and_lhs_locations() {
+    let inputs: Value =
+        serde_json::from_str(include_str!("fixtures/parser/reference-new-inputs.json")).unwrap();
+    let expected: Value =
+        serde_json::from_str(include_str!("fixtures/parser/reference-new-expected.json")).unwrap();
+    let root = Inputs::new();
+    let files = inputs
+        .as_object()
+        .unwrap()
+        .iter()
+        .map(|(name, code)| root.write(name, code.as_str().unwrap()))
+        .collect();
+    let mut project = Project::new(files, Vec::new());
+    project.php_version = 80500;
+    assert_eq!(errors(&project), expected["analysed"]["errors"]);
+}
+
+#[test]
+fn reference_new_assignment_collects_inner_argument_and_body_errors_before_outer_reduction() {
+    use pun_phpstan::{Array, Key, Value as Php};
+    let root = Inputs::new();
+    let file = root.write_source(
+        "order",
+        include_str!("fixtures/parser/reference-new-order.php"),
+    );
+    let mut project = Project::new(vec![file], Vec::new());
+    project.php_version = 80500;
+    project.reported = Some(std::sync::Arc::new(|_| false));
+    let mut entry = Array::new();
+    entry.set(Key::from("identifier"), Php::str("phpstan.parse"));
+    project.ignore_errors =
+        pun_phpstan::ignore::IgnoredErrors::new(&Array::list([Php::Array(entry)]), true);
+    let expected: Value =
+        serde_json::from_str(include_str!("fixtures/parser/reference-new-expected.json")).unwrap();
+    // Ignore messages retain reduction order, unlike sorted diagnostics. The invalid attribute and
+    // filtered rules also prove parser failure suppresses resolution without filtering severe errors.
+    assert_eq!(
+        json!(analyse_project(&project).unwrap().general),
+        expected["order"]["general"]
+    );
+    assert_eq!(errors(&project), expected["order"]["errors"]);
+}
+
+#[test]
+fn reference_new_assignment_rejects_whole_scanned_files_but_not_valid_neighbors() {
+    let inputs: Value =
+        serde_json::from_str(include_str!("fixtures/parser/reference-new-scans.json")).unwrap();
+    let expected: Value =
+        serde_json::from_str(include_str!("fixtures/parser/reference-new-expected.json")).unwrap();
+    for (name, code) in inputs.as_object().unwrap() {
+        let root = Inputs::new();
+        let main = root.write_source("main", include_str!("fixtures/parser/scan-main.php"));
+        let symbols = root.write("symbols", code.as_str().unwrap());
+        let mut project = Project::new(vec![main], vec![symbols]);
+        project.php_version = 80500;
+        assert_eq!(
+            errors(&project),
+            expected["scanned"][name]["errors"],
+            "{name}"
+        );
+    }
+}
+
+#[test]
+fn reference_new_assignment_version_boundary_comes_from_php_parser() {
+    let expected: Value =
+        serde_json::from_str(include_str!("fixtures/parser/reference-new-expected.json")).unwrap();
+    let root = Inputs::new();
+    let file = root.write("input", "$value =& new stdClass;");
+    for version in [70100, 70400, 80000, 80100, 80200, 80400, 80500] {
+        let mut project = Project::new(vec![file.clone()], Vec::new());
+        project.php_version = version;
+        assert_eq!(
+            errors(&project),
+            expected["versions"][version.to_string()]["errors"],
+            "PHP {version}"
+        );
+    }
+    // PHPStan's config excludes these versions, but its bundled public PhpParser factory accepts
+    // them. Those captures check the exact allowsAssignNewByReference boundary through Project.
+    for version in [50600, 70000] {
+        let mut project = Project::new(vec![file.clone()], Vec::new());
+        project.php_version = version;
+        let messages: Vec<_> = analyse_project(&project)
+            .unwrap()
+            .errors
+            .into_iter()
+            .map(|error| error.message)
+            .collect();
+        assert_eq!(
+            json!(messages),
+            expected["parserVersions"][version.to_string()],
+            "PHP {version}"
+        );
+    }
+}
+
+#[test]
+fn reference_new_assignment_does_not_translate_other_grammar_productions() {
+    let inputs: Value = serde_json::from_str(include_str!(
+        "fixtures/parser/reference-new-unsupported.json"
+    ))
+    .unwrap();
+    let upstream: Value =
+        serde_json::from_str(include_str!("fixtures/parser/reference-new-expected.json")).unwrap();
+    for (name, code) in inputs.as_object().unwrap() {
+        let root = Inputs::new();
+        let file = root.write("input", code.as_str().unwrap());
+        let mut project = Project::new(vec![file], Vec::new());
+        project.php_version = 80500;
+        // Permit captured grammar failures as they are ported, but not this production's semantic
+        // error. Assignment-rule errors on Mago's admitted trees remain a separate parity boundary.
+        let got = errors(&project);
+        let want = upstream["unsupported"][name]["errors"].as_array().unwrap();
+        assert!(
+            got.as_array()
+                .unwrap()
+                .iter()
+                .filter(|error| error["identifier"] == "phpstan.parse")
+                .all(|error| want.contains(error)),
+            "{name}: got {got}, broader upstream contract is {want:?}"
+        );
+    }
+}
