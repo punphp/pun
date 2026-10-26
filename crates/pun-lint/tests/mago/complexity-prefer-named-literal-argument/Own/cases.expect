@@ -1,0 +1,9 @@
+87 90 Literal argument `'a'` should be passed as a named argument for clarity.
+92 95 Literal argument `"b"` should be passed as a named argument for clarity.
+97 100 Literal argument `1.5` should be passed as a named argument for clarity.
+102 106 Literal argument `true` should be passed as a named argument for clarity.
+108 113 Literal argument `false` should be passed as a named argument for clarity.
+115 119 Literal argument `null` should be passed as a named argument for clarity.
+183 184 Literal argument `1` should be passed as a named argument for clarity.
+225 226 Literal argument `2` should be passed as a named argument for clarity.
+235 236 Literal argument `2` should be passed as a named argument for clarity.

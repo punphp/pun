@@ -1,0 +1,3 @@
+37 49 Direct instantiation of type `HttpService\Client` is disallowed.
+56 68 Direct instantiation of type `HttpService\Client` is disallowed.
+75 87 Direct instantiation of type `HttpService\Client` is disallowed.

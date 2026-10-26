@@ -1,0 +1,1 @@
+<?php function test($bad_snake_param) {}

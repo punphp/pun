@@ -1,0 +1,1 @@
+<?php $obj->SomeProp = 1; $$dynamic_Var = 2;

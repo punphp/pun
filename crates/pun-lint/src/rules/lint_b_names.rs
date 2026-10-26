@@ -184,6 +184,23 @@ pub fn function_call_matches_any<'n>(
     find(identifier.value()).or_else(|| find(&resolved))
 }
 
+/// mago-names' `is_imported` for a function name (`constant` false) or a constant name (`constant` true): an
+/// explicit rule (a leading `\`, `namespace\` or a `use function` / `use const` import) resolved it.
+pub fn is_imported(
+    ancestors: &[Node<'_, '_>],
+    identifier: &Identifier<'_>,
+    constant: bool,
+) -> bool {
+    let kind = if constant {
+        Kind::Const
+    } else {
+        Kind::Function
+    };
+    scope(ancestors, identifier.span().start.offset)
+        .resolve(kind, identifier.value())
+        .1
+}
+
 /// `function_call_matches` for one name.
 pub fn function_call_matches(
     ancestors: &[Node<'_, '_>],

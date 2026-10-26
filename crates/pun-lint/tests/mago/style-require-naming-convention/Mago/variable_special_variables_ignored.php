@@ -1,0 +1,1 @@
+<?php $this->foo = $_GET; $GLOBALS['x'] = 1; $argv = [];

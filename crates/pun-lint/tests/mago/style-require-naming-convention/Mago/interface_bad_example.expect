@@ -1,0 +1,3 @@
+17 28 Interface name `myInterface` should be in class case.
+42 54 Interface name `my_interface` should be in class case.
+68 80 Interface name `MY_INTERFACE` should be in class case.

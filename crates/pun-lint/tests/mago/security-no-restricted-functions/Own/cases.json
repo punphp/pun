@@ -1,0 +1,1 @@
+{"functions":["shell_exec",{"name":"Exec","help":"No."},{"name":"var_dump","level":"warn"}],"extensions":["curl",{"name":"CORE","help":"x","level":"note"}]}

@@ -1,0 +1,6 @@
+26 49 Avoid `elseif` clauses.
+50 73 Avoid `elseif` clauses.
+74 90 Avoid `else` clauses.
+108 128 Avoid `elseif` clauses.
+129 142 Avoid `else` clauses.
+190 210 Avoid `else` clauses.

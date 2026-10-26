@@ -1,0 +1,10 @@
+73 80 Class has high complexity.
+415 416 Method `m` has high complexity.
+832 839 Trait has high complexity.
+858 859 Method `m` has high complexity.
+901 907 Enum has high complexity.
+934 935 Method `m` has high complexity.
+986 991 Class has high complexity.
+1010 1011 Method `m` has high complexity.
+1059 1107 Closure has high complexity.
+1109 1158 Function has high complexity.

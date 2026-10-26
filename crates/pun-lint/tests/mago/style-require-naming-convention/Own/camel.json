@@ -1,0 +1,1 @@
+{"function-name": {"enabled": true, "camel": true}, "method-name": {"enabled": true, "camel": true}, "property-name": {"enabled": true, "camel": true}, "variable-name": {"enabled": true, "camel": true, "either": false}}

@@ -1,0 +1,1 @@
+{"function-name": {"enabled": true, "camel": false}, "method-name": {"enabled": true, "camel": false, "use-snake-case-for-tests": true}, "property-name": {"enabled": true, "camel": false}, "variable-name": {"enabled": true, "camel": false, "either": false, "check-parameters": false}}

@@ -1,0 +1,25 @@
+21 31 Class name `base_thing` should be in class case.
+40 50 Constant name `lowerConst` should be in constant case.
+68 78 Constant name `Mixed2Name` should be in constant case.
+177 179 Class name `_x` should be in class case.
+189 195 Class name `a😀b` should be in class case.
+209 217 Interface name `my_iface` should be in class case.
+226 227 Constant name `x` should be in constant case.
+287 295 Trait name `my_trait` should be in class case.
+338 345 Enum name `my_enum` should be in class case.
+354 355 Constant name `v` should be in constant case.
+380 385 Constant name `lower` should be in constant case.
+402 412 Constant name `Camel9Case` should be in constant case.
+427 436 Function name `camelCase` should be in snake case.
+476 485 Function name `Bad__Name` should be in snake case.
+542 553 Property name `$snake_prop` should be in camel case.
+555 564 Property name `$Bad_Prop` should be in camel case.
+609 625 Property name `$promotedSnake_x` should be in camel case.
+652 662 Variable name `$Bad_Param` should be in either camel case or snake case.
+724 736 Method name `snake_method` should be in camel case.
+801 815 Method name `test_something` should be in camel case.
+841 848 Method name `TestBig` should be in camel case.
+912 917 Method name `Ügly` should be in camel case.
+956 964 Variable name `$Bad_Var` should be in either camel case or snake case.
+1100 1114 Variable name `$Closure_Param` should be in either camel case or snake case.
+1128 1139 Variable name `$ArrowParam` should be in either camel case or snake case.

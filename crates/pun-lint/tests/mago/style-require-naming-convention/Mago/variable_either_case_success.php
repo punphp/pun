@@ -1,0 +1,1 @@
+<?php $snake_case = 1; $camelCase = 2;

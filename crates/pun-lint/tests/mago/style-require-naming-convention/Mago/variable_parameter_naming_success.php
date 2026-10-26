@@ -1,0 +1,1 @@
+<?php function test($valid_param, $another_one) {}
