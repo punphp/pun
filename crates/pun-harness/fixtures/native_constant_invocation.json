@@ -1,0 +1,660 @@
+{
+    "fixer": "native_constant_invocation",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\ConstantNotation\\NativeConstantInvocationFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/ConstantNotation/NativeConstantInvocationFixerTest.php",
+    "case_count": 59,
+    "tests": [
+        {
+            "method": "testInvalidConfiguration",
+            "params": [
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": null
+                },
+                {
+                    "name": "exceptionExpression",
+                    "type": "string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\ConstantNotation\\NativeConstantInvocationFixerTest",
+            "body": "    public function testInvalidConfiguration(array $configuration, string $exceptionExpression): void\n    {\n        $this->expectException(InvalidFixerConfigurationException::class);\n        $this->expectExceptionMessage($exceptionExpression);\n\n        $this->fixer->configure($configuration); // @phpstan-ignore argument.type\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideInvalidConfigurationCases",
+                    "key": "unknown configuration key",
+                    "args": [
+                        {
+                            "foo": "bar"
+                        },
+                        "[native_constant_invocation] Invalid configuration: The option \"foo\" does not exist."
+                    ]
+                },
+                {
+                    "provider": "provideInvalidConfigurationCases",
+                    "key": "invalid exclude configuration element - null",
+                    "args": [
+                        {
+                            "include": [
+                                null
+                            ]
+                        },
+                        "[native_constant_invocation] Invalid configuration: The option \"include\" with value array is expected to be of type \"string[]\", but one of the elements is of type \"null\"."
+                    ]
+                },
+                {
+                    "provider": "provideInvalidConfigurationCases",
+                    "key": "invalid exclude configuration element - false",
+                    "args": [
+                        {
+                            "include": [
+                                false
+                            ]
+                        },
+                        "[native_constant_invocation] Invalid configuration: The option \"include\" with value array is expected to be of type \"string[]\", but one of the elements is of type \"bool\"."
+                    ]
+                },
+                {
+                    "provider": "provideInvalidConfigurationCases",
+                    "key": "invalid exclude configuration element - true",
+                    "args": [
+                        {
+                            "include": [
+                                true
+                            ]
+                        },
+                        "[native_constant_invocation] Invalid configuration: The option \"include\" with value array is expected to be of type \"string[]\", but one of the elements is of type \"bool\"."
+                    ]
+                },
+                {
+                    "provider": "provideInvalidConfigurationCases",
+                    "key": "invalid exclude configuration element - int",
+                    "args": [
+                        {
+                            "include": [
+                                1
+                            ]
+                        },
+                        "[native_constant_invocation] Invalid configuration: The option \"include\" with value array is expected to be of type \"string[]\", but one of the elements is of type \"int\"."
+                    ]
+                },
+                {
+                    "provider": "provideInvalidConfigurationCases",
+                    "key": "invalid exclude configuration element - array",
+                    "args": [
+                        {
+                            "include": [
+                                []
+                            ]
+                        },
+                        "[native_constant_invocation] Invalid configuration: The option \"include\" with value array is expected to be of type \"string[]\", but one of the elements is of type \"array\"."
+                    ]
+                },
+                {
+                    "provider": "provideInvalidConfigurationCases",
+                    "key": "invalid exclude configuration element - float",
+                    "args": [
+                        {
+                            "include": [
+                                0.1
+                            ]
+                        },
+                        "[native_constant_invocation] Invalid configuration: The option \"include\" with value array is expected to be of type \"string[]\", but one of the elements is of type \"float\"."
+                    ]
+                },
+                {
+                    "provider": "provideInvalidConfigurationCases",
+                    "key": "invalid exclude configuration element - object",
+                    "args": [
+                        {
+                            "include": [
+                                {
+                                    "__class": "stdClass"
+                                }
+                            ]
+                        },
+                        "[native_constant_invocation] Invalid configuration: The option \"include\" with value array is expected to be of type \"string[]\", but one of the elements is of type \"stdClass\"."
+                    ]
+                },
+                {
+                    "provider": "provideInvalidConfigurationCases",
+                    "key": "invalid exclude configuration element - not-trimmed",
+                    "args": [
+                        {
+                            "include": [
+                                "  M_PI  "
+                            ]
+                        },
+                        "[native_constant_invocation] Invalid configuration: Each element must be a non-empty, trimmed string, got \"string\" instead."
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": []
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\ConstantNotation\\NativeConstantInvocationFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null, array $configuration = []): void\n    {\n        $this->fixer->configure($configuration);\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php var_dump(NULL, FALSE, TRUE, 1);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php echo CUSTOM_DEFINED_CONSTANT_123;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php echo m_pi; // Constant are case sensitive"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php namespace M_PI;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php namespace Foo; use M_PI;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php class M_PI {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php class Foo extends M_PI {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 7,
+                    "args": [
+                        "<?php class Foo implements M_PI {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 8,
+                    "args": [
+                        "<?php interface M_PI {};"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 9,
+                    "args": [
+                        "<?php trait M_PI {};"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 10,
+                    "args": [
+                        "<?php class Foo { const M_PI = 1; }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 11,
+                    "args": [
+                        "<?php class Foo { use M_PI; }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 12,
+                    "args": [
+                        "<?php class Foo { public $M_PI = 1; }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 13,
+                    "args": [
+                        "<?php class Foo { function M_PI($M_PI) {} }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 14,
+                    "args": [
+                        "<?php class Foo { function bar() { $M_PI = M_PI() + self::M_PI(); } }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 15,
+                    "args": [
+                        "<?php class Foo { function bar() { $this->M_PI(self::M_PI); } }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 16,
+                    "args": [
+                        "<?php namespace Foo; use Bar as M_PI;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 17,
+                    "args": [
+                        "<?php echo Foo\\M_PI\\Bar;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 18,
+                    "args": [
+                        "<?php M_PI::foo();"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 19,
+                    "args": [
+                        "<?php function x(M_PI $foo, M_PI &$bar, M_PI ...$baz) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 20,
+                    "args": [
+                        "<?php $foo instanceof M_PI;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 21,
+                    "args": [
+                        "<?php class x implements FOO, M_PI, BAZ {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 22,
+                    "args": [
+                        "<?php class Foo { use Bar, M_PI { Bar::baz insteadof M_PI; } }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 23,
+                    "args": [
+                        "<?php M_PI: goto M_PI;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 24,
+                    "args": [
+                        "<?php echo \\M_PI;",
+                        "<?php echo M_PI;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 25,
+                    "args": [
+                        "<?php namespace Foo; use M_PI; echo \\M_PI;",
+                        "<?php namespace Foo; use M_PI; echo M_PI;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 26,
+                    "args": [
+                        "<?php namespace M_PI; const M_PI = 1; return \\M_PI;",
+                        "<?php namespace M_PI; const M_PI = 1; return M_PI;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 27,
+                    "args": [
+                        "<?php foo(\\E_DEPRECATED | \\E_USER_DEPRECATED);",
+                        "<?php foo(E_DEPRECATED | E_USER_DEPRECATED);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 28,
+                    "args": [
+                        "<?php function foo(): M_PI {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 29,
+                    "args": [
+                        "<?php use X\\Y\\{FOO, BAR as BAR2, M_PI};"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 30,
+                    "args": [
+                        "<?php\ntry {\n    foo(\\JSON_ERROR_DEPTH|\\JSON_PRETTY_PRINT|JOB_QUEUE_PRIORITY_HIGH);\n} catch (\\Exception | \\InvalidArgumentException|\\UnexpectedValueException|LogicException $e) {\n}\n",
+                        "<?php\ntry {\n    foo(\\JSON_ERROR_DEPTH|JSON_PRETTY_PRINT|\\JOB_QUEUE_PRIORITY_HIGH);\n} catch (\\Exception | \\InvalidArgumentException|\\UnexpectedValueException|LogicException $e) {\n}\n"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 31,
+                    "args": [
+                        "<?php echo \\FOO_BAR_BAZ . \\M_PI;",
+                        "<?php echo FOO_BAR_BAZ . M_PI;",
+                        {
+                            "include": [
+                                "FOO_BAR_BAZ"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 32,
+                    "args": [
+                        "<?php class Foo { public function bar($foo) { return \\FOO_BAR_BAZ . \\M_PI; } }",
+                        "<?php class Foo { public function bar($foo) { return FOO_BAR_BAZ . M_PI; } }",
+                        {
+                            "include": [
+                                "FOO_BAR_BAZ"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 33,
+                    "args": [
+                        "<?php echo PHP_SAPI . FOO_BAR_BAZ . \\M_PI;",
+                        "<?php echo PHP_SAPI . FOO_BAR_BAZ . M_PI;",
+                        {
+                            "fix_built_in": false,
+                            "include": [
+                                "M_PI"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 34,
+                    "args": [
+                        "<?php class Foo { public function bar($foo) { return PHP_SAPI . FOO_BAR_BAZ . \\M_PI; } }",
+                        "<?php class Foo { public function bar($foo) { return PHP_SAPI . FOO_BAR_BAZ . M_PI; } }",
+                        {
+                            "fix_built_in": false,
+                            "include": [
+                                "M_PI"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 35,
+                    "args": [
+                        "<?php echo \\PHP_SAPI . M_PI;",
+                        "<?php echo PHP_SAPI . M_PI;",
+                        {
+                            "exclude": [
+                                "M_PI"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 36,
+                    "args": [
+                        "<?php class Foo { public function bar($foo) { return \\PHP_SAPI . M_PI; } }",
+                        "<?php class Foo { public function bar($foo) { return PHP_SAPI . M_PI; } }",
+                        {
+                            "exclude": [
+                                "M_PI"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "null true false are case insensitive",
+                    "args": [
+                        "<?php\nvar_dump(\n    \\null,\n    \\NULL,\n    \\Null,\n    \\nUlL,\n    \\false,\n    \\FALSE,\n    true,\n    TRUE,\n    \\M_PI,\n    \\M_pi,\n    m_pi,\n    m_PI\n);",
+                        "<?php\nvar_dump(\n    null,\n    NULL,\n    Null,\n    nUlL,\n    false,\n    FALSE,\n    true,\n    TRUE,\n    M_PI,\n    M_pi,\n    m_pi,\n    m_PI\n);",
+                        {
+                            "fix_built_in": false,
+                            "include": [
+                                "null",
+                                "false",
+                                "M_PI",
+                                "M_pi"
+                            ],
+                            "exclude": []
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "do not include user constants unless explicitly listed",
+                    "args": [
+                        "<?php\nvar_dump(\n    \\null,\n    DONTFIXME_PHPCSFIXER_TESTS_FIXER_CONSTANTNOTATION_NATIVECONSTANTINVOCATIONFIXERTEST6ADECF1AB762C,\n    \\FIXME_PHPCSFIXER_TESTS_FIXER_CONSTANTNOTATION_NATIVECONSTANTINVOCATIONFIXERTEST6ADECF1AB762C\n);",
+                        "<?php\nvar_dump(\n    null,\n    DONTFIXME_PHPCSFIXER_TESTS_FIXER_CONSTANTNOTATION_NATIVECONSTANTINVOCATIONFIXERTEST6ADECF1AB762C,\n    FIXME_PHPCSFIXER_TESTS_FIXER_CONSTANTNOTATION_NATIVECONSTANTINVOCATIONFIXERTEST6ADECF1AB762C\n);",
+                        {
+                            "fix_built_in": true,
+                            "include": [
+                                "FIXME_PHPCSFIXER_TESTS_FIXER_CONSTANTNOTATION_NATIVECONSTANTINVOCATIONFIXERTEST6ADECF1AB762C"
+                            ],
+                            "exclude": []
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "do not fix imported constants",
+                    "args": [
+                        "<?php\n\nnamespace Foo;\n\nuse const M_EULER;\n\nvar_dump(\n    null,\n    \\M_PI,\n    M_EULER\n);",
+                        "<?php\n\nnamespace Foo;\n\nuse const M_EULER;\n\nvar_dump(\n    null,\n    M_PI,\n    M_EULER\n);",
+                        {
+                            "fix_built_in": false,
+                            "include": [
+                                "M_PI",
+                                "M_EULER"
+                            ],
+                            "exclude": []
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "scoped only",
+                    "args": [
+                        "<?php\n\nnamespace space1 {\n    echo \\PHP_VERSION;\n}\nnamespace {\n    echo PHP_VERSION;\n}",
+                        "<?php\n\nnamespace space1 {\n    echo PHP_VERSION;\n}\nnamespace {\n    echo PHP_VERSION;\n}",
+                        {
+                            "scope": "namespaced"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "scoped only no namespace",
+                    "args": [
+                        "<?php\n\necho PHP_VERSION . PHP_EOL;",
+                        null,
+                        {
+                            "scope": "namespaced"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "strict option",
+                    "args": [
+                        "<?php\n                echo \\PHP_VERSION . \\PHP_EOL; // built-in constants to have backslash\n                echo MY_FRAMEWORK_MAJOR_VERSION . MY_FRAMEWORK_MINOR_VERSION; // non-built-in constants not to have backslash\n                echo \\Dont\\Touch\\Namespaced\\CONSTANT;\n            ",
+                        "<?php\n                echo \\PHP_VERSION . PHP_EOL; // built-in constants to have backslash\n                echo \\MY_FRAMEWORK_MAJOR_VERSION . MY_FRAMEWORK_MINOR_VERSION; // non-built-in constants not to have backslash\n                echo \\Dont\\Touch\\Namespaced\\CONSTANT;\n            ",
+                        {
+                            "strict": true
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix80",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.0.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\ConstantNotation\\NativeConstantInvocationFixerTest",
+            "body": "    public function testFix80(string $expected): void\n    {\n        $this->fixer->configure(['strict' => true]);\n        $this->doTest($expected);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 0,
+                    "args": [
+                        "<?php\n            try {\n            } catch (\\Exception) {\n            }"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 1,
+                    "args": [
+                        "<?php try { foo(); } catch(\\InvalidArgumentException|\\LogicException $e) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 2,
+                    "args": [
+                        "<?php try { foo(); } catch(\\InvalidArgumentException|\\LogicException) {}"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix81",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.1.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\ConstantNotation\\NativeConstantInvocationFixerTest",
+            "body": "    public function testFix81(string $expected): void\n    {\n        $this->fixer->configure(['strict' => true]);\n        $this->doTest($expected);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix81Cases",
+                    "key": 0,
+                    "args": [
+                        "<?php enum someEnum: int\n                {\n                    case E_ALL = 123;\n                }"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix82",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.2.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\ConstantNotation\\NativeConstantInvocationFixerTest",
+            "body": "    public function testFix82(string $expected): void\n    {\n        $this->fixer->configure(['strict' => true]);\n        $this->doTest($expected);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix82Cases",
+                    "key": 0,
+                    "args": [
+                        "<?php class Foo { public (\\A&B)|(C&\\D)|E\\F|\\G|(A&H\\I)|(A&\\J\\K) $var; }"
+                    ]
+                },
+                {
+                    "provider": "provideFix82Cases",
+                    "key": 1,
+                    "args": [
+                        "<?php function foo ((\\A&B)|(C&\\D)|E\\F|\\G|(A&H\\I)|(A&\\J\\K) $var) {}"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix83",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.3.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\ConstantNotation\\NativeConstantInvocationFixerTest",
+            "body": "    public function testFix83(string $expected, string $input): void\n    {\n        $this->fixer->configure(['strict' => true]);\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix83Cases",
+                    "key": 0,
+                    "args": [
+                        "<?php class Foo {\n                public const string C1 = \\PHP_EOL;\n                protected const string|int C2 = \\PHP_EOL;\n                private const string|(A&B) C3 = BAR;\n                public const EnumA C4 = EnumA::FOO;\n                private const array CONNECTION_TIMEOUT = ['foo'];\n            }",
+                        "<?php class Foo {\n                public const string C1 = PHP_EOL;\n                protected const string|int C2 = \\PHP_EOL;\n                private const string|(A&B) C3 = \\BAR;\n                public const EnumA C4 = EnumA::FOO;\n                private const array CONNECTION_TIMEOUT = ['foo'];\n            }"
+                    ]
+                }
+            ]
+        }
+    ]
+}

@@ -8859,7 +8859,7 @@
       "upstream": [
         "native_constant_invocation"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/performance/require-qualified-native-function",
@@ -8876,7 +8876,7 @@
       "upstream": [
         "native_function_invocation"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/pest/no-before-all-in-describe",

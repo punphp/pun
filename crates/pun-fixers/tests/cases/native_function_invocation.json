@@ -1,0 +1,91 @@
+[
+    {
+        "fixer": "native_function_invocation",
+        "config": {
+            "exclude": [
+                "  is_string  "
+            ]
+        },
+        "error": "[native_function_invocation] Invalid configuration: Each element must be a non-empty, trimmed string, got \"string\" instead."
+    },
+    {
+        "fixer": "native_function_invocation",
+        "config": {
+            "include": [
+                "@xxx"
+            ]
+        },
+        "error": "[native_function_invocation] Invalid configuration: Unknown set \"@xxx\", known sets are \"@all\", \"@internal\" and \"@compiler_optimized\"."
+    },
+    {
+        "fixer": "native_function_invocation",
+        "config": {
+            "include": [
+                " x "
+            ]
+        },
+        "error": "[native_function_invocation] Invalid configuration: Each element must be a non-empty, trimmed string, got \"string\" instead."
+    },
+    {
+        "fixer": "native_function_invocation",
+        "config": {
+            "exclude": [
+                1
+            ]
+        },
+        "error": "[native_function_invocation] Invalid configuration: The option \"exclude\" with value array is expected to be of type \"string[]\", but one of the elements is of type \"int\"."
+    },
+    {
+        "fixer": "native_function_invocation",
+        "config": {
+            "scope": "x"
+        },
+        "error": "[native_function_invocation] Invalid configuration: The option \"scope\" with value \"x\" is invalid. Accepted values are: \"all\", \"namespaced\"."
+    },
+    {
+        "fixer": "native_function_invocation",
+        "config": {
+            "scope": "namespaced"
+        },
+        "input": "<?php\nfunction f() { return \\strlen(x()) + \\foo() + is_int(1) + \\Bar\\baz(); }\nnamespace C;\n\\count(strlen(\"a\"));\n",
+        "expected": "<?php\nfunction f() { return \\strlen(x()) + \\foo() + is_int(1) + \\Bar\\baz(); }\nnamespace C;\n\\count(\\strlen(\"a\"));\n"
+    },
+    {
+        "fixer": "native_function_invocation",
+        "config": {
+            "include": [
+                "@all"
+            ],
+            "exclude": [
+                "Foo"
+            ]
+        },
+        "input": "<?php\nfunction f() { return \\strlen(x()) + \\foo() + is_int(1) + \\Bar\\baz(); }\nnamespace C;\n\\count(strlen(\"a\"));\n",
+        "expected": "<?php\nfunction f() { return \\strlen(\\x()) + foo() + \\is_int(1) + \\Bar\\baz(); }\nnamespace C;\n\\count(\\strlen(\"a\"));\n"
+    },
+    {
+        "fixer": "native_function_invocation",
+        "config": {
+            "include": [
+                "@internal",
+                "x"
+            ],
+            "strict": false
+        },
+        "input": "<?php\nfunction f() { return \\strlen(x()) + \\foo() + is_int(1) + \\Bar\\baz(); }\nnamespace C;\n\\count(strlen(\"a\"));\n",
+        "expected": "<?php\nfunction f() { return \\strlen(\\x()) + \\foo() + \\is_int(1) + \\Bar\\baz(); }\nnamespace C;\n\\count(\\strlen(\"a\"));\n"
+    },
+    {
+        "fixer": "native_function_invocation",
+        "config": {
+            "include": [
+                "x"
+            ],
+            "exclude": [
+                "x"
+            ]
+        },
+        "input": "<?php\nfunction f() { return \\strlen(x()) + \\foo() + is_int(1) + \\Bar\\baz(); }\nnamespace C;\n\\count(strlen(\"a\"));\n",
+        "expected": "<?php\nfunction f() { return strlen(x()) + foo() + is_int(1) + \\Bar\\baz(); }\nnamespace C;\ncount(strlen(\"a\"));\n"
+    }
+]

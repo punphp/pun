@@ -1,0 +1,67 @@
+[
+    {
+        "fixer": "native_constant_invocation",
+        "config": {
+            "include": [
+                "  M_PI  "
+            ]
+        },
+        "error": "[native_constant_invocation] Invalid configuration: Each element must be a non-empty, trimmed string, got \"string\" instead."
+    },
+    {
+        "fixer": "native_constant_invocation",
+        "config": {
+            "exclude": [
+                1
+            ]
+        },
+        "error": "[native_constant_invocation] Invalid configuration: The option \"exclude\" with value array is expected to be of type \"string[]\", but one of the elements is of type \"int\"."
+    },
+    {
+        "fixer": "native_constant_invocation",
+        "config": {
+            "fix_built_in": 1
+        },
+        "error": "[native_constant_invocation] Invalid configuration: The option \"fix_built_in\" with value 1 is expected to be of type \"bool\", but is of type \"int\"."
+    },
+    {
+        "fixer": "native_constant_invocation",
+        "config": {
+            "exclude": []
+        },
+        "input": "<?php\nnamespace A;\necho TRUE, null, M_PI, FOO, \\BAR, PHP_EOL;\n",
+        "expected": "<?php\nnamespace A;\necho \\TRUE, \\null, \\M_PI, FOO, BAR, \\PHP_EOL;\n"
+    },
+    {
+        "fixer": "native_constant_invocation",
+        "config": {
+            "fix_built_in": false,
+            "include": [
+                "FOO",
+                "True",
+                ""
+            ]
+        },
+        "input": "<?php\nnamespace A;\necho TRUE, null, M_PI, FOO, \\BAR, PHP_EOL;\n",
+        "expected": "<?php\nnamespace A;\necho TRUE, null, M_PI, \\FOO, BAR, PHP_EOL;\n"
+    },
+    {
+        "fixer": "native_constant_invocation",
+        "config": {
+            "strict": false,
+            "exclude": [
+                "M_PI"
+            ]
+        },
+        "input": "<?php\nnamespace A;\necho TRUE, null, M_PI, FOO, \\BAR, PHP_EOL;\n",
+        "expected": "<?php\nnamespace A;\necho \\TRUE, \\null, M_PI, FOO, \\BAR, \\PHP_EOL;\n"
+    },
+    {
+        "fixer": "native_constant_invocation",
+        "config": {
+            "scope": "namespaced"
+        },
+        "input": "<?php\necho \\M_PI;\nnamespace B;\nuse const Foo\\PHP_EOL;\necho M_PI, PHP_EOL, \\FOO;\n",
+        "expected": "<?php\necho \\M_PI;\nnamespace B;\nuse const Foo\\PHP_EOL;\necho \\M_PI, PHP_EOL, FOO;\n"
+    }
+]
