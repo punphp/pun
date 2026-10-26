@@ -12523,7 +12523,7 @@
         "rules": [
           "lint/phpunit/prefer-assert-count"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -12993,7 +12993,7 @@
         "rules": [
           "lint/phpunit/prefer-narrow-with-consecutive"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -13119,7 +13119,7 @@
         "rules": [
           "lint/phpunit/no-expects-any"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -13253,7 +13253,7 @@
         "rules": [
           "lint/phpunit/prefer-simple-mock-expectation"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -13361,7 +13361,7 @@
         "rules": [
           "lint/phpunit/prefer-specific-will-method"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -13371,7 +13371,7 @@
         "rules": [
           "lint/phpunit/prefer-simple-with-matcher"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {

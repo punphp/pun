@@ -8,10 +8,9 @@ use mago_syntax::cst::{Call, Expression, Node, NodeKind};
 use pun_problem::Safety;
 
 use super::{
-    AnyCall, NewArg, arg_value, is_test_case_call_named, old_args, renamed, report, rewrite_args,
-    text,
+    AnyCall, NewArg, arg_value, expr_name, is_test_case_call_named, old_args, renamed, report,
+    rewrite_args, text,
 };
-use crate::rules::rector_code_quality::named;
 use crate::syntax::unparenthesize;
 use crate::{Context, Report, Rule};
 
@@ -47,17 +46,34 @@ impl Rule for PreferAssertStringContains {
         let Some(first) = call.args().first().copied() else {
             return;
         };
-        let Expression::Call(Call::Function(strpos)) = unparenthesize(arg_value(first)) else {
-            return;
-        };
-        if !named(strpos, "strpos") && !named(strpos, "stripos") {
+        let value = unparenthesize(arg_value(first));
+        if matches!(
+            value,
+            Expression::Call(Call::Method(_) | Call::StaticMethod(_))
+        ) {
             return;
         }
-        let inner: Vec<_> = strpos.argument_list.arguments.iter().collect();
-        let (Some(haystack), Some(needle)) = (inner.first(), inner.get(1)) else {
+        let Some(function) = expr_name(value) else {
             return;
         };
+        if !function.eq_ignore_ascii_case(b"strpos") && !function.eq_ignore_ascii_case(b"stripos") {
+            return;
+        }
         let Some(name) = renamed(&call, RENAME) else {
+            return;
+        };
+        let Expression::Call(Call::Function(strpos)) = value else {
+            // Upstream renames the call before it finds no function call to take the arguments from.
+            out.push(report(
+                call.span,
+                &format!("Use `{name}()` instead of comparing `strpos()` with `false`."),
+                Safety::Safe,
+                vec![pun_problem::Edit::new(call.name_span(), name)],
+            ));
+            return;
+        };
+        let inner: Vec<_> = strpos.argument_list.arguments.iter().collect();
+        let (Some(haystack), Some(needle)) = (inner.first(), inner.get(1)) else {
             return;
         };
         out.push(report(

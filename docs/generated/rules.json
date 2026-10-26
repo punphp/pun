@@ -11329,7 +11329,7 @@
         "RemoveExpectAnyFromMock",
         "RemoveExpectAnyFromMockRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/phpunit/no-final-constructor-override",
@@ -11621,7 +11621,7 @@
         "AssertCompareOnCountableWithMethodToAssertCountRector",
         "Rector\\PHPUnit\\CodeQuality\\Rector\\MethodCall\\AssertCompareOnCountableWithMethodToAssertCountRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/phpunit/prefer-assert-instanceof",
@@ -12208,7 +12208,7 @@
         "NarrowIdenticalWithConsecutiveRector",
         "Rector\\PHPUnit\\CodeQuality\\Rector\\MethodCall\\NarrowIdenticalWithConsecutiveRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/phpunit/prefer-new-assertion-names",
@@ -12349,7 +12349,7 @@
         "SingleWithConsecutiveToWith",
         "SingleWithConsecutiveToWithRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/phpunit/prefer-simple-with-matcher",
@@ -12370,7 +12370,7 @@
         "UseSpecificWithMethod",
         "UseSpecificWithMethodRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/phpunit/prefer-specific-assertions",
@@ -12433,7 +12433,7 @@
         "UseSpecificWillMethod",
         "UseSpecificWillMethodRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/phpunit/prefer-standalone-asserts-over-callback",
