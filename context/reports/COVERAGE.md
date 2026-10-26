@@ -6,7 +6,7 @@
 | punphp | 5397 | 5397 | 100.00% | ok |
 | punphp-analyse | 39701 | 39701 | 100.00% | ok |
 | punphp-config | 2604 | 2604 | 100.00% | ok |
-| punphp-fixers | 34895 | 34895 | 100.00% | ok |
+| punphp-fixers | 36563 | 36563 | 100.00% | ok |
 | punphp-format | 1022 | 1022 | 100.00% | ok |
 | punphp-harness | 235 | 235 | 100.00% | ok |
 | punphp-lint | 21881 | 21881 | 100.00% | ok |
