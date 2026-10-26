@@ -466,16 +466,18 @@ fn accepts_reasons() {
 /// negative controls with checked mixed nested in generic arguments.
 #[test]
 fn generic_comparisons() {
-    use pun_phpstan::types::{StrictMixed, accepts, accepts_reasons};
+    use pun_phpstan::types::{StrictMixed, accepts_with, accepts_reasons};
     let fixture = fixture("generic-comparisons.json");
     let mut failures = Vec::new();
     for row in fixture.as_array().unwrap() {
         let a = resolve_str(row[0].as_str().unwrap(), None);
-        let b = resolve_str(row[1].as_str().unwrap(), None);
-        let b = if row[2].as_bool().unwrap() { StrictMixed { explicit: true, implicit: true }.transform(&b) } else { b };
+        let received = resolve_str(row[1].as_str().unwrap(), None);
+        let checked = row[2].as_bool().unwrap();
+        let flags = StrictMixed { explicit: checked, implicit: checked };
+        let b = flags.transform(&received);
         let got = serde_json::json!([
             row[0], row[1], row[2], format!("{:?}", is_super_type_of(&a, &b)),
-            format!("{:?}", accepts(&a, &b, true)), accepts_reasons(&a, &b, true, StrictMixed::default()),
+            format!("{:?}", accepts_with(&a, &received, true, flags)), accepts_reasons(&a, &received, true, flags),
         ]);
         if got != *row { failures.push(format!("expected {row}\nreceived {got}")); }
     }
