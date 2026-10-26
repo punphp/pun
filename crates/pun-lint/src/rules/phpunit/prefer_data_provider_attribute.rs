@@ -8,12 +8,12 @@
 //! the rule's group.
 
 use mago_syntax::cst::{
-    Access, AttributeList, ClassLikeConstantSelector, Expression, Identifier, Literal,
-    LiteralStringKind, Node, NodeKind, PartialArgument,
+    Access, AttributeList, ClassLikeConstantSelector, Expression, Identifier, Literal, Node,
+    NodeKind, PartialArgument,
 };
 use pun_problem::Safety;
 
-use super::annotations::{Annotated, TagValue, named_tags};
+use super::annotations::{Annotated, TagValue, map_item, named_tags};
 use super::{is_in_test_class, report};
 use crate::rules::prefer_absolute_include::print_string;
 use crate::rules::rector_batch5::resolve_class_name;
@@ -154,56 +154,6 @@ fn create_attribute_group(value: &str) -> String {
         map_item(&format!("{class_name}::class")),
         map_item(method_name)
     )
-}
-
-/// `AnnotationToAttributeMapper::map()` for a string item, printed: `Class::CONSTANT`
-/// (`ClassConstFetchAnnotationToAttributeMapper`), else a string (`StringAnnotationToAttributeMapper`, its outer
-/// `"` gone), double-quoted when it has a `'` and no line break (`NamedArgsFactory::normalizeStringDoubleQuote()`).
-fn map_item(value: &str) -> String {
-    if value.contains("::") && !value.starts_with('"') {
-        let parts: Vec<&str> = value.split("::").collect();
-        if let [class, constant] = parts[..]
-            && !class.is_empty()
-            && is_class_name(class.trim_start_matches('\\'))
-            && is_constant_name(constant)
-        {
-            return format!("{class}::{constant}");
-        }
-        return print_str(value);
-    }
-    let value = if value.starts_with('"') && value.ends_with('"') {
-        value.trim_matches('"')
-    } else {
-        value
-    };
-    print_str(value)
-}
-
-/// A `String_` as php-parser prints it, its kind as the mappers set it.
-fn print_str(value: &str) -> String {
-    let kind = if value.contains('\'') && !value.contains('\n') {
-        LiteralStringKind::DoubleQuoted
-    } else {
-        LiteralStringKind::SingleQuoted
-    };
-    print_string(kind, value.as_bytes()).unwrap_or_default()
-}
-
-/// `RectorAssert::className()`: `^[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*(\\[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)*$`.
-fn is_class_name(name: &str) -> bool {
-    name.split('\\').all(|part| is_name(part, 0x7f))
-}
-
-/// `RectorAssert::constantName()`: `^[a-zA-Z_\x80-\xff][a-zA-Z0-9_\x80-\xff]*$`.
-fn is_constant_name(name: &str) -> bool {
-    is_name(name, 0x80)
-}
-
-/// A name of letters, `_`, digits (not first) and bytes from `high` up.
-fn is_name(name: &str, high: u8) -> bool {
-    let b = name.as_bytes();
-    let letter = |c: u8| c.is_ascii_alphabetic() || c == b'_' || c >= high;
-    !b.is_empty() && letter(b[0]) && b[1..].iter().all(|&c| letter(c) || c.is_ascii_digit())
 }
 
 /// An attribute group as php-parser's printer gives it once php-parser's `NameResolver` has replaced its names, when

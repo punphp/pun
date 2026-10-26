@@ -13203,7 +13203,7 @@
         "rules": [
           "lint/phpunit/prefer-requires-attribute"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
