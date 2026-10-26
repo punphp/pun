@@ -14984,7 +14984,7 @@
       "upstream": [
         "comment_to_phpdoc"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/style/prefer-pow-operator",
@@ -17098,7 +17098,7 @@
         "strict-behavior",
         "strict_param"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "analyse/arrays/duplicate-array-key",

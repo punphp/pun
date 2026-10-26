@@ -265,7 +265,7 @@
         "rules": [
           "lint/style/prefer-phpdoc-comment"
         ],
-        "note": "Same. Options: renamed for TOML: [options.\"lint/style/prefer-phpdoc-comment\"]. Planned: not ported yet.",
+        "note": "Same. Options: renamed for TOML: [options.\"lint/style/prefer-phpdoc-comment\"].",
         "unsupported": false
       },
       {
@@ -2755,7 +2755,7 @@
         "rules": [
           "lint/types/require-strict-param"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -3251,7 +3251,7 @@
         "rules": [
           "lint/style/prefer-phpdoc-comment"
         ],
-        "note": "Same. Options: renamed for TOML: [options.\"lint/style/prefer-phpdoc-comment\"]. Planned: not ported yet.",
+        "note": "Same. Options: renamed for TOML: [options.\"lint/style/prefer-phpdoc-comment\"].",
         "unsupported": false
       },
       {
@@ -5741,7 +5741,7 @@
         "rules": [
           "lint/types/require-strict-param"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -26517,7 +26517,7 @@
         "rules": [
           "lint/types/require-strict-param"
         ],
-        "note": "Same. Options: none (Mago options do not carry; Pun uses the CS-Fixer rule options). Planned: not ported yet.",
+        "note": "Same. Options: none (Mago options do not carry; Pun uses the CS-Fixer rule options).",
         "unsupported": false
       },
       {
