@@ -848,7 +848,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "style/prefer-instanceof-stringable" = { fix = "none", sets = ["coding-style"], ported = true, origin = "mago", status = "decided", summary = "Detects the legacy pattern `is_object($x) && method_exists($x, '__toString')` and suggests" }
 "style/prefer-list-phpdoc" = { fix = "unsafe", ported = true, status = "decided", summary = "PHPDoc `list` type must be used instead of `array` without a key." }
 "style/prefer-php-version-id" = { fix = "safe", sets = ["coding-style"], ported = true, status = "decided", summary = "Changes use of call to version compare function to use of PHP version constant" }
-"style/prefer-phpdoc-comment" = { fix = "unsafe", ported = false, status = "decided", summary = "Comments with annotation should be docblock when used on structural elements." }
+"style/prefer-phpdoc-comment" = { fix = "unsafe", ported = true, status = "decided", summary = "Comments with annotation should be docblock when used on structural elements." }
 "style/prefer-pow-operator" = { fix = "unsafe", sets = ["modernize"], ported = true, status = "decided", summary = "Converts `pow` to the `**` operator." }
 "style/prefer-property-over-local-getter" = { fix = "unsafe", sets = ["privatization"], ported = true, status = "decided", summary = "Privatize getter of local property to property" }
 "style/prefer-random-int" = { fix = "unsafe", sets = ["modernize"], ported = true, status = "decided", summary = "Replaces `rand`, `srand`, `getrandmax` functions calls with their `mt_*` analogs or `random_int`." }
@@ -956,7 +956,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "types/prefer-instanceof" = { fix = "unsafe", sets = ["code-quality"], ported = false, status = "decided", summary = "Use instanceof instead of is_a(), null checks or truthiness checks on nullable objects." }
 "types/prefer-narrow-param-type" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Narrow an already nullable array_any()/array_all()/array_find()/array_find_key() closure param to the non-nullable array item type" }
 "types/prefer-specific-return-type" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Narrows return type from generic `object` or parent class to specific class in final classes/methods" }
-"types/require-strict-param" = { fix = "mixed", intent = "suspicious", sets = ["coding-style"], ported = false, status = "decided", summary = "Functions should be used with `$strict` param set to `true`.", note = "fix is safe where the haystack type is known (Rector StrictInArray/StrictArraySearch), unsafe otherwise (CS-Fixer strict_param)" }
+"types/require-strict-param" = { fix = "mixed", intent = "suspicious", sets = ["coding-style"], ported = true, status = "decided", summary = "Functions should be used with `$strict` param set to `true`.", note = "fix is safe where the haystack type is known (Rector StrictInArray/StrictArraySearch), unsafe otherwise (CS-Fixer strict_param)" }
 
 [rules.analyse]
 "arrays/duplicate-array-key" = { preset = "basic", fixed_by = ["lint/dead-code/no-duplicate-array-key"], status = "decided" }

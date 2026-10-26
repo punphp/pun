@@ -1,0 +1,203 @@
+{
+    "fixer": "strict_param",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\Strict\\StrictParamFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/Strict/StrictParamFixerTest.php",
+    "case_count": 23,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\Strict\\StrictParamFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php\n    in_array(1, $a, true);\n    in_array(1, $a, false);\n    in_array(1, $a, $useStrict);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php class Foo\n                {\n                    public function in_array($needle, $haystack) {}\n                }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php\n    in_array(1, $a, true);",
+                        "<?php\n    in_array(1, $a);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php\n    in_array(1, foo(), true);",
+                        "<?php\n    in_array(1, foo());"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php\n    in_array(1, array(1, 2, 3), true);",
+                        "<?php\n    in_array(1, array(1, 2, 3));"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php\n    in_array(1, [1, 2, 3], true);",
+                        "<?php\n    in_array(1, [1, 2, 3]);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php\n    in_array(in_array(1, [1, in_array(1, [1, 2, 3], true) ? 21 : 22, 3], true) ? 111 : 222, [1, in_array(1, [1, 2, 3], true) ? 21 : 22, 3], true);",
+                        "<?php\n    in_array(in_array(1, [1, in_array(1, [1, 2, 3]) ? 21 : 22, 3]) ? 111 : 222, [1, in_array(1, [1, 2, 3]) ? 21 : 22, 3]);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 7,
+                    "args": [
+                        "<?php\n    in_Array(1, $a, true);",
+                        "<?php\n    in_Array(1, $a);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 8,
+                    "args": [
+                        "<?php\n    base64_decode($foo, true);\n    base64_decode($foo, false);\n    base64_decode($foo, $useStrict);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 9,
+                    "args": [
+                        "<?php\n    base64_decode($foo, true);",
+                        "<?php\n    base64_decode($foo);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 10,
+                    "args": [
+                        "<?php\n    array_search($foo, $bar, true);\n    array_search($foo, $bar, false);\n    array_search($foo, $bar, $useStrict);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 11,
+                    "args": [
+                        "<?php\n    array_search($foo, $bar, true);",
+                        "<?php\n    array_search($foo, $bar);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 12,
+                    "args": [
+                        "<?php\n    array_keys($foo);\n    array_keys($foo, $bar, true);\n    array_keys($foo, $bar, false);\n    array_keys($foo, $bar, $useStrict);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 13,
+                    "args": [
+                        "<?php\n    array_keys($foo, $bar, true);",
+                        "<?php\n    array_keys($foo, $bar);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 14,
+                    "args": [
+                        "<?php\n    mb_detect_encoding($foo, $bar, true);\n    mb_detect_encoding($foo, $bar, false);\n    mb_detect_encoding($foo, $bar, $useStrict);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 15,
+                    "args": [
+                        "<?php\n    mb_detect_encoding($foo, mb_detect_order(), true);",
+                        "<?php\n    mb_detect_encoding($foo);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 16,
+                    "args": [
+                        "<?php\n    use function in_array;\n\n    class Foo\n    {\n        public function __construct($foo, $bar) {}\n    }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 17,
+                    "args": [
+                        "<?php\n    namespace Foo {\n        array_keys($foo, $bar, true);\n    }\n    namespace Bar {\n        use function Foo\\LoremIpsum;\n        array_keys($foo, $bar, true);\n    }",
+                        "<?php\n    namespace Foo {\n        array_keys($foo, $bar);\n    }\n    namespace Bar {\n        use function Foo\\LoremIpsum;\n        array_keys($foo, $bar);\n    }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 18,
+                    "args": [
+                        "<?php\n    use function \\base64_decode;\n    foo($bar);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 19,
+                    "args": [
+                        "<?php\n    use function Baz\\base64_decode;\n    foo($bar);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 20,
+                    "args": [
+                        "<?php\n    in_array(1, foo(), true /* 1 *//* 2 *//* 3 */);",
+                        "<?php\n    in_array(1, foo() /* 1 *//* 2 *//* 3 */);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 21,
+                    "args": [
+                        "<?php in_array($b, $c, true, );",
+                        "<?php in_array($b, $c, );"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 22,
+                    "args": [
+                        "<?php in_array($b, $c/* 0 *//* 1 */, true,/* 2 *//* 3 */);",
+                        "<?php in_array($b, $c/* 0 *//* 1 */,/* 2 *//* 3 */);"
+                    ]
+                }
+            ]
+        }
+    ]
+}

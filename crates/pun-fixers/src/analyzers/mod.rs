@@ -12,6 +12,7 @@ pub(crate) mod arguments_analyzer;
 pub(crate) mod attribute_analyzer;
 pub(crate) mod blocks_analyzer;
 pub(crate) mod classy_analyzer;
+pub(crate) mod comments_analyzer;
 pub(crate) mod constant_invocation;
 pub(crate) mod control_case_structures_analyzer;
 pub(crate) mod docblock;
