@@ -461,8 +461,6 @@
 4 Comparison/StrictComparisonOfDifferentTypesRuleTest::testBug14904
 4 Comparison/StrictComparisonOfDifferentTypesRuleTest::testBug8060
 4 Comparison/TernaryOperatorConstantConditionRuleTest::testBug3370
-# an-types: class constant values: `self::C` of a constant with a @var reads the @var type, not the value; generics.notGeneric is not reported
-2 Constants/ValueAssignedToClassConstantRuleTest::testRule
 # an-types: property writes: trait context, `already assigned`, WeakMap's template default, array offset and list values, generic declaring-class display, set-hook parameter types, accepts tips, @param-out values, clone with, constant/range types where Mago's differ
 3 Properties/ReadOnlyByPhpDocPropertyAssignRuleTest::testRule
 3 Properties/ReadOnlyByPhpDocPropertyAssignRuleTest::testFeature7648
