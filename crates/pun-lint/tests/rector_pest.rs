@@ -386,3 +386,51 @@ fn use_to_match_array() {
 fn use_sequence_matcher() {
     check(PreferSequence, "UseSequenceMatcherRector");
 }
+
+#[test]
+fn chain_expect_calls() {
+    check(PreferChainedExpect::default(), "ChainExpectCallsRector");
+}
+
+#[test]
+fn chain_expect_calls_without_merge_different_variables() {
+    let mut rule = PreferChainedExpect::default();
+    rule.configure(&serde_json::json!({ "merge-different-variables": false }))
+        .unwrap();
+    check(rule, "ChainExpectCallsRectorWithoutMergeDifferentVariables");
+}
+
+#[test]
+fn chain_expect_calls_and_use_to_be_empty() {
+    run_class(
+        vec![
+            Box::new(PreferChainedExpect::default()),
+            Box::new(PreferToBeEmpty),
+        ],
+        "ChainExpectCallsRectorAndUseToBeEmpty",
+    );
+}
+
+/// The plugin's tests/Rules/Conflicts: the rule with others that change the same statements.
+#[test]
+fn chain_expect_calls_and_matchers() {
+    run_class(
+        vec![
+            Box::new(PreferToHaveLength),
+            Box::new(PreferToHaveCount),
+            Box::new(PreferChainedExpect::default()),
+        ],
+        "ChainExpectCallsAndMatchers",
+    );
+}
+
+#[test]
+fn chain_expect_calls_and_use_each_modifier() {
+    run_class(
+        vec![
+            Box::new(PreferChainedExpect::default()),
+            Box::new(PreferEachModifier),
+        ],
+        "ChainExpectCallsAndUseEachModifier",
+    );
+}
