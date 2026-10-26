@@ -1,0 +1,501 @@
+{
+    "fixer": "void_return",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\FunctionNotation\\VoidReturnFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/FunctionNotation/VoidReturnFixerTest.php",
+    "case_count": 58,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": []
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\FunctionNotation\\VoidReturnFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null, array $configuration = []): void\n    {\n        $this->fixer->configure($configuration);\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php class Test { public function __construct() {} }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php class Test { public function __destruct() {} }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php class Test { public function __clone() {} }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php function foo($param) { return $param; }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php function foo($param) { return null; }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php function foo($param) { yield; }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php function foo($param) { yield $param; }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 7,
+                    "args": [
+                        "<?php function foo($param) { yield from test(); }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 8,
+                    "args": [
+                        "<?php function foo($param): Void {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 9,
+                    "args": [
+                        "<?php interface Test { public function foo($param); }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 10,
+                    "args": [
+                        "<?php function foo($param) { return function($a) use ($param): string {}; }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 11,
+                    "args": [
+                        "<?php abstract class Test { abstract public function foo($param); }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 12,
+                    "args": [
+                        "<?php use Foo\\ { function Bar }; function test() { return Bar(); }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 13,
+                    "args": [
+                        "<?php\n                /**\n                 * @return array\n                 */\n                function foo($param) {}\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 14,
+                    "args": [
+                        "<?php\n                interface Test {\n                    /**\n                     * @return array\n                     */\n                    public function foo($param);\n                }\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 15,
+                    "args": [
+                        "<?php function foo($param): void { return; }",
+                        "<?php function foo($param) { return; }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 16,
+                    "args": [
+                        "<?php function foo($param): void {}",
+                        "<?php function foo($param) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 17,
+                    "args": [
+                        "<?php class Test { public function foo($param): void { return; } }",
+                        "<?php class Test { public function foo($param) { return; } }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 18,
+                    "args": [
+                        "<?php class Test { public function foo($param): void {} }",
+                        "<?php class Test { public function foo($param) {} }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 19,
+                    "args": [
+                        "<?php trait Test { public function foo($param): void { return; } }",
+                        "<?php trait Test { public function foo($param) { return; } }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 20,
+                    "args": [
+                        "<?php trait Test { public function foo($param): void {} }",
+                        "<?php trait Test { public function foo($param) {} }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 21,
+                    "args": [
+                        "<?php $arr = []; usort($arr, function ($a, $b): void {});",
+                        "<?php $arr = []; usort($arr, function ($a, $b) {});"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 22,
+                    "args": [
+                        "<?php $arr = []; $param = 1; usort($arr, function ($a, $b) use ($param): void {});",
+                        "<?php $arr = []; $param = 1; usort($arr, function ($a, $b) use ($param) {});"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 23,
+                    "args": [
+                        "<?php function foo($param) { return function($a) use ($param): void {}; }",
+                        "<?php function foo($param) { return function($a) use ($param) {}; }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 24,
+                    "args": [
+                        "<?php function foo($param): void { $arr = []; usort($arr, function ($a, $b) use ($param): void {}); }",
+                        "<?php function foo($param) { $arr = []; usort($arr, function ($a, $b) use ($param) {}); }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 25,
+                    "args": [
+                        "<?php function foo() { $arr = []; return usort($arr, new class { public function __invoke($a, $b): void {} }); }",
+                        "<?php function foo() { $arr = []; return usort($arr, new class { public function __invoke($a, $b) {} }); }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 26,
+                    "args": [
+                        "<?php function foo(): void { $arr = []; usort($arr, new class { public function __invoke($a, $b): void {} }); }",
+                        "<?php function foo() { $arr = []; usort($arr, new class { public function __invoke($a, $b) {} }); }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 27,
+                    "args": [
+                        "<?php\n                function foo(): void {\n                    $a = function (): void {};\n                }",
+                        "<?php\n                function foo() {\n                    $a = function () {};\n                }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 28,
+                    "args": [
+                        "<?php\n                function foo(): void {\n                    (function (): void {\n                        return;\n                    })();\n                }",
+                        "<?php\n                function foo() {\n                    (function () {\n                        return;\n                    })();\n                }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 29,
+                    "args": [
+                        "<?php\n                function foo(): void {\n                    (function () {\n                        return 1;\n                    })();\n                }",
+                        "<?php\n                function foo() {\n                    (function () {\n                        return 1;\n                    })();\n                }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 30,
+                    "args": [
+                        "<?php\n                function foo(): void {\n                    $b = new class {\n                        public function b1(): void {}\n                        public function b2() { return 2; }\n                    };\n                }",
+                        "<?php\n                function foo() {\n                    $b = new class {\n                        public function b1() {}\n                        public function b2() { return 2; }\n                    };\n                }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 31,
+                    "args": [
+                        "<?php\n                /**\n                 * @return void\n                 */\n                function foo($param): void {}",
+                        "<?php\n                /**\n                 * @return void\n                 */\n                function foo($param) {}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 32,
+                    "args": [
+                        "<?php\n                interface Test {\n                    /**\n                     * @return void\n                     */\n                    public function foo($param): void;\n                }",
+                        "<?php\n                interface Test {\n                    /**\n                     * @return void\n                     */\n                    public function foo($param);\n                }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 33,
+                    "args": [
+                        "<?php\n                abstract class Test {\n                    /**\n                     * @return void\n                     */\n                    abstract protected function foo($param): void;\n                }",
+                        "<?php\n                abstract class Test {\n                    /**\n                     * @return void\n                     */\n                    abstract protected function foo($param);\n                }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 34,
+                    "args": [
+                        "<?php fn($a) => null;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 35,
+                    "args": [
+                        "<?php fn($a) => 1;"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 36,
+                    "args": [
+                        "<?php fn($a) => var_dump($a);"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 37,
+                    "args": [
+                        "<?php\n\nclass Foo\n{\n    public function hello(): void\n    {\n        $hello = function($a): void { echo 'Hello '.$a; };\n        echo $hello('World');\n    }\n}",
+                        "<?php\n\nclass Foo\n{\n    public function hello()\n    {\n        $hello = function($a) { echo 'Hello '.$a; };\n        echo $hello('World');\n    }\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 38,
+                    "args": [
+                        "<?php\n\nclass Foo\n{\n    public function hello(): void\n    {\n        $hello = function($a) { echo 'Hello '.$a; };\n        echo $hello('World');\n    }\n}",
+                        "<?php\n\nclass Foo\n{\n    public function hello()\n    {\n        $hello = function($a) { echo 'Hello '.$a; };\n        echo $hello('World');\n    }\n}",
+                        {
+                            "fix_lambda": false
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Test if magic method __construct is handled without causing syntax error",
+                    "args": [
+                        "<?php class Test { public function __construct() {} }",
+                        null
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Test if magic method __destruct is handled without causing syntax error",
+                    "args": [
+                        "<?php class Test { public function __destruct() {} }",
+                        null
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Test if magic method __call is handled without causing syntax error",
+                    "args": [
+                        "<?php class Test { public function __call($x0,$x1): void {} }",
+                        "<?php class Test { public function __call($x0,$x1) {} }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Test if magic method __callStatic is handled without causing syntax error",
+                    "args": [
+                        "<?php class Test { public static function __callStatic($x0,$x1): void {} }",
+                        "<?php class Test { public static function __callStatic($x0,$x1) {} }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Test if magic method __get is handled without causing syntax error",
+                    "args": [
+                        "<?php class Test { public function __get($x0): void {} }",
+                        "<?php class Test { public function __get($x0) {} }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Test if magic method __set is handled without causing syntax error",
+                    "args": [
+                        "<?php class Test { public function __set($x0,$x1): void {} }",
+                        "<?php class Test { public function __set($x0,$x1) {} }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Test if magic method __isset is handled without causing syntax error",
+                    "args": [
+                        "<?php class Test { public function __isset($x0) {} }",
+                        null
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Test if magic method __unset is handled without causing syntax error",
+                    "args": [
+                        "<?php class Test { public function __unset($x0): void {} }",
+                        "<?php class Test { public function __unset($x0) {} }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Test if magic method __sleep is handled without causing syntax error",
+                    "args": [
+                        "<?php class Test { public function __sleep() {} }",
+                        null
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Test if magic method __wakeup is handled without causing syntax error",
+                    "args": [
+                        "<?php class Test { public function __wakeup(): void {} }",
+                        "<?php class Test { public function __wakeup() {} }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Test if magic method __serialize is handled without causing syntax error",
+                    "args": [
+                        "<?php class Test { public function __serialize() {} }",
+                        null
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Test if magic method __unserialize is handled without causing syntax error",
+                    "args": [
+                        "<?php class Test { public function __unserialize($x0): void {} }",
+                        "<?php class Test { public function __unserialize($x0) {} }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Test if magic method __toString is handled without causing syntax error",
+                    "args": [
+                        "<?php class Test { public function __toString() {} }",
+                        null
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Test if magic method __invoke is handled without causing syntax error",
+                    "args": [
+                        "<?php class Test { public function __invoke(): void {} }",
+                        "<?php class Test { public function __invoke() {} }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Test if magic method __set_state is handled without causing syntax error",
+                    "args": [
+                        "<?php class Test { public static function __set_state($x0) {} }",
+                        null
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Test if magic method __clone is handled without causing syntax error",
+                    "args": [
+                        "<?php class Test { public function __clone() {} }",
+                        null
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Test if magic method __debugInfo is handled without causing syntax error",
+                    "args": [
+                        "<?php class Test { public function __debugInfo() {} }",
+                        null
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix80",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.0.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\FunctionNotation\\VoidReturnFixerTest",
+            "body": "    public function testFix80(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 0,
+                    "args": [
+                        "<?php\n\n            class Foo\n            {\n                /**\n                 * @return int|false\n                 */\n                #[\\ReturnTypeWillChange]\n                public function test() {}\n            }\n            "
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 1,
+                    "args": [
+                        "<?php\n\n            /**\n             * @return void\n             */\n            #[\\Deprecated]\n            function test(): void {};\n            ",
+                        "<?php\n\n            /**\n             * @return void\n             */\n            #[\\Deprecated]\n            function test() {};\n            "
+                    ]
+                }
+            ]
+        }
+    ]
+}
