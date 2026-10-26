@@ -11579,7 +11579,7 @@
         "AssertFuncCallToPHPUnitAssertRector",
         "Rector\\PHPUnit\\CodeQuality\\Rector\\FuncCall\\AssertFuncCallToPHPUnitAssertRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/phpunit/prefer-assert-array-has-key",

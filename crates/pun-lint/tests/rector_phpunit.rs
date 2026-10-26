@@ -317,3 +317,8 @@ fn narrow_single_will_return_callback() {
         "NarrowSingleWillReturnCallbackRector",
     );
 }
+
+#[test]
+fn assert_func_call_to_p_h_p_unit_assert() {
+    check(PreferAssert, "AssertFuncCallToPHPUnitAssertRector");
+}
