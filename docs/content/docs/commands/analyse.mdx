@@ -36,6 +36,9 @@ Static calls check PHPDoc `@method` signatures, including inherited tags. Pun ch
 Failed named instance and static method lookups retain PHPStan's error type when no reflected or provider result exists.
 Ordinary method calls retain unknown-class diagnostics and their discovery tips. Dynamic selectors and `method_exists()` assertions retain their separate fallback behavior.
 
+Unresolved named function calls retain PHPStan's error type after argument evaluation, including inside `function_exists()` guards.
+Dynamic callable result inference remains incomplete.
+
 Argument-count checks distinguish empty arrays from non-empty open array shapes passed with `...`.
 
 When argument type checks are enabled, calls respect `@no-named-arguments` on functions, methods and constructors, including inherited policies. Named arguments and string-keyed unpacking produce PHPStan's `argument.named` diagnostic after argument binding. Unknown arguments retain their binding diagnostics.
@@ -84,6 +87,9 @@ Trailing commas in `for` clauses and echo lists report a parser error at the com
 Empty array elements report parser errors after namespace checks. Parser checks permit omitted destructuring targets, including nested array targets.
 Named classes and direct anonymous-class expressions respect pre-8.1 `readonly` tokenization.
 Heredoc and nowdoc closing markers cannot mix tabs and spaces, regardless of the configured PHP target version.
+Document bodies validate indentation before escape decoding.
+Fatal Unicode escape errors stop later parser reductions; malformed escapes remain nonfatal.
+Parser diagnostic locations preserve PHP's string-escape newline accounting.
 Invalid files contribute no scanned symbols; command output contains only the severe parser errors.
 General PHP syntax-error translation remains incomplete.
 
