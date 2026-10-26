@@ -1,0 +1,202 @@
+{
+    "fixer": "php_unit_namespaced",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\PhpUnit\\PhpUnitNamespacedFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/PhpUnit/PhpUnitNamespacedFixerTest.php",
+    "case_count": 18,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": []
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\PhpUnit\\PhpUnitNamespacedFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null, array $configuration = []): void\n    {\n        $this->fixer->configure($configuration);\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": "class_mapping",
+                    "args": [
+                        "<?php new PHPUnit\\Framework\\Error\\Error();",
+                        "<?php new PHPUnit_Framework_Error();"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "class_mapping_bogus_fqcn",
+                    "args": [
+                        "<?php new \\PHPUnit\\Framework\\MockObject\\Stub\\ReturnStub();",
+                        "<?php new \\PHPUnit_Framework_MockObject_Stub_Return();"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "class_mapping_bogus_fqcn_lowercase",
+                    "args": [
+                        "<?php new \\PHPUnit\\Framework\\MockObject\\Stub\\ReturnStub();",
+                        "<?php new \\phpunit_framework_mockobject_stub_return();"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "class_mapping_bogus_fqcn_uppercase",
+                    "args": [
+                        "<?php new \\PHPUnit\\Framework\\MockObject\\Stub\\ReturnStub();",
+                        "<?php new \\PHPUNIT_FRAMEWORK_MOCKOBJECT_STUB_RETURN();"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php\n    final class MyTest extends \\PHPUnit\\Framework\\TestCase\n    {\n    }",
+                        "<?php\n    final class MyTest extends \\PHPUnit_Framework_TestCase\n    {\n    }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php\n    final class TextDiffTest extends PHPUnit\\Framework\\TestCase\n    {\n    }",
+                        "<?php\n    final class TextDiffTest extends PHPUnit_Framework_TestCase\n    {\n    }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php\n    use \\PHPUnit\\Framework\\TestCase;\n    final class TextDiffTest extends TestCase\n    {\n    }",
+                        "<?php\n    use \\PHPUnit_Framework_TestCase;\n    final class TextDiffTest extends PHPUnit_Framework_TestCase\n    {\n    }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php\n    use \\PHPUnit\\FRAMEWORK\\TestCase as TestAlias;\n    final class TextDiffTest extends TestAlias\n    {\n    }",
+                        "<?php\n    use \\PHPUnit_FRAMEWORK_TestCase as TestAlias;\n    final class TextDiffTest extends TestAlias\n    {\n    }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php\n    namespace Foo;\n    use PHPUnit\\Framework\\TestCase;\n    final class TextDiffTest extends TestCase\n    {\n    }",
+                        "<?php\n    namespace Foo;\n    use PHPUnit_Framework_TestCase;\n    final class TextDiffTest extends PHPUnit_Framework_TestCase\n    {\n    }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php\n    namespace Foo;\n    use PHPUnit\\Framework\\TestCase as TestAlias;\n    final class TextDiffTest extends TestAlias\n    {\n    }",
+                        "<?php\n    namespace Foo;\n    use PHPUnit_Framework_TestCase as TestAlias;\n    final class TextDiffTest extends TestAlias\n    {\n    }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php\n    final class MyTest extends \\PHPUnit\\Framework\\TestCase\n    {\n        public function aaa()\n        {\n            $a = new PHPUnit_Framework_Assert();\n            $b = new PHPUnit_Framework_BaseTestListener();\n            $c = new PHPUnit_Framework_TestListener();\n\n            $d1 = new PHPUnit_Aaa();\n            $d2 = new PHPUnit_Aaa_Bbb();\n            $d3 = new PHPUnit_Aaa_Bbb_Ccc();\n            $d4 = new PHPUnit_Aaa_Bbb_Ccc_Ddd();\n            $d5 = new PHPUnit_Aaa_Bbb_Ccc_Ddd_Eee();\n        }\n    }",
+                        "<?php\n    final class MyTest extends \\PHPUnit_Framework_TestCase\n    {\n        public function aaa()\n        {\n            $a = new PHPUnit_Framework_Assert();\n            $b = new PHPUnit_Framework_BaseTestListener();\n            $c = new PHPUnit_Framework_TestListener();\n\n            $d1 = new PHPUnit_Aaa();\n            $d2 = new PHPUnit_Aaa_Bbb();\n            $d3 = new PHPUnit_Aaa_Bbb_Ccc();\n            $d4 = new PHPUnit_Aaa_Bbb_Ccc_Ddd();\n            $d5 = new PHPUnit_Aaa_Bbb_Ccc_Ddd_Eee();\n        }\n    }",
+                        {
+                            "target": "4.8"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 7,
+                    "args": [
+                        "<?php\n    final class MyTest extends \\PHPUnit\\Framework\\TestCase\n    {\n        public function aaa()\n        {\n            $a = new PHPUnit\\Framework\\Assert();\n            $b = new PHPUnit\\Framework\\BaseTestListener();\n            $c = new PHPUnit\\Framework\\TestListener();\n\n            $d1 = new PHPUnit_Aaa();\n            $d2 = new PHPUnit_Aaa_Bbb();\n            $d3 = new PHPUnit_Aaa_Bbb_Ccc();\n            $d4 = new PHPUnit_Aaa_Bbb_Ccc_Ddd();\n            $d5 = new PHPUnit_Aaa_Bbb_Ccc_Ddd_Eee();\n        }\n    }",
+                        "<?php\n    final class MyTest extends \\PHPUnit_Framework_TestCase\n    {\n        public function aaa()\n        {\n            $a = new PHPUnit_Framework_Assert();\n            $b = new PHPUnit_Framework_BaseTestListener();\n            $c = new PHPUnit_Framework_TestListener();\n\n            $d1 = new PHPUnit_Aaa();\n            $d2 = new PHPUnit_Aaa_Bbb();\n            $d3 = new PHPUnit_Aaa_Bbb_Ccc();\n            $d4 = new PHPUnit_Aaa_Bbb_Ccc_Ddd();\n            $d5 = new PHPUnit_Aaa_Bbb_Ccc_Ddd_Eee();\n        }\n    }",
+                        {
+                            "target": "5.7"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 8,
+                    "args": [
+                        "<?php\n    final class MyTest extends \\PHPUnit\\Framework\\TestCase\n    {\n        public function aaa()\n        {\n            $a = new PHPUnit\\Framework\\Assert();\n            $b = new PHPUnit\\Framework\\BaseTestListener();\n            $c = new PHPUnit\\Framework\\TestListener();\n\n            $d1 = new PHPUnit\\Aaa();\n            $d2 = new PHPUnit\\Aaa\\Bbb();\n            $d3 = new PHPUnit\\Aaa\\Bbb\\Ccc();\n            $d4 = new PHPUnit\\Aaa\\Bbb\\Ccc\\Ddd();\n            $d5 = new PHPUnit\\Aaa\\Bbb\\Ccc\\Ddd\\Eee();\n        }\n    }",
+                        "<?php\n    final class MyTest extends \\PHPUnit_Framework_TestCase\n    {\n        public function aaa()\n        {\n            $a = new PHPUnit_Framework_Assert();\n            $b = new PHPUnit_Framework_BaseTestListener();\n            $c = new PHPUnit_Framework_TestListener();\n\n            $d1 = new PHPUnit_Aaa();\n            $d2 = new PHPUnit_Aaa_Bbb();\n            $d3 = new PHPUnit_Aaa_Bbb_Ccc();\n            $d4 = new PHPUnit_Aaa_Bbb_Ccc_Ddd();\n            $d5 = new PHPUnit_Aaa_Bbb_Ccc_Ddd_Eee();\n        }\n    }",
+                        {
+                            "target": "6.0"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 9,
+                    "args": [
+                        "<?php\n                    echo \\PHPUnit\\Runner\\Version::id();\n                    echo \\PHPUnit\\Runner\\Version::id();\n                    ",
+                        "<?php\n                    echo \\PHPUnit_Runner_Version::id();\n                    echo \\PHPUnit_Runner_Version::id();\n                    "
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 10,
+                    "args": [
+                        "<?php\n                final class MyTest extends TestCase\n                {\n                    const PHPUNIT_FOO = \"foo\";\n                }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 11,
+                    "args": [
+                        "<?php\n                final class MyTest extends TestCase\n                {\n                    const FOO = Bar::PHPUNIT_FOO;\n                }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 12,
+                    "args": [
+                        "<?php\n\n                define('PHPUNIT_COMPOSER_INSTALL', dirname(__DIR__).'/vendor/autoload.php');\n                require PHPUNIT_COMPOSER_INSTALL;"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix81",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.1.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\PhpUnit\\PhpUnitNamespacedFixerTest",
+            "body": "    public function testFix81(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix81Cases",
+                    "key": 0,
+                    "args": [
+                        "<?php\n                final class MyTest extends TestCase\n                {\n                    final public const PHPUNIT_FOO_A = \"foo\";\n                    final public const PHPUNIT_FOO_B = Bar::PHPUNIT_FOO;\n                }"
+                    ]
+                }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,23 @@
+[
+    {
+        "fixer": "php_unit_namespaced",
+        "input": "<?php\nuse \\PHPUnit_Framework_Assert;\nuse PHPUnit_Util_XML;\nclass FooTest extends PHPUnit_Framework_Assert {\n    const PHPUnit_Foo = 1;\n    public function testA() {\n        PHPUnit_Framework_Assert::assertTrue(Foo::PHPUnit_Bar);\n        new PHPUnit_Util_XML();\n        new \\phpunit_util_regex();\n        $x = new PHPUnit_Framework_TestListener();\n        phpunit_foo_bar();\n    }\n}\n",
+        "expected": "<?php\nuse \\PHPUnit\\Framework\\Assert;\nuse PHPUnit\\Util\\Xml;\nclass FooTest extends Assert {\n    const PHPUnit_Foo = 1;\n    public function testA() {\n        Assert::assertTrue(Foo::PHPUnit_Bar);\n        new Xml();\n        new \\PHPUnit\\Util\\RegularExpression();\n        $x = new PHPUnit\\Framework\\TestListener();\n        phpunit_foo_bar();\n    }\n}\n"
+    },
+    {
+        "fixer": "php_unit_namespaced",
+        "config": {
+            "target": "5.7"
+        },
+        "input": "<?php\nuse \\PHPUnit_Framework_Assert;\nuse PHPUnit_Util_XML;\nclass FooTest extends PHPUnit_Framework_Assert {\n    const PHPUnit_Foo = 1;\n    public function testA() {\n        PHPUnit_Framework_Assert::assertTrue(Foo::PHPUnit_Bar);\n        new PHPUnit_Util_XML();\n        new \\phpunit_util_regex();\n        $x = new PHPUnit_Framework_TestListener();\n        phpunit_foo_bar();\n    }\n}\n",
+        "expected": "<?php\nuse \\PHPUnit\\Framework\\Assert;\nuse PHPUnit_Util_XML;\nclass FooTest extends Assert {\n    const PHPUnit_Foo = 1;\n    public function testA() {\n        Assert::assertTrue(Foo::PHPUnit_Bar);\n        new PHPUnit_Util_XML();\n        new \\phpunit_util_regex();\n        $x = new PHPUnit\\Framework\\TestListener();\n        phpunit_foo_bar();\n    }\n}\n"
+    },
+    {
+        "fixer": "php_unit_namespaced",
+        "config": {
+            "target": "4.8"
+        },
+        "input": "<?php\nuse \\PHPUnit_Framework_Assert;\nuse PHPUnit_Util_XML;\nclass FooTest extends PHPUnit_Framework_Assert {\n    const PHPUnit_Foo = 1;\n    public function testA() {\n        PHPUnit_Framework_Assert::assertTrue(Foo::PHPUnit_Bar);\n        new PHPUnit_Util_XML();\n        new \\phpunit_util_regex();\n        $x = new PHPUnit_Framework_TestListener();\n        phpunit_foo_bar();\n    }\n}\n",
+        "expected": "<?php\nuse \\PHPUnit_Framework_Assert;\nuse PHPUnit_Util_XML;\nclass FooTest extends PHPUnit_Framework_Assert {\n    const PHPUnit_Foo = 1;\n    public function testA() {\n        PHPUnit_Framework_Assert::assertTrue(Foo::PHPUnit_Bar);\n        new PHPUnit_Util_XML();\n        new \\phpunit_util_regex();\n        $x = new PHPUnit_Framework_TestListener();\n        phpunit_foo_bar();\n    }\n}\n"
+    }
+]
