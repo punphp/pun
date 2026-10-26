@@ -381,6 +381,8 @@ fn with_callback_identical_to_standalone_asserts() {
 #[test]
 fn ticket_annotation_to_attribute() {
     // Pun/inline_tag: phpdoc-parser ends a generic tag's value at a further `@tag` inside its line and keeps that tag
-    // in the doc; Pun leaves such a doc alone.
+    // in the doc; Pun leaves such a doc alone. Pun/unclosed_bracket: a generic tag whose brackets do not close takes
+    // in the generic tags after it (`DoctrineAnnotationDecorator::mergeNestedDoctrineAnnotations()`), and Rector then
+    // prints their text twice; Pun leaves such a doc alone.
     check(PreferTicketAttribute, "TicketAnnotationToAttributeRector");
 }
