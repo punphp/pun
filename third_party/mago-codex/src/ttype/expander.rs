@@ -13,6 +13,7 @@ use crate::identifier::function_like::FunctionLikeIdentifier;
 use crate::identifier::method::MethodIdentifier;
 use crate::metadata::CodebaseMetadata;
 use crate::metadata::class_like::ClassLikeMetadata;
+use crate::metadata::class_like_constant::ClassLikeConstantMetadata;
 use crate::metadata::function_like::FunctionLikeMetadata;
 use crate::ttype::TType;
 use crate::ttype::TypeRef;
@@ -166,6 +167,9 @@ pub struct TypeExpansionOptions {
     pub allow_mixin_static_rebind: bool,
     /// Keep operators that depend on call arguments while binding their class-relative types.
     pub preserve_parameter_dependencies: bool,
+    /// InitializerExprTypeResolver creates bare object identities, including literal self/parent/static.
+    /// Their names and omitted arguments are values, not declaration types to instantiate.
+    pub preserve_initializer_object_identity: bool,
 }
 
 /// Expands a type union, resolving special types like `self`, `static`, `parent`,
@@ -176,6 +180,31 @@ pub fn expand_union(codebase: &CodebaseMetadata, return_type: &mut TUnion, optio
     }
 
     expand_union_inner(codebase, return_type, options);
+}
+
+/// Select the raw initializer or effective declaration before expanding its references.
+pub fn expand_class_constant_value(
+    codebase: &CodebaseMetadata,
+    constant: &ClassLikeConstantMetadata,
+    late_bound: bool,
+    options: &TypeExpansionOptions,
+) -> TUnion {
+    let mut value = constant.value_type(late_bound);
+    let options = TypeExpansionOptions {
+        preserve_initializer_object_identity: constant.inferred_type.is_some()
+            && (!late_bound || (constant.type_metadata.is_none() && constant.flags.is_final())),
+        ..options.clone()
+    };
+    expand_union(codebase, &mut value, &options);
+    value
+}
+
+/// Fill omitted arguments on a temporary member-lookup receiver, not the stored initializer.
+pub fn specialize_named_object_for_member_lookup(codebase: &CodebaseMetadata, object: &mut TNamedObject) {
+    if object.type_parameters.is_none() && !object.is_static && !object.is_this {
+        let metadata = codebase.get_class_like_by_name(object.name);
+        expand_or_fill_type_parameters(object, metadata, codebase, &TypeExpansionOptions::default());
+    }
 }
 
 fn expand_shared_union(codebase: &CodebaseMetadata, return_type: &mut Arc<TUnion>, options: &TypeExpansionOptions) {
@@ -268,6 +297,11 @@ pub(crate) fn expand_atomic(
             }
         },
         TAtomic::Object(object) => {
+            if options.preserve_initializer_object_identity
+                && matches!(object, TObject::Named(named) if named.type_parameters.is_none())
+            {
+                return;
+            }
             if let Some(parameter) = resolve_generic_static_type(object, codebase, options) {
                 *skip_key = true;
                 new_return_type_parts.push(TAtomic::GenericParameter(parameter));
@@ -531,6 +565,8 @@ fn expand_member_reference(
     options: &TypeExpansionOptions,
     new_return_type_parts: &mut Vec<TAtomic>,
 ) {
+    // The referenced value selects its own raw or declaration policy, independently of its caller.
+    let options = &TypeExpansionOptions { preserve_initializer_object_identity: false, ..options.clone() };
     let class_like_name = if class_like_name.as_bytes().eq_ignore_ascii_case(b"parent") {
         options
             .self_class
@@ -565,14 +601,13 @@ fn expand_member_reference(
             continue;
         }
 
-        if let Some(inferred_type) = constant.inferred_type.as_ref() {
+        if constant.inferred_type.is_some() {
             let Some(_guard) = ConstantExpansionGuard::try_new(class_like_name, *constant_name) else {
                 new_return_type_parts.push(TAtomic::Never);
                 continue;
             };
 
-            let mut inferred_type = inferred_type.clone();
-            expand_union(codebase, &mut inferred_type, options);
+            let inferred_type = expand_class_constant_value(codebase, constant, false, options);
             new_return_type_parts.extend(inferred_type.types.into_owned());
         } else if let Some(type_metadata) = constant.type_metadata.as_ref() {
             let mut constant_type = type_metadata.type_union.clone();
@@ -618,6 +653,7 @@ fn expand_global_reference(
     options: &TypeExpansionOptions,
     new_return_type_parts: &mut Vec<TAtomic>,
 ) {
+    let options = &TypeExpansionOptions { preserve_initializer_object_identity: false, ..options.clone() };
     let (constant, constants) = match selector {
         TGlobalReferenceSelector::Identifier(name) => (codebase.constants.get_key_value(name), None),
         _ => (None, Some(&codebase.constants)),
@@ -637,7 +673,11 @@ fn expand_global_reference(
 
         if let Some(inferred_type) = constant.inferred_type.as_ref() {
             let mut inferred_type = inferred_type.clone();
-            expand_union(codebase, &mut inferred_type, options);
+            expand_union(
+                codebase,
+                &mut inferred_type,
+                &TypeExpansionOptions { preserve_initializer_object_identity: true, ..options.clone() },
+            );
             new_return_type_parts.extend(inferred_type.types.into_owned());
         } else if let Some(type_metadata) = constant.type_metadata.as_ref() {
             let mut constant_type = type_metadata.type_union.clone();

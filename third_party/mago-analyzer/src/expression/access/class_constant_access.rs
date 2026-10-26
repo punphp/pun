@@ -1,8 +1,5 @@
 use mago_allocator::Arena;
 use mago_codex::ttype::add_optional_union_type;
-use mago_codex::ttype::expander::StaticClassType;
-use mago_codex::ttype::expander::TypeExpansionOptions;
-use mago_codex::ttype::expander::expand_union;
 use mago_codex::ttype::get_mixed;
 use mago_codex::ttype::get_never;
 use mago_syntax::cst::ClassConstantAccess;
@@ -30,22 +27,6 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for ClassConstantAccess<'arena> {
         for resolved_constant in resolution.constants {
             resulting_type =
                 Some(add_optional_union_type(resolved_constant.const_type, resulting_type.as_ref(), context.codebase));
-        }
-
-        if let Some(resulting_type) = &mut resulting_type {
-            expand_union(
-                context.codebase,
-                resulting_type,
-                &TypeExpansionOptions {
-                    self_class: block_context.scope.get_class_like_name(),
-                    static_class_type: if let Some(calling_class) = block_context.scope.get_class_like_name() {
-                        StaticClassType::Name(calling_class)
-                    } else {
-                        StaticClassType::None
-                    },
-                    ..Default::default()
-                },
-            );
         }
 
         artifacts.set_expression_type(

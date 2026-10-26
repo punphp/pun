@@ -55,13 +55,21 @@ where
 
     reference.lookup_class = Some(class.name);
     reference.static_access = true;
-    let mut result = if let Some(constant) = class.constants.get(&name) {
+    let result = if let Some(constant) = class.constants.get(&name) {
         reference.kind = MemberKind::ClassConstant;
         reference.declaration = Some(constant.span.subspan(0, name.len() as u32));
-        constant.value_type(
+        mago_codex::ttype::expander::expand_class_constant_value(
+            context.codebase,
+            constant,
             matches!(access.class.unparenthesized(), Expression::Static(_))
                 && !class.flags.is_final()
                 && !class.kind.is_enum(),
+            &TypeExpansionOptions {
+                self_class: Some(class.name),
+                static_class_type: StaticClassType::Name(class.name),
+                function_is_final: class.flags.is_final(),
+                ..TypeExpansionOptions::default()
+            },
         )
     } else {
         let case = class.enum_cases.get(&name)?;
@@ -69,17 +77,6 @@ where
         reference.declaration = Some(case.name_span);
         TUnion::from_atomic(TAtomic::Object(TObject::Enum(TEnum::new_case(class.original_name, name))))
     };
-
-    expand_union(
-        context.codebase,
-        &mut result,
-        &TypeExpansionOptions {
-            self_class: Some(class.name),
-            static_class_type: StaticClassType::Name(class.name),
-            function_is_final: class.flags.is_final(),
-            ..TypeExpansionOptions::default()
-        },
-    );
 
     Some((reference, result))
 }

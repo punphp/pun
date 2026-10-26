@@ -360,11 +360,10 @@ where
             !matches!(resolution_origin, ResolutionOrigin::Named { .. } | ResolutionOrigin::LiteralClassString)
                 && !metadata.flags.is_final()
                 && !metadata.kind.is_enum();
-        let mut const_type = constant_metadata.value_type(late_bound);
-
-        expander::expand_union(
+        let const_type = expander::expand_class_constant_value(
             context.codebase,
-            &mut const_type,
+            constant_metadata,
+            late_bound,
             &TypeExpansionOptions {
                 self_class: Some(metadata.name),
                 static_class_type: StaticClassType::Name(metadata.name),
@@ -418,11 +417,10 @@ where
                 !matches!(resolution_origin, ResolutionOrigin::Named { .. } | ResolutionOrigin::LiteralClassString)
                     && !required_metadata.flags.is_final()
                     && !required_metadata.kind.is_enum();
-            let mut const_type = constant_metadata.value_type(late_bound);
-
-            expander::expand_union(
+            let const_type = expander::expand_class_constant_value(
                 context.codebase,
-                &mut const_type,
+                constant_metadata,
+                late_bound,
                 &TypeExpansionOptions {
                     self_class: Some(required_metadata.name),
                     static_class_type: StaticClassType::Name(required_metadata.name),

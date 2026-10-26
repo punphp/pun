@@ -1084,10 +1084,12 @@ where
         if !declaring_class_metadata.template_types.is_empty()
             && let TObject::Named(named_object) = object
         {
+            let mut receiver = named_object.clone();
+            expander::specialize_named_object_for_member_lookup(context.codebase, &mut receiver);
             *ty = localize_property_type(
                 context,
                 ty,
-                named_object.get_type_parameters().unwrap_or_default(),
+                receiver.get_type_parameters().unwrap_or_default(),
                 if class_id.as_bytes().eq_ignore_ascii_case(declaring_class_id.as_bytes()) {
                     declaring_class_metadata
                 } else {

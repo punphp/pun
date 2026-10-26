@@ -1,0 +1,9 @@
+parameters:
+    level: 0
+    phpVersion: 80400
+    paths:
+        - readers.php
+    scanFiles:
+        - objects.php
+        - scanned.php
+    tmpDir: cache-readers

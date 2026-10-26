@@ -26,6 +26,8 @@ use mago_codex::ttype::atomic::scalar::TScalar;
 use mago_codex::ttype::get_empty;
 use mago_codex::ttype::get_int_or_float;
 use mago_codex::ttype::get_mixed;
+use mago_codex::ttype::get_named_object;
+use mago_codex::ttype::get_object;
 use mago_codex::ttype::union::TUnion;
 use mago_database::file::{File, FileId, FileType};
 use mago_names::ResolvedNames;
@@ -1240,16 +1242,32 @@ impl InitializerInference<'_> {
             .into_iter()
             .filter(|(_, owned, _)| *owned)
         {
-            let mut value = infer_initializer_with_codebase(
-                file,
-                names,
-                &scope,
-                expression,
-                self.metadata,
-                self.class,
-                &types,
-            )
-            .unwrap_or_else(get_mixed);
+            let mut value = match expression {
+                // InitializerExprTypeResolver::getType(New_): constructor inference belongs only
+                // to declaration flow. Even self/parent/static are literal ObjectType identities.
+                Expression::Instantiation(new) => match new.class {
+                    Expression::Identifier(name) => {
+                        get_named_object(mago_word::word(names.get(name)), None)
+                    }
+                    Expression::Self_(_) | Expression::Parent(_) | Expression::Static(_) => {
+                        get_named_object(
+                            mago_word::word(&file.contents[new.class.span().to_range_usize()]),
+                            None,
+                        )
+                    }
+                    _ => get_object(),
+                },
+                _ => infer_initializer_with_codebase(
+                    file,
+                    names,
+                    &scope,
+                    expression,
+                    self.metadata,
+                    self.class,
+                    &types,
+                )
+                .unwrap_or_else(get_mixed),
+            };
             // Materialize PHPStan's removeFalsey result using the existing excluded-set
             // representation. Mago's legacy truthiness flags alone lose this reflection identity.
             for atomic in value.types.to_mut() {

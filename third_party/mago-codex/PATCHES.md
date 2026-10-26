@@ -331,3 +331,20 @@ Fresh public controls and oracle captures are in
 Trait rebinding does not use the ordinary declaration-span cache. New trait semantics, expanded cycle
 resolution, enum backing unions, arbitrary dynamic holders, calls, construction, and general
 initializer-expression expansion remain outside this patch.
+
+## Raw initializer object identity
+
+`TypeExpansionOptions::preserve_initializer_object_identity` keeps a raw initializer's bare named
+objects intact, including objects inside shapes and unions. Reference expansion and its cycle guards
+still run. Declaration expansion retains its existing treatment of omitted generic arguments.
+
+`expand_class_constant_value()` selects the raw initializer or effective declaration before expansion.
+Global and member references enable the identity policy only for inferred values. Declaration-only
+references clear it. `specialize_named_object_for_member_lookup()` applies the existing template
+defaults and bounds to a temporary receiver, without changing the stored initializer value.
+
+The source contracts are PHPStan 2.3.1's
+[`InitializerExprTypeResolver.php:208–214`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Reflection/InitializerExprTypeResolver.php#L208-L214)
+and [`ObjectType.php:1952–1968`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Type/ObjectType.php#L1952-L1968).
+Public controls and actual PHPStan captures are in
+`crates/pun-analyse/tests/fixtures/initializer-objects/`.

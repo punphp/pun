@@ -95,12 +95,14 @@ impl<'arena> Analyzable<'_, 'arena> for ConstantAccess<'arena> {
 
         crate::utils::availability::check_constant_availability(context, constant_metadata, &name, self.span());
 
-        let mut constant_type = if !constant_metadata.flags.is_built_in()
-            && let Some(t) = context.constant_types.get(&constant_metadata.span)
-            && constant_metadata.type_metadata.as_ref().is_none_or(|canonical| {
-                canonical.from_docblock || canonical.type_union.types != t.types
-            })
-        {
+        let local_type = context.constant_types.get(&constant_metadata.span).filter(|value| {
+            !constant_metadata.flags.is_built_in()
+                && constant_metadata
+                    .type_metadata
+                    .as_ref()
+                    .is_none_or(|canonical| canonical.from_docblock || canonical.type_union.types != value.types)
+        });
+        let mut constant_type = if let Some(t) = local_type {
             // Encountered declarations carry flow-selected values. Forward and other-file reads
             // instead use canonical initializer metadata. Equal atoms retain its union markers.
             t.clone()
@@ -126,7 +128,16 @@ impl<'arena> Analyzable<'_, 'arena> for ConstantAccess<'arena> {
             }
         };
 
-        expander::expand_union(context.codebase, &mut constant_type, &TypeExpansionOptions::default());
+        expander::expand_union(
+            context.codebase,
+            &mut constant_type,
+            &TypeExpansionOptions {
+                preserve_initializer_object_identity: !constant_metadata.flags.is_built_in()
+                    && local_type.is_none()
+                    && constant_metadata.type_metadata.as_ref().is_none_or(|metadata| !metadata.from_docblock),
+                ..TypeExpansionOptions::default()
+            },
+        );
 
         artifacts.set_expression_type(self, constant_type);
 

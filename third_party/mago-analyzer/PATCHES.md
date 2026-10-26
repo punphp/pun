@@ -1583,3 +1583,22 @@ unchanged. Existing providers can still implement both traits.
 Pun's internal initializer scope uses this callback contract without an unused `Provider::meta()`
 implementation. The public class-initializer controls exercise the callback through ordinary analysis,
 including lexical `self` and `parent` arithmetic. No new analysis entrypoint or metadata calls are added.
+
+## Raw object constant readers and member lookup
+
+Class-constant resolution and cached receivers use `expand_class_constant_value()` to keep raw
+initializer objects bare. The class-access wrapper no longer expands an already-resolved value
+again. Global constant reads preserve that identity for canonical values, while encountered local
+declarations retain ordinary constructor inference.
+
+Method-template collection and property localization specialize a temporary receiver through
+`specialize_named_object_for_member_lookup()`. A bare `Box` therefore stays bare when read as a
+constant, but its members still use the declared template defaults or bounds. Explicit receiver
+arguments and class-relative template scopes retain their existing paths.
+
+The source contract is PHPStan 2.3.1's
+[`ObjectType::getClassReflection()`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Type/ObjectType.php#L1952-L1968),
+with default selection in
+[`TemplateTypeHelper::resolveTemplateTypes()`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Type/Generic/TemplateTypeHelper.php#L64-L68).
+Public controls in `initializer-objects/` distinguish raw values, native and PHPDoc declarations,
+constructor flow, repeated property reads, and member return types.

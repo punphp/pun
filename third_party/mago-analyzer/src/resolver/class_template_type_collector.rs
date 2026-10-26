@@ -29,6 +29,11 @@ pub(crate) fn collect(
     }
 
     let mut class_template_parameters: HashMap<Word, HashMap<GenericParent, TUnion>> = HashMap::default();
+    let mut specialized = object_type.cloned();
+    if let Some(TObject::Named(object)) = &mut specialized {
+        mago_codex::ttype::expander::specialize_named_object_for_member_lookup(codebase, object);
+    }
+    let object_type = specialized.as_ref();
 
     if let Some(TObject::Named(TNamedObject { type_parameters: Some(parameters), .. })) = &object_type {
         if class_metadata.name == static_class_metadata.name && !static_class_metadata.template_types.is_empty() {
