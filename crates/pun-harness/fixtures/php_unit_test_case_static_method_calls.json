@@ -1,0 +1,248 @@
+{
+    "fixer": "php_unit_test_case_static_method_calls",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\PhpUnit\\PhpUnitTestCaseStaticMethodCallsFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/PhpUnit/PhpUnitTestCaseStaticMethodCallsFixerTest.php",
+    "case_count": 18,
+    "tests": [
+        {
+            "method": "testInvalidConfiguration",
+            "params": [
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": null
+                },
+                {
+                    "name": "expectedExceptionMessage",
+                    "type": "string",
+                    "default": null
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\PhpUnit\\PhpUnitTestCaseStaticMethodCallsFixerTest",
+            "body": "    public function testInvalidConfiguration(array $configuration, string $expectedExceptionMessage): void\n    {\n        $this->expectException(InvalidFixerConfigurationException::class);\n        $this->expectExceptionMessage($expectedExceptionMessage);\n\n        $this->fixer->configure($configuration); // @phpstan-ignore argument.type\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideInvalidConfigurationCases",
+                    "key": "wrong type for methods key",
+                    "args": [
+                        {
+                            "methods": {
+                                "123": 1
+                            }
+                        },
+                        "[php_unit_test_case_static_method_calls] Invalid configuration: The option \"methods\" with value array is expected to be of type \"string[]\", but one of the elements is of type \"int\"."
+                    ]
+                },
+                {
+                    "provider": "provideInvalidConfigurationCases",
+                    "key": "wrong type for methods value",
+                    "args": [
+                        {
+                            "methods": {
+                                "assertSame": 123
+                            }
+                        },
+                        "[php_unit_test_case_static_method_calls] Invalid configuration: The option \"methods\" with value array is expected to be of type \"string[]\", but one of the elements is of type \"int\"."
+                    ]
+                },
+                {
+                    "provider": "provideInvalidConfigurationCases",
+                    "key": "wrong mix of \"methods\" and \"target\"",
+                    "args": [
+                        {
+                            "methods": {
+                                "once": "self"
+                            },
+                            "target": "11.0"
+                        },
+                        "[php_unit_test_case_static_method_calls] Configuration cannot contain method \"once\" and target \"11.0\", it is dynamic in that PHPUnit version."
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": []
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\PhpUnit\\PhpUnitTestCaseStaticMethodCallsFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null, array $configuration = []): void\n    {\n        $this->fixer->configure($configuration);\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": 0,
+                    "args": [
+                        "<?php\nclass MyTest extends \\PHPUnit_Framework_TestCase\n{\n    public function testBaseCase()\n    {\n        static::assertSame(1, 2);\n        static::markTestIncomplete('foo');\n        static::fail('foo');\n    }\n}",
+                        "<?php\nclass MyTest extends \\PHPUnit_Framework_TestCase\n{\n    public function testBaseCase()\n    {\n        $this->assertSame(1, 2);\n        $this->markTestIncomplete('foo');\n        $this->fail('foo');\n    }\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 1,
+                    "args": [
+                        "<?php\nclass MyTest extends \\PHPUnit_Framework_TestCase\n{\n    public function testMocks()\n    {\n        $mock = $this->createMock(MyInterface::class);\n        $mock\n            ->expects(static::once())\n            ->method('run')\n            ->with(\n                static::identicalTo(1),\n                static::stringContains('foo')\n            )\n            ->will(static::onConsecutiveCalls(\n                static::returnSelf(),\n                static::throwException(new \\Exception())\n            ))\n        ;\n    }\n}",
+                        "<?php\nclass MyTest extends \\PHPUnit_Framework_TestCase\n{\n    public function testMocks()\n    {\n        $mock = $this->createMock(MyInterface::class);\n        $mock\n            ->expects($this->once())\n            ->method('run')\n            ->with(\n                $this->identicalTo(1),\n                $this->stringContains('foo')\n            )\n            ->will($this->onConsecutiveCalls(\n                $this->returnSelf(),\n                $this->throwException(new \\Exception())\n            ))\n        ;\n    }\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 2,
+                    "args": [
+                        "<?php\nclass MyTest extends \\PHPUnit_Framework_TestCase\n{\n    public function testWeirdIndentation()\n    {\n        static\n        // @TODO\n            ::\n        assertSame\n        (1, 2);\n        // $this->markTestIncomplete('foo');\n        /*\n        $this->fail('foo');\n        */\n    }\n}",
+                        "<?php\nclass MyTest extends \\PHPUnit_Framework_TestCase\n{\n    public function testWeirdIndentation()\n    {\n        $this\n        // @TODO\n            ->\n        assertSame\n        (1, 2);\n        // $this->markTestIncomplete('foo');\n        /*\n        $this->fail('foo');\n        */\n    }\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 3,
+                    "args": [
+                        "<?php\nclass MyTest extends \\PHPUnit_Framework_TestCase\n{\n    public function testBaseCase()\n    {\n        $this->assertSame(1, 2);\n        $this->markTestIncomplete('foo');\n        $this->fail('foo');\n\n        $lambda = function () {\n            $this->assertSame(1, 23);\n            self::assertSame(1, 23);\n            static::assertSame(1, 23);\n        };\n    }\n}",
+                        "<?php\nclass MyTest extends \\PHPUnit_Framework_TestCase\n{\n    public function testBaseCase()\n    {\n        $this->assertSame(1, 2);\n        self::markTestIncomplete('foo');\n        static::fail('foo');\n\n        $lambda = function () {\n            $this->assertSame(1, 23);\n            self::assertSame(1, 23);\n            static::assertSame(1, 23);\n        };\n    }\n}",
+                        {
+                            "call_type": "this"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 4,
+                    "args": [
+                        "<?php\nclass MyTest extends \\PHPUnit_Framework_TestCase\n{\n    public function testBaseCase()\n    {\n        self::assertSame(1, 2);\n        self::markTestIncomplete('foo');\n        self::fail('foo');\n    }\n}",
+                        "<?php\nclass MyTest extends \\PHPUnit_Framework_TestCase\n{\n    public function testBaseCase()\n    {\n        $this->assertSame(1, 2);\n        self::markTestIncomplete('foo');\n        static::fail('foo');\n    }\n}",
+                        {
+                            "call_type": "self"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 5,
+                    "args": [
+                        "<?php\nclass MyTest extends \\PHPUnit_Framework_TestCase\n{\n    public function testBaseCase()\n    {\n        $this->assertSame(1, 2);\n        $this->assertSame(1, 2);\n\n        static::setUpBeforeClass();\n        static::setUpBeforeClass();\n\n        $otherTest->setUpBeforeClass();\n        OtherTest::setUpBeforeClass();\n    }\n}",
+                        "<?php\nclass MyTest extends \\PHPUnit_Framework_TestCase\n{\n    public function testBaseCase()\n    {\n        static::assertSame(1, 2);\n        $this->assertSame(1, 2);\n\n        static::setUpBeforeClass();\n        $this->setUpBeforeClass();\n\n        $otherTest->setUpBeforeClass();\n        OtherTest::setUpBeforeClass();\n    }\n}",
+                        {
+                            "call_type": "this",
+                            "methods": {
+                                "setUpBeforeClass": "static"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 6,
+                    "args": [
+                        "<?php\nclass MyTest extends \\PHPUnit_Framework_TestCase\n{\n    public static function foo()\n    {\n        $this->assertSame(1, 2);\n        self::assertSame(1, 2);\n        static::assertSame(1, 2);\n\n        $lambda = function () {\n            $this->assertSame(1, 2);\n            self::assertSame(1, 2);\n            static::assertSame(1, 2);\n        };\n    }\n\n    public function bar()\n    {\n        $lambda = static function () {\n            $this->assertSame(1, 2);\n            self::assertSame(1, 2);\n            static::assertSame(1, 2);\n        };\n\n        $myProphecy->setCount(0)->will(function () {\n            $this->getCount()->willReturn(0);\n        });\n    }\n\n    static public function baz()\n    {\n        $this->assertSame(1, 2);\n        self::assertSame(1, 2);\n        static::assertSame(1, 2);\n\n        $lambda = function () {\n            $this->assertSame(1, 2);\n            self::assertSame(1, 2);\n            static::assertSame(1, 2);\n        };\n    }\n\n    static final protected function xyz()\n    {\n        static::assertSame(1, 2);\n    }\n}",
+                        null,
+                        {
+                            "call_type": "this"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": 7,
+                    "args": [
+                        "<?php\nclass MyTest extends \\PHPUnit_Framework_TestCase\n{\n    public function foo()\n    {\n        $this->assertSame(1, 2);\n        $this->assertSame(1, 2);\n        $this->assertSame(1, 2);\n    }\n\n    public function bar()\n    {\n        $lambdaOne = static function () {\n            $this->assertSame(1, 21);\n            self::assertSame(1, 21);\n            static::assertSame(1, 21);\n        };\n\n        $lambdaTwo = function () {\n            $this->assertSame(1, 21);\n            self::assertSame(1, 21);\n            static::assertSame(1, 21);\n        };\n    }\n\n    public function baz2()\n    {\n        $this->assertSame(1, 22);\n        $this->assertSame(1, 22);\n        $this->assertSame(1, 22);\n        $this->assertSame(1, 23);\n    }\n\n}",
+                        "<?php\nclass MyTest extends \\PHPUnit_Framework_TestCase\n{\n    public function foo()\n    {\n        $this->assertSame(1, 2);\n        self::assertSame(1, 2);\n        static::assertSame(1, 2);\n    }\n\n    public function bar()\n    {\n        $lambdaOne = static function () {\n            $this->assertSame(1, 21);\n            self::assertSame(1, 21);\n            static::assertSame(1, 21);\n        };\n\n        $lambdaTwo = function () {\n            $this->assertSame(1, 21);\n            self::assertSame(1, 21);\n            static::assertSame(1, 21);\n        };\n    }\n\n    public function baz2()\n    {\n        $this->assertSame(1, 22);\n        self::assertSame(1, 22);\n        static::assertSame(1, 22);\n        STATIC::assertSame(1, 23);\n    }\n\n}",
+                        {
+                            "call_type": "this"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "do not change class property and method signature",
+                    "args": [
+                        "<?php\nclass FooTest extends TestCase\n{\n    public function foo()\n    {\n        $this->assertSame = 42;\n    }\n\n    public function assertSame($foo, $bar){}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "do not change when only case is different",
+                    "args": [
+                        "<?php\nclass FooTest extends TestCase\n{\n    public function foo()\n    {\n        STATIC::assertSame(1, 1);\n    }\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "do not crash on abstract static function",
+                    "args": [
+                        "<?php\nabstract class FooTest extends TestCase\n{\n    abstract public static function dataProvider();\n}",
+                        null,
+                        {
+                            "call_type": "this"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "handle $this with double colon following",
+                    "args": [
+                        "<?php\n                class FooTest extends TestCase\n                {\n                    public function testFoo()\n                    {\n                        static::assertTrue(true);\n                    }\n                }",
+                        "<?php\n                class FooTest extends TestCase\n                {\n                    public function testFoo()\n                    {\n                        $this::assertTrue(true);\n                    }\n                }"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "anonymous class",
+                    "args": [
+                        "<?php\nclass MyTest extends \\PHPUnit_Framework_TestCase\n{\n    public function testBaseCase()\n    {\n        static::assertSame(1, 2);\n\n        $foo = new class() {\n            public function assertSame($a, $b)\n            {\n                $this->assertSame(1, 2);\n            }\n        };\n    }\n}",
+                        "<?php\nclass MyTest extends \\PHPUnit_Framework_TestCase\n{\n    public function testBaseCase()\n    {\n        $this->assertSame(1, 2);\n\n        $foo = new class() {\n            public function assertSame($a, $b)\n            {\n                $this->assertSame(1, 2);\n            }\n        };\n    }\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "anonymous class extending TestCase",
+                    "args": [
+                        "<?php\n$myTest = new class () extends \\PHPUnit_Framework_TestCase\n{\n    public function testSomething()\n    {\n        static::assertTrue(true);\n        static::assertTrue(true);\n    }\n};",
+                        "<?php\n$myTest = new class () extends \\PHPUnit_Framework_TestCase\n{\n    public function testSomething()\n    {\n        self::assertTrue(true);\n        static::assertTrue(true);\n    }\n};"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix81",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.1.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\PhpUnit\\PhpUnitTestCaseStaticMethodCallsFixerTest",
+            "body": "    public function testFix81(string $expected, ?string $input = null): void\n    {\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix81Cases",
+                    "key": 0,
+                    "args": [
+                        "<?php\n                class FooTest extends TestCase\n                {\n                    public function testFoo()\n                    {\n                        $a = $this::assertTrue(...);\n                    }\n                }\n            "
+                    ]
+                }
+            ]
+        }
+    ]
+}

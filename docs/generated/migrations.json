@@ -2001,7 +2001,7 @@
         "rules": [
           "lint/phpunit/require-assertion-style"
         ],
-        "note": "Same. Options: renamed for TOML: [options.\"lint/phpunit/require-assertion-style\"]. Planned: not ported yet.",
+        "note": "Same. Options: renamed for TOML: [options.\"lint/phpunit/require-assertion-style\"].",
         "unsupported": false
       },
       {
@@ -4987,7 +4987,7 @@
         "rules": [
           "lint/phpunit/require-assertion-style"
         ],
-        "note": "Same. Options: renamed for TOML: [options.\"lint/phpunit/require-assertion-style\"]. Planned: not ported yet.",
+        "note": "Same. Options: renamed for TOML: [options.\"lint/phpunit/require-assertion-style\"].",
         "unsupported": false
       },
       {
@@ -24915,7 +24915,7 @@
         "rules": [
           "lint/phpunit/require-assertion-style"
         ],
-        "note": "Same. Options: none (Mago options do not carry; Pun uses the CS-Fixer rule options). Planned: not ported yet.",
+        "note": "Same. Options: none (Mago options do not carry; Pun uses the CS-Fixer rule options).",
         "unsupported": false
       },
       {

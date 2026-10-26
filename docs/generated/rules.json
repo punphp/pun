@@ -12657,7 +12657,7 @@
         "assertion-style",
         "php_unit_test_case_static_method_calls"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/phpunit/require-covers",
