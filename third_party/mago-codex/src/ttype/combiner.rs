@@ -6,6 +6,7 @@ use foldhash::HashSet;
 
 use mago_word::Word;
 use mago_word::WordSet;
+use mago_word::ascii_lowercase_word;
 use mago_word::word;
 
 static ATOM_FALSE: LazyLock<Word> = LazyLock::new(|| word("false"));
@@ -48,9 +49,9 @@ use crate::ttype::combination::TypeCombination;
 use crate::ttype::combine_union_types;
 use crate::ttype::comparator::ComparisonResult;
 use crate::ttype::comparator::array_comparator::is_array_contained_by_array;
-use crate::ttype::comparator::object_comparator;
 use crate::ttype::comparator::union_comparator;
 use crate::ttype::get_arraykey;
+use crate::ttype::is_atomic_intersection_contained_by;
 use crate::ttype::template::variance::Variance;
 use crate::ttype::union::TUnion;
 use crate::utils::str_is_numeric;
@@ -1112,7 +1113,7 @@ fn scrape_type_properties(
             return;
         }
 
-        let Some(symbol_type) = codebase.symbols.get_kind(fq_class_name) else {
+        let Some(symbol_type) = codebase.symbols.get_kind(ascii_lowercase_word(fq_class_name.as_bytes())) else {
             combination.value_types.insert(atomic.get_id(), atomic);
             return;
         };
@@ -1132,31 +1133,21 @@ fn scrape_type_properties(
                 let existing_name = existing_object.get_name();
 
                 if intersection_types.is_some() || existing_object.has_intersection_types() {
-                    if object_comparator::is_shallowly_contained_by(
-                        codebase,
-                        existing_type,
-                        &atomic,
-                        false,
-                        &mut ComparisonResult::new(),
-                    ) {
-                        types_to_remove.push(existing_name);
+                    if is_atomic_intersection_contained_by(existing_type, &atomic, codebase) {
+                        types_to_remove.push(*key);
                         continue;
                     }
 
-                    if object_comparator::is_shallowly_contained_by(
-                        codebase,
-                        &atomic,
-                        existing_type,
-                        false,
-                        &mut ComparisonResult::new(),
-                    ) {
+                    if is_atomic_intersection_contained_by(&atomic, existing_type, codebase) {
                         return;
                     }
 
                     continue;
                 }
 
-                let Some(existing_symbol_kind) = codebase.symbols.get_kind(existing_object.get_name()) else {
+                let Some(existing_symbol_kind) =
+                    codebase.symbols.get_kind(ascii_lowercase_word(existing_name.as_bytes()))
+                else {
                     continue;
                 };
 

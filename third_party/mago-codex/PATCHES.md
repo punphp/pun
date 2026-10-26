@@ -639,3 +639,25 @@ constant reads. This remains a lint adaptation, not a change to Mago's scanner o
 The existing `late_static_constants.php.inc` expectation stays unchanged. `moved_closure.rs` also
 checks its anonymous-class section before and after a move, with the constant-return and native
 string-return rules separately. Rector 2.6.1 confirms both rules' expected output on both inputs.
+
+## Object intersection construction
+
+`intersect_atomic_types()` returns a proven narrower operand unchanged. Its incomparable-object
+constructor flattens ordinary named-object conjunctions and removes exact duplicate constraints.
+Generic arguments, template bounds, and static or `$this` identities retain their metadata.
+Mixed unions still intersect their excluded types. No exclusion limit or fallback is added.
+
+`is_atomic_intersection_contained_by()` checks both the primary type and its additional conjuncts.
+The combiner uses this query instead of its former shallow object comparison. Symbol-kind queries
+use the symbol table's lowercase keys without changing source-spelled type names. A subsumed
+intersection is removed by its full atomic ID, not its primary class name. The unused shallow
+comparison wrapper is deleted.
+
+The source contracts are PHPStan 2.3.1's
+[`TypeCombinator.php:2026–2029`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Type/TypeCombinator.php#L2026-L2029),
+[`TypeCombinator.php:2099–2160`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Type/TypeCombinator.php#L2099-L2160), and
+[`TypeCombinator.php:751–783`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Type/TypeCombinator.php#L751-L783).
+Public controls and fresh oracle captures are in `crates/pun-analyse/tests/fixtures/object-intersections/`.
+Conditional assertion production is unchanged. The retained flow oracle also records PHPStan's
+false-branch exclusions, which differ from Mago's conditional assertion transfer. The direct mixed
+union regression checks the intersection contract independently of those conditional assertions.

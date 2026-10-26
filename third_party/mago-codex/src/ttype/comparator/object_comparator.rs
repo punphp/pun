@@ -1,55 +1,11 @@
 use crate::metadata::CodebaseMetadata;
 use crate::misc::GenericParent;
-use crate::ttype::TType;
 use crate::ttype::atomic::TAtomic;
 use crate::ttype::atomic::generic::TGenericParameter;
 use crate::ttype::atomic::object::TObject;
 use crate::ttype::comparator::ComparisonResult;
 use crate::ttype::comparator::union_comparator;
 use crate::ttype::wrap_atomic;
-
-pub(crate) fn is_shallowly_contained_by(
-    codebase: &CodebaseMetadata,
-    input_type_part: &TAtomic,
-    container_type_part: &TAtomic,
-    inside_assertion: bool,
-    atomic_comparison_result: &mut ComparisonResult,
-) -> bool {
-    // `T <= A & B`
-    if let Some(container_intersection_types) = container_type_part.get_intersection_types()
-        && !container_intersection_types.is_empty()
-    {
-        for part in container_intersection_types {
-            if !is_shallowly_contained_by(codebase, input_type_part, part, inside_assertion, atomic_comparison_result) {
-                return false;
-            }
-        }
-    }
-    // `A & B <= T`
-    else if let Some(input_intersection_types) = input_type_part.get_intersection_types()
-        && !input_intersection_types.is_empty()
-    {
-        for part in input_intersection_types {
-            if is_shallowly_contained_by(
-                codebase,
-                part,
-                container_type_part,
-                inside_assertion,
-                atomic_comparison_result,
-            ) {
-                return true;
-            }
-        }
-    }
-
-    is_intersection_shallowly_contained_by(
-        codebase,
-        input_type_part,
-        container_type_part,
-        inside_assertion,
-        atomic_comparison_result,
-    )
-}
 
 pub(super) fn is_intersection_shallowly_contained_by(
     codebase: &CodebaseMetadata,

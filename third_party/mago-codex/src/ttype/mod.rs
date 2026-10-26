@@ -1287,6 +1287,36 @@ pub fn intersect_union_types(type_1: &TUnion, type_2: &TUnion, codebase: &Codeba
     None
 }
 
+/// Containment of every conjunct, including the primary object's generic/static identity.
+pub(crate) fn is_atomic_intersection_contained_by(
+    input: &TAtomic,
+    container: &TAtomic,
+    codebase: &CodebaseMetadata,
+) -> bool {
+    let input = TUnion::from_atomic(input.clone());
+    let contained = |container| {
+        union_comparator::is_contained_by(
+            codebase,
+            &input,
+            &TUnion::from_atomic(container),
+            false,
+            false,
+            false,
+            &mut ComparisonResult::default(),
+        )
+    };
+    if !contained(container.clone()) {
+        return false;
+    }
+    // The general comparator can otherwise prove only the additional intersection parts.
+    let mut root = container.clone();
+    if let Some(parts) = root.get_intersection_types_mut() {
+        parts.clear();
+        return contained(root);
+    }
+    true
+}
+
 /// This is the core logic used by `intersect_union_types`.
 fn intersect_atomic_types(
     type_1: &TAtomic,
@@ -1328,54 +1358,17 @@ fn intersect_atomic_types(
         return Some(TAtomic::Scalar(TScalar::Integer(intersected_int)));
     }
 
-    let t1_union = TUnion::from_atomic(type_1.clone());
-    let t2_union = TUnion::from_atomic(type_2.clone());
+    let narrower_type = if is_atomic_intersection_contained_by(type_2, type_1, codebase) {
+        Some(type_2)
+    } else if is_atomic_intersection_contained_by(type_1, type_2, codebase) {
+        Some(type_1)
+    } else {
+        None
+    };
 
-    let mut narrower_type = None;
-    let mut wider_type = None;
-
-    if union_comparator::is_contained_by(
-        codebase,
-        &t2_union,
-        &t1_union,
-        false,
-        false,
-        false,
-        &mut ComparisonResult::default(),
-    ) {
-        narrower_type = Some(type_2);
-        wider_type = Some(type_1);
-    } else if union_comparator::is_contained_by(
-        codebase,
-        &t1_union,
-        &t2_union,
-        false,
-        false,
-        false,
-        &mut ComparisonResult::default(),
-    ) {
-        narrower_type = Some(type_1);
-        wider_type = Some(type_2);
-    }
-
-    if let (Some(narrower), Some(wider)) = (narrower_type, wider_type) {
+    if let Some(narrower) = narrower_type {
         *intersection_performed = true;
-        let mut result = narrower.clone();
-
-        if narrower.can_be_intersected() && wider.can_be_intersected() {
-            let mut wider_clone = wider.clone();
-            if let Some(types) = wider_clone.get_intersection_types_mut() {
-                types.clear();
-            }
-
-            result.add_intersection_type(wider_clone);
-            if let Some(wider_intersections) = wider.get_intersection_types() {
-                for i_type in wider_intersections {
-                    result.add_intersection_type(i_type.clone());
-                }
-            }
-        }
-        return Some(result);
+        return Some(narrower.clone());
     }
 
     if let (TAtomic::Array(left_array), TAtomic::Array(right_array)) = (type_1, type_2) {
@@ -1439,10 +1432,22 @@ fn intersect_atomic_types(
         }
 
         let mut result = type_1.clone();
-        result.add_intersection_type(type_2.clone());
-        if let Some(intersections) = type_2.get_intersection_types() {
-            for i in intersections {
-                result.add_intersection_type(i.clone());
+        let mut pending = vec![type_2.clone()];
+        if let TAtomic::Object(TObject::Named(object)) = &mut result
+            && let Some(parts) = object.intersection_types.take()
+        {
+            pending.extend(*parts);
+        }
+        let root = result.clone();
+        while let Some(mut part) = pending.pop() {
+            // Flatten ordinary object conjunctions, not template bounds or generic arguments.
+            if let TAtomic::Object(TObject::Named(object)) = &mut part
+                && let Some(parts) = object.intersection_types.take()
+            {
+                pending.extend(*parts);
+            }
+            if part != root && !result.get_intersection_types().is_some_and(|parts| parts.contains(&part)) {
+                result.add_intersection_type(part);
             }
         }
 
