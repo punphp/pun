@@ -84,7 +84,7 @@ impl<'arena> Checker<'_, 'arena> {
                 }),
         };
         if let Some(class) = class
-            && let Some(members::Method::User { f, declaring }) =
+            && let Some(members::Method::User { f, declaring, .. }) =
                 members::method(self, class, name.value)
         {
             // Mago's populated `used_traits` includes inherited traits. Their `self` is the class that first

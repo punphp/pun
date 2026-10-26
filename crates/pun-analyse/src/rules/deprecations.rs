@@ -90,7 +90,7 @@ impl Checker<'_, '_> {
     /// A method's merged `@deprecated` (PhpDocInheritanceResolver::resolvePhpDocForMethod()).
     pub(super) fn method_deprecation(&self, m: &Method) -> Option<Deprecation> {
         match m {
-            Method::User { declaring, f } => self.resolved_method(declaring, f, 0)?.deprecated,
+            Method::User { declaring, f, .. } => self.resolved_method(declaring, f, 0)?.deprecated,
             Method::Builtin { f, .. } => f.deprecated.then_some(None),
         }
     }
@@ -104,7 +104,7 @@ impl Checker<'_, '_> {
         let get = |n: &mago_word::Word| self.codebase.get_class_like(n.as_bytes());
         // an ancestor's method: a user one's merged PHPDoc, a built-in's deprecation
         let inherited = |m: Method| match m {
-            Method::User { declaring, f } => self.resolved_method(declaring, f, depth + 1),
+            Method::User { declaring, f, .. } => self.resolved_method(declaring, f, depth + 1),
             Method::Builtin { f, .. } => Some(Resolved { deprecated: f.deprecated.then_some(None), not_deprecated: false }),
         };
         let parent = declaring.direct_parent_class.as_ref().and_then(get).and_then(|p| {

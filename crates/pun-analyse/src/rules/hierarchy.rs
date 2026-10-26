@@ -322,7 +322,7 @@ pub fn in_class(c: &mut Checker, at: Span, k: &ClassLikeMetadata) {
             continue; // a `@method` tag
         };
         let is_abstract = match &m {
-            members::Method::User { declaring, f } => {
+            members::Method::User { declaring, f, .. } => {
                 c.method_abstract(declaring, f) && !inherited_satisfies(c, declaring, f, lower_name)
             }
             // isProvidedByBuiltinAncestor(): a non-abstract built-in parent implementing the interface provides its

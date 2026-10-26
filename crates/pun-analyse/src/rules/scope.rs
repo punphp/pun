@@ -731,7 +731,7 @@ impl<'a, 'arena> Checker<'a, 'arena> {
     fn invalidating_method(&self, method: &Method) -> bool {
         match method {
             Method::Builtin { f, .. } => f.side_effects == "Yes",
-            Method::User { declaring, f } => {
+            Method::User { declaring, f, .. } => {
                 if f.name.as_bytes().eq_ignore_ascii_case(b"__construct") {
                     return true;
                 }

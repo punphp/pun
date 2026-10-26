@@ -17,6 +17,9 @@ pub enum Method<'a> {
     User {
         declaring: &'a ClassLikeMetadata,
         f: &'a FunctionLikeMetadata,
+        /// The reflected name and modifiers can differ from a trait's stored declaration.
+        name: mago_word::Word,
+        visibility: Visibility,
     },
     Builtin {
         declaring: &'static symbols::Class,
@@ -44,8 +47,9 @@ impl Method<'_> {
 
     pub fn name(&self) -> String {
         match self {
-            Method::User { f, .. } => {
-                String::from_utf8_lossy(f.original_name.as_bytes()).into_owned()
+            Method::User { f, name, .. } => {
+                let name = if *name == f.name { f.original_name } else { *name };
+                String::from_utf8_lossy(name.as_bytes()).into_owned()
             }
             Method::Builtin { f, .. } => f.name.clone(),
         }
@@ -60,7 +64,7 @@ impl Method<'_> {
 
     pub fn is_abstract(&self) -> bool {
         match self {
-            Method::User { declaring, f } => {
+            Method::User { declaring, f, .. } => {
                 f.method_metadata.as_ref().is_some_and(|m| m.is_abstract)
                     || declaring.kind.is_interface()
             }
@@ -77,10 +81,7 @@ impl Method<'_> {
 
     pub fn visibility(&self) -> Visibility {
         match self {
-            Method::User { f, .. } => f
-                .method_metadata
-                .as_ref()
-                .map_or(Visibility::Public, |m| m.visibility),
+            Method::User { visibility, .. } => *visibility,
             Method::Builtin { .. } => Visibility::Public,
         }
     }
@@ -94,11 +95,16 @@ impl Method<'_> {
 
     pub fn variants(&self) -> Variants {
         match self {
-            Method::User { f, declaring } => {
+            Method::User { f, declaring, name, .. } => {
                 let mut v = Variants::of(f);
                 for a in v.all.iter_mut() {
-                    let class = String::from_utf8_lossy(declaring.name.as_bytes()).into_owned();
-                    a.callee = a.callee.take().map(|(_, name)| (Some(class), name));
+                    let storage = declaring.declaring_method_ids.get(name);
+                    a.class = Some(declaring.name.to_string());
+                    a.callee = Some(super::params::UserCallee {
+                        class: Some(storage.map_or(declaring.name, |id| id.get_class_name()).to_string()),
+                        name: storage.map_or(f.name, |id| id.get_method_name()).to_string(),
+                        reflected_name: name.to_string(),
+                    });
                 }
                 v
             }
@@ -161,7 +167,7 @@ pub fn annotation_method<'a>(
                 .get(&(k.name, lower))
                 .map(Box::as_ref)
         {
-            return Some(Method::User { declaring, f });
+            return Some(user(c, declaring, f, lower));
         }
         // findClassReflectionWithMethod(): traits first, then the parent, then interfaces, depth first.
         let start = pending.len();
@@ -214,16 +220,13 @@ fn declared<'a>(
             && k.span.start.offset <= f.span.start.offset
             && f.span.end.offset <= k.span.end.offset
         {
-            return Some(Method::User { declaring: k, f });
+            return Some(user(c, k, f, *lower));
         }
         // `use T { foo as bar; }`
-        if let Some(original) = k.trait_alias_map.get(lower)
-            && let Some(f) = k
-                .direct_trait_names()
-                .filter_map(|t| codebase.get_class_like(t.as_bytes()))
-                .find_map(|t| codebase.get_declaring_method(t.name.as_bytes(), original.as_bytes()))
+        if k.trait_alias_map.contains_key(lower)
+            && let Some(f) = codebase.get_declaring_method(k.name.as_bytes(), lower.as_bytes())
         {
-            return Some(Method::User { declaring: k, f });
+            return Some(user(c, k, f, *lower));
         }
         None
     };
@@ -244,10 +247,7 @@ fn declared<'a>(
         if let Some(Method::User { f, .. }) = found.take()
             && declaring.is_none_or(|d| d.span == f.span)
         {
-            found = Some(Method::User {
-                declaring: *parent,
-                f,
-            });
+            found = Some(user(c, parent, f, *lower));
             active.remove(&parent.name);
             pending.pop();
             continue;
@@ -272,4 +272,15 @@ fn declared<'a>(
         }
     }
     found
+}
+
+fn user<'a>(
+    c: &Checker<'a, '_>,
+    declaring: &'a ClassLikeMetadata,
+    f: &'a FunctionLikeMetadata,
+    name: mago_word::Word,
+) -> Method<'a> {
+    let visibility = c.codebase.get_method_visibility(declaring.name.as_bytes(), name.as_bytes())
+        .unwrap_or_else(|| f.method_metadata.as_ref().map_or(Visibility::Public, |m| m.visibility));
+    Method::User { declaring, f, name, visibility }
 }

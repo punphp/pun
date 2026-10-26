@@ -311,7 +311,7 @@ impl<'a, 'arena> Checker<'a, 'arena> {
                                     .collect(),
                             );
                         }
-                        let super::super::members::Method::User { declaring, f } =
+                        let super::super::members::Method::User { declaring, f, .. } =
                             super::super::members::method(self, class, name.as_bytes())?
                         else {
                             return None;

@@ -294,7 +294,14 @@ fn native_declaration(
     t: &mago_codex::metadata::ttype::TypeMetadata,
     class: Option<&ClassLikeMetadata>,
 ) -> Type {
-    if t.type_union.types.len() < 2 {
+    // Even a single `self` atom has already become the storage trait's name in the codex. Resolve the written
+    // contextual keyword instead, against the class consuming the method.
+    let contextual = class.is_some() && file_contents(c, t.span.file_id).is_some_and(|contents| {
+        contents.get(t.span.start.offset as usize..t.span.end.offset as usize).is_some_and(|hint| {
+            [b"self".as_slice(), b"parent", b"static"].iter().any(|name| hint.eq_ignore_ascii_case(name))
+        })
+    });
+    if t.type_union.types.len() < 2 && !contextual {
         return from_tunion_in(c, &t.type_union, class);
     }
     let written = (|| {
@@ -328,6 +335,16 @@ fn native_declaration(
 /// with its PHPDoc type (a method's inherited one too), `declaring` being the class-like declaring a method.
 pub fn codex_params(c: &Checker, f: &FunctionLikeMetadata, declaring: Option<&ClassLikeMetadata>) -> Vec<Type> {
     let doc = codex_doc(c, f, declaring);
+    codex_parameter_types(c, f, declaring, doc)
+}
+
+/// Parameters in the reflected method's name scope, not the stored trait declaration's name scope.
+pub(super) fn reflected_params(c: &Checker, f: &FunctionLikeMetadata, declaring: Option<&ClassLikeMetadata>, name: &str) -> Vec<Type> {
+    let doc = reflected_doc(c, f, declaring, name);
+    codex_parameter_types(c, f, declaring, doc)
+}
+
+fn codex_parameter_types(c: &Checker, f: &FunctionLikeMetadata, declaring: Option<&ClassLikeMetadata>, doc: Resolved) -> Vec<Type> {
     f.parameters
         .iter()
         .map(|p| {
@@ -365,9 +382,35 @@ pub fn codex_closure_this(c: &Checker, f: &FunctionLikeMetadata, declaring: Opti
     codex_doc(c, f, declaring).closure_this
 }
 
+pub(super) fn reflected_closure_this(c: &Checker, f: &FunctionLikeMetadata, declaring: Option<&ClassLikeMetadata>, name: &str) -> HashMap<String, Type> {
+    reflected_doc(c, f, declaring, name).closure_this
+}
+
+/// The declaring class's policy and the resolved method PHPDoc, including its reflected alias name scope.
+pub(super) fn reflected_accepts_named(c: &Checker, class: &ClassLikeMetadata, name: &str) -> bool {
+    !super::declarations::has_tag(&c.class_tags(class), &["@no-named-arguments"])
+        && method_doc(c, class, name.as_bytes(), 0).and_then(|doc| doc.accepts_named).unwrap_or(true)
+}
+
 /// The PHPDoc return type of a function-like from the codex (a method's inherited one too).
 pub fn codex_return(c: &Checker, f: &FunctionLikeMetadata, declaring: Option<&ClassLikeMetadata>) -> Option<Type> {
     codex_doc(c, f, declaring).ret
+}
+
+/// `getReturnType()` of a reflected callable, not its raw `@return` tag. The reflected alias name determines the
+/// implicit magic return type; a function named `__construct` is still an ordinary function.
+pub(super) fn codex_return_type(c: &Checker, f: &FunctionLikeMetadata, declaring: Option<&ClassLikeMetadata>, name: &str) -> Type {
+    let native = f.return_type_declaration_metadata.as_ref()
+        .map(|t| native_declaration(c, t, declaring))
+        .or_else(|| declaring.and_then(|_| magic_return(name.as_bytes())));
+    decide_type(native.unwrap_or_else(mixed), reflected_doc(c, f, declaring, name).ret)
+}
+
+fn reflected_doc(c: &Checker, f: &FunctionLikeMetadata, declaring: Option<&ClassLikeMetadata>, name: &str) -> Resolved {
+    match declaring {
+        Some(class) => method_doc(c, class, name.as_bytes(), 0).unwrap_or_default(),
+        None => codex_doc(c, f, None),
+    }
 }
 
 /// The declaration's PHPDoc name/template scope, also when an inline value annotation is read from a closure.
@@ -483,6 +526,7 @@ pub struct Signature {
 struct Resolved {
     params: HashMap<String, Type>,
     ret: Option<Type>,
+    accepts_named: Option<bool>,
     /// `@param-out` and `@param-closure-this` types by parameter name
     outs: HashMap<String, Type>,
     closure_this: HashMap<String, Type>,
@@ -565,6 +609,9 @@ fn resolved_own(
             .map(|(k, (t, _))| (k, t))
             .collect(),
         ret: doc.return_type(&scope),
+        accepts_named: Some(!super::declarations::has_tag(
+            &super::declarations::doc_tags(&raw), &["@no-named-arguments"],
+        )),
         outs: Doc::named_types(&doc.outs, &scope),
         closure_this: Doc::named_types(&doc.closure_this, &scope),
         self_out: doc.self_out.as_ref().map(|n| resolve_in(n, &scope)),
@@ -592,12 +639,21 @@ fn method_doc(
     name: &[u8],
     depth: usize,
 ) -> Option<Resolved> {
-    let m = c.codebase.get_method(class.name.as_bytes(), name)?;
+    let m = c.codebase.get_declaring_method(class.name.as_bytes(), name)?;
     if class.flags.contains(MetadataFlags::BUILTIN) {
         return builtin_method_doc(class, m, name);
     }
-    let own = if m.has_docblock {
-        resolved_own(c, m, class, class)
+    // FileTypeMapper::createPhpDocNodeMap() renames a trait method's name scope to its alias. Its original name
+    // therefore has no resolved PHPDoc in the using class, while native parameter declarations still apply.
+    let storage = c.codebase.get_declaring_method_class(class.name.as_bytes(), name)
+        .and_then(|n| c.codebase.get_class_like(n.as_bytes())).unwrap_or(class);
+    let aliased_source = storage.name != class.name && storage.kind.is_trait()
+        && class.trait_alias_map.iter().any(|(alias, source)| {
+            source.as_bytes() == name && class.declaring_method_ids.get(alias)
+                == class.declaring_method_ids.get(&mago_word::word(name))
+        });
+    let own = if m.has_docblock && !aliased_source {
+        resolved_own(c, m, storage, class)
     } else {
         None
     };
@@ -779,6 +835,7 @@ fn merge(
     constructor: bool,
 ) -> Resolved {
     let mut out = current.unwrap_or_default();
+    out.accepts_named = Some(out.accepts_named.unwrap_or(true) && parent.accepts_named.unwrap_or(true));
     // a constructor's parameters map by name (`resolveMethodPhpDocFromParentClass()`)
     let parent_names: Vec<String> = if constructor {
         positional.to_vec()

@@ -1,0 +1,74 @@
+{
+  "totals": {
+    "errors": 0,
+    "file_errors": 10
+  },
+  "files": {
+    "calls.php": {
+      "errors": 10,
+      "messages": [
+        {
+          "message": "Attribute class AttributeReflection\\PrivateAttribute constructor must be public.",
+          "line": 10,
+          "ignorable": true,
+          "identifier": "attribute.constructorNotPublic"
+        },
+        {
+          "message": "Constructor of attribute class AttributeReflection\\PrivateAttribute is not public.",
+          "line": 16,
+          "ignorable": true,
+          "identifier": "attribute.constructorNotPublic"
+        },
+        {
+          "message": "Attribute class AttributeReflection\\NestedPrivateAttribute constructor must be public.",
+          "line": 24,
+          "ignorable": true,
+          "identifier": "attribute.constructorNotPublic"
+        },
+        {
+          "message": "Constructor of attribute class AttributeReflection\\NestedPrivateAttribute is not public.",
+          "line": 30,
+          "ignorable": true,
+          "identifier": "attribute.constructorNotPublic"
+        },
+        {
+          "message": "Attribute class AttributeReflection\\InheritedPrivateAttribute constructor must be public.",
+          "line": 33,
+          "ignorable": true,
+          "identifier": "attribute.constructorNotPublic"
+        },
+        {
+          "message": "Constructor of attribute class AttributeReflection\\InheritedPrivateAttribute is not public.",
+          "line": 36,
+          "ignorable": true,
+          "identifier": "attribute.constructorNotPublic"
+        },
+        {
+          "message": "Attribute class AttributeReflection\\PrivateAliasedAttribute constructor must be public.",
+          "line": 75,
+          "ignorable": true,
+          "identifier": "attribute.constructorNotPublic"
+        },
+        {
+          "message": "Constructor of attribute class AttributeReflection\\PrivateAliasedAttribute is not public.",
+          "line": 81,
+          "ignorable": true,
+          "identifier": "attribute.constructorNotPublic"
+        },
+        {
+          "message": "Cannot instantiate class AttributeReflection\\PrivateAttribute via private constructor AttributeReflection\\PrivateAttribute::__construct().",
+          "line": 186,
+          "ignorable": true,
+          "identifier": "new.privateConstructor"
+        },
+        {
+          "message": "Constructor of class AttributeReflection\\ExplicitReturnAttribute has a return type.",
+          "line": 206,
+          "ignorable": false,
+          "identifier": "constructor.returnType"
+        }
+      ]
+    }
+  },
+  "errors": []
+}

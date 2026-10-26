@@ -316,7 +316,7 @@ fn restricted(
     m: &Method,
     declaring: Option<&ClassLikeMetadata>,
 ) -> Option<(String, String)> {
-    let Method::User { declaring: own, f } = m else {
+    let Method::User { declaring: own, f, .. } = m else {
         return None;
     };
     if !c.internal_members {
@@ -577,7 +577,7 @@ pub fn static_property_member(c: &Checker, k: &ClassLikeMetadata, name: &[u8]) -
 /// The method a STATIC_METHOD_CALL location names (`hasMethod()` and `getMethod()`), for the class-name extensions.
 pub fn method_member(c: &Checker, m: &Method) -> super::class_names::Member {
     let (internal, declaring_deprecated) = match m {
-        Method::User { declaring, f } => (
+        Method::User { declaring, f, .. } => (
             f.flags.is_internal() || declaring.flags.is_internal(),
             c.deprecations && c.class_deprecation(declaring).is_some(),
         ),

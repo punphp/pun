@@ -34,11 +34,18 @@ pub struct Acceptor {
     pub by_ref: Vec<ByRef>,
     /// Whether `getClosureThisType()` is non-null, retained through selection and combination.
     pub closure_this: Vec<bool>,
-    /// A built-in method's class, which `self`/`static` in its parameter types name.
+    /// A method's reflection context, which `self`/`static` in its parameter types name. A trait method's context
+    /// is the consuming class, not its storage owner.
     pub class: Option<String>,
-    /// A user function-like's codex entry, to read its parameter types as PHPStan does: the declaring class-like of a
-    /// method (`None` for a function) and the function-like's name.
-    pub callee: Option<(Option<String>, String)>,
+    pub callee: Option<UserCallee>,
+}
+
+/// A user's storage identity stays separate from the reflected class and method name (trait aliases included).
+#[derive(Clone, Debug, PartialEq)]
+pub struct UserCallee {
+    pub class: Option<String>,
+    pub name: String,
+    pub reflected_name: String,
 }
 
 /// A parameter's type as its reflection declares it, converted when an argument type is checked against it.
@@ -67,17 +74,25 @@ impl Acceptor {
     /// Resolve a user reflection's PHPDoc before selection can discard its callee identity. Methods share the
     /// inheritance and declaring-class contract used by the named-argument collector.
     pub(super) fn accepts_named(&self, c: &Checker) -> Tri {
-        let accepts = self.callee.as_ref().and_then(|(class, name)| {
-            if let Some(class) = class {
-                let class = c.codebase.get_class_like(class.as_bytes())?;
-                let f = c.codebase.get_method(class.name.as_bytes(), name.as_bytes())?;
-                Some(accepts_named(c, f, Some(class)))
+        let accepts = self.user(c).zip(self.callee.as_ref()).map(|((f, class), callee)| match class {
+            Some(class) => if super::declared::reflected_accepts_named(c, class, &callee.reflected_name) {
+                Tri::Yes
             } else {
-                let f = c.codebase.get_function(name.as_bytes())?;
-                Some(accepts_named(c, f, None))
-            }
+                Tri::No
+            },
+            None => accepts_named(c, f, None),
         });
         accepts.unwrap_or(self.accepts_named_arguments)
+    }
+
+    /// The stored declaration and consuming-class context used by PHPStan's method reflection.
+    pub(super) fn user<'c>(&self, c: &'c Checker) -> Option<(&'c FunctionLikeMetadata, Option<&'c ClassLikeMetadata>)> {
+        let callee = self.callee.as_ref()?;
+        let f = match &callee.class {
+            Some(class) => c.codebase.get_method(class.as_bytes(), callee.name.as_bytes())?,
+            None => c.codebase.get_function(callee.name.as_bytes())?,
+        };
+        Some((f, self.class.as_ref().and_then(|name| c.codebase.get_class_like(name.as_bytes()))))
     }
 
     fn min(&self) -> usize {
@@ -128,7 +143,11 @@ impl Acceptor {
                 .collect(),
             closure_this: f.parameters.iter().map(|p| p.closure_this_type.is_some()).collect(),
             class: None,
-            callee: Some((None, String::from_utf8_lossy(f.name.as_bytes()).into_owned())),
+            callee: Some(UserCallee {
+                class: None,
+                name: f.name.to_string(),
+                reflected_name: f.name.to_string(),
+            }),
         }
     }
 
@@ -183,14 +202,8 @@ pub fn select(c: &Checker, variants: Variants, counts: &Counts) -> Acceptor {
     };
     let variants: Vec<_> = variants.into_iter().map(|mut v| {
         v.accepts_named_arguments = v.accepts_named(c);
-        if let Some((class, name)) = &v.callee
-            && let Some(f) = match class {
-                Some(class) => c.codebase.get_method(class.as_bytes(), name.as_bytes()),
-                None => c.codebase.get_function(name.as_bytes()),
-            }
-        {
-            let class = class.as_ref().and_then(|name| c.codebase.get_class_like(name.as_bytes()));
-            let bindings = super::declared::codex_closure_this(c, f, class);
+        if let (Some((f, class)), Some(callee)) = (v.user(c), v.callee.as_ref()) {
+            let bindings = super::declared::reflected_closure_this(c, f, class, &callee.reflected_name);
             v.closure_this = v.names.iter().map(|name| bindings.contains_key(name)).collect();
         }
         v

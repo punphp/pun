@@ -2,8 +2,6 @@
 //! each argument's type against its parameter's (`argument.type`), by-reference parameters given no variable
 //! (`argument.byRef`) and unpacked non-iterables (`argument.unpackNonIterable`).
 
-use mago_codex::metadata::class_like::ClassLikeMetadata;
-use mago_codex::metadata::function_like::FunctionLikeMetadata;
 use mago_span::Span;
 use pun_phpstan::symbols::ByRef;
 use pun_phpstan::types::{
@@ -43,21 +41,17 @@ pub(in super::super) fn declared_type(c: &Checker, acceptor: &Acceptor, p: usize
         ParamType::Builtin(s, _) => Some(pun_phpstan::resolve::resolve_str(s, acceptor.class.as_deref())),
         ParamType::Typed(t) => Some(t.clone()),
         ParamType::User => {
-            let (f, declaring) = callee(c, acceptor)?;
+            let (f, declaring) = acceptor.user(c)?;
             // ponytail: computed per argument, not cached per callee
-            declared::codex_params(c, f, declaring).into_iter().nth(p)
+            declared::reflected_params(c, f, declaring, &acceptor.callee.as_ref()?.reflected_name).into_iter().nth(p)
         }
     }
 }
 
-/// A user callee's codex entry and the class-like declaring it (a method's).
-fn callee<'c>(c: &'c Checker, acceptor: &Acceptor) -> Option<(&'c FunctionLikeMetadata, Option<&'c ClassLikeMetadata>)> {
-    match acceptor.callee.as_ref()? {
-        (Some(k), name) => {
-            Some((c.codebase.get_method(k.as_bytes(), name.as_bytes())?, c.codebase.get_class_like(k.as_bytes())))
-        }
-        (None, name) => Some((c.codebase.get_function(name.as_bytes())?, None)),
-    }
+/// `getReturnType()` retains native and implicit magic return types when deciding the PHPDoc type.
+fn return_type(c: &Checker, acceptor: &Acceptor) -> Option<Type> {
+    let (f, declaring) = acceptor.user(c)?;
+    Some(declared::codex_return_type(c, f, declaring, &acceptor.callee.as_ref()?.reflected_name))
 }
 
 /// A type only the call resolves: a template type (ResolvedFunctionVariant), `static`/`$this` or a conditional type.
@@ -116,7 +110,7 @@ fn infer(c: &Checker, acceptor: &Acceptor, args: &[Entry], parameters: &[Option<
         }
     }
     // an unpassed parameter takes its default value, a variadic one an explicit `never`
-    let callee = callee(c, acceptor);
+    let callee = acceptor.user(c);
     for (p, passed) in passed.iter_mut().enumerate().filter(|(_, t)| t.is_none()) {
         let default = callee.and_then(|(f, _)| f.parameters.get(p)?.default_type.as_ref());
         *passed = match default {
@@ -133,7 +127,7 @@ fn infer(c: &Checker, acceptor: &Acceptor, args: &[Entry], parameters: &[Option<
             _ => map,
         });
         // a return type conditional on a passed parameter infers from its target too
-        match callee.and_then(|(f, declaring)| declared::codex_return(c, f, declaring)) {
+        match return_type(c, acceptor) {
             Some(Type::Conditional(cond))
                 if !cond.negated
                     && let Subject::Parameter(name) = &cond.subject
@@ -247,7 +241,7 @@ fn property_reflections(c: &Checker, inference: &Inference) -> Vec<(String, pun_
 /// (not absorbed by a union member) that both a parameter and the return type use.
 fn unresolvable_templates(c: &Checker, acceptor: &Acceptor, inference: &Inference) -> Vec<String> {
     let Inference { templates, passed, map, .. } = inference;
-    let Some(ret) = callee(c, acceptor).and_then(|(f, declaring)| declared::codex_return(c, f, declaring)) else {
+    let Some(ret) = return_type(c, acceptor) else {
         return vec![];
     };
     let resolved_to = |t: &Template| {

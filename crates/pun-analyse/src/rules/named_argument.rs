@@ -52,7 +52,7 @@ fn method_doc(
         .iter()
         .chain(&class.direct_parent_interfaces);
     for parent in parents.filter_map(|p| c.codebase.get_class_like(p.as_bytes())) {
-        if let Some(members::Method::User { declaring, f }) = members::method(c, parent, name)
+        if let Some(members::Method::User { declaring, f, .. }) = members::method(c, parent, name)
             && !f
                 .method_metadata
                 .as_ref()
@@ -137,7 +137,7 @@ fn method(c: &Checker, ty: &Type, name: &[u8], counts: &params::Counts) -> Optio
         Type::Object(n, _) | Type::Static(n, _) | Type::This(n) | Type::EnumCase(n, _) => {
             let m = c.method_of(n, name).ok().flatten()?;
             let (accepts, final_class) = match &m {
-                members::Method::User { declaring, f } => {
+                members::Method::User { declaring, f, .. } => {
                     (accepts(c, declaring, f), declaring.flags.is_final())
                 }
                 members::Method::Builtin { declaring, .. } => (true, declaring.is_final),

@@ -1,0 +1,342 @@
+{
+  "totals": {
+    "errors": 0,
+    "file_errors": 54
+  },
+  "files": {
+    "calls.php": {
+      "errors": 54,
+      "messages": [
+        {
+          "message": "Attribute class AttributeReflection\\PrivateAttribute constructor must be public.",
+          "line": 10,
+          "ignorable": true,
+          "identifier": "attribute.constructorNotPublic"
+        },
+        {
+          "message": "Constructor of attribute class AttributeReflection\\PrivateAttribute is not public.",
+          "line": 16,
+          "ignorable": true,
+          "identifier": "attribute.constructorNotPublic"
+        },
+        {
+          "message": "Attribute class AttributeReflection\\NestedPrivateAttribute constructor must be public.",
+          "line": 24,
+          "ignorable": true,
+          "identifier": "attribute.constructorNotPublic"
+        },
+        {
+          "message": "Constructor of attribute class AttributeReflection\\NestedPrivateAttribute is not public.",
+          "line": 30,
+          "ignorable": true,
+          "identifier": "attribute.constructorNotPublic"
+        },
+        {
+          "message": "Attribute class AttributeReflection\\InheritedPrivateAttribute constructor must be public.",
+          "line": 33,
+          "ignorable": true,
+          "identifier": "attribute.constructorNotPublic"
+        },
+        {
+          "message": "Constructor of attribute class AttributeReflection\\InheritedPrivateAttribute is not public.",
+          "line": 36,
+          "ignorable": true,
+          "identifier": "attribute.constructorNotPublic"
+        },
+        {
+          "message": "Attribute class AttributeReflection\\TypedAttribute constructor invoked with named argument $x, but it's not allowed because of @no-named-arguments.",
+          "line": 51,
+          "ignorable": true,
+          "identifier": "argument.named"
+        },
+        {
+          "message": "Parameter $x of attribute class AttributeReflection\\TypedAttribute constructor expects int, string given.",
+          "line": 51,
+          "ignorable": true,
+          "identifier": "argument.type"
+        },
+        {
+          "message": "Attribute class AttributeReflection\\InheritedTypedAttribute constructor invoked with named argument $x, but it's not allowed because of @no-named-arguments.",
+          "line": 57,
+          "ignorable": true,
+          "identifier": "argument.named"
+        },
+        {
+          "message": "Parameter $x of attribute class AttributeReflection\\InheritedTypedAttribute constructor expects int, string given.",
+          "line": 57,
+          "ignorable": true,
+          "identifier": "argument.type"
+        },
+        {
+          "message": "Attribute class AttributeReflection\\AliasedAttribute constructor invoked with named argument $x, but it's not allowed because of @no-named-arguments.",
+          "line": 72,
+          "ignorable": true,
+          "identifier": "argument.named"
+        },
+        {
+          "message": "Parameter $x of attribute class AttributeReflection\\AliasedAttribute constructor expects int, string given.",
+          "line": 72,
+          "ignorable": true,
+          "identifier": "argument.type"
+        },
+        {
+          "message": "Attribute class AttributeReflection\\PrivateAliasedAttribute constructor must be public.",
+          "line": 75,
+          "ignorable": true,
+          "identifier": "attribute.constructorNotPublic"
+        },
+        {
+          "message": "Attribute class AttributeReflection\\PrivateAliasedAttribute constructor invoked with named argument $x, but it's not allowed because of @no-named-arguments.",
+          "line": 81,
+          "ignorable": true,
+          "identifier": "argument.named"
+        },
+        {
+          "message": "Constructor of attribute class AttributeReflection\\PrivateAliasedAttribute is not public.",
+          "line": 81,
+          "ignorable": true,
+          "identifier": "attribute.constructorNotPublic"
+        },
+        {
+          "message": "Parameter $x of attribute class AttributeReflection\\PrivateAliasedAttribute constructor expects int, string given.",
+          "line": 81,
+          "ignorable": true,
+          "identifier": "argument.type"
+        },
+        {
+          "message": "Parameter #1 $value of attribute class AttributeReflection\\ContextAttribute constructor expects AttributeReflection\\ContextAttribute, int given.",
+          "line": 96,
+          "ignorable": true,
+          "identifier": "argument.type"
+        },
+        {
+          "message": "Parameter #1 $value of attribute class AttributeReflection\\InheritedContextAttribute constructor expects AttributeReflection\\ContextAttribute, int given.",
+          "line": 102,
+          "ignorable": true,
+          "identifier": "argument.type"
+        },
+        {
+          "message": "Parameter #1 $value of attribute class AttributeReflection\\TemplateAttribute constructor expects object, int given.",
+          "line": 116,
+          "ignorable": true,
+          "identifier": "argument.type"
+        },
+        {
+          "message": "Parameter #1 $value of attribute class AttributeReflection\\AliasedTemplateAttribute constructor expects object, int given.",
+          "line": 154,
+          "ignorable": true,
+          "identifier": "argument.type"
+        },
+        {
+          "message": "PHPDoc tag @return with type T of object is incompatible with native type int.",
+          "line": 164,
+          "ignorable": true,
+          "identifier": "return.phpDocType"
+        },
+        {
+          "message": "Call to new AttributeReflection\\TypedAttribute() on a separate line has no effect.",
+          "line": 183,
+          "ignorable": true,
+          "identifier": "new.resultUnused"
+        },
+        {
+          "message": "Class AttributeReflection\\TypedAttribute constructor invoked with named argument $x, but it's not allowed because of @no-named-arguments.",
+          "line": 183,
+          "ignorable": true,
+          "identifier": "argument.named"
+        },
+        {
+          "message": "Parameter $x of class AttributeReflection\\TypedAttribute constructor expects int, string given.",
+          "line": 183,
+          "ignorable": true,
+          "identifier": "argument.type"
+        },
+        {
+          "message": "Call to new AttributeReflection\\TypedAttribute() on a separate line has no effect.",
+          "line": 184,
+          "ignorable": true,
+          "identifier": "new.resultUnused"
+        },
+        {
+          "message": "Class AttributeReflection\\InheritedTypedAttribute constructor invoked with named argument $x, but it's not allowed because of @no-named-arguments.",
+          "line": 184,
+          "ignorable": true,
+          "identifier": "argument.named"
+        },
+        {
+          "message": "Parameter $x of class AttributeReflection\\InheritedTypedAttribute constructor expects int, string given.",
+          "line": 184,
+          "ignorable": true,
+          "identifier": "argument.type"
+        },
+        {
+          "message": "Call to new AttributeReflection\\AliasedAttribute() on a separate line has no effect.",
+          "line": 185,
+          "ignorable": true,
+          "identifier": "new.resultUnused"
+        },
+        {
+          "message": "Class AttributeReflection\\AliasedAttribute constructor invoked with named argument $x, but it's not allowed because of @no-named-arguments.",
+          "line": 185,
+          "ignorable": true,
+          "identifier": "argument.named"
+        },
+        {
+          "message": "Parameter $x of class AttributeReflection\\AliasedAttribute constructor expects int, string given.",
+          "line": 185,
+          "ignorable": true,
+          "identifier": "argument.type"
+        },
+        {
+          "message": "Call to new AttributeReflection\\PrivateAttribute() on a separate line has no effect.",
+          "line": 186,
+          "ignorable": true,
+          "identifier": "new.resultUnused"
+        },
+        {
+          "message": "Cannot instantiate class AttributeReflection\\PrivateAttribute via private constructor AttributeReflection\\PrivateAttribute::__construct().",
+          "line": 186,
+          "ignorable": true,
+          "identifier": "new.privateConstructor"
+        },
+        {
+          "message": "Method AttributeReflection\\TypedAttribute::__construct() invoked with named argument $x, but it's not allowed because of @no-named-arguments.",
+          "line": 187,
+          "ignorable": true,
+          "identifier": "argument.named"
+        },
+        {
+          "message": "Parameter $x of method AttributeReflection\\TypedAttribute::__construct() expects int, string given.",
+          "line": 187,
+          "ignorable": true,
+          "identifier": "argument.type"
+        },
+        {
+          "message": "Parameter #1 $value of method AttributeReflection\\TraitTemplateAttribute::factory() expects object, int given.",
+          "line": 188,
+          "ignorable": true,
+          "identifier": "argument.type"
+        },
+        {
+          "message": "Unable to resolve the template type T in call to method AttributeReflection\\TraitTemplateAttribute::factory()",
+          "line": 188,
+          "ignorable": true,
+          "tip": "See: https://phpstan.org/blog/solving-phpstan-error-unable-to-resolve-template-type",
+          "identifier": "argument.templateType"
+        },
+        {
+          "message": "Parameter #1 $value of method AttributeReflection\\NativeReturn::method() expects object, int given.",
+          "line": 190,
+          "ignorable": true,
+          "identifier": "argument.type"
+        },
+        {
+          "message": "Parameter #1 $value of method AttributeReflection\\NativeReturn::untyped() expects object, int given.",
+          "line": 191,
+          "ignorable": true,
+          "identifier": "argument.type"
+        },
+        {
+          "message": "Unable to resolve the template type T in call to method AttributeReflection\\NativeReturn::untyped()",
+          "line": 191,
+          "ignorable": true,
+          "tip": "See: https://phpstan.org/blog/solving-phpstan-error-unable-to-resolve-template-type",
+          "identifier": "argument.templateType"
+        },
+        {
+          "message": "Call to function AttributeReflection\\__construct() on a separate line has no effect.",
+          "line": 192,
+          "ignorable": true,
+          "identifier": "function.resultUnused"
+        },
+        {
+          "message": "Parameter #1 $value of function AttributeReflection\\__construct expects object, int given.",
+          "line": 192,
+          "ignorable": true,
+          "identifier": "argument.type"
+        },
+        {
+          "message": "Unable to resolve the template type T in call to function AttributeReflection\\__construct",
+          "line": 192,
+          "ignorable": true,
+          "tip": "See: https://phpstan.org/blog/solving-phpstan-error-unable-to-resolve-template-type",
+          "identifier": "argument.templateType"
+        },
+        {
+          "message": "Call to new AttributeReflection\\ContextAttribute() on a separate line has no effect.",
+          "line": 193,
+          "ignorable": true,
+          "identifier": "new.resultUnused"
+        },
+        {
+          "message": "Parameter #1 $value of class AttributeReflection\\InheritedContextAttribute constructor expects AttributeReflection\\ContextAttribute, stdClass given.",
+          "line": 193,
+          "ignorable": true,
+          "identifier": "argument.type"
+        },
+        {
+          "message": "Constructor of class AttributeReflection\\ExplicitReturnAttribute has a return type.",
+          "line": 206,
+          "ignorable": false,
+          "identifier": "constructor.returnType"
+        },
+        {
+          "message": "Method AttributeReflection\\ExplicitReturnAttribute::__construct() with return type void returns T of object but should not return anything.",
+          "line": 206,
+          "ignorable": true,
+          "identifier": "return.void"
+        },
+        {
+          "message": "Parameter #1 $value of attribute class AttributeReflection\\ExplicitReturnAttribute constructor expects object, int given.",
+          "line": 209,
+          "ignorable": true,
+          "identifier": "argument.type"
+        },
+        {
+          "message": "Unable to resolve the template type T in instantiation of attribute class AttributeReflection\\ExplicitReturnAttribute",
+          "line": 209,
+          "ignorable": true,
+          "tip": "See: https://phpstan.org/blog/solving-phpstan-error-unable-to-resolve-template-type",
+          "identifier": "argument.templateType"
+        },
+        {
+          "message": "Parameter #1 $value of attribute class AttributeReflection\\PlainTraitTemplateAttribute constructor expects object, int given.",
+          "line": 218,
+          "ignorable": true,
+          "identifier": "argument.type"
+        },
+        {
+          "message": "Attribute class AttributeReflection\\ForbiddenClassPolicyAttribute constructor invoked with named argument $value, but it's not allowed because of @no-named-arguments.",
+          "line": 252,
+          "ignorable": true,
+          "identifier": "argument.named"
+        },
+        {
+          "message": "Parameter #1 $value of method AttributeReflection\\NativeSelfOwner::renamed() expects AttributeReflection\\NativeSelfOwner, stdClass given.",
+          "line": 271,
+          "ignorable": true,
+          "identifier": "argument.type"
+        },
+        {
+          "message": "Parameter #1 $value of attribute class AttributeReflection\\SelectedAttribute constructor expects int, string given.",
+          "line": 295,
+          "ignorable": true,
+          "identifier": "argument.type"
+        },
+        {
+          "message": "Parameter $other of method AttributeReflection\\SelectedAttribute::other() expects string, int given.",
+          "line": 300,
+          "ignorable": true,
+          "identifier": "argument.type"
+        },
+        {
+          "message": "Method AttributeReflection\\AliasedPolicyAttribute::factory() invoked with named argument $value, but it's not allowed because of @no-named-arguments.",
+          "line": 320,
+          "ignorable": true,
+          "identifier": "argument.named"
+        }
+      ]
+    }
+  },
+  "errors": []
+}
