@@ -80,6 +80,9 @@ Named classes and direct anonymous-class expressions respect pre-8.1 `readonly` 
 Invalid files contribute no scanned symbols; command output contains only the severe parser errors.
 General PHP syntax-error translation remains incomplete.
 
+Assignment checks allow references on individual destructuring targets and nested `array(...)` targets inside short-array destructuring.
+Arrays nested directly inside an explicit `list()` remain literal expressions, not destructuring targets.
+
 The `compact()` check preserves resolved function-import names and reads variable certainty before evaluating arguments.
 Benevolent unions and callable-array intersections retain their literal variable names.
 Its findings share `analyse/undefined/variable` selection; independent compact-rule selection remains incomplete.
