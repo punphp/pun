@@ -49,3 +49,9 @@ function calls(array $ints, array $lists): void
     $_ = implode(array: [1]);
     $_ = array_any([1]);
 }
+
+function terminatedArrayCallback(): void
+{
+    array_find(throw new \RuntimeException(), static fn (int $value): bool => true);
+    $_ = array_find([1], static fn (int $value): bool => true);
+}

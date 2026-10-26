@@ -38,8 +38,14 @@ Argument-count checks distinguish empty arrays from non-empty open array shapes 
 When argument type checks are enabled, calls respect `@no-named-arguments` on functions, methods and constructors, including inherited policies. Named arguments and string-keyed unpacking produce PHPStan's `argument.named` diagnostic after argument binding. Unknown arguments retain their binding diagnostics.
 
 At PHPStan level 5 and above, shared argument checks validate allowed built-in constants and report unresolvable generic parameter types.
-They also reject static closures for parameters that require a bound `$this`.
+Unresolvable-type diagnostics preserve the explanation from the type comparison or deferred array-shape key.
+Shared argument checks also reject static closures for parameters that require a bound `$this`.
 These checks also apply to attribute constructors.
+
+Shared attribute checks preserve explicit import aliases and evaluate parenthesized flag expressions.
+Trait constructors retain adapted visibility, named-argument policies and parameter types in the consuming class's scope.
+Constructor template checks use the reflected return type, including implicit `void`, rather than the raw `@return` tag.
+Attribute rule support remains incomplete.
 
 Dynamic `new $class` expressions report unknown class names even when another possible name exists.
 
@@ -47,13 +53,25 @@ Dynamic constant fetches such as `Example::{$name}` check each possible name whe
 
 Class-constant checks retain expression guards across branches, ternaries and short-circuit conditions.
 Writes invalidate guards for the affected receiver or selector.
-General function-call identities, indirect variables, dynamic property selectors and type-dependent comparisons remain unsupported.
+Named calls retain their argument identities; impure methods and by-reference arguments invalidate affected guards.
+Dynamic and nullsafe calls, indirect variables, dynamic property selectors and general type-dependent comparisons remain unsupported.
 
 Inline non-static closures and arrow functions use the class named by `@param-closure-this`.
 Pun resolves these tags on named functions and methods called through a class name or a single known object class, including nullable receivers.
 Bindings from multiple possible receiver classes remain unsupported.
 
 `PHPStan\dumpType()` reports inferred types in PHPStan's precise diagnostic notation. `PHPStan\dumpPhpDocType()` reports the same types as PHPDoc. Each argument produces one non-ignorable diagnostic on the call's line. Native type dumps, scope dumps, and the `PHPStan\Testing` assertion functions remain unported.
+
+Constant-bound templates retain their identities when combined with literal scalar types.
+Union descriptions use PHPStan's ordering, including distinct null-bound templates.
+
+`array_rand()` inference preserves possible array keys and returns a non-empty list when the requested count is at least two.
+`rand()`, `mt_rand()` and `random_int()` preserve inferred integer bounds.
+Reversed bounds are swapped only for `rand()`, matching PHPStan.
+
+Array writes distinguish definite literal keys from literal alternatives within a general string or integer key.
+Straight-through `foreach` loops over sealed constant lists of up to 16 required entries retain sequential array mutation state.
+Nested loops, references and loop exits retain general loop inference.
 
 An [ignore comment](/docs/configuration/ignore-comments) suppresses a matching ignorable finding:
 

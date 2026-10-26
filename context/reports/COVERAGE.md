@@ -4,13 +4,13 @@
 | crate | lines | hit | line % | tests |
 |---|---:|---:|---:|---|
 | punphp | 5397 | 5397 | 100.00% | ok |
-| punphp-analyse | 36208 | 36208 | 100.00% | ok |
+| punphp-analyse | 39701 | 39701 | 100.00% | ok |
 | punphp-config | 2604 | 2604 | 100.00% | ok |
 | punphp-fixers | 34895 | 34895 | 100.00% | ok |
 | punphp-format | 1022 | 1022 | 100.00% | ok |
 | punphp-harness | 235 | 235 | 100.00% | ok |
 | punphp-lint | 21786 | 21786 | 100.00% | ok |
-| punphp-phpstan | 9735 | 9735 | 100.00% | ok |
+| punphp-phpstan | 10259 | 10259 | 100.00% | ok |
 | punphp-problem | 105 | 105 | 100.00% | ok |
 | punphp-tokens | 3897 | 3897 | 100.00% | ok |
 | punphp-workspace | 457 | 457 | 100.00% | ok |
@@ -32,18 +32,18 @@ Uncovered lines:
 - `crates/pun-cli/src/pint_error.rs:77` `Thrown::of`'s fallback to Laravel Zero's ConsoleException for an untyped error: every error a format, lint or check run can hit today is typed (Finder, annotation, read/write) or already an `Abort`, so the fallback only guards future errors.
 - `crates/pun-cli/src/watch.rs:56` the watch channel's `Disconnected`: the notify watcher holds the sender and lives as long as the loop, so the channel never disconnects while it waits.
 - `crates/pun-phpstan/src/resolve.rs:39` a global type alias whose definition refers to itself: PHPStan's UsefulTypeAliasResolver throws ShouldNotHappenException ("Circular definition for type alias"); Pun resolves `*ERROR*` instead of recursing forever.
-- `crates/pun-phpstan/src/resolve.rs:962` a `true`/`false`/`null`/array constant expression as a type: phpdoc-parser reads only `@var null ::X`-like tag values so, and PHPStan's TypeNodeResolver throws ShouldNotHappenException on them; Pun resolves `*ERROR*` instead of crashing.
+- `crates/pun-phpstan/src/resolve.rs:983` a `true`/`false`/`null`/array constant expression as a type: phpdoc-parser reads only `@var null ::X`-like tag values so, and PHPStan's TypeNodeResolver throws ShouldNotHappenException on them; Pun resolves `*ERROR*` instead of crashing.
 - `crates/pun-cli/src/migrate.rs:557` closest_preset's "nothing to switch" return: every PHPStan level leaves some rules of its closest Pun preset off (level 0: the basic preset's 11-12 non-level-0 rules, with or without bleedingEdge), so a migrated `[analyse]` always has on/off lines.
-- `crates/pun-analyse/src/rules/return_types.rs:55-57` `Provider::meta()` of the array-slice return provider: as for the Laravel hook, `PluginRegistry` reads `meta()` only for its own library plugins.
-- `crates/pun-analyse/src/rules/return_types.rs:274-276` the same for the benevolent-return provider.
-- `crates/pun-analyse/src/rules/return_types.rs:315-317` the same for the Closure::bind()/bindTo() provider.
+- `crates/pun-analyse/src/rules/return_types.rs:60-62` `Provider::meta()` of the built-in return provider: as for the Laravel hook, `PluginRegistry` reads `meta()` only for its own library plugins.
+- `crates/pun-analyse/src/rules/return_types.rs:509-511` the same for the benevolent-return provider.
+- `crates/pun-analyse/src/rules/return_types.rs:550-552` the same for the Closure method return provider.
 - `crates/pun-analyse/src/rules/larastan/relations.rs:180` RelationExistenceRule's relation method declared by one of PHP's own classes: a model extends Eloquent's Model, which extends none of them, so its methods are always the user's.
 - `crates/pun-analyse/src/laravel/mod.rs:506-513` `Provider::meta()` of the model-attribute hook: Mago's `Provider` trait requires it, but `PluginRegistry` reads `meta()` only for its own library plugins, never for a registered expression hook, and the hook struct is private.
-- `crates/pun-analyse/src/rules/infer.rs:231-234` `Provider::meta()` of the definedness hook: as for the model-attribute hook's above, `PluginRegistry` never reads it for a registered expression hook.
-- `crates/pun-analyse/src/rules/infer.rs:178` the upstream-failure fallback that drops only the failing file's inferred types. The Methods fixture panics enter the separate codex scanner's intersection-masking retry. Signed integer division overflow is now fixed in the maintained analyzer and has a public regression; no known panic producer is retained solely to cover this guard.
+- `crates/pun-analyse/src/rules/infer.rs:272-275` `Provider::meta()` of the definedness hook: as for the model-attribute hook's above, `PluginRegistry` never reads it for a registered expression hook.
+- `crates/pun-analyse/src/rules/infer.rs:208` the upstream-failure fallback that drops only the failing file's inferred types. The Methods fixture panics enter the separate codex scanner's intersection-masking retry. Signed integer division overflow is now fixed in the maintained analyzer and has a public regression; no known panic producer is retained solely to cover this guard.
 - `crates/pun-analyse/src/mago.rs:74` the upstream-panic fallback that skips only the failing file. The former debug-panic.php (`int&mixed`) no longer triggers it, and signed integer division overflow is now fixed in the maintained analyzer. The containment guard remains for unexpected upstream failures.
-- `crates/pun-analyse/src/rules/types/convert.rs:369-371` a callable alias (`TCallable::Alias`) as an expression's type: Mago's analyser expands the alias it gives a variable assigned a closure when the variable is read, and `Closure::getCurrent()` in a generic closure is the only other source; the arm stays so such a type describes as PHPStan's ClosureType.
-- `crates/pun-analyse/src/rules/types/convert.rs:548` an array shape key naming a class constant (`array{Foo::BAR: int}`): Mago resolves it to the constant's value when it expands the type, so an expression's type never carries one.
+- `crates/pun-analyse/src/rules/types/convert.rs:482-484` a callable alias (`TCallable::Alias`) as an expression's type: Mago's analyser expands the alias it gives a variable assigned a closure when the variable is read, and `Closure::getCurrent()` in a generic closure is the only other source; the arm stays so such a type describes as PHPStan's ClosureType.
+- `crates/pun-analyse/src/rules/types/convert.rs:665` an array shape key naming a class constant (`array{Foo::BAR: int}`): Mago resolves it to the constant's value when it expands the type, so an expression's type never carries one.
 - `crates/pun-phpstan/src/symbols.rs:156-158` `Visitor::expecting()` of the symbols.json map reader: serde calls it only to word the error for malformed input, and symbols.json is compiled in (every map in it is an object or `[]`).
 - `crates/pun-lint/src/rules/laravel/prefer_nullsafe.rs:49` the non-target node guard: `Linter` dispatches this rule only for MethodCall and PropertyAccess, as its `targets()` requires.
 - `crates/pun-lint/src/rules/laravel/prefer_env_helper.rs:34` the non-target node guard: `Linter` dispatches only ArrayAccess for this rule.

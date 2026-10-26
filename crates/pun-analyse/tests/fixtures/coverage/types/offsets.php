@@ -224,3 +224,10 @@ function issetOffset(\ArrayAccess $a): void
         $a['k'] = 1;
     }
 }
+
+/** @param \ArrayAccess<int, int>&\Countable $storage */
+function intersectedOffsets(\ArrayAccess&\Countable $storage): void
+{
+    $storage['invalid'] += 1;
+    $storage[2] += 1;
+}

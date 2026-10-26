@@ -63,6 +63,13 @@
    "identifier": "argument.missing",
    "message": "Missing parameter $separator (string) in call to function implode.",
    "tip": null
+  },
+  {
+   "file": "types4.php",
+   "line": 56,
+   "identifier": "deadCode.unreachable",
+   "message": "Unreachable statement - code above always terminates.",
+   "tip": null
   }
  ]
 }

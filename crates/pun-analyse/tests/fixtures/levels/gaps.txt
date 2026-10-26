@@ -273,11 +273,9 @@
 5 Methods/CallMethodsRuleTest::testRequireExtends
 5 Methods/CallMethodsRuleTest::testStringableStrictTypes
 5 Methods/CallStaticMethodsRuleTest::testBug3641
-5 Methods/CallStaticMethodsRuleTest::testBug4550
 5 Methods/CallStaticMethodsRuleTest::testBug5259
 5 Methods/CallStaticMethodsRuleTest::testBug8296
 5 Methods/CallStaticMethodsRuleTest::testBugWrongMethodNameWithTemplateMixed
-5 Methods/CallStaticMethodsRuleTest::testConditionalParam
 5 Methods/CallStaticMethodsRuleTest::testDynamicCall
 5 Methods/CallStaticMethodsRuleTest::testRequireExtends
 5 Properties/AccessPropertiesRuleTest::testBug12645
@@ -377,7 +375,6 @@
 9 Methods/CallStaticMethodsRuleTest::testBug5259
 9 Methods/CallStaticMethodsRuleTest::testBug8296
 9 Methods/CallStaticMethodsRuleTest::testBugWrongMethodNameWithTemplateMixed
-9 Methods/CallStaticMethodsRuleTest::testConditionalParam
 9 Methods/CallStaticMethodsRuleTest::testDiscussion7004
 9 Methods/CallStaticMethodsRuleTest::testDynamicCall
 9 Methods/CallStaticMethodsRuleTest::testRequireExtends
@@ -482,9 +479,7 @@
 3 Properties/TypesAssignedToPropertiesRuleTest::testAppendedArrayItemType
 3 Properties/TypesAssignedToPropertiesRuleTest::testBug6286
 3 Properties/TypesAssignedToPropertiesRuleTest::testBug3703
-3 Properties/TypesAssignedToPropertiesRuleTest::testBug3383
 3 Properties/TypesAssignedToPropertiesRuleTest::testBug6356b
-3 Properties/TypesAssignedToPropertiesRuleTest::testIntegerRangesAndConstants
 3 Properties/TypesAssignedToPropertiesRuleTest::testWritingReadonlyProperty
 3 Properties/TypesAssignedToPropertiesRuleTest::testBug4174
 3 Properties/TypesAssignedToPropertiesRuleTest::testShortBodySetHook
@@ -707,13 +702,11 @@
 5 Functions/CallToFunctionParametersRuleTest::testBug1946
 5 Functions/CallToFunctionParametersRuleTest::testClosureSignatureFromUsages
 5 Functions/CallToFunctionParametersRuleTest::testClosureSignatureFromUsagesOfGenericObject
-5 Methods/CallMethodsRuleTest::testBug15251
 5 Methods/CallMethodsRuleTest::testBug8441
 5 Methods/CallMethodsRuleTest::testClassConstantWildcardArguments
 5 Methods/CallMethodsRuleTest::testGenericArgumentNullability#0
 5 Methods/CallMethodsRuleTest::testGenericArgumentNullability#1
 5 Methods/CallMethodsRuleTest::testVoidConditionalReturnType
-5 Methods/CallStaticMethodsRuleTest::testBug15251
 9 Functions/CallToFunctionParametersRuleTest::testBug11041
 9 Functions/CallToFunctionParametersRuleTest::testBug11510
 9 Functions/CallToFunctionParametersRuleTest::testBug11919
@@ -743,7 +736,6 @@
 # an-dead: MatchExpressionRule: Mago's types differ (rand() and <=> are int, in_array() and gettype() narrowing), the subject `$this` of a trait, TypeCombinator::remove() for class strings and templates, an unnarrowed enum subject described after removing a case
 4 Comparison/MatchExpressionRuleTest::testEnums
 4 Comparison/MatchExpressionRuleTest::testBug7176
-4 Comparison/MatchExpressionRuleTest::testBug6064
 4 Comparison/MatchExpressionRuleTest::testBug8614
 4 Comparison/MatchExpressionRuleTest::testBug9436
 4 Comparison/MatchExpressionRuleTest::testBug12998

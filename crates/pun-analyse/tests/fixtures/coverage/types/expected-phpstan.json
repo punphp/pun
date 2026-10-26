@@ -429,6 +429,13 @@
    "tip": null
   },
   {
+   "file": "offsets.php",
+   "line": 231,
+   "identifier": "offsetAccess.notFound",
+   "message": "Offset 'invalid' does not exist on ArrayAccess<int, int>&Countable.",
+   "tip": null
+  },
+  {
    "file": "properties.php",
    "line": 19,
    "identifier": "property.readOnlyByPhpDocDefaultValue",

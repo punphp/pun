@@ -363,8 +363,10 @@ was silent):
   SensitiveParameter), so they are not built-in to it and their case is checked (`#[\ATTRIBUTE]` reports at level 0).
   A probe of every class in data/symbols.json found no others.
 - UseAliasVisitor is a per-namespace map of explicit `use X as Y` aliases; a pair whose node is the written name
-  skips the case check when the name is one part written exactly as such an alias. Pairs on other nodes (an
-  attribute, a parameter, a property, a `use` item) never skip, as their php-parser node carries no such attribute.
+  skips the case check when the name is one part written exactly as such an alias. Pairs on other nodes (a
+  parameter, a property, a `use` item) never skip, as their php-parser node carries no such attribute. The pinned
+  AttributesCheck supplies the attribute's Name, so attributes must retain explicit-alias suppression too; the
+  earlier claim that it supplies the attribute node was incorrect (actual PHPStan reproduction, 2026-10-25).
 - StaticMethodCallCheck's case and prefix errors are dropped where PHPStan returns none: a missing method on a class
   with `__callStatic()` (reportMagicMethods is off at level 0), unless a guard or an `@method static` tag knows it.
 - AccessStaticPropertiesCheck and StaticMethodCallableRule have no call site in Pun yet (their rules are not

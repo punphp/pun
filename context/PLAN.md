@@ -4,7 +4,7 @@ The one file for where Pun stands: how this folder works, every decision, the bu
 open questions. Rewritten 2026-10-17 after walking through every command with Pushpak; it replaces README.md,
 DECISIONS.md, TASKS.md and REQUESTS.md (their history is in git). Finished work is not listed; `git log` has it.
 
-## 0. Resume here (2026-10-25)
+## 0. Resume here (2026-10-26)
 
 One lead agent works on `main` and spawns subagents for independent slices in worktrees (AGENTS.md "How work runs").
 Pushpak resumed all commands on 2026-10-25. CI stays disabled.
@@ -14,10 +14,11 @@ Pushpak resumed all commands on 2026-10-25. CI stays disabled.
 - **Rule docs:** steps 1–5 built locally: all 1,256 rule pages, 67 command/group pages, 8 presets, 8 sets, six
   migration mappings and the URL-filtered directory. CLI links need the public docs origin; none is configured.
   The docs build passes on Linux (1,446 pages); public deployment has not been verified.
-- **Last full batch:** all 167 analyser tests pass on Rust 1.99/Linux: 165 public tests, the full rule harness
-  (741 seconds), and all 2,787 level-fixture cases run in 19 filtered groups. The fixture checks compare ported
-  identifiers against PHPStan with the remaining explicit gaps; they are not full level parity. Fresh profiles
-  cover 36,208/36,208 production lines. Coverage cleanup now removes stale example executables as well as tests
+- **Last full batch:** 277 public and library analyser tests pass on Rust 1.99/Linux, together with the full rule
+  harness (734 seconds) and all 2,787 level-fixture cases run in 19 filtered groups. The fixture checks compare
+  ported identifiers against PHPStan with the remaining explicit gaps; they are not full level parity. Fresh
+  profiles cover 39,701/39,701 analyser production lines and 10,259/10,259 owning PHPStan lines after the existing
+  exclusions. All 12 analyse CLI tests pass. Coverage cleanup removes stale example executables as well as tests
   and binaries, so old source mappings cannot contribute phantom lines. Harness coverage remains 235/235 lines,
   with all five tests passing in its last full measurement.
 - **Local integration gate:** the variable, named-argument and callable snapshot passes the full level-0 rule
@@ -51,9 +52,26 @@ Pushpak resumed all commands on 2026-10-25. CI stays disabled.
   Inferred class-constant receivers and expression guards pass eight public tests at levels 0/1/2/7/8/9/10.
   Incoming explicit-mixed origins survive conditions, while writes invalidate replaced receivers and selectors.
   The Classes rule and level sweeps pass. Call/purity identities, indirect variables, dynamic property selectors
-  and general type-dependent comparisons remain unsupported, so the mapping stays inactive. Isolated workers
-  own argument reason producers, literal-template scalar buckets, array_rand count bounds and negative mixed
-  guard production; the unset offset-query batch awaits integration.
+  and general type-dependent comparisons remain unsupported, so the mapping stays inactive. Argument reason
+  producers, excluded-mixed/late offset queries and array_rand/random-integer bounds are integrated locally:
+  all 262 public analyser tests and the full rule harness pass (483 seconds), and fresh owning PHPStan coverage
+  is 10,068/10,068. All 628 changed production lines are covered. Functions, Methods, Arrays and DeadCode level
+  sweeps pass. Broader level and whole-analyser coverage gates are running; Comparison and Properties found
+  a count-after-loop-unset error and an extra generic-property accessory. Both reproduce on pushed main before
+  this batch. Their source-owned corrections are now integrated: definite-key extraction requires every offset
+  alternative to be literal, and bounded constant-list foreach replay retains sequential array exit states.
+  Eight obsolete gap entries are removed. Literal-template scalar buckets, exact Zend union sorting, attribute
+  input corrections and named-call class-constant guards are integrated locally. The combined template/attribute
+  public matrix and the complete PHPStan crate pass. Owning-crate coverage exposed the object-template union's
+  strategy tie-break; 96 fresh PHPStan controls now pass after matching inherited SubtractableType dispatch.
+  Every public analyser target passes across a split instrumented run, and all 12 analyse CLI tests pass.
+  Trait constructor reflection is now integrated, preserving adapted visibility, storage identity, consuming-class
+  parameter scopes and effective return types. That snapshot and the array-mutation corrections pass the full
+  batch above, with eight obsolete level gaps removed. Negative mixed guards match all 92 strict oracle records
+  in isolation, including declared versus inferred assertions and subtraction descriptions. Their current-base
+  replay also preserves explicit inferred mixed metadata: 105 public tests pass and 114/114 changed production
+  lines are covered. This replay and the returned class-case, native-property and initializer slices still need
+  combined integration gates.
   Local phar:// archive checks and PHP's two-layer gzip restart limit are integrated: all seven include tests
   and 43 combined argument, array and unset controls pass. Fresh archive expectations match the real PHPStan
   public Analyser byte for byte. Runtime wrappers, PHAR aliases/mounts, OpenSSL signatures and bzip2 remain
@@ -391,18 +409,17 @@ Gate passed ea7a84bc2d4c4f4b90ad177d911e6ade3accf253
 | analyse level 0 named arguments: port MethodCallWithPossiblyRenamedNamedArgumentRule's analysed call/override collectors and cross-file join, preserving named-argument acceptance and private/final controls | doing (collector, provenance and template-offset corrections integrated locally; combined verification running) |
 | analyse level 0 arrays: complete DuplicateKeysInLiteralArraysRule beyond the verified scalar/constant keys, sealed unpacking and byte-exact literal keys; inferred binary-string metadata still uses UTF-8 strings | doing (numeric and literal-byte corrections verified on main; whole rule remains unported) |
 | analyse constant inference: retain compound initializer precision when the constant follows its consuming function or lives in a scanned-only file; duplicate-key checks already recover these values, but copied-variable type dumps remain too broad | doing (integrated locally against 29 PHPStan diagnostics; shared production initializer inference; combined verification running) |
-| analyse level 0 variables: port DefinedVariableRule and CompactVariablesRule on shared variable-certainty observations, including assign/undefined-allowed contexts, dynamic names and the CLI/maybe-undefined switches | doing (strict Functions and Variables sweeps pass; failed reads and both coalesce controls integrated; literal-template and late-type variable names isolated; combined gates remain) |
-| analyse level 0 unset: port UnsetRule's readonly and hooked-property checks, recursive offset checks and definitely-undefined local checks through shared reflection, types and certainty | doing (all 15 public tests pass, including ten exported cases, ArrayObject defaults, generic metadata and repeated nested write-back; 30 combined controls pass; subtracted-mixed/late offset queries and full combined gates remain; mapping stays unported) |
-| analyse level 0 attributes: complete the twelve existing attribute-rule contracts against AttributesCheck, including constructor types and version/named-argument controls, before activating their mappings | doing (flag, group and level-1/5 controls verified; shared no-named-argument contract integrated; combined activation gate remains) |
-| analyse shared arguments: port FunctionCallParametersCheck's allowed-constant reflection metadata, constant identity, exclusive groups and bitmask checks with configured PHP-version and level gates | doing (integrated locally; three public regressions pass with PHPStan 2.3.1 expectations; combined full-crate verification remains) |
-| analyse shared arguments: port FunctionCallParametersCheck's bindable-static-closure and unresolvable-parameter checks, including attribute constructors | doing (shared contracts and first-class callback policies integrated; 21 combined public controls and targeted level filters pass; optional unresolvable-type tips remain isolated work) |
-| analyse class constants: extend ClassConstantRule's receiver checks beyond named classes and self/static/parent to inferred expression receivers at higher levels | doing (receiver, expression-guard and incoming mixed-origin matrices integrated; eight public tests and Classes rule/level sweeps pass; call/purity identities, indirect variables, dynamic property selectors and general type-dependent comparisons remain; mapping stays unported) |
-| analyse call termination: distinguish implicit empty-domain inference from explicitly never-returning calls, preserving nested evaluation and PHPStan reachability | doing (constant-empty array_rand correction integrated and 14 neighboring controls pass; non-empty count bounds isolated; general generic-bottom termination remains unported) |
+| analyse level 0 variables: port DefinedVariableRule and CompactVariablesRule on shared variable-certainty observations, including assign/undefined-allowed contexts, dynamic names and the CLI/maybe-undefined switches | doing (strict Functions and Variables sweeps pass; literal-template and late-type variable names integrated with scalar buckets and exact Zend ordering; four public variable-name tests pass; combined gates remain) |
+| analyse level 0 unset: port UnsetRule's readonly and hooked-property checks, recursive offset checks and definitely-undefined local checks through shared reflection, types and certainty | doing (16 integrated public tests and ten exported cases pass; negative guards match 92 oracle records in isolation; native annotation overlays, readonly aliases and declaration modifiers are being corrected separately; require-extends property reflection remains; mapping stays unported) |
+| analyse level 0 attributes: complete the twelve existing attribute-rule contracts against AttributesCheck, including constructor types and version/named-argument controls, before activating their mappings | doing (explicit aliases, parenthesized flags and shared trait-constructor reflection integrated; isolated reflection controls match 9/41/45 oracle diagnostics at levels 0/5/6; conditional/coalesce initializer inference remains isolated; combined gates running; mapping stays unported) |
+| analyse shared class names: carry imported-name and internal-class case options through the shared ClassCaseSensitivityCheck, preserving explicit aliases and written-name distinctions | doing (isolated source port against fresh PHPStan controls; qualified special-name parser validation and source-only class_alias provenance remain separate attribute boundaries) |
+| analyse parser name validation: reject qualified special class names with PHPStan's non-ignorable parse diagnostic and suppress ordinary analysis of the erroneous file | doing (isolated shared pre-scan and file-analysis gate, reserved-name checks and duplicate imports; CLI severe-error presentation remains separate from public analysis; arbitrary syntax-error translation remains unported) |
+| analyse initializer reflection: resolve global dependencies before ternary/coalesce filtering and retain canonical reflection values separately from file-local flow values | doing (isolated global-only source port; class-constant union storage and declaring-scope resolution remain a separate follow-up) |
+| analyse class constants: extend ClassConstantRule's receiver checks beyond named classes and self/static/parent to inferred expression receivers at higher levels | doing (named-call identities and bounded purity invalidation integrated; nine public tests pass; dynamic/nullsafe calls, indirect variables, dynamic property selectors and general type-dependent comparisons remain; mapping stays unported) |
+| analyse call termination: distinguish implicit empty-domain inference from explicitly never-returning calls, preserving nested evaluation and PHPStan reachability | doing (array_rand count bounds and random-integer returns integrated locally; 17 neighboring controls and Functions/DeadCode sweeps pass; general generic-bottom termination remains unported) |
 | analyse level 0 includes: extend integrated RequireFileExistsRule and IncludedFilePathResolver beyond local files to supported stream paths before whole-rule activation | doing (local phar:// archive members and gzip restart boundary integrated; seven include tests and fresh PHPStan capture pass; runtime wrappers, aliases/mounts, OpenSSL signatures and bzip2 remain unsupported) |
 | analyse native types (needs Pushpak): exact `getNativeType()` needs full/native state on the same control-flow walk; Mago 1.57 exposes one lane and no PHPDoc-disable setting. Choose a maintained Mago source patch or a Pun-native scope engine. Default: preserve PHPStan's paired-state contract and leave native-dependent debug rules unported rather than substitute a comments-disabled second pass | needs Pushpak |
 | analyse callable inference: backport Mago 1.59.0's `Closure::fromCallable()` provider through Pun's production registry, preserving PHPStan signatures through assignment and invocation | doing (integrated locally; combined verification running; unknown/static-closure spelling and unresolved-string union fallback remain documented boundaries) |
-| analyse generic inference: backport Mago 1.59.0's omitted-template defaults for new objects only where fresh PHPStan captures confirm parity, preserving constructor inference and inherited defaults | doing (five public tests pass, including actual empty-array constructor defaults and never-valued arguments; combined full-crate verification remains) |
-| analyse generic parent constants: backport codex's parent-member expansion before lookup and the class-string shortcut, preserving all 1.57.0 pins | doing (integrated locally with 50 PHPStan diagnostics; combined verification running) |
 | analyse callback follow-up: foreach-defined coalesce return values lose their raw signature (`list<mixed>` rather than oracle `list<1|23>`); callback-refined constant conditions also lack the native/PHPDoc tip | todo |
 | analyse 3 follow-up: extend inline `@param-closure-this` bindings to dynamic callables, closure variables, constructor and unpacked callbacks, and template/conditional/union bindings | todo |
 | analyse 3 follow-up: method-call declaring-class displays outside the declaring class's own scope omit template arguments; use default bounds and resolved ancestor template maps, not just the in-scope templates | todo |
@@ -488,6 +505,7 @@ output, name checks, signing and publishing (Pushpak: after Step 4).
 | --- | --- |
 | docs 6: CLI rule-page links (needs the public docs origin; the plan settles the path, not the hostname) | blocked (needs Pushpak) |
 | docs content: 385 analyse rules have no summary; no rule has a why or examples. Add prose and oracle-backed examples in mapping.toml in later batches | todo |
+| release notices: the Zend sorting port requires the acknowledgment in THIRD_PARTY_NOTICES.md and the Zend Engine acknowledgment in advertising materials that mention its features or use (Zend Engine License clauses 5 and 6); verify those materials before publication | todo |
 
 ### Foundations, alongside every step (plan/foundations.md)
 
