@@ -11807,7 +11807,7 @@
         "rules": [
           "lint/pest/require-type-matcher-first"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
