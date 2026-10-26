@@ -253,6 +253,17 @@ fn unused_probe_stops_for_cached_or_unselected_blade() {
     );
     for selected in ["app", "resources"] {
         std::fs::remove_file(dir.join("node-pids")).unwrap();
+        let finished = start(
+            &dir,
+            &["--cache-file=cache.json", "--format=json", selected],
+        )
+        .finish(b"");
+        assert!(finished.status.success());
+        let result: serde_json::Value = serde_json::from_slice(&finished.stdout).unwrap();
+        assert_eq!(result["files"], serde_json::json!([]));
+        assert_eq!(pids(&dir).len(), 1);
+        wait_until(|| pids(&dir).iter().all(|&pid| !alive(pid)));
+        std::fs::remove_file(dir.join("node-pids")).unwrap();
         let mut running = start(
             &dir,
             &[
