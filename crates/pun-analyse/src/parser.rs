@@ -1,4 +1,4 @@
-//! php-parser 5.9's name, modifier, parameter and try failures, before reflection scanning or rule callbacks. RichParser and
+//! php-parser 5.9's semantic/name failures, before reflection scanning or rule callbacks. RichParser and
 //! SimpleParser collect parser-stage errors first, then stop at the first NameResolver error. This is not a
 //! translation of Mago's grammar errors: a recovered CST remains outside this validation contract.
 
@@ -65,7 +65,7 @@ fn special(value: &[u8]) -> bool {
         || value.eq_ignore_ascii_case(b"static")
 }
 
-/// ParserAbstract's reserved-name, modifier, parameter and try checks. Modifiers are checked as tokens arrive;
+/// ParserAbstract's collecting semantic checks. Modifiers are checked as tokens arrive;
 /// declaration checks run on reduction (after their bodies). Every parser-stage error wins over NameResolver.
 struct Reserved<'a> {
     file: &'a File,
@@ -341,6 +341,40 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Reserved<'_> {
     }
     fn walk_in_property_hook(&mut self, node: &'ast PropertyHook<'arena>, _: &mut ()) {
         self.modifiers(&node.modifiers, true);
+    }
+    fn walk_out_property_hook(&mut self, node: &'ast PropertyHook<'arena>, _: &mut ()) {
+        // ParserAbstract::checkPropertyHook follows the parameter list and body, including their errors.
+        let name = node.name.value;
+        if !name.eq_ignore_ascii_case(b"get") && !name.eq_ignore_ascii_case(b"set") {
+            self.errors.push(error(
+                self.file,
+                node.name.span,
+                format!(
+                    "Unknown hook \"{}\", expected \"get\" or \"set\"",
+                    String::from_utf8_lossy(name)
+                ),
+            ));
+        }
+        if name.eq_ignore_ascii_case(b"get")
+            && let Some(parameters) = &node.parameter_list
+        {
+            self.errors.push(error(
+                self.file,
+                parameters.left_parenthesis,
+                "get hook must not have a parameter list".into(),
+            ));
+        }
+    }
+    fn walk_out_property_hook_list(&mut self, node: &'ast PropertyHookList<'arena>, _: &mut ()) {
+        // checkEmptyPropertyHookList runs for property and parameter hook lists (including promotion),
+        // before the enclosing checkParam. An absent list is not an empty list.
+        if node.hooks.is_empty() {
+            self.errors.push(error(
+                self.file,
+                node.left_brace,
+                "Property hook list cannot be empty".into(),
+            ));
+        }
     }
     fn walk_out_method(&mut self, node: &'ast Method<'arena>, _: &mut ()) {
         // ParserAbstract::checkClassMethod runs after the body, with method_modifiers' first token as #2.
