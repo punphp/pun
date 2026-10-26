@@ -165,7 +165,7 @@ pub(crate) fn ensure_is_doc_block_with_annotation(
 }
 
 /// `DocBlockAnnotationTrait::createDocBlock`.
-fn create_doc_block(
+pub(crate) fn create_doc_block(
     tokens: &mut Tokens,
     doc_block_index: usize,
     annotation: &str,

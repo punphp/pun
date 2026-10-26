@@ -12962,7 +12962,7 @@
       "upstream": [
         "php_unit_test_annotation"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/refactor/add-override-attribute",

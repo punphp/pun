@@ -1991,7 +1991,7 @@
         "rules": [
           "lint/phpunit/require-test-annotation-style"
         ],
-        "note": "Same. Options: renamed for TOML: [options.\"lint/phpunit/require-test-annotation-style\"]. Planned: not ported yet.",
+        "note": "Same. Options: renamed for TOML: [options.\"lint/phpunit/require-test-annotation-style\"].",
         "unsupported": false
       },
       {
@@ -4977,7 +4977,7 @@
         "rules": [
           "lint/phpunit/require-test-annotation-style"
         ],
-        "note": "Same. Options: renamed for TOML: [options.\"lint/phpunit/require-test-annotation-style\"]. Planned: not ported yet.",
+        "note": "Same. Options: renamed for TOML: [options.\"lint/phpunit/require-test-annotation-style\"].",
         "unsupported": false
       },
       {

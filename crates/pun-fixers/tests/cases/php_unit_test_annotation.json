@@ -1,0 +1,15 @@
+[
+    {
+        "fixer": "php_unit_test_annotation",
+        "input": "<?php\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /** Single line doc */\n    public function testOne() {}\n    /**\n     * @test\n     * @depends  testOne\n     * @DEPENDS other\n     */\n    public function two() {}\n    /**\n     * @testdox Something @test\n     * @testWith [1]\n     */\n    public function test_three($a) {}\n    public function test() {}\n    /** @test */\n    #[Attr]\n    public function four() { $f = function () {}; }\n    public function helper() {}\n}\n",
+        "expected": "<?php\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /** Single line doc */\n    public function testOne() {}\n    /**\n     *\n     * @depends  testOne\n     * @DEPENDS other\n     */\n    public function testTwo() {}\n    /**\n     * @testdox Something @test\n     * @testWith [1]\n     */\n    public function test_three($a) {}\n    public function test() {}\n    /** */\n    #[Attr]\n    public function testFour() { $f = function () {}; }\n    public function helper() {}\n}\n"
+    },
+    {
+        "fixer": "php_unit_test_annotation",
+        "config": {
+            "style": "annotation"
+        },
+        "input": "<?php\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /** Single line doc */\n    public function testOne() {}\n    /**\n     * @test\n     * @depends  testOne\n     * @DEPENDS other\n     */\n    public function two() {}\n    /**\n     * @testdox Something @test\n     * @testWith [1]\n     */\n    public function test_three($a) {}\n    public function test() {}\n    /** @test */\n    #[Attr]\n    public function four() { $f = function () {}; }\n    public function helper() {}\n}\n",
+        "expected": "<?php\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    /**\n     * Single line doc\n     *\n     * @test\n     */\n    public function one() {}\n    /**\n     * @test\n     * @depends  one\n     * @DEPENDS other\n     */\n    public function two() {}\n    /**\n     * @testdox Something @test\n     * @testWith [1]\n     *\n     * @test\n     */\n    public function three($a) {}\n    /**\n     * @test\n     */\n    public function test() {}\n    /** @test */\n    #[Attr]\n    public function four() { $f = function () {}; }\n    public function helper() {}\n}\n"
+    }
+]

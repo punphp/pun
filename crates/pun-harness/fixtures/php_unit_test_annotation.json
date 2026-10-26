@@ -1,0 +1,534 @@
+{
+    "fixer": "php_unit_test_annotation",
+    "test_class": "PhpCsFixer\\Tests\\Fixer\\PhpUnit\\PhpUnitTestAnnotationFixerTest",
+    "test_file": "php-cs-fixer/tests/Fixer/PhpUnit/PhpUnitTestAnnotationFixerTest.php",
+    "case_count": 44,
+    "tests": [
+        {
+            "method": "testFix",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": []
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\PhpUnit\\PhpUnitTestAnnotationFixerTest",
+            "body": "    public function testFix(string $expected, ?string $input = null, array $configuration = []): void\n    {\n        $this->fixer->configure($configuration);\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFixCases",
+                    "key": "Annotation is used, and it should not be",
+                    "args": [
+                        "<?php\nclass Test extends \\PhpUnit\\FrameWork\\TestCase\n{\n    /**\n     *\n     */\n    public function testItDoesSomething() {}\n}",
+                        "<?php\nclass Test extends \\PhpUnit\\FrameWork\\TestCase\n{\n    /**\n     * @test\n     */\n    public function itDoesSomething() {}\n}",
+                        {
+                            "style": "prefix"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Annotation is not used, but should be",
+                    "args": [
+                        "<?php\nclass Test extends \\PhpUnit\\FrameWork\\TestCase\n{\n    /**\n     * @test\n     */\n    public function itDoesSomething() {}\n}",
+                        "<?php\nclass Test extends \\PhpUnit\\FrameWork\\TestCase\n{\n    public function testItDoesSomething() {}\n}",
+                        {
+                            "style": "annotation"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Annotation is not used, but should be, class is extra indented",
+                    "args": [
+                        "<?php\nif (1) {\n    class Test extends \\PhpUnit\\FrameWork\\TestCase\n    {\n        /**\n         * @test\n         */\n        public function itDoesSomething() {}\n    }\n}",
+                        "<?php\nif (1) {\n    class Test extends \\PhpUnit\\FrameWork\\TestCase\n    {\n        public function testItDoesSomething() {}\n    }\n}",
+                        {
+                            "style": "annotation"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Annotation is not used, but should be, and there is already a docBlock",
+                    "args": [
+                        "<?php\nclass Test extends \\PhpUnit\\FrameWork\\TestCase\n{\n    /**\n     * @dataProvider blabla\n     *\n     * @test\n     */\n    public function itDoesSomething() {}\n    }",
+                        "<?php\nclass Test extends \\PhpUnit\\FrameWork\\TestCase\n{\n    /**\n     * @dataProvider blabla\n     */\n    public function testItDoesSomething() {}\n    }",
+                        {
+                            "style": "annotation"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Annotation is used, but should not be, and it depends on other tests",
+                    "args": [
+                        "<?php\nclass Test extends \\PhpUnit\\FrameWork\\TestCase\n{\n    /**\n     *\n     */\n    public function testAaa () {}\n\n    public function helperFunction() {}\n\n    /**\n     * @depends testAaa\n     *\n     *\n     */\n    public function testBbb () {}\n}",
+                        "<?php\nclass Test extends \\PhpUnit\\FrameWork\\TestCase\n{\n    /**\n     * @test\n     */\n    public function aaa () {}\n\n    public function helperFunction() {}\n\n    /**\n     * @depends aaa\n     *\n     * @test\n     */\n    public function bbb () {}\n}",
+                        {
+                            "style": "prefix"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Annotation is not used, but should be, and it depends on other tests",
+                    "args": [
+                        "<?php\nclass Test extends \\PhpUnit\\FrameWork\\TestCase\n{\n    /**\n     * @test\n     */\n    public function aaa () {}\n\n    /**\n     * @depends aaa\n     *\n     * @test\n     */\n    public function bbb () {}\n}",
+                        "<?php\nclass Test extends \\PhpUnit\\FrameWork\\TestCase\n{\n    public function testAaa () {}\n\n    /**\n     * @depends testAaa\n     */\n    public function testBbb () {}\n}",
+                        {
+                            "style": "annotation"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Annotation is removed, the function is one word and we want it to use camel case",
+                    "args": [
+                        "<?php\nclass Test extends \\PhpUnit\\FrameWork\\TestCase\n{\n    /**\n     *\n     */\n    public function testWorks() {}\n}",
+                        "<?php\nclass Test extends \\PhpUnit\\FrameWork\\TestCase\n{\n    /**\n     * @test\n     */\n    public function works() {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Annotation is added, and it is snake case",
+                    "args": [
+                        "<?php\nclass Test extends \\PhpUnit\\FrameWork\\TestCase\n{\n    /**\n     * @test\n     */\n    public function it_has_snake_case() {}\n}",
+                        "<?php\nclass Test extends \\PhpUnit\\FrameWork\\TestCase\n{\n    public function test_it_has_snake_case() {}\n}",
+                        {
+                            "style": "annotation"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Annotation gets added, it has an @depends, and we use snake case",
+                    "args": [
+                        "<?php\nclass Test extends \\PhpUnit\\FrameWork\\TestCase\n{\n    /**\n     * @test\n     */\n    public function works_fine () {}\n\n    /**\n     * @depends works_fine\n     *\n     * @test\n     */\n    public function works_fine_too() {}\n}",
+                        "<?php\nclass Test extends \\PhpUnit\\FrameWork\\TestCase\n{\n    public function test_works_fine () {}\n\n    /**\n     * @depends test_works_fine\n     */\n    public function test_works_fine_too() {}\n}",
+                        {
+                            "style": "annotation"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Class has both camel and snake case, annotated functions and not, and wants to add annotations",
+                    "args": [
+                        "<?php\nclass Test extends \\PhpUnit\\FrameWork\\TestCase\n{\n    /**\n     * @test\n     */\n    public function snake_cased () {}\n\n    /**\n     * @test\n     */\n    public function camelCased () {}\n\n    /**\n     * Description.\n     *\n     * @depends camelCased\n     *\n     * @test\n     */\n    public function depends_on_someone () {}\n\n    //It even has a comment\n    public function a_helper_function () {}\n\n    /**\n     * @depends depends_on_someone\n     *\n     * @test\n     */\n    public function moreDepends() {}\n\n    /**\n     * @depends depends_on_someone\n     *\n     * @test\n     */\n    public function alreadyAnnotated() {}\n}",
+                        "<?php\nclass Test extends \\PhpUnit\\FrameWork\\TestCase\n{\n    public function test_snake_cased () {}\n\n    public function testCamelCased () {}\n\n    /**\n     * Description.\n     *\n     * @depends testCamelCased\n     */\n    public function test_depends_on_someone () {}\n\n    //It even has a comment\n    public function a_helper_function () {}\n\n    /**\n     * @depends test_depends_on_someone\n     */\n    public function testMoreDepends() {}\n\n    /**\n     * @depends test_depends_on_someone\n     *\n     * @test\n     */\n    public function alreadyAnnotated() {}\n}",
+                        {
+                            "style": "annotation"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Annotation has to be added to multiple functions",
+                    "args": [
+                        "<?php\nclass Test extends \\PhpUnit\\FrameWork\\TestCase\n{\n    /**\n     * @test\n     */\n    public function itWorks() {}\n\n    /**\n     * @test\n     */\n    public function itDoesSomething() {}\n}",
+                        "<?php\nclass Test extends \\PhpUnit\\FrameWork\\TestCase\n{\n    public function testItWorks() {}\n\n    public function testItDoesSomething() {}\n}",
+                        {
+                            "style": "annotation"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Class with big doc blocks and multiple functions has to remove annotations",
+                    "args": [
+                        "<?php\nclass Test extends \\PhpUnit\\FrameWork\\TestCase\n{\n\n    /**\n     * This test is part of the database group and has a provider.\n     *\n     * @param int $paramOne\n     * @param bool $paramTwo\n     *\n     *\n     * @dataProvider provides\n     * @group Database\n     */\n    public function testDatabase ($paramOne, $paramTwo) {}\n\n    /**\n     * Provider for the database test function\n     *\n     * @return array\n     */\n    public function provides() {}\n\n    /**\n     * I am just a helper function but I have test in my name.\n     * I also have a doc Block\n     *\n     * @return Foo\\Bar\n     */\n    public function help_test() {}\n\n\n    protected function setUp() {}\n\n    /**\n     * I depend on the database function, but I already\n     * had test in my name and a docblock\n     *\n     * @depends testDatabase\n     */\n    public function testDepends () {}\n}",
+                        "<?php\nclass Test extends \\PhpUnit\\FrameWork\\TestCase\n{\n\n    /**\n     * This test is part of the database group and has a provider.\n     *\n     * @param int $paramOne\n     * @param bool $paramTwo\n     *\n     * @test\n     * @dataProvider provides\n     * @group Database\n     */\n    public function database ($paramOne, $paramTwo) {}\n\n    /**\n     * Provider for the database test function\n     *\n     * @return array\n     */\n    public function provides() {}\n\n    /**\n     * I am just a helper function but I have test in my name.\n     * I also have a doc Block\n     *\n     * @return Foo\\Bar\n     */\n    public function help_test() {}\n\n\n    protected function setUp() {}\n\n    /**\n     * I depend on the database function, but I already\n     * had test in my name and a docblock\n     *\n     * @depends database\n     */\n    public function testDepends () {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Test Annotation has to be removed, but its just one line",
+                    "args": [
+                        "<?php\nclass Test extends \\PhpUnit\\FrameWork\\TestCase\n{\n    /** */\n    public function testItWorks() {}\n}",
+                        "<?php\nclass Test extends \\PhpUnit\\FrameWork\\TestCase\n{\n    /** @test */\n    public function itWorks() {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Test annotation has to be added, but there is already a one line doc block",
+                    "args": [
+                        "<?php\nclass Test extends \\PhpUnit\\FrameWork\\TestCase\n{\n    /**\n     * @group Database\n     *\n     * @test\n     */\n    public function itTestsDatabase() {}\n}",
+                        "<?php\nclass Test extends \\PhpUnit\\FrameWork\\TestCase\n{\n    /** @group Database */\n    public function testItTestsDatabase() {}\n}",
+                        {
+                            "style": "annotation"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Test annotation has to be added, but there is already a one line doc block which is a sentence",
+                    "args": [
+                        "<?php\nclass Test extends \\PhpUnit\\FrameWork\\TestCase\n{\n    /**\n     * I really like this test, it helps a lot\n     *\n     * @test\n     */\n    public function itTestsDatabase() {}\n}",
+                        "<?php\nclass Test extends \\PhpUnit\\FrameWork\\TestCase\n{\n    /** I really like this test, it helps a lot */\n    public function testItTestsDatabase() {}\n}",
+                        {
+                            "style": "annotation"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Test annotation has to be added, but there is already a one line comment present",
+                    "args": [
+                        "<?php\nclass Test extends \\PhpUnit\\FrameWork\\TestCase\n{\n    //I really like this test, it helps a lot\n    /**\n     * @test\n     */\n    public function itTestsDatabase() {}\n}",
+                        "<?php\nclass Test extends \\PhpUnit\\FrameWork\\TestCase\n{\n    //I really like this test, it helps a lot\n    public function testItTestsDatabase() {}\n}",
+                        {
+                            "style": "annotation"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Test annotation has to be added, there is a one line doc block which is an @depends tag",
+                    "args": [
+                        "<?php\nclass Test extends \\PhpUnit\\FrameWork\\TestCase\n{\n    /**\n     * @test\n     */\n    public function itTestsDatabase() {}\n\n    /**\n     * @depends itTestsDatabase\n     *\n     * @test\n     */\n    public function itDepends() {}\n}",
+                        "<?php\nclass Test extends \\PhpUnit\\FrameWork\\TestCase\n{\n    public function testItTestsDatabase() {}\n\n    /** @depends testItTestsDatabase */\n    public function testItDepends() {}\n}",
+                        {
+                            "style": "annotation"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Annotation gets removed, but the function has a @testWith",
+                    "args": [
+                        "<?php\nfinal class ProcessLinterProcessBuilderTest extends TestCase\n{\n    /**\n     *\n     * @param string $executable\n     * @param string $file\n     * @param string $expected\n     *\n     * @testWith [\"php\", \"foo.php\", \"\\\"php\\\" -l \\\"foo.php\\\"\"]\n     *           [\"C:\\Program Files\\php\\php.exe\", \"foo bar\\baz.php\", \"\\\"C:\\Program Files\\php\\php.exe\\\" -l \\\"foo bar\\baz.php\\\"\"]\n     * @requires OS Linux|Darwin\n     */\n    public function testPrepareCommandOnPhpOnLinuxOrMac($executable, $file, $expected)\n    {\n        $builder = new ProcessLinterProcessBuilder($executable);\n\n        $this->assertSame(\n            $expected,\n            $builder->build($file)->getCommandLine()\n        );\n    }\n}",
+                        "<?php\nfinal class ProcessLinterProcessBuilderTest extends TestCase\n{\n    /**\n     * @test\n     * @param string $executable\n     * @param string $file\n     * @param string $expected\n     *\n     * @testWith [\"php\", \"foo.php\", \"\\\"php\\\" -l \\\"foo.php\\\"\"]\n     *           [\"C:\\Program Files\\php\\php.exe\", \"foo bar\\baz.php\", \"\\\"C:\\Program Files\\php\\php.exe\\\" -l \\\"foo bar\\baz.php\\\"\"]\n     * @requires OS Linux|Darwin\n     */\n    public function prepareCommandOnPhpOnLinuxOrMac($executable, $file, $expected)\n    {\n        $builder = new ProcessLinterProcessBuilder($executable);\n\n        $this->assertSame(\n            $expected,\n            $builder->build($file)->getCommandLine()\n        );\n    }\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Annotation gets added, but there is already an @testWith in the doc block",
+                    "args": [
+                        "<?php\nfinal class ProcessLinterProcessBuilderTest extends TestCase\n{\n    /**\n     * @param string $executable\n     * @param string $file\n     * @param string $expected\n     *\n     * @testWith [\"php\", \"foo.php\", \"\\\"php\\\" -l \\\"foo.php\\\"\"]\n     *           [\"C:\\Program Files\\php\\php.exe\", \"foo bar\\baz.php\", \"\\\"C:\\Program Files\\php\\php.exe\\\" -l \\\"foo bar\\baz.php\\\"\"]\n     * @requires OS Linux|Darwin\n     *\n     * @test\n     */\n    public function prepareCommandOnPhpOnLinuxOrMac($executable, $file, $expected)\n    {\n        $builder = new ProcessLinterProcessBuilder($executable);\n\n        $this->assertSame(\n            $expected,\n            $builder->build($file)->getCommandLine()\n        );\n    }\n}",
+                        "<?php\nfinal class ProcessLinterProcessBuilderTest extends TestCase\n{\n    /**\n     * @param string $executable\n     * @param string $file\n     * @param string $expected\n     *\n     * @testWith [\"php\", \"foo.php\", \"\\\"php\\\" -l \\\"foo.php\\\"\"]\n     *           [\"C:\\Program Files\\php\\php.exe\", \"foo bar\\baz.php\", \"\\\"C:\\Program Files\\php\\php.exe\\\" -l \\\"foo bar\\baz.php\\\"\"]\n     * @requires OS Linux|Darwin\n     */\n    public function testPrepareCommandOnPhpOnLinuxOrMac($executable, $file, $expected)\n    {\n        $builder = new ProcessLinterProcessBuilder($executable);\n\n        $this->assertSame(\n            $expected,\n            $builder->build($file)->getCommandLine()\n        );\n    }\n}",
+                        {
+                            "style": "annotation"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Annotation gets properly removed, even when it is in a weird place",
+                    "args": [
+                        "<?php\nclass Test extends \\PhpUnit\\FrameWork\\TestCase\n{\n    /**\n     * I am a comment about the function\n     */\n    public function testIHateMyTestSuite() {}\n\n    /**\n     * I am another comment about a function\n     */\n    public function testThisMakesNoSense() {}\n\n    /**\n     * This comment has   more issues\n     */\n    public function testItUsesTabs() {}\n\n    /**\n     * @depends testItUsesTabs\n     */\n    public function testItDependsReally() {}\n\n    /**\n     * @depends testItUsesTabs\n     */\n    public function testItDependsSomeMore() {}\n}",
+                        "<?php\nclass Test extends \\PhpUnit\\FrameWork\\TestCase\n{\n    /**\n     * I am a comment @test about the function\n     */\n    public function iHateMyTestSuite() {}\n\n    /**\n     * I am another comment about a function @test\n     */\n    public function thisMakesNoSense() {}\n\n    /**\n     * This comment has @test   more issues\n     */\n    public function itUsesTabs() {}\n\n    /**\n     * @depends itUsesTabs @test\n     */\n    public function itDependsReally() {}\n\n    /**\n     * @test @depends itUsesTabs\n     */\n    public function itDependsSomeMore() {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Annotation gets added when a single line has doc block has multiple tags already",
+                    "args": [
+                        "<?php\nclass Test extends \\PhpUnit\\FrameWork\\TestCase\n{\n    /**\n     * There is some text here @group Database @group Integration\n     *\n     * @test\n     */\n    public function whyDoThis() {}\n}",
+                        "<?php\nclass Test extends \\PhpUnit\\FrameWork\\TestCase\n{\n    /** There is some text here @group Database @group Integration */\n    public function testWhyDoThis() {}\n}",
+                        {
+                            "style": "annotation"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Annotation gets removed when a single line doc block has the tag, but there are other things as well",
+                    "args": [
+                        "<?php\nclass Test extends \\PhpUnit\\FrameWork\\TestCase\n{\n    /** There is some text here @group Database @group Integration */\n    public function testWhyDoThis() {}\n}",
+                        "<?php\nclass Test extends \\PhpUnit\\FrameWork\\TestCase\n{\n    /** There is some @test text here @group Database @group Integration */\n    public function testWhyDoThis() {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Annotation is used, and should be",
+                    "args": [
+                        "<?php\nclass Test extends \\PhpUnit\\FrameWork\\TestCase\n{\n    /**\n     * @test\n     */\n    public function itDoesSomething() {}\n}",
+                        null,
+                        {
+                            "style": "annotation"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Annotation is not used, and should not be",
+                    "args": [
+                        "<?php\nclass Test extends \\PhpUnit\\FrameWork\\TestCase\n{\n    public function testItDoesSomethingWithoutPhpDoc() {}\n    /**\n     * No annotation, just text\n     */\n    public function testItDoesSomethingWithPhpDoc() {}\n\n    public function testingItDoesSomethingWithoutPhpDoc() {}\n    /**\n     * No annotation, just text\n     */\n    public function testingItDoesSomethingWithPhpDoc() {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Annotation is added when it is already present in a weird place",
+                    "args": [
+                        "<?php\nclass Test extends \\PhpUnit\\FrameWork\\TestCase\n{\n    /**\n     * I am a comment @test about the function\n     *\n     * @test\n     */\n    public function iHateMyTestSuite() {}\n}",
+                        "<?php\nclass Test extends \\PhpUnit\\FrameWork\\TestCase\n{\n    /**\n     * I am a comment @test about the function\n     */\n    public function iHateMyTestSuite() {}\n}",
+                        {
+                            "style": "annotation"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Docblock does not get converted to a multi line doc block if it already has @test annotation",
+                    "args": [
+                        "<?php\nclass Test extends \\PhpUnit\\FrameWork\\TestCase\n{\n    /** @test */\n    public function doesSomeThings() {}\n}",
+                        null,
+                        {
+                            "style": "annotation"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Annotation does not get added if class is not a test",
+                    "args": [
+                        "<?php\nclass Waterloo\n{\n    public function testDoesSomeThings() {}\n}",
+                        null,
+                        {
+                            "style": "annotation"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Annotation does not get removed if class is not a test",
+                    "args": [
+                        "<?php\nclass Waterloo\n{\n    /**\n     * @test\n     */\n    public function doesSomeThings() {}\n}"
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Annotation does not get added if there are no tests in the test class",
+                    "args": [
+                        "<?php\nclass Test extends \\PhpUnit\\FrameWork\\TestCase\n{\n    public function setUp() {}\n\n    public function itHelpsSomeTests() {}\n\n    public function someMoreChanges() {}\n}",
+                        null,
+                        {
+                            "style": "annotation"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Abstract test gets annotation removed",
+                    "args": [
+                        "<?php\nabstract class Test extends \\PhpUnit\\FrameWork\\TestCase\n{\n    /**\n     *\n     */\n    abstract function testFooBar();\n}",
+                        "<?php\nabstract class Test extends \\PhpUnit\\FrameWork\\TestCase\n{\n    /**\n     * @test\n     */\n    abstract function fooBar();\n}",
+                        {
+                            "style": "prefix"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Annotation present, but method already have test prefix",
+                    "args": [
+                        "<?php\nclass Test extends \\PhpUnit\\FrameWork\\TestCase\n{\n    /**\n     *\n     */\n    public function testarossaIsFromItaly() {}\n}",
+                        "<?php\nclass Test extends \\PhpUnit\\FrameWork\\TestCase\n{\n    /**\n     * @test\n     */\n    public function testarossaIsFromItaly() {}\n}",
+                        {
+                            "style": "prefix"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Annotation present, but method is test prefix",
+                    "args": [
+                        "<?php\nclass Test extends \\PhpUnit\\FrameWork\\TestCase\n{\n    /**\n     *\n     */\n    public function test() {}\n}",
+                        "<?php\nclass Test extends \\PhpUnit\\FrameWork\\TestCase\n{\n    /**\n     * @test\n     */\n    public function test() {}\n}",
+                        {
+                            "style": "prefix"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Abstract test gets annotation added",
+                    "args": [
+                        "<?php\nabstract class Test extends \\PhpUnit\\FrameWork\\TestCase\n{\n    /**\n     * @test\n     */\n    abstract function fooBar();\n}",
+                        "<?php\nabstract class Test extends \\PhpUnit\\FrameWork\\TestCase\n{\n    abstract function testFooBar();\n}",
+                        {
+                            "style": "annotation"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Annotation gets added, but there is a number after the testprefix so it keeps the prefix",
+                    "args": [
+                        "<?php\nclass Test extends \\PhpUnit\\FrameWork\\TestCase\n{\n    /**\n     * @test\n     */\n    public function test123fooBar() {}\n}",
+                        "<?php\nclass Test extends \\PhpUnit\\FrameWork\\TestCase\n{\n    public function test123fooBar() {}\n}",
+                        {
+                            "style": "annotation"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Annotation missing, but there is a lowercase character after the test prefix so it keeps the prefix",
+                    "args": [
+                        "<?php\nclass Test extends \\PhpUnit\\FrameWork\\TestCase\n{\n    /**\n     * @test\n     */\n    public function testarossaIsFromItaly() {}\n}",
+                        "<?php\nclass Test extends \\PhpUnit\\FrameWork\\TestCase\n{\n    public function testarossaIsFromItaly() {}\n}",
+                        {
+                            "style": "annotation"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Annotation present, but there is a lowercase character after the test prefix so it keeps the prefix",
+                    "args": [
+                        "<?php\nclass Test extends \\PhpUnit\\FrameWork\\TestCase\n{\n    /**\n     * @test\n     */\n    public function testarossaIsFromItaly() {}\n}",
+                        null,
+                        {
+                            "style": "annotation"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Annotation missing, method qualifies as test, but test prefix cannot be removed",
+                    "args": [
+                        "<?php\nclass Test extends \\PhpUnit\\FrameWork\\TestCase\n{\n    /**\n     * @test\n     */\n    public function test() {}\n}",
+                        "<?php\nclass Test extends \\PhpUnit\\FrameWork\\TestCase\n{\n    public function test() {}\n}",
+                        {
+                            "style": "annotation"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Annotation missing, method qualifies as test, but test_ prefix cannot be removed",
+                    "args": [
+                        "<?php\nclass Test extends \\PhpUnit\\FrameWork\\TestCase\n{\n    /**\n     * @test\n     */\n    public function test_() {}\n}",
+                        "<?php\nclass Test extends \\PhpUnit\\FrameWork\\TestCase\n{\n    public function test_() {}\n}",
+                        {
+                            "style": "annotation"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Annotation present, method qualifies as test, but test_ prefix cannot be removed",
+                    "args": [
+                        "<?php\nclass Test extends \\PhpUnit\\FrameWork\\TestCase\n{\n    /**\n     * @test\n     */\n    public function test_() {}\n}",
+                        null,
+                        {
+                            "style": "annotation"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "Annotation missing, method after fix still has \"test\" prefix",
+                    "args": [
+                        "<?php\nclass Test extends \\PhpUnit\\FrameWork\\TestCase\n{\n    /**\n     * @test\n     */\n    public function test_foo() {}\n}",
+                        "<?php\nclass Test extends \\PhpUnit\\FrameWork\\TestCase\n{\n    public function test_test_foo() {}\n}",
+                        {
+                            "style": "annotation"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFixCases",
+                    "key": "do not touch single line @depends annotation when already correct",
+                    "args": [
+                        "<?php class FooTest extends \\PHPUnit\\Framework\\TestCase\n                {\n                    public function testOne() {}\n\n                    /** @depends testOne */\n                    public function testTwo() {}\n\n                    /**    @depends    testTwo    */\n                    public function testThree() {}\n                }"
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testWithWhitespacesConfig",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "?string",
+                    "default": null
+                },
+                {
+                    "name": "config",
+                    "type": "array",
+                    "default": []
+                }
+            ],
+            "requires_php": null,
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\PhpUnit\\PhpUnitTestAnnotationFixerTest",
+            "body": "    public function testWithWhitespacesConfig(string $expected, ?string $input = null, array $config = []): void\n    {\n        $this->fixer->setWhitespacesConfig(new WhitespacesFixerConfig(\"\\t\", \"\\r\\n\"));\n        $this->fixer->configure($config);\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideWithWhitespacesConfigCases",
+                    "key": 0,
+                    "args": [
+                        "<?php\n\n                    class FooTest extends \\PHPUnit_Framework_TestCase {\n\n                    /**\n                     *\n                     */\n                    public function testFooTest() {}\n                    }\n                ",
+                        "<?php\n\n                    class FooTest extends \\PHPUnit_Framework_TestCase {\n\n                    /**\n                     * @test\n                     */\n                    public function fooTest() {}\n                    }\n                "
+                    ]
+                }
+            ]
+        },
+        {
+            "method": "testFix80",
+            "params": [
+                {
+                    "name": "expected",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "input",
+                    "type": "string",
+                    "default": null
+                },
+                {
+                    "name": "configuration",
+                    "type": "array",
+                    "default": null
+                }
+            ],
+            "requires_php": ">= 8.0.0",
+            "declared_in": "PhpCsFixer\\Tests\\Fixer\\PhpUnit\\PhpUnitTestAnnotationFixerTest",
+            "body": "    public function testFix80(string $expected, string $input, array $configuration): void\n    {\n        $this->fixer->configure($configuration);\n\n        $this->doTest($expected, $input);\n    }\n",
+            "cases": [
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 0,
+                    "args": [
+                        "<?php\nclass Test extends \\PhpUnit\\FrameWork\\TestCase\n{\n    /**\n     * @test\n     */\n    #[OneTest]\n    public function itWorks() {}\n\n    /**\n     * @test\n     */\n    #[TwoTest]\n    public function itDoesSomething() {}\n}",
+                        "<?php\nclass Test extends \\PhpUnit\\FrameWork\\TestCase\n{\n    #[OneTest]\n    public function testItWorks() {}\n\n    #[TwoTest]\n    public function testItDoesSomething() {}\n}",
+                        {
+                            "style": "annotation"
+                        }
+                    ]
+                },
+                {
+                    "provider": "provideFix80Cases",
+                    "key": 1,
+                    "args": [
+                        "<?php\nclass Test extends \\PhpUnit\\FrameWork\\TestCase\n{\n    /**\n     * @test\n     */\n    #[OneTest]\n    #[Internal]\n    public function itWorks() {}\n\n    /**\n     * @test\n     */\n    #[TwoTest]\n    #[Internal]\n    public function itDoesSomething() {}\n}",
+                        "<?php\nclass Test extends \\PhpUnit\\FrameWork\\TestCase\n{\n    #[OneTest]\n    #[Internal]\n    public function testItWorks() {}\n\n    #[TwoTest]\n    #[Internal]\n    public function testItDoesSomething() {}\n}",
+                        {
+                            "style": "annotation"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
