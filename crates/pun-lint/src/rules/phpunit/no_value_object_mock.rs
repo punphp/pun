@@ -5,12 +5,11 @@
 //! method call, a static call or a `new`, or an array item's value, becomes `new \...\Request()`.
 
 use mago_syntax::cst::{
-    Access, ArgumentList, ArrayElement, Call, ClassLikeConstantSelector, Expression, Node,
-    NodeKind, PartialArgument,
+    ArgumentList, ArrayElement, Call, Expression, Node, NodeKind, PartialArgument,
 };
 use pun_problem::{Edit, Safety};
 
-use super::{AnyCall, TEST_CASE, arg_value, class_is, report, resolve, string_value};
+use super::{AnyCall, TEST_CASE, arg_value, class_is, class_string, report};
 use crate::syntax::{node_span, unparenthesize};
 use crate::{Context, Report, Rule};
 
@@ -105,21 +104,7 @@ fn mocked_class(ancestors: &[Node<'_, '_>], value: &Expression<'_>) -> Option<St
     if !call.is_name(&["createMock"]) {
         return None;
     }
-    let first = arg_value(call.args().into_iter().next()?);
-    let class = match first {
-        Expression::Access(Access::ClassConstant(access)) => {
-            let (Expression::Identifier(class), ClassLikeConstantSelector::Identifier(constant)) =
-                (access.class, &access.constant)
-            else {
-                return None;
-            };
-            if !constant.value.eq_ignore_ascii_case(b"class") {
-                return None;
-            }
-            resolve(ancestors, class)
-        }
-        _ => string_value(first)?,
-    };
+    let class = class_string(ancestors, arg_value(call.args().into_iter().next()?))?;
     [REQUEST, REQUEST_STACK]
         .contains(&class.as_str())
         .then_some(class)

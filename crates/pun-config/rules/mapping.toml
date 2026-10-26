@@ -654,7 +654,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "phpunit/no-assert-is-type" = { fix = "safe", ported = true, status = "decided", summary = "Replaces `Assert::isType()` calls with type-specific `Assert::is*()` calls" }
 "phpunit/no-assert-same-type-mismatch" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Correct expected type in assertSame() method to match strict type of passed variable" }
 "phpunit/no-at-matcher" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Replace at() method call with desired matcher" }
-"phpunit/no-bare-mock-assign" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Add explicit instance assert between above nullable object pass" }
+"phpunit/no-bare-mock-assign" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Add explicit instance assert between above nullable object pass" }
 "phpunit/no-bare-mock-builder" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Remove getMockBuilder() to createMock()" }
 "phpunit/no-empty-test" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Remove empty test methods" }
 "phpunit/no-entity-mock" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Move from entity mock, to direct use of class instance and setters" }

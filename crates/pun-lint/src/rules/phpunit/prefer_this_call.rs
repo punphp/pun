@@ -20,7 +20,7 @@ use crate::syntax::node_span;
 use crate::{Context, Report, Rule};
 
 /// rector-phpunit's `NonAssertNonStaticMethods::ALL`.
-const NON_ASSERT: &[&str] = &[
+pub(super) const NON_ASSERT: &[&str] = &[
     "createMock",
     "atLeast",
     "atLeastOnce",

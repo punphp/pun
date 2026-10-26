@@ -11,6 +11,7 @@ mod no_assert_contains_only;
 mod no_assert_is_type;
 mod no_assert_same_type_mismatch;
 mod no_at_matcher;
+mod no_bare_mock_assign;
 mod no_bare_mock_builder;
 mod no_empty_test;
 mod no_expects_any;
@@ -55,6 +56,7 @@ pub use no_assert_contains_only::NoAssertContainsOnly;
 pub use no_assert_is_type::NoAssertIsType;
 pub use no_assert_same_type_mismatch::NoAssertSameTypeMismatch;
 pub use no_at_matcher::NoAtMatcher;
+pub use no_bare_mock_assign::NoBareMockAssign;
 pub use no_bare_mock_builder::NoBareMockBuilder;
 pub use no_empty_test::NoEmptyTest;
 pub use no_expects_any::NoExpectsAny;
@@ -152,6 +154,7 @@ pub(crate) fn all() -> Vec<Box<dyn Rule>> {
         Box::new(PreferNamedDataProviderKeys),
         Box::new(PreferTestPrefix),
         Box::new(NoValueObjectMock),
+        Box::new(NoBareMockAssign),
     ]
 }
 
@@ -508,6 +511,25 @@ pub(crate) fn string_value(expr: &Expression<'_>) -> Option<String> {
     match crate::rules::rector_batch5::value(expr)? {
         crate::rules::rector_batch5::Value::Str(s) => Some(s),
         _ => None,
+    }
+}
+
+/// `ValueResolver::getValue` for a class name: a string literal, or `X::class` resolved.
+pub(crate) fn class_string(ancestors: &[Node<'_, '_>], expr: &Expression<'_>) -> Option<String> {
+    use mago_syntax::cst::{Access, ClassLikeConstantSelector};
+    match unparenthesize(expr) {
+        Expression::Access(Access::ClassConstant(access)) => {
+            let (Expression::Identifier(class), ClassLikeConstantSelector::Identifier(constant)) =
+                (access.class, &access.constant)
+            else {
+                return None;
+            };
+            constant
+                .value
+                .eq_ignore_ascii_case(b"class")
+                .then(|| resolve(ancestors, class))
+        }
+        expr => string_value(expr),
     }
 }
 

@@ -11226,7 +11226,7 @@
         "BareCreateMockAssignToDirectUseRector",
         "Rector\\PHPUnit\\CodeQuality\\Rector\\ClassMethod\\BareCreateMockAssignToDirectUseRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/phpunit/no-bare-mock-builder",
