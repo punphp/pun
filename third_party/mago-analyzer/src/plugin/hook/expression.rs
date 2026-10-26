@@ -6,14 +6,13 @@ use crate::plugin::context::HookContext;
 use crate::plugin::context::InvocationInfo;
 use crate::plugin::hook::ExpressionHookResult;
 use crate::plugin::hook::HookResult;
-use crate::plugin::provider::Provider;
 
 /// Hook trait for intercepting expression analysis.
 ///
 /// This hook receives the real CST expression and full mutable context,
 /// allowing hooks to inspect expressions, report issues, modify analysis state,
 /// and optionally skip analysis with a custom type.
-pub trait ExpressionHook: Provider {
+pub trait ExpressionHook: Send + Sync {
     /// Observers publish information outside the analysis state and must not see speculative callback walks.
     /// Semantic hooks keep the default so raw return inference retains their type refinements.
     fn is_observer(&self) -> bool {

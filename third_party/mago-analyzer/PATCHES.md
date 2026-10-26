@@ -1573,3 +1573,13 @@ existing union wire encoding directly. No extension protocol or dependency versi
 
 The fresh PHPStan 2.3.1 controls in `class-constant-initializers/declared.php` distinguish each selection
 and verify that a mismatched `@var string` reports runtime value 1 while exact reads retain `1|4`.
+
+## Expression callbacks without provider metadata
+
+`ExpressionHook` requires `Send + Sync`, not `Provider`. The registry stores expression callbacks and
+dispatches their hook methods without reading provider metadata. The thread-safety requirements stay
+unchanged. Existing providers can still implement both traits.
+
+Pun's internal initializer scope uses this callback contract without an unused `Provider::meta()`
+implementation. The public class-initializer controls exercise the callback through ordinary analysis,
+including lexical `self` and `parent` arithmetic. No new analysis entrypoint or metadata calls are added.

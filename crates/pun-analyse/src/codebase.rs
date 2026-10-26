@@ -1006,17 +1006,6 @@ impl Initializers<'_> {
 /// Isolated arithmetic islands need their lexical self/parent scope, not a synthetic global scope.
 struct InitializerScope(mago_word::Word);
 
-impl mago_analyzer::plugin::Provider for InitializerScope {
-    fn meta() -> &'static mago_analyzer::plugin::ProviderMeta {
-        static META: mago_analyzer::plugin::ProviderMeta = mago_analyzer::plugin::ProviderMeta::new(
-            "pun-initializer-scope",
-            "initializer-scope",
-            "lexical initializer scope",
-        );
-        &META
-    }
-}
-
 impl mago_analyzer::plugin::ExpressionHook for InitializerScope {
     fn before_expression(
         &self,
