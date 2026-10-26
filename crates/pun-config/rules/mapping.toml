@@ -670,7 +670,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "phpunit/no-test-constructor" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Replace or remove __construct() in PHPUnit test cases; use setUp()." }
 "phpunit/no-unused-mock" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Remove standalone method calls with no effect" }
 "phpunit/no-unused-mock-property" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Remove never used property mock, only to set expectations" }
-"phpunit/no-value-object-mock" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Use a real instance instead of a mock for entities and simple value objects in tests." }
+"phpunit/no-value-object-mock" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Use a real instance instead of a mock for entities and simple value objects in tests." }
 "phpunit/prefer-assert" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Turns assert() calls in tests to PHPUnit assert method alternative" }
 "phpunit/prefer-assert-array-has-key" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Turns assertTrue() + isset() comparisons to more precise assertArrayHasKey() method" }
 "phpunit/prefer-assert-count" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Replaces use of assertSame and assertEquals on Countable objects with count method" }

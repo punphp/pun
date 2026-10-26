@@ -359,3 +359,8 @@ fn replace_test_annotation_with_prefixed_function() {
         "ReplaceTestAnnotationWithPrefixedFunctionRector",
     );
 }
+
+#[test]
+fn direct_instance_over_mock_arg() {
+    check(NoValueObjectMock, "DirectInstanceOverMockArgRector");
+}
