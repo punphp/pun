@@ -1168,7 +1168,7 @@ pub fn intersect_union_types(type_1: &TUnion, type_2: &TUnion, codebase: &Codeba
                 [TAtomic::Mixed(other)] => TUnion::from_atomic(TAtomic::Mixed(match other.effective_subtracted_type() {
                     Some(previous) => TMixed::with_subtracted_type(combine_union_types(excluded, &previous, codebase, Default::default())),
                     None => mixed.clone(),
-                })),
+                }.with_is_explicit(mixed.is_explicit() || other.is_explicit()))),
                 _ => atomic::mixed::subtraction::remove(other, excluded, codebase),
             });
         }
@@ -1178,7 +1178,9 @@ pub fn intersect_union_types(type_1: &TUnion, type_2: &TUnion, codebase: &Codeba
 
     if type_1.is_mixed() {
         if type_2.is_mixed() {
-            return Some(get_mixed());
+            return Some(TUnion::from_atomic(TAtomic::Mixed(TMixed::new().with_is_explicit(
+                type_1.types.iter().chain(type_2.types.iter()).any(|atomic| matches!(atomic, TAtomic::Mixed(mixed) if mixed.is_explicit())),
+            ))));
         }
 
         return Some(type_2.clone());

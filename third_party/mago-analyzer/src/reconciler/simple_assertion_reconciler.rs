@@ -30,6 +30,7 @@ use mago_codex::ttype::comparator::atomic_comparator;
 use mago_codex::ttype::comparator::union_comparator;
 use mago_codex::ttype::get_arraykey;
 use mago_codex::ttype::get_closed_resource;
+use mago_codex::ttype::get_empty;
 use mago_codex::ttype::get_float;
 use mago_codex::ttype::get_mixed;
 use mago_codex::ttype::get_mixed_iterable;
@@ -77,8 +78,14 @@ where
     A: Arena,
 {
     if let Some(assertion_type) = assertion.get_type() {
-        // `mixed is T` -> `T`, always
+        // A falsey mixed scope is finite: its positive is_int alternative contains only zero.
         if existing_var_type.is_mixed() {
+            if existing_var_type.is_falsy_mixed() {
+                let types = get_empty().types.iter().filter(|atomic| atomic_comparator::is_contained_by(
+                    context.codebase, atomic, assertion_type, true, &mut ComparisonResult::new(),
+                )).cloned().collect::<Vec<_>>();
+                return Some(if types.is_empty() { get_never() } else { existing_var_type.clone_with_types(types) });
+            }
             return Some(wrap_atomic(assertion_type.clone()));
         }
 
@@ -175,7 +182,7 @@ where
                 ));
             }
             TAtomic::Array(TArray::Keyed(TKeyedArray { known_items: None, parameters: Some(parameters), .. }))
-                if (parameters.0.is_placeholder() || parameters.0.is_array_key())
+                if (parameters.0.is_placeholder() || parameters.0.is_array_key() || parameters.0.is_mixed())
                     && (parameters.1.is_placeholder() || parameters.1.is_mixed()) =>
             {
                 return Some(intersect_keyed_array(
@@ -818,7 +825,7 @@ where
 
     for atomic in existing_var_type.types.as_ref() {
         match atomic {
-            TAtomic::Array(TArray::Keyed(keyed_array)) if !keyed_array.has_known_items() => {
+            TAtomic::Array(TArray::Keyed(keyed_array)) => {
                 let mut non_empty = keyed_array.is_non_empty();
 
                 if let Some(TAtomic::Array(assertion_array)) = assertion_type
@@ -827,10 +834,16 @@ where
                     non_empty = true;
                 }
 
-                acceptable_types.push(TAtomic::Array(TArray::Keyed(keyed_array.as_non_empty_array(non_empty))));
-            }
-            TAtomic::Array(TArray::Keyed(keyed_array)) => {
-                acceptable_types.push(TAtomic::Array(TArray::Keyed(keyed_array.clone())));
+                let mut refined = keyed_array.as_non_empty_array(non_empty);
+                if let Some(TAtomic::Array(TArray::Keyed(asserted))) = assertion_type
+                    && let (Some((key, value)), Some((asserted_key, asserted_value))) = (&refined.parameters, &asserted.parameters)
+                    && (key.is_array_key() || key.is_mixed()) && value.is_vanilla_mixed()
+                    && asserted_key.is_vanilla_mixed() && asserted_value.is_vanilla_mixed()
+                {
+                    // PHPStan keeps explicit mixed parameters when refining an unconstrained array.
+                    refined.parameters = asserted.parameters.clone();
+                }
+                acceptable_types.push(TAtomic::Array(TArray::Keyed(refined)));
             }
             TAtomic::Array(TArray::List(list)) => {
                 acceptable_types.push(TAtomic::Array(TArray::List(list.clone())));
@@ -872,6 +885,17 @@ where
                 did_remove_type = true;
             }
         }
+    }
+
+    if let Some(general) = acceptable_types.iter().find(|atomic| matches!(atomic,
+        TAtomic::Array(TArray::Keyed(array)) if array.known_items.is_none()
+            && array.parameters.as_ref().is_some_and(|(key, value)| key.is_vanilla_mixed() && value.is_vanilla_mixed())
+    )) && acceptable_types.iter().all(|atomic| atomic_comparator::is_contained_by(
+        context.codebase, atomic, general, true, &mut ComparisonResult::new(),
+    )) {
+        // Intersecting with the general array absorbs its constant-array alternatives. Do not
+        // union them again: TypeCombinator's array union would erase the assertion's mixed key.
+        acceptable_types = vec![general.clone()];
     }
 
     finalize(context, acceptable_types, did_remove_type, key, span, existing_var_type, assertion, negated, is_equality)
@@ -1151,8 +1175,8 @@ where
     for atomic in existing_var_type.types.as_ref() {
         match atomic {
             TAtomic::Scalar(TScalar::Bool(existing_bool)) => {
-                if existing_bool.is_general() || *existing_bool == boolean {
-                    acceptable_types.push(TAtomic::Scalar(TScalar::Bool(boolean)));
+                if boolean.is_general() || existing_bool.is_general() || *existing_bool == boolean {
+                    acceptable_types.push(TAtomic::Scalar(TScalar::Bool(if boolean.is_general() { *existing_bool } else { boolean })));
                 } else {
                     did_remove_type = true;
                 }
@@ -1215,7 +1239,7 @@ where
     for atomic in existing_var_type.types.as_ref() {
         match atomic {
             TAtomic::Scalar(TScalar::Float(_)) => {
-                acceptable_types.push(TAtomic::Scalar(TScalar::Float(*float)));
+                acceptable_types.push(atomic.clone());
             }
             TAtomic::Mixed(_) | TAtomic::Scalar(TScalar::Generic | TScalar::Numeric) => {
                 return get_float();
@@ -1238,7 +1262,7 @@ where
                     context.codebase,
                     atomic,
                     &TAtomic::Scalar(TScalar::Float(*float)),
-                    false,
+                    true,
                     &mut ComparisonResult::new(),
                 ) {
                     acceptable_types.push(atomic.clone());

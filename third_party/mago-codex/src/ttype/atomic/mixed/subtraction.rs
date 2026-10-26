@@ -6,6 +6,7 @@ use std::sync::Arc;
 use super::TMixed;
 use crate::metadata::CodebaseMetadata;
 use crate::ttype::atomic::TAtomic;
+use crate::ttype::atomic::array::TArray;
 use crate::ttype::atomic::scalar::TScalar;
 use crate::ttype::atomic::scalar::int::TInteger;
 use crate::ttype::combiner::CombinerOptions;
@@ -59,7 +60,7 @@ impl TMixed {
             }
             None => excluded.clone(),
         };
-        TUnion::from_atomic(TAtomic::Mixed(Self::with_subtracted_type(excluded)))
+        TUnion::from_atomic(TAtomic::Mixed(Self::with_subtracted_type(excluded).with_is_explicit(self.is_explicit())))
     }
 
     /// MixedType::unsetOffset(): an unset may create the empty array, but no other excluded value.
@@ -68,6 +69,7 @@ impl TMixed {
         match self.get_subtracted_type() {
             Some(excluded) => {
                 Self::with_subtracted_type(remove(excluded, &get_empty_keyed_array(), codebase))
+                    .with_is_explicit(self.is_explicit())
             }
             None => self.clone(),
         }
@@ -90,6 +92,14 @@ pub(crate) fn remove(from: &TUnion, excluded: &TUnion, codebase: &CodebaseMetada
                     &mut ComparisonResult::new(),
                 ) {
                     Vec::new()
+                } else if let (TAtomic::Array(array), TAtomic::Array(empty)) = (&atomic, remove)
+                    && empty.is_empty()
+                {
+                    // PHPStan ArrayType::tryRemove(array{}): retain precisely non-empty arrays.
+                    vec![TAtomic::Array(match array {
+                        TArray::Keyed(array) => TArray::Keyed(array.clone().with_non_empty(true)),
+                        TArray::List(array) => TArray::List(array.clone_non_empty()),
+                    })]
                 } else if let (
                     TAtomic::Scalar(TScalar::Integer(a)),
                     TAtomic::Scalar(TScalar::Integer(b)),

@@ -233,3 +233,25 @@ The public `pun-analyse/tests/attributes.rs` regressions compare complete diagno
 boolean, null, and unresolved flags remain invalid attribute declarations. The oracle uses
 `tests/fixtures/attributes/phpstan-input-flags.neon`; its source revision is
 `cb3b7e99489b2e3789ee2eec10501cb7a72580ea`.
+
+## Explicit mixed identity and empty-array subtraction
+
+`TMixed::is_explicit` records PHPStan's explicit mixed identity independently of a containing
+union's annotation flags. Its serde default is false, so older serialized metadata remains
+readable. Analyzer assertions can set this identity without changing PHPDoc parsing globally.
+Subtraction and unset preserve the identity. A mixed union is explicit only when every mixed
+operand is explicit; intersection retains explicitness from either mixed operand. ErrorType
+keeps its existing identity and precedence.
+
+The array combiner normalizes unconstrained mixed keys through array-key when joining distinct
+arrays, matching `ArrayType::getIterableKeyType()` in PHPStan's `TypeCombinator`. Equal array
+operands retain their parameters. Mixed value parameters retain their explicitness during a join.
+
+`mixed/subtraction.rs::remove()` now handles array minus empty array. Both keyed arrays and lists
+retain their parameter types and become non-empty. This ports `ArrayType::tryRemove()` and
+allows `TMixed::unset_offset()` to admit an empty array without admitting excluded non-empty arrays.
+
+The source remains PHPStan 2.3.1 at `cb3b7e99489b2e3789ee2eec10501cb7a72580ea`.
+`pun-analyse/tests/fixtures/mixed-subtraction/guard-types.php` records the PHAR's explicitness and
+array-domain results. `tests/mixed_subtraction.rs` checks these shared APIs, serde compatibility,
+public guard diagnostics, and passive native tracking. No dependency or lockfile changes are needed.

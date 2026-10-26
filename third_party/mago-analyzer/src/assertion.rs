@@ -9,6 +9,8 @@ use mago_codex::ttype::add_optional_union_type;
 use mago_codex::ttype::atomic::TAtomic;
 use mago_codex::ttype::atomic::array::TArray;
 use mago_codex::ttype::atomic::array::key::ArrayKey;
+use mago_codex::ttype::atomic::array::keyed::TKeyedArray;
+use mago_codex::ttype::atomic::mixed::TMixed;
 use mago_codex::ttype::atomic::object::TObject;
 use mago_codex::ttype::atomic::object::named::TNamedObject;
 use mago_codex::ttype::atomic::scalar::TScalar;
@@ -97,8 +99,13 @@ where
 
             match call {
                 // If the function does not have any, try collecting
-                // assertions for special functions.
-                Call::Function(function_call) if if_types.is_empty() => {
+                // assertions for special functions. is_array needs PHPStan's explicit parameters,
+                // not the prelude's otherwise equivalent array<array-key, mixed> annotation.
+                Call::Function(function_call) if if_types.is_empty()
+                    || (is_function_call_to(expression, assertion_context, b"is_array")
+                        && matches!(function_call.function, Expression::Identifier(id)
+                            if assertion_context.codebase.get_function(assertion_context.resolved_names.get(id))
+                                .is_none_or(|function| function.flags.is_built_in()))) => {
                     if_types.extend(scrape_special_function_call_assertions(
                         assertion_context,
                         artifacts,
@@ -376,6 +383,14 @@ where
                 .map(mago_syntax::cst::Argument::value)
                 .and_then(|array_key| get_expression_array_key(artifacts, array_key))
                 .map(|key| (1, vec![Assertion::HasArrayKey(key)])),
+            b"is_array" if assertion_context.codebase.get_function(resolved_function_name.as_bytes())
+                .is_none_or(|function| function.flags.is_built_in()) => {
+                // IsArrayFunctionTypeSpecifyingExtension uses explicit mixed for both parameters.
+                let mixed = std::sync::Arc::new(TUnion::from_atomic(TAtomic::Mixed(TMixed::new().with_is_explicit(true))));
+                Some((0, vec![Assertion::IsType(TAtomic::Array(TArray::Keyed(TKeyedArray::new_with_parameters(
+                    mixed.clone(), mixed,
+                ))))]))
+            }
             b"is_countable" => Some((0, vec![Assertion::Countable])),
             b"ctype_digit" => Some((
                 0,

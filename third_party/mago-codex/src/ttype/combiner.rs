@@ -50,6 +50,7 @@ use crate::ttype::comparator::ComparisonResult;
 use crate::ttype::comparator::array_comparator::is_array_contained_by_array;
 use crate::ttype::comparator::object_comparator;
 use crate::ttype::comparator::union_comparator;
+use crate::ttype::get_arraykey;
 use crate::ttype::template::variance::Variance;
 use crate::ttype::union::TUnion;
 use crate::utils::str_is_numeric;
@@ -175,12 +176,16 @@ pub fn combine(types: Vec<TAtomic>, codebase: &CodebaseMetadata, options: Combin
         return types;
     }
 
+    let is_explicit_mixed = types.iter().filter_map(|atomic| {
+        if let TAtomic::Mixed(mixed) = atomic { Some(mixed.is_explicit()) } else { None }
+    }).all(|explicit| explicit);
+
     // PHPStan keeps the first unconstrained mixed operand, including ErrorType.
     // Do not make an error marker infectious when ordinary mixed comes first.
     if types.iter().any(|atomic| matches!(atomic, TAtomic::Mixed(mixed) if mixed.is_error() || mixed.get_subtracted_type().is_some()))
-        && let Some(mixed) = types.iter().find(|atomic| {
+        && let Some(mixed) = types.iter().filter(|atomic| {
             matches!(atomic, TAtomic::Mixed(mixed) if mixed.is_vanilla() && (!mixed.is_isset_from_loop() || mixed.is_error()))
-        })
+        }).min_by_key(|atomic| matches!(atomic, TAtomic::Mixed(mixed) if mixed.is_explicit()))
     {
         return vec![mixed.clone()];
     }
@@ -190,12 +195,24 @@ pub fn combine(types: Vec<TAtomic>, codebase: &CodebaseMetadata, options: Combin
     }) {
         return vec![TAtomic::Mixed(crate::ttype::atomic::mixed::subtraction::union(
             excluded, &TUnion::from_vec(types.clone()), codebase,
-        ))];
+        ).with_is_explicit(is_explicit_mixed))];
     }
 
+    // TypeCombinator combines distinct arrays through getIterableKeyType(), which converts
+    // an unconstrained mixed key to array-key. Equal arrays retain their declared parameters.
+    let normalize_array_keys = types.iter().find(|atomic| atomic.is_array()).is_some_and(|first| {
+        types.iter().any(|atomic| atomic.is_array() && atomic != first)
+    });
     let mut combination = TypeCombination::new();
 
-    for atomic in types {
+    for mut atomic in types {
+        if normalize_array_keys
+            && let TAtomic::Array(TArray::Keyed(array)) = &mut atomic
+            && let Some((key, _)) = &mut array.parameters
+            && key.is_vanilla_mixed()
+        {
+            *key = Arc::new(get_arraykey());
+        }
         if let TAtomic::Derived(derived) = atomic {
             combination.derived_types.insert(derived);
             continue;
@@ -228,7 +245,7 @@ pub fn combine(types: Vec<TAtomic>, codebase: &CodebaseMetadata, options: Combin
             } else {
                 TMixedTruthiness::Undetermined
             },
-        ))];
+        ).with_is_explicit(is_explicit_mixed))];
     } else if combination.flags.contains(CombinationFlags::HAS_MIXED) {
         return vec![TAtomic::Mixed(TMixed::new())];
     }

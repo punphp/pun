@@ -404,18 +404,83 @@ fn analyzer_copies_joins_and_offset_access_preserve_only_the_correct_exclusions(
 
 #[test]
 fn negative_guards_produce_mixed_exclusions_without_an_injection_hook() {
+    guard_oracle("guards.php", include_str!("fixtures/mixed-subtraction/guards.json"));
+}
+
+#[test]
+fn explicit_mixed_and_unset_array_domains_match_the_shared_phpstan_api() {
+    use std::sync::Arc;
+    use mago_codex::ttype::atomic::array::{TArray, keyed::TKeyedArray, list::TList};
+
+    let codebase = CodebaseMetadata::new();
+    let explicit = TMixed::new().with_is_explicit(true);
+    let explicit_union = TUnion::from_atomic(TAtomic::Mixed(explicit.clone()));
+    let types = BTreeMap::from([
+        ("implicit", get_mixed()),
+        ("explicit", explicit_union.clone()),
+        ("excluded", explicit.subtract(&get_int(), &codebase)),
+        ("int", get_int()),
+    ]);
+    let mut got = serde_json::Map::new();
+    for (name, array) in [
+        ("array", TArray::Keyed(TKeyedArray::new_with_parameters(
+            Arc::new(explicit_union.clone()), Arc::new(explicit_union.clone()),
+        ))),
+        ("list", TArray::List(TList::new(Arc::new(explicit_union)))),
+    ] {
+        let excluded = TMixed::new().subtract(&TUnion::from_atomic(TAtomic::Array(array)), &codebase);
+        let TAtomic::Mixed(mixed) = excluded.get_single() else { panic!("not mixed") };
+        let unset = mixed.unset_offset(&codebase);
+        let TAtomic::Array(array) = unset.get_subtracted_type().unwrap().get_single() else { panic!("not array") };
+        let item = mago_codex::ttype::get_array_value_parameter(array, &codebase);
+        let TAtomic::Mixed(item) = item.get_single() else { panic!("not mixed") };
+        got.insert(format!("unset:{name}"), serde_json::json!({
+            "nonempty": array.is_non_empty(), "item-explicit": item.is_explicit(),
+        }));
+    }
+    for a in ["implicit", "explicit", "excluded"] {
+        for (b, other) in &types {
+            for (operation, result) in [
+                ("union", combine_union_types(&types[a], other, &codebase, Default::default())),
+                ("intersect", intersect_union_types(&types[a], other, &codebase).unwrap()),
+            ] {
+                let metadata = match result.types.as_ref() {
+                    [TAtomic::Mixed(mixed)] => Value::Bool(mixed.is_explicit()),
+                    _ => Value::Null,
+                };
+                got.insert(format!("{operation}:{a}:{b}"), metadata);
+                let restored: TUnion = serde_json::from_value(serde_json::to_value(&result).unwrap()).unwrap();
+                assert_eq!(restored, result);
+            }
+        }
+    }
+    let TAtomic::Mixed(excluded) = types["excluded"].get_single() else { panic!("not mixed") };
+    got.insert("subtract-explicit".into(), Value::Bool(excluded.is_explicit()));
+    got.insert("unset-explicit".into(), Value::Bool(excluded.unset_offset(&codebase).is_explicit()));
+    let expected: Value = serde_json::from_str(include_str!("fixtures/mixed-subtraction/guard-types.json")).unwrap();
+    assert_eq!(Value::Object(got), expected);
+    let mut legacy = serde_json::to_value(TMixed::new()).unwrap();
+    legacy.as_object_mut().unwrap().remove("is_explicit");
+    assert_eq!(serde_json::from_value::<TMixed>(legacy).unwrap(), TMixed::new());
+}
+
+#[test]
+fn array_guards_preserve_explicit_parameters_copies_joins_and_falsey_intersections() {
+    guard_oracle("array-guards.php", include_str!("fixtures/mixed-subtraction/array-guards.json"));
+}
+
+fn guard_oracle(file: &str, oracle: &str) {
     let root = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
         .join("tests/fixtures/mixed-subtraction");
-    let mut project = pun_analyse::Project::new(vec![root.join("guards.php")], Vec::new());
+    let mut project = pun_analyse::Project::new(vec![root.join(file)], Vec::new());
     project.php_version = 80400;
     let mut got: Vec<_> = pun_analyse::run(&project)
         .unwrap()
         .into_iter()
         .map(|e| (e.line, e.identifier, e.message, e.tip, e.can_be_ignored))
         .collect();
-    let oracle: Value = serde_json::from_str(include_str!("fixtures/mixed-subtraction/guards.json"))
-        .unwrap();
-    let mut want: Vec<_> = oracle["files"]["guards.php"]["messages"]
+    let oracle: Value = serde_json::from_str(oracle).unwrap();
+    let mut want: Vec<_> = oracle["files"][file]["messages"]
         .as_array()
         .unwrap()
         .iter()
@@ -450,7 +515,8 @@ fn negative_guard_exclusions_are_independent_of_native_tracking() {
     use mago_syntax::{cst::{Call, Expression}, parser::parse_file};
 
     const SOURCE: &[u8] = include_bytes!("fixtures/mixed-subtraction/guards.php");
-    struct Observe(Arc<Mutex<BTreeMap<u32, TUnion>>>);
+    const ARRAYS: &[u8] = include_bytes!("fixtures/mixed-subtraction/array-guards.php");
+    struct Observe(Arc<Mutex<BTreeMap<u32, TUnion>>>, &'static [u8]);
     impl Provider for Observe {
         fn meta() -> &'static ProviderMeta {
             static META: ProviderMeta = ProviderMeta::new(
@@ -471,7 +537,7 @@ fn negative_guard_exclusions_are_independent_of_native_tracking() {
                 && matches!(call.function, Expression::Identifier(id) if id.value() == b"\\PHPStan\\dumpType")
             {
                 let argument = call.argument_list.arguments.iter().next().unwrap().value();
-                let line = 1 + SOURCE[..expression.span().start.offset as usize]
+                let line = 1 + self.1[..expression.span().start.offset as usize]
                     .iter().filter(|b| **b == b'\n').count() as u32;
                 self.0.lock().unwrap().insert(
                     line, context.get_expression_type(argument).unwrap().clone(),
@@ -482,9 +548,10 @@ fn negative_guard_exclusions_are_independent_of_native_tracking() {
     }
     let prelude = mago_prelude::Prelude::build();
     let mut baseline = None;
-    for native in [false, true] {
+    for (source, native) in [(SOURCE, false), (SOURCE, true), (ARRAYS, false), (ARRAYS, true)] {
+        if !native { baseline = None; }
         let arena = LocalArena::new();
-        let file = File::ephemeral(Cow::Borrowed(b"negative-mixed-guards.php"), Cow::Borrowed(SOURCE));
+        let file = File::ephemeral(Cow::Borrowed(b"negative-mixed-guards.php"), Cow::Borrowed(source));
         let program = parse_file(&arena, &file);
         assert!(!program.has_errors());
         let names = NameResolver::new(&arena).resolve(program);
@@ -495,16 +562,27 @@ fn negative_guard_exclusions_are_independent_of_native_tracking() {
         populate_codebase(&mut codebase, &mut references, Default::default(), Default::default());
         let observed = Arc::new(Mutex::new(BTreeMap::new()));
         let mut registry = PluginRegistry::with_library_providers();
-        registry.register_expression_hook(Observe(Arc::clone(&observed)));
+        registry.register_expression_hook(Observe(Arc::clone(&observed), source));
         let analyzer = Analyzer::new(&arena, &file, &names, &codebase, &registry, settings);
         let mut result = AnalysisResult::new(references);
         let artifacts = analyzer.analyze_with_artifacts(program, &mut result).unwrap();
         let observed = std::mem::take(&mut *observed.lock().unwrap());
-        // Actual PHPStan dumps mixed~int at line 8 and ErrorType after every failed-read guard.
-        let TAtomic::Mixed(not_int) = observed[&8].get_single() else { panic!("not mixed") };
-        assert_eq!(not_int.get_subtracted_type(), Some(&get_int()));
-        for line in [125, 128, 131] {
-            assert!(observed[&line].is_error(), "line {line}: {:?}", observed[&line]);
+        if source == SOURCE {
+            // Actual PHPStan dumps mixed~int at line 8 and ErrorType after every failed-read guard.
+            let TAtomic::Mixed(not_int) = observed[&8].get_single() else { panic!("not mixed") };
+            assert_eq!(not_int.get_subtracted_type(), Some(&get_int()));
+            for line in [125, 128, 131] {
+                assert!(observed[&line].is_error(), "line {line}: {:?}", observed[&line]);
+            }
+        } else {
+            // PHPStan's array<mixed, mixed> after the join and repeated guard has explicit parameters.
+            let TAtomic::Array(mago_codex::ttype::atomic::array::TArray::Keyed(array)) = observed[&20].get_single()
+                else { panic!("not a keyed array: {:?}", observed[&20]) };
+            let (key, value) = array.parameters.as_ref().unwrap();
+            for parameter in [key, value] {
+                let TAtomic::Mixed(mixed) = parameter.get_single() else { panic!("not mixed") };
+                assert!(mixed.is_explicit());
+            }
         }
         let state = (observed, artifacts.expression_types, format!("{:?}", result.issues));
         if let Some(baseline) = &baseline {

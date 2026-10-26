@@ -1406,3 +1406,32 @@ This producer does not add iterable, callable, structural-accessory, or generic-
 complements. Loose coercive comparisons also need separate transfers. A fresh PHPStan probe of
 `$value != 0` requires `mixed~(0|0.0|'0'|false|null)`, not just `mixed~0`. The unchanged resource
 predicate control returns mixed, matching PHPStan.
+
+## Falsey guard intersections and explicit array assertions
+
+The follow-up closes the three producer and transfer failures recorded above. The original
+`guards.php` regression now matches all 36 PHPStan 2.3.1 records, without changed expectations.
+
+`simple_assertion_reconciler.rs` intersects a falsey mixed value with the asserted type instead
+of replacing that value with the entire asserted domain. The intersection uses the finite
+falsey domain and strict assertion containment. In particular, integer zero does not satisfy
+`is_float()`. Subsequent positive float and bool guards retain their surviving literals.
+
+`assertion.rs` supplies explicit mixed key and value types for builtin `is_array()` assertions,
+matching `IsArrayFunctionTypeSpecifyingExtension::specifyTypes()`. The prelude annotation does
+not carry that distinction. A user-defined function named `is_array` retains its own assertions.
+Unconstrained keyed-array refinements keep these source-owned parameters. Pun's atomic converter
+reads the mixed identity from Codex, not an annotation flag or the reported type string.
+The positive array intersection also absorbs constant-array alternatives covered by its generic
+array. Re-unioning those alternatives would normalize away the explicit mixed key again.
+
+Codex's accompanying patch retains explicit mixed through subtraction, unset, unions,
+intersections, copies, and distinct-array joins. It also subtracts the empty-array domain
+from an array exclusion after unset, retaining only non-empty arrays in that exclusion.
+
+Fresh controls are in `mixed-subtraction/array-guards.php` and `guard-types.php`. Their oracle
+records remain strict. Two additional records expose separate existing contracts: the shared
+type reporter adds parentheses around a single non-empty-array exclusion at array-guards.php:74;
+and Mago infers a string assertion from an unannotated user function at line 137, which PHPStan
+does not infer. This patch does not change `restore_metadata`, the shared type reporter, or
+inferred function assertions.
