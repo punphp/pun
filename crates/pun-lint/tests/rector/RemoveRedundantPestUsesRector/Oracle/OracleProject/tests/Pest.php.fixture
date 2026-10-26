@@ -1,0 +1,14 @@
+<?php
+
+use Illuminate\Foundation\Testing\RefreshDatabase as Refresh;
+use Tests\Fixture\SampleTrait;
+
+pest()->extend(Tests\TestCase::class)->use(Refresh::class)->IN('Feature/');
+uses(SampleTrait::class)->in("Feature\\Sub", <<<'TXT'
+Unit
+TXT);
+pest()->use(\Other\Trait1::class)->group('x')->in('Unit');
+pest()->use(Missing::class, 'nope')->in('Feature');
+pest()->use(\Bad\One::class)->in('../Feature');
+pest()->use(\Bad\Two::class)->in('Fea*');
+pest()->use(\Bad\Three::class)->in('/abs');

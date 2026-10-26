@@ -76,30 +76,52 @@ fn run_class(rules: Vec<Box<dyn Rule>>, class: &str) {
         }
         for (path, input, expected) in fixtures(&dir) {
             let name = format!("{sub}/{}", path.file_name().unwrap().to_string_lossy());
-            let fixed = linter.fix(&path, &input).unwrap();
-            let expected = if sub == "Fixture" && fixed.source == format!("{expected}\n") {
-                fixed.source.clone()
-            } else {
-                expected
-            };
-            assert_eq!(fixed.source, expected, "{class} {name}: lint --fix");
-            assert_eq!(
-                format(&pipeline, &fixed.source),
-                format(&pipeline, &expected),
-                "{class} {name}: format(lint --fix)"
+            check_fixture(
+                &linter,
+                &pipeline,
+                &format!("{class} {name}"),
+                sub == "Fixture",
+                &path,
+                &input,
+                expected,
             );
-            if input != expected {
-                // The rule did the work, not the formatter.
-                assert_ne!(
-                    format(&pipeline, &input),
-                    format(&pipeline, &expected),
-                    "{class} {name}"
-                );
-                assert!(!fixed.applied.is_empty(), "{class} {name}");
-            } else {
-                assert!(fixed.applied.is_empty(), "{class} {name}");
-            }
         }
+    }
+}
+
+/// One fixture through `linter` as the file at `path`: `lint --fix` gives `expected` (an upstream fixture may lack
+/// Rector's final newline), the formatter agrees, and the rule did the work.
+fn check_fixture(
+    linter: &Linter,
+    pipeline: &Pipeline,
+    name: &str,
+    upstream: bool,
+    path: &Path,
+    input: &str,
+    expected: String,
+) {
+    let fixed = linter.fix(path, input).unwrap();
+    let expected = if upstream && fixed.source == format!("{expected}\n") {
+        fixed.source.clone()
+    } else {
+        expected
+    };
+    assert_eq!(fixed.source, expected, "{name}: lint --fix");
+    assert_eq!(
+        format(pipeline, &fixed.source),
+        format(pipeline, &expected),
+        "{name}: format(lint --fix)"
+    );
+    if input != expected {
+        // The rule did the work, not the formatter.
+        assert_ne!(
+            format(pipeline, input),
+            format(pipeline, &expected),
+            "{name}"
+        );
+        assert!(!fixed.applied.is_empty(), "{name}");
+    } else {
+        assert!(fixed.applied.is_empty(), "{name}");
     }
 }
 
@@ -459,4 +481,81 @@ fn uses_to_extend() {
         .collect();
     sources.sort();
     pun_lint::rules::facts::with_sources(sources, || check(PreferExtend, "UsesToExtendRector"));
+}
+
+/// The plugin's fixtures for this rule are projects: `<Project>/tests/Pest.php.fixture` becomes `tests/Pest.php` for
+/// the run, as its test copies it, and each `.php.inc` is linted as the `.php` file beside it.
+#[test]
+fn remove_redundant_pest_uses() {
+    let linter = Linter::new(vec![Box::new(NoRedundantUses)], 80400);
+    let pipeline = laravel();
+    let root =
+        Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/rector/RemoveRedundantPestUsesRector");
+    let scratch = std::env::temp_dir().join(format!("pun-redundant-uses-{}", std::process::id()));
+    let mut count = 0;
+    for sub in ["Fixture", "Oracle"] {
+        for project in std::fs::read_dir(root.join(sub)).unwrap() {
+            let project = project.unwrap().path();
+            let copy = scratch.join(sub).join(project.file_name().unwrap());
+            let mut stack = vec![project.clone()];
+            while let Some(dir) = stack.pop() {
+                for entry in std::fs::read_dir(&dir).unwrap() {
+                    let path = entry.unwrap().path();
+                    let rel = path.strip_prefix(&project).unwrap();
+                    if path.is_dir() {
+                        stack.push(path);
+                        continue;
+                    }
+                    let name = path.file_name().unwrap().to_string_lossy().into_owned();
+                    let target = copy.join(rel);
+                    std::fs::create_dir_all(target.parent().unwrap()).unwrap();
+                    if name == "Pest.php.fixture" {
+                        std::fs::copy(&path, target.with_file_name("Pest.php")).unwrap();
+                    }
+                }
+            }
+            let mut files: Vec<PathBuf> = Vec::new();
+            let mut stack = vec![project.clone()];
+            while let Some(dir) = stack.pop() {
+                for entry in std::fs::read_dir(&dir).unwrap() {
+                    let path = entry.unwrap().path();
+                    if path.is_dir() {
+                        stack.push(path);
+                    } else if path.to_string_lossy().ends_with(".php.inc") {
+                        files.push(path);
+                    }
+                }
+            }
+            files.sort();
+            for file in files {
+                let content = std::fs::read_to_string(&file).unwrap();
+                let (input, expected) = match content.split_once("-----\n") {
+                    Some((i, e)) => (i.to_string(), e.to_string()),
+                    None => (content.clone(), content),
+                };
+                let rel = file
+                    .strip_prefix(&project)
+                    .unwrap()
+                    .to_string_lossy()
+                    .into_owned();
+                let path = copy.join(rel.trim_end_matches(".inc"));
+                let name = format!(
+                    "RemoveRedundantPestUsesRector {sub}/{}/{rel}",
+                    project.file_name().unwrap().to_string_lossy()
+                );
+                check_fixture(
+                    &linter,
+                    &pipeline,
+                    &name,
+                    sub == "Fixture",
+                    &path,
+                    &input,
+                    expected,
+                );
+                count += 1;
+            }
+        }
+    }
+    std::fs::remove_dir_all(&scratch).unwrap();
+    assert_eq!(count, 27);
 }

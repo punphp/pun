@@ -13,6 +13,7 @@ mod no_focused_test;
 mod no_invalid_repeat;
 mod no_negated_boolean_matcher;
 mod no_redundant_type_expectation;
+mod no_redundant_uses;
 mod no_static_test_closure;
 mod prefer_chained_expect;
 mod prefer_comparison_matchers;
@@ -71,6 +72,7 @@ pub use no_focused_test::NoFocusedTest;
 pub use no_invalid_repeat::NoInvalidRepeat;
 pub use no_negated_boolean_matcher::NoNegatedBooleanMatcher;
 pub use no_redundant_type_expectation::NoRedundantTypeExpectation;
+pub use no_redundant_uses::NoRedundantUses;
 pub use no_static_test_closure::NoStaticTestClosure;
 pub use prefer_chained_expect::PreferChainedExpect;
 pub use prefer_comparison_matchers::PreferComparisonMatchers;
@@ -146,6 +148,7 @@ pub(crate) fn all() -> Vec<Box<dyn Rule>> {
         Box::new(NoInvalidRepeat),
         Box::new(NoNegatedBooleanMatcher),
         Box::new(NoRedundantTypeExpectation),
+        Box::new(NoRedundantUses),
         Box::new(NoStaticTestClosure),
         Box::new(PreferChainedExpect::default()),
         Box::new(PreferComparisonMatchers),

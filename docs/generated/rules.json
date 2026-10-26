@@ -9042,7 +9042,7 @@
         "RemoveRedundantPestUses",
         "RemoveRedundantPestUsesRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/pest/no-static-test-closure",

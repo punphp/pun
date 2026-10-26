@@ -11857,7 +11857,7 @@
         "rules": [
           "lint/pest/no-redundant-uses"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
