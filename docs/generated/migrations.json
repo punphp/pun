@@ -12983,7 +12983,7 @@
         "rules": [
           "lint/phpunit/prefer-named-data-provider-keys"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {

@@ -343,3 +343,11 @@ fn construct_class_method_to_set_up_test_case() {
         "ConstructClassMethodToSetUpTestCaseRector",
     );
 }
+
+#[test]
+fn named_argument_for_data_provider() {
+    check(
+        PreferNamedDataProviderKeys,
+        "NamedArgumentForDataProviderRector",
+    );
+}
