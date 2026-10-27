@@ -6,6 +6,8 @@ use std::collections::{HashMap, HashSet};
 use mago_analyzer::plugin::HookContext;
 use mago_analyzer::plugin::context::InvocationInfo;
 use mago_codex::identifier::function_like::FunctionLikeIdentifier;
+use mago_codex::ttype::atomic::array::key::ArrayKey;
+use mago_codex::ttype::get_literal_string;
 use mago_codex::ttype::union::TUnion;
 use mago_span::{HasSpan, Span};
 use mago_syntax::cst::*;
@@ -119,23 +121,27 @@ impl Certainty {
     }
 
     /// DefinedVariableRule filters each constant name's scope by `name-expression === name`.
-    pub fn for_name(guard: Option<&Variable>, context: &HookContext<'_, '_>) -> Self {
+    pub fn for_name(guard: &Expression<'_>, context: &HookContext<'_, '_>) -> Self {
         let mut result = Self::of(context);
-        if let Some(Variable::Direct(guard)) = guard
-            && let Some(ty) = context.get_variable_type(guard.name)
-        {
+        let guard = super::types::flow::unparen(guard);
+        let ty = match guard {
+            Expression::Variable(Variable::Direct(v)) => {
+                context.get_variable_type(v.name).map(std::rc::Rc::as_ref)
+            }
+            _ => context.get_expression_type(guard),
+        };
+        if let Some(ty) = ty {
             for value in ty
                 .types
                 .iter()
                 .filter_map(|atomic| atomic.get_literal_string_value())
             {
+                let literal = get_literal_string(mago_word::word(value));
+                let Some(name) = OffsetName::of(guard) else {
+                    continue;
+                };
                 let mut filtered = context.block_context().clone();
-                filtered.locals.insert(
-                    mago_word::word(guard.name),
-                    std::rc::Rc::new(mago_codex::ttype::get_literal_string(mago_word::word(
-                        value,
-                    ))),
-                );
+                filtered.locals.insert(name.id, std::rc::Rc::new(literal));
                 filtered.apply_variable_conditions(context.codebase());
                 let target = format!("${}", String::from_utf8_lossy(value));
                 let certainty = filtered.variable_certainty(mago_word::word(&target));
@@ -170,6 +176,71 @@ impl Certainty {
             .get(&format!("${name}"))
             .copied()
             .unwrap_or(Tri::No)
+    }
+}
+
+/// Only literal offsets of local arrays have stable identities without selector dependencies.
+/// Their observed types participate in Mago's existing branch merge and conditional-holder invalidation.
+#[derive(PartialEq, Eq, Hash)]
+pub(super) struct OffsetName {
+    root: mago_word::Word,
+    id: mago_word::Word,
+}
+
+impl OffsetName {
+    fn of(guard: &Expression<'_>) -> Option<Self> {
+        match super::types::flow::unparen(guard) {
+            Expression::Variable(Variable::Direct(v)) => {
+                let id = mago_word::word(v.name);
+                Some(Self { root: id, id })
+            }
+            Expression::ArrayAccess(access) => {
+                let mut name = Self::of(access.array)?;
+                let key = match super::types::flow::unparen(access.index) {
+                    Expression::Literal(Literal::String(s)) => {
+                        ArrayKey::from_string(mago_word::word(s.value?))
+                    }
+                    Expression::Literal(Literal::Integer(i)) => {
+                        ArrayKey::Integer(i64::try_from(i.value?).ok()?)
+                    }
+                    _ => return None,
+                };
+                name.id = mago_word::concat_word!(
+                    name.id.as_bytes(),
+                    b"[",
+                    key.id_word().as_bytes(),
+                    b"]"
+                );
+                Some(name)
+            }
+            _ => None,
+        }
+    }
+
+    /// Materialize only selected name offsets after a real write, never by replaying statement syntax.
+    pub fn assigned(&self, assignment: &Assignment<'_>, context: &mut HookContext<'_, '_>) {
+        let mut lhs = super::types::flow::unparen(assignment.lhs);
+        while let Expression::ArrayAccess(access) = lhs {
+            lhs = super::types::flow::unparen(access.array);
+        }
+        if !matches!(lhs, Expression::Variable(Variable::Direct(v)) if v.name == self.root.as_bytes())
+        {
+            return;
+        }
+        // Whole-root and unstable-offset writes invalidate the cached expression too. Do not create
+        // correlations from a whole array's fields: PHPStan records the actual assigned expression.
+        let ty = Self::of(assignment.lhs)
+            .filter(|name| name.id == self.id)
+            .and_then(|_| context.get_expression_type(assignment).cloned());
+        let block = context.block_context_mut();
+        match ty {
+            Some(ty) => {
+                block.locals.insert(self.id, std::rc::Rc::new(ty));
+            }
+            None => {
+                block.locals.remove(&self.id);
+            }
+        }
     }
 }
 
@@ -217,10 +288,11 @@ pub(super) fn defined(context: &HookContext<'_, '_>, name: &str) -> Tri {
 pub(super) fn typed_expressions(
     program: &Program,
     names: &mago_names::ResolvedNames,
-) -> (Vec<Span>, HashSet<Span>) {
+) -> (Vec<Span>, HashSet<Span>, HashSet<OffsetName>) {
     struct Wanted<'n, 'arena> {
         spans: Vec<Span>,
         compact_calls: HashSet<Span>,
+        offset_names: HashSet<OffsetName>,
         names: &'n mago_names::ResolvedNames<'arena>,
     }
     impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Wanted<'_, '_> {
@@ -228,6 +300,12 @@ pub(super) fn typed_expressions(
             self.spans.push(v.span());
             self.spans
                 .extend(super::types::dynamic_names::static_property(v));
+            if let Variable::Indirect(v) = v
+                && let Some(name) = OffsetName::of(v.expression)
+                && name.id != name.root
+            {
+                self.offset_names.insert(name);
+            }
         }
         fn walk_in_closure(&mut self, c: &'ast Closure<'arena>, _: &mut ()) {
             self.spans.push(c.span());
@@ -244,10 +322,11 @@ pub(super) fn typed_expressions(
     let mut wanted = Wanted {
         spans: Vec::new(),
         compact_calls: HashSet::new(),
+        offset_names: HashSet::new(),
         names,
     };
     wanted.walk_program(program, &mut ());
-    (wanted.spans, wanted.compact_calls)
+    (wanted.spans, wanted.compact_calls, wanted.offset_names)
 }
 
 /// NodeScopeResolver::lookForExpressionCallback() selects only the target chain, not name/index expressions.

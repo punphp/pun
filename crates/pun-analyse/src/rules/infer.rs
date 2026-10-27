@@ -152,12 +152,12 @@ fn analyse_observed<'arena>(
     variables: Option<&mut variables::Observations>,
 ) -> (HashMap<Span, TUnion>, HashMap<Span, Tri>, Origins, HashMap<(u32, u32), bool>) {
     let mut wanted = wanted;
-    let compact_calls = if variables.is_some() {
-        let (typed, compact_calls) = variables::typed_expressions(program, names);
+    let (compact_calls, offset_names) = if variables.is_some() {
+        let (typed, compact_calls, offset_names) = variables::typed_expressions(program, names);
         wanted.extend(typed);
-        compact_calls
+        (compact_calls, offset_names)
     } else {
-        HashSet::new()
+        (HashSet::new(), HashSet::new())
     };
     if wanted.is_empty() {
         return Default::default();
@@ -189,6 +189,7 @@ fn analyse_observed<'arena>(
             ids,
             wanted: wanted.iter().copied().collect(),
             compact_calls,
+            offset_names,
             builtins: super::reflection::builtins(php_version),
             unset_scopes,
             unset_roots,
@@ -258,6 +259,7 @@ struct Definedness {
     ids: HashMap<Span, Vec<u8>>,
     wanted: HashSet<Span>,
     compact_calls: HashSet<Span>,
+    offset_names: HashSet<variables::OffsetName>,
     builtins: &'static pun_phpstan::symbols::Symbols,
     unset_scopes: HashSet<Span>,
     unset_roots: HashMap<Span, Vec<(Span, Vec<u8>)>>,
@@ -394,6 +396,11 @@ impl ExpressionHook for Definedness {
     }
 
     fn after_expression(&self, expr: &Expression<'_>, context: &mut HookContext<'_, '_>) -> HookResult<()> {
+        if let Expression::Assignment(assignment) = expr {
+            for name in &self.offset_names {
+                name.assigned(assignment, context);
+            }
+        }
         // Compound assignments and output references can later overwrite an input's artifacts.
         // Keep its completed read; scoped unset and coalesce variables have their own observations.
         if self.wanted.contains(&expr.span())
@@ -407,17 +414,10 @@ impl ExpressionHook for Definedness {
             if let Some(source) = self.found.lock().expect("no hook panics while holding the lock").reference_sources.remove(&expr.span()) {
                 source.restore(context);
             }
-            let (dynamic, guard) = match expr {
-                Expression::Variable(Variable::Indirect(i)) => (true, match super::types::flow::unparen(i.expression) {
-                    Expression::Variable(v) => Some(v),
-                    _ => None,
-                }),
-                _ => (false, None),
-            };
-            if dynamic {
+            if let Expression::Variable(Variable::Indirect(i)) = expr {
                 let mut found = self.found.lock().expect("no hook panics while holding the lock");
                 if !found.allowed.contains(&expr.span()) {
-                    found.variables.scopes.insert(expr.span(), variables::Certainty::for_name(guard, context));
+                    found.variables.scopes.insert(expr.span(), variables::Certainty::for_name(i.expression, context));
                 }
             }
         }
@@ -450,7 +450,7 @@ fn observe_variable(v: &Variable<'_>, context: &HookContext<'_, '_>, found: &mut
         Variable::Nested(v) => {
             // DefinedVariableRule reads the outer target in its incoming scope, before name side effects.
             if !found.allowed.contains(&v.span()) {
-                found.variables.scopes.insert(v.span(), variables::Certainty::for_name(Some(v.variable), context));
+                found.variables.scopes.insert(v.span(), variables::Certainty::for_name(&Expression::Variable(v.variable.clone()), context));
             }
             if let Variable::Direct(name) = v.variable
                 && let Some(ty) = context.get_variable_type(name.name)

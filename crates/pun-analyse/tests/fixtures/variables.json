@@ -229,6 +229,21 @@
       202,
       "variable.undefined",
       "Undefined variable: $missingDeep"
+    ],
+    [
+      233,
+      "variable.undefined",
+      "Undefined variable: $foo"
+    ],
+    [
+      272,
+      "variable.undefined",
+      "Undefined variable: $foo"
+    ],
+    [
+      304,
+      "variable.undefined",
+      "Undefined variable: $untrackedOffset"
     ]
   ],
   "edge": [
@@ -526,6 +541,61 @@
       216,
       "variable.nameNotString",
       "Variable variable name must be a string, but $this(VariableCertainty\\MultilineNames) was given."
+    ],
+    [
+      233,
+      "variable.undefined",
+      "Undefined variable: $foo"
+    ],
+    [
+      260,
+      "variable.undefined",
+      "Variable $bar might not be defined."
+    ],
+    [
+      260,
+      "variable.undefined",
+      "Variable $foo might not be defined."
+    ],
+    [
+      272,
+      "variable.undefined",
+      "Undefined variable: $foo"
+    ],
+    [
+      283,
+      "variable.undefined",
+      "Variable $bar might not be defined."
+    ],
+    [
+      283,
+      "variable.undefined",
+      "Variable $foo might not be defined."
+    ],
+    [
+      295,
+      "variable.undefined",
+      "Variable $bar might not be defined."
+    ],
+    [
+      295,
+      "variable.undefined",
+      "Variable $foo might not be defined."
+    ],
+    [
+      297,
+      "variable.undefined",
+      "Variable $bar might not be defined."
+    ],
+    [
+      297,
+      "variable.undefined",
+      "Variable $foo might not be defined."
+    ],
+    [
+      304,
+      "variable.undefined",
+      "Undefined variable: $untrackedOffset"
     ]
   ],
   "maybe": [
@@ -783,6 +853,61 @@
       202,
       "variable.undefined",
       "Undefined variable: $missingDeep"
+    ],
+    [
+      233,
+      "variable.undefined",
+      "Undefined variable: $foo"
+    ],
+    [
+      260,
+      "variable.undefined",
+      "Variable $bar might not be defined."
+    ],
+    [
+      260,
+      "variable.undefined",
+      "Variable $foo might not be defined."
+    ],
+    [
+      272,
+      "variable.undefined",
+      "Undefined variable: $foo"
+    ],
+    [
+      283,
+      "variable.undefined",
+      "Variable $bar might not be defined."
+    ],
+    [
+      283,
+      "variable.undefined",
+      "Variable $foo might not be defined."
+    ],
+    [
+      295,
+      "variable.undefined",
+      "Variable $bar might not be defined."
+    ],
+    [
+      295,
+      "variable.undefined",
+      "Variable $foo might not be defined."
+    ],
+    [
+      297,
+      "variable.undefined",
+      "Variable $bar might not be defined."
+    ],
+    [
+      297,
+      "variable.undefined",
+      "Variable $foo might not be defined."
+    ],
+    [
+      304,
+      "variable.undefined",
+      "Undefined variable: $untrackedOffset"
     ]
   ],
   "quiet": [
@@ -1045,6 +1170,21 @@
       216,
       "variable.nameNotString",
       "Variable variable name must be a string, but $this(VariableCertainty\\MultilineNames) was given."
+    ],
+    [
+      233,
+      "variable.undefined",
+      "Undefined variable: $foo"
+    ],
+    [
+      272,
+      "variable.undefined",
+      "Undefined variable: $foo"
+    ],
+    [
+      304,
+      "variable.undefined",
+      "Undefined variable: $untrackedOffset"
     ]
   ]
 }

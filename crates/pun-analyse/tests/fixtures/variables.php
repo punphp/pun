@@ -220,3 +220,86 @@ class MultilineNames
         };
     }
 }
+
+function negativeOffsetNames(bool $flag): void
+{
+    $names = [];
+    if ($flag) {
+        $names['key'] = 'foo';
+    } else {
+        $names['key'] = 'bar';
+        $foo = $bar = 1;
+    }
+    echo ${$names['key']};
+}
+
+function positiveOffsetNames(bool $flag): void
+{
+    $names = [];
+    if ($flag) {
+        $names['key'] = 'foo';
+        $foo = 1;
+    } else {
+        $names['key'] = 'bar';
+        $bar = 1;
+    }
+    echo ${($names['key'])};
+}
+
+function overwrittenOffsetNames(bool $flag, bool $other): void
+{
+    $names = [];
+    if ($flag) {
+        $names['key'] = 'foo';
+        $foo = 1;
+    } else {
+        $names['key'] = 'bar';
+        $bar = 1;
+    }
+    $names['key'] = $other ? 'foo' : 'bar';
+    echo ${$names['key']};
+}
+
+function integerOffsetNames(bool $flag): void
+{
+    $names = [];
+    if ($flag) {
+        $names[0] = 'foo';
+    } else {
+        $names[0] = 'bar';
+        $foo = $bar = 1;
+    }
+    echo ${$names[0]};
+}
+
+function literalOffsetNames(bool $flag): void
+{
+    if ($flag) {
+        $names = ['foo'];
+    } else {
+        $names = ['bar'];
+        $foo = $bar = 1;
+    }
+    echo ${$names["0"]};
+}
+
+function nestedOffsetNames(bool $flag): void
+{
+    if ($flag) {
+        $names = ['nested' => ['key' => 'foo']];
+        $foo = 1;
+    } else {
+        $names = ['nested' => ['key' => 'bar']];
+        $bar = 1;
+    }
+    echo ${$names['nested']['key']};
+    $names = ['nested' => ['key' => $flag ? 'bar' : 'foo']];
+    echo ${$names['nested']['key']};
+}
+
+function variableOffsetName(): void
+{
+    $names = ['key' => 'untrackedOffset'];
+    $key = 'key';
+    echo ${$names[$key]};
+}
