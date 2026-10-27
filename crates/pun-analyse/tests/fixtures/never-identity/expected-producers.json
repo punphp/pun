@@ -1,0 +1,1292 @@
+{
+    "phar_sha256": "85157dba3d95d77ca603d2b7303aa78a538f9e3b56ccad07dd794c53aa96d1ae",
+    "controls": {
+        "implicit": {
+            "class": "PHPStan\\Type\\NeverType",
+            "type": "*NEVER*",
+            "kind": "implicit",
+            "explicit": false,
+            "accepts_int": true
+        },
+        "explicit-accepting": {
+            "class": "PHPStan\\Type\\NeverType",
+            "type": "*NEVER*",
+            "kind": "explicit-accepting",
+            "explicit": true,
+            "accepts_int": true
+        },
+        "nonaccepting": {
+            "class": "PHPStan\\Type\\NonAcceptingNeverType",
+            "type": "never",
+            "kind": "nonaccepting",
+            "explicit": true,
+            "accepts_int": false
+        }
+    },
+    "expressions": {
+        "67": {
+            "line": 4,
+            "expression": "exit()",
+            "getType": {
+                "class": "PHPStan\\Type\\NonAcceptingNeverType",
+                "type": "never",
+                "kind": "nonaccepting",
+                "explicit": true,
+                "accepts_int": false
+            },
+            "getNativeType": {
+                "class": "PHPStan\\Type\\NonAcceptingNeverType",
+                "type": "never",
+                "kind": "nonaccepting",
+                "explicit": true,
+                "accepts_int": false
+            }
+        },
+        "107": {
+            "line": 5,
+            "expression": "exit()",
+            "getType": {
+                "class": "PHPStan\\Type\\NonAcceptingNeverType",
+                "type": "never",
+                "kind": "nonaccepting",
+                "explicit": true,
+                "accepts_int": false
+            },
+            "getNativeType": {
+                "class": "PHPStan\\Type\\NonAcceptingNeverType",
+                "type": "never",
+                "kind": "nonaccepting",
+                "explicit": true,
+                "accepts_int": false
+            }
+        },
+        "146": {
+            "line": 6,
+            "expression": "die()",
+            "getType": {
+                "class": "PHPStan\\Type\\NonAcceptingNeverType",
+                "type": "never",
+                "kind": "nonaccepting",
+                "explicit": true,
+                "accepts_int": false
+            },
+            "getNativeType": {
+                "class": "PHPStan\\Type\\NonAcceptingNeverType",
+                "type": "never",
+                "kind": "nonaccepting",
+                "explicit": true,
+                "accepts_int": false
+            }
+        },
+        "186": {
+            "line": 7,
+            "expression": "throw new \\RuntimeException()",
+            "getType": {
+                "class": "PHPStan\\Type\\NonAcceptingNeverType",
+                "type": "never",
+                "kind": "nonaccepting",
+                "explicit": true,
+                "accepts_int": false
+            },
+            "getNativeType": {
+                "class": "PHPStan\\Type\\NonAcceptingNeverType",
+                "type": "never",
+                "kind": "nonaccepting",
+                "explicit": true,
+                "accepts_int": false
+            }
+        },
+        "250": {
+            "line": 8,
+            "expression": "declaredStop()",
+            "getType": {
+                "class": "PHPStan\\Type\\NonAcceptingNeverType",
+                "type": "never",
+                "kind": "nonaccepting",
+                "explicit": true,
+                "accepts_int": false
+            },
+            "getNativeType": {
+                "class": "PHPStan\\Type\\NonAcceptingNeverType",
+                "type": "never",
+                "kind": "nonaccepting",
+                "explicit": true,
+                "accepts_int": false
+            },
+            "terminates": true
+        },
+        "307": {
+            "line": 11,
+            "expression": "fn () => exit()",
+            "getType": {
+                "class": "PHPStan\\Type\\ClosureType",
+                "type": "Closure(): never",
+                "kind": null,
+                "explicit": null,
+                "accepts_int": false
+            },
+            "getNativeType": {
+                "class": "PHPStan\\Type\\ClosureType",
+                "type": "Closure(): never",
+                "kind": null,
+                "explicit": null,
+                "accepts_int": false
+            },
+            "callable_return": {
+                "class": "PHPStan\\Type\\NonAcceptingNeverType",
+                "type": "never",
+                "kind": "nonaccepting",
+                "explicit": true,
+                "accepts_int": false
+            },
+            "native_callable_return": {
+                "class": "PHPStan\\Type\\NonAcceptingNeverType",
+                "type": "never",
+                "kind": "nonaccepting",
+                "explicit": true,
+                "accepts_int": false
+            }
+        },
+        "316": {
+            "line": 11,
+            "expression": "exit()",
+            "getType": {
+                "class": "PHPStan\\Type\\NonAcceptingNeverType",
+                "type": "never",
+                "kind": "nonaccepting",
+                "explicit": true,
+                "accepts_int": false
+            },
+            "getNativeType": {
+                "class": "PHPStan\\Type\\NonAcceptingNeverType",
+                "type": "never",
+                "kind": "nonaccepting",
+                "explicit": true,
+                "accepts_int": false
+            }
+        },
+        "340": {
+            "line": 12,
+            "expression": "fn (): never => exit()",
+            "getType": {
+                "class": "PHPStan\\Type\\ClosureType",
+                "type": "Closure(): never",
+                "kind": null,
+                "explicit": null,
+                "accepts_int": false
+            },
+            "getNativeType": {
+                "class": "PHPStan\\Type\\ClosureType",
+                "type": "Closure(): never",
+                "kind": null,
+                "explicit": null,
+                "accepts_int": false
+            },
+            "callable_return": {
+                "class": "PHPStan\\Type\\NonAcceptingNeverType",
+                "type": "never",
+                "kind": "nonaccepting",
+                "explicit": true,
+                "accepts_int": false
+            },
+            "native_callable_return": {
+                "class": "PHPStan\\Type\\NonAcceptingNeverType",
+                "type": "never",
+                "kind": "nonaccepting",
+                "explicit": true,
+                "accepts_int": false
+            }
+        },
+        "356": {
+            "line": 12,
+            "expression": "exit()",
+            "getType": {
+                "class": "PHPStan\\Type\\NonAcceptingNeverType",
+                "type": "never",
+                "kind": "nonaccepting",
+                "explicit": true,
+                "accepts_int": false
+            },
+            "getNativeType": {
+                "class": "PHPStan\\Type\\NonAcceptingNeverType",
+                "type": "never",
+                "kind": "nonaccepting",
+                "explicit": true,
+                "accepts_int": false
+            }
+        },
+        "377": {
+            "line": 13,
+            "expression": "fn () => throw new \\RuntimeException()",
+            "getType": {
+                "class": "PHPStan\\Type\\ClosureType",
+                "type": "Closure(): never",
+                "kind": null,
+                "explicit": null,
+                "accepts_int": false
+            },
+            "getNativeType": {
+                "class": "PHPStan\\Type\\ClosureType",
+                "type": "Closure(): never",
+                "kind": null,
+                "explicit": null,
+                "accepts_int": false
+            },
+            "callable_return": {
+                "class": "PHPStan\\Type\\NonAcceptingNeverType",
+                "type": "never",
+                "kind": "nonaccepting",
+                "explicit": true,
+                "accepts_int": false
+            },
+            "native_callable_return": {
+                "class": "PHPStan\\Type\\NonAcceptingNeverType",
+                "type": "never",
+                "kind": "nonaccepting",
+                "explicit": true,
+                "accepts_int": false
+            }
+        },
+        "386": {
+            "line": 13,
+            "expression": "throw new \\RuntimeException()",
+            "getType": {
+                "class": "PHPStan\\Type\\NonAcceptingNeverType",
+                "type": "never",
+                "kind": "nonaccepting",
+                "explicit": true,
+                "accepts_int": false
+            },
+            "getNativeType": {
+                "class": "PHPStan\\Type\\NonAcceptingNeverType",
+                "type": "never",
+                "kind": "nonaccepting",
+                "explicit": true,
+                "accepts_int": false
+            }
+        },
+        "434": {
+            "line": 14,
+            "expression": "fn (): never => throw new \\RuntimeException()",
+            "getType": {
+                "class": "PHPStan\\Type\\ClosureType",
+                "type": "Closure(): never",
+                "kind": null,
+                "explicit": null,
+                "accepts_int": false
+            },
+            "getNativeType": {
+                "class": "PHPStan\\Type\\ClosureType",
+                "type": "Closure(): never",
+                "kind": null,
+                "explicit": null,
+                "accepts_int": false
+            },
+            "callable_return": {
+                "class": "PHPStan\\Type\\NonAcceptingNeverType",
+                "type": "never",
+                "kind": "nonaccepting",
+                "explicit": true,
+                "accepts_int": false
+            },
+            "native_callable_return": {
+                "class": "PHPStan\\Type\\NonAcceptingNeverType",
+                "type": "never",
+                "kind": "nonaccepting",
+                "explicit": true,
+                "accepts_int": false
+            }
+        },
+        "450": {
+            "line": 14,
+            "expression": "throw new \\RuntimeException()",
+            "getType": {
+                "class": "PHPStan\\Type\\NonAcceptingNeverType",
+                "type": "never",
+                "kind": "nonaccepting",
+                "explicit": true,
+                "accepts_int": false
+            },
+            "getNativeType": {
+                "class": "PHPStan\\Type\\NonAcceptingNeverType",
+                "type": "never",
+                "kind": "nonaccepting",
+                "explicit": true,
+                "accepts_int": false
+            }
+        },
+        "494": {
+            "line": 15,
+            "expression": "fn () => declaredStop()",
+            "getType": {
+                "class": "PHPStan\\Type\\ClosureType",
+                "type": "Closure(): never",
+                "kind": null,
+                "explicit": null,
+                "accepts_int": false
+            },
+            "getNativeType": {
+                "class": "PHPStan\\Type\\ClosureType",
+                "type": "Closure(): never",
+                "kind": null,
+                "explicit": null,
+                "accepts_int": false
+            },
+            "callable_return": {
+                "class": "PHPStan\\Type\\NonAcceptingNeverType",
+                "type": "never",
+                "kind": "nonaccepting",
+                "explicit": true,
+                "accepts_int": false
+            },
+            "native_callable_return": {
+                "class": "PHPStan\\Type\\NonAcceptingNeverType",
+                "type": "never",
+                "kind": "nonaccepting",
+                "explicit": true,
+                "accepts_int": false
+            }
+        },
+        "503": {
+            "line": 15,
+            "expression": "declaredStop()",
+            "getType": {
+                "class": "PHPStan\\Type\\NonAcceptingNeverType",
+                "type": "never",
+                "kind": "nonaccepting",
+                "explicit": true,
+                "accepts_int": false
+            },
+            "getNativeType": {
+                "class": "PHPStan\\Type\\NonAcceptingNeverType",
+                "type": "never",
+                "kind": "nonaccepting",
+                "explicit": true,
+                "accepts_int": false
+            },
+            "terminates": true
+        },
+        "536": {
+            "line": 16,
+            "expression": "fn (): never => declaredStop()",
+            "getType": {
+                "class": "PHPStan\\Type\\ClosureType",
+                "type": "Closure(): never",
+                "kind": null,
+                "explicit": null,
+                "accepts_int": false
+            },
+            "getNativeType": {
+                "class": "PHPStan\\Type\\ClosureType",
+                "type": "Closure(): never",
+                "kind": null,
+                "explicit": null,
+                "accepts_int": false
+            },
+            "callable_return": {
+                "class": "PHPStan\\Type\\NonAcceptingNeverType",
+                "type": "never",
+                "kind": "nonaccepting",
+                "explicit": true,
+                "accepts_int": false
+            },
+            "native_callable_return": {
+                "class": "PHPStan\\Type\\NonAcceptingNeverType",
+                "type": "never",
+                "kind": "nonaccepting",
+                "explicit": true,
+                "accepts_int": false
+            }
+        },
+        "552": {
+            "line": 16,
+            "expression": "declaredStop()",
+            "getType": {
+                "class": "PHPStan\\Type\\NonAcceptingNeverType",
+                "type": "never",
+                "kind": "nonaccepting",
+                "explicit": true,
+                "accepts_int": false
+            },
+            "getNativeType": {
+                "class": "PHPStan\\Type\\NonAcceptingNeverType",
+                "type": "never",
+                "kind": "nonaccepting",
+                "explicit": true,
+                "accepts_int": false
+            },
+            "terminates": true
+        },
+        "583": {
+            "line": 17,
+            "expression": "function () { exit(); }",
+            "getType": {
+                "class": "PHPStan\\Type\\ClosureType",
+                "type": "Closure(): never",
+                "kind": null,
+                "explicit": null,
+                "accepts_int": false
+            },
+            "getNativeType": {
+                "class": "PHPStan\\Type\\ClosureType",
+                "type": "Closure(): never",
+                "kind": null,
+                "explicit": null,
+                "accepts_int": false
+            },
+            "callable_return": {
+                "class": "PHPStan\\Type\\NonAcceptingNeverType",
+                "type": "never",
+                "kind": "nonaccepting",
+                "explicit": true,
+                "accepts_int": false
+            },
+            "native_callable_return": {
+                "class": "PHPStan\\Type\\NonAcceptingNeverType",
+                "type": "never",
+                "kind": "nonaccepting",
+                "explicit": true,
+                "accepts_int": false
+            }
+        },
+        "597": {
+            "line": 17,
+            "expression": "exit()",
+            "getType": {
+                "class": "PHPStan\\Type\\NonAcceptingNeverType",
+                "type": "never",
+                "kind": "nonaccepting",
+                "explicit": true,
+                "accepts_int": false
+            },
+            "getNativeType": {
+                "class": "PHPStan\\Type\\NonAcceptingNeverType",
+                "type": "never",
+                "kind": "nonaccepting",
+                "explicit": true,
+                "accepts_int": false
+            }
+        },
+        "624": {
+            "line": 18,
+            "expression": "fn () => implicitBottom()",
+            "getType": {
+                "class": "PHPStan\\Type\\ClosureType",
+                "type": "Closure(): never",
+                "kind": null,
+                "explicit": null,
+                "accepts_int": false
+            },
+            "getNativeType": {
+                "class": "PHPStan\\Type\\ClosureType",
+                "type": "Closure(): mixed",
+                "kind": null,
+                "explicit": null,
+                "accepts_int": false
+            },
+            "callable_return": {
+                "class": "PHPStan\\Type\\NeverType",
+                "type": "*NEVER*",
+                "kind": "implicit",
+                "explicit": false,
+                "accepts_int": true
+            },
+            "native_callable_return": {
+                "class": "PHPStan\\Type\\MixedType",
+                "type": "mixed",
+                "kind": null,
+                "explicit": null,
+                "accepts_int": true
+            }
+        },
+        "633": {
+            "line": 18,
+            "expression": "implicitBottom()",
+            "getType": {
+                "class": "PHPStan\\Type\\NeverType",
+                "type": "*NEVER*",
+                "kind": "implicit",
+                "explicit": false,
+                "accepts_int": true
+            },
+            "getNativeType": {
+                "class": "PHPStan\\Type\\MixedType",
+                "type": "mixed",
+                "kind": null,
+                "explicit": null,
+                "accepts_int": true
+            },
+            "terminates": false
+        },
+        "668": {
+            "line": 19,
+            "expression": "fn () => acceptingBottom()",
+            "getType": {
+                "class": "PHPStan\\Type\\ClosureType",
+                "type": "Closure(): never",
+                "kind": null,
+                "explicit": null,
+                "accepts_int": false
+            },
+            "getNativeType": {
+                "class": "PHPStan\\Type\\ClosureType",
+                "type": "Closure(): mixed",
+                "kind": null,
+                "explicit": null,
+                "accepts_int": false
+            },
+            "callable_return": {
+                "class": "PHPStan\\Type\\NeverType",
+                "type": "*NEVER*",
+                "kind": "explicit-accepting",
+                "explicit": true,
+                "accepts_int": true
+            },
+            "native_callable_return": {
+                "class": "PHPStan\\Type\\MixedType",
+                "type": "mixed",
+                "kind": null,
+                "explicit": null,
+                "accepts_int": true
+            }
+        },
+        "677": {
+            "line": 19,
+            "expression": "acceptingBottom()",
+            "getType": {
+                "class": "PHPStan\\Type\\NeverType",
+                "type": "*NEVER*",
+                "kind": "explicit-accepting",
+                "explicit": true,
+                "accepts_int": true
+            },
+            "getNativeType": {
+                "class": "PHPStan\\Type\\MixedType",
+                "type": "mixed",
+                "kind": null,
+                "explicit": null,
+                "accepts_int": true
+            },
+            "terminates": false
+        },
+        "716": {
+            "line": 20,
+            "expression": "fn () => nonacceptingBottom()",
+            "getType": {
+                "class": "PHPStan\\Type\\ClosureType",
+                "type": "Closure(): never",
+                "kind": null,
+                "explicit": null,
+                "accepts_int": false
+            },
+            "getNativeType": {
+                "class": "PHPStan\\Type\\ClosureType",
+                "type": "Closure(): mixed",
+                "kind": null,
+                "explicit": null,
+                "accepts_int": false
+            },
+            "callable_return": {
+                "class": "PHPStan\\Type\\NonAcceptingNeverType",
+                "type": "never",
+                "kind": "nonaccepting",
+                "explicit": true,
+                "accepts_int": false
+            },
+            "native_callable_return": {
+                "class": "PHPStan\\Type\\MixedType",
+                "type": "mixed",
+                "kind": null,
+                "explicit": null,
+                "accepts_int": true
+            }
+        },
+        "725": {
+            "line": 20,
+            "expression": "nonacceptingBottom()",
+            "getType": {
+                "class": "PHPStan\\Type\\NonAcceptingNeverType",
+                "type": "never",
+                "kind": "nonaccepting",
+                "explicit": true,
+                "accepts_int": false
+            },
+            "getNativeType": {
+                "class": "PHPStan\\Type\\MixedType",
+                "type": "mixed",
+                "kind": null,
+                "explicit": null,
+                "accepts_int": true
+            },
+            "terminates": false
+        },
+        "779": {
+            "line": 23,
+            "expression": "\\call_user_func(fn () => exit())",
+            "getType": {
+                "class": "PHPStan\\Type\\NonAcceptingNeverType",
+                "type": "never",
+                "kind": "nonaccepting",
+                "explicit": true,
+                "accepts_int": false
+            },
+            "getNativeType": {
+                "class": "PHPStan\\Type\\MixedType",
+                "type": "mixed",
+                "kind": null,
+                "explicit": null,
+                "accepts_int": true
+            },
+            "terminates": false
+        },
+        "795": {
+            "line": 23,
+            "expression": "fn () => exit()",
+            "getType": {
+                "class": "PHPStan\\Type\\ClosureType",
+                "type": "Closure(): never",
+                "kind": null,
+                "explicit": null,
+                "accepts_int": false
+            },
+            "getNativeType": {
+                "class": "PHPStan\\Type\\ClosureType",
+                "type": "Closure(): never",
+                "kind": null,
+                "explicit": null,
+                "accepts_int": false
+            },
+            "callable_return": {
+                "class": "PHPStan\\Type\\NonAcceptingNeverType",
+                "type": "never",
+                "kind": "nonaccepting",
+                "explicit": true,
+                "accepts_int": false
+            },
+            "native_callable_return": {
+                "class": "PHPStan\\Type\\NonAcceptingNeverType",
+                "type": "never",
+                "kind": "nonaccepting",
+                "explicit": true,
+                "accepts_int": false
+            }
+        },
+        "804": {
+            "line": 23,
+            "expression": "exit()",
+            "getType": {
+                "class": "PHPStan\\Type\\NonAcceptingNeverType",
+                "type": "never",
+                "kind": "nonaccepting",
+                "explicit": true,
+                "accepts_int": false
+            },
+            "getNativeType": {
+                "class": "PHPStan\\Type\\NonAcceptingNeverType",
+                "type": "never",
+                "kind": "nonaccepting",
+                "explicit": true,
+                "accepts_int": false
+            }
+        },
+        "1002": {
+            "line": 29,
+            "expression": "fn () => die()",
+            "getType": {
+                "class": "PHPStan\\Type\\ClosureType",
+                "type": "Closure(): never",
+                "kind": null,
+                "explicit": null,
+                "accepts_int": false
+            },
+            "getNativeType": {
+                "class": "PHPStan\\Type\\ClosureType",
+                "type": "Closure(): never",
+                "kind": null,
+                "explicit": null,
+                "accepts_int": false
+            },
+            "callable_return": {
+                "class": "PHPStan\\Type\\NonAcceptingNeverType",
+                "type": "never",
+                "kind": "nonaccepting",
+                "explicit": true,
+                "accepts_int": false
+            },
+            "native_callable_return": {
+                "class": "PHPStan\\Type\\NonAcceptingNeverType",
+                "type": "never",
+                "kind": "nonaccepting",
+                "explicit": true,
+                "accepts_int": false
+            }
+        },
+        "1011": {
+            "line": 29,
+            "expression": "die()",
+            "getType": {
+                "class": "PHPStan\\Type\\NonAcceptingNeverType",
+                "type": "never",
+                "kind": "nonaccepting",
+                "explicit": true,
+                "accepts_int": false
+            },
+            "getNativeType": {
+                "class": "PHPStan\\Type\\NonAcceptingNeverType",
+                "type": "never",
+                "kind": "nonaccepting",
+                "explicit": true,
+                "accepts_int": false
+            }
+        },
+        "1033": {
+            "line": 30,
+            "expression": "fn (): never => die()",
+            "getType": {
+                "class": "PHPStan\\Type\\ClosureType",
+                "type": "Closure(): never",
+                "kind": null,
+                "explicit": null,
+                "accepts_int": false
+            },
+            "getNativeType": {
+                "class": "PHPStan\\Type\\ClosureType",
+                "type": "Closure(): never",
+                "kind": null,
+                "explicit": null,
+                "accepts_int": false
+            },
+            "callable_return": {
+                "class": "PHPStan\\Type\\NonAcceptingNeverType",
+                "type": "never",
+                "kind": "nonaccepting",
+                "explicit": true,
+                "accepts_int": false
+            },
+            "native_callable_return": {
+                "class": "PHPStan\\Type\\NonAcceptingNeverType",
+                "type": "never",
+                "kind": "nonaccepting",
+                "explicit": true,
+                "accepts_int": false
+            }
+        },
+        "1049": {
+            "line": 30,
+            "expression": "die()",
+            "getType": {
+                "class": "PHPStan\\Type\\NonAcceptingNeverType",
+                "type": "never",
+                "kind": "nonaccepting",
+                "explicit": true,
+                "accepts_int": false
+            },
+            "getNativeType": {
+                "class": "PHPStan\\Type\\NonAcceptingNeverType",
+                "type": "never",
+                "kind": "nonaccepting",
+                "explicit": true,
+                "accepts_int": false
+            }
+        },
+        "1090": {
+            "line": 32,
+            "expression": "\\call_user_func(fn () => die())",
+            "getType": {
+                "class": "PHPStan\\Type\\NonAcceptingNeverType",
+                "type": "never",
+                "kind": "nonaccepting",
+                "explicit": true,
+                "accepts_int": false
+            },
+            "getNativeType": {
+                "class": "PHPStan\\Type\\MixedType",
+                "type": "mixed",
+                "kind": null,
+                "explicit": null,
+                "accepts_int": true
+            },
+            "terminates": false
+        },
+        "1106": {
+            "line": 32,
+            "expression": "fn () => die()",
+            "getType": {
+                "class": "PHPStan\\Type\\ClosureType",
+                "type": "Closure(): never",
+                "kind": null,
+                "explicit": null,
+                "accepts_int": false
+            },
+            "getNativeType": {
+                "class": "PHPStan\\Type\\ClosureType",
+                "type": "Closure(): never",
+                "kind": null,
+                "explicit": null,
+                "accepts_int": false
+            },
+            "callable_return": {
+                "class": "PHPStan\\Type\\NonAcceptingNeverType",
+                "type": "never",
+                "kind": "nonaccepting",
+                "explicit": true,
+                "accepts_int": false
+            },
+            "native_callable_return": {
+                "class": "PHPStan\\Type\\NonAcceptingNeverType",
+                "type": "never",
+                "kind": "nonaccepting",
+                "explicit": true,
+                "accepts_int": false
+            }
+        },
+        "1115": {
+            "line": 32,
+            "expression": "die()",
+            "getType": {
+                "class": "PHPStan\\Type\\NonAcceptingNeverType",
+                "type": "never",
+                "kind": "nonaccepting",
+                "explicit": true,
+                "accepts_int": false
+            },
+            "getNativeType": {
+                "class": "PHPStan\\Type\\NonAcceptingNeverType",
+                "type": "never",
+                "kind": "nonaccepting",
+                "explicit": true,
+                "accepts_int": false
+            }
+        },
+        "1159": {
+            "line": 33,
+            "expression": "\\call_user_func(fn () => throw new \\RuntimeException())",
+            "getType": {
+                "class": "PHPStan\\Type\\NonAcceptingNeverType",
+                "type": "never",
+                "kind": "nonaccepting",
+                "explicit": true,
+                "accepts_int": false
+            },
+            "getNativeType": {
+                "class": "PHPStan\\Type\\MixedType",
+                "type": "mixed",
+                "kind": null,
+                "explicit": null,
+                "accepts_int": true
+            },
+            "terminates": false
+        },
+        "1175": {
+            "line": 33,
+            "expression": "fn () => throw new \\RuntimeException()",
+            "getType": {
+                "class": "PHPStan\\Type\\ClosureType",
+                "type": "Closure(): never",
+                "kind": null,
+                "explicit": null,
+                "accepts_int": false
+            },
+            "getNativeType": {
+                "class": "PHPStan\\Type\\ClosureType",
+                "type": "Closure(): never",
+                "kind": null,
+                "explicit": null,
+                "accepts_int": false
+            },
+            "callable_return": {
+                "class": "PHPStan\\Type\\NonAcceptingNeverType",
+                "type": "never",
+                "kind": "nonaccepting",
+                "explicit": true,
+                "accepts_int": false
+            },
+            "native_callable_return": {
+                "class": "PHPStan\\Type\\NonAcceptingNeverType",
+                "type": "never",
+                "kind": "nonaccepting",
+                "explicit": true,
+                "accepts_int": false
+            }
+        },
+        "1184": {
+            "line": 33,
+            "expression": "throw new \\RuntimeException()",
+            "getType": {
+                "class": "PHPStan\\Type\\NonAcceptingNeverType",
+                "type": "never",
+                "kind": "nonaccepting",
+                "explicit": true,
+                "accepts_int": false
+            },
+            "getNativeType": {
+                "class": "PHPStan\\Type\\NonAcceptingNeverType",
+                "type": "never",
+                "kind": "nonaccepting",
+                "explicit": true,
+                "accepts_int": false
+            }
+        },
+        "1252": {
+            "line": 34,
+            "expression": "\\call_user_func(fn () => declaredStop())",
+            "getType": {
+                "class": "PHPStan\\Type\\NonAcceptingNeverType",
+                "type": "never",
+                "kind": "nonaccepting",
+                "explicit": true,
+                "accepts_int": false
+            },
+            "getNativeType": {
+                "class": "PHPStan\\Type\\MixedType",
+                "type": "mixed",
+                "kind": null,
+                "explicit": null,
+                "accepts_int": true
+            },
+            "terminates": false
+        },
+        "1268": {
+            "line": 34,
+            "expression": "fn () => declaredStop()",
+            "getType": {
+                "class": "PHPStan\\Type\\ClosureType",
+                "type": "Closure(): never",
+                "kind": null,
+                "explicit": null,
+                "accepts_int": false
+            },
+            "getNativeType": {
+                "class": "PHPStan\\Type\\ClosureType",
+                "type": "Closure(): never",
+                "kind": null,
+                "explicit": null,
+                "accepts_int": false
+            },
+            "callable_return": {
+                "class": "PHPStan\\Type\\NonAcceptingNeverType",
+                "type": "never",
+                "kind": "nonaccepting",
+                "explicit": true,
+                "accepts_int": false
+            },
+            "native_callable_return": {
+                "class": "PHPStan\\Type\\NonAcceptingNeverType",
+                "type": "never",
+                "kind": "nonaccepting",
+                "explicit": true,
+                "accepts_int": false
+            }
+        },
+        "1277": {
+            "line": 34,
+            "expression": "declaredStop()",
+            "getType": {
+                "class": "PHPStan\\Type\\NonAcceptingNeverType",
+                "type": "never",
+                "kind": "nonaccepting",
+                "explicit": true,
+                "accepts_int": false
+            },
+            "getNativeType": {
+                "class": "PHPStan\\Type\\NonAcceptingNeverType",
+                "type": "never",
+                "kind": "nonaccepting",
+                "explicit": true,
+                "accepts_int": false
+            },
+            "terminates": true
+        },
+        "1366": {
+            "line": 37,
+            "expression": "exit()",
+            "getType": {
+                "class": "PHPStan\\Type\\NonAcceptingNeverType",
+                "type": "never",
+                "kind": "nonaccepting",
+                "explicit": true,
+                "accepts_int": false
+            },
+            "getNativeType": {
+                "class": "PHPStan\\Type\\NonAcceptingNeverType",
+                "type": "never",
+                "kind": "nonaccepting",
+                "explicit": true,
+                "accepts_int": false
+            }
+        },
+        "1423": {
+            "line": 38,
+            "expression": "die()",
+            "getType": {
+                "class": "PHPStan\\Type\\NonAcceptingNeverType",
+                "type": "never",
+                "kind": "nonaccepting",
+                "explicit": true,
+                "accepts_int": false
+            },
+            "getNativeType": {
+                "class": "PHPStan\\Type\\NonAcceptingNeverType",
+                "type": "never",
+                "kind": "nonaccepting",
+                "explicit": true,
+                "accepts_int": false
+            }
+        },
+        "1480": {
+            "line": 39,
+            "expression": "throw new \\RuntimeException()",
+            "getType": {
+                "class": "PHPStan\\Type\\NonAcceptingNeverType",
+                "type": "never",
+                "kind": "nonaccepting",
+                "explicit": true,
+                "accepts_int": false
+            },
+            "getNativeType": {
+                "class": "PHPStan\\Type\\NonAcceptingNeverType",
+                "type": "never",
+                "kind": "nonaccepting",
+                "explicit": true,
+                "accepts_int": false
+            }
+        },
+        "1563": {
+            "line": 40,
+            "expression": "declaredStop()",
+            "getType": {
+                "class": "PHPStan\\Type\\NonAcceptingNeverType",
+                "type": "never",
+                "kind": "nonaccepting",
+                "explicit": true,
+                "accepts_int": false
+            },
+            "getNativeType": {
+                "class": "PHPStan\\Type\\NonAcceptingNeverType",
+                "type": "never",
+                "kind": "nonaccepting",
+                "explicit": true,
+                "accepts_int": false
+            },
+            "terminates": true
+        },
+        "1635": {
+            "line": 41,
+            "expression": "\\call_user_func(fn () => exit())",
+            "getType": {
+                "class": "PHPStan\\Type\\NonAcceptingNeverType",
+                "type": "never",
+                "kind": "nonaccepting",
+                "explicit": true,
+                "accepts_int": false
+            },
+            "getNativeType": {
+                "class": "PHPStan\\Type\\MixedType",
+                "type": "mixed",
+                "kind": null,
+                "explicit": null,
+                "accepts_int": true
+            },
+            "terminates": false
+        },
+        "1651": {
+            "line": 41,
+            "expression": "fn () => exit()",
+            "getType": {
+                "class": "PHPStan\\Type\\ClosureType",
+                "type": "Closure(): never",
+                "kind": null,
+                "explicit": null,
+                "accepts_int": false
+            },
+            "getNativeType": {
+                "class": "PHPStan\\Type\\ClosureType",
+                "type": "Closure(): never",
+                "kind": null,
+                "explicit": null,
+                "accepts_int": false
+            },
+            "callable_return": {
+                "class": "PHPStan\\Type\\NonAcceptingNeverType",
+                "type": "never",
+                "kind": "nonaccepting",
+                "explicit": true,
+                "accepts_int": false
+            },
+            "native_callable_return": {
+                "class": "PHPStan\\Type\\NonAcceptingNeverType",
+                "type": "never",
+                "kind": "nonaccepting",
+                "explicit": true,
+                "accepts_int": false
+            }
+        },
+        "1660": {
+            "line": 41,
+            "expression": "exit()",
+            "getType": {
+                "class": "PHPStan\\Type\\NonAcceptingNeverType",
+                "type": "never",
+                "kind": "nonaccepting",
+                "explicit": true,
+                "accepts_int": false
+            },
+            "getNativeType": {
+                "class": "PHPStan\\Type\\NonAcceptingNeverType",
+                "type": "never",
+                "kind": "nonaccepting",
+                "explicit": true,
+                "accepts_int": false
+            }
+        },
+        "1730": {
+            "line": 42,
+            "expression": "consume(\\call_user_func(fn () => exit()))",
+            "getType": {
+                "class": "PHPStan\\Type\\NullType",
+                "type": "null",
+                "kind": null,
+                "explicit": null,
+                "accepts_int": false
+            },
+            "getNativeType": {
+                "class": "PHPStan\\Type\\VoidType",
+                "type": "void",
+                "kind": null,
+                "explicit": null,
+                "accepts_int": false
+            },
+            "terminates": false
+        },
+        "1738": {
+            "line": 42,
+            "expression": "\\call_user_func(fn () => exit())",
+            "getType": {
+                "class": "PHPStan\\Type\\NonAcceptingNeverType",
+                "type": "never",
+                "kind": "nonaccepting",
+                "explicit": true,
+                "accepts_int": false
+            },
+            "getNativeType": {
+                "class": "PHPStan\\Type\\MixedType",
+                "type": "mixed",
+                "kind": null,
+                "explicit": null,
+                "accepts_int": true
+            },
+            "terminates": false
+        },
+        "1754": {
+            "line": 42,
+            "expression": "fn () => exit()",
+            "getType": {
+                "class": "PHPStan\\Type\\ClosureType",
+                "type": "Closure(): never",
+                "kind": null,
+                "explicit": null,
+                "accepts_int": false
+            },
+            "getNativeType": {
+                "class": "PHPStan\\Type\\ClosureType",
+                "type": "Closure(): never",
+                "kind": null,
+                "explicit": null,
+                "accepts_int": false
+            },
+            "callable_return": {
+                "class": "PHPStan\\Type\\NonAcceptingNeverType",
+                "type": "never",
+                "kind": "nonaccepting",
+                "explicit": true,
+                "accepts_int": false
+            },
+            "native_callable_return": {
+                "class": "PHPStan\\Type\\NonAcceptingNeverType",
+                "type": "never",
+                "kind": "nonaccepting",
+                "explicit": true,
+                "accepts_int": false
+            }
+        },
+        "1763": {
+            "line": 42,
+            "expression": "exit()",
+            "getType": {
+                "class": "PHPStan\\Type\\NonAcceptingNeverType",
+                "type": "never",
+                "kind": "nonaccepting",
+                "explicit": true,
+                "accepts_int": false
+            },
+            "getNativeType": {
+                "class": "PHPStan\\Type\\NonAcceptingNeverType",
+                "type": "never",
+                "kind": "nonaccepting",
+                "explicit": true,
+                "accepts_int": false
+            }
+        },
+        "1839": {
+            "line": 43,
+            "expression": "implicitBottom()",
+            "getType": {
+                "class": "PHPStan\\Type\\NeverType",
+                "type": "*NEVER*",
+                "kind": "implicit",
+                "explicit": false,
+                "accepts_int": true
+            },
+            "getNativeType": {
+                "class": "PHPStan\\Type\\MixedType",
+                "type": "mixed",
+                "kind": null,
+                "explicit": null,
+                "accepts_int": true
+            },
+            "terminates": false
+        },
+        "1916": {
+            "line": 44,
+            "expression": "acceptingBottom()",
+            "getType": {
+                "class": "PHPStan\\Type\\NeverType",
+                "type": "*NEVER*",
+                "kind": "explicit-accepting",
+                "explicit": true,
+                "accepts_int": true
+            },
+            "getNativeType": {
+                "class": "PHPStan\\Type\\MixedType",
+                "type": "mixed",
+                "kind": null,
+                "explicit": null,
+                "accepts_int": true
+            },
+            "terminates": false
+        },
+        "1998": {
+            "line": 45,
+            "expression": "nonacceptingBottom()",
+            "getType": {
+                "class": "PHPStan\\Type\\NonAcceptingNeverType",
+                "type": "never",
+                "kind": "nonaccepting",
+                "explicit": true,
+                "accepts_int": false
+            },
+            "getNativeType": {
+                "class": "PHPStan\\Type\\MixedType",
+                "type": "mixed",
+                "kind": null,
+                "explicit": null,
+                "accepts_int": true
+            },
+            "terminates": false
+        }
+    },
+    "continued": {
+        "after-implicit": 1862,
+        "after-nested-forwarded": 1778
+    }
+}

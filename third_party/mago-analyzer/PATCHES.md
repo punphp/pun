@@ -1813,7 +1813,7 @@ Call and pipe evaluations start with a checkpoint-aware false fact before expres
 Skipped or unresolved loop conditions and increments cannot retain a previous terminating result;
 removing the entry instead would let a checkpoint merge restore the old true fact.
 Pun's flow and finally checks consume the resolved facts. Unused-call checks suppress only
-explicit never results. Throw, exit and die produce explicit never; a terminating closure body
+explicit never results. Throw, exit and die produce nonaccepting never; a terminating closure body
 without return values infers non-accepting never, as `ClosureTypeResolver` does.
 
 `crates/pun-analyse/tests/never_calls.rs` compares public diagnostics with the pinned PHPStan
@@ -1823,6 +1823,27 @@ inside and outside other calls, nullsafe calls and their arguments, loop bodies 
 The public Analyzer controls in `native_lane.rs` also replace replayed conditions and increments
 through hooks, checking skipped calls, replacement values and unresolved targets with native
 tracking both enabled and disabled.
+
+## Terminating expression bottom identity
+
+`expression/construct/exit.rs` and `expression/throw.rs` emit nonaccepting never, matching PHPStan
+2.3.1's [`ExitHandler`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Analyser/ExprHandler/ExitHandler.php#L68-L79)
+and [`ThrowHandler`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Analyser/ExprHandler/ThrowHandler.php#L49-L60).
+This changes three type emissions, not termination facts, throw edges, or argument evaluation.
+Nonaccepting never remains explicit.
+
+The earlier clone note misattributed the accepting result of `fn () => exit()` to arrow inference.
+PHPStan's [`ClosureTypeResolver`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Analyser/ExprHandler/Helper/ClosureTypeResolver.php#L672-L688)
+retains the body type. The installed 2.3.1 PHAR and source tag agree. Correcting the expression
+producers also corrects their arrow and forwarded return types without normalizing arrow returns.
+
+The public Analyzer regression in `crates/pun-analyse/tests/never_identity.rs` uses
+`tests/fixtures/never-identity/expected-producers.json`, captured by `capture-producers.php` with
+the pinned PHPStan bootstrap. It checks direct exit, die, and throw expressions, hinted and unhinted
+arrows, statement-body closures, named never calls, forwarding, intrinsic call facts, and statement
+continuation. Dynamic return controls retain implicit, explicit accepting, and nonaccepting never
+through unhinted arrows. A blanket arrow normalization would fail those controls. Arrow inference,
+native inference, clone inference, and shared combinators remain unchanged.
 
 ## Edited-body declaration ownership
 
@@ -1880,11 +1901,6 @@ continuation. Real `call_user_func()` named and closure operands also retain non
 without an intrinsic termination fact. Their clone statements stop execution, but a clone nested
 inside another call does not stop continuation. The scalar control retains implicit never and
 continues. Regenerate these expectations with `capture-never.php` and the pinned PHPStan bootstrap.
-
-Arrow-return inference remains a separate limit: `fn () => exit()` supplies explicit accepting
-never here, while PHPStan supplies nonaccepting never. A native `: never` arrow hint does not
-change that inferred result. The source-level forwarding controls therefore use a declared named
-function and a statement-body closure. This patch does not change those return-type producers.
 
 ## Receiver-aware native property observations
 

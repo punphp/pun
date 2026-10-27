@@ -1,13 +1,15 @@
 //! Bottom identity is independent of call evaluation. Expectations come from PHPStan 2.3.1.
 
 use std::borrow::Cow;
+use std::collections::BTreeMap;
 use std::rc::Rc;
-use std::sync::Arc;
+use std::sync::{Arc, Mutex};
 
 use mago_allocator::LocalArena;
 use mago_analyzer::Analyzer;
 use mago_analyzer::analysis_result::AnalysisResult;
 use mago_analyzer::plugin::create_registry_with_plugins;
+use mago_analyzer::plugin::{ExpressionHook, HookContext, HookResult, PluginRegistry};
 use mago_analyzer::settings::Settings;
 use mago_codex::metadata::CodebaseMetadata;
 use mago_codex::metadata::ttype::TypeMetadata;
@@ -44,7 +46,8 @@ use mago_codex::ttype::{
 };
 use mago_database::file::{File, FileType};
 use mago_names::resolver::NameResolver;
-use mago_span::{Position, Span};
+use mago_span::{HasSpan, Position, Span};
+use mago_syntax::cst::Expression;
 use mago_syntax::parser::parse_file;
 use mago_word::word;
 use serde_json::{Value, json};
@@ -506,4 +509,128 @@ fn selected_conditional_branches_keep_their_actual_bottom_identity() {
             assert!(conditional.otherwise.is_int());
         }
     }
+}
+
+#[test]
+fn exit_throw_producers_and_forwarded_returns_keep_their_actual_never_kind() {
+    struct NeverControls(Arc<Mutex<BTreeMap<String, u32>>>);
+    impl ExpressionHook for NeverControls {
+        fn after_expression(
+            &self,
+            expression: &Expression<'_>,
+            context: &mut HookContext<'_, '_>,
+        ) -> HookResult<()> {
+            let span = expression.span();
+            let source = include_bytes!("fixtures/never-identity/producers.php");
+            let text = &source[span.start.offset as usize..span.end.offset as usize];
+            // Match the oracle's dynamic extension, not the production exit/throw
+            // producers. The declarations stay mixed and intrinsically continuing.
+            let value = match text {
+                b"implicitBottom()" => Some(get_never()),
+                b"acceptingBottom()" => Some(get_explicit_never()),
+                b"nonacceptingBottom()" => Some(get_non_accepting_never()),
+                _ => None,
+            };
+            if let Some(value) = value {
+                context.set_expression_type(expression, value);
+            }
+            if text.starts_with(b"'after-") {
+                let name = std::str::from_utf8(&text[1..text.len() - 1]).unwrap();
+                self.0
+                    .lock()
+                    .unwrap()
+                    .insert(name.to_owned(), span.start.offset);
+            }
+            Ok(())
+        }
+    }
+
+    let source = include_bytes!("fixtures/never-identity/producers.php");
+    let oracle: Value = serde_json::from_slice(include_bytes!(
+        "fixtures/never-identity/expected-producers.json"
+    ))
+    .unwrap();
+    let file = File::ephemeral(Cow::Borrowed(b"producers.php"), Cow::Borrowed(source));
+    let arena = LocalArena::new();
+    let program = parse_file(&arena, &file);
+    assert!(!program.has_errors());
+    let names = NameResolver::new(&arena).resolve(program);
+    let prelude = mago_prelude::Prelude::build();
+    let mut codebase = prelude.metadata;
+    codebase.extend(scan_program(
+        &arena,
+        &file,
+        program,
+        &names,
+        Default::default(),
+    ));
+    let mut references = prelude.symbol_references;
+    populate_codebase(
+        &mut codebase,
+        &mut references,
+        Default::default(),
+        Default::default(),
+    );
+    let continued = Arc::new(Mutex::new(BTreeMap::new()));
+    let mut plugins = PluginRegistry::new();
+    plugins.register_expression_hook(NeverControls(Arc::clone(&continued)));
+    let mut result = AnalysisResult::new(references);
+    let artifacts = Analyzer::new(
+        &arena,
+        &file,
+        &names,
+        &codebase,
+        &plugins,
+        Settings::default(),
+    )
+    .analyze_with_artifacts(program, &mut result)
+    .unwrap();
+
+    let mut observed = BTreeMap::new();
+    let mut expected = BTreeMap::new();
+    for (offset, record) in oracle["expressions"].as_object().unwrap() {
+        let start = offset.parse::<u32>().unwrap();
+        let expression = record["expression"].as_str().unwrap();
+        let end = start + expression.len() as u32;
+        let span = Span::new(file.id, Position::new(start), Position::new(end));
+        let ty = artifacts
+            .get_expression_type(&span)
+            .unwrap_or_else(|| panic!("missing {expression} at {start}"));
+        if let Some(terminates) = record.get("terminates") {
+            assert_eq!(
+                Some(&terminates.as_bool().unwrap()),
+                artifacts.call_terminations.get(&(start, end)),
+                "intrinsic termination of {expression} at {start}"
+            );
+        }
+        let (ty, identity) = if let Some(identity) = record.get("callable_return") {
+            let TAtomic::Callable(TCallable::Signature(signature)) = ty.get_single() else {
+                panic!("not a callable: {expression}: {ty:?}");
+            };
+            (signature.get_return_type().unwrap(), identity)
+        } else {
+            (ty, &record["getType"])
+        };
+        if identity["type"] == "void" {
+            assert!(ty.is_void(), "{expression}: {ty:?}");
+        }
+        let expected_kind = match identity["kind"].as_str() {
+            Some("explicit-accepting") => json!("explicit"),
+            _ => identity["kind"].clone(),
+        };
+        observed.insert(start, (expression, kind(ty), ty.is_explicit_never()));
+        expected.insert(
+            start,
+            (
+                expression,
+                expected_kind,
+                identity["explicit"].as_bool().unwrap_or(false),
+            ),
+        );
+    }
+    assert_eq!(observed, expected);
+    assert_eq!(
+        serde_json::to_value(&*continued.lock().unwrap()).unwrap(),
+        oracle["continued"]
+    );
 }
