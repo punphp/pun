@@ -151,6 +151,7 @@ mod no_unused_static;
 mod no_unused_test_method_param;
 mod no_useless_array_values;
 mod no_useless_block;
+mod no_useless_cast;
 mod no_useless_catch;
 mod no_useless_condition;
 mod no_useless_constructor;
@@ -376,6 +377,7 @@ pub use no_unused_static::NoUnusedStatic;
 pub use no_unused_test_method_param::NoUnusedTestMethodParam;
 pub use no_useless_array_values::NoUselessArrayValues;
 pub use no_useless_block::NoUselessBlock;
+pub use no_useless_cast::NoUselessCast;
 pub use no_useless_catch::NoUselessCatch;
 pub use no_useless_condition::NoUselessCondition;
 pub use no_useless_constructor::NoUselessConstructor;
@@ -493,6 +495,7 @@ pub const PROJECT_RULES: &[&str] = &[
     "lint/complexity/require-previous-exception",
     "lint/dead-code/no-useless-filter-var",
     "lint/dead-code/no-useless-math",
+    "lint/dead-code/no-useless-cast",
 ];
 
 /// Every rule, in a fixed order.
@@ -731,5 +734,6 @@ fn ungrouped() -> Vec<Box<dyn Rule>> {
         Box::new(RequirePreviousException),
         Box::new(NoUselessFilterVar),
         Box::new(NoUselessMath),
+        Box::new(NoUselessCast),
     ]
 }

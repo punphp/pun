@@ -411,7 +411,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "dead-code/no-unused-return-type" = { fix = "safe", sets = ["dead-code"], ported = false, status = "decided", summary = "Narrow overly wide union return type declaration if possible" }
 "dead-code/no-unused-static" = { fix = "none", intent = "correctness", sets = ["code-quality"], ported = true, origin = "mago", status = "decided", summary = "Flags `static $x;` declarations whose name is never read or written" }
 "dead-code/no-unused-test-method-param" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove parameter of private test class method, that is overridden by direct assign before its first use" }
-"dead-code/no-useless-cast" = { fix = "safe", sets = ["dead-code"], ported = false, status = "decided", summary = "Remove casts to the type the value already has, including (string) inside concatenation." }
+"dead-code/no-useless-cast" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove casts to the type the value already has, including (string) inside concatenation." }
 "dead-code/no-useless-catch" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove dead try/catch" }
 "dead-code/no-useless-condition" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove if conditions whose branches return the same value." }
 "dead-code/no-useless-constructor" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove constructor that only delegates call to parent class with same values" }

@@ -15,17 +15,20 @@
 //! output changes on every run; Pun leaves a `new` with the caught exception as a positional argument alone, so that
 //! its fix rounds settle.
 //!
-//! RemoveFilterVarOnExactTypeRector/Pun/moved_operation_parentheses and
-//! RemoveDeadZeroAndOneOperationRector/Pun/kept_operation_parentheses: Rector prints the value it keeps without the
+//! RemoveFilterVarOnExactTypeRector/Pun/moved_operation_parentheses,
+//! RemoveDeadZeroAndOneOperationRector/Pun/kept_operation_parentheses and RecastingRemovalRector/Pun/operand_parentheses:
+//! Rector prints the value it keeps without the
 //! parentheses the new place needs (`filter_var($i + 1, FILTER_VALIDATE_INT) * 2` becomes `$i + 1 * 2`); Pun keeps
 //! the meaning (lint.md: meaning over bytes).
+//!
+//! RecastingRemovalRector/FixturePhp74 runs at PHP 7.4, below Pun's floor, and is not copied.
 
 mod lint_c;
 
 use lint_c::run_class;
 use pun_lint::Rule;
 use pun_lint::rules::{
-    NoConstantCondition, NoUnusedTestMethodParam, NoUselessFilterVar, NoUselessMath,
+    NoConstantCondition, NoUnusedTestMethodParam, NoUselessCast, NoUselessFilterVar, NoUselessMath,
     PreferInstanceMethod, RequirePreviousException,
 };
 
@@ -67,4 +70,9 @@ fn remove_filter_var_on_exact_type() {
 #[test]
 fn remove_dead_zero_and_one_operation() {
     check(NoUselessMath, "RemoveDeadZeroAndOneOperationRector");
+}
+
+#[test]
+fn recasting_removal() {
+    check(NoUselessCast, "RecastingRemovalRector");
 }

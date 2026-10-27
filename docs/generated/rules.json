@@ -6350,7 +6350,7 @@
         "RecastingRemovalRector",
         "Rector\\DeadCode\\Rector\\Cast\\RecastingRemovalRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/dead-code/no-useless-catch",
