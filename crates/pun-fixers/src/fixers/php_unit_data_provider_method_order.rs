@@ -131,14 +131,15 @@ fn orig_usage_data_provider_order_pairs(
     for provider in get_data_providers(tokens, start_index, end_index) {
         let mut usages: IndexMap<usize, (usize, Vec<u8>, usize)> = IndexMap::new();
         for &(usage, offset) in &provider.usage_indices {
-            let Some(found) = tokens.find_sequence(
-                &[T_FUNCTION.into(), T_STRING.into()],
-                usage,
-                Some(end_index),
-                |_| true,
-            ) else {
-                continue;
-            };
+            // the usage's own method (`function` and its name, as `DataProviderAnalyzer` found it) comes after it
+            let found = tokens
+                .find_sequence(
+                    &[T_FUNCTION.into(), T_STRING.into()],
+                    usage,
+                    Some(end_index),
+                    |_| true,
+                )
+                .unwrap();
             let name_index = *found.last().unwrap();
             usages.insert(
                 name_index,
