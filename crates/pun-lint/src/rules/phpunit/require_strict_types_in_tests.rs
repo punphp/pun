@@ -39,9 +39,7 @@ impl Rule for RequireStrictTypesInTests {
         ctx: &Context<'_>,
         out: &mut Vec<Report>,
     ) {
-        let Node::Program(program) = node else {
-            return;
-        };
+        let Node::Program(program) = node else { return };
         let has_strict_types = program.statements.iter().any(|statement| {
             matches!(statement, Statement::Declare(d) if d.items.iter().any(|i| i.name.value == b"strict_types"))
         });

@@ -39,9 +39,7 @@ impl Rule for AddDataProviderAllowMockObjects {
         ctx: &Context<'_>,
         out: &mut Vec<Report>,
     ) {
-        let Some((members, _, _)) = class_body(node) else {
-            return;
-        };
+        let (members, _, _) = class_body(node).unwrap();
         let mut scope = ancestors.to_vec();
         scope.push(node);
         if !should_add(ctx, &scope, node) {

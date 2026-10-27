@@ -45,9 +45,7 @@ impl Rule for NoTestConstructor {
         ctx: &Context<'_>,
         out: &mut Vec<Report>,
     ) {
-        let Node::Class(class) = node else {
-            return;
-        };
+        let Node::Class(class) = node else { return };
         let mut scope = ancestors.to_vec();
         scope.push(node);
         if !is_in_test_class(ctx, &scope, None) {

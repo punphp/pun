@@ -38,9 +38,7 @@ impl Rule for AddMockObjectType {
         ctx: &Context<'_>,
         out: &mut Vec<Report>,
     ) {
-        let Node::Method(method) = node else {
-            return;
-        };
+        let Node::Method(method) = node else { return };
         if !method
             .modifiers
             .iter()

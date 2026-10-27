@@ -29,9 +29,7 @@ impl Rule for RequireFinalTestCase {
         ctx: &Context<'_>,
         out: &mut Vec<Report>,
     ) {
-        let Node::Class(class) = node else {
-            return;
-        };
+        let Node::Class(class) = node else { return };
         // skip obvious cases
         if class
             .modifiers

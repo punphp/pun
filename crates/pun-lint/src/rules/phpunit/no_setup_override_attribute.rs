@@ -31,9 +31,7 @@ impl Rule for NoSetupOverrideAttribute {
         ctx: &Context<'_>,
         out: &mut Vec<Report>,
     ) {
-        let Node::Method(method) = node else {
-            return;
-        };
+        let Node::Method(method) = node else { return };
         let name = method.name.value;
         if !(name.eq_ignore_ascii_case(b"setUp") || name.eq_ignore_ascii_case(b"tearDown")) {
             return;

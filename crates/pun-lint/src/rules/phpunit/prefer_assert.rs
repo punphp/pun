@@ -42,9 +42,7 @@ impl Rule for PreferAssert {
         ctx: &Context<'_>,
         out: &mut Vec<Report>,
     ) {
-        let Some((members, _, _)) = class_body(node) else {
-            return;
-        };
+        let (members, _, _) = class_body(node).unwrap();
         let mut scope = ancestors.to_vec();
         scope.push(node);
         let behat = is_behat_context(ctx, &scope);

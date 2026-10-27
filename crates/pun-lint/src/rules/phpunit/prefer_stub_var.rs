@@ -35,15 +35,13 @@ impl Rule for PreferStubVar {
         ctx: &Context<'_>,
         out: &mut Vec<Report>,
     ) {
-        let Node::Property(property) = node else {
-            return;
-        };
+        let Node::Property(prop) = node else { return };
         // only inside PHPUnit TestCase scope
         if !is_in_test_class(ctx, ancestors, None) {
             return;
         }
         // only properties already converted to a Stub native type
-        let hint = match property {
+        let hint = match prop {
             Property::Plain(p) => p.hint.as_ref(),
             Property::Hooked(p) => p.hint.as_ref(),
         };

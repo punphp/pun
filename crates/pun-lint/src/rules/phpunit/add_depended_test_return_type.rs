@@ -37,9 +37,7 @@ impl Rule for AddDependedTestReturnType {
         ctx: &Context<'_>,
         out: &mut Vec<Report>,
     ) {
-        let Some((members, left, _)) = class_body(node) else {
-            return;
-        };
+        let (members, left, _) = class_body(node).unwrap();
         let mut scope = ancestors.to_vec();
         scope.push(node);
         if !is_in_test_class(ctx, &scope, None) {

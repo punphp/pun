@@ -36,9 +36,7 @@ impl Rule for PreferDataProvider {
         ctx: &Context<'_>,
         out: &mut Vec<Report>,
     ) {
-        let Some((members, left_brace, _)) = class_body(node) else {
-            return;
-        };
+        let (members, left_brace, _) = class_body(node).unwrap();
         if !ctx.source.contains("@testWith") && !ctx.source.contains("@testwith") {
             return;
         }

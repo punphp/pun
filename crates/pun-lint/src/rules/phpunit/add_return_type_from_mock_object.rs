@@ -47,9 +47,7 @@ impl Rule for AddReturnTypeFromMockObject {
         out: &mut Vec<Report>,
     ) {
         // type is already known
-        let Node::Method(method) = node else {
-            return;
-        };
+        let Node::Method(method) = node else { return };
         if method.return_type_hint.is_some() {
             return;
         }

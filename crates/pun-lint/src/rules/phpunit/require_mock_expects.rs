@@ -38,9 +38,7 @@ impl Rule for RequireMockExpects {
         ctx: &Context<'_>,
         out: &mut Vec<Report>,
     ) {
-        let Node::Method(method) = node else {
-            return;
-        };
+        let Node::Method(method) = node else { return };
         // allowed as can be flexible
         if method.name.value.eq_ignore_ascii_case(b"setUp") {
             return;
