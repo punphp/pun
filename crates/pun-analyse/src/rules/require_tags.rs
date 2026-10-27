@@ -41,7 +41,7 @@ pub(super) fn tag_types(c: &Checker, k: &ClassLikeMetadata, names: [&str; 2]) ->
     let Some(doc) = c.class_doc(k) else {
         return Vec::new();
     };
-    let tags = phpdoc::tags(&String::from_utf8_lossy(&doc)).unwrap_or_default();
+    let tags = phpdoc::tags(&doc).unwrap_or_default();
     let scope = super::declared::class_scope(c, k.span, k);
     // (the project's classes known, for `self&\stdClass` in a trait to be `never`)
     super::declared::with_classes(c, || {

@@ -155,19 +155,113 @@ fn late_quoted_shape_keys_preserve_bytes_through_template_substitution() {
     let scope = TemplateScope(template.clone());
     let oracle: Value =
         serde_json::from_str(include_str!("fixtures/byte-strings/expected.json")).unwrap();
-    for row in oracle["late_shape_keys"].as_array().unwrap() {
-        let input = row["input"].as_str().unwrap();
-        let node = pun_phpstan::phpdoc::parse(input).unwrap();
+    for row in oracle["late_shape_keys"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .chain(oracle["raw_late_shape_keys"].as_array().unwrap())
+    {
+        let input = row
+            .get("source_hex")
+            .map(bytes)
+            .unwrap_or_else(|| row["input"].as_str().unwrap().as_bytes().to_vec());
+        let node = pun_phpstan::phpdoc::parse(&input).unwrap();
         let ty = resolve_in(&node, &scope);
-        assert!(matches!(ty, Type::LateArrayShape(_)), "{input}");
+        assert!(matches!(ty, Type::LateArrayShape(_)), "{input:?}");
         let replacement = Type::ConstString(bytes(&row["replacement"]));
         let map = infer_template_types(&template, &replacement);
         let resolved = resolve_template_types(&ty, &map);
         assert_eq!(
             shape_keys(&resolved),
             row["entries"],
-            "{input}; replacement {}",
+            "{input:?}; replacement {}",
             row["replacement"]
         );
+    }
+}
+
+fn raw_value(node: &pun_phpstan::phpdoc::Node) -> Value {
+    let ty = pun_phpstan::resolve::resolve(node, None);
+    match &ty {
+        Type::ConstString(value) => json!(hex(value)),
+        _ => shape_keys(&ty),
+    }
+}
+
+#[test]
+fn raw_quoted_scalars_and_shapes_match_phpstan_bytes() {
+    use pun_phpstan::phpdoc::{ConstExpr, Node, ShapeKey};
+    fn parsed_bytes(node: &Node) -> Value {
+        match node {
+            Node::Const(ConstExpr::Str(value)) => json!(hex(value)),
+            Node::ArrayShape { items, .. } => json!(
+                items
+                    .iter()
+                    .map(|item| {
+                        let key = match item.key.as_ref().unwrap() {
+                            ShapeKey::Str(value) => json!(["string", hex(value)]),
+                            ShapeKey::Int(value) => json!(["int", value]),
+                            ShapeKey::Ident(value) => json!(["ident", value]),
+                            other => panic!("unexpected parsed key: {other:?}"),
+                        };
+                        json!([key, parsed_bytes(&item.value)])
+                    })
+                    .collect::<Vec<_>>()
+            ),
+            other => panic!("unexpected parsed node: {other:?}"),
+        }
+    }
+    let oracle: Value =
+        serde_json::from_str(include_str!("fixtures/byte-strings/expected.json")).unwrap();
+    for row in oracle["raw_types"].as_array().unwrap() {
+        let input = bytes(&row["source_hex"]);
+        let node = pun_phpstan::phpdoc::parse(&input).unwrap();
+        assert_eq!(parsed_bytes(&node), row["parsed"], "{}", row["source_hex"]);
+    }
+}
+
+#[test]
+fn raw_prefix_offsets_count_source_bytes() {
+    let oracle: Value =
+        serde_json::from_str(include_str!("fixtures/byte-strings/expected.json")).unwrap();
+    for row in oracle["raw_prefixes"].as_array().unwrap() {
+        let input = bytes(&row["source_hex"]);
+        let (_, offset) = pun_phpstan::phpdoc::parse_prefix(&input).unwrap();
+        assert_eq!(json!(offset), row["offset"], "{}", row["source_hex"]);
+    }
+}
+
+#[test]
+fn raw_error_offsets_preserve_bytes_but_messages_substitute_utf8() {
+    let oracle: Value =
+        serde_json::from_str(include_str!("fixtures/byte-strings/expected.json")).unwrap();
+    for row in oracle["raw_errors"].as_array().unwrap() {
+        let input = bytes(&row["source_hex"]);
+        let error = pun_phpstan::phpdoc::parse(&input).unwrap_err();
+        assert_eq!(error.message(), row["message"].as_str().unwrap());
+    }
+}
+
+#[test]
+fn raw_multiline_crlf_tags_preserve_quoted_payloads() {
+    use pun_phpstan::phpdoc::TagValue;
+    let oracle: Value =
+        serde_json::from_str(include_str!("fixtures/byte-strings/expected.json")).unwrap();
+    for row in oracle["raw_docs"].as_array().unwrap() {
+        let input = bytes(&row["source_hex"]);
+        let tags = pun_phpstan::phpdoc::tags(&input).unwrap();
+        let values: Vec<_> = tags
+            .iter()
+            .map(|tag| {
+                let node = match &tag.value {
+                    TagValue::Param { ty: Some(node), .. }
+                    | TagValue::Type(node)
+                    | TagValue::Var(node, _) => node,
+                    other => panic!("unexpected tag: {other:?}"),
+                };
+                json!([tag.name, raw_value(node)])
+            })
+            .collect();
+        assert_eq!(json!(values), row["tags"]);
     }
 }

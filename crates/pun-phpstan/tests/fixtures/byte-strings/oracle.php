@@ -33,6 +33,25 @@ function shapeKeys(PHPStan\Type\Type $type): array
     return $rows;
 }
 
+// The parser boundary retains quoted numeric strings; numeric key coercion belongs to type resolution.
+function parsedBytes(PHPStan\PhpDocParser\Ast\Type\TypeNode $node): array|string
+{
+    if ($node instanceof PHPStan\PhpDocParser\Ast\Type\ConstTypeNode) {
+        return bin2hex($node->constExpr->value);
+    }
+    return array_map(static function ($item) {
+        $key = $item->keyName;
+        if ($key instanceof PHPStan\PhpDocParser\Ast\ConstExpr\ConstExprStringNode) {
+            $key = ['string', bin2hex($key->value)];
+        } elseif ($key instanceof PHPStan\PhpDocParser\Ast\ConstExpr\ConstExprIntegerNode) {
+            $key = ['int', $key->value];
+        } else {
+            $key = ['ident', $key->name];
+        }
+        return [$key, parsedBytes($item->valueType)];
+    }, $node->items);
+}
+
 $values = ['', '0', '12', 'e', 'E', 'é', "\xff", "\xfe", "\xc3", "\xc2", "\xffa", "\xffA", "\0\n\t\r\v\f\x07\x08\\\"'", "\x01\x1f\x7f", 'abcdefghijklmnopqrstuvwxy', str_repeat('é', 25), str_repeat("\xff", 25), str_repeat('é', 11) . "\xff", "\xed\xa0\x80", "\xe0\x80\x80", "\xf4\x90\x80\x80"];
 $rows = [];
 foreach ($values as $value) {
@@ -113,7 +132,56 @@ SHAPES;
             $lateRows[] = ['input' => $input, 'replacement' => bin2hex($replacement), 'entries' => shapeKeys($resolved)];
         }
     }
-    echo json_encode(['values' => $rows, 'pairs' => $pairs, 'escapes' => $escapes, 'identity_neighbors' => $neighbors, 'callable_neighbors' => $callableNeighbors, 'shape_keys' => $shapeRows, 'late_shape_keys' => $lateRows], JSON_PRETTY_PRINT | JSON_INVALID_UTF8_SUBSTITUTE | JSON_THROW_ON_ERROR), "\n";
+    $parserConfig = new PHPStan\PhpDocParser\ParserConfig([]);
+    $lexer = new PHPStan\PhpDocParser\Lexer\Lexer($parserConfig);
+    $constParser = new PHPStan\PhpDocParser\Parser\ConstExprParser($parserConfig);
+    $typeParser = new PHPStan\PhpDocParser\Parser\TypeParser($parserConfig, $constParser);
+    $docParser = new PHPStan\PhpDocParser\Parser\PhpDocParser($parserConfig, $typeParser, $constParser);
+    $nodeResolver = $container->getByType(PHPStan\PhpDoc\TypeNodeResolver::class);
+    $rawInputs = ["'\xff'", "\"\xfe\"", "'\xef\xbf\xbd'", "'\xff\\xff'", "\"\xff\\xff\"",
+        "array{'\xff': 'first', '\xfe': 'second', '\xef\xbf\xbd': 'third'}",
+        "array{'\xff': 'first', \"\\xff\": 'last', '\xfe': 'other'}",
+        'array{"\x31": "first", "\x30\x31": "zero", bare: "bare", 1: "last"}',
+    ];
+    $rawRows = [];
+    foreach ($rawInputs as $input) {
+        $type = $resolver->resolve($input);
+        $parsed = $typeParser->parse(new PHPStan\PhpDocParser\Parser\TokenIterator($lexer->tokenize($input)));
+        $rawRows[] = ['source_hex' => bin2hex($input), 'parsed' => parsedBytes($parsed), 'value' => $type instanceof ConstantStringType ? bin2hex($type->getValue()) : shapeKeys($type)];
+    }
+    $prefixRows = [];
+    foreach (["array{'\xff': int} \$x", "'\xfe' trailing", "array{'\xff': int}\r\nrest"] as $input) {
+        $tokens = new PHPStan\PhpDocParser\Parser\TokenIterator($lexer->tokenize($input));
+        $typeParser->parse($tokens);
+        $prefixRows[] = ['source_hex' => bin2hex($input), 'offset' => $tokens->currentTokenOffset()];
+    }
+    $errorRows = [];
+    foreach (["'\xff' '\xfe'", "array{'\xff': int, '\xfe'} trailing"] as $input) {
+        try {
+            $resolver->resolve($input);
+            throw new LogicException('Expected a parser error');
+        } catch (PHPStan\PhpDocParser\Parser\ParserException $e) {
+            $errorRows[] = ['source_hex' => bin2hex($input), 'message' => $e->getMessage()];
+        }
+    }
+    $docRows = [];
+    foreach (["/**\r\n * @param array{\r\n * '\xff': 'first',\r\n * '\xfe': 'second',\r\n * '\xef\xbf\xbd': 'third'\r\n * } \$x\r\n * @return '\xff'\r\n */", "/** @var '\xfe' \$x */"] as $input) {
+        $doc = $docParser->parse(new PHPStan\PhpDocParser\Parser\TokenIterator($lexer->tokenize($input)));
+        $tags = [];
+        foreach ($doc->children as $tag) {
+            $type = $nodeResolver->resolve($tag->value->type, new PHPStan\Analyser\NameScope(null, []));
+            $tags[] = [$tag->name, $type instanceof ConstantStringType ? bin2hex($type->getValue()) : shapeKeys($type)];
+        }
+        $docRows[] = ['source_hex' => bin2hex($input), 'tags' => $tags];
+    }
+    $rawLateRows = [];
+    $input = "array{K: 'template', '\xff': 'ff', '\xfe': 'fe', '\xef\xbf\xbd': 'replacement'}";
+    foreach (["\xff", "\xfe", "\xef\xbf\xbd", '1'] as $replacement) {
+        $type = $resolver->resolve($input, $scope);
+        $resolved = TemplateTypeHelper::resolveTemplateTypes($type, new TemplateTypeMap(['K' => new ConstantStringType($replacement)]), TemplateTypeVarianceMap::createEmpty(), TemplateTypeVariance::createStatic());
+        $rawLateRows[] = ['source_hex' => bin2hex($input), 'replacement' => bin2hex($replacement), 'entries' => shapeKeys($resolved)];
+    }
+    echo json_encode(['values' => $rows, 'pairs' => $pairs, 'escapes' => $escapes, 'identity_neighbors' => $neighbors, 'callable_neighbors' => $callableNeighbors, 'shape_keys' => $shapeRows, 'late_shape_keys' => $lateRows, 'raw_types' => $rawRows, 'raw_prefixes' => $prefixRows, 'raw_errors' => $errorRows, 'raw_docs' => $docRows, 'raw_late_shape_keys' => $rawLateRows], JSON_PRETTY_PRINT | JSON_INVALID_UTF8_SUBSTITUTE | JSON_THROW_ON_ERROR), "\n";
 } finally {
     $items = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($root, FilesystemIterator::SKIP_DOTS), RecursiveIteratorIterator::CHILD_FIRST);
     foreach ($items as $item) {

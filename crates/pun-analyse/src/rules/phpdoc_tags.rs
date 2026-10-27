@@ -126,7 +126,7 @@ pub fn node(c: &mut Checker, at: Span) {
     };
     let start = doc.as_ptr() as usize - file.contents.as_ptr() as usize;
     // (no tags where PHPStan's parser throws)
-    for tag in phpdoc::tags(&String::from_utf8_lossy(doc)).unwrap_or_default() {
+    for tag in phpdoc::tags(doc).unwrap_or_default() {
         let offset = start
             + doc
                 .split_inclusive(|b| *b == b'\n')

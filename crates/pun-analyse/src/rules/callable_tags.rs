@@ -24,7 +24,7 @@ pub fn function_like(c: &mut Checker, at: Span, params: &FunctionLikeParameterLi
     let Some(doc) = doc_before(&c.file.contents, at.start.offset as usize) else {
         return;
     };
-    let tags = phpdoc::tags(&String::from_utf8_lossy(doc)).unwrap_or_default();
+    let tags = phpdoc::tags(doc).unwrap_or_default();
     // `resolveParamImmediatelyInvokedCallable()`: by name, a later tag keeping an earlier one's place
     let mut invoked: Vec<(String, bool)> = Vec::new();
     for (names, immediately) in [

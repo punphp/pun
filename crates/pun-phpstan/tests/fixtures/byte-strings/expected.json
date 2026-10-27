@@ -5639,5 +5639,366 @@
                 ]
             ]
         }
+    ],
+    "raw_types": [
+        {
+            "source_hex": "27ff27",
+            "parsed": "ff",
+            "value": "ff"
+        },
+        {
+            "source_hex": "22fe22",
+            "parsed": "fe",
+            "value": "fe"
+        },
+        {
+            "source_hex": "27efbfbd27",
+            "parsed": "efbfbd",
+            "value": "efbfbd"
+        },
+        {
+            "source_hex": "27ff5c78666627",
+            "parsed": "ff5c786666",
+            "value": "ff5c786666"
+        },
+        {
+            "source_hex": "22ff5c78666622",
+            "parsed": "ffff",
+            "value": "ffff"
+        },
+        {
+            "source_hex": "61727261797b27ff273a20276669727374272c2027fe273a20277365636f6e64272c2027efbfbd273a20277468697264277d",
+            "parsed": [
+                [
+                    [
+                        "string",
+                        "ff"
+                    ],
+                    "6669727374"
+                ],
+                [
+                    [
+                        "string",
+                        "fe"
+                    ],
+                    "7365636f6e64"
+                ],
+                [
+                    [
+                        "string",
+                        "efbfbd"
+                    ],
+                    "7468697264"
+                ]
+            ],
+            "value": [
+                [
+                    [
+                        "string",
+                        "ff"
+                    ],
+                    "6669727374"
+                ],
+                [
+                    [
+                        "string",
+                        "fe"
+                    ],
+                    "7365636f6e64"
+                ],
+                [
+                    [
+                        "string",
+                        "efbfbd"
+                    ],
+                    "7468697264"
+                ]
+            ]
+        },
+        {
+            "source_hex": "61727261797b27ff273a20276669727374272c20225c786666223a20276c617374272c2027fe273a20276f74686572277d",
+            "parsed": [
+                [
+                    [
+                        "string",
+                        "ff"
+                    ],
+                    "6669727374"
+                ],
+                [
+                    [
+                        "string",
+                        "ff"
+                    ],
+                    "6c617374"
+                ],
+                [
+                    [
+                        "string",
+                        "fe"
+                    ],
+                    "6f74686572"
+                ]
+            ],
+            "value": [
+                [
+                    [
+                        "string",
+                        "ff"
+                    ],
+                    "6c617374"
+                ],
+                [
+                    [
+                        "string",
+                        "fe"
+                    ],
+                    "6f74686572"
+                ]
+            ]
+        },
+        {
+            "source_hex": "61727261797b225c783331223a20226669727374222c20225c7833305c783331223a20227a65726f222c20626172653a202262617265222c20313a20226c617374227d",
+            "parsed": [
+                [
+                    [
+                        "string",
+                        "31"
+                    ],
+                    "6669727374"
+                ],
+                [
+                    [
+                        "string",
+                        "3031"
+                    ],
+                    "7a65726f"
+                ],
+                [
+                    [
+                        "ident",
+                        "bare"
+                    ],
+                    "62617265"
+                ],
+                [
+                    [
+                        "int",
+                        "1"
+                    ],
+                    "6c617374"
+                ]
+            ],
+            "value": [
+                [
+                    [
+                        "int",
+                        1
+                    ],
+                    "6c617374"
+                ],
+                [
+                    [
+                        "string",
+                        "3031"
+                    ],
+                    "7a65726f"
+                ],
+                [
+                    [
+                        "string",
+                        "62617265"
+                    ],
+                    "62617265"
+                ]
+            ]
+        }
+    ],
+    "raw_prefixes": [
+        {
+            "source_hex": "61727261797b27ff273a20696e747d202478",
+            "offset": 16
+        },
+        {
+            "source_hex": "27fe2720747261696c696e67",
+            "offset": 4
+        },
+        {
+            "source_hex": "61727261797b27ff273a20696e747d0d0a72657374",
+            "offset": 15
+        }
+    ],
+    "raw_errors": [
+        {
+            "source_hex": "27ff272027fe27",
+            "message": "Unexpected token \"'\ufffd'\", expected TOKEN_END at offset 4 on line 1"
+        },
+        {
+            "source_hex": "61727261797b27ff273a20696e742c2027fe277d20747261696c696e67",
+            "message": "Unexpected token \"trailing\", expected TOKEN_END at offset 21 on line 1"
+        }
+    ],
+    "raw_docs": [
+        {
+            "source_hex": "2f2a2a0d0a202a2040706172616d2061727261797b0d0a202a2027ff273a20276669727374272c0d0a202a2027fe273a20277365636f6e64272c0d0a202a2027efbfbd273a20277468697264270d0a202a207d2024780d0a202a204072657475726e2027ff270d0a202a2f",
+            "tags": [
+                [
+                    "@param",
+                    [
+                        [
+                            [
+                                "string",
+                                "ff"
+                            ],
+                            "6669727374"
+                        ],
+                        [
+                            [
+                                "string",
+                                "fe"
+                            ],
+                            "7365636f6e64"
+                        ],
+                        [
+                            [
+                                "string",
+                                "efbfbd"
+                            ],
+                            "7468697264"
+                        ]
+                    ]
+                ],
+                [
+                    "@return",
+                    "ff"
+                ]
+            ]
+        },
+        {
+            "source_hex": "2f2a2a20407661722027fe27202478202a2f",
+            "tags": [
+                [
+                    "@var",
+                    "fe"
+                ]
+            ]
+        }
+    ],
+    "raw_late_shape_keys": [
+        {
+            "source_hex": "61727261797b4b3a202774656d706c617465272c2027ff273a20276666272c2027fe273a20276665272c2027efbfbd273a20277265706c6163656d656e74277d",
+            "replacement": "ff",
+            "entries": [
+                [
+                    [
+                        "string",
+                        "ff"
+                    ],
+                    "6666"
+                ],
+                [
+                    [
+                        "string",
+                        "fe"
+                    ],
+                    "6665"
+                ],
+                [
+                    [
+                        "string",
+                        "efbfbd"
+                    ],
+                    "7265706c6163656d656e74"
+                ]
+            ]
+        },
+        {
+            "source_hex": "61727261797b4b3a202774656d706c617465272c2027ff273a20276666272c2027fe273a20276665272c2027efbfbd273a20277265706c6163656d656e74277d",
+            "replacement": "fe",
+            "entries": [
+                [
+                    [
+                        "string",
+                        "fe"
+                    ],
+                    "6665"
+                ],
+                [
+                    [
+                        "string",
+                        "ff"
+                    ],
+                    "6666"
+                ],
+                [
+                    [
+                        "string",
+                        "efbfbd"
+                    ],
+                    "7265706c6163656d656e74"
+                ]
+            ]
+        },
+        {
+            "source_hex": "61727261797b4b3a202774656d706c617465272c2027ff273a20276666272c2027fe273a20276665272c2027efbfbd273a20277265706c6163656d656e74277d",
+            "replacement": "efbfbd",
+            "entries": [
+                [
+                    [
+                        "string",
+                        "efbfbd"
+                    ],
+                    "7265706c6163656d656e74"
+                ],
+                [
+                    [
+                        "string",
+                        "ff"
+                    ],
+                    "6666"
+                ],
+                [
+                    [
+                        "string",
+                        "fe"
+                    ],
+                    "6665"
+                ]
+            ]
+        },
+        {
+            "source_hex": "61727261797b4b3a202774656d706c617465272c2027ff273a20276666272c2027fe273a20276665272c2027efbfbd273a20277265706c6163656d656e74277d",
+            "replacement": "31",
+            "entries": [
+                [
+                    [
+                        "int",
+                        1
+                    ],
+                    "74656d706c617465"
+                ],
+                [
+                    [
+                        "string",
+                        "ff"
+                    ],
+                    "6666"
+                ],
+                [
+                    [
+                        "string",
+                        "fe"
+                    ],
+                    "6665"
+                ],
+                [
+                    [
+                        "string",
+                        "efbfbd"
+                    ],
+                    "7265706c6163656d656e74"
+                ]
+            ]
+        }
     ]
 }

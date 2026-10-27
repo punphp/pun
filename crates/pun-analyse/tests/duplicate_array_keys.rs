@@ -151,6 +151,38 @@ fn quoted_shapes_reach_duplicate_keys_through_scanning_and_inline_annotations() 
 }
 
 #[test]
+fn raw_phpdoc_ingestion_preserves_binary_values_and_error_offsets() {
+    let oracle: Value = serde_json::from_str(include_str!(
+        "fixtures/duplicate-array-keys/expected-raw-doc.json"
+    ))
+    .unwrap();
+    let source: Vec<u8> = oracle["source_hex"]
+        .as_str()
+        .unwrap()
+        .as_bytes()
+        .chunks_exact(2)
+        .map(|pair| u8::from_str_radix(std::str::from_utf8(pair).unwrap(), 16).unwrap())
+        .collect();
+    let root = std::env::temp_dir().join(format!("pun-raw-doc-test-{}", std::process::id()));
+    std::fs::create_dir_all(&root).unwrap();
+    let file = root.join("raw.php");
+    std::fs::write(&file, source).unwrap();
+    // Remove the scratch source even when the diagnostic assertion fails.
+    let result = std::panic::catch_unwind(|| {
+        for level in [0, 2] {
+            let mut project = Project::new(vec![file.clone()], Vec::new());
+            project.level = level;
+            project.bleeding_edge = true;
+            check(project, &oracle["levels"][level.to_string()]);
+        }
+    });
+    std::fs::remove_dir_all(&root).unwrap();
+    if let Err(error) = result {
+        std::panic::resume_unwind(error);
+    }
+}
+
+#[test]
 fn scanned_quoted_shape_keys_and_overwrites_match_phpstan_hex_values() {
     use std::borrow::Cow;
 

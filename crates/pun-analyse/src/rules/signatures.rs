@@ -258,23 +258,27 @@ struct Doc {
 }
 
 /// Each tag and its text up to the next tag (continuation lines joined with a space).
-fn tag_values(doc: &[u8]) -> Vec<(String, String)> {
+fn tag_values(doc: &[u8]) -> Vec<(String, Vec<u8>)> {
     let body = doc.strip_prefix(b"/**").unwrap_or(doc);
     let body = body.strip_suffix(b"*/").unwrap_or(body);
-    let mut tags: Vec<(String, String)> = Vec::new();
-    for line in String::from_utf8_lossy(body).lines() {
-        let line = line.trim_start();
-        let line = line.strip_prefix('*').unwrap_or(line).trim();
-        if let Some(rest) = line.strip_prefix('@') {
+    let mut tags: Vec<(String, Vec<u8>)> = Vec::new();
+    for line in body.split(|b| *b == b'\n') {
+        let line = line.trim_ascii_start();
+        let line = line.strip_prefix(b"*").unwrap_or(line).trim_ascii();
+        if let Some(rest) = line.strip_prefix(b"@") {
             let len = rest
-                .find(|ch: char| !(ch.is_ascii_alphanumeric() || matches!(ch, '-' | '\\' | ':')))
+                .iter()
+                .position(|ch| !(ch.is_ascii_alphanumeric() || matches!(ch, b'-' | b'\\' | b':')))
                 .unwrap_or(rest.len());
-            tags.push((format!("@{}", &rest[..len]), rest[len..].trim().to_string()));
+            tags.push((
+                format!("@{}", String::from_utf8_lossy(&rest[..len])),
+                rest[len..].trim_ascii().to_vec(),
+            ));
         } else if let Some((_, text)) = tags.last_mut()
             && !line.is_empty()
         {
-            text.push(' ');
-            text.push_str(line);
+            text.push(b' ');
+            text.extend_from_slice(line);
         }
     }
     tags
@@ -282,16 +286,17 @@ fn tag_values(doc: &[u8]) -> Vec<(String, String)> {
 
 /// The longest leading part of `text` ending before whitespace (or at its end) that is one type, and what follows
 /// (phpdoc-parser parses the type, then the rest of the tag).
-fn leading_type(text: &str) -> Option<(Node, &str)> {
+fn leading_type(text: &[u8]) -> Option<(Node, &[u8])> {
     let ends = text
-        .char_indices()
-        .filter(|(_, ch)| ch.is_whitespace())
+        .iter()
+        .enumerate()
+        .filter(|(_, ch)| ch.is_ascii_whitespace())
         .map(|(i, _)| i)
         .chain(std::iter::once(text.len()));
     let mut found = None;
     for end in ends {
         if let Ok(node) = phpdoc::parse(&text[..end]) {
-            found = Some((node, text[end..].trim_start()));
+            found = Some((node, text[end..].trim_ascii_start()));
         }
     }
     found
@@ -321,20 +326,24 @@ fn read_doc(c: &Checker, at: Span) -> Doc {
         ]
         .contains(&template)
         {
-            let name: String = text.chars().take_while(|ch| !ch.is_whitespace()).collect();
-            let mut rest = text[name.len()..].trim_start();
+            let len = text
+                .iter()
+                .position(u8::is_ascii_whitespace)
+                .unwrap_or(text.len());
+            let name = String::from_utf8_lossy(&text[..len]).into_owned();
+            let mut rest = text[len..].trim_ascii_start();
             let mut bound = None;
             if let Some(b) = rest
-                .strip_prefix("of ")
-                .or_else(|| rest.strip_prefix("as "))
-                && let Some((node, after)) = leading_type(b.trim_start())
+                .strip_prefix(b"of ")
+                .or_else(|| rest.strip_prefix(b"as "))
+                && let Some((node, after)) = leading_type(b.trim_ascii_start())
             {
                 bound = Some(node);
                 rest = after;
             }
             let default = rest
-                .strip_prefix('=')
-                .and_then(|d| leading_type(d.trim_start()))
+                .strip_prefix(b"=")
+                .and_then(|d| leading_type(d.trim_ascii_start()))
                 .map(|(node, _)| node);
             doc.templates.push((name, bound, default));
         } else if let Some(r) = rank(
@@ -342,12 +351,18 @@ fn read_doc(c: &Checker, at: Span) -> Doc {
             &["@param", "@phan-param", "@psalm-param", "@phpstan-param"],
         ) {
             if let Some((node, rest)) = leading_type(text) {
-                let rest = rest.trim_start_matches(['&', '.']);
-                if let Some(name) = rest.strip_prefix('$') {
-                    let name: String = name
-                        .chars()
-                        .take_while(|ch| ch.is_ascii_alphanumeric() || *ch == '_' || !ch.is_ascii())
-                        .collect();
+                let rest = &rest[rest
+                    .iter()
+                    .take_while(|ch| matches!(ch, b'&' | b'.'))
+                    .count()..];
+                if let Some(name) = rest.strip_prefix(b"$") {
+                    let len = name
+                        .iter()
+                        .position(|ch| {
+                            !(ch.is_ascii_alphanumeric() || *ch == b'_' || !ch.is_ascii())
+                        })
+                        .unwrap_or(name.len());
+                    let name = String::from_utf8_lossy(&name[..len]).into_owned();
                     params.push((r, name, node));
                 }
             }

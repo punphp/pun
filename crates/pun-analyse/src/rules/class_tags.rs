@@ -47,7 +47,7 @@ fn tags(c: &Checker, k: &ClassLikeMetadata, scope: &NameScope) -> Tags {
     let Some(doc) = c.class_doc(k) else {
         return Tags::default();
     };
-    let tags = phpdoc::tags(&String::from_utf8_lossy(&doc)).unwrap_or_default();
+    let tags = phpdoc::tags(&doc).unwrap_or_default();
     let named = |names: &[&str]| -> Vec<&TagValue> {
         names
             .iter()

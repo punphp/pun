@@ -182,7 +182,7 @@ fn check(raw: &[u8], doc: &Doc, scope: &NameScope, native: &Native) -> Errors {
     }
     // (a `@return` whose value does not parse is an InvalidTagValueNode, no return tag)
     // ponytail: Doc::parse's approximate reader still reads it; PLAN.md "move doc::Doc::parse ... onto phpdoc::tags"
-    let invalid_return = pun_phpstan::phpdoc::tags(&String::from_utf8_lossy(raw))
+    let invalid_return = pun_phpstan::phpdoc::tags(raw)
         .unwrap_or_default()
         .iter()
         .any(|t| t.name.ends_with("return") && matches!(t.value, pun_phpstan::phpdoc::TagValue::Invalid(..)));

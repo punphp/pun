@@ -156,7 +156,7 @@ const PATTERNS: &[(Tok, &str)] = &[
 
 /// `Lexer::tokenize()`: (value, type, line). Like `preg_match_all` with the `A` modifier, lexing stops at the first
 /// byte no alternative matches (a lone `\r`, a vertical tab).
-fn tokenize(input: &str) -> Vec<(Tok, String, usize)> {
+fn tokenize(input: &[u8]) -> Vec<(Tok, Vec<u8>, usize)> {
     use std::sync::OnceLock;
     static RE: OnceLock<pcre2::bytes::Regex> = OnceLock::new();
     let re = RE.get_or_init(|| {
@@ -167,14 +167,13 @@ fn tokenize(input: &str) -> Vec<(Tok, String, usize)> {
             .build(&format!(r"\G(?:{})", alternatives.join("|")))
             .expect("phpdoc lexer regex")
     });
-    let bytes = input.as_bytes();
     let mut tokens = Vec::new();
     let mut offset = 0;
     let mut line = 1;
     let mut locs = re.capture_locations();
-    while offset < bytes.len()
+    while offset < input.len()
         && re
-            .captures_read_at(&mut locs, bytes, offset)
+            .captures_read_at(&mut locs, input, offset)
             .ok()
             .flatten()
             .is_some()
@@ -184,13 +183,13 @@ fn tokenize(input: &str) -> Vec<(Tok, String, usize)> {
             .find(|&g| locs.get(g).is_some())
             .expect("one alternative");
         let kind = PATTERNS[group - 1].0;
-        tokens.push((kind, input[start..end].to_string(), line));
+        tokens.push((kind, input[start..end].to_vec(), line));
         if kind == Tok::Eol {
             line += 1;
         }
         offset = end;
     }
-    tokens.push((Tok::End, String::new(), line));
+    tokens.push((Tok::End, Vec::new(), line));
     tokens
 }
 
@@ -317,7 +316,7 @@ type R<T> = Result<T, ParseError>;
 
 /// `TokenIterator`
 struct Tokens {
-    tokens: Vec<(Tok, String, usize)>,
+    tokens: Vec<(Tok, Vec<u8>, usize)>,
     /// the byte offset of each token
     offsets: Vec<usize>,
     index: usize,
@@ -328,7 +327,7 @@ struct Tokens {
 }
 
 impl Tokens {
-    fn new(input: &str) -> Self {
+    fn new(input: &[u8]) -> Self {
         let tokens = tokenize(input);
         let offsets = tokens
             .iter()
@@ -360,8 +359,12 @@ impl Tokens {
     fn kind(&self) -> Tok {
         self.tokens[self.index].0
     }
-    fn value(&self) -> &str {
+    fn bytes(&self) -> &[u8] {
         &self.tokens[self.index].1
+    }
+    /// Identifiers and diagnostic presentation remain textual; literal identity uses `bytes()`.
+    fn value(&self) -> std::borrow::Cow<'_, str> {
+        String::from_utf8_lossy(self.bytes())
     }
     fn line(&self) -> usize {
         self.tokens[self.index].2
@@ -373,7 +376,7 @@ impl Tokens {
         kinds.contains(&self.kind())
     }
     fn is_value(&self, value: &str) -> bool {
-        self.value() == value
+        self.bytes() == value.as_bytes()
     }
     fn preceded_by_ws(&self) -> bool {
         self.index > 0 && self.tokens[self.index - 1].0 == Tok::Ws
@@ -381,7 +384,7 @@ impl Tokens {
     /// `getSkippedHorizontalWhiteSpaceIfAny()`
     fn skipped_ws(&self) -> &str {
         if self.preceded_by_ws() {
-            &self.tokens[self.index - 1].1
+            std::str::from_utf8(&self.tokens[self.index - 1].1).expect("horizontal whitespace")
         } else {
             ""
         }
@@ -453,7 +456,7 @@ impl Tokens {
     fn join_until(&mut self, kinds: &[Tok]) -> String {
         let mut s = String::new();
         while !self.is_any(kinds) {
-            s.push_str(&self.tokens[self.index].1);
+            s.push_str(&self.value());
             self.index += 1;
         }
         s
@@ -474,13 +477,14 @@ impl Tokens {
 }
 
 /// `TypeStringResolver::resolve()`'s parse step: one type, then the end of input.
-pub fn parse(input: &str) -> R<Node> {
+pub fn parse(input: impl AsRef<[u8]>) -> R<Node> {
+    let input = input.as_ref();
     if let Some(name) = input
-        .strip_prefix('*')
-        .and_then(|s| s.strip_suffix('*'))
-        .filter(|s| matches!(*s, "NEVER" | "ERROR"))
+        .strip_prefix(b"*")
+        .and_then(|s| s.strip_suffix(b"*"))
+        .filter(|s| matches!(*s, b"NEVER" | b"ERROR"))
     {
-        return Ok(Node::Star(name.to_string()));
+        return Ok(Node::Star(String::from_utf8_lossy(name).into_owned()));
     }
     let mut t = Tokens::new(input);
     let node = parse_type(&mut t)?;
@@ -490,8 +494,8 @@ pub fn parse(input: &str) -> R<Node> {
 
 /// phpdoc-parser's `TypeParser::parse()` at the start of a PHPDoc tag's value: the type and the byte offset where
 /// the rest of the value starts.
-pub fn parse_prefix(input: &str) -> R<(Node, usize)> {
-    let mut t = Tokens::new(input);
+pub fn parse_prefix(input: impl AsRef<[u8]>) -> R<(Node, usize)> {
+    let mut t = Tokens::new(input.as_ref());
     let node = parse_type(&mut t)?;
     Ok((node, t.offset()))
 }
@@ -1009,7 +1013,7 @@ fn parse_shape_item(t: &mut Tokens) -> R<ShapeItem> {
 fn parse_shape_key(t: &mut Tokens) -> R<ShapeKey> {
     let key = match t.kind() {
         Tok::Int => ShapeKey::Int(t.value().replace('_', "")),
-        Tok::SingleQuoted | Tok::DoubleQuoted => ShapeKey::Str(unescape(t.value())),
+        Tok::SingleQuoted | Tok::DoubleQuoted => ShapeKey::Str(unescape(t.bytes())),
         _ => {
             let ident = t.value().to_string();
             t.consume(Tok::Ident)?;
@@ -1036,7 +1040,7 @@ fn parse_object_shape(t: &mut Tokens) -> R<Node> {
         t.skip_nl();
         let key = match t.kind() {
             Tok::SingleQuoted | Tok::DoubleQuoted => {
-                let key = String::from_utf8_lossy(&unescape(t.value())).into_owned();
+                let key = String::from_utf8_lossy(&unescape(t.bytes())).into_owned();
                 t.next();
                 key
             }
@@ -1073,18 +1077,18 @@ fn parse_const_expr(t: &mut Tokens, doctrine: bool) -> R<ConstExpr> {
             return Ok(ConstExpr::Int(value));
         }
         Tok::DoctrineString if doctrine => {
-            let value = t.value().to_string();
+            let value = t.bytes().to_vec();
             t.next();
-            return Ok(ConstExpr::Str(value.into_bytes()));
+            return Ok(ConstExpr::Str(value));
         }
         Tok::SingleQuoted if doctrine => return Err(t.error(Tok::DoubleQuoted, None)),
         Tok::DoubleQuoted if doctrine => {
-            let value = t.value().to_string();
+            let value = t.bytes().to_vec();
             t.next();
-            return Ok(ConstExpr::Str(doctrine_string(t, value).into_bytes()));
+            return Ok(ConstExpr::Str(doctrine_string(t, value)));
         }
         Tok::SingleQuoted | Tok::DoubleQuoted => {
-            let value = unescape(t.value());
+            let value = unescape(t.bytes());
             t.next();
             return Ok(ConstExpr::Str(value));
         }
@@ -1106,7 +1110,7 @@ fn parse_const_expr(t: &mut Tokens, doctrine: bool) -> R<ConstExpr> {
                 let mut last = None;
                 loop {
                     if last != Some(Tok::Ident) && t.is(Tok::Ident) {
-                        name.push_str(t.value());
+                        name.push_str(&t.value());
                         t.next();
                         last = Some(Tok::Ident);
                         continue;
@@ -1157,9 +1161,9 @@ fn parse_const_array(t: &mut Tokens, end: Tok, doctrine: bool) -> R<ConstExpr> {
 
 /// `parseDoctrineString()`: a Doctrine string continues over the double-quoted and annotation strings after it
 /// (the value is kept as written).
-fn doctrine_string(t: &mut Tokens, mut text: String) -> String {
+fn doctrine_string(t: &mut Tokens, mut text: Vec<u8>) -> Vec<u8> {
     while t.is_any(&[Tok::DoubleQuoted, Tok::DoctrineString]) {
-        text.push_str(t.value());
+        text.extend_from_slice(t.bytes());
         t.next();
     }
     text
@@ -1242,8 +1246,8 @@ pub enum TagValue {
 
 /// `PhpDocParser::parse()` on a doc comment: its tags. `None` where PHPStan's parser throws (an argument of a
 /// `@\Doctrine` tag that does not parse).
-pub fn tags(doc: &str) -> Option<Vec<Tag>> {
-    let mut t = Tokens::new(doc);
+pub fn tags(doc: impl AsRef<[u8]>) -> Option<Vec<Tag>> {
+    let mut t = Tokens::new(doc.as_ref());
     t.consume(Tok::OpenPhpdoc).ok()?;
     t.try_consume(Tok::Eol);
     let mut children: Vec<Option<Tag>> = Vec::new();
@@ -1815,12 +1819,12 @@ fn parse_doctrine_array_key(t: &mut Tokens) -> R<()> {
     match t.kind() {
         Tok::Int | Tok::SingleQuoted => t.next(),
         Tok::DoctrineString => {
-            let value = t.value().to_string();
+            let value = t.bytes().to_vec();
             doctrine_string(t, value);
             t.next();
         }
         Tok::DoubleQuoted => {
-            let value = t.value().to_string();
+            let value = t.bytes().to_vec();
             t.next();
             doctrine_string(t, value);
         }
@@ -1844,6 +1848,6 @@ fn parse_doctrine_array_key(t: &mut Tokens) -> R<()> {
 }
 
 /// `StringUnescaper::unescapeString()`.
-fn unescape(quoted: &str) -> Vec<u8> {
-    pun_tokens::php_compat::unescape_phpdoc_string(quoted.as_bytes())
+fn unescape(quoted: &[u8]) -> Vec<u8> {
+    pun_tokens::php_compat::unescape_phpdoc_string(quoted)
 }

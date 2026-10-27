@@ -17,25 +17,29 @@ use pun_phpstan::types::Type;
 
 /// Each tag of a doc comment and its value: the rest of its line and the lines after it up to the next tag, joined
 /// with a space. A tag starts a line (after the leading `*`).
-pub fn tags(doc: &[u8]) -> Vec<(String, String)> {
+pub fn tags(doc: &[u8]) -> Vec<(String, Vec<u8>)> {
     let body = doc.strip_prefix(b"/**").unwrap_or(doc);
     let body = body.strip_suffix(b"*/").unwrap_or(body);
-    let mut tags: Vec<(String, String)> = Vec::new();
-    for line in String::from_utf8_lossy(body).lines() {
-        let line = line.trim_start();
-        let line = line.strip_prefix('*').unwrap_or(line).trim();
-        if let Some(rest) = line.strip_prefix('@') {
+    let mut tags: Vec<(String, Vec<u8>)> = Vec::new();
+    for line in body.split(|b| *b == b'\n') {
+        let line = line.trim_ascii_start();
+        let line = line.strip_prefix(b"*").unwrap_or(line).trim_ascii();
+        if let Some(rest) = line.strip_prefix(b"@") {
             let len = rest
-                .find(|ch: char| {
-                    !(ch.is_ascii_alphanumeric() || matches!(ch, '-' | '_' | '\\' | ':'))
+                .iter()
+                .position(|ch| {
+                    !(ch.is_ascii_alphanumeric() || matches!(ch, b'-' | b'_' | b'\\' | b':'))
                 })
                 .unwrap_or(rest.len());
-            tags.push((format!("@{}", &rest[..len]), rest[len..].trim().to_string()));
+            tags.push((
+                format!("@{}", String::from_utf8_lossy(&rest[..len])),
+                rest[len..].trim_ascii().to_vec(),
+            ));
         } else if let Some((_, text)) = tags.last_mut()
             && !line.is_empty()
         {
-            text.push(' ');
-            text.push_str(line);
+            text.push(b' ');
+            text.extend_from_slice(line);
         }
     }
     tags
@@ -70,31 +74,36 @@ pub fn doc_before(contents: &[u8], offset: usize) -> Option<&[u8]> {
 
 /// A `@param` value: the type, `...`, and the parameter's name without `$` (`parseParamTagValue()`; a typeless one
 /// is not a ParamTagValueNode).
-fn param_value(value: &str) -> Option<(Node, bool, String)> {
-    if value.starts_with(['$', '&']) || value.starts_with("...") {
+fn param_value(value: &[u8]) -> Option<(Node, bool, String)> {
+    if matches!(value.first(), Some(b'$' | b'&')) || value.starts_with(b"...") {
         return None;
     }
     let (node, offset) = phpdoc::parse_prefix(value).ok()?;
-    let mut rest = value[offset..].trim_start();
-    rest = rest.strip_prefix('&').unwrap_or(rest).trim_start();
-    let variadic = rest.starts_with("...");
+    let mut rest = value[offset..].trim_ascii_start();
+    rest = rest.strip_prefix(b"&").unwrap_or(rest).trim_ascii_start();
+    let variadic = rest.starts_with(b"...");
     if variadic {
-        rest = rest[3..].trim_start();
+        rest = rest[3..].trim_ascii_start();
     }
-    let name = rest.strip_prefix('$')?;
+    let name = rest.strip_prefix(b"$")?;
     let len = name
-        .find(|ch: char| !(ch.is_ascii_alphanumeric() || ch == '_' || !ch.is_ascii()))
+        .iter()
+        .position(|ch| !(ch.is_ascii_alphanumeric() || *ch == b'_' || !ch.is_ascii()))
         .unwrap_or(name.len());
-    if len == 0 || name.as_bytes()[0].is_ascii_digit() {
+    if len == 0 || name[0].is_ascii_digit() {
         return None;
     }
-    Some((node, variadic, name[..len].to_string()))
+    Some((
+        node,
+        variadic,
+        String::from_utf8_lossy(&name[..len]).into_owned(),
+    ))
 }
 
 /// A type-first tag value (`@return`, `@var`, `@throws`, `@extends`, ...): the type and the rest.
-fn type_value(value: &str) -> Option<(Node, &str)> {
+fn type_value(value: &[u8]) -> Option<(Node, &[u8])> {
     let (node, offset) = phpdoc::parse_prefix(value).ok()?;
-    Some((node, value[offset..].trim_start()))
+    Some((node, value[offset..].trim_ascii_start()))
 }
 
 /// A `@method` tag as written (`parseMethodTagValue()`).
@@ -107,13 +116,12 @@ pub struct MethodTag {
 }
 
 /// Splits `s` at the commas outside brackets and quotes.
-fn split_top(s: &str) -> Vec<&str> {
+fn split_top(s: &[u8]) -> Vec<&[u8]> {
     let mut out = Vec::new();
     let (mut depth, mut quote, mut start) = (0i32, None, 0);
-    let bytes = s.as_bytes();
     let mut i = 0;
-    while i < bytes.len() {
-        let b = bytes[i];
+    while i < s.len() {
+        let b = s[i];
         match quote {
             Some(_) if b == b'\\' => i += 1,
             Some(q) if b == q => quote = None,
@@ -136,26 +144,29 @@ fn split_top(s: &str) -> Vec<&str> {
 }
 
 /// The leading identifier of `s` (a method or class name).
-fn identifier(s: &str) -> &str {
+fn identifier(s: &[u8]) -> &[u8] {
     let len = s
-        .find(|ch: char| !(ch.is_ascii_alphanumeric() || ch == '_' || ch == '\\' || !ch.is_ascii()))
+        .iter()
+        .position(|ch| {
+            !(ch.is_ascii_alphanumeric() || matches!(ch, b'_' | b'\\') || !ch.is_ascii())
+        })
         .unwrap_or(s.len());
     &s[..len]
 }
 
-fn method_value(value: &str) -> Option<MethodTag> {
-    let mut rest = value.trim_start();
+fn method_value(value: &[u8]) -> Option<MethodTag> {
+    let mut rest = value.trim_ascii_start();
     let mut is_static = false;
-    if let Some(after) = rest.strip_prefix("static")
-        && after.starts_with(char::is_whitespace)
+    if let Some(after) = rest.strip_prefix(b"static")
+        && after.first().is_some_and(u8::is_ascii_whitespace)
     {
         is_static = true;
-        rest = after.trim_start();
+        rest = after.trim_ascii_start();
     }
     let first = identifier(rest);
-    let after_first = rest[first.len()..].trim_start();
+    let after_first = rest[first.len()..].trim_ascii_start();
     let (ret, name, after) =
-        if !first.is_empty() && (after_first.starts_with('(') || after_first.starts_with('<')) {
+        if !first.is_empty() && (after_first.starts_with(b"(") || after_first.starts_with(b"<")) {
             // no return type: `static` alone was the return type
             let ret = if is_static {
                 Some(phpdoc::parse_prefix("static").ok()?.0)
@@ -165,57 +176,60 @@ fn method_value(value: &str) -> Option<MethodTag> {
             (ret, first, after_first)
         } else {
             let (node, offset) = phpdoc::parse_prefix(rest).ok()?;
-            let after = rest[offset..].trim_start();
+            let after = rest[offset..].trim_ascii_start();
             let name = identifier(after);
             if name.is_empty() {
                 return None;
             }
-            (Some(node), name, after[name.len()..].trim_start())
+            (Some(node), name, after[name.len()..].trim_ascii_start())
         };
     let mut after = after;
     let mut templates = Vec::new();
-    if let Some(inner) = after.strip_prefix('<') {
-        let close = inner.find('>')?;
+    if let Some(inner) = after.strip_prefix(b"<") {
+        let close = inner.iter().position(|b| *b == b'>')?;
         for t in split_top(&inner[..close]) {
-            templates.push(template_value(t.trim())?);
+            templates.push(template_value(t.trim_ascii())?);
         }
-        after = inner[close + 1..].trim_start();
+        after = inner[close + 1..].trim_ascii_start();
     }
-    let inner = after.strip_prefix('(')?;
+    let inner = after.strip_prefix(b"(")?;
     let mut depth = 1;
-    let close = inner.char_indices().find_map(|(i, ch)| {
+    let close = inner.iter().enumerate().find_map(|(i, ch)| {
         match ch {
-            '(' => depth += 1,
-            ')' => depth -= 1,
+            b'(' => depth += 1,
+            b')' => depth -= 1,
             _ => {}
         }
         (depth == 0).then_some(i)
     })?;
     let mut params = Vec::new();
     for param in split_top(&inner[..close]) {
-        let param = param.trim();
+        let param = param.trim_ascii();
         if param.is_empty() {
             continue;
         }
-        let (decl, default) = match param.split_once('=') {
-            Some((d, v)) => (d.trim_end(), Some(v.trim())),
+        let (decl, default) = match param.iter().position(|b| *b == b'=') {
+            Some(i) => (
+                param[..i].trim_ascii_end(),
+                Some(param[i + 1..].trim_ascii()),
+            ),
             None => (param, None),
         };
-        let at = decl.rfind('$')?;
-        let pname = identifier(&decl[at + 1..]).to_string();
-        let mut ty = decl[..at].trim_end();
-        ty = ty.strip_suffix("...").unwrap_or(ty).trim_end();
-        ty = ty.strip_suffix('&').unwrap_or(ty).trim_end();
+        let at = decl.iter().rposition(|b| *b == b'$')?;
+        let pname = String::from_utf8_lossy(identifier(&decl[at + 1..])).into_owned();
+        let mut ty = decl[..at].trim_ascii_end();
+        ty = ty.strip_suffix(b"...").unwrap_or(ty).trim_ascii_end();
+        ty = ty.strip_suffix(b"&").unwrap_or(ty).trim_ascii_end();
         let node = if ty.is_empty() {
             None
         } else {
             Some(phpdoc::parse(ty).ok()?)
         };
-        let null_default = default.is_some_and(|d| d.eq_ignore_ascii_case("null"));
+        let null_default = default.is_some_and(|d| d.eq_ignore_ascii_case(b"null"));
         params.push((pname, node, null_default));
     }
     Some(MethodTag {
-        name: name.to_string(),
+        name: String::from_utf8_lossy(name).into_owned(),
         ret,
         params,
         templates,
@@ -347,11 +361,11 @@ impl Doc {
                 .or_else(|| order(&PROPERTY_WRITE_TAGS, tag).map(|r| 20 + r))
             {
                 if let Some((node, rest)) = type_value(value)
-                    && let Some(name) = rest.strip_prefix('$')
+                    && let Some(name) = rest.strip_prefix(b"$")
                 {
                     let name = identifier(name);
                     if !name.is_empty() {
-                        properties.push((rank, name.to_string(), node));
+                        properties.push((rank, String::from_utf8_lossy(name).into_owned(), node));
                     }
                 }
             } else if tag == "@mixin" {
@@ -365,7 +379,8 @@ impl Doc {
             } else if TYPE_ALIAS_TAGS.contains(&tag.as_str()) {
                 let name = identifier(value);
                 if !name.is_empty() {
-                    out.type_aliases.push(name.to_string());
+                    out.type_aliases
+                        .push(String::from_utf8_lossy(name).into_owned());
                 }
             } else if TYPE_ALIAS_IMPORT_TAGS.contains(&tag.as_str()) {
                 if let Some(import) = alias_import(value) {
@@ -389,21 +404,22 @@ impl Doc {
                 // PhpDocParser expects whitespace or the end after the type: `@return Foo(` is invalid
                 // ponytail: for `@return` only; the other tags still take the type prefix
                 if let Ok((node, offset)) = phpdoc::parse_prefix(value)
-                    && !value[offset..].starts_with(|ch: char| !ch.is_whitespace())
+                    && value.get(offset).is_none_or(u8::is_ascii_whitespace)
                 {
                     returns.push((rank, (tag.clone(), node)));
                 }
             } else if let Some(rank) = order(&VAR_TAGS, tag) {
                 if let Some((node, rest)) = type_value(value) {
                     let name = rest
-                        .strip_prefix('$')
+                        .strip_prefix(b"$")
                         .map(|n| {
-                            n.split(|ch: char| {
-                                !(ch.is_ascii_alphanumeric() || ch == '_' || !ch.is_ascii())
-                            })
-                            .next()
-                            .unwrap_or("")
-                            .to_string()
+                            let len = n
+                                .iter()
+                                .position(|ch| {
+                                    !(ch.is_ascii_alphanumeric() || *ch == b'_' || !ch.is_ascii())
+                                })
+                                .unwrap_or(n.len());
+                            String::from_utf8_lossy(&n[..len]).into_owned()
                         })
                         .unwrap_or_default();
                     vars.push((rank, (tag.clone(), name, node)));
@@ -569,50 +585,58 @@ fn contains_error(ty: &Type) -> bool {
 }
 
 /// `parseTypeAliasImportTagValue()`: `Alias from Class` with an optional `as Name`.
-fn alias_import(value: &str) -> Option<(String, String, Option<String>)> {
+fn alias_import(value: &[u8]) -> Option<(String, String, Option<String>)> {
     let alias = identifier(value);
-    let rest = value[alias.len()..].trim_start().strip_prefix("from")?;
-    if alias.is_empty() || !rest.starts_with(char::is_whitespace) {
+    let rest = value[alias.len()..]
+        .trim_ascii_start()
+        .strip_prefix(b"from")?;
+    if alias.is_empty() || !rest.first().is_some_and(u8::is_ascii_whitespace) {
         return None;
     }
-    let rest = rest.trim_start();
+    let rest = rest.trim_ascii_start();
     let len = rest
-        .find(|ch: char| !(ch.is_ascii_alphanumeric() || ch == '_' || ch == '\\' || !ch.is_ascii()))
+        .iter()
+        .position(|ch| {
+            !(ch.is_ascii_alphanumeric() || matches!(ch, b'_' | b'\\') || !ch.is_ascii())
+        })
         .unwrap_or(rest.len());
     if len == 0 {
         return None;
     }
-    let from = rest[..len].to_string();
-    let rest = rest[len..].trim_start();
+    let from = String::from_utf8_lossy(&rest[..len]).into_owned();
+    let rest = rest[len..].trim_ascii_start();
     let alias_as = rest
-        .strip_prefix("as")
-        .filter(|r| r.starts_with(char::is_whitespace))
-        .map(|r| identifier(r.trim_start()).to_string())
+        .strip_prefix(b"as")
+        .filter(|r| r.first().is_some_and(u8::is_ascii_whitespace))
+        .map(|r| String::from_utf8_lossy(identifier(r.trim_ascii_start())).into_owned())
         .filter(|n| !n.is_empty());
-    Some((alias.to_string(), from, alias_as))
+    Some((String::from_utf8_lossy(alias).into_owned(), from, alias_as))
 }
 
 /// `parseTemplateTagValue()`: `T`, `T of Bound`, `T as Bound`, `T = Default`.
-fn template_value(value: &str) -> Option<TemplateTag> {
+fn template_value(value: &[u8]) -> Option<TemplateTag> {
     let len = value
-        .find(|ch: char| !(ch.is_ascii_alphanumeric() || ch == '_' || ch == '\\' || !ch.is_ascii()))
+        .iter()
+        .position(|ch| {
+            !(ch.is_ascii_alphanumeric() || matches!(ch, b'_' | b'\\') || !ch.is_ascii())
+        })
         .unwrap_or(value.len());
     if len == 0 {
         return None;
     }
-    let name = value[..len].to_string();
-    let mut rest = value[len..].trim_start();
+    let name = String::from_utf8_lossy(&value[..len]).into_owned();
+    let mut rest = value[len..].trim_ascii_start();
     let mut bound = None;
     if let Some(b) = rest
-        .strip_prefix("of ")
-        .or_else(|| rest.strip_prefix("as "))
+        .strip_prefix(b"of ")
+        .or_else(|| rest.strip_prefix(b"as "))
     {
-        let (node, after) = type_value(b.trim_start())?;
+        let (node, after) = type_value(b.trim_ascii_start())?;
         bound = Some(node);
         rest = after;
     }
-    let default = match rest.strip_prefix('=') {
-        Some(d) => Some(type_value(d.trim_start())?.0),
+    let default = match rest.strip_prefix(b"=") {
+        Some(d) => Some(type_value(d.trim_ascii_start())?.0),
         None => None,
     };
     Some(TemplateTag {

@@ -22,12 +22,12 @@ pub const IDENTIFIERS: &[&str] = &["throws.void", "catch.alreadyCaught"];
 /// `getThrowType()->isVoid()->yes()` of the function-like at `at`.
 fn throws_void(c: &Checker, at: Span) -> bool {
     let Some(doc) = doc_before(&c.file.contents, at.start.offset as usize) else { return false };
-    let throws: Vec<String> = tags(doc)
+    let throws: Vec<Vec<u8>> = tags(doc)
         .into_iter()
         .filter(|(t, _)| t == "@throws" || t == "@phpstan-throws")
-        .map(|(_, v)| v.split_whitespace().next().unwrap_or_default().to_ascii_lowercase())
+        .map(|(_, v)| v.split(u8::is_ascii_whitespace).find(|s| !s.is_empty()).unwrap_or_default().to_ascii_lowercase())
         .collect();
-    !throws.is_empty() && throws.iter().all(|t| t == "void")
+    !throws.is_empty() && throws.iter().all(|t| t == b"void")
 }
 
 /// The `@throws` types of a user function-like (built-in ones and `@throws void` give none).

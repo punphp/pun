@@ -423,10 +423,9 @@ impl Producer<'_, '_, '_> {
         let throws: Vec<_> = tags.iter().filter(|(name, _)| name == kind).collect();
         if throws.is_empty() {
             effects.throws = true; // FuncCallHandler's default implicit throw point, even on a pure call.
-        } else if !throws
-            .iter()
-            .all(|(_, value)| value.split_whitespace().next() == Some("void"))
-        {
+        } else if !throws.iter().all(|(_, value)| {
+            value.split(u8::is_ascii_whitespace).find(|s| !s.is_empty()) == Some(b"void".as_slice())
+        }) {
             return None;
         }
         self.arrays.clear();
