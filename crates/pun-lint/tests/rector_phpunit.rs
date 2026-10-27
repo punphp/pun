@@ -481,3 +481,12 @@ fn return_iterator_in_data_provider() {
         "ReturnIteratorInDataProviderRector",
     );
 }
+
+#[test]
+fn return_type_from_mock_object() {
+    // Fixture/ verbatim from rector-src 2.6.1 (rules-tests/...), a Rector core rule of the phpunit sets.
+    check(
+        AddReturnTypeFromMockObject,
+        "ReturnTypeFromMockObjectRector",
+    );
+}

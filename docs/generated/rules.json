@@ -11044,7 +11044,7 @@
         "ReturnTypeFromMockObject",
         "ReturnTypeFromMockObjectRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/phpunit/add-stub-intersection-type",

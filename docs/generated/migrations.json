@@ -9467,7 +9467,7 @@
         "rules": [
           "lint/phpunit/add-return-type-from-mock-object"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {

@@ -645,7 +645,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "phpunit/add-property-type-create-mock" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add \"PHPUnit\\Framework\\MockObject\\MockObject\" typed property from assigned mock to clearly separate from real objects" }
 "phpunit/add-property-type-setup" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add strict typed property based on setUp() strict typed assigns in TestCase" }
 "phpunit/add-property-type-setup-docblock" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add property type in PHPUnit test from docblock, if defined in setUp() method" }
-"phpunit/add-return-type-from-mock-object" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add known property and return MockObject types" }
+"phpunit/add-return-type-from-mock-object" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add known property and return MockObject types" }
 "phpunit/add-stub-intersection-type" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Add a Stub intersection @var docblock with the stubbed class to a native Stub property" }
 "phpunit/add-test-void-return" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add void to PHPUnit test methods" }
 "phpunit/add-will-return-callback-param-type" = { fix = "unsafe", sets = ["code-quality"], ported = false, status = "decided", summary = "Decorate callbacks and arrow functions in willReturnCallback() with known param/return types based on reflection method" }
