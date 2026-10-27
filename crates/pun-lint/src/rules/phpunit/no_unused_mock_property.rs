@@ -11,7 +11,7 @@
 
 use mago_syntax::cst::{
     Access, Call, ClassLikeMember, ClassLikeMemberSelector, Expression, MethodBody, Node, NodeKind,
-    Property, Statement, TraitUse, Variable,
+    Property, Statement, Variable,
 };
 use pun_problem::Safety;
 
@@ -274,17 +274,36 @@ fn is_property_used_in_trait<'a>(
     members: impl Iterator<Item = &'a ClassLikeMember<'a>>,
     name: &[u8],
 ) -> bool {
-    let facts = facts(ctx);
-    let Some(Node::Program(program)) = scope.first() else {
-        return false;
+    let Some(traits) = traits_in_file(ctx, scope, members) else {
+        return true;
     };
-    let uses: Vec<&TraitUse<'_>> = members
-        .filter_map(|m| match m {
-            ClassLikeMember::TraitUse(u) => Some(u),
-            _ => None,
-        })
-        .collect();
-    for trait_use in uses {
+    traits.into_iter().any(|declared| {
+        let mut stack = vec![declared];
+        while let Some(node) = stack.pop() {
+            if let Node::PropertyAccess(a) = node
+                && matches!(&a.property, ClassLikeMemberSelector::Identifier(id) if id.value.eq_ignore_ascii_case(name))
+            {
+                return true;
+            }
+            node.visit_children(|child| stack.push(child));
+        }
+        false
+    })
+}
+
+/// The declarations of the traits the class uses (`use A, B;` among `members`, names that are no trait left out),
+/// which must all be in this file: `None` when one is not, as Pun does not read other files.
+pub(super) fn traits_in_file<'n, 'a>(
+    ctx: &Context<'_>,
+    scope: &[Node<'n, 'n>],
+    members: impl Iterator<Item = &'a ClassLikeMember<'a>>,
+) -> Option<Vec<Node<'n, 'n>>> {
+    let facts = facts(ctx);
+    let mut traits = Vec::new();
+    for member in members {
+        let ClassLikeMember::TraitUse(trait_use) = member else {
+            continue;
+        };
         for id in trait_use.trait_names.iter() {
             let trait_name = resolve(scope, id);
             let Some(metadata) = facts
@@ -294,12 +313,10 @@ fn is_property_used_in_trait<'a>(
             else {
                 continue;
             };
-            if facts.text(metadata.span).is_none() {
-                return true;
-            }
-            // the trait in this file
+            facts.text(metadata.span)?;
+            // the file's root, whose descendants are its traits
+            let mut stack: Vec<Node<'n, 'n>> = scope.first().copied().into_iter().collect();
             let mut declared = None;
-            let mut stack: Vec<Node<'_, '_>> = vec![Node::Program(program)];
             while let Some(node) = stack.pop() {
                 if matches!(node, Node::Trait(_))
                     && node_span(&node).start == metadata.span.start.offset as usize
@@ -309,23 +326,8 @@ fn is_property_used_in_trait<'a>(
                 }
                 node.visit_children(|child| stack.push(child));
             }
-            let Some(declared) = declared else {
-                return true;
-            };
-            let mut used = false;
-            let mut stack = vec![declared];
-            while let Some(node) = stack.pop() {
-                if let Node::PropertyAccess(a) = node
-                    && matches!(&a.property, ClassLikeMemberSelector::Identifier(id) if id.value.eq_ignore_ascii_case(name))
-                {
-                    used = true;
-                }
-                node.visit_children(|child| stack.push(child));
-            }
-            if used {
-                return true;
-            }
+            traits.push(declared?);
         }
     }
-    false
+    Some(traits)
 }

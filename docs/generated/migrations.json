@@ -13013,7 +13013,7 @@
         "rules": [
           "lint/phpunit/prefer-local-over-setup-property"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {

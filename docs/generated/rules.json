@@ -12086,7 +12086,7 @@
         "NarrowUnusedSetUpDefinedPropertyRector",
         "Rector\\PHPUnit\\CodeQuality\\Rector\\Class_\\NarrowUnusedSetUpDefinedPropertyRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/phpunit/prefer-merged-will-return-callback",
