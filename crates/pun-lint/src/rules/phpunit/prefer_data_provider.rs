@@ -82,20 +82,14 @@ impl Rule for PreferDataProvider {
                     values.push(value);
                 }
                 if values.len() > 1 {
-                    let Some(array) = create_array(&Value::Array(values.clone())) else {
-                        return;
-                    };
-                    multi_line = Some(array);
+                    multi_line = Some(create_array(&Value::Array(values.clone())));
                 }
                 if let [only] = &values[..] {
                     // createArrayItem() takes an array only
                     if !matches!(only, Value::Array(_) | Value::Object(_)) {
                         return;
                     }
-                    let Some(array) = create_array(only) else {
-                        return;
-                    };
-                    single_line.push(array);
+                    single_line.push(create_array(only));
                 }
                 // cleanup
                 removed[i] = true;
@@ -199,31 +193,32 @@ fn decode(json: &str) -> Option<Value> {
     serde_json::from_str(json).ok()
 }
 
-/// `createArrayItem()` for a decoded PHP array, printed: a string key as a single-quoted string, an integer key left
-/// out.
-fn create_array(value: &Value) -> Option<String> {
-    let items: Vec<String> = match value {
-        Value::Array(items) => items
-            .iter()
-            .map(parse_array_item_value)
-            .collect::<Option<_>>()?,
-        Value::Object(map) => map
+/// `createArrayItem()` for a decoded PHP array (a JSON array or object), printed: a string key as a single-quoted
+/// string, an integer key left out.
+fn create_array(value: &Value) -> String {
+    let items: Vec<String> = match value.as_object() {
+        Some(map) => map
             .iter()
             .map(|(key, value)| {
-                let value = parse_array_item_value(value)?;
-                Some(if is_int_key(key) {
+                let value = parse_array_item_value(value);
+                if is_int_key(key) {
                     value
                 } else {
-                    format!(
-                        "{} => {value}",
-                        print_string(LiteralStringKind::SingleQuoted, key.as_bytes())?
-                    )
-                })
+                    // a JSON key is UTF-8
+                    let key =
+                        print_string(LiteralStringKind::SingleQuoted, key.as_bytes()).unwrap();
+                    format!("{key} => {value}")
+                }
             })
-            .collect::<Option<_>>()?,
-        _ => return None,
+            .collect(),
+        None => value
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(parse_array_item_value)
+            .collect(),
     };
-    Some(format!("[{}]", items.join(", ")))
+    format!("[{}]", items.join(", "))
 }
 
 /// Whether PHP makes the JSON object key `key` an integer key: a decimal integer without leading zeros that fits.
@@ -237,17 +232,17 @@ fn is_int_key(key: &str) -> bool {
 
 /// `parseArrayItemValue()`: an array as [`create_array`], anything else as a constant named by its JSON
 /// (`Json::encode()`, with unescaped Unicode and slashes and a kept zero fraction).
-fn parse_array_item_value(value: &Value) -> Option<String> {
-    Some(match value {
-        Value::Array(_) | Value::Object(_) => create_array(value)?,
+fn parse_array_item_value(value: &Value) -> String {
+    match value {
+        Value::Array(_) | Value::Object(_) => create_array(value),
         Value::Null => "null".to_string(),
         Value::Bool(b) => b.to_string(),
         Value::Number(n) => match n.as_i64() {
             Some(i) => i.to_string(),
-            None => json_float(n.as_f64()?),
+            None => json_float(n.as_f64().unwrap()),
         },
         Value::String(s) => json_string(s),
-    })
+    }
 }
 
 /// `json_encode()` of a string with `JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES`.

@@ -196,15 +196,8 @@ fn print_expression(ancestors: &[Node<'_, '_>], expression: &Expression<'_>) -> 
     }
 }
 
-/// A class name as php-parser prints it after `NameResolver`: `self`, `parent` and `static` as written, any other
-/// name fully qualified.
+/// A class name as php-parser prints it after `NameResolver`: fully qualified (Mago parses `self`, `parent` and
+/// `static` as expressions of their own).
 fn print_class(ancestors: &[Node<'_, '_>], class: &Identifier<'_>) -> String {
-    let written = String::from_utf8_lossy(class.value());
-    if ["self", "parent", "static"]
-        .iter()
-        .any(|special| written.eq_ignore_ascii_case(special))
-    {
-        return written.into_owned();
-    }
     format!("\\{}", resolve_class_name(ancestors, class))
 }

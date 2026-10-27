@@ -82,18 +82,18 @@ impl Rule for PreferSpecificTrueFalseAssertion {
             return;
         };
         let value = unparenthesize(arg_value(first));
-        let (function, inner): (&str, Option<Vec<_>>) = match value {
-            Expression::Construct(Construct::Empty(_)) => ("empty", None),
+        // the function's arguments, or the operand of `empty()`
+        let (function, inner): (&str, Result<Vec<_>, &Expression<'_>>) = match value {
+            Expression::Construct(Construct::Empty(empty)) => ("empty", Err(empty.value)),
             Expression::Call(Call::Function(f)) => {
                 let name = match f.function {
                     Expression::Identifier(Identifier::Local(id)) => id.value,
                     Expression::Identifier(Identifier::FullyQualified(id)) => &id.value[1..],
                     _ => return,
                 };
-                let Ok(name) = std::str::from_utf8(name) else {
-                    return;
-                };
-                (name, Some(f.argument_list.arguments.iter().collect()))
+                // a name that is not UTF-8 is none of the functions
+                let name = std::str::from_utf8(name).unwrap_or_default();
+                (name, Ok(f.argument_list.arguments.iter().collect()))
             }
             _ => return,
         };
@@ -104,7 +104,7 @@ impl Rule for PreferSpecificTrueFalseAssertion {
             return;
         };
         if function == "is_a" {
-            let Some(subject) = inner.as_ref().and_then(|args| args.first()) else {
+            let Some(subject) = inner.as_ref().ok().and_then(|args| args.first()) else {
                 return;
             };
             if is_string_type(ctx, arg_value(subject)) {
@@ -120,15 +120,10 @@ impl Rule for PreferSpecificTrueFalseAssertion {
             name = Some(existing_assert_method_name(ctx, not_assert));
         }
         let new: Vec<NewArg> = match &inner {
-            None => {
-                let Expression::Construct(Construct::Empty(empty)) = value else {
-                    return;
-                };
-                std::iter::once(NewArg::New(expr_text(ctx, empty.value).to_string()))
-                    .chain(old_args(&call, 1))
-                    .collect()
-            }
-            Some(args) => {
+            Err(empty) => std::iter::once(NewArg::New(expr_text(ctx, empty).to_string()))
+                .chain(old_args(&call, 1))
+                .collect(),
+            Ok(args) => {
                 let moved = |i: usize| NewArg::New(text(ctx, args[i]).to_string());
                 let front: Vec<NewArg> = match function {
                     "in_array" | "array_search" if args.len() == 3 => vec![moved(0), moved(1)],

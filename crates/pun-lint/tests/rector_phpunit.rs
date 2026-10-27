@@ -238,6 +238,8 @@ fn use_specific_will_method() {
     check(PreferSpecificWillMethod, "UseSpecificWillMethodRector");
 }
 
+/// Pun/empty_element: an array with an empty element makes Rector fail on the file ("Cannot use empty array elements
+/// in arrays"); Pun leaves the call alone.
 #[test]
 fn single_with_consecutive_to_with() {
     check(
@@ -395,6 +397,8 @@ fn with_callback_identical_to_standalone_asserts() {
     );
 }
 
+/// Pun/form_feed: phpdoc-parser's lexer stops at a form feed, so Rector takes the tag's value up to it and drops the
+/// rest of the doc; Pun leaves such a doc alone.
 #[test]
 fn ticket_annotation_to_attribute() {
     // Pun/inline_tag: phpdoc-parser ends a generic tag's value at a further `@tag` inside its line and keeps that tag
@@ -406,6 +410,8 @@ fn ticket_annotation_to_attribute() {
     check(PreferTicketAttribute, "TicketAnnotationToAttributeRector");
 }
 
+/// Pun/doctrine: a `@dataProvider(...)` whose argument is more than a name, or with a further tag on its line, is one
+/// Pun does not rebuild as `DoctrineAnnotationDecorator` does; Pun leaves it alone.
 #[test]
 fn data_provider_annotation_to_attribute() {
     // Pun/parenthesized: a Doctrine `@dataProvider(...)` whose brackets do not close on its line or that has more than
@@ -442,6 +448,7 @@ fn covers_annotation_with_value_to_attribute() {
     );
 }
 
+/// Pun/bigint: Rector decodes an integer past 64 bits as a string (`JSON_BIGINT_AS_STRING`); Pun leaves the tag alone.
 #[test]
 fn test_with_annotation_to_attribute() {
     // Pun/invalid_json: a `@testWith` line that is not JSON makes Rector fail on the file (`JsonException`); Pun leaves
@@ -488,6 +495,7 @@ fn annotation_with_value_to_attribute() {
     check(rule, "AnnotationWithValueToAttributeRector");
 }
 
+/// Pun/bigint: Rector decodes an integer past 64 bits as a string (`JSON_BIGINT_AS_STRING`); Pun leaves the tag alone.
 #[test]
 fn test_with_to_data_provider() {
     // Pun/not_an_array: a `@testWith` line that is not JSON, or JSON that is not an array or object, makes Rector fail
@@ -548,6 +556,8 @@ fn remove_never_used_mock_property() {
     check(NoUnusedMockProperty, "RemoveNeverUsedMockPropertyRector");
 }
 
+/// Pun/assigned_twice: Rector changes the last `createMock()` assigned to a property; run again, it changes the one
+/// before. Pun's fix loop runs the rule until nothing changes, so the expectation is Rector's second run.
 #[test]
 fn property_create_mock_to_create_stub() {
     check(PreferCreateStub, "PropertyCreateMockToCreateStubRector");

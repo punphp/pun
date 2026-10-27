@@ -48,18 +48,12 @@ impl Rule for PreferAssertInstancesOf {
         let Statement::Expression(statement) = list.stmts[0] else {
             return;
         };
-        let Expression::Call(inner @ (Call::Method(_) | Call::StaticMethod(_))) =
-            statement.expression
-        else {
-            return;
-        };
-        let inner_node = match inner {
-            Call::Method(m) => Node::MethodCall(m),
-            Call::StaticMethod(s) => Node::StaticMethodCall(s),
+        let call = match statement.expression {
+            Expression::Call(Call::Method(m)) => AnyCall::of(Node::MethodCall(m)).unwrap(),
+            Expression::Call(Call::StaticMethod(s)) => {
+                AnyCall::of(Node::StaticMethodCall(s)).unwrap()
+            }
             _ => return,
-        };
-        let Some(call) = AnyCall::of(inner_node) else {
-            return;
         };
         if !call.is_name(&["assertInstanceOf"]) {
             return;

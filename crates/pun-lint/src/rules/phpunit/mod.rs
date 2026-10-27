@@ -492,6 +492,19 @@ pub(crate) fn own_class(ancestors: &[Node<'_, '_>]) -> Option<String> {
     class_scope(nodes)?.name
 }
 
+/// `ReflectionResolver::resolveClassReflection()`'s class for a node with the ancestors `ancestors`: the class-like it
+/// is in, an anonymous class by the name Mago gives it.
+pub(crate) fn own_class_reflection(
+    ctx: &Context<'_>,
+    ancestors: &[Node<'_, '_>],
+) -> Option<String> {
+    let nodes = own_class_like(ancestors)?;
+    Some(match class_scope(nodes).unwrap().name {
+        Some(name) => name,
+        None => facts(ctx).anonymous_class_name(mago_span::HasSpan::span(nodes.last().unwrap())),
+    })
+}
+
 /// A class name as written at the node `ancestors` lead to, resolved.
 pub(crate) fn resolve(ancestors: &[Node<'_, '_>], id: &Identifier<'_>) -> String {
     crate::rules::rector_batch5::resolve_class_name(ancestors, id)
@@ -927,13 +940,13 @@ pub(crate) fn contains(node: Node<'_, '_>, found: &dyn Fn(Node<'_, '_>) -> bool)
 
 /// Whether the node is a method call named one of `names`.
 pub(crate) fn is_method_call_named(node: Node<'_, '_>, names: &[&str]) -> bool {
-    matches!(node, Node::MethodCall(_)) && AnyCall::of(node).is_some_and(|c| c.is_name(names))
+    AnyCall::of(node).is_some_and(|c| !c.is_static && c.is_name(names))
 }
 
 /// The text of `expr` with every method call named `equalTo` inside it replaced by its first argument's value, as
 /// `traverseNodesWithCallable` leaves it: the replacement of `expr` itself is lost (the traversed array is dropped),
-/// and a replacement is traversed in turn. `None` when such a call has no argument (Rector stops there).
-pub(crate) fn without_equal_to(ctx: &Context<'_>, expr: &Expression<'_>) -> Option<String> {
+/// and a replacement is traversed in turn.
+pub(crate) fn without_equal_to(ctx: &Context<'_>, expr: &Expression<'_>) -> String {
     use mago_syntax::cst::MethodCall;
     fn collect<'a>(node: Node<'a, 'a>, root: Span, calls: &mut Vec<&'a MethodCall<'a>>) {
         if let Node::MethodCall(m) = node
@@ -954,21 +967,24 @@ pub(crate) fn without_equal_to(ctx: &Context<'_>, expr: &Expression<'_>) -> Opti
     for m in calls {
         let call = node_span(m);
         out.push_str(&ctx.source[at..call.start]);
-        out.push_str(&replaced_equal_to(ctx, m)?);
+        out.push_str(&replaced_equal_to(ctx, m));
         at = call.end;
     }
     out.push_str(&ctx.source[at..span.end]);
-    Some(out)
+    out
 }
 
 /// The text of an `equalTo()` call's replacement: its first argument's value, with its own `equalTo()` calls
-/// replaced.
-fn replaced_equal_to(ctx: &Context<'_>, call: &mago_syntax::cst::MethodCall<'_>) -> Option<String> {
-    inner_without_equal_to(ctx, arg_value(call.argument_list.arguments.first()?))
+/// replaced; the call as it is without one (`$node->getArgs()[0]->value` is `null`, which replaces nothing).
+fn replaced_equal_to(ctx: &Context<'_>, call: &mago_syntax::cst::MethodCall<'_>) -> String {
+    match call.argument_list.arguments.first() {
+        Some(first) => inner_without_equal_to(ctx, arg_value(first)),
+        None => text(ctx, call).to_string(),
+    }
 }
 
 /// [`without_equal_to`] for a node inside the traversed one, which is replaced too when it is an `equalTo()` call.
-pub(crate) fn inner_without_equal_to(ctx: &Context<'_>, expr: &Expression<'_>) -> Option<String> {
+pub(crate) fn inner_without_equal_to(ctx: &Context<'_>, expr: &Expression<'_>) -> String {
     use mago_syntax::cst::Call;
     let value = unparenthesize(expr);
     if let Expression::Call(Call::Method(m)) = value
