@@ -795,3 +795,31 @@ reflection override, and its union can collapse `Box<exact Service>` and `Box<br
 one object. Codex conservatively retains both internal alternatives rather than overwriting either
 through a printed-ID key; their common printed ID is still `Box<Service>`. The nested-identity
 control checks this metadata-retention contract, not PHPStan's internal alternative count.
+
+## Union member order is observable metadata
+
+`TUnion::from_vec()` retains input order while removing redundant `never` members. The native hint
+scanner already supplies members in written order. Sorting those members for the equality fast path
+lost that order before analysis, so later conversion could not recover it after a dynamic call
+invalidated the declaration origin. Structural named-object retention made this loss visible in
+`renamed_named_argument`: `OtherContract|Contract` incorrectly selected `Contract::run()`.
+
+PHPStan 2.3.1 keeps a separate sorted description view in
+[`UnionType`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Type/UnionType.php#L69-L77).
+Its
+[`getUnresolvedMethodPrototype()`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Type/UnionType.php#L778-L804)
+visits the original members, and
+[`UnionTypeMethodReflection::getDeclaringClass()`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Reflection/Type/UnionTypeMethodReflection.php#L32-L35)
+uses the first method. Codex now preserves that source-owned contract without changing the collector
+or restoring members that refinement or reassignment removed.
+
+Union equality and hashing remain order-independent. IDs still sort a separate list, and named-object
+metadata remains structural, including exactness, receiver identity, generic arguments, and exclusions.
+The union tests check both orders, redundant `never` removal, stable printed IDs, and equal hashes.
+The nullable hash controls explicitly reverse their input instead of relying on constructor sorting.
+The unchanged public named-argument fixtures cover written order, copies, reassignment, safe calls,
+and refinement. A fresh PHPStan 2.3.1 capture matches every existing fixture expectation.
+
+The separate Pun `Type::Object` conversion still loses exactness, as documented above. A supplementary
+named-argument probe for assigned exact constructor unions produces two extra subtype warnings at
+that boundary. This order repair preserves codex exactness but does not add a collector-specific fix.

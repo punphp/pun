@@ -109,10 +109,9 @@ impl TUnion {
     /// This preserves the original logic for cleaning up dynamically created unions,
     /// such as removing redundant `never` types.
     ///
-    /// Atoms are additionally sorted into canonical order so that two unions
-    /// built from the same set of atoms compare equal via the ordered
-    /// slice-equality fast path in [`PartialEq::eq`], without triggering the
-    /// fallback O(N^2) subset check.
+    /// Member order is preserved: union method reflection uses the first member's
+    /// declaring class. Equality and hashing remain order-independent, and printed
+    /// IDs sort a separate view without changing the members.
     ///
     /// # Panics
     ///
@@ -142,10 +141,6 @@ impl TUnion {
         // which were removed, ensure the final union is `never`.
         if types.is_empty() {
             types.push(TAtomic::Never);
-        }
-
-        if types.len() > 1 {
-            types.sort_unstable();
         }
 
         Self::new(Cow::Owned(types))
