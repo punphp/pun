@@ -74,6 +74,19 @@ fn analyze(
     native: bool,
     mut registry: PluginRegistry,
 ) -> (AnalysisArtifacts, Observed, String) {
+    let observed = Arc::<Mutex<Observed>>::default();
+    registry.register_expression_hook(Observer(Arc::clone(&observed)));
+    let (artifacts, result) = analyze_with_registry(code, native, registry);
+    let found = std::mem::take(&mut *observed.lock().unwrap());
+    (artifacts, found, format!("{:?}", result.issues))
+}
+
+// Unlike analyze(), this path does not install a custom observer that disables convergence.
+fn analyze_with_registry(
+    code: &[u8],
+    native: bool,
+    registry: PluginRegistry,
+) -> (AnalysisArtifacts, AnalysisResult) {
     let file = File::new(
         Cow::Borrowed(b"native.php"),
         FileType::Host,
@@ -94,15 +107,12 @@ fn analyze(
         Default::default(),
         Default::default(),
     );
-    let observed = Arc::<Mutex<Observed>>::default();
-    registry.register_expression_hook(Observer(Arc::clone(&observed)));
     let analyzer = Analyzer::new(&arena, &file, &names, &codebase, &registry, settings);
     let mut result = AnalysisResult::new(references);
     let artifacts = analyzer
         .analyze_with_artifacts(program, &mut result)
         .unwrap();
-    let found = std::mem::take(&mut *observed.lock().unwrap());
-    (artifacts, found, format!("{:?}", result.issues))
+    (artifacts, result)
 }
 
 fn marked_ranges(code: &[u8], marker: &str) -> Vec<(usize, (u32, u32))> {
@@ -930,4 +940,173 @@ fn replayed_calls_do_not_retain_termination_after_a_hook_replaces_the_evaluation
             }
         }
     }
+}
+
+#[test]
+fn inspection_and_confirmation_report_types_without_terminating_the_call_flow() {
+    use mago_reporting::Level;
+
+    let code = br"<?php
+namespace Mago {
+    function inspect(mixed ...$values): void {}
+    function confirm(mixed $value, string $expected): void {}
+}
+namespace {
+    Mago\inspect($value = 7); // call
+    echo
+        $value; // value
+    Mago\confirm($value, 'int(7)'); // call
+    echo
+        $value; // value
+    Mago\confirm($value, 'string'); // call
+    echo
+        $value; // value
+}
+";
+    let (enabled, result) =
+        analyze_with_registry(code, true, PluginRegistry::with_library_providers());
+    let (disabled, off_result) =
+        analyze_with_registry(code, false, PluginRegistry::with_library_providers());
+    assert_full_artifacts_equal(&enabled, &disabled);
+    assert_eq!(result.issues, off_result.issues);
+    let diagnostics = result
+        .issues
+        .iter()
+        .map(|issue| (issue.level, issue.code.as_deref(), issue.message.as_ref()))
+        .collect::<Vec<_>>();
+    assert_eq!(
+        diagnostics,
+        [
+            (
+                Level::Help,
+                Some("type-inspection"),
+                "Type information for arguments of `Mago\\inspect()` call."
+            ),
+            (
+                Level::Help,
+                Some("type-confirmation"),
+                "Type of expression is `int(7)` as expected."
+            ),
+            (
+                Level::Error,
+                Some("type-confirmation"),
+                "Type of expression is `int(7)`, but expected `string`."
+            ),
+        ]
+    );
+    assert!(
+        result
+            .issues
+            .iter()
+            .next()
+            .unwrap()
+            .annotations
+            .iter()
+            .any(|annotation| annotation.message.as_deref() == Some("Argument #1 type: `int(7)`"))
+    );
+    for (_, range) in marked_ranges(code, "// call") {
+        assert_eq!(enabled.call_terminations.get(&range), Some(&false));
+        assert_eq!(
+            enabled
+                .get_expression_type(&span(range))
+                .map(native_id)
+                .as_deref(),
+            Some("void")
+        );
+    }
+    for (_, range) in marked_ranges(code, "// value") {
+        assert_eq!(
+            enabled
+                .get_expression_type(&span(range))
+                .map(native_id)
+                .as_deref(),
+            Some("int(7)")
+        );
+    }
+}
+
+#[test]
+fn converged_loops_preserve_continuing_and_terminating_call_facts() {
+    let code = br"<?php
+function keep(): int { return 7; }
+function stop(): never { while (true) {} }
+function example(bool $more, bool $halt): void {
+    $a = 0; // before
+    $b = 0; $c = 0;
+    while ($more) {
+        $a = 'a';
+        while ($more) {
+            $b = 'b';
+            while ($more) {
+                $c = 'c';
+                keep(); // continuing
+                if ($halt) {
+                    stop(); // terminating
+                }
+                echo
+                    $c; // inside
+            }
+        }
+    }
+    echo
+        $a; // after
+    echo
+        $b; // after
+    echo
+        $c; // after
+}
+";
+    let registry = PluginRegistry::with_library_providers();
+    assert!(!registry.has_custom_plugins());
+    let (enabled, result) = analyze_with_registry(code, true, registry);
+    let (disabled, off_result) =
+        analyze_with_registry(code, false, PluginRegistry::with_library_providers());
+    let (unoptimized, _, unoptimized_issues) =
+        analyze(code, false, PluginRegistry::with_library_providers());
+    assert_full_artifacts_equal(&enabled, &disabled);
+    assert_full_artifacts_equal(&disabled, &unoptimized);
+    assert_eq!(result.issues, off_result.issues);
+    assert_eq!(format!("{:?}", result.issues), unoptimized_issues);
+    assert!(result.issues.is_empty(), "{:?}", result.issues);
+    for (marker, terminates, ty) in [
+        ("// continuing", false, "int"),
+        ("// terminating", true, "never"),
+        ("// inside", false, "string('c')"),
+    ] {
+        let range = marked_ranges(code, marker)[0].1;
+        assert_eq!(
+            enabled
+                .get_expression_type(&span(range))
+                .map(native_id)
+                .as_deref(),
+            Some(ty),
+            "{marker}"
+        );
+        if marker != "// inside" {
+            assert_eq!(enabled.call_terminations.get(&range), Some(&terminates));
+        }
+    }
+    for ((_, range), ty) in marked_ranges(code, "// after").into_iter().zip([
+        "int(0)|string('a')",
+        "int(0)|string('b')",
+        "int(0)|string('c')",
+    ]) {
+        assert_eq!(
+            enabled
+                .get_expression_type(&span(range))
+                .map(native_id)
+                .as_deref(),
+            Some(ty)
+        );
+        assert!(enabled.get_native_expression_type(&span(range)).is_none());
+    }
+    let before = span(marked_ranges(code, "// before")[0].1);
+    assert_eq!(
+        enabled
+            .get_native_expression_type(&before)
+            .map(native_id)
+            .as_deref(),
+        Some("int(0)")
+    );
+    assert!(disabled.get_native_expression_type(&before).is_none());
 }
