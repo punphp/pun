@@ -603,11 +603,8 @@
 5 Methods/CallMethodsRuleTest::testCallMethodsNullIssue
 5 Methods/CallStaticMethodsRuleTest::testHasMethodStaticCall
 5 Properties/AccessPropertiesRuleTest::testAccessPropertiesAfterIsNullInBooleanOr
-5 Properties/AccessPropertiesRuleTest::testBug2861
 5 Properties/AccessPropertiesRuleTest::testDomExtensionLegacyTemplateNodes
 5 Properties/AccessPropertiesRuleTest::testObjectShapes
-5 Properties/AccessStaticPropertiesRuleTest::testBug2861
-5 Properties/AccessStaticPropertiesRuleTest::testBug8333
 9 Functions/CallToFunctionParametersRuleTest::testBug14012
 9 Functions/CallToFunctionParametersRuleTest::testBug3107
 9 Functions/CallToFunctionParametersRuleTest::testBug5474

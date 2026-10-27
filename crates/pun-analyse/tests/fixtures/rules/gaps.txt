@@ -19,8 +19,6 @@ Properties/AccessPropertiesRuleTest::testRequireExtends
 Keywords/DeclareStrictTypesRuleTest::testNested
 # classConstant.value on a trait's duplicate constants (a PHP error): PHP's reflection keeps the last, the codex the first
 Classes/DuplicateTraitDeclarationRuleTest::testBug14250
-# a dynamic static property name (`self::${$property}`) needs the name's constant string types
-Properties/AccessStaticPropertiesInAssignRuleTest::testRuleExpressionNames
 # an anonymous class's getName() hashes its path relative to the working directory, which the export ran from elsewhere
 Classes/ExistingClassInClassExtendsRuleTest::testEnums
 # argument.missing on built-ins called with named arguments: PHPStan's named-argument variant selection (and
