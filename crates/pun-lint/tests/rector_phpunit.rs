@@ -560,3 +560,8 @@ fn add_stub_intersection_var_to_stub_property() {
         "AddStubIntersectionVarToStubPropertyRector",
     );
 }
+
+#[test]
+fn expects_param_to_mock_object() {
+    check(AddMockObjectType, "ExpectsParamToMockObjectRector");
+}

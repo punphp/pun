@@ -99,14 +99,14 @@ impl<'s> Doc<'s> {
 
     /// `printFormatPreserving()` with no child changed but the removed ones.
     pub fn print(&self, removed: &[bool]) -> String {
-        self.print_appending(removed, None)
+        self.print_appending(removed, &[])
     }
 
-    /// [`Doc::print`] with the tag `appended` (`@name value`) added after the children (`addPhpDocTagNode()`).
-    pub fn print_appending(&self, removed: &[bool], appended: Option<&str>) -> String {
+    /// [`Doc::print`] with the tags `appended` (`@name value`) added after the children (`addPhpDocTagNode()`).
+    pub fn print_appending(&self, removed: &[bool], appended: &[&str]) -> String {
         // `EmptyPhpDocDetector`: nothing but blank lines left.
         let kept: Vec<usize> = (0..self.children.len()).filter(|&i| !removed[i]).collect();
-        if appended.is_none()
+        if appended.is_empty()
             && kept
                 .iter()
                 .all(|&i| self.children[i].0 == self.children[i].1)
@@ -151,13 +151,13 @@ impl<'s> Doc<'s> {
                 current = start - usize::from(self.tokens[start - 1].0 == Kind::Eol);
             }
             // The children keep their keys when one goes, so the child whose key is the new count counts as last.
-            let count = kept.len() + usize::from(appended.is_some());
+            let count = kept.len() + appended.len();
             let printed = tokens(current, end, i + 1 == count);
             output.push_str(printed.trim_end());
             current = end;
         }
         // `standardPrintPhpDocChildNode()` in a doc made multi-line
-        if let Some(appended) = appended {
+        for appended in appended {
             output.push_str("\n * ");
             output.push_str(appended);
         }

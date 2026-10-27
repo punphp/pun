@@ -200,6 +200,6 @@ pub(crate) fn with_tag_type(
                 &text[from + child.len()..]
             ))
         }
-        None => Some(doc.print_appending(&vec![false; doc.len()], Some(&added))),
+        None => Some(doc.print_appending(&vec![false; doc.len()], &[&added])),
     }
 }
