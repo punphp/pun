@@ -6,13 +6,13 @@ The two supported-only `r` modifier lines need the newer engine. Its expectation
 PHP and PCRE2 fixtures, not the orb's PHP 8.5.12 oracle, which links 10.42.
 Combine exports only when their token sources are byte-identical.
 
-The latest integration batch passes all 372 bounded jobs: 1,315 rule cases, 2,787 level cases,
-529 analyser public/library tests and 431 lint tests. All 71 owning PHPStan tests also pass.
-The original return-type and declaration-order failures remain in the evidence alongside their passing rerun.
-All 13,534 changed executable production lines are covered without new exclusions.
-The export combines 392 fresh profiles from 129 executables with earlier records only for byte-identical
-tracked sources. Changed-source records come from the passing rerun. Existing exclusions retain their
-reasons; their source offsets move with the inference and declaration helpers.
+The latest integration batch passes all 392 bounded jobs: 1,315 rule cases, 2,787 level cases,
+536 analyser public/library tests, 431 lint tests and all 73 owning PHPStan tests.
+All 361 changed executable source lines are covered without new exclusions, including the Larastan
+config-key fallback exercised through public configuration loading. All 51 affected CLI tests also pass.
+The export combines 398 fresh profiles from 130 executables with earlier records only for byte-identical
+tracked sources. Source hashes are unchanged across the complete gate. Existing exclusions retain their
+reasons; their offsets move with the inference and PHPDoc resolution helpers.
 
 LLVM reports 17 zero-hash mapping warnings for unchanged, always-inline `BlockContextFlags` methods
 in Mago. Every method has a matching nonzero-hash profile record with positive executions.
@@ -22,13 +22,13 @@ The warnings do not name a changed production function.
 | crate | lines | hit | line % | tests |
 |---|---:|---:|---:|---|
 | punphp | 5457 | 5457 | 100.00% | ok |
-| punphp-analyse | 42695 | 42695 | 100.00% | ok |
+| punphp-analyse | 42771 | 42771 | 100.00% | ok |
 | punphp-config | 2755 | 2755 | 100.00% | ok |
 | punphp-fixers | 39232 | 39232 | 100.00% | ok |
 | punphp-format | 1022 | 1022 | 100.00% | ok |
 | punphp-harness | 235 | 235 | 100.00% | ok |
 | punphp-lint | 39270 | 39270 | 100.00% | ok |
-| punphp-phpstan | 10529 | 10529 | 100.00% | ok |
+| punphp-phpstan | 10530 | 10530 | 100.00% | ok |
 | punphp-problem | 105 | 105 | 100.00% | ok |
 | punphp-tokens | 3956 | 3956 | 100.00% | ok |
 | punphp-workspace | 457 | 457 | 100.00% | ok |
@@ -50,14 +50,14 @@ Uncovered lines:
 - `crates/pun-cli/src/pint_error.rs:77` `Thrown::of`'s fallback to Laravel Zero's ConsoleException for an untyped error: every error a format, lint or check run can hit today is typed (Finder, annotation, read/write) or already an `Abort`, so the fallback only guards future errors.
 - `crates/pun-cli/src/watch.rs:56` the watch channel's `Disconnected`: the notify watcher holds the sender and lives as long as the loop, so the channel never disconnects while it waits.
 - `crates/pun-phpstan/src/resolve.rs:39` a global type alias whose definition refers to itself: PHPStan's UsefulTypeAliasResolver throws ShouldNotHappenException ("Circular definition for type alias"); Pun resolves `*ERROR*` instead of recursing forever.
-- `crates/pun-phpstan/src/resolve.rs:983` a `true`/`false`/`null`/array constant expression as a type: phpdoc-parser reads only `@var null ::X`-like tag values so, and PHPStan's TypeNodeResolver throws ShouldNotHappenException on them; Pun resolves `*ERROR*` instead of crashing.
+- `crates/pun-phpstan/src/resolve.rs:984` a `true`/`false`/`null`/array constant expression as a type: phpdoc-parser reads only `@var null ::X`-like tag values so, and PHPStan's TypeNodeResolver throws ShouldNotHappenException on them; Pun resolves `*ERROR*` instead of crashing.
 - `crates/pun-cli/src/migrate.rs:557` closest_preset's "nothing to switch" return: every PHPStan level leaves some rules of its closest Pun preset off (level 0: the basic preset's 11-12 non-level-0 rules, with or without bleedingEdge), so a migrated `[analyse]` always has on/off lines.
 - `crates/pun-analyse/src/rules/return_types.rs:74-76` `Provider::meta()` of the built-in return provider: as for the Laravel hook, `PluginRegistry` reads `meta()` only for its own library plugins.
 - `crates/pun-analyse/src/rules/return_types.rs:1236-1238` the same for the benevolent-return provider.
 - `crates/pun-analyse/src/rules/return_types.rs:1277-1279` the same for the Closure method return provider.
 - `crates/pun-analyse/src/rules/larastan/relations.rs:180` RelationExistenceRule's relation method declared by one of PHP's own classes: a model extends Eloquent's Model, which extends none of them, so its methods are always the user's.
 - `crates/pun-analyse/src/laravel/mod.rs:506-513` `Provider::meta()` of the model-attribute hook: Mago's `Provider` trait requires it, but `PluginRegistry` reads `meta()` only for its own library plugins, never for a registered expression hook, and the hook struct is private.
-- `crates/pun-analyse/src/rules/infer.rs:282-285` `Provider::meta()` of the definedness hook: as for the model-attribute hook's above, `PluginRegistry` never reads it for a registered expression hook.
+- `crates/pun-analyse/src/rules/infer.rs:286-289` `Provider::meta()` of the definedness hook: as for the model-attribute hook's above, `PluginRegistry` never reads it for a registered expression hook.
 - `crates/pun-analyse/src/mago.rs:74` the upstream-panic fallback that skips only the failing file. The former debug-panic.php (`int&mixed`) no longer triggers it, and signed integer division overflow is now fixed in the maintained analyzer. The containment guard remains for unexpected upstream failures.
 - `crates/pun-analyse/src/rules/types/convert.rs:752` a symbolic class-constant array key (`array{Foo::BAR: int}`): canonical expansion resolves known literal keys before conversion. Unknown or nonliteral keys can remain symbolic inside Mago, but no public input is known to carry one into this converter. The fallback returns `Error`. This is the existing exclusion shifted by object-exclusion handling, not a newly excluded branch.
 - `crates/pun-phpstan/src/symbols.rs:156-158` `Visitor::expecting()` of the symbols.json map reader: serde calls it only to word the error for malformed input, and symbols.json is compiled in (every map in it is an object or `[]`).

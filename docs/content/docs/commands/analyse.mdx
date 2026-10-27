@@ -33,6 +33,10 @@ Human output uses Pun IDs such as `analyse/undefined/function`. Machine reports 
 
 Static calls check PHPDoc `@method` signatures, including inherited tags. Pun checks their required and named arguments and reports static calls to non-static methods.
 
+Static property checks resolve each name in a finite inferred name set.
+Failed reads retain PHPStan's error type rather than `null`.
+Property increment and decrement checks validate the stored new value separately from a postfix expression's old result.
+
 Failed named instance and static method lookups retain PHPStan's error type when no reflected or provider result exists.
 Ordinary method calls retain unknown-class diagnostics and their discovery tips. Dynamic selectors and `method_exists()` assertions retain their separate fallback behavior.
 
@@ -114,6 +118,10 @@ Variable names read from literal array offsets retain branch-dependent definedne
 Writes to the array or another offset invalidate those cached names.
 Literal string offsets use PHP bytes and support negative integer indexes.
 
+Shared scope inference honors PHPStan's `polluteScopeWithLoopInitialAssignments` parameter, which defaults to true.
+When disabled, `for` exits include the pre-loop scope; `while` adds that scope only when zero iterations are possible.
+The setting does not change `checkMaybeUndefinedVariables`, `foreach`, or `do-while` behavior.
+
 Dynamic `new $class` expressions report unknown class names even when another possible name exists.
 
 Dynamic constant fetches such as `Example::{$name}` check each possible name when the selector has a finite set of string values. The checks preserve branch narrowing and report missing or inaccessible constants.
@@ -166,6 +174,8 @@ Reversed bounds are swapped only for `rand()`, matching PHPStan.
 
 PHPDoc union lowering preserves literal alternatives and nullable boundaries without recursive stack growth over flat unions.
 Parsing and nested non-union types retain their existing stack limits.
+The PHPStan-compatible PHPDoc resolver preserves decoded quoted array-shape keys as bytes, including through template substitution.
+Quoted shape-key decoding in shared inference and non-UTF-8 identifier handling remain incomplete.
 
 `strlen()` inference uses PHP scalar casts and byte lengths, including binary strings.
 Literal alternatives produce exact lengths or a contiguous integer range. General integer ranges are not enumerated.
