@@ -21,6 +21,9 @@
 //! parentheses the new place needs (`filter_var($i + 1, FILTER_VALIDATE_INT) * 2` becomes `$i + 1 * 2`); Pun keeps
 //! the meaning (lint.md: meaning over bytes).
 //!
+//! RemoveDeadInstanceOfRector/Source/vendor/{Node,If_}.php are not upstream: they declare the nikic/php-parser 5
+//! types a fixture names, which Rector's run loads from its vendor directory.
+//!
 //! RecastingRemovalRector/FixturePhp74 runs at PHP 7.4, below Pun's floor, and is not copied.
 
 mod lint_c;
@@ -28,8 +31,8 @@ mod lint_c;
 use lint_c::run_class;
 use pun_lint::Rule;
 use pun_lint::rules::{
-    NoConstantCondition, NoUnusedTestMethodParam, NoUselessCast, NoUselessFilterVar, NoUselessMath,
-    PreferInstanceMethod, RequirePreviousException,
+    NoAlwaysTrueInstanceof, NoConstantCondition, NoUnusedTestMethodParam, NoUselessCast,
+    NoUselessFilterVar, NoUselessMath, PreferInstanceMethod, RequirePreviousException,
 };
 
 fn check(rule: impl Rule + 'static, class: &str) {
@@ -75,4 +78,9 @@ fn remove_dead_zero_and_one_operation() {
 #[test]
 fn recasting_removal() {
     check(NoUselessCast, "RecastingRemovalRector");
+}
+
+#[test]
+fn remove_dead_instance_of() {
+    check(NoAlwaysTrueInstanceof, "RemoveDeadInstanceOfRector");
 }

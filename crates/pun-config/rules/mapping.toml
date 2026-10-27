@@ -361,7 +361,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "control-flow/prefer-yield-from" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "If the function explicitly returns an array, and has the return type `iterable`, then `yield from` must be used instead of `return`." }
 "dead-code/no-always-false-condition" = { fix = "safe", sets = ["dead-code"], ported = false, status = "decided", summary = "Reduce always false in a `if (a || b)` condition" }
 "dead-code/no-always-true-if" = { fix = "safe", sets = ["dead-code"], ported = false, status = "decided", summary = "Remove if condition that is always true" }
-"dead-code/no-always-true-instanceof" = { fix = "safe", sets = ["dead-code"], ported = false, status = "decided", summary = "Remove instanceof checks and assert(instanceof) calls that are always true for the known type." }
+"dead-code/no-always-true-instanceof" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove instanceof checks and assert(instanceof) calls that are always true for the known type." }
 "dead-code/no-always-true-instanceof-assert" = { fix = "safe", sets = ["dead-code"], ported = false, status = "decided", summary = "Remove assert() with instanceof check on a value whose type is already known" }
 "dead-code/no-and-true" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove `and true` that has no added value" }
 "dead-code/no-bool-ternary" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Remove unnecessary ternary expressions" }

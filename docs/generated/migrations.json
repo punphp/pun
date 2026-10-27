@@ -8483,7 +8483,7 @@
         "rules": [
           "lint/dead-code/no-always-true-instanceof"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {

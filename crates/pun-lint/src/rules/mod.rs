@@ -45,6 +45,7 @@ mod lint_b_security;
 mod lint_b_serialize;
 mod mago_const_value;
 mod mago_usage;
+mod no_always_true_instanceof;
 mod no_and_assignment;
 mod no_and_true;
 mod no_array_accumulation_in_loop;
@@ -227,6 +228,7 @@ mod require_strict_array_search;
 mod require_array_filter_callback;
 mod require_strict_in_array;
 mod side_effect;
+mod stmt_splice;
 mod syntax_types;
 mod types;
 mod used_variable;
@@ -268,6 +270,7 @@ pub use add_param_type_sprintf::AddParamTypeSprintf;
 pub use laravel::*;
 pub use pest::*;
 pub use phpunit::*;
+pub use no_always_true_instanceof::NoAlwaysTrueInstanceof;
 pub use no_and_assignment::NoAndAssignment;
 pub use no_and_true::NoAndTrue;
 pub use no_array_accumulation_in_loop::NoArrayAccumulationInLoop;
@@ -496,6 +499,7 @@ pub const PROJECT_RULES: &[&str] = &[
     "lint/dead-code/no-useless-filter-var",
     "lint/dead-code/no-useless-math",
     "lint/dead-code/no-useless-cast",
+    "lint/dead-code/no-always-true-instanceof",
 ];
 
 /// Every rule, in a fixed order.
@@ -735,5 +739,6 @@ fn ungrouped() -> Vec<Box<dyn Rule>> {
         Box::new(NoUselessFilterVar),
         Box::new(NoUselessMath),
         Box::new(NoUselessCast),
+        Box::new(NoAlwaysTrueInstanceof),
     ]
 }

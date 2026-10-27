@@ -5350,7 +5350,7 @@
         "RemoveDeadInstanceOf",
         "RemoveDeadInstanceOfRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/dead-code/no-always-true-instanceof-assert",

@@ -126,8 +126,7 @@ fn report(span: Span, edit: Edit) -> Report {
 
 /// The function, method or closure whose body is the list, printed as php-parser's `pStmt_ClassMethod`,
 /// `pStmt_Function` and `pExpr_Closure` print it with `inner` (the `return` that stays, with its comments) as its only
-/// statement: attributes and modifiers in their order, the parameters on one line (one per line when one of them has
-/// comments), and the body at its own indent. A body of anything else gets no new layout.
+/// statement: see [`reprint_function_like`].
 fn function_like_reprint(
     source: &str,
     tokens: &[Token],
@@ -139,6 +138,35 @@ fn function_like_reprint(
         Node::MethodBody(_) => ancestors[n - 4],
         other => other,
     };
+    reprint_function_like(source, tokens, holder, &|level| {
+        let nl_in = format!("\n{}", " ".repeat(level));
+        let mut code = nl_in.clone();
+        let before = previous_token_end(source, tokens, inner.start);
+        let comments = comments_between(tokens, before, inner.start);
+        if !comments.is_empty() {
+            code.push_str(&print_comments(source, &comments, &nl_in));
+            code.push_str(&nl_in);
+        }
+        code.push_str(&reprint(
+            source,
+            tokens,
+            inner,
+            level as isize - indentation(source, inner.start) as isize,
+        ));
+        code
+    })
+}
+
+/// The function, method or closure `holder` printed anew, as php-parser's `pStmt_ClassMethod`, `pStmt_Function` and
+/// `pExpr_Closure` print it when its statement list cannot keep its layout: attributes and modifiers in their order,
+/// the parameters on one line (one per line when one of them has comments), and the body at its own indent, with the
+/// statements `body` prints at the level it is given (each after a line break). Anything else gets no new layout.
+pub(crate) fn reprint_function_like(
+    source: &str,
+    tokens: &[Token],
+    holder: Node<'_, '_>,
+    body: &dyn Fn(usize) -> String,
+) -> Option<Edit> {
     let (span, attributes, inline, head, parameters, uses, return_type, new_line) = match holder {
         Node::Method(m) => {
             let reference = if m.ampersand.is_some() { "&" } else { "" };
@@ -251,14 +279,7 @@ fn function_like_reprint(
     }
     code.push_str(if new_line { &nl } else { " " });
     code.push('{');
-    code.push_str(&nl_in);
-    let before = previous_token_end(source, tokens, inner.start);
-    let comments = comments_between(tokens, before, inner.start);
-    if !comments.is_empty() {
-        code.push_str(&print_comments(source, &comments, &nl_in));
-        code.push_str(&nl_in);
-    }
-    code.push_str(&moved(inner, level + 4));
+    code.push_str(&body(level + 4));
     code.push_str(&nl);
     code.push('}');
     Some(Edit::new(span, code))
