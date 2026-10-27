@@ -450,3 +450,10 @@ fn annotation_with_value_to_attribute() {
     .unwrap();
     check(rule, "AnnotationWithValueToAttributeRector");
 }
+
+#[test]
+fn test_with_to_data_provider() {
+    // Pun/not_an_array: a `@testWith` line that is not JSON, or JSON that is not an array or object, makes Rector fail
+    // on the file (`JsonException`, a `TypeError`); Pun leaves the class alone.
+    check(PreferDataProvider, "TestWithToDataProviderRector");
+}
