@@ -78,7 +78,7 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Function<'arena> {
             ));
         };
 
-        if function_metadata.span != self.span() {
+        if context.codebase.declaration_span(function_metadata.span) != self.span() {
             report_duplicate_function_definition(context, function_name.as_ref(), self.span(), function_metadata.span);
 
             return Ok(());

@@ -454,3 +454,69 @@ union flags, so it loses never identity. This patch does not change the wire ver
 Public type, scanner, template, conditional, and serde controls live in
 `crates/pun-analyse/tests/never_identity.rs`, with independently captured PHPStan constructor,
 combinator, reflection, and scope observations under `tests/fixtures/never-identity/`.
+
+## Current-file anonymous signatures
+
+`CodebaseMetadata::with_file_closures()` installs every closure and arrow function from a complete
+current-file scan. The scan retains namespace aliases, class scopes, nested template parents,
+parameters, defaults, attributes, assertions, and native and PHPDoc return declarations. The existing
+signature populator resolves those types against the project's symbols. Reference attribution uses
+the fresh scan's file signature and named scopes before the temporary scan is dropped.
+
+`FunctionLikeTable` shares the project's populated map and owns file-sized replacements. Fresh entries
+always win, including collisions with an old closure's key and annotation changes at an unchanged key.
+Every old anonymous entry from a replaced file is hidden, even when the replacement is empty. Lookup,
+iteration, equality, and serialization expose the same effective table. Mutable collection operations
+explicitly materialize that table and detach it from shared snapshots.
+
+The other metadata collections use copy-on-write backing. Creating an analysis snapshot does not copy
+project declarations, symbols, signatures, ancestry maps, or patches. The snapshot owns its anonymous
+metadata before `Context`, `ScopeContext`, invocation inference, or plugins borrow it. Their existing
+metadata accessors and lifetimes do not change. No metadata is leaked through the syntax arena.
+
+Body edits also move the ends of enclosing classes and functions. A file-local span map lets
+`declaration_span()` identify each current scanner-selected declaration without replacing its populated
+signature. Declarations owned by another file keep their original coordinates. This ownership map is
+temporary analysis state, not a persisted signature. A decoded snapshot needs a fresh file scan before
+analysis of edited bodies, just like a project loaded before those edits.
+
+Pun's lint facts prepare separate current native and documented snapshots for every source revision.
+The facts cache also checks the file path, PHP version, and retained project identity. Named project
+declarations remain unchanged. `populate_codebase_after_body_edit()` retains its existing contract:
+it populates mutable merged scans with unchanged declaration signatures, not file-local snapshots.
+
+Public regressions are in `pun-analyse/tests/closure_freshness.rs` and
+`pun-lint/tests/moved_closure.rs`. The latter preserves the supplied Rector 2.6.1 bytes in
+`tests/fixtures/moved-closure/`, including its CLI configuration. The Analyzer controls check both
+directions of same-key parameter and return edits, colliding positions, PHPDoc versus native input,
+nested captures, reference and variadic parameters, defaults, named arguments, template parents,
+project-only enum symbols, default plugins, deleted keys, persistence, and shared backing. A later
+typed expression rejects partial analysis or a suppressed missing-metadata error. Native tracking
+enabled and disabled must produce identical observations and diagnostics.
+
+The user-defined raw-gather control changes native parameter types. Normal gathers infer their
+callback bodies; only the recursive depth cutoff uses the native declared return. The builtin
+`array_map` control changes the declared return and checks the plugin's resulting element type.
+
+Against `e1c66a25`, four public controls fail on successful stale lookups: colliding positions and
+same-key native parameters, returns, and PHPDoc parameters. The repaired native CLI applies both
+rules in the supplied fixture, matches a fresh Rector 2.6.1 run byte for byte, and changes nothing
+on a second run. The focused and adjacent suites pass 63 tests. Their commands are:
+
+```sh
+export CARGO_TARGET_DIR=target-closure-freshness CARGO_BUILD_JOBS=1 RAYON_NUM_THREADS=2
+export RUST_TEST_THREADS=1
+timeout 900 nice cargo test -p punphp-analyse -p punphp-lint --test closure_freshness --test moved_closure --test project
+timeout 900 nice cargo test -p punphp-analyse --test callback_gather --test generic_defaults --test native_lane --test closure_from_callable
+timeout 900 nice cargo test -p punphp-lint --test rector_types closure
+timeout 900 nice cargo test -p punphp-lint --test rector_types arrow
+```
+
+Fresh profiles from the 16 focused, closure, and arrow controls cover **247/247 changed production
+executable lines** against `e1c66a25`: 198 in codex, 6 in analyzer, and 43 in lint facts.
+They also cover **538/538 new test executable lines**, without exclusions. The private target uses
+one Cargo job and two Rayon threads. Instrument `mago-codex`, `mago-analyzer`, `mago-prelude`,
+`pun-lint`, and the public test binaries. The prelude must be instrumented because its codec
+instantiates the metadata's serde methods. The LCOV report uses
+`cargo llvm-cov report --no-default-ignore-filename-regex --lcov` so maintained path dependencies
+and test sources remain visible when intersecting the report with the added diff lines.

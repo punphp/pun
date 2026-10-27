@@ -72,7 +72,7 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Method<'arena> {
         };
 
         // Skip duplicate methods; semantics reports the error
-        if method_metadata.span != self.span() {
+        if context.codebase.declaration_span(method_metadata.span) != self.span() {
             return Ok(());
         }
 

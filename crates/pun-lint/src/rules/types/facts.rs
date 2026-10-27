@@ -25,6 +25,7 @@ use mago_codex::metadata::flags::MetadataFlags;
 use mago_codex::populator::populate_codebase;
 use mago_codex::reference::SymbolReferences;
 use mago_codex::scanner::scan_program;
+use mago_codex::signature_builder::build_file_signature;
 use mago_codex::ttype::atomic::TAtomic;
 use mago_codex::ttype::atomic::object::TObject;
 use mago_codex::ttype::atomic::scalar::TScalar;
@@ -152,8 +153,8 @@ pub(crate) fn is_vendor_file(file: FileId) -> bool {
 thread_local! {
     /// Other files' sources whose symbols a file analysed on its own sees (tests: Rector's fixture `Source/` classes).
     static SOURCES: RefCell<Vec<(String, String)>> = const { RefCell::new(Vec::new()) };
-    /// The facts of the last file analysed on this thread, by its source and PHP version.
-    static LAST: RefCell<Option<(String, u32, Rc<Facts>)>> = const { RefCell::new(None) };
+    /// Facts belong to a path, source, PHP version and project snapshot, not just source bytes.
+    static LAST: RefCell<Option<Rc<Facts>>> = const { RefCell::new(None) };
 }
 
 /// Run `f` with the symbols of `sources` (path, code) visible to the files analysed on their own on this thread.
@@ -179,6 +180,8 @@ pub(crate) struct Facts {
     pub codebase: Arc<CodebaseMetadata>,
     /// The codebase as written, docblocks read (see [`ProjectCodebase`]).
     documented: Arc<CodebaseMetadata>,
+    /// Retain the cache identity, so allocator address reuse cannot alias a later project.
+    project: Option<Arc<ProjectCodebase>>,
     path: String,
     /// The file's source with its docblocks blanked out.
     native_source: String,
@@ -870,19 +873,31 @@ pub(crate) fn without_docblocks(code: &str) -> String {
 
 /// The facts of the file `ctx` is about.
 pub(crate) fn facts(ctx: &Context<'_>) -> Rc<Facts> {
+    let project = PROJECT
+        .read()
+        .unwrap_or_else(|e| e.into_inner())
+        .as_ref()
+        .map(Arc::clone);
     let cached = LAST.with(|l| {
         l.borrow()
             .as_ref()
-            .filter(|(source, version, _)| *version == ctx.php_version && source == ctx.source)
-            .map(|(_, _, facts)| Rc::clone(facts))
+            .filter(|facts| {
+                facts.version == php_version_of(ctx.php_version)
+                    && facts.path == ctx.path.to_string_lossy()
+                    && facts.source == ctx.source
+                    && match (&facts.project, &project) {
+                        (Some(old), Some(current)) => Arc::ptr_eq(old, current),
+                        (None, None) => true,
+                        _ => false,
+                    }
+            })
+            .map(Rc::clone)
     });
     if let Some(facts) = cached {
         return facts;
     }
-    let facts = Rc::new(scan(ctx));
-    LAST.with(|l| {
-        *l.borrow_mut() = Some((ctx.source.to_string(), ctx.php_version, Rc::clone(&facts)))
-    });
+    let facts = Rc::new(scan(ctx, project));
+    LAST.with(|l| *l.borrow_mut() = Some(Rc::clone(&facts)));
     facts
 }
 
@@ -923,26 +938,46 @@ fn scan_into(codebase: &mut CodebaseMetadata, file: &File, version: PHPVersion) 
         .collect()
 }
 
-/// The facts of a file: the project's codebase, or the prelude with the file's own symbols.
-fn scan(ctx: &Context<'_>) -> Facts {
+/// A file-sized replacement over shared project declarations, prepared before any analyzer
+/// scope or plugin borrows it. Never retain old anonymous keys, even on a successful lookup.
+fn refresh_closures(
+    codebase: &CodebaseMetadata,
+    path: &str,
+    code: &str,
+    version: PHPVersion,
+) -> Arc<CodebaseMetadata> {
+    let file = mago_file(path, code, FileType::Host);
+    let arena = LocalArena::new();
+    let program = parse_file(&arena, &file);
+    let names = NameResolver::new(&arena).resolve(program);
+    // Keep scan_into's panic boundary without falling back to stale anonymous keys.
+    let mut scanned = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
+        scan_program(&arena, &file, program, &names, version)
+    }))
+    .unwrap_or_default();
+    scanned.set_file_signature(file.id, build_file_signature(&file, program, &names));
+    Arc::new(codebase.with_file_closures(file.id, scanned))
+}
+
+/// The facts of a file: shared project declarations with current anonymous signatures.
+fn scan(ctx: &Context<'_>, project: Option<Arc<ProjectCodebase>>) -> Facts {
     let path = ctx.path.to_string_lossy().into_owned();
-    let project = PROJECT
-        .read()
-        .unwrap_or_else(|e| e.into_inner())
-        .as_ref()
-        .map(Arc::clone);
+    let identity = project.clone();
     let project = project.unwrap_or_else(|| {
         let mut files: Vec<(String, String)> = SOURCES.with(|s| s.borrow().clone());
         files.push((path.clone(), ctx.source.to_string()));
         project_codebase(&files, ctx.php_version)
     });
+    let version = php_version_of(ctx.php_version);
+    let native_source = without_docblocks(ctx.source);
     Facts {
-        codebase: Arc::clone(&project.native),
-        documented: Arc::clone(&project.documented),
+        codebase: refresh_closures(&project.native, &path, &native_source, version),
+        documented: refresh_closures(&project.documented, &path, ctx.source, version),
+        project: identity,
         path,
-        native_source: without_docblocks(ctx.source),
+        native_source,
         source: ctx.source.to_string(),
-        version: php_version_of(ctx.php_version),
+        version,
         artifacts: OnceCell::new(),
         documented_artifacts: OnceCell::new(),
     }

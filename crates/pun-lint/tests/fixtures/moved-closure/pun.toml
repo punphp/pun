@@ -1,0 +1,3 @@
+[lint.rules]
+"lint/control-flow/no-else-after-return" = "error"
+"lint/types/add-arrow-function-return-type" = "error"

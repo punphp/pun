@@ -1823,3 +1823,24 @@ inside and outside other calls, nullsafe calls and their arguments, loop bodies 
 The public Analyzer controls in `native_lane.rs` also replace replayed conditions and increments
 through hooks, checking skipped calls, replacement values and unresolved targets with native
 tracking both enabled and disabled.
+
+## Edited-body declaration ownership
+
+The class, interface, trait, enum, method, and function duplicate guards compare against
+`CodebaseMetadata::declaration_span()`. A current-file anonymous-signature snapshot records the
+scanner-selected span of each named declaration owned by that file. This lets body edits change
+declaration ends and positions without causing the analyzer to skip the edited body as a duplicate.
+Populated named signatures and their project ownership remain shared. Without a refresh, the original
+span remains authoritative. Another file's declaration is never remapped, and same-file duplicates
+still compare against only the selected declaration.
+
+The public controls in `pun-analyse/tests/closure_freshness.rs` exercise all six guards, moved bodies,
+same-file duplicates, and a declaration owned by another project file. The exact Rector regression in
+`pun-lint/tests/moved_closure.rs` requires both these ownership checks and fresh anonymous signatures.
+Closure, invocation, scope, and plugin lookup APIs retain their existing signatures and lifetimes.
+
+The native CLI now matches the supplied Rector 2.6.1 expectation byte for byte and is idempotent.
+All 63 focused and adjacent public controls pass. Fresh profiles cover **6/6 changed analyzer
+executable lines** against `e1c66a25`, without exclusions. The full commands, snapshot ownership,
+and combined changed-line coverage are recorded in
+[`mago-codex/PATCHES.md`](../mago-codex/PATCHES.md#current-file-anonymous-signatures).

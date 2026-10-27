@@ -55,11 +55,13 @@ mod entry_spans;
 pub mod enum_case;
 pub mod flags;
 pub mod function_like;
+pub mod function_likes;
 mod inherited_methods;
 pub mod parameter;
 mod patch;
 pub mod property;
 pub mod property_hook;
+pub mod shared;
 mod trait_adaptation;
 pub mod ttype;
 pub mod version_constraint;
@@ -97,31 +99,31 @@ pub struct CodebaseMetadata {
     /// Configuration flag: Should types be inferred based on usage patterns?
     pub infer_types_from_usage: bool,
     /// Map from class-like FQCN (`Word`) to its detailed metadata (`ClassLikeMetadata`).
-    pub class_likes: WordMap<Box<ClassLikeMetadata>>,
+    pub class_likes: shared::Shared<WordMap<Box<ClassLikeMetadata>>>,
     #[cfg_attr(feature = "serde", serde(default))]
-    pub class_like_aliases: WordMap<Word>,
+    pub class_like_aliases: shared::Shared<WordMap<Word>>,
     #[cfg_attr(feature = "serde", serde(default))]
-    class_like_alias_declarations: WordMap<(Word, Span, MetadataFlags)>,
+    class_like_alias_declarations: shared::Shared<WordMap<(Word, Span, MetadataFlags)>>,
     #[cfg_attr(feature = "serde", serde(skip, default))]
     class_like_aliases_dirty: bool,
     /// Map from a function/method identifier tuple `(scope_id, function_id)` to its metadata (`FunctionLikeMetadata`).
     /// `scope_id` is the FQCN for methods or often `Word::empty()` for global functions.
-    pub function_likes: HashMap<(Word, Word), Box<FunctionLikeMetadata>>,
+    pub function_likes: function_likes::FunctionLikeTable,
     /// Stores the kind (Class, Interface, etc.) for every known symbol FQCN.
-    pub symbols: Symbols,
+    pub symbols: shared::Shared<Symbols>,
     /// Map from global constant FQN (`Word`) to its metadata (`ConstantMetadata`).
-    pub constants: WordMap<ConstantMetadata>,
+    pub constants: shared::Shared<WordMap<ConstantMetadata>>,
     /// Map from class/interface FQCN to the set of all its descendants (recursive).
-    pub all_class_like_descendants: WordMap<WordSet>,
+    pub all_class_like_descendants: shared::Shared<WordMap<WordSet>>,
     /// Map from class/interface FQCN to the set of its direct descendants (children).
-    pub direct_classlike_descendants: WordMap<WordSet>,
+    pub direct_classlike_descendants: shared::Shared<WordMap<WordSet>>,
     /// Set of symbols (FQCNs) that are considered safe/validated.
-    pub safe_symbols: WordSet,
+    pub safe_symbols: shared::Shared<WordSet>,
     /// Set of specific members `(SymbolFQCN, MemberName)` that are considered safe/validated.
-    pub safe_symbol_members: HashSet<(Word, Word)>,
+    pub safe_symbol_members: shared::Shared<HashSet<(Word, Word)>>,
     /// Each `FileSignature` contains a hierarchical tree of `DefSignatureNode` representing
     /// top-level symbols (classes, functions, constants) and their nested members (methods, properties).
-    pub file_signatures: HashMap<FileId, FileSignature>,
+    pub file_signatures: shared::Shared<HashMap<FileId, FileSignature>>,
     /// Per-patch class-like metadata, keyed by FQCN.
     ///
     /// Vendor and patch files declare symbols under the same FQCN, so patches cannot share
@@ -129,14 +131,14 @@ pub struct CodebaseMetadata {
     /// the same FQCN is diagnosed as a [`PatchDuplicateTarget`](ScanningIssueKind::PatchDuplicateTarget)
     /// rather than silently overwriting the first. Entries here are folded into `class_likes`
     /// by [`apply_patches_pass`](Self::apply_patches_pass).
-    pub patch_class_likes: WordMap<Box<ClassLikeMetadata>>,
+    pub patch_class_likes: shared::Shared<WordMap<Box<ClassLikeMetadata>>>,
     /// Per-patch function-like metadata, keyed by `(scope, name)`.
     ///
     /// The key matches the existing `function_likes` key shape: the FQCN for methods,
     /// `empty_word()` for free functions.
-    pub patch_function_likes: HashMap<(Word, Word), Box<FunctionLikeMetadata>>,
+    pub patch_function_likes: shared::Shared<HashMap<(Word, Word), Box<FunctionLikeMetadata>>>,
     /// Per-patch constant metadata, keyed by FQN.
-    pub patch_constants: WordMap<ConstantMetadata>,
+    pub patch_constants: shared::Shared<WordMap<ConstantMetadata>>,
 }
 
 impl CodebaseMetadata {
@@ -145,6 +147,53 @@ impl CodebaseMetadata {
     #[must_use]
     pub fn new() -> Self {
         Self::default()
+    }
+
+    /// Replace all anonymous functions of `file` with a complete current-file scan.
+    ///
+    /// Scan the entire program with `scan_program`, not individual expressions: nested
+    /// templates, namespace aliases and class scopes belong to that scanner's context.
+    /// Attach its current `FileSignature` for named-scope reference attribution.
+    /// Signatures are populated against this project's symbols before installing them.
+    /// Named declarations and all other project metadata remain shared and unchanged.
+    /// Deleted/moved anonymous keys are masked even when the replacement is empty; a
+    /// successful old-key hit is never evidence that a signature is still current.
+    #[must_use]
+    pub fn with_file_closures(&self, file: FileId, mut scanned: Self) -> Self {
+        crate::populator::populate_file_closures(&mut scanned, &self.symbols);
+        // Body edits change enclosing declaration ends too. Preserve the populated
+        // named metadata, but let duplicate guards recognize the scanner-selected
+        // current declaration. A winner belonging to another file never gets remapped.
+        let mut declaration_spans = HashMap::default();
+        for (name, metadata) in &scanned.class_likes {
+            if let Some(original) = self.class_likes.get(name)
+                && original.span.file_id == file && metadata.span.file_id == file
+            {
+                declaration_spans.insert(original.span, metadata.span);
+            }
+        }
+        for (key, metadata) in &scanned.function_likes {
+            if (metadata.kind.is_function() || metadata.kind.is_method())
+                && let Some(original) = self.function_likes.get(key)
+                && original.span.file_id == file && metadata.span.file_id == file
+            {
+                declaration_spans.insert(original.span, metadata.span);
+            }
+        }
+        scanned.function_likes.retain(|_, metadata| {
+            metadata.span.file_id == file && (metadata.kind.is_closure() || metadata.kind.is_arrow_function())
+        });
+        let mut snapshot = self.clone();
+        snapshot.function_likes.replace_closures(file, scanned.function_likes.into_inner(), declaration_spans);
+        snapshot
+    }
+
+    /// Current ownership coordinates for a populated named declaration during body
+    /// analysis. Without a current-file scan, the original span remains authoritative.
+    /// This ephemeral mapping is rebuilt on refresh, not persisted as project metadata.
+    #[must_use]
+    pub fn declaration_span(&self, original: Span) -> Span {
+        self.function_likes.declaration_span(original)
     }
 
     pub(crate) fn add_class_like_alias(&mut self, alias: Word, target: Word, span: Span, flags: MetadataFlags) {
@@ -193,8 +242,8 @@ impl CodebaseMetadata {
             }
         }
 
-        let aliases_changed = aliases != previous_aliases;
-        self.class_like_aliases = aliases;
+        let aliases_changed = aliases != *previous_aliases;
+        self.class_like_aliases = aliases.into();
         let mut aliased_classes = WordSet::default();
         for (alias, actual) in &self.class_like_aliases {
             let Some(metadata) = self.class_likes.get_mut(actual) else {
@@ -1179,7 +1228,7 @@ impl CodebaseMetadata {
             }
         }
 
-        self.symbols.extend(other.symbols);
+        self.symbols.extend(other.symbols.into_inner());
 
         for (k, v) in other.all_class_like_descendants {
             self.all_class_like_descendants.entry(k).or_default().extend(v);
@@ -1399,7 +1448,7 @@ impl CodebaseMetadata {
             self.patch_constants.insert(k, v);
         }
 
-        self.symbols = Symbols::new();
+        self.symbols = Symbols::new().into();
         self.class_like_aliases.clear();
         self.class_like_alias_declarations.clear();
         self.class_like_aliases_dirty = false;
@@ -1753,8 +1802,8 @@ fn orphan_patch_constant_diagnostic(meta: &ConstantMetadata) -> Issue {
 }
 
 fn merge_function_likes(
-    target: &mut HashMap<(Word, Word), Box<FunctionLikeMetadata>>,
-    incoming: HashMap<(Word, Word), Box<FunctionLikeMetadata>>,
+    target: &mut function_likes::FunctionLikeTable,
+    incoming: function_likes::FunctionLikeTable,
 ) {
     for (key, mut metadata) in incoming {
         match target.entry(key) {
