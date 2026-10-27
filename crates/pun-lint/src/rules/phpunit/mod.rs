@@ -49,6 +49,7 @@ mod prefer_data_provider_attribute;
 mod prefer_depends_attribute;
 mod prefer_inline_create_stub;
 mod prefer_merged_will_return_callback;
+mod prefer_mock_intersection_return;
 mod prefer_named_data_provider_keys;
 mod prefer_narrow_will_return_callback;
 mod prefer_narrow_with_consecutive;
@@ -114,6 +115,7 @@ pub use prefer_data_provider_attribute::PreferDataProviderAttribute;
 pub use prefer_depends_attribute::PreferDependsAttribute;
 pub use prefer_inline_create_stub::PreferInlineCreateStub;
 pub use prefer_merged_will_return_callback::PreferMergedWillReturnCallback;
+pub use prefer_mock_intersection_return::PreferMockIntersectionReturn;
 pub use prefer_named_data_provider_keys::PreferNamedDataProviderKeys;
 pub use prefer_narrow_will_return_callback::PreferNarrowWillReturnCallback;
 pub use prefer_narrow_with_consecutive::PreferNarrowWithConsecutive;
@@ -217,6 +219,7 @@ pub(crate) fn all() -> Vec<Box<dyn Rule>> {
         Box::new(RequireMockExpects),
         Box::new(PreferInlineCreateStub),
         Box::new(PreferStubVar),
+        Box::new(PreferMockIntersectionReturn),
     ]
 }
 
