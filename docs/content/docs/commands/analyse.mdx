@@ -137,6 +137,7 @@ Negative type guards preserve excluded values in `mixed` types.
 Full type inference preserves explicit `mixed` from native and PHPDoc declarations, built-in return types, assignments and captures.
 Mixed offset reads keep explicitness but drop receiver truthiness and exclusions.
 Unknown properties and methods remain implicit `mixed`.
+`clone` results retain only object alternatives; cloning `$this` produces `static`.
 Only declared or inherited assertion contracts narrow a caller's arguments; a predicate inferred from a callee's body does not.
 Native `unset` checks retain a property's modifiers and hooks beneath a PHPDoc property annotation.
 Annotation-only properties do not acquire native modifiers.
@@ -154,12 +155,17 @@ Parsing and nested non-union types retain their existing stack limits.
 Literal alternatives produce exact lengths or a contiguous integer range. General integer ranges are not enumerated.
 Stored callable signatures retain the declared return type rather than specializing it from invocation arguments.
 
+`str_repeat()` inference returns exact literal alternatives when their combined output occupies fewer than 100 bytes.
+Larger or unknown results retain PHPStan's applicable string refinements, including simultaneous lowercase and uppercase guarantees.
+Constant strings preserve binary bytes through PHPDoc decoding and type comparisons.
+
 Integer and IP validation through `filter_input()` and `filter_var()` preserves failure values, array flags, defaults and integer range options.
 Other filters and `FILTER_THROW_ON_FAILURE` retain declaration-based inference.
 
 Implicit `never` from an empty value domain does not make later statements unreachable.
 Call termination follows the resolved declaration, separately from a dynamic return type.
 An expression statement whose value is explicit `never` also terminates, matching PHPStan's treatment of forwarded calls.
+`exit`, `die`, and `throw` produce PHPStan's nonaccepting `never`, including through inferred arrow-function returns.
 
 From level 2, `analyse/functions/invalid-pure` reports `void.pure` for supported functions and private methods whose bodies provably have no side effects.
 Unknown effect producers remain unchecked. Full pure-function and pure-method validation remains incomplete.

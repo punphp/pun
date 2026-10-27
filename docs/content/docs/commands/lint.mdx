@@ -67,6 +67,9 @@ The `types/*` rules look up classes in every file lint selects, even when you na
 Rules ported from Rector read types the way Rector does with PHPStan 2.2.7, the version that Rector and Larastan projects such as Pinkary lock. In a trait, only `$this` and the trait's own members have no type.
 `types/add-return-type-from-constant` reads documented constant types. Anonymous classes are final for late-static constant lookup.
 
+Fix rounds refresh closure and arrow-function signatures after source edits.
+Moving a closure preserves its parameters, return type, and captured variables.
+
 Clean-file cache entries are separate from format entries. `--no-cache` disables cache reads and writes.
 
 ## Ignore comments
