@@ -66,6 +66,7 @@ mod prefer_with_is_instance_of;
 mod ptype;
 mod require_data_provider_newlines;
 mod require_final_test_case;
+mod require_mock_expects;
 mod require_strict_types_in_tests;
 mod require_string_assert_argument;
 
@@ -127,6 +128,7 @@ pub use prefer_ticket_attribute::PreferTicketAttribute;
 pub use prefer_with_is_instance_of::PreferWithIsInstanceOf;
 pub use require_data_provider_newlines::RequireDataProviderNewlines;
 pub use require_final_test_case::RequireFinalTestCase;
+pub use require_mock_expects::RequireMockExpects;
 pub use require_strict_types_in_tests::RequireStrictTypesInTests;
 pub use require_string_assert_argument::RequireStringAssertArgument;
 
@@ -207,6 +209,7 @@ pub(crate) fn all() -> Vec<Box<dyn Rule>> {
         Box::new(NoMockIntersectionProperty),
         Box::new(NoUnusedMockProperty),
         Box::new(PreferCreateStub),
+        Box::new(RequireMockExpects),
     ]
 }
 

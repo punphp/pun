@@ -200,19 +200,23 @@ fn passes_mock_object(
 
 /// `(new ObjectType(MockObject))->isSuperTypeOf($type)->yes()`.
 fn is_super_type_of_mock_object(codebase: &CodebaseMetadata, t: &TUnion) -> bool {
-    let is_mock = |atomic: &TAtomic| match atomic {
-        TAtomic::Object(TObject::Named(named)) => std::iter::once(named.name.as_bytes())
-            .chain(named.intersection_types.iter().flat_map(|i| {
-                i.iter().filter_map(|a| match a {
-                    TAtomic::Object(TObject::Named(n)) => Some(n.name.as_bytes()),
-                    _ => None,
-                })
-            }))
-            .any(|c| {
-                c.eq_ignore_ascii_case(MOCK_OBJECT.as_bytes())
-                    || codebase.is_instance_of(c, MOCK_OBJECT.as_bytes())
-            }),
-        _ => false,
+    !t.types.is_empty() && t.types.iter().all(|a| is_mock_object(codebase, a))
+}
+
+/// A named object that is a `MockObject`, or an intersection with one.
+pub(super) fn is_mock_object(codebase: &CodebaseMetadata, atomic: &TAtomic) -> bool {
+    let TAtomic::Object(TObject::Named(named)) = atomic else {
+        return false;
     };
-    !t.types.is_empty() && t.types.iter().all(is_mock)
+    std::iter::once(named.name.as_bytes())
+        .chain(named.intersection_types.iter().flat_map(|i| {
+            i.iter().filter_map(|a| match a {
+                TAtomic::Object(TObject::Named(n)) => Some(n.name.as_bytes()),
+                _ => None,
+            })
+        }))
+        .any(|c| {
+            c.eq_ignore_ascii_case(MOCK_OBJECT.as_bytes())
+                || codebase.is_instance_of(c, MOCK_OBJECT.as_bytes())
+        })
 }

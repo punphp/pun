@@ -734,7 +734,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "phpunit/require-internal" = { fix = "safe", ported = true, status = "decided", summary = "All PHPUnit test classes should be marked as internal." }
 "phpunit/require-iterable-data-provider" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "The return type of PHPUnit data provider must be `iterable`." }
 "phpunit/require-method-casing" = { fix = "safe", sets = ["coding-style"], ported = true, status = "decided", summary = "Enforce camel (or snake) case for PHPUnit test methods, following configuration." }
-"phpunit/require-mock-expects" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Add an explicit expects() to mocked method calls." }
+"phpunit/require-mock-expects" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Add an explicit expects() to mocked method calls." }
 "phpunit/require-protected-setup" = { fix = "unsafe", ported = true, status = "decided", summary = "Changes the visibility of the `setUp()` and `tearDown()` functions of PHPUnit to `protected`, to match the PHPUnit TestCase.", note = "Pint laravel preset; moved out of format because CS-Fixer marks it risky" }
 "phpunit/require-size" = { fix = "safe", ported = true, status = "decided", summary = "All PHPUnit test cases should have `@small`, `@medium` or `@large` annotation to enable run time limits." }
 "phpunit/require-static-data-provider" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "Make PHPUnit data providers static." }

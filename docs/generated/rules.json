@@ -12848,7 +12848,7 @@
         "DecorateWillReturnMapWithExpectsMockRector",
         "Rector\\PHPUnit\\CodeQuality\\Rector\\Expression\\DecorateWillReturnMapWithExpectsMockRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/phpunit/require-protected-setup",

@@ -515,3 +515,11 @@ fn remove_never_used_mock_property() {
 fn property_create_mock_to_create_stub() {
     check(PreferCreateStub, "PropertyCreateMockToCreateStubRector");
 }
+
+#[test]
+fn decorate_will_return_map_with_expects_mock() {
+    check(
+        RequireMockExpects,
+        "DecorateWillReturnMapWithExpectsMockRector",
+    );
+}
