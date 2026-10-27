@@ -30,6 +30,7 @@ mod prefer_class_keyword;
 mod no_unused_constructor_param;
 mod no_null_default_argument;
 mod add_param_type_sprintf;
+mod class_method;
 mod laravel;
 mod pest;
 mod lint_b_doc;
@@ -68,6 +69,7 @@ mod no_empty;
 mod no_empty_block;
 mod no_empty_catch;
 mod no_empty_loop;
+mod no_empty_method;
 mod no_escaped_quotes;
 mod no_eval;
 mod no_explicit_constructor_call;
@@ -107,6 +109,7 @@ mod no_protected_constant_in_final;
 mod no_protected_method_in_final;
 mod no_protected_property_in_final;
 mod no_redundant_condition;
+mod no_redundant_default_argument;
 mod no_redundant_final_const;
 mod no_redundant_null_check;
 mod no_redundant_promoted_assign;
@@ -135,6 +138,7 @@ mod no_unused_foreach_key;
 mod no_unused_global;
 mod no_unused_label;
 mod no_unused_private_constant;
+mod no_unused_private_method;
 mod no_unused_private_method_param;
 mod no_unused_private_property;
 mod no_unused_public_method_param;
@@ -143,7 +147,9 @@ mod no_useless_array_values;
 mod no_useless_block;
 mod no_useless_catch;
 mod no_useless_condition;
+mod no_useless_constructor;
 mod no_useless_continue;
+mod no_useless_override;
 mod no_useless_readonly;
 mod no_useless_ternary;
 mod no_useless_variable;
@@ -271,6 +277,7 @@ pub use no_empty::NoEmpty;
 pub use no_empty_block::NoEmptyBlock;
 pub use no_empty_catch::NoEmptyCatch;
 pub use no_empty_loop::NoEmptyLoop;
+pub use no_empty_method::NoEmptyMethod;
 pub use no_escaped_quotes::NoEscapedQuotes;
 pub use no_eval::NoEval;
 pub use no_explicit_constructor_call::NoExplicitConstructorCall;
@@ -310,6 +317,7 @@ pub use no_protected_constant_in_final::NoProtectedConstantInFinal;
 pub use no_protected_method_in_final::NoProtectedMethodInFinal;
 pub use no_protected_property_in_final::NoProtectedPropertyInFinal;
 pub use no_redundant_condition::NoRedundantCondition;
+pub use no_redundant_default_argument::NoRedundantDefaultArgument;
 pub use no_redundant_final_const::NoRedundantFinalConst;
 pub use no_redundant_null_check::NoRedundantNullCheck;
 pub use no_redundant_promoted_assign::NoRedundantPromotedAssign;
@@ -338,6 +346,7 @@ pub use no_unused_foreach_key::NoUnusedForeachKey;
 pub use no_unused_global::NoUnusedGlobal;
 pub use no_unused_label::NoUnusedLabel;
 pub use no_unused_private_constant::NoUnusedPrivateConstant;
+pub use no_unused_private_method::NoUnusedPrivateMethod;
 pub use no_unused_private_method_param::NoUnusedPrivateMethodParam;
 pub use no_unused_private_property::NoUnusedPrivateProperty;
 pub use no_unused_public_method_param::NoUnusedPublicMethodParam;
@@ -346,7 +355,9 @@ pub use no_useless_array_values::NoUselessArrayValues;
 pub use no_useless_block::NoUselessBlock;
 pub use no_useless_catch::NoUselessCatch;
 pub use no_useless_condition::NoUselessCondition;
+pub use no_useless_constructor::NoUselessConstructor;
 pub use no_useless_continue::NoUselessContinue;
+pub use no_useless_override::NoUselessOverride;
 pub use no_useless_readonly::NoUselessReadonly;
 pub use no_useless_ternary::NoUselessTernary;
 pub use no_useless_variable::NoUselessVariable;
@@ -406,6 +417,16 @@ pub use require_strict_array_search::RequireStrictArraySearch;
 pub use types::*;
 
 use crate::Rule;
+
+/// The rules outside `lint/types/` that read classes declared in other files (parents, interfaces, traits), for
+/// which the CLI scans the project as it does for the types rules.
+pub const PROJECT_RULES: &[&str] = &[
+    "lint/dead-code/no-empty-method",
+    "lint/dead-code/no-unused-private-method",
+    "lint/dead-code/no-useless-constructor",
+    "lint/dead-code/no-useless-override",
+    "lint/dead-code/no-redundant-default-argument",
+];
 
 /// Every rule, in a fixed order.
 pub fn all() -> Vec<Box<dyn Rule>> {
@@ -620,5 +641,10 @@ fn ungrouped() -> Vec<Box<dyn Rule>> {
         Box::new(NoSideEffectsWithDeclarations::default()),
         Box::new(RequireNamingConvention::default()),
         Box::new(RequirePhpdoc::default()),
+        Box::new(NoEmptyMethod),
+        Box::new(NoUnusedPrivateMethod),
+        Box::new(NoUselessConstructor),
+        Box::new(NoUselessOverride),
+        Box::new(NoRedundantDefaultArgument),
     ]
 }

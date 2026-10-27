@@ -5612,7 +5612,7 @@
         "RemoveEmptyClassMethod",
         "RemoveEmptyClassMethodRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/dead-code/no-false-ternary",
@@ -5892,7 +5892,7 @@
         "RemoveArgumentFromDefaultParentCall",
         "RemoveArgumentFromDefaultParentCallRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/dead-code/no-redundant-foreach-guard",
@@ -6192,7 +6192,7 @@
         "RemoveUnusedPrivateMethod",
         "RemoveUnusedPrivateMethodRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/dead-code/no-unused-private-method-param",
@@ -6410,7 +6410,7 @@
         "RemoveParentDelegatingConstructor",
         "RemoveParentDelegatingConstructorRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/dead-code/no-useless-continue",
@@ -6496,7 +6496,7 @@
         "RemoveParentDelegatingClassMethodRector",
         "no-redundant-method-override"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/dead-code/no-useless-phpdoc-type",

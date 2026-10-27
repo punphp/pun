@@ -8403,7 +8403,7 @@
         "rules": [
           "lint/dead-code/no-redundant-default-argument"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -8609,7 +8609,7 @@
         "rules": [
           "lint/dead-code/no-empty-method"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -8783,7 +8783,7 @@
         "rules": [
           "lint/dead-code/no-useless-override"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -8793,7 +8793,7 @@
         "rules": [
           "lint/dead-code/no-useless-constructor"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -8971,7 +8971,7 @@
         "rules": [
           "lint/dead-code/no-unused-private-method"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -25837,7 +25837,7 @@
         "rules": [
           "lint/dead-code/no-useless-override"
         ],
-        "note": "Same. Options: same. Planned: not ported yet.",
+        "note": "Same. Options: same.",
         "unsupported": false
       },
       {

@@ -270,7 +270,10 @@ pub(crate) fn format(a: FormatArgs, stage: Stage, lint: LintOpts) -> Result<u8> 
             for r in &mut natives {
                 configure(&cfg, r.as_mut())?;
             }
-            if natives.iter().any(|r| r.id().starts_with("lint/types/")) {
+            if natives.iter().any(|r| {
+                r.id().starts_with("lint/types/")
+                    || pun_lint::rules::PROJECT_RULES.contains(&r.id())
+            }) {
                 project_codebase(&cfg)?;
             }
             natives
