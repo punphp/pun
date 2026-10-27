@@ -8,6 +8,15 @@
 //! classes of tests/phpunit-stubs (PHPUnit 13.2.6's files with empty method bodies, scripts/export-phpunit-stub.php)
 //! beside its Source/ classes, and the Symfony and Behat classes of rector-phpunit's own stubs/ (tests/rector-phpunit-stubs,
 //! verbatim at e68085d).
+//!
+//! Pun/case_mismatch: a renaming rule's method name written in other letter case (`$this->AssertTrue(...)`) makes
+//! Rector fail on the file (`IdentifierManipulator::renameNodeWithMap` looks the name up in its map as written and
+//! builds an `Identifier` of `null`); Pun leaves the call alone.
+//!
+//! Pun/declined (the annotation-to-attribute rules): Pun leaves a doc alone that has another comment before it
+//! (php-parser reprints those with the doc), a tag Pun's doc reader does not follow (`@\...`, `@_...`), or a tab in the
+//! node's indentation (Rector writes the new attribute and the reprinted doc at its own indentation, in spaces).
+//! Pun/tabbed is that last case for `ReplaceTestAnnotationWithPrefixedFunctionRector`.
 
 use std::path::{Path, PathBuf};
 
@@ -439,8 +448,24 @@ fn test_with_annotation_to_attribute() {
 
 #[test]
 fn annotation_with_value_to_attribute() {
-    // config/configured_rule.php, as `pun migrate` writes its `AnnotationWithValueToAttribute` objects.
+    // config/configured_rule.php, as `pun migrate` writes its `AnnotationWithValueToAttribute` objects, and two more
+    // that its fixtures do not use (Oracle/values ran with all five). Pun/declined: a doc with a tag Pun's doc reader
+    // does not follow (`@\\...`, `@_...`), a tab-indented node (Rector indents the attribute with spaces) and an
+    // anonymous class that already has attributes; Pun leaves the class alone.
     let mut rule = PreferAttributeOverAnnotation::default();
+    assert!(rule.configure(&serde_json::json!(null)).is_ok());
+    assert!(rule.configure(&serde_json::json!(true)).is_err());
+    assert!(rule.configure(&serde_json::json!({"other": []})).is_err());
+    assert!(rule.configure(&serde_json::json!({"items": true})).is_err());
+    assert!(rule.configure(&serde_json::json!({"items": [1]})).is_err());
+    assert!(
+        rule.configure(&serde_json::json!({"items": [{"annotation-name": 1}]}))
+            .is_err()
+    );
+    assert!(
+        rule.configure(&serde_json::json!({"items": [{"annotation-name": "a"}]}))
+            .is_err()
+    );
     rule.configure(&serde_json::json!({ "items": [
         { "annotation-name": "backupGlobals", "attribute-class": "PHPUnit\\Framework\\Attributes\\BackupGlobals",
           "value-map": { "enabled": true, "disabled": false }, "is-on-class-level": false },
@@ -448,6 +473,10 @@ fn annotation_with_value_to_attribute() {
           "value-map": [], "is-on-class-level": false },
         { "annotation-name": "uses", "attribute-class": "PHPUnit\\Framework\\Attributes\\UsesClass",
           "value-map": [], "is-on-class-level": true },
+        { "annotation-name": "backupStaticAttributes",
+          "attribute-class": "PHPUnit\\Framework\\Attributes\\BackupStaticProperties",
+          "value-map": { "enabled": 1, "disabled": 2.5, "maybe": "yes" } },
+        { "annotation-name": "Some\\Tag", "attribute-class": "PHPUnit\\Framework\\Attributes\\Group" },
     ]}))
     .unwrap();
     check(rule, "AnnotationWithValueToAttributeRector");

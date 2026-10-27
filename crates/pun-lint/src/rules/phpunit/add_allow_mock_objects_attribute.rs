@@ -9,7 +9,7 @@ use pun_problem::Safety;
 
 use super::annotations::Annotated;
 use super::{class_is, is_in_test_class, report};
-use crate::rules::rector_batch5::has_attribute;
+use crate::rules::rector_batch5::resolve_class_name;
 use crate::rules::types::facts::facts;
 use crate::syntax::node_span;
 use crate::{Context, Report, Rule};
@@ -59,11 +59,12 @@ impl Rule for AddAllowMockObjectsAttribute {
 
 /// `shouldSkipClass()` negated: a test class, the attribute class exists, and the class has no such attribute.
 pub(super) fn should_add(ctx: &Context<'_>, scope: &[Node<'_, '_>], node: Node<'_, '_>) -> bool {
-    let lists = match node {
-        Node::Class(c) => &c.attribute_lists,
-        Node::AnonymousClass(c) => &c.attribute_lists,
-        _ => return false,
-    };
+    // the class's own attribute lists, as `has_attribute()` reads them
+    let filled = node.children().into_iter().any(|child| {
+        matches!(child, Node::AttributeList(list) if list.attributes.iter().any(|a| {
+            resolve_class_name(scope, &a.name).eq_ignore_ascii_case(ALLOW_MOCK_OBJECTS)
+        }))
+    });
     is_in_test_class(ctx, scope, None)
         // attribute must exist for the rule to work
         && facts(ctx)
@@ -71,7 +72,7 @@ pub(super) fn should_add(ctx: &Context<'_>, scope: &[Node<'_, '_>], node: Node<'
             .get_class_like(ALLOW_MOCK_OBJECTS.as_bytes())
             .is_some()
         // already filled
-        && !has_attribute(scope, lists, ALLOW_MOCK_OBJECTS)
+        && !filled
 }
 
 /// Report the class with the attribute added (`$node->attrGroups[] = ...`).
