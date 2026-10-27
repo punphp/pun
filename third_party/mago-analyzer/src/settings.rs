@@ -41,6 +41,9 @@ pub struct Settings {
     /// PHPStan's foreach body-entry narrowing and guaranteed-iteration holder projection.
     pub pollute_scope_with_always_iterable_foreach: bool,
 
+    /// PHPStan's standalone block scope pollution, independently of loop settings and reporting.
+    pub pollute_scope_with_block: bool,
+
     /// Find and report expressions whose results are not used (e.g., `$a + $b;`). Defaults to `false`.
     pub find_unused_expressions: bool,
 
@@ -425,6 +428,7 @@ impl Settings {
             track_native_types: false,
             pollute_scope_with_loop_initial_assignments: true,
             pollute_scope_with_always_iterable_foreach: true,
+            pollute_scope_with_block: true,
             find_unused_expressions: true,
             find_unused_definitions: true,
             find_overly_wide_return_types: false,

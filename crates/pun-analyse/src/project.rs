@@ -55,6 +55,8 @@ pub struct Project {
     pub pollute_scope_with_loop_initial_assignments: bool,
     /// `polluteScopeWithAlwaysIterableForeach`: narrow iterable bodies and retain new exit holders.
     pub pollute_scope_with_always_iterable_foreach: bool,
+    /// `polluteScopeWithBlock`: retain the actual standalone block scope (on by default).
+    pub pollute_scope_with_block: bool,
     /// The rule level: `level` (`max` is 10), 0 when unset.
     pub level: u8,
     /// `featureToggles.checkGenericIterableClasses` (on with bleedingEdge).
@@ -248,6 +250,7 @@ impl Project {
             check_maybe_undefined_variables: flag("checkMaybeUndefinedVariables"),
             pollute_scope_with_loop_initial_assignments: !matches!(params.get_str("polluteScopeWithLoopInitialAssignments"), Some(Value::Bool(false))),
             pollute_scope_with_always_iterable_foreach: !matches!(params.get_str("polluteScopeWithAlwaysIterableForeach"), Some(Value::Bool(false))),
+            pollute_scope_with_block: !matches!(params.get_str("polluteScopeWithBlock"), Some(Value::Bool(false))),
             level,
             check_generic_iterable_classes: toggle("checkGenericIterableClasses"),
             internal_tag: toggle("internalTag"),
@@ -307,6 +310,7 @@ impl Project {
             check_maybe_undefined_variables: false,
             pollute_scope_with_loop_initial_assignments: true,
             pollute_scope_with_always_iterable_foreach: true,
+            pollute_scope_with_block: true,
             level: 0,
             check_generic_iterable_classes: false,
             internal_tag: false,

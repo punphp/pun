@@ -900,6 +900,7 @@ pub struct Checker<'a, 'arena> {
     check_maybe_undefined_variables: bool,
     pollute_scope_with_loop_initial_assignments: bool,
     pollute_scope_with_always_iterable_foreach: bool,
+    pollute_scope_with_block: bool,
     /// MethodSignatureRule's purity checks: `featureToggles.reportMethodPurityOverride`.
     method_purity_override: bool,
     /// UninitializedPropertyRule: `checkUninitializedProperties`.

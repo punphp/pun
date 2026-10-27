@@ -811,6 +811,7 @@ fn copied_key(c: &Checker, at: Span) -> Option<Type> {
         c.php_version,
         c.pollute_scope_with_loop_initial_assignments,
         c.pollute_scope_with_always_iterable_foreach,
+        c.pollute_scope_with_block,
         vec![expression.span()],
         Vec::new(),
     )

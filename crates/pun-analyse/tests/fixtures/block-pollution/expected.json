@@ -1,0 +1,2706 @@
+{
+    "default": [
+        [
+            "matrix.php",
+            8,
+            "phpstan.dumpType",
+            "Dumped type: 1",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            12,
+            "phpstan.dumpType",
+            "Dumped type: 'body'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            13,
+            "echo.nonString",
+            "Parameter #1 (array{'body'}) of echo cannot be converted to string.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            15,
+            "echo.nonString",
+            "Parameter #1 (array{'body'}) of echo cannot be converted to string.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            16,
+            "phpstan.dumpType",
+            "Dumped type: 'body'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            17,
+            "phpstan.dumpType",
+            "Dumped type: 2",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            18,
+            "phpstan.dumpType",
+            "Dumped type: array{'body'}",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            20,
+            "phpstan.dumpType",
+            "Dumped type: 'outside'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            21,
+            "variable.undefined",
+            "Undefined variable: $neverAssigned",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            29,
+            "phpstan.dumpType",
+            "Dumped type: false",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            34,
+            "phpstan.dumpType",
+            "Dumped type: false",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            44,
+            "variable.undefined",
+            "Variable $created might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            45,
+            "phpstan.dumpType",
+            "Dumped type: 'end'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            48,
+            "void.pure",
+            "Function BlockPollution\\returns() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            61,
+            "phpstan.dumpType",
+            "Dumped type: 'throw'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            64,
+            "phpstan.dumpType",
+            "Dumped type: 'throw'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            74,
+            "phpstan.dumpType",
+            "Dumped type: 'end'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            76,
+            "variable.undefined",
+            "Variable $onBreak might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            76,
+            "variable.undefined",
+            "Variable $onEnd might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            77,
+            "phpstan.dumpType",
+            "Dumped type: 'break'|'end'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            87,
+            "phpstan.dumpType",
+            "Dumped type: 'break'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            97,
+            "phpstan.dumpType",
+            "Dumped type: 'continue'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            112,
+            "variable.undefined",
+            "Variable $breakOut might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            112,
+            "variable.undefined",
+            "Variable $continueOut might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            119,
+            "variable.undefined",
+            "Variable $held might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            125,
+            "variable.undefined",
+            "Variable $held might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            126,
+            "variable.undefined",
+            "Variable $held might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            127,
+            "phpstan.dumpType",
+            "Dumped type: 'changed'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            133,
+            "variable.undefined",
+            "Undefined variable: $existing",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            134,
+            "phpstan.dumpType",
+            "Dumped type: *ERROR*",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            134,
+            "variable.undefined",
+            "Undefined variable: $existing",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            136,
+            "variable.undefined",
+            "Variable $fromExtract might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            145,
+            "phpstan.dumpType",
+            "Dumped type: 2",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            146,
+            "echo.nonString",
+            "Parameter #1 (array{}|array{non-empty-string}) of echo cannot be converted to string.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            168,
+            "phpstan.dumpType",
+            "Dumped type: non-empty-array<int, string>",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            170,
+            "variable.undefined",
+            "Variable $created might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            170,
+            "variable.undefined",
+            "Variable $value might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            171,
+            "phpstan.dumpType",
+            "Dumped type: array<int, string>",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            178,
+            "include.fileNotFound",
+            "Path in include() \"pun-block-missing-body.php\" is not a file or it does not exist.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            180,
+            "phpstan.dumpType",
+            "Dumped type: 'body'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            185,
+            "phpstan.dumpType",
+            "Dumped type: 'else'|'elseif'|'if'",
+            null,
+            false
+        ],
+        [
+            "native.php",
+            4,
+            "void.pure",
+            "Function BlockPollution\\nativeTypes() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "native.php",
+            9,
+            "phpstan.dumpNativeType",
+            "Dumped type: 2",
+            null,
+            false
+        ],
+        [
+            "native.php",
+            11,
+            "phpstan.dumpNativeType",
+            "Dumped type: 2",
+            null,
+            false
+        ],
+        [
+            "native.php",
+            12,
+            "phpstan.dumpNativeType",
+            "Dumped type: 3",
+            null,
+            false
+        ],
+        [
+            "native.php",
+            14,
+            "phpstan.dumpNativeType",
+            "Dumped type: 4",
+            null,
+            false
+        ]
+    ],
+    "enabled": [
+        [
+            "matrix.php",
+            8,
+            "phpstan.dumpType",
+            "Dumped type: 1",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            12,
+            "phpstan.dumpType",
+            "Dumped type: 'body'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            13,
+            "echo.nonString",
+            "Parameter #1 (array{'body'}) of echo cannot be converted to string.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            15,
+            "echo.nonString",
+            "Parameter #1 (array{'body'}) of echo cannot be converted to string.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            16,
+            "phpstan.dumpType",
+            "Dumped type: 'body'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            17,
+            "phpstan.dumpType",
+            "Dumped type: 2",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            18,
+            "phpstan.dumpType",
+            "Dumped type: array{'body'}",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            20,
+            "phpstan.dumpType",
+            "Dumped type: 'outside'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            21,
+            "variable.undefined",
+            "Undefined variable: $neverAssigned",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            29,
+            "phpstan.dumpType",
+            "Dumped type: false",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            34,
+            "phpstan.dumpType",
+            "Dumped type: false",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            44,
+            "variable.undefined",
+            "Variable $created might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            45,
+            "phpstan.dumpType",
+            "Dumped type: 'end'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            48,
+            "void.pure",
+            "Function BlockPollution\\returns() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            61,
+            "phpstan.dumpType",
+            "Dumped type: 'throw'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            64,
+            "phpstan.dumpType",
+            "Dumped type: 'throw'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            74,
+            "phpstan.dumpType",
+            "Dumped type: 'end'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            76,
+            "variable.undefined",
+            "Variable $onBreak might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            76,
+            "variable.undefined",
+            "Variable $onEnd might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            77,
+            "phpstan.dumpType",
+            "Dumped type: 'break'|'end'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            87,
+            "phpstan.dumpType",
+            "Dumped type: 'break'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            97,
+            "phpstan.dumpType",
+            "Dumped type: 'continue'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            112,
+            "variable.undefined",
+            "Variable $breakOut might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            112,
+            "variable.undefined",
+            "Variable $continueOut might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            119,
+            "variable.undefined",
+            "Variable $held might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            125,
+            "variable.undefined",
+            "Variable $held might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            126,
+            "variable.undefined",
+            "Variable $held might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            127,
+            "phpstan.dumpType",
+            "Dumped type: 'changed'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            133,
+            "variable.undefined",
+            "Undefined variable: $existing",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            134,
+            "phpstan.dumpType",
+            "Dumped type: *ERROR*",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            134,
+            "variable.undefined",
+            "Undefined variable: $existing",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            136,
+            "variable.undefined",
+            "Variable $fromExtract might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            145,
+            "phpstan.dumpType",
+            "Dumped type: 2",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            146,
+            "echo.nonString",
+            "Parameter #1 (array{}|array{non-empty-string}) of echo cannot be converted to string.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            168,
+            "phpstan.dumpType",
+            "Dumped type: non-empty-array<int, string>",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            170,
+            "variable.undefined",
+            "Variable $created might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            170,
+            "variable.undefined",
+            "Variable $value might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            171,
+            "phpstan.dumpType",
+            "Dumped type: array<int, string>",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            178,
+            "include.fileNotFound",
+            "Path in include() \"pun-block-missing-body.php\" is not a file or it does not exist.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            180,
+            "phpstan.dumpType",
+            "Dumped type: 'body'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            185,
+            "phpstan.dumpType",
+            "Dumped type: 'else'|'elseif'|'if'",
+            null,
+            false
+        ],
+        [
+            "native.php",
+            4,
+            "void.pure",
+            "Function BlockPollution\\nativeTypes() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "native.php",
+            9,
+            "phpstan.dumpNativeType",
+            "Dumped type: 2",
+            null,
+            false
+        ],
+        [
+            "native.php",
+            11,
+            "phpstan.dumpNativeType",
+            "Dumped type: 2",
+            null,
+            false
+        ],
+        [
+            "native.php",
+            12,
+            "phpstan.dumpNativeType",
+            "Dumped type: 3",
+            null,
+            false
+        ],
+        [
+            "native.php",
+            14,
+            "phpstan.dumpNativeType",
+            "Dumped type: 4",
+            null,
+            false
+        ]
+    ],
+    "disabled": [
+        [
+            "matrix.php",
+            8,
+            "phpstan.dumpType",
+            "Dumped type: 1",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            12,
+            "phpstan.dumpType",
+            "Dumped type: 'body'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            13,
+            "echo.nonString",
+            "Parameter #1 (array{'body'}) of echo cannot be converted to string.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            15,
+            "echo.nonString",
+            "Parameter #1 (array{'body'}) of echo cannot be converted to string.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            15,
+            "variable.undefined",
+            "Variable $created might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            15,
+            "variable.undefined",
+            "Variable $possible might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            16,
+            "phpstan.dumpType",
+            "Dumped type: 1|'body'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            17,
+            "phpstan.dumpType",
+            "Dumped type: 2|'entry'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            17,
+            "variable.undefined",
+            "Variable $possible might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            18,
+            "phpstan.dumpType",
+            "Dumped type: array{'body'}",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            18,
+            "variable.undefined",
+            "Variable $created might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            20,
+            "phpstan.dumpType",
+            "Dumped type: 'outside'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            21,
+            "variable.undefined",
+            "Undefined variable: $neverAssigned",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            29,
+            "phpstan.dumpType",
+            "Dumped type: 1|false",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            30,
+            "variable.undefined",
+            "Variable $nested might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            33,
+            "variable.undefined",
+            "Variable $nested might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            33,
+            "variable.undefined",
+            "Variable $outer might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            34,
+            "phpstan.dumpType",
+            "Dumped type: 1|'entry'|false",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            44,
+            "variable.undefined",
+            "Variable $created might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            45,
+            "phpstan.dumpType",
+            "Dumped type: 'end'|'entry'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            48,
+            "void.pure",
+            "Function BlockPollution\\returns() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            61,
+            "phpstan.dumpType",
+            "Dumped type: 'throw'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            64,
+            "phpstan.dumpType",
+            "Dumped type: 'throw'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            74,
+            "phpstan.dumpType",
+            "Dumped type: 'end'|'entry'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            76,
+            "variable.undefined",
+            "Variable $onBreak might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            76,
+            "variable.undefined",
+            "Variable $onEnd might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            77,
+            "phpstan.dumpType",
+            "Dumped type: 'break'|'end'|'entry'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            87,
+            "phpstan.dumpType",
+            "Dumped type: 'break'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            97,
+            "phpstan.dumpType",
+            "Dumped type: 'continue'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            112,
+            "variable.undefined",
+            "Variable $breakOut might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            112,
+            "variable.undefined",
+            "Variable $continueOut might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            119,
+            "variable.undefined",
+            "Variable $held might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            119,
+            "variable.undefined",
+            "Variable $unrelated might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            125,
+            "variable.undefined",
+            "Variable $held might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            126,
+            "variable.undefined",
+            "Variable $held might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            127,
+            "phpstan.dumpType",
+            "Dumped type: 'changed'|'no'|'yes'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            133,
+            "variable.undefined",
+            "Variable $created might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            133,
+            "variable.undefined",
+            "Variable $existing might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            134,
+            "phpstan.dumpType",
+            "Dumped type: 'entry'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            134,
+            "variable.undefined",
+            "Variable $existing might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            136,
+            "variable.undefined",
+            "Undefined variable: $fromExtract",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            145,
+            "phpstan.dumpType",
+            "Dumped type: 1|2",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            146,
+            "echo.nonString",
+            "Parameter #1 (array{}|array{non-empty-string}) of echo cannot be converted to string.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            146,
+            "variable.undefined",
+            "Variable $matches might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            161,
+            "variable.undefined",
+            "Variable $block might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            168,
+            "phpstan.dumpType",
+            "Dumped type: non-empty-array<int, string>",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            170,
+            "variable.undefined",
+            "Variable $created might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            170,
+            "variable.undefined",
+            "Variable $initial might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            170,
+            "variable.undefined",
+            "Variable $value might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            171,
+            "phpstan.dumpType",
+            "Dumped type: array<int, string>",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            178,
+            "include.fileNotFound",
+            "Path in include() \"pun-block-missing-body.php\" is not a file or it does not exist.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            178,
+            "include.fileNotFound",
+            "Path in include() \"pun-block-missing-entry.php\" is not a file or it does not exist.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            180,
+            "phpstan.dumpType",
+            "Dumped type: 'body'|'one'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            185,
+            "phpstan.dumpType",
+            "Dumped type: 'else'|'elseif'|'if'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            189,
+            "variable.undefined",
+            "Variable $colonIf might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            191,
+            "variable.undefined",
+            "Variable $colonFor might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            193,
+            "variable.undefined",
+            "Variable $colonWhile might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            195,
+            "variable.undefined",
+            "Variable $colonForeach might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            197,
+            "variable.undefined",
+            "Variable $doBlock might not be defined.",
+            null,
+            true
+        ],
+        [
+            "native.php",
+            4,
+            "void.pure",
+            "Function BlockPollution\\nativeTypes() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "native.php",
+            9,
+            "phpstan.dumpNativeType",
+            "Dumped type: 2",
+            null,
+            false
+        ],
+        [
+            "native.php",
+            11,
+            "phpstan.dumpNativeType",
+            "Dumped type: 1|2",
+            null,
+            false
+        ],
+        [
+            "native.php",
+            12,
+            "phpstan.dumpNativeType",
+            "Dumped type: 3",
+            null,
+            false
+        ],
+        [
+            "native.php",
+            12,
+            "variable.undefined",
+            "Variable $created might not be defined.",
+            null,
+            true
+        ],
+        [
+            "native.php",
+            14,
+            "phpstan.dumpNativeType",
+            "Dumped type: 4",
+            null,
+            false
+        ]
+    ],
+    "quiet": [
+        [
+            "matrix.php",
+            8,
+            "phpstan.dumpType",
+            "Dumped type: 1",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            12,
+            "phpstan.dumpType",
+            "Dumped type: 'body'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            13,
+            "echo.nonString",
+            "Parameter #1 (array{'body'}) of echo cannot be converted to string.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            15,
+            "echo.nonString",
+            "Parameter #1 (array{'body'}) of echo cannot be converted to string.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            16,
+            "phpstan.dumpType",
+            "Dumped type: 1|'body'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            17,
+            "phpstan.dumpType",
+            "Dumped type: 2|'entry'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            18,
+            "phpstan.dumpType",
+            "Dumped type: array{'body'}",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            20,
+            "phpstan.dumpType",
+            "Dumped type: 'outside'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            21,
+            "variable.undefined",
+            "Undefined variable: $neverAssigned",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            29,
+            "phpstan.dumpType",
+            "Dumped type: 1|false",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            34,
+            "phpstan.dumpType",
+            "Dumped type: 1|'entry'|false",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            45,
+            "phpstan.dumpType",
+            "Dumped type: 'end'|'entry'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            48,
+            "void.pure",
+            "Function BlockPollution\\returns() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            61,
+            "phpstan.dumpType",
+            "Dumped type: 'throw'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            64,
+            "phpstan.dumpType",
+            "Dumped type: 'throw'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            74,
+            "phpstan.dumpType",
+            "Dumped type: 'end'|'entry'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            77,
+            "phpstan.dumpType",
+            "Dumped type: 'break'|'end'|'entry'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            87,
+            "phpstan.dumpType",
+            "Dumped type: 'break'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            97,
+            "phpstan.dumpType",
+            "Dumped type: 'continue'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            127,
+            "phpstan.dumpType",
+            "Dumped type: 'changed'|'no'|'yes'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            134,
+            "phpstan.dumpType",
+            "Dumped type: 'entry'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            136,
+            "variable.undefined",
+            "Undefined variable: $fromExtract",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            145,
+            "phpstan.dumpType",
+            "Dumped type: 1|2",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            146,
+            "echo.nonString",
+            "Parameter #1 (array{}|array{non-empty-string}) of echo cannot be converted to string.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            168,
+            "phpstan.dumpType",
+            "Dumped type: non-empty-array<int, string>",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            171,
+            "phpstan.dumpType",
+            "Dumped type: array<int, string>",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            178,
+            "include.fileNotFound",
+            "Path in include() \"pun-block-missing-body.php\" is not a file or it does not exist.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            178,
+            "include.fileNotFound",
+            "Path in include() \"pun-block-missing-entry.php\" is not a file or it does not exist.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            180,
+            "phpstan.dumpType",
+            "Dumped type: 'body'|'one'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            185,
+            "phpstan.dumpType",
+            "Dumped type: 'else'|'elseif'|'if'",
+            null,
+            false
+        ],
+        [
+            "native.php",
+            4,
+            "void.pure",
+            "Function BlockPollution\\nativeTypes() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "native.php",
+            9,
+            "phpstan.dumpNativeType",
+            "Dumped type: 2",
+            null,
+            false
+        ],
+        [
+            "native.php",
+            11,
+            "phpstan.dumpNativeType",
+            "Dumped type: 1|2",
+            null,
+            false
+        ],
+        [
+            "native.php",
+            12,
+            "phpstan.dumpNativeType",
+            "Dumped type: 3",
+            null,
+            false
+        ],
+        [
+            "native.php",
+            14,
+            "phpstan.dumpNativeType",
+            "Dumped type: 4",
+            null,
+            false
+        ]
+    ],
+    "independent": [
+        [
+            "matrix.php",
+            8,
+            "phpstan.dumpType",
+            "Dumped type: 1",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            12,
+            "phpstan.dumpType",
+            "Dumped type: 'body'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            13,
+            "echo.nonString",
+            "Parameter #1 (array{'body'}) of echo cannot be converted to string.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            15,
+            "echo.nonString",
+            "Parameter #1 (array{'body'}) of echo cannot be converted to string.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            15,
+            "variable.undefined",
+            "Variable $created might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            15,
+            "variable.undefined",
+            "Variable $possible might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            16,
+            "phpstan.dumpType",
+            "Dumped type: 1|'body'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            17,
+            "phpstan.dumpType",
+            "Dumped type: 2|'entry'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            17,
+            "variable.undefined",
+            "Variable $possible might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            18,
+            "phpstan.dumpType",
+            "Dumped type: array{'body'}",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            18,
+            "variable.undefined",
+            "Variable $created might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            20,
+            "phpstan.dumpType",
+            "Dumped type: 'outside'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            21,
+            "variable.undefined",
+            "Undefined variable: $neverAssigned",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            29,
+            "phpstan.dumpType",
+            "Dumped type: 1|false",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            30,
+            "variable.undefined",
+            "Variable $nested might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            33,
+            "variable.undefined",
+            "Variable $nested might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            33,
+            "variable.undefined",
+            "Variable $outer might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            34,
+            "phpstan.dumpType",
+            "Dumped type: 1|'entry'|false",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            44,
+            "variable.undefined",
+            "Variable $created might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            45,
+            "phpstan.dumpType",
+            "Dumped type: 'end'|'entry'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            48,
+            "void.pure",
+            "Function BlockPollution\\returns() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            61,
+            "phpstan.dumpType",
+            "Dumped type: 'throw'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            64,
+            "phpstan.dumpType",
+            "Dumped type: 'throw'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            74,
+            "phpstan.dumpType",
+            "Dumped type: 'end'|'entry'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            76,
+            "variable.undefined",
+            "Variable $onBreak might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            76,
+            "variable.undefined",
+            "Variable $onEnd might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            76,
+            "variable.undefined",
+            "Variable $value might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            77,
+            "phpstan.dumpType",
+            "Dumped type: 'break'|'end'|'entry'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            86,
+            "variable.undefined",
+            "Variable $created might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            87,
+            "phpstan.dumpType",
+            "Dumped type: 'break'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            96,
+            "variable.undefined",
+            "Variable $created might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            97,
+            "phpstan.dumpType",
+            "Dumped type: 'continue'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            112,
+            "variable.undefined",
+            "Variable $breakOut might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            112,
+            "variable.undefined",
+            "Variable $continueOut might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            112,
+            "variable.undefined",
+            "Variable $inner might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            112,
+            "variable.undefined",
+            "Variable $outer might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            119,
+            "variable.undefined",
+            "Variable $held might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            119,
+            "variable.undefined",
+            "Variable $unrelated might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            125,
+            "variable.undefined",
+            "Variable $held might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            126,
+            "variable.undefined",
+            "Variable $held might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            127,
+            "phpstan.dumpType",
+            "Dumped type: 'changed'|'no'|'yes'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            133,
+            "variable.undefined",
+            "Variable $created might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            133,
+            "variable.undefined",
+            "Variable $existing might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            134,
+            "phpstan.dumpType",
+            "Dumped type: 'entry'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            134,
+            "variable.undefined",
+            "Variable $existing might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            136,
+            "variable.undefined",
+            "Undefined variable: $fromExtract",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            145,
+            "phpstan.dumpType",
+            "Dumped type: 1|2",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            146,
+            "echo.nonString",
+            "Parameter #1 (array{}|array{non-empty-string}) of echo cannot be converted to string.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            146,
+            "variable.undefined",
+            "Variable $matches might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            151,
+            "variable.undefined",
+            "Undefined variable: $initial",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            153,
+            "variable.undefined",
+            "Variable $whileInitial might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            155,
+            "variable.undefined",
+            "Variable $foreachCreated might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            155,
+            "variable.undefined",
+            "Variable $key might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            155,
+            "variable.undefined",
+            "Variable $value might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            161,
+            "variable.undefined",
+            "Variable $block might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            168,
+            "phpstan.dumpType",
+            "Dumped type: array<int, string>",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            170,
+            "variable.undefined",
+            "Undefined variable: $initial",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            170,
+            "variable.undefined",
+            "Variable $created might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            170,
+            "variable.undefined",
+            "Variable $value might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            171,
+            "phpstan.dumpType",
+            "Dumped type: array<int, string>",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            178,
+            "include.fileNotFound",
+            "Path in include() \"pun-block-missing-body.php\" is not a file or it does not exist.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            178,
+            "include.fileNotFound",
+            "Path in include() \"pun-block-missing-entry.php\" is not a file or it does not exist.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            180,
+            "phpstan.dumpType",
+            "Dumped type: 'body'|'one'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            185,
+            "phpstan.dumpType",
+            "Dumped type: 'else'|'elseif'|'if'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            189,
+            "variable.undefined",
+            "Variable $colonIf might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            191,
+            "variable.undefined",
+            "Variable $colonFor might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            193,
+            "variable.undefined",
+            "Variable $colonWhile might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            195,
+            "variable.undefined",
+            "Variable $colonForeach might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            197,
+            "variable.undefined",
+            "Variable $doBlock might not be defined.",
+            null,
+            true
+        ],
+        [
+            "native.php",
+            4,
+            "void.pure",
+            "Function BlockPollution\\nativeTypes() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "native.php",
+            9,
+            "phpstan.dumpNativeType",
+            "Dumped type: 2",
+            null,
+            false
+        ],
+        [
+            "native.php",
+            11,
+            "phpstan.dumpNativeType",
+            "Dumped type: 1|2",
+            null,
+            false
+        ],
+        [
+            "native.php",
+            12,
+            "phpstan.dumpNativeType",
+            "Dumped type: 3",
+            null,
+            false
+        ],
+        [
+            "native.php",
+            12,
+            "variable.undefined",
+            "Variable $created might not be defined.",
+            null,
+            true
+        ],
+        [
+            "native.php",
+            14,
+            "phpstan.dumpNativeType",
+            "Dumped type: 4",
+            null,
+            false
+        ]
+    ],
+    "loops-only": [
+        [
+            "matrix.php",
+            8,
+            "phpstan.dumpType",
+            "Dumped type: 1",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            12,
+            "phpstan.dumpType",
+            "Dumped type: 'body'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            13,
+            "echo.nonString",
+            "Parameter #1 (array{'body'}) of echo cannot be converted to string.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            15,
+            "echo.nonString",
+            "Parameter #1 (array{'body'}) of echo cannot be converted to string.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            16,
+            "phpstan.dumpType",
+            "Dumped type: 'body'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            17,
+            "phpstan.dumpType",
+            "Dumped type: 2",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            18,
+            "phpstan.dumpType",
+            "Dumped type: array{'body'}",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            20,
+            "phpstan.dumpType",
+            "Dumped type: 'outside'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            21,
+            "variable.undefined",
+            "Undefined variable: $neverAssigned",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            29,
+            "phpstan.dumpType",
+            "Dumped type: false",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            34,
+            "phpstan.dumpType",
+            "Dumped type: false",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            44,
+            "variable.undefined",
+            "Variable $created might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            45,
+            "phpstan.dumpType",
+            "Dumped type: 'end'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            48,
+            "void.pure",
+            "Function BlockPollution\\returns() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            61,
+            "phpstan.dumpType",
+            "Dumped type: 'throw'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            64,
+            "phpstan.dumpType",
+            "Dumped type: 'throw'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            74,
+            "phpstan.dumpType",
+            "Dumped type: 'end'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            76,
+            "variable.undefined",
+            "Variable $onBreak might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            76,
+            "variable.undefined",
+            "Variable $onEnd might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            76,
+            "variable.undefined",
+            "Variable $value might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            77,
+            "phpstan.dumpType",
+            "Dumped type: 'break'|'end'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            86,
+            "variable.undefined",
+            "Variable $created might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            87,
+            "phpstan.dumpType",
+            "Dumped type: 'break'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            96,
+            "variable.undefined",
+            "Variable $created might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            97,
+            "phpstan.dumpType",
+            "Dumped type: 'continue'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            112,
+            "variable.undefined",
+            "Variable $breakOut might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            112,
+            "variable.undefined",
+            "Variable $continueOut might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            112,
+            "variable.undefined",
+            "Variable $inner might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            112,
+            "variable.undefined",
+            "Variable $outer might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            119,
+            "variable.undefined",
+            "Variable $held might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            125,
+            "variable.undefined",
+            "Variable $held might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            126,
+            "variable.undefined",
+            "Variable $held might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            127,
+            "phpstan.dumpType",
+            "Dumped type: 'changed'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            133,
+            "variable.undefined",
+            "Undefined variable: $existing",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            134,
+            "phpstan.dumpType",
+            "Dumped type: *ERROR*",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            134,
+            "variable.undefined",
+            "Undefined variable: $existing",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            136,
+            "variable.undefined",
+            "Variable $fromExtract might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            145,
+            "phpstan.dumpType",
+            "Dumped type: 2",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            146,
+            "echo.nonString",
+            "Parameter #1 (array{}|array{non-empty-string}) of echo cannot be converted to string.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            151,
+            "variable.undefined",
+            "Undefined variable: $initial",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            153,
+            "variable.undefined",
+            "Variable $whileInitial might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            155,
+            "variable.undefined",
+            "Variable $foreachCreated might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            155,
+            "variable.undefined",
+            "Variable $key might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            155,
+            "variable.undefined",
+            "Variable $value might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            168,
+            "phpstan.dumpType",
+            "Dumped type: array<int, string>",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            170,
+            "variable.undefined",
+            "Undefined variable: $initial",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            170,
+            "variable.undefined",
+            "Variable $created might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            170,
+            "variable.undefined",
+            "Variable $value might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            171,
+            "phpstan.dumpType",
+            "Dumped type: array<int, string>",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            178,
+            "include.fileNotFound",
+            "Path in include() \"pun-block-missing-body.php\" is not a file or it does not exist.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            180,
+            "phpstan.dumpType",
+            "Dumped type: 'body'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            185,
+            "phpstan.dumpType",
+            "Dumped type: 'else'|'elseif'|'if'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            191,
+            "variable.undefined",
+            "Variable $colonFor might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            195,
+            "variable.undefined",
+            "Variable $colonForeach might not be defined.",
+            null,
+            true
+        ],
+        [
+            "native.php",
+            4,
+            "void.pure",
+            "Function BlockPollution\\nativeTypes() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "native.php",
+            9,
+            "phpstan.dumpNativeType",
+            "Dumped type: 2",
+            null,
+            false
+        ],
+        [
+            "native.php",
+            11,
+            "phpstan.dumpNativeType",
+            "Dumped type: 2",
+            null,
+            false
+        ],
+        [
+            "native.php",
+            12,
+            "phpstan.dumpNativeType",
+            "Dumped type: 3",
+            null,
+            false
+        ],
+        [
+            "native.php",
+            14,
+            "phpstan.dumpNativeType",
+            "Dumped type: 4",
+            null,
+            false
+        ]
+    ],
+    "secondary": [
+        [
+            "secondary.php",
+            4,
+            "void.pure",
+            "Function BlockPollution\\matchSubjects() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "secondary.php",
+            7,
+            "phpstan.dumpType",
+            "Dumped type: 1|'entry'",
+            null,
+            false
+        ],
+        [
+            "secondary.php",
+            8,
+            "expr.resultUnused",
+            "Expression \"match ($subject) {\u2026\" on a separate line does not do anything.",
+            null,
+            true
+        ],
+        [
+            "secondary.php",
+            9,
+            "expr.resultUnused",
+            "Expression \"match ($subject) {\u2026\" on a separate line does not do anything.",
+            null,
+            true
+        ]
+    ],
+    "secondary-enabled": [
+        [
+            "secondary.php",
+            4,
+            "void.pure",
+            "Function BlockPollution\\matchSubjects() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "secondary.php",
+            7,
+            "phpstan.dumpType",
+            "Dumped type: 1",
+            null,
+            false
+        ],
+        [
+            "secondary.php",
+            8,
+            "expr.resultUnused",
+            "Expression \"match ($subject) {\u2026\" on a separate line does not do anything.",
+            null,
+            true
+        ],
+        [
+            "secondary.php",
+            8,
+            "match.alwaysFalse",
+            "Match arm comparison between 1 and 'entry' is always false.",
+            null,
+            true
+        ],
+        [
+            "secondary.php",
+            9,
+            "expr.resultUnused",
+            "Expression \"match ($subject) {\u2026\" on a separate line does not do anything.",
+            null,
+            true
+        ],
+        [
+            "secondary.php",
+            9,
+            "match.alwaysTrue",
+            "Match arm comparison between 1 and 1 is always true.",
+            "Remove remaining cases below this one and this error will disappear too.",
+            true
+        ]
+    ]
+}

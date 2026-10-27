@@ -2445,3 +2445,37 @@ narrowing controls. The existing dead-code fixture checks repeated probes of an 
 
 The array reduction is bounded. It does not port every `TypeCombinator` array-union optimization or
 establish complete coalesce, string-offset, or variable-rule inference parity.
+
+## Standalone block scope pollution
+
+`Settings::pollute_scope_with_block` defaults to true. Pun passes `polluteScopeWithBlock` from resolved
+parameters through `Project`, `Checks`, `Checker`, and every primary and secondary inference entry point.
+The setting is independent of maybe-undefined reporting, loop-initial pollution, and foreach pollution.
+
+The reference is PHPStan 2.3.1 at `cb3b7e99489b2e3789ee2eec10501cb7a72580ea`:
+
+- [`BlockHandler.php:48–69`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Analyser/StmtHandler/BlockHandler.php#L48-L69)
+  evaluates the body once. Enabled pollution returns its actual scope. Disabled pollution joins incoming
+  and final scopes but keeps the actual termination, exits, throws, and effects.
+- [`MutatingScope.php:4514–4577`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Analyser/MutatingScope.php#L4514-L4577)
+  joins holder types and certainty, combines conditional holders, joins native types, and ANDs extract state.
+  Pun uses its existing variable-scope and native-scope joins. Only scope state changes after body analysis.
+  Existing control-flow artifacts and other body effects remain intact.
+
+Mago's CST also represents control-statement braces as `Statement::Block`. PHP-Parser exposes those bodies
+as statement lists, so they must not receive standalone-block pollution. The statement dispatcher records
+the spans of the actual braced bodies of `if`, `elseif`, `else`, `for`, `while`, `foreach`, and `do`.
+These immutable body roles remain distinct from nested standalone blocks and blocks inside colon-delimited bodies.
+The default-enabled path does not collect those spans. No parser or variable-scope implementation changes.
+
+Public `variables` and `project` tests compare resolved default, enabled, disabled, quiet, and independent
+configs with fresh PHPStan output in `tests/fixtures/block-pollution/expected.json`. `capture.php` regenerates
+the diagnostics, full types, and scalar native types. Controls cover asymmetric holders, nested blocks,
+conditionals, return, throw, local and outward exits, unset, extract, output arguments, expression effects,
+include inference, exhaustive matches, body braces, colon syntax, and unchanged surrounding code.
+The public Analyzer test checks native exit unions, unchanged full artifacts, and single visits to marked reads.
+Plugin-error controls check that a failed body remains an error rather than a continuing optional branch.
+
+This patch does not port PHPStan's separate `VariableFlow` liveness algebra or extend the existing scope joins.
+Unsupported native transfers retain their existing invalidation behavior. This is not a complete variable-flow
+or DefinedVariableRule port.

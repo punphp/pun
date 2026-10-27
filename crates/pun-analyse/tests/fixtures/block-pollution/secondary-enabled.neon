@@ -1,0 +1,4 @@
+includes:
+    - secondary.neon
+parameters:
+    polluteScopeWithBlock: true

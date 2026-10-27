@@ -1,0 +1,5 @@
+includes:
+    - enabled.neon
+parameters:
+    polluteScopeWithLoopInitialAssignments: false
+    polluteScopeWithAlwaysIterableForeach: false

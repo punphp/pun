@@ -60,6 +60,37 @@ fn project_from_phpstan_neon() {
 }
 
 #[test]
+fn block_pollution_defaults_and_explicit_config() {
+    use pun_phpstan::{Array, Value};
+
+    let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/block-pollution");
+    assert!(Project::new(Vec::new(), Vec::new()).pollute_scope_with_block);
+    assert!(Project::from_config(&root, &Array::new()).pollute_scope_with_block);
+    assert!(mago_analyzer::settings::Settings::default().pollute_scope_with_block);
+    for (mode, pollution, maybe, loops) in [
+        ("default", true, true, true),
+        ("enabled", true, true, true),
+        ("disabled", false, true, true),
+        ("quiet", false, false, true),
+        ("independent", false, true, false),
+        ("loops-only", true, true, false),
+        ("secondary", false, true, true),
+        ("secondary-enabled", true, true, true),
+    ] {
+        let config = resolve(&Options {
+            config: Some(root.join(format!("{mode}.neon")).to_string_lossy().into_owned()),
+            ..Options::for_project(&root.to_string_lossy())
+        }).unwrap();
+        assert_eq!(config.parameters.get_str("polluteScopeWithBlock"), Some(&Value::Bool(pollution)));
+        let project = Project::from_config(&root, &config.parameters);
+        assert_eq!(project.pollute_scope_with_block, pollution);
+        assert_eq!(project.check_maybe_undefined_variables, maybe);
+        assert_eq!(project.pollute_scope_with_loop_initial_assignments, loops);
+        assert_eq!(project.pollute_scope_with_always_iterable_foreach, loops);
+    }
+}
+
+#[test]
 fn foreach_pollution_defaults_and_explicit_config() {
     use pun_phpstan::{Array, Value};
 

@@ -1,6 +1,7 @@
 use std::rc::Rc;
 
 use foldhash::HashMap;
+use foldhash::HashSet;
 use mago_allocator::Arena;
 use mago_word::Word;
 use mago_word::WordMap;
@@ -60,6 +61,8 @@ where
     pub(super) scope: NamespaceScope,
     pub(super) collector: Collector<'ctx, 'arena, A>,
     pub(super) statement_span: Span,
+    /// CST braces owned by control statements are not PHP-Parser's standalone Block nodes.
+    pub(super) control_body_blocks: HashSet<Span>,
     pub(super) plugin_registry: &'ctx PluginRegistry,
     pub(super) external_analysis_session: Option<&'ctx ExternalAnalysisSession>,
     pub(super) additional_symbol_references: Option<&'ctx SymbolReferences>,
@@ -98,6 +101,7 @@ where
             settings,
             scope: NamespaceScope::default(),
             statement_span,
+            control_body_blocks: HashSet::default(),
             collector,
             plugin_registry,
             external_analysis_session,

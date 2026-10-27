@@ -503,7 +503,7 @@ mod tests {
             magic_dir: false,
             path_constants: false,
         };
-        let (_, include_state) = include_file::prepare(&arena, &file, program, &names, &codebase, 80400, true, true, &settings);
+        let (_, include_state) = include_file::prepare(&arena, &file, program, &names, &codebase, 80400, true, true, true, &settings);
         let c = Checker {
             file: &file,
             has_compiler_halt: false,
@@ -576,6 +576,7 @@ mod tests {
             check_maybe_undefined_variables: false,
             pollute_scope_with_loop_initial_assignments: true,
             pollute_scope_with_always_iterable_foreach: true,
+            pollute_scope_with_block: true,
             method_purity_override: false,
             uninitialized_properties: false,
             missing_callable_signature: false,

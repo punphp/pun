@@ -9,11 +9,20 @@ use mago_reporting::Issue;
 use mago_span::HasSpan;
 use mago_syntax::comments::docblock::PrecedingDocblocks;
 use mago_syntax::cst::Call;
+use mago_syntax::cst::DoWhile;
 use mago_syntax::cst::Expression;
 use mago_syntax::cst::ExpressionStatement;
+use mago_syntax::cst::For;
+use mago_syntax::cst::ForBody;
+use mago_syntax::cst::Foreach;
+use mago_syntax::cst::ForeachBody;
 use mago_syntax::cst::FunctionCall;
+use mago_syntax::cst::If;
+use mago_syntax::cst::IfBody;
 use mago_syntax::cst::Node;
 use mago_syntax::cst::Statement;
+use mago_syntax::cst::While;
+use mago_syntax::cst::WhileBody;
 use mago_word::Word;
 
 use crate::Context;
@@ -103,6 +112,32 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Statement<'arena> {
             }
         }
 
+        if !context.settings.pollute_scope_with_block {
+            // PHP-Parser exposes these bodies as statement lists, not standalone Block nodes.
+            // Record only the actual CST body wrapper; nested and colon-body blocks stay standalone.
+            let mut body = |statement: &Statement<'arena>| {
+                if let Statement::Block(block) = statement {
+                    context.control_body_blocks.insert(block.span());
+                }
+            };
+            match self {
+                Statement::If(If { body: IfBody::Statement(statement), .. }) => {
+                    body(statement.statement);
+                    for clause in &statement.else_if_clauses {
+                        body(clause.statement);
+                    }
+                    if let Some(clause) = &statement.else_clause {
+                        body(clause.statement);
+                    }
+                }
+                Statement::For(For { body: ForBody::Statement(statement), .. })
+                | Statement::Foreach(Foreach { body: ForeachBody::Statement(statement), .. })
+                | Statement::While(While { body: WhileBody::Statement(statement), .. })
+                | Statement::DoWhile(DoWhile { statement, .. }) => body(statement),
+                _ => {}
+            }
+        }
+
         let result = match self {
             Statement::Inline(_)
             | Statement::OpeningTag(_)
@@ -185,7 +220,17 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Statement<'arena> {
                 function.analyze(context, block_context, artifacts)
             }
             Statement::Block(block) => {
-                analyze_statements(block.statements.as_slice(), context, block_context, artifacts)
+                let entry = (!context.settings.pollute_scope_with_block && !context.control_body_blocks.contains(&block.span()))
+                    .then(|| (block_context.variable_scope(), block_context.native_locals.clone()));
+                analyze_statements(block.statements.as_slice(), context, block_context, artifacts)?;
+                if let Some((entry, native_entry)) = entry {
+                    // BlockHandler merges scopes, not statement results: actual termination, exits,
+                    // throws and side effects still belong to the body that was evaluated once.
+                    block_context.merge_variable_scope_types(&[entry, block_context.variable_scope()], context.codebase);
+                    block_context.native_locals =
+                        crate::native::join(&[native_entry, block_context.native_locals.take()], context.codebase);
+                }
+                Ok(())
             }
             Statement::Expression(expression) => expression.expression.analyze(context, block_context, artifacts),
             Statement::Try(r#try) => r#try.analyze(context, block_context, artifacts),
