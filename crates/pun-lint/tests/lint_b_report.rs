@@ -20,6 +20,12 @@ const PHPSTAN: &[&str] = &[
     "lint/style/no-short-ternary",
     "lint/style/no-variable-variable",
     "lint/classes/no-explicit-constructor-call",
+    "lint/style/no-dynamic-method-call",
+    "lint/style/no-dynamic-method-callable",
+    "lint/style/no-dynamic-property",
+    "lint/style/no-dynamic-static-call",
+    "lint/style/no-dynamic-static-callable",
+    "lint/style/no-dynamic-static-property",
 ];
 
 fn line_col(source: &str, offset: usize) -> (usize, usize) {
@@ -114,6 +120,18 @@ fn version_gates() {
         .check(Path::new("a.php"), code)
         .unwrap();
     assert_eq!(found.len(), 1);
+}
+
+#[test]
+fn dynamic_call_on_anonymous_class() {
+    // PHPStan 2.3.1 with phpstan-strict-rules 2.0.12 (noVariableVariables only), run on this code as f.php in its
+    // directory: an anonymous class is `class@anonymous/<path>:<line>`, the path as PHPStan was given it.
+    let code = "<?php\n\nfunction f($m) {\n    $x = new class { };\n    $x->$m();\n}\n";
+    let found = Linter::new(vec![Box::new(rules::NoDynamicMethodCall)], 80400)
+        .check(Path::new("f.php"), code)
+        .unwrap();
+    let messages: Vec<&str> = found.iter().map(|p| p.message.as_str()).collect();
+    assert_eq!(messages, ["Variable method call on class@anonymous/f.php:4."]);
 }
 
 #[test]

@@ -436,7 +436,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "functions/require-assert-description" = { fix = "none", intent = "correctness", ported = true, origin = "mago", status = "decided", summary = "Detects assert functions that do not have a description." }
 "functions/require-strict-array-search" = { fix = "mixed", intent = "suspicious", sets = ["coding-style"], ported = true, status = "decided", summary = "Makes array_search search for identical elements" }
 "functions/require-strict-function-call" = { fix = "none", intent = "suspicious", sets = ["coding-style"], ported = true, status = "decided", summary = "Requires the strict flag of `in_array()`, `array_search()`, `array_keys()` with a search value and `base64_decode()`." }
-"functions/require-strict-in-array" = { fix = "mixed", intent = "suspicious", sets = ["coding-style"], ported = false, status = "decided", summary = "Set in_array strict to true when defined on similar type" }
+"functions/require-strict-in-array" = { fix = "mixed", intent = "suspicious", sets = ["coding-style"], ported = true, status = "decided", summary = "Set in_array strict to true when defined on similar type" }
 "imports/no-unused" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Unused `use` statements must be removed." }
 "laravel-12/prefer-scope-attribute" = { fix = "unsafe", gated_by = "laravel-version", ported = true, status = "decided", summary = "Changes model scope methods to use the scope attribute" }
 "laravel/add-factory-extends-phpdoc" = { fix = "unsafe", gated_by = "laravel-version", ported = false, status = "decided", summary = "Adds the @extends annotation to Factories." }
@@ -746,20 +746,20 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "refactor/prefer-attribute-over-annotation" = { fix = "unsafe", ported = false, status = "decided", summary = "Replace configured PHPDoc annotations (including nested ones) with attributes." }
 "refactor/prefer-constant" = { fix = "unsafe", sets = ["coding-style"], ported = true, status = "decided", summary = "Replace function calls that return a constant (php_sapi_name(), pi(), ...) with the constant." }
 "refactor/remove-attribute" = { fix = "safe", ported = true, status = "decided", summary = "Removes configured attributes by their respective FQN." }
-"refactor/remove-function-argument" = { fix = "unsafe", ported = false, status = "decided", summary = "Remove argument by position by function name" }
-"refactor/remove-function-call" = { fix = "unsafe", ported = false, status = "decided", summary = "Remove defined function calls" }
+"refactor/remove-function-argument" = { fix = "unsafe", ported = true, status = "decided", summary = "Remove argument by position by function name" }
+"refactor/remove-function-call" = { fix = "unsafe", ported = true, status = "decided", summary = "Remove defined function calls" }
 "refactor/remove-phpdoc-annotation" = { fix = "safe", ported = true, status = "decided", summary = "Removes configured annotations from PHPDoc." }
-"refactor/rename-cast" = { fix = "unsafe", ported = false, status = "decided", summary = "Renames casts" }
+"refactor/rename-cast" = { fix = "unsafe", ported = true, status = "decided", summary = "Renames casts" }
 "refactor/rename-class" = { fix = "unsafe", gated_by = "laravel-version", ported = false, status = "decided", summary = "Replace defined classes by new ones" }
-"refactor/rename-class-constant" = { fix = "unsafe", ported = false, status = "decided", summary = "Replace defined class constants in their calls" }
-"refactor/rename-constant" = { fix = "unsafe", ported = false, status = "decided", summary = "Replace constant by new ones" }
-"refactor/rename-function" = { fix = "unsafe", gated_by = "laravel-version", ported = false, status = "decided", summary = "Turn defined function call new one" }
+"refactor/rename-class-constant" = { fix = "unsafe", ported = true, status = "decided", summary = "Replace defined class constants in their calls" }
+"refactor/rename-constant" = { fix = "unsafe", ported = true, status = "decided", summary = "Replace constant by new ones" }
+"refactor/rename-function" = { fix = "unsafe", gated_by = "laravel-version", ported = true, status = "decided", summary = "Turn defined function call new one" }
 "refactor/rename-method" = { fix = "unsafe", gated_by = "laravel-version", ported = false, status = "decided", summary = "Turn method names to new ones" }
 "refactor/rename-phpdoc-tag" = { fix = "safe", ported = true, status = "decided", summary = "Renames PHPDoc tags." }
 "refactor/replace-array-access" = { fix = "unsafe", ported = false, status = "decided", summary = "Change array dim fetch to method call" }
-"refactor/replace-function-with-constant" = { fix = "unsafe", ported = false, status = "decided", summary = "Changes use of function calls to use constants" }
-"refactor/replace-function-with-new" = { fix = "unsafe", ported = false, status = "decided", summary = "Change configured function calls to new Instance" }
-"refactor/replace-function-with-static" = { fix = "unsafe", ported = false, status = "decided", summary = "Turn defined function call to static method call" }
+"refactor/replace-function-with-constant" = { fix = "unsafe", ported = true, status = "decided", summary = "Changes use of function calls to use constants" }
+"refactor/replace-function-with-new" = { fix = "unsafe", ported = true, status = "decided", summary = "Change configured function calls to new Instance" }
+"refactor/replace-function-with-static" = { fix = "unsafe", ported = true, status = "decided", summary = "Turn defined function call to static method call" }
 "refactor/replace-static-with-method" = { fix = "unsafe", ported = false, status = "decided", summary = "Change static call to service method via constructor injection" }
 "security/add-sensitive-parameter" = { fix = "safe", intent = "suspicious", sets = ["code-quality"], ported = true, origin = "mago", status = "decided", summary = "Requires that parameters that are likely to contain sensitive information (e.g., passwords) are marked with the `#[SensitiveParameter]` attribute." }
 "security/no-debug-calls" = { fix = "unsafe", intent = "suspicious", sets = ["coding-style"], ported = true, status = "decided", summary = "Remove or report debug calls left in code: dd(), dump(), var_dump(), ray(), and ->dd()/->dump() in Pest expectations." }
@@ -794,13 +794,13 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "style/no-array-push" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "Converts simple usages of `array_push($x, $y);` to `$x[] = $y;`." }
 "style/no-assign-in-ternary-branch" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Assign outcome of ternary condition to variable, where applicable" }
 "style/no-call-user-func" = { fix = "unsafe", sets = ["code-quality", "coding-style"], ported = true, status = "decided", summary = "Call callables directly instead of through call_user_func()." }
-"style/no-dynamic-method-call" = { fix = "none", sets = ["coding-style"], ported = false, status = "decided", summary = "Disallows calling a method by a variable name (`$object->$method()`)." }
-"style/no-dynamic-method-callable" = { fix = "none", sets = ["coding-style"], ported = false, status = "decided", summary = "Disallows a first-class callable of a method with a variable name (`$object->$method(...)`)." }
+"style/no-dynamic-method-call" = { fix = "none", sets = ["coding-style"], ported = true, status = "decided", summary = "Disallows calling a method by a variable name (`$object->$method()`)." }
+"style/no-dynamic-method-callable" = { fix = "none", sets = ["coding-style"], ported = true, status = "decided", summary = "Disallows a first-class callable of a method with a variable name (`$object->$method(...)`)." }
 "style/no-dynamic-name" = { fix = "none", sets = ["coding-style"], origin = "mago", ported = true, status = "decided", summary = "Discourages usage of PHP's variable variables feature." }
-"style/no-dynamic-property" = { fix = "none", sets = ["coding-style"], ported = false, status = "decided", summary = "Disallows accessing a property by a variable name (`$object->$property`)." }
-"style/no-dynamic-static-call" = { fix = "none", sets = ["coding-style"], ported = false, status = "decided", summary = "Disallows calling a static method by a variable name (`Foo::$method()`)." }
-"style/no-dynamic-static-callable" = { fix = "none", sets = ["coding-style"], ported = false, status = "decided", summary = "Disallows a first-class callable of a static method with a variable name (`Foo::$method(...)`)." }
-"style/no-dynamic-static-property" = { fix = "none", sets = ["coding-style"], ported = false, status = "decided", summary = "Disallows accessing a static property by a variable name (`Foo::$$property`)." }
+"style/no-dynamic-property" = { fix = "none", sets = ["coding-style"], ported = true, status = "decided", summary = "Disallows accessing a property by a variable name (`$object->$property`)." }
+"style/no-dynamic-static-call" = { fix = "none", sets = ["coding-style"], ported = true, status = "decided", summary = "Disallows calling a static method by a variable name (`Foo::$method()`)." }
+"style/no-dynamic-static-callable" = { fix = "none", sets = ["coding-style"], ported = true, status = "decided", summary = "Disallows a first-class callable of a static method with a variable name (`Foo::$method(...)`)." }
+"style/no-dynamic-static-property" = { fix = "none", sets = ["coding-style"], ported = true, status = "decided", summary = "Disallows accessing a static property by a variable name (`Foo::$$property`)." }
 "style/no-empty" = { fix = "unsafe", intent = "suspicious", sets = ["code-quality"], ported = true, status = "decided", summary = "Detects the use of the `empty()` construct.", note = "fix (Rector DisallowedEmptyRuleFixer) is unsafe; report-only from strict-rules empty.notAllowed and Mago no-empty" }
 "style/no-ereg" = { fix = "unsafe", sets = ["modernize"], ported = true, status = "decided", summary = "Replace deprecated `ereg` regular expression functions with `preg`." }
 "style/no-escaped-quotes" = { fix = "safe", sets = ["coding-style"], ported = true, status = "decided", summary = "Prefer quote that are not inside the string" }
@@ -833,7 +833,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "style/prefer-class-constant" = { fix = "unsafe", sets = ["modernize", "coding-style"], ported = false, status = "decided", summary = "Use `Foo::class` instead of class-name strings." }
 "style/prefer-class-keyword" = { fix = "unsafe", sets = ["coding-style"], ported = true, status = "decided", summary = "Use `class` keyword for class name resolution in string instead of hardcoded string reference" }
 "style/prefer-class-keyword-on-object" = { fix = "unsafe", sets = ["modernize"], ported = true, status = "decided", summary = "Replace `get_class` calls on object variables with class keyword syntax." }
-"style/prefer-class-name-constant" = { fix = "unsafe", sets = ["coding-style"], ported = false, status = "decided", summary = "Replace string class names by `<class>::class` constant" }
+"style/prefer-class-name-constant" = { fix = "unsafe", sets = ["coding-style"], ported = true, status = "decided", summary = "Replace string class names by `<class>::class` constant" }
 "style/prefer-compound-assignment" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "Shorthand notation for operators should be used if possible." }
 "style/prefer-create-from-timestamp" = { fix = "none", ported = true, origin = "mago", status = "decided", summary = "Suggests `DateTimeImmutable::createFromTimestamp()` when a Unix timestamp is converted" }
 "style/prefer-date-time-immutable" = { fix = "unsafe", intent = "suspicious", ported = true, status = "decided", summary = "Class `DateTimeImmutable` should be used instead of `DateTime`." }

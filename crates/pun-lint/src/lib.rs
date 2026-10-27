@@ -59,6 +59,13 @@ pub trait Rule: Send + Sync {
         None
     }
 
+    /// Whether the rule's fix may match again on the code it wrote (removing the argument at a position, renames that
+    /// can chain). Rector runs a rule once per file; the fix rounds of [`Linter::fix`] stop running such a rule on a
+    /// file once one of its fixes applied there.
+    fn once(&self) -> bool {
+        false
+    }
+
     /// Takes the rule's options from pun.toml (`options` of its `[lint.rules]` entry, keyed as the upstream rule's
     /// configuration), before any file is linted. The error says what is wrong with them. A rule without options
     /// rejects any.
@@ -251,6 +258,8 @@ impl Linter {
         let mut current = source.to_string();
         let mut applied = Vec::new();
         let mut last_rules = Vec::new();
+        // The rules that run once (`Rule::once`) and whose fixes applied in an earlier round.
+        let mut done: Vec<String> = Vec::new();
         let mut round = 0;
         loop {
             let mut problems = self.check(path, &current).map_err(|e| match e {
@@ -261,6 +270,7 @@ impl Linter {
                 },
                 e => e,
             })?;
+            problems.retain(|p| !done.contains(&p.rule));
             filter(&current, &mut problems);
             let with_fix: Vec<&Problem> = problems.iter().filter(|p| p.fix.is_some()).collect();
             let fixes: Vec<&Fix> = with_fix.iter().filter_map(|p| p.fix.as_ref()).collect();
@@ -277,6 +287,11 @@ impl Linter {
             if round == MAX_ROUNDS {
                 return Err(LintError::NoConvergence { rules: last_rules });
             }
+            done.extend(
+                (last_rules.iter())
+                    .filter(|id| self.rules.iter().any(|r| r.id() == id.as_str() && r.once()))
+                    .cloned(),
+            );
             applied.extend(result.applied.iter().map(|&i| with_fix[i].clone()));
             current = result.source;
             round += 1;

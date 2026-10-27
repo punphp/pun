@@ -171,6 +171,12 @@ takes one table per Mago code, each with `enabled` and that rule's options:
 `"style/require-naming-convention" = { method-name = { enabled = true, camel = false }, class-name = { psr = true } }`.
 As in Mago, its method, property and variable checks are off until enabled.
 
+The `refactor` codemods ported from Rector do nothing until configured. They take the Rector rule's configuration:
+a map keeps its keys (`"refactor/rename-function" = { view = "Laravel\\Templating\\render" }`), and a list of
+value objects goes under `items`, with each object's properties in kebab-case
+(`"refactor/remove-function-argument" = { items = [{ function = "ldap_first_attribute", argument-position = 2 }] }`).
+Names are checked as Rector checks them, so `"1f" is not a valid function name` is a config error.
+
 `pun migrate` translates names and values. The [rule reference](/docs/rules) lists options for each rule.
 
 ## Removed keys

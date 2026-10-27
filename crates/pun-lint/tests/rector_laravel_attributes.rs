@@ -24,7 +24,7 @@
 #[allow(dead_code)]
 mod lint_c;
 
-use lint_c::run_class_with;
+use lint_c::run_class_stubs;
 use pun_lint::Rule;
 use pun_lint::rules::{
     PreferAliasesAttribute, PreferAppendsAttribute, PreferBackoffAttribute,
@@ -41,7 +41,7 @@ use pun_lint::rules::{
 };
 
 fn check(rule: impl Rule + 'static, class: &str) {
-    run_class_with(
+    run_class_stubs(
         vec![Box::new(rule)],
         class,
         80400,

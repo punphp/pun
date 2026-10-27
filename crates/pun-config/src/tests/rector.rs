@@ -196,8 +196,8 @@ fn carries_rule_configurations() {
         ]
     );
 
-    // Composed: a ported rule gets its options on its line, even when a set already turns it on; an unported one is
-    // named. lint/complexity/no-and-assignment is ported and in code-quality (mapping.toml); its options are made up.
+    // Composed: a ported rule gets its options on its line, even when a set already turns it on.
+    // lint/complexity/no-and-assignment is ported and in code-quality (mapping.toml); its options are made up.
     let rector = Rector {
         sets: vec!["code-quality"],
         want: vec![
@@ -232,13 +232,13 @@ fn carries_rule_configurations() {
         text.contains("\n\"complexity/no-and-assignment\" = { items = 1 }\n"),
         "{text}"
     );
-    assert_eq!(done.on, 1);
-    if !rule_meta_ported("lint/refactor/rename-function") {
-        assert!(done.unsupported.contains(&(
-            "RenameFunctionRector".to_string(),
-            "not supported by Pun yet".to_string()
-        )));
-    }
+    // lint/refactor/rename-function is ported, so it gets its line with the options.
+    assert!(rule_meta_ported("lint/refactor/rename-function"));
+    assert!(
+        text.contains("\n\"refactor/rename-function\" = { split = \"explode\", join = \"implode\" }\n"),
+        "{text}"
+    );
+    assert_eq!(done.on, 2);
     let cfg = from_toml(&root, &text).unwrap();
     let rule = cfg
         .lint

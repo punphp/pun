@@ -1,0 +1,17 @@
+<?php
+
+namespace N;
+
+use const A\OLD_CONSTANT;
+
+echo MYSQL_ASSOC, \MYSQL_ASSOC, mysql_assoc, OLD_CONSTANT, \OLD_CONSTANT, X\MYSQL_ASSOC;
+echo MYSQLI_ASSOC;
+-----
+<?php
+
+namespace N;
+
+use const A\OLD_CONSTANT;
+
+echo MYSQLI_ASSOC, MYSQLI_ASSOC, MYSQLI_ASSOC, OLD_CONSTANT, NEW_CONSTANT, X\MYSQL_ASSOC;
+echo MYSQLI_ASSOC;

@@ -27,6 +27,7 @@ mod require_parent_visibility;
 mod add_datetime_property_type;
 mod no_dead_catch;
 mod prefer_class_keyword;
+mod prefer_class_name_constant;
 mod no_unused_constructor_param;
 mod no_null_default_argument;
 mod add_param_type_sprintf;
@@ -64,6 +65,7 @@ mod no_double_self_assignment;
 mod no_duplicate_array_key;
 mod no_duplicate_case_body;
 mod no_duplicate_match_arm;
+mod no_dynamic_member;
 mod no_dynamic_name;
 mod no_else_after_return;
 mod no_empty;
@@ -158,6 +160,7 @@ mod no_variable_variable;
 mod no_void_on_magic_method;
 mod no_void_reference_return;
 mod php_parser;
+mod phpstan_describe;
 mod prefer_absolute_include;
 mod prefer_array_all;
 mod prefer_array_any;
@@ -204,6 +207,7 @@ mod rector_batch5;
 mod rector_code_quality;
 mod rector_conditions;
 mod rector_stmts;
+mod refactor;
 mod require_assign_set_padding;
 mod require_attribute_argument_order;
 mod require_is_a_allow_string;
@@ -212,6 +216,7 @@ mod require_preg_quote_delimiter;
 mod require_statement_padding;
 mod require_strict_function_call;
 mod require_strict_array_search;
+mod require_strict_in_array;
 mod side_effect;
 mod syntax_types;
 mod types;
@@ -247,6 +252,7 @@ pub use require_parent_visibility::RequireParentVisibility;
 pub use add_datetime_property_type::AddDatetimePropertyType;
 pub use no_dead_catch::NoDeadCatch;
 pub use prefer_class_keyword::PreferClassKeyword;
+pub use prefer_class_name_constant::PreferClassNameConstant;
 pub use no_unused_constructor_param::NoUnusedConstructorParam;
 pub use no_null_default_argument::{NoNullDefaultArgument, NoNullDefaultNamedArgument};
 pub use add_param_type_sprintf::AddParamTypeSprintf;
@@ -273,6 +279,10 @@ pub use no_double_self_assignment::NoDoubleSelfAssignment;
 pub use no_duplicate_array_key::NoDuplicateArrayKey;
 pub use no_duplicate_case_body::NoDuplicateCaseBody;
 pub use no_duplicate_match_arm::NoDuplicateMatchArm;
+pub use no_dynamic_member::{
+    NoDynamicMethodCall, NoDynamicMethodCallable, NoDynamicProperty, NoDynamicStaticCall,
+    NoDynamicStaticCallable, NoDynamicStaticProperty,
+};
 pub use no_dynamic_name::NoDynamicName;
 pub use no_else_after_return::NoElseAfterReturn;
 pub use no_empty::NoEmpty;
@@ -416,6 +426,8 @@ pub use require_preg_quote_delimiter::RequirePregQuoteDelimiter;
 pub use require_statement_padding::RequireStatementPadding;
 pub use require_strict_function_call::RequireStrictFunctionCall;
 pub use require_strict_array_search::RequireStrictArraySearch;
+pub use require_strict_in_array::RequireStrictInArray;
+pub use refactor::*;
 pub use types::*;
 
 use crate::Rule;
@@ -469,6 +481,7 @@ pub fn all() -> Vec<Box<dyn Rule>> {
     rules.extend(types::all());
     rules.extend(pest::all());
     rules.extend(phpunit::all());
+    rules.extend(refactor::all());
     rules.extend(ungrouped());
     rules
 }
@@ -682,5 +695,13 @@ fn ungrouped() -> Vec<Box<dyn Rule>> {
         Box::new(NoUselessConstructor),
         Box::new(NoUselessOverride),
         Box::new(NoRedundantDefaultArgument),
+        Box::new(NoDynamicMethodCall),
+        Box::new(NoDynamicMethodCallable),
+        Box::new(NoDynamicProperty),
+        Box::new(NoDynamicStaticCall),
+        Box::new(NoDynamicStaticCallable),
+        Box::new(NoDynamicStaticProperty),
+        Box::new(PreferClassNameConstant::default()),
+        Box::new(RequireStrictInArray),
     ]
 }

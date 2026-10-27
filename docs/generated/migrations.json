@@ -7439,7 +7439,7 @@
         "rules": [
           "lint/refactor/replace-function-with-constant"
         ],
-        "note": "Same. Options: configurable: options carry 1:1 (same keys, kebab-cased). Planned: not ported yet.",
+        "note": "Same. Options: configurable: options carry 1:1 (same keys, kebab-cased).",
         "unsupported": false
       },
       {
@@ -7457,7 +7457,7 @@
         "rules": [
           "lint/refactor/replace-function-with-new"
         ],
-        "note": "Same. Options: configurable: options carry 1:1 (same keys, kebab-cased). Planned: not ported yet.",
+        "note": "Same. Options: configurable: options carry 1:1 (same keys, kebab-cased).",
         "unsupported": false
       },
       {
@@ -7467,7 +7467,7 @@
         "rules": [
           "lint/refactor/replace-function-with-static"
         ],
-        "note": "Same. Options: configurable: options carry 1:1 (same keys, kebab-cased). Planned: not ported yet.",
+        "note": "Same. Options: configurable: options carry 1:1 (same keys, kebab-cased).",
         "unsupported": false
       },
       {
@@ -8659,7 +8659,7 @@
         "rules": [
           "lint/refactor/remove-function-call"
         ],
-        "note": "Same. Options: configurable: options carry 1:1 (same keys, kebab-cased). Planned: not ported yet.",
+        "note": "Same. Options: configurable: options carry 1:1 (same keys, kebab-cased).",
         "unsupported": false
       },
       {
@@ -8669,7 +8669,7 @@
         "rules": [
           "lint/refactor/remove-function-argument"
         ],
-        "note": "Same. Options: configurable: options carry 1:1 (same keys, kebab-cased). Planned: not ported yet.",
+        "note": "Same. Options: configurable: options carry 1:1 (same keys, kebab-cased).",
         "unsupported": false
       },
       {
@@ -9171,7 +9171,7 @@
         "rules": [
           "lint/refactor/rename-cast"
         ],
-        "note": "Same. Options: configurable: options carry 1:1 (same keys, kebab-cased). Planned: not ported yet.",
+        "note": "Same. Options: configurable: options carry 1:1 (same keys, kebab-cased).",
         "unsupported": false
       },
       {
@@ -9191,7 +9191,7 @@
         "rules": [
           "lint/refactor/rename-class-constant"
         ],
-        "note": "Same. Options: configurable: options carry 1:1 (same keys, kebab-cased). Planned: not ported yet.",
+        "note": "Same. Options: configurable: options carry 1:1 (same keys, kebab-cased).",
         "unsupported": false
       },
       {
@@ -9201,7 +9201,7 @@
         "rules": [
           "lint/refactor/rename-constant"
         ],
-        "note": "Same. Options: configurable: options carry 1:1 (same keys, kebab-cased). Planned: not ported yet.",
+        "note": "Same. Options: configurable: options carry 1:1 (same keys, kebab-cased).",
         "unsupported": false
       },
       {
@@ -9235,7 +9235,7 @@
         "rules": [
           "lint/refactor/rename-function"
         ],
-        "note": "Same. Options: configurable: options carry 1:1 (same keys, kebab-cased). Planned: not ported yet.",
+        "note": "Same. Options: configurable: options carry 1:1 (same keys, kebab-cased).",
         "unsupported": false
       },
       {
@@ -10129,7 +10129,7 @@
         "rules": [
           "lint/functions/require-strict-in-array"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -10147,7 +10147,7 @@
         "rules": [
           "lint/style/prefer-class-name-constant"
         ],
-        "note": "Same. Options: configurable: options carry 1:1 (same keys, kebab-cased). Planned: not ported yet.",
+        "note": "Same. Options: configurable: options carry 1:1 (same keys, kebab-cased).",
         "unsupported": false
       },
       {
@@ -19665,7 +19665,7 @@
         "rules": [
           "lint/style/no-dynamic-method-call"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -21811,7 +21811,7 @@
         "rules": [
           "lint/style/no-dynamic-property"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -23431,7 +23431,7 @@
         "rules": [
           "lint/style/no-dynamic-static-call"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -23661,7 +23661,7 @@
         "rules": [
           "lint/style/no-dynamic-static-property"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
