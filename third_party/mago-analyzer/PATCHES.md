@@ -1710,3 +1710,30 @@ the real prelude, assignment copies, overwritten values, closure captures, and b
 No assignment, capture, or combiner changes are needed once the producers supply the existing flag.
 The fixture README records the separate native-property, clone, falsey-join, and invalid `array_pop`
 boundaries rather than treating them as explicit-mixed parity.
+
+## Parameter-dependent first-class callback returns
+
+`expression/partial_application/function_partial_application.rs` preserves conditional return types
+when constructing a first-class function signature. `invocation/analyzer.rs` binds that callback's
+named parameters to the surrounding call's expected inputs before resolving its conditional return.
+The specialized signature replaces the provisional callback bounds when inferring the outer call.
+Ordinary generic callbacks retain their existing inference path.
+
+This follows PHPStan 2.3.1's `GenericParametersAcceptorResolver::resolve()` and
+`ResolvedFunctionVariantWithOriginal::resolveConditionalTypesForParameter()`: parameter names and
+passed argument types remain available until conditional return resolution.
+The public `callback_gather` controls compare fifteen fresh PHPStan observations and the unchanged
+level-9 bug-11056 fixture. They cover positive and negated conditions, named arguments, a nonzero
+parameter index, unknown strings, copied callables, and ordinary generic and arrow controls.
+The callback, callable-origin, explicit-mixed producer, and native-lane suites pass 33 public tests.
+Fresh LLVM profiles cover all 32 changed executable engine lines without exclusions.
+
+Recapture the conditional observations from the repository root:
+
+```sh
+php .oracle/phpstan/vendor/bin/phpstan analyse \
+	--configuration=crates/pun-analyse/tests/fixtures/callback-gather/phpstan.neon \
+	--no-progress --error-format=json \
+	crates/pun-analyse/tests/fixtures/callback-gather/conditional.php |
+	jq '[.files[].messages[]]'
+```

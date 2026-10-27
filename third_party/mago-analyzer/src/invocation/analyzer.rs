@@ -1425,7 +1425,7 @@ fn infer_generic_callable_arguments<'ctx, 'arena, A>(
             &result_without_callback_bounds,
             parameter_types,
             base_class_metadata,
-            base_parameter_type,
+            base_parameter_type.clone(),
         );
 
         let expected_signatures = expected_parameter_type.types.iter().filter_map(|atomic| match atomic {
@@ -1454,6 +1454,14 @@ fn infer_generic_callable_arguments<'ctx, 'arena, A>(
                     _ => continue,
                 };
 
+                let parameter_dependent_return =
+                    input_signature.get_return_type().is_some_and(contains_parameter_variable);
+                let mut callback_parameters = WordMap::default();
+                if parameter_dependent_return {
+                    // Replace the provisional callback bounds only after its inputs are known.
+                    remove_template_bounds_from_argument(template_result, argument_offset);
+                }
+
                 for (input_parameter, expected_parameter) in
                     input_signature.get_parameters().iter().zip(expected_signature.get_parameters())
                 {
@@ -1464,6 +1472,10 @@ fn infer_generic_callable_arguments<'ctx, 'arena, A>(
                         continue;
                     };
 
+                    if parameter_dependent_return && let Some(name) = input_parameter.get_name() {
+                        callback_parameters.insert(name.0, expected_type.clone());
+                    }
+
                     if !input_type.has_template_types() || expected_type.is_mixed() {
                         continue;
                     }
@@ -1472,6 +1484,27 @@ fn infer_generic_callable_arguments<'ctx, 'arena, A>(
                         context,
                         input_type,
                         expected_type,
+                        template_result,
+                        argument_offset,
+                        *argument_span,
+                        false,
+                    );
+                }
+
+                if parameter_dependent_return {
+                    let return_type = resolve_invocation_type(
+                        context,
+                        invocation,
+                        template_result,
+                        &callback_parameters,
+                        input_signature.get_return_type().unwrap().clone(),
+                    );
+                    let mut specialized_signature = input_signature.into_owned();
+                    specialized_signature.return_type = Some(std::sync::Arc::new(return_type));
+                    infer_parameter_templates_from_argument(
+                        context,
+                        &base_parameter_type,
+                        &TUnion::from_atomic(TAtomic::Callable(TCallable::Signature(specialized_signature))),
                         template_result,
                         argument_offset,
                         *argument_span,
