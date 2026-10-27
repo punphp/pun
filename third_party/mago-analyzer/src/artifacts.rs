@@ -28,7 +28,8 @@ use crate::readonly::PendingReadonlyPropertyWrite;
 pub(crate) use self::expression_types::CheckpointAction;
 pub(crate) use self::expression_types::ExpressionTypeCheckpoints;
 
-pub(crate) type DetachedExpressionTypeCheckpoints = (ExpressionTypeCheckpoints, Option<ExpressionTypeCheckpoints>);
+pub(crate) type DetachedExpressionTypeCheckpoints =
+    (ExpressionTypeCheckpoints, Option<ExpressionTypeCheckpoints>, ExpressionTypeCheckpoints<bool>);
 
 #[derive(Debug, Clone, Default)]
 struct NativeExpressionTypes {
@@ -81,6 +82,9 @@ pub(crate) struct BranchFlow {
 pub struct AnalysisArtifacts {
     pub expression_types: HashMap<(u32, u32), Rc<TUnion>>,
     native_expression_types: Option<NativeExpressionTypes>,
+    /// Whether every resolved call target explicitly cannot return, independently of dynamic return types.
+    pub call_terminations: HashMap<(u32, u32), bool>,
+    call_termination_checkpoints: ExpressionTypeCheckpoints<bool>,
     pub if_true_assertions: HashMap<(u32, u32), WordMap<AssertionSet>>,
     pub if_false_assertions: HashMap<(u32, u32), WordMap<AssertionSet>>,
     pub true_branch_only_assertions: HashMap<(u32, u32), WordMap<AssertionSet>>,
@@ -120,6 +124,8 @@ impl AnalysisArtifacts {
         Self {
             expression_types: HashMap::default(),
             native_expression_types: None,
+            call_terminations: HashMap::default(),
+            call_termination_checkpoints: ExpressionTypeCheckpoints::default(),
             inferred_return_types: Vec::new(),
             inferred_yield_key_types: Vec::new(),
             inferred_yield_value_types: Vec::new(),
@@ -318,6 +324,20 @@ impl AnalysisArtifacts {
         Some(&**t)
     }
 
+    pub(crate) fn set_call_termination<T: HasSpan>(&mut self, expression: &T, terminates: bool) {
+        self.call_termination_checkpoints.insert(
+            &mut self.call_terminations,
+            get_expression_range(expression),
+            terminates,
+        );
+    }
+
+    pub(crate) fn transfer_call_terminations(&mut self, child: &mut Self) {
+        for (range, terminates) in child.call_terminations.drain() {
+            self.call_termination_checkpoints.insert(&mut self.call_terminations, range, terminates);
+        }
+    }
+
     /// Native type from this same evaluation. None means disabled, unsupported, or not evaluated;
     /// it is never substituted with the full type or mixed. This is an explicitly partial API.
     pub fn get_native_expression_type<T: HasSpan>(&self, expression: &T) -> Option<&TUnion> {
@@ -377,6 +397,7 @@ impl AnalysisArtifacts {
 
     pub(crate) fn begin_expression_type_checkpoint(&mut self) {
         self.expression_type_checkpoints.begin_checkpoint();
+        self.call_termination_checkpoints.begin_checkpoint();
         if let Some(native) = &mut self.native_expression_types {
             native.checkpoints.begin_checkpoint();
         }
@@ -387,11 +408,13 @@ impl AnalysisArtifacts {
 
     pub(crate) fn expression_type_checkpoint_matches(&self, same: impl Fn(&TUnion, &TUnion) -> bool) -> bool {
         // Native state is passive: it must not change the full lane's loop iteration decisions.
-        self.expression_type_checkpoints.checkpoint_matches(&self.expression_types, same)
+        self.expression_type_checkpoints.checkpoint_matches(&self.expression_types, |a, b| same(a, b))
+            && self.call_termination_checkpoints.checkpoint_matches(&self.call_terminations, |a, b| a == b)
     }
 
     pub(crate) fn finish_expression_type_checkpoint(&mut self, action: CheckpointAction) {
         self.expression_type_checkpoints.finish_checkpoint(&mut self.expression_types, action);
+        self.call_termination_checkpoints.finish_checkpoint(&mut self.call_terminations, action);
         if let Some(native) = &mut self.native_expression_types {
             native.checkpoints.finish_checkpoint(&mut native.types, action);
         }
@@ -402,6 +425,7 @@ impl AnalysisArtifacts {
 
     pub(crate) fn remove_expression_type(&mut self, range: &(u32, u32)) {
         self.expression_type_checkpoints.remove(&mut self.expression_types, range);
+        self.call_termination_checkpoints.remove(&mut self.call_terminations, range);
         self.remove_native_expression_type(range);
     }
 
@@ -426,11 +450,13 @@ impl AnalysisArtifacts {
         Some((
             self.expression_type_checkpoints.detach(&self.expression_types),
             self.native_expression_types.as_mut().map(|native| native.checkpoints.detach(&native.types)),
+            self.call_termination_checkpoints.detach(&self.call_terminations),
         ))
     }
 
     pub(crate) fn restore_expression_type_checkpoints(&mut self, checkpoints: DetachedExpressionTypeCheckpoints) {
         self.expression_type_checkpoints = checkpoints.0;
+        self.call_termination_checkpoints = checkpoints.2;
         if let Some(checkpoints) = checkpoints.1 {
             self.native_expression_types.get_or_insert_with(NativeExpressionTypes::default).checkpoints = checkpoints;
         }

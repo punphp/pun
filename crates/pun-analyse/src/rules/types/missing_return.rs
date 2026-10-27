@@ -189,6 +189,7 @@ fn check(c: &mut Checker, b: &Block, parent: Span, d: Declared) {
     let ret = d.ret;
     let results = super::flow::Results {
         types: &c.types,
+        call_terminations: Some(&c.call_terminations),
         contents: &c.file.contents,
         codebase: Some(c.codebase),
     };

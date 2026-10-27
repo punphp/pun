@@ -1,7 +1,7 @@
 //! NodeScopeResolver's statement results, as far as the rules read them: whether a statement list always terminates
 //! (`StatementResult::isAlwaysTerminating()`), whether it yields, its break/continue exit points, and the end statements
-//! of a function body (`ExecutionEndNode`). Types come from Mago's inference ([`Results::types`]): a call typed
-//! `never` terminates, a loop condition typed `true` always iterates.
+//! of a function body (`ExecutionEndNode`). Inference retains resolved call termination separately from value
+//! types: implicit `never` does not terminate, and a loop condition typed `true` always iterates.
 
 use mago_span::{HasSpan, Span};
 use mago_syntax::cst::*;
@@ -101,6 +101,7 @@ pub struct End {
 /// Statement results over Mago's types of the analysed file (none when only the syntax is known).
 pub struct Results<'t> {
     pub types: &'t HashMap<Span, TUnion>,
+    pub call_terminations: Option<&'t HashMap<(u32, u32), bool>>,
     /// the analysed file's contents, for the comments php-parser turns into a trailing `Nop` statement
     pub contents: &'t [u8],
     /// the codebase, for an enum's cases (none when only the syntax is known)
@@ -146,6 +147,14 @@ fn line_comment(contents: &[u8], p: usize) -> bool {
 impl<'t> Results<'t> {
     fn type_of(&self, e: &Expression) -> Option<&'t TUnion> {
         self.types.get(&e.span())
+    }
+
+    fn call_terminates(&self, e: &Expression) -> bool {
+        let span = e.span();
+        self.call_terminations
+            .and_then(|calls| calls.get(&(span.start.offset, span.end.offset)))
+            .copied()
+            .unwrap_or(false)
     }
 
     /// `processStmtNodes()` of a function-like body: its result and, when the last statement is reached, the
@@ -519,16 +528,12 @@ impl<'t> Results<'t> {
         }
     }
 
-    /// `findEarlyTerminatingExpr()`: `exit`, `throw`, or an expression typed `never`.
+    /// An expression statement also terminates when its value is explicit never.
     fn early_terminating<'arena>(&self, e: &Expression<'arena>) -> bool {
         matches!(
             e,
             Expression::Throw(_) | Expression::Construct(Construct::Exit(_) | Construct::Die(_))
-        ) || self.is_never(e)
-    }
-
-    fn is_never<'arena>(&self, e: &Expression<'arena>) -> bool {
-        self.type_of(e).is_some_and(|t| t.is_never())
+        ) || self.type_of(e).is_some_and(|t| t.is_explicit_never())
     }
 
     /// `ExpressionResult::isAlwaysTerminating()`: the expression always ends the execution where it is evaluated.
@@ -555,7 +560,7 @@ impl<'t> Results<'t> {
             | Expression::ArrowFunction(_)
             | Expression::AnonymousClass(_)
             | Expression::Call(Call::NullSafeMethod(_)) => false,
-            Expression::Call(_) => self.is_never(e) || self.children_terminate(Node::Expression(e)),
+            Expression::Call(_) => self.call_terminates(e) || self.children_terminate(Node::Expression(e)),
             _ => self.children_terminate(Node::Expression(e)),
         }
     }

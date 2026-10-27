@@ -138,6 +138,9 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for NullSafeMethodCall<'arena> {
             }
         }
 
+        // PHPStan's NullsafeMethodCallHandler always returns a non-terminating expression result.
+        let has_returned = block_context.flags.has_returned();
+        let control_actions = block_context.control_actions.clone();
         analyze_method_call(
             context,
             block_context,
@@ -148,6 +151,8 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for NullSafeMethodCall<'arena> {
             true, // is_nullsafe
             self.span(),
         )?;
+        block_context.flags.set_has_returned(has_returned);
+        block_context.control_actions = control_actions;
 
         if context.plugin_registry.has_nullsafe_method_call_hooks() {
             let mut hook_context = HookContext::new(context.codebase, context.source_file, block_context, artifacts);
@@ -266,7 +271,7 @@ where
         false,
     )?;
 
-    Ok(result)
+    Ok(result.ty)
 }
 
 #[allow(clippy::expect_used)]
@@ -399,6 +404,7 @@ where
             method_resolution.encountered_mixed,
             is_null_safe && method_resolution.encountered_null,
             artifacts.get_expression_type(object).is_some_and(|t| t.has_nullsafe_null()),
+            is_null_safe,
         )?;
     }
 

@@ -92,6 +92,7 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for FunctionCall<'arena> {
             false,
             false,
             false, // object_has_nullsafe_null - not applicable for function calls
+            false,
         )?;
 
         // FuncCallHandler::resolveReturnType(): an unknown named function has ErrorType,

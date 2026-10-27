@@ -13,6 +13,11 @@ use crate::error::AnalysisError;
 use crate::invocation::Invocation;
 use crate::invocation::resolver::resolve_invocation_type;
 
+pub struct InvocationReturnType {
+    pub ty: TUnion,
+    pub always_terminates: bool,
+}
+
 pub fn fetch_invocation_return_type<'ctx, 'arena, A>(
     context: &mut Context<'ctx, 'arena, A>,
     block_context: &BlockContext<'ctx>,
@@ -20,15 +25,22 @@ pub fn fetch_invocation_return_type<'ctx, 'arena, A>(
     invocation: &Invocation<'ctx, '_, 'arena>,
     template_result: &TemplateResult,
     parameters: &WordMap<TUnion>,
-) -> Result<TUnion, AnalysisError>
+) -> Result<InvocationReturnType, AnalysisError>
 where
     A: Arena,
 {
-    if let Some(return_type) = fetch_invocation_provider_return_type(context, block_context, artifacts, invocation) {
-        return Ok(return_type);
-    }
-
-    Ok(fetch_declared_invocation_return_type(context, invocation, template_result, parameters))
+    let declared = fetch_declared_invocation_return_type(context, invocation, template_result, parameters);
+    // PHPStan resolves forwarding as a value rewrite after reading the builtin's mixed acceptor.
+    // Mago's prelude instead expresses that rewrite as a generic return; it must not become an exit edge.
+    let forwarded = matches!(
+        invocation.target.get_function_like_identifier(),
+        Some(FunctionLikeIdentifier::Function(name))
+            if name.as_bytes().eq_ignore_ascii_case(b"call_user_func")
+                || name.as_bytes().eq_ignore_ascii_case(b"call_user_func_array")
+    );
+    let always_terminates = declared.is_explicit_never() && !forwarded;
+    let ty = fetch_invocation_provider_return_type(context, block_context, artifacts, invocation).unwrap_or(declared);
+    Ok(InvocationReturnType { ty, always_terminates })
 }
 
 /// Requests a custom return type from registered providers and reports provider issues.
@@ -96,6 +108,7 @@ where
     let target_return_type = if let Some(function_like_metadata) = invocation.target.get_function_like_metadata()
         && let Some(docblock_return) = function_like_metadata.return_type_metadata.as_ref()
         && docblock_return.from_docblock
+        && !docblock_return.type_union.is_explicit_never()
         && !docblock_return.type_union.has_template_types()
         && !docblock_return.type_union.is_generic_parameter()
         && !docblock_return.type_union.types.iter().any(|t| {

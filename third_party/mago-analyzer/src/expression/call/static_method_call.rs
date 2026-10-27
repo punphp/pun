@@ -166,6 +166,7 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for StaticMethodCall<'arena> {
                 method_resolution.encountered_mixed,
                 expression_is_nullsafe(self.class) || method_resolution.encountered_null,
                 class_has_nullsafe_null,
+                false,
             )?;
         }
 

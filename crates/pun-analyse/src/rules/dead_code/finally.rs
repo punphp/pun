@@ -96,9 +96,9 @@ fn terminates(c: &Checker, e: &Expression) -> bool {
         }
         Expression::Conditional(t) => terminates(c, t.condition),
         Expression::Match(m) => terminates(c, m.expression),
-        Expression::Call(Call::NullSafeMethod(m)) => terminates(c, m.object),
+        Expression::Call(Call::NullSafeMethod(_)) => false,
         Expression::Access(Access::NullSafeProperty(p)) => terminates(c, p.object),
-        Expression::Call(_) if c.type_of(e).is_some_and(|t| t.is_never()) => true,
+        Expression::Call(_) if c.call_terminates(e) => true,
         _ => Node::Expression(e)
             .children()
             .into_iter()
@@ -159,6 +159,7 @@ fn statement(c: &Checker, s: &Statement) -> Result {
         Statement::Return(_) => Some("return"),
         Statement::Expression(e) => match unparen(e.expression) {
             Expression::Throw(_) => Some("throw"),
+            _ if c.type_of(e.expression).is_some_and(|t| t.is_explicit_never()) => Some("exit point"),
             _ if terminates(c, e.expression) => Some("exit point"),
             _ => None,
         },

@@ -190,7 +190,7 @@ fn checker<'a, 'arena>(
     let (include_typed, include_state) = super::include_file::prepare(arena, file, program, names, codebase, php_version, &project.include_file);
     typed.extend(include_typed);
     let mut variables = super::variables::Observations::default();
-    let (mut types, defined, origins) = infer(arena, file, program, names, codebase, php_version, project.level, typed, &mut variables);
+    let (mut types, defined, origins, call_terminations) = infer(arena, file, program, names, codebase, php_version, project.level, typed, &mut variables);
     if project.level >= 4 {
         let (subjects, unknown) = super::dead_code::match_subject_types(file, program, codebase, php_version);
         types.extend(subjects);
@@ -204,6 +204,7 @@ fn checker<'a, 'arena>(
         relative_path: &project.relative_path,
         file,
         types,
+        call_terminations,
         defined,
         variables,
         origins,

@@ -1,0 +1,7 @@
+parameters:
+    level: 5
+    phpVersion: 80400
+    tmpDir: ../../../../../target/oracle-never-calls
+    paths: [cases.php]
+    parallel:
+        maximumNumberOfProcesses: 1

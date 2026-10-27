@@ -1779,3 +1779,42 @@ which return the selected type rather than reconstructing a never type. The publ
 in `crates/pun-analyse/tests/never_identity.rs` compare selected, negated, and unresolved branches with
 fresh scope captures. Call evaluation, closure return inference, termination facts, and the external
 wire protocol are separate owners and remain unchanged here.
+
+## Never values and call termination
+
+`invocation/return_type_fetcher.rs` resolves the declaration before consulting return providers.
+Its result retains both the selected value type and whether the resolved declaration is explicitly
+never-returning. `expression/call/mod.rs` requires every possible target to terminate, with no
+mixed or nullable continuation. Provider-selected implicit never remains an observable value type.
+
+PHPStan's `TypehintHelper::decideType()` retains an explicit PHPDoc never even when the native
+declaration returns object, array or void. The declaration compatibility fallback preserves that
+bottom instead of replacing it with the native return. Argument-driven template inference also
+retains the input never kind when extracting residual atoms, so forwarded callable returns keep
+their actual identity without turning implicit bottom into explicit never.
+
+This ports PHPStan 2.3.1's `FuncCallHandler::processExpr()`: resolved acceptors establish call
+termination before dynamic return rewrites. PHPStan models `call_user_func()` and
+`call_user_func_array()` forwarding as value rewrites of mixed-returning builtins; Mago's generic
+forwarding signatures must not introduce an intrinsic exit edge. Nullsafe calls retain
+`NullsafeMethodCallHandler`'s non-terminating expression result, even for a non-null receiver.
+Expression statements separately terminate for explicit never values, following `ExpressionHandler`.
+
+`AnalysisArtifacts::call_terminations` keeps these evaluation facts separate from copied types.
+Function and closure artifacts transfer the facts to their parent. The existing changed-entry
+checkpoint implementation now also handles boolean observations, preserving nested rollback,
+merge, speculative replay and opaque-hook mutations without cloning complete maps on entry.
+Call and pipe evaluations start with a checkpoint-aware false fact before expression hooks run.
+Skipped or unresolved loop conditions and increments cannot retain a previous terminating result;
+removing the entry instead would let a checkpoint merge restore the old true fact.
+Pun's flow and finally checks consume the resolved facts. Unused-call checks suppress only
+explicit never results. Throw, exit and die produce explicit never; a terminating closure body
+without return values infers non-accepting never, as `ClosureTypeResolver` does.
+
+`crates/pun-analyse/tests/never_calls.rs` compares public diagnostics with the pinned PHPStan
+capture under `tests/fixtures/never-calls/`. The fixture distinguishes implicit return values,
+native and PHPDoc declarations, conditional named arguments, callable invocation, forwarding
+inside and outside other calls, nullsafe calls and their arguments, loop bodies and finally blocks.
+The public Analyzer controls in `native_lane.rs` also replace replayed conditions and increments
+through hooks, checking skipped calls, replacement values and unresolved targets with native
+tracking both enabled and disabled.

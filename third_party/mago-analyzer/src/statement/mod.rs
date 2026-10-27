@@ -21,6 +21,7 @@ use crate::analyzable::Analyzable;
 use crate::artifacts::AnalysisArtifacts;
 use crate::code::IssueCode;
 use crate::context::block::BlockContext;
+use crate::context::scope::control_action::ControlAction;
 use crate::error::AnalysisError;
 use crate::plugin::HookAction;
 use crate::plugin::context::HookContext;
@@ -207,6 +208,13 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Statement<'arena> {
         };
 
         result?;
+
+        if let Statement::Expression(expression) = self
+            && artifacts.get_expression_type(expression.expression).is_some_and(|ty| ty.is_explicit_never())
+        {
+            block_context.flags.set_has_returned(true);
+            block_context.control_actions.insert(ControlAction::End);
+        }
 
         if let Statement::Expression(expression) = self
             && context.settings.find_unused_expressions

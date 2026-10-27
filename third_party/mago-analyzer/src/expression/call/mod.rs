@@ -130,6 +130,7 @@ fn analyze_invocation_targets<'ctx, 'ast, 'arena, A>(
     encountered_mixed_targets: bool,
     should_add_null: bool,
     object_has_nullsafe_null: bool,
+    is_null_safe: bool,
 ) -> Result<(), AnalysisError>
 where
     A: Arena,
@@ -166,12 +167,18 @@ where
 
     let mut resulting_type = None;
     let mut all_targets_non_nullable_return = !invocation_targets.is_empty();
+    let mut always_terminates = !invocation_targets.is_empty()
+        && !encountered_mixed_targets
+        && !should_add_null
+        && !object_has_nullsafe_null
+        && !is_null_safe;
     for target in invocation_targets {
         if let InvocationTarget::FunctionLike { metadata, .. } = &target {
             let name = metadata.name;
             match true {
                 _ if name.as_bytes().eq_ignore_ascii_case(b"mago\\inspect") => {
                     inspect_arguments(context, block_context, artifacts, &target, &invocation_arguments)?;
+                    always_terminates = false;
 
                     resulting_type =
                         Some(add_optional_union_type(get_void(), resulting_type.as_ref(), context.codebase));
@@ -180,6 +187,7 @@ where
                 }
                 _ if name.as_bytes().eq_ignore_ascii_case(b"mago\\confirm") => {
                     confirm_argument_type(context, block_context, artifacts, &target, &invocation_arguments)?;
+                    always_terminates = false;
 
                     resulting_type =
                         Some(add_optional_union_type(get_void(), resulting_type.as_ref(), context.codebase));
@@ -231,8 +239,9 @@ where
             &argument_types,
         )?;
 
-        all_targets_non_nullable_return &= !return_type.is_nullable();
-        resulting_type = Some(add_optional_union_type(return_type, resulting_type.as_ref(), context.codebase));
+        always_terminates &= return_type.always_terminates;
+        all_targets_non_nullable_return &= !return_type.ty.is_nullable();
+        resulting_type = Some(add_optional_union_type(return_type.ty, resulting_type.as_ref(), context.codebase));
 
         post_invocation_process(
             context,
@@ -288,14 +297,12 @@ where
         resulting_type,
     );
 
-    if resulting_type.is_never() && !block_context.flags.inside_loop() {
-        artifacts.set_expression_type(&call_span, resulting_type);
-
+    artifacts.set_expression_type(&call_span, resulting_type);
+    artifacts.set_call_termination(&call_span, always_terminates);
+    if always_terminates {
         block_context.flags.set_has_returned(true);
         block_context.control_actions.insert(ControlAction::End);
-        return Ok(());
     }
-    artifacts.set_expression_type(&call_span, resulting_type);
 
     Ok(())
 }

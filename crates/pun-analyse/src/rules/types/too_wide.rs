@@ -67,7 +67,7 @@ fn body(c: &mut Checker, b: &Block, parent: Span, native: bool, ret: &Type, of: 
             }
         }
     }
-    let results = super::flow::Results { types: &c.types, contents: &c.file.contents, codebase: Some(c.codebase) };
+    let results = super::flow::Results { types: &c.types, call_terminations: Some(&c.call_terminations), contents: &c.file.contents, codebase: Some(c.codebase) };
     let (flow, ends) = results.execution_ends(&list(b.statements.as_slice()), parent, Some(b.right_brace));
     if !flow.always {
         types.push(Type::Void);

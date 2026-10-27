@@ -107,7 +107,7 @@ pub(super) fn infer<'arena>(
     level: u8,
     extra: Vec<Span>,
     variables: &mut variables::Observations,
-) -> (HashMap<Span, TUnion>, HashMap<Span, Tri>, Origins) {
+) -> (HashMap<Span, TUnion>, HashMap<Span, Tri>, Origins, HashMap<(u32, u32), bool>) {
     let mut wanted = TypedExpressions {
         spans: Vec::new(),
         names,
@@ -135,7 +135,7 @@ pub(super) fn analyse<'arena>(
     php_version: u32,
     wanted: Vec<Span>,
     watched: Vec<Span>,
-) -> (HashMap<Span, TUnion>, HashMap<Span, Tri>, Origins) {
+) -> (HashMap<Span, TUnion>, HashMap<Span, Tri>, Origins, HashMap<(u32, u32), bool>) {
     analyse_observed(arena, file, program, names, codebase, php_version, wanted, watched, None)
 }
 
@@ -150,7 +150,7 @@ fn analyse_observed<'arena>(
     wanted: Vec<Span>,
     watched: Vec<Span>,
     variables: Option<&mut variables::Observations>,
-) -> (HashMap<Span, TUnion>, HashMap<Span, Tri>, Origins) {
+) -> (HashMap<Span, TUnion>, HashMap<Span, Tri>, Origins, HashMap<(u32, u32), bool>) {
     let mut wanted = wanted;
     let compact_calls = if variables.is_some() {
         let (typed, compact_calls) = variables::typed_expressions(program, names);
@@ -222,7 +222,7 @@ fn analyse_observed<'arena>(
     if let Some(variables) = variables {
         *variables = std::mem::take(&mut found.variables);
     }
-    (types, found.defined, origins)
+    (types, found.defined, origins, artifacts.call_terminations.into_iter().collect())
 }
 
 struct ArrayChildren<'s> {
@@ -548,5 +548,10 @@ impl<'a, 'arena> Checker<'a, 'arena> {
     /// `$scope->getType($expr)`, as Mago infers it, for the expressions [`typed_expressions()`] lists.
     pub(super) fn type_of(&self, expr: &Expression) -> Option<&TUnion> {
         self.types.get(&expr.span())
+    }
+
+    pub(super) fn call_terminates(&self, expr: &Expression) -> bool {
+        let span = expr.span();
+        self.call_terminations.get(&(span.start.offset, span.end.offset)).copied().unwrap_or(false)
     }
 }

@@ -112,6 +112,7 @@ impl Wanted<'_> {
         let empty = HashMap::new();
         let results = flow::Results {
             types: &empty,
+            call_terminations: None,
             contents: self.contents,
             codebase: None,
         };
@@ -305,6 +306,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Wanted<'_> {
             let empty = HashMap::new();
             let results = flow::Results {
                 types: &empty,
+                call_terminations: None,
                 contents: self.contents,
                 codebase: None,
             };

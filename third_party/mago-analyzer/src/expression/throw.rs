@@ -3,7 +3,7 @@ use std::rc::Rc;
 
 use mago_codex::ttype::TType;
 use mago_codex::ttype::combine_union_types;
-use mago_codex::ttype::get_never;
+use mago_codex::ttype::get_explicit_never;
 use mago_reporting::Annotation;
 use mago_reporting::Issue;
 use mago_span::HasSpan;
@@ -85,7 +85,7 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Throw<'arena> {
             }
         }
 
-        artifacts.set_expression_type(self, get_never());
+        artifacts.set_expression_type(self, get_explicit_never());
 
         Ok(())
     }

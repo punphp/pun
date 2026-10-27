@@ -76,6 +76,9 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Expression<'arena> {
         let span = self.span();
         artifacts.remove_native_expression_type(&(span.start.offset, span.end.offset));
         artifacts.record_variable_definedness(Node::Expression(self), block_context);
+        if matches!(self, Expression::Call(_) | Expression::Pipe(_)) {
+            artifacts.set_call_termination(self, false);
+        }
 
         if context.plugin_registry.has_expression_hooks() {
             let mut hook_context = HookContext::new(context.codebase, context.source_file, block_context, artifacts);

@@ -788,6 +788,8 @@ pub struct Checker<'a, 'arena> {
     relative_path: &'a crate::relative_path::RelativePath,
     /// Mago's inferred types of the expressions rules ask about (see [`typed_expressions()`]).
     types: HashMap<Span, TUnion>,
+    /// Resolved calls' own termination, independent of their provider-selected result type.
+    call_terminations: HashMap<(u32, u32), bool>,
     /// `$scope->hasVariableType()` where the wanted direct variables are read (see [`infer::analyse()`]).
     defined: HashMap<Span, pun_phpstan::types::Tri>,
     /// The running inference blocks observed by DefinedVariableRule and CompactVariablesRule.

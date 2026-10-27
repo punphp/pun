@@ -245,6 +245,7 @@ fn pure_condition_wrappers_retain_the_full_walks_existing_visits() {
 
 fn assert_full_artifacts_equal(enabled: &AnalysisArtifacts, disabled: &AnalysisArtifacts) {
     assert_eq!(enabled.expression_types, disabled.expression_types);
+    assert_eq!(enabled.call_terminations, disabled.call_terminations);
     assert_eq!(enabled.if_true_assertions, disabled.if_true_assertions);
     assert_eq!(enabled.if_false_assertions, disabled.if_false_assertions);
     assert_eq!(
@@ -852,5 +853,81 @@ fn hook_skips_do_not_leave_native_values_from_before_the_skipped_transfer() {
             artifacts.get_native_expression_type(&after).is_none(),
             "mode {mode}"
         );
+    }
+}
+
+#[test]
+fn replayed_calls_do_not_retain_termination_after_a_hook_replaces_the_evaluation() {
+    use std::sync::atomic::{AtomicUsize, Ordering};
+
+    use mago_analyzer::plugin::ExpressionHookResult;
+    use mago_codex::ttype::get_literal_int;
+
+    struct Rewrite {
+        visits: Arc<AtomicUsize>,
+        mode: u8,
+    }
+    impl Provider for Rewrite {
+        fn meta() -> &'static ProviderMeta {
+            static META: ProviderMeta =
+                ProviderMeta::new("call-replay", "call-replay", "replace a replayed call");
+            &META
+        }
+    }
+    impl ExpressionHook for Rewrite {
+        fn before_expression(
+            &self,
+            expression: &Expression<'_>,
+            context: &mut HookContext<'_, '_>,
+        ) -> HookResult<ExpressionHookResult> {
+            if !matches!(expression, Expression::Call(_))
+                || self.visits.fetch_add(1, Ordering::SeqCst) == 0
+            {
+                return Ok(ExpressionHookResult::Continue);
+            }
+            Ok(match self.mode {
+                0 => ExpressionHookResult::Skip,
+                1 => ExpressionHookResult::SkipWithType(get_literal_int(123)),
+                _ => {
+                    context.set_variable_type(b"$f", get_literal_int(0));
+                    ExpressionHookResult::Continue
+                }
+            })
+        }
+    }
+
+    for loop_body in [
+        "for (; $more; $f()) { $a = 's'; }",
+        "do { $a = 's'; } while ($f());",
+    ] {
+        let code = format!(
+            "<?php function stop(): never {{ throw new Exception(); }}\n\
+             $a = 0; $more = true; $f = 'stop'; {loop_body}"
+        );
+        let start = code.rfind("$f()").unwrap() as u32;
+        let range = (start, start + 4);
+        for mode in 0..3 {
+            for native in [false, true] {
+                let visits = Arc::new(AtomicUsize::new(0));
+                let mut registry = PluginRegistry::new();
+                registry.register_expression_hook(Rewrite {
+                    visits: Arc::clone(&visits),
+                    mode,
+                });
+                let (artifacts, _, _) = analyze(code.as_bytes(), native, registry);
+                assert!(visits.load(Ordering::SeqCst) > 1, "{loop_body}");
+                assert_eq!(
+                    artifacts.call_terminations.get(&range),
+                    Some(&false),
+                    "{loop_body}, mode {mode}, native {native}"
+                );
+                if mode == 1 {
+                    assert_eq!(
+                        artifacts.get_expression_type(&span(range)),
+                        Some(&get_literal_int(123))
+                    );
+                }
+            }
+        }
     }
 }

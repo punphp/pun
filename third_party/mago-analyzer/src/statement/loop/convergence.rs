@@ -555,6 +555,7 @@ mod tests {
                 .all(|(a, b)| same_union(a, b))
         );
         assert_eq!(original.resolved_method_calls, optimized.resolved_method_calls);
+        assert_eq!(original.call_terminations, optimized.call_terminations);
         assert_eq!(
             format!("{:?}", original.pending_readonly_property_writes),
             format!("{:?}", optimized.pending_readonly_property_writes)

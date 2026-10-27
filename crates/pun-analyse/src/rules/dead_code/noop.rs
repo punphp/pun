@@ -998,7 +998,7 @@ fn side_effects(c: &mut Checker, e: &Expression) {
             Some(f)
                 if !f.asserts()
                     && !TESTING_FUNCTIONS.contains(&f.name().as_str())
-                    && !c.type_of(e).is_some_and(|t| t.is_never()) =>
+                    && !c.type_of(e).is_some_and(|t| t.is_explicit_never()) =>
             {
                 Some((
                     "function.resultUnused",
@@ -1060,7 +1060,7 @@ fn method_message(
 ) -> Option<(&'static str, String)> {
     let m = c.method_target(on, method)?;
     if matches!(&m, Method::User { f, .. } if asserts(f))
-        || c.type_of(call).is_some_and(|t| t.is_never())
+        || c.type_of(call).is_some_and(|t| t.is_explicit_never())
     {
         return None;
     }

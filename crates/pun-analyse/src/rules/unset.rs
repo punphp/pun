@@ -510,6 +510,7 @@ mod tests {
             property_access: Default::default(),
             relative_path: &project.relative_path,
             types: Default::default(),
+            call_terminations: Default::default(),
             defined: Default::default(),
             variables: Default::default(),
             origins: Default::default(),

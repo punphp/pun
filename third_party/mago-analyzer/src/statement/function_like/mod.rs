@@ -40,7 +40,7 @@ use mago_codex::ttype::get_arraykey;
 use mago_codex::ttype::get_keyed_array;
 use mago_codex::ttype::get_list;
 use mago_codex::ttype::get_mixed;
-use mago_codex::ttype::get_never;
+use mago_codex::ttype::get_non_accepting_never;
 use mago_codex::ttype::get_void;
 use mago_codex::ttype::union::TUnion;
 use mago_codex::ttype::wrap_atomic;
@@ -162,7 +162,7 @@ where
             if let Some(inferred_return_type) = inferred_return_type {
                 signature.return_type = Some(Arc::new(inferred_return_type));
             } else if inner_has_returned {
-                signature.return_type = Some(Arc::new(get_never()));
+                signature.return_type = Some(Arc::new(get_non_accepting_never()));
             } else {
                 signature.return_type = Some(Arc::new(get_void()));
             }
@@ -375,6 +375,7 @@ where
     if parent_artifacts.should_retain_completed_expression_types() {
         parent_artifacts.extend_expression_types(expression_types);
         parent_artifacts.transfer_native_expression_types(&mut artifacts);
+        parent_artifacts.transfer_call_terminations(&mut artifacts);
     }
     parent_artifacts.variable_definedness.extend(std::mem::take(&mut artifacts.variable_definedness));
     parent_artifacts.resolved_method_calls.append(&mut artifacts.resolved_method_calls);
