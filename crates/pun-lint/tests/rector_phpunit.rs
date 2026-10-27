@@ -591,3 +591,10 @@ fn allow_mock_objects_for_data_provider() {
         "AllowMockObjectsForDataProviderRector",
     );
 }
+
+/// As for `single_mock_property_type`: the installed Rector's copy compares attributes against a prefixed `Depends`, so
+/// Oracle/ comes from the rule with the prefix taken out of its `use`.
+#[test]
+fn add_param_type_from_depends() {
+    check(AddParamTypeDepends, "AddParamTypeFromDependsRector");
+}

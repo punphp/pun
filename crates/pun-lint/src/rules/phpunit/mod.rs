@@ -13,6 +13,7 @@ mod add_depended_test_return_type;
 mod add_mock_intersection_param;
 mod add_mock_intersection_type;
 mod add_mock_object_type;
+mod add_param_type_depends;
 mod add_return_type_from_mock_object;
 mod add_stub_intersection_type;
 mod add_test_void_return;
@@ -87,6 +88,7 @@ pub use add_depended_test_return_type::AddDependedTestReturnType;
 pub use add_mock_intersection_param::AddMockIntersectionParam;
 pub use add_mock_intersection_type::AddMockIntersectionType;
 pub use add_mock_object_type::AddMockObjectType;
+pub use add_param_type_depends::AddParamTypeDepends;
 pub use add_return_type_from_mock_object::AddReturnTypeFromMockObject;
 pub use add_stub_intersection_type::AddStubIntersectionType;
 pub use add_test_void_return::AddTestVoidReturn;
@@ -238,6 +240,7 @@ pub(crate) fn all() -> Vec<Box<dyn Rule>> {
         Box::new(AddMockIntersectionParam),
         Box::new(AddAllowMockObjectsAttribute),
         Box::new(AddDataProviderAllowMockObjects),
+        Box::new(AddParamTypeDepends),
     ]
 }
 
