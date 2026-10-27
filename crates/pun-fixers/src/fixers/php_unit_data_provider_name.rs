@@ -122,12 +122,10 @@ impl PhpUnitDataProviderNameFixer {
         }
     }
 
-    /// `getDataProviderNameForUsageIndex`.
+    /// `getDataProviderNameForUsageIndex`, from a `function` token: no attribute comes after one, so upstream's step
+    /// over an attribute never runs.
     fn name_for_usage(&self, tokens: &Tokens, mut index: usize) -> String {
         loop {
-            if tokens[index].is_kind(T_ATTRIBUTE) {
-                index = tokens.find_block_end(Tokens::BLOCK_TYPE_ATTRIBUTE, index);
-            }
             index = tokens.get_next_meaningful_token(index).unwrap();
             if tokens[index].is_kind(T_STRING) {
                 break;

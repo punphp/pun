@@ -81,9 +81,8 @@ fn get_methods(tokens: &Tokens, start_index: usize, end_index: usize) -> IndexMa
         if !tokens[index].is_kind(T_FUNCTION) {
             continue;
         }
-        let Some(name_index) = tokens.get_next_non_whitespace(index, None) else {
-            continue;
-        };
+        // the class's `}` comes after it
+        let name_index = tokens.get_next_non_whitespace(index, None).unwrap();
         if !tokens[name_index].is_kind(T_STRING) {
             continue;
         }
@@ -124,11 +123,10 @@ fn data_provider_name_index(
     if name != b"PHPUnit\\Framework\\Attributes\\DataProvider" {
         return None;
     }
-    let close = tokens.get_prev_token_of_kind(
-        attribute.end + 1,
-        &[")".into(), T_ATTRIBUTE.into()],
-        true,
-    )?;
+    // the attribute's `#[` comes before it
+    let close = tokens
+        .get_prev_token_of_kind(attribute.end + 1, &[")".into(), T_ATTRIBUTE.into()], true)
+        .unwrap();
     if tokens[close].is_kind(T_ATTRIBUTE) {
         return None;
     }
