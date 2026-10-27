@@ -2,10 +2,15 @@ use std::rc::Rc;
 use std::sync::Arc;
 
 use mago_allocator::Arena;
+use mago_codex::assertion::Assertion;
 use mago_codex::ttype::atomic::TAtomic;
 use mago_codex::ttype::atomic::array::TArray;
+use mago_codex::ttype::combine_union_types;
+use mago_codex::ttype::combiner::CombinerOptions;
 use mago_codex::ttype::get_arraykey;
+use mago_codex::ttype::get_empty_keyed_array;
 use mago_codex::ttype::get_mixed;
+use mago_codex::ttype::get_object;
 use mago_codex::ttype::union::TUnion;
 use mago_reporting::Annotation;
 use mago_reporting::Issue;
@@ -33,6 +38,7 @@ use crate::error::AnalysisError;
 use crate::expression::assignment::PropertyWriteKind;
 use crate::expression::assignment::analyze_assignment_to_variable;
 use crate::expression::assignment::assign_to_expression;
+use crate::reconciler::assertion_reconciler::reconcile;
 use crate::statement::analyze_statements;
 use crate::statement::r#loop;
 use crate::utils::expression::get_block_expression_id;
@@ -58,6 +64,11 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Foreach<'arena> {
         let (always_enters_loop, mut key_type, mut value_type) =
             r#loop::analyze_iterator(context, block_context, artifacts, iterator, iterator_variable_id, self)?;
 
+        // ForeachHandler keeps entry after evaluating the iterable: its assignments are unconditional.
+        let entry = block_context.clone();
+        let never_enters_loop = artifacts.get_expression_type(iterator).is_some_and(|ty| {
+            ty.types.iter().all(|atomic| matches!(atomic, TAtomic::Array(array) if array.is_empty()))
+        });
         let unrolled_arrays = unroll_array_mutations(context, block_context, artifacts, self, is_by_reference)?;
 
         if key_type.is_never() {
@@ -69,6 +80,14 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Foreach<'arena> {
         }
 
         let mut loop_block_context = block_context.clone();
+        if context.settings.pollute_scope_with_always_iterable_foreach
+            && let Some(id) = iterator_variable_id
+            && let Some(ty) = loop_block_context.locals.get(&id).cloned()
+        {
+            // `iteratee !== []`: retain non-array alternatives rather than asserting truthiness.
+            let narrowed = reconcile(context, &Assertion::NonEmptyCountable(true), Some(&ty), None, true, None, false, false);
+            loop_block_context.locals.insert(id, Rc::new(narrowed));
+        }
         loop_block_context.flags.set_inside_loop(true);
         loop_block_context.break_types.push(BreakContext::Loop(self.span()));
         let mut key_expression_id = None;
@@ -165,6 +184,7 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Foreach<'arena> {
         };
 
         let mut loop_scope = LoopScope::new(self.span(), block_context.locals.clone(), None);
+        loop_scope.foreach_entry_scope = Some(entry.variable_scope());
         if let Some((_, _, _, entry_id, entry_type)) = &foreach_entry {
             loop_scope.parent_context_variables.insert(*entry_id, Rc::clone(entry_type));
             loop_scope.tracks_assignment_targets = true;
@@ -182,6 +202,15 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Foreach<'arena> {
             false,
             always_enters_loop,
         )?;
+
+        // PHPStan joins only reachable body ends and local exits. Terminating-only bodies use
+        // their final scope as the fallback before the empty/nonempty selection below.
+        let mut exits = loop_scope.break_scopes.clone();
+        exits.extend(loop_scope.foreach_continue_scopes.iter().cloned());
+        exits.extend(loop_scope.foreach_body_scope.iter().cloned());
+        let always_terminates = exits.is_empty();
+        let mut final_context = inner_loop_block_context.clone();
+        final_context.merge_variable_scope_types(&exits, context.codebase);
 
         let refined_entry = if let Some((iterator_id, key_id, value_id, entry_id, original_entry_type)) = foreach_entry
             && !loop_scope.final_actions.contains(ControlAction::Break)
@@ -211,6 +240,27 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Foreach<'arena> {
             /* infinite_loop = */ false,
         );
 
+        if never_enters_loop || (always_enters_loop && always_terminates) {
+            block_context.merge_variable_scope_types(&[entry.variable_scope()], context.codebase);
+        } else if !always_enters_loop {
+            // The zero-iteration edge is `iteratee === [] || is_object(iteratee)`, not the
+            // original array type. A body replacing the array must not retain its old elements.
+            let mut empty_entry = entry.clone();
+            if let Some(id) = iterator_variable_id
+                && let Some(ty) = empty_entry.locals.get(&id).cloned()
+            {
+                let empty = reconcile(context, &Assertion::IsIdentical(get_empty_keyed_array().get_single().clone()), Some(&ty), None, false, None, false, false);
+                let object = reconcile(context, &Assertion::IsType(get_object().get_single().clone()), Some(&ty), None, false, None, false, false);
+                empty_entry.locals.insert(id, Rc::new(combine_union_types(&empty, &object, context.codebase, CombinerOptions::default())));
+            }
+            block_context.merge_variable_scope_types(&[empty_entry.variable_scope(), final_context.variable_scope()], context.codebase);
+        } else {
+            block_context.merge_variable_scope_types(&[final_context.variable_scope()], context.codebase);
+        }
+        if always_enters_loop && always_terminates {
+            block_context.flags.set_has_returned(true);
+        }
+
         // Refine after inheriting the loop context so a non-empty iterator's
         // widened type does not overwrite the fully transformed value type.
         if let Some((iterator_id, entry_type)) = refined_entry
@@ -224,8 +274,44 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Foreach<'arena> {
             block_context.locals.extend(arrays);
         }
 
+        // Array refinements and unrolling supply final types, not permission to create new holders.
+        if always_enters_loop && !always_terminates && !context.settings.pollute_scope_with_always_iterable_foreach {
+            let final_context = block_context.clone();
+            project_without_pollution(context, block_context, &entry, final_context);
+        }
+
         Ok(())
     }
+}
+
+/// MutatingScope::processAlwaysIterableForeachScopeWithoutPollute: final types, entry AND final
+/// certainty, entry-only holders retained. Align existing holder types before using the ordinary
+/// scope join, so it intersects conditional holders without inventing disjoint-type implications.
+fn project_without_pollution<'ctx, A: Arena>(
+    context: &Context<'ctx, '_, A>,
+    output: &mut BlockContext<'ctx>,
+    entry: &BlockContext<'ctx>,
+    mut final_context: BlockContext<'ctx>,
+) {
+    let mut typed_entry = entry.clone();
+    for (name, ty) in &entry.locals {
+        if final_context.variable_certainty(*name).is_absent() {
+            final_context.locals.insert(*name, Rc::clone(ty));
+            final_context.variable_state.absent.remove(name);
+        }
+    }
+    for (name, ty) in &final_context.locals {
+        if entry.variable_certainty(*name).is_absent() || !entry.locals.contains_key(name) {
+            continue;
+        }
+        let mut ty = (**ty).clone();
+        ty.set_possibly_undefined(!entry.variable_certainty(*name).is_defined(), None);
+        ty.set_possibly_undefined_from_try(false);
+        typed_entry.locals.insert(*name, Rc::new(ty));
+    }
+    output.variable_state = entry.variable_state.clone();
+    output.merge_variable_scope_types(&[typed_entry.variable_scope(), final_context.variable_scope()], context.codebase);
+    output.variable_state.after_extract_call = entry.variable_state.after_extract_call;
 }
 
 /// ForeachHandler::tryProcessUnrolledConstantArrayForeach's sequential chain for array state.

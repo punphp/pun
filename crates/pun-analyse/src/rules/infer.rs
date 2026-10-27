@@ -106,6 +106,7 @@ pub(super) fn infer<'arena>(
     php_version: u32,
     level: u8,
     pollute_scope_with_loop_initial_assignments: bool,
+    pollute_scope_with_always_iterable_foreach: bool,
     extra: Vec<Span>,
     variables: &mut variables::Observations,
 ) -> (HashMap<Span, TUnion>, HashMap<Span, Tri>, Origins, HashMap<(u32, u32), bool>) {
@@ -123,7 +124,7 @@ pub(super) fn infer<'arena>(
     wanted.extend(dead_code::flow_types(program, level));
     let (typed, watched) = dead_code::coalesce_types(program, level);
     wanted.extend(typed);
-    analyse_observed(arena, file, program, names, codebase, php_version, pollute_scope_with_loop_initial_assignments, wanted, watched, Some(variables))
+    analyse_observed(arena, file, program, names, codebase, php_version, pollute_scope_with_loop_initial_assignments, pollute_scope_with_always_iterable_foreach, wanted, watched, Some(variables))
 }
 
 /// Mago's types of the `wanted` expressions, analysing only the declarations that hold them.
@@ -135,10 +136,11 @@ pub(super) fn analyse<'arena>(
     codebase: &CodebaseMetadata,
     php_version: u32,
     pollute_scope_with_loop_initial_assignments: bool,
+    pollute_scope_with_always_iterable_foreach: bool,
     wanted: Vec<Span>,
     watched: Vec<Span>,
 ) -> (HashMap<Span, TUnion>, HashMap<Span, Tri>, Origins, HashMap<(u32, u32), bool>) {
-    analyse_observed(arena, file, program, names, codebase, php_version, pollute_scope_with_loop_initial_assignments, wanted, watched, None)
+    analyse_observed(arena, file, program, names, codebase, php_version, pollute_scope_with_loop_initial_assignments, pollute_scope_with_always_iterable_foreach, wanted, watched, None)
 }
 
 #[allow(clippy::too_many_arguments)]
@@ -150,6 +152,7 @@ fn analyse_observed<'arena>(
     codebase: &CodebaseMetadata,
     php_version: u32,
     pollute_scope_with_loop_initial_assignments: bool,
+    pollute_scope_with_always_iterable_foreach: bool,
     wanted: Vec<Span>,
     watched: Vec<Span>,
     variables: Option<&mut variables::Observations>,
@@ -201,6 +204,7 @@ fn analyse_observed<'arena>(
     }
     let mut settings = Settings::new(crate::codebase::php_version(php_version));
     settings.pollute_scope_with_loop_initial_assignments = pollute_scope_with_loop_initial_assignments;
+    settings.pollute_scope_with_always_iterable_foreach = pollute_scope_with_always_iterable_foreach;
     let analyzer = Analyzer::new(arena, file, names, codebase, &registry, settings);
     let mut result = AnalysisResult::new(SymbolReferences::new());
     // Only the declarations holding a wanted expression: a method's types come from its own body and the codebase,

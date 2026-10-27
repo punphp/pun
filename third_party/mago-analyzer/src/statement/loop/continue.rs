@@ -152,6 +152,9 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Continue<'arena> {
             };
 
             loop_scope.final_actions.insert(ControlAction::Continue);
+            if let Some(entry) = &loop_scope.foreach_entry_scope {
+                loop_scope.foreach_continue_scopes.push(block_context.variable_scope().loop_exit_scope(entry));
+            }
             crate::context::scope::loop_scope::merge_exit_locals(
                 &mut loop_scope.continue_locals,
                 &block_context.locals,

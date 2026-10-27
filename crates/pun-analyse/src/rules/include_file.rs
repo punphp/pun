@@ -69,6 +69,7 @@ pub(super) fn prepare<'arena>(
     codebase: &CodebaseMetadata,
     php_version: u32,
     pollute_scope_with_loop_initial_assignments: bool,
+    pollute_scope_with_always_iterable_foreach: bool,
     settings: &Settings,
 ) -> (Vec<Span>, State) {
     let mut wanted = Wanted {
@@ -98,6 +99,7 @@ pub(super) fn prepare<'arena>(
         codebase,
         php_version,
         pollute_scope_with_loop_initial_assignments,
+        pollute_scope_with_always_iterable_foreach,
         wanted.spans,
         Vec::new(),
     );

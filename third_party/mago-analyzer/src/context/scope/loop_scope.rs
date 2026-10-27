@@ -39,6 +39,10 @@ pub struct LoopScope {
     pub first_falsey_scope: Option<VariableScope>,
     pub pre_update_scope: Option<VariableScope>,
     pub back_edge_dead: bool,
+    /// Foreach's entry and actual body/continue exits; separate from for/while headers.
+    pub foreach_entry_scope: Option<VariableScope>,
+    pub foreach_body_scope: Option<VariableScope>,
+    pub foreach_continue_scopes: Vec<VariableScope>,
     pub parent_loop: Option<Box<LoopScope>>,
 }
 
@@ -68,6 +72,9 @@ impl LoopScope {
             first_falsey_scope: None,
             pre_update_scope: None,
             back_edge_dead: false,
+            foreach_entry_scope: None,
+            foreach_body_scope: None,
+            foreach_continue_scopes: Vec::new(),
         }
     }
 

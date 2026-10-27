@@ -928,6 +928,7 @@ where
                     loop_scope.break_locals = None;
                     loop_scope.break_scopes.clear();
                     loop_scope.continue_locals = None;
+                    loop_scope.foreach_continue_scopes.clear();
                     artifacts.set_loop_scope(loop_scope);
                     analyze_statements(statements, context, &mut continue_context, artifacts)?;
 
@@ -1527,6 +1528,10 @@ fn update_loop_scope_contexts<'ctx, A>(
 ) where
     A: Arena,
 {
+    if let Some(entry) = &loop_scope.foreach_entry_scope {
+        loop_scope.foreach_body_scope = (!continue_context.flags.has_returned())
+            .then(|| continue_context.variable_scope().loop_exit_scope(entry));
+    }
     loop_scope.back_edge_dead = continue_context.flags.has_returned() && loop_scope.continue_locals.is_none();
     if loop_scope.final_actions.contains(ControlAction::Continue) {
         let mut back_edge = loop_scope.continue_locals.clone();

@@ -76,6 +76,7 @@ pub(crate) struct Checks {
     cli_arguments_variables_registered: bool,
     check_maybe_undefined_variables: bool,
     pollute_scope_with_loop_initial_assignments: bool,
+    pollute_scope_with_always_iterable_foreach: bool,
     /// [`Project::report_method_purity_override`].
     method_purity_override: bool,
     /// [`Project::check_uninitialized_properties`].
@@ -136,6 +137,7 @@ impl Checks {
             cli_arguments_variables_registered: project.cli_arguments_variables_registered,
             check_maybe_undefined_variables: project.check_maybe_undefined_variables,
             pollute_scope_with_loop_initial_assignments: project.pollute_scope_with_loop_initial_assignments,
+            pollute_scope_with_always_iterable_foreach: project.pollute_scope_with_always_iterable_foreach,
             method_purity_override: project.report_method_purity_override,
             uninitialized_properties: project.check_uninitialized_properties,
             missing_callable_signature: project.check_missing_callable_signature,
@@ -189,12 +191,12 @@ fn checker<'a, 'arena>(
     typed.extend(super::types::typed_expressions(program, &file.contents, project.level));
     typed.extend(super::strict::typed_expressions(project, codebase, program));
     typed.extend(super::operators::typed_expressions(project.strict, program));
-    let (include_typed, include_state) = super::include_file::prepare(arena, file, program, names, codebase, php_version, project.pollute_scope_with_loop_initial_assignments, &project.include_file);
+    let (include_typed, include_state) = super::include_file::prepare(arena, file, program, names, codebase, php_version, project.pollute_scope_with_loop_initial_assignments, project.pollute_scope_with_always_iterable_foreach, &project.include_file);
     typed.extend(include_typed);
     let mut variables = super::variables::Observations::default();
-    let (mut types, defined, origins, call_terminations) = infer(arena, file, program, names, codebase, php_version, project.level, project.pollute_scope_with_loop_initial_assignments, typed, &mut variables);
+    let (mut types, defined, origins, call_terminations) = infer(arena, file, program, names, codebase, php_version, project.level, project.pollute_scope_with_loop_initial_assignments, project.pollute_scope_with_always_iterable_foreach, typed, &mut variables);
     if project.level >= 4 {
-        let (subjects, unknown) = super::dead_code::match_subject_types(file, program, codebase, php_version, project.pollute_scope_with_loop_initial_assignments);
+        let (subjects, unknown) = super::dead_code::match_subject_types(file, program, codebase, php_version, project.pollute_scope_with_loop_initial_assignments, project.pollute_scope_with_always_iterable_foreach);
         types.extend(subjects);
         for span in unknown {
             types.remove(&span);
@@ -271,6 +273,7 @@ fn checker<'a, 'arena>(
         cli_arguments_variables_registered: project.cli_arguments_variables_registered,
         check_maybe_undefined_variables: project.check_maybe_undefined_variables,
         pollute_scope_with_loop_initial_assignments: project.pollute_scope_with_loop_initial_assignments,
+        pollute_scope_with_always_iterable_foreach: project.pollute_scope_with_always_iterable_foreach,
         method_purity_override: project.method_purity_override,
         uninitialized_properties: project.uninitialized_properties,
         missing_callable_signature: project.missing_callable_signature,

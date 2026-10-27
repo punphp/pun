@@ -1,0 +1,2956 @@
+{
+    "default": [
+        [
+            "foreach-always-iterable.php",
+            8,
+            "variable.undefined",
+            "Undefined variable: $key",
+            null,
+            true
+        ],
+        [
+            "foreach-always-iterable.php",
+            9,
+            "variable.undefined",
+            "Undefined variable: $val",
+            null,
+            true
+        ],
+        [
+            "foreach-always-iterable.php",
+            10,
+            "variable.undefined",
+            "Undefined variable: $test",
+            null,
+            true
+        ],
+        [
+            "foreach-always-iterable.php",
+            34,
+            "variable.undefined",
+            "Variable $test might not be defined.",
+            null,
+            true
+        ],
+        [
+            "foreach-always-iterable.php",
+            47,
+            "variable.undefined",
+            "Variable $key might not be defined.",
+            null,
+            true
+        ],
+        [
+            "foreach-always-iterable.php",
+            48,
+            "variable.undefined",
+            "Variable $test might not be defined.",
+            null,
+            true
+        ],
+        [
+            "foreach-always-iterable.php",
+            61,
+            "variable.undefined",
+            "Variable $key might not be defined.",
+            null,
+            true
+        ],
+        [
+            "foreach-always-iterable.php",
+            62,
+            "variable.undefined",
+            "Variable $test might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            13,
+            "phpstan.dumpType",
+            "Dumped type: 'after'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            14,
+            "phpstan.dumpType",
+            "Dumped type: 'after'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            15,
+            "phpstan.dumpType",
+            "Dumped type: 'body'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            22,
+            "phpstan.dumpType",
+            "Dumped type: non-empty-array<int, string>",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            26,
+            "variable.undefined",
+            "Variable $created might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            26,
+            "variable.undefined",
+            "Variable $key might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            26,
+            "variable.undefined",
+            "Variable $value might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            27,
+            "phpstan.dumpType",
+            "Dumped type: 'after'|'before'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            28,
+            "phpstan.dumpType",
+            "Dumped type: array<int, string>",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            35,
+            "variable.undefined",
+            "Undefined variable: $created",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            35,
+            "variable.undefined",
+            "Undefined variable: $key",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            35,
+            "variable.undefined",
+            "Undefined variable: $value",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            35,
+            "variable.undefined",
+            "Variable $possible might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            36,
+            "phpstan.dumpType",
+            "Dumped type: 'before'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            46,
+            "variable.undefined",
+            "Variable $breakOnly might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            46,
+            "variable.undefined",
+            "Variable $endOnly might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            47,
+            "phpstan.dumpType",
+            "Dumped type: 'break'|'end'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            54,
+            "phpstan.dumpType",
+            "Dumped type: 'break'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            63,
+            "variable.undefined",
+            "Variable $continueOnly might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            63,
+            "variable.undefined",
+            "Variable $endOnly might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            64,
+            "phpstan.dumpType",
+            "Dumped type: 'continue'|'end'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            71,
+            "phpstan.dumpType",
+            "Dumped type: 'continue'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            81,
+            "phpstan.dumpType",
+            "Dumped type: 'end'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            88,
+            "variable.undefined",
+            "Variable $created might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            88,
+            "variable.undefined",
+            "Variable $key might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            88,
+            "variable.undefined",
+            "Variable $value might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            89,
+            "phpstan.dumpType",
+            "Dumped type: 'before'|'return'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            90,
+            "phpstan.dumpType",
+            "Dumped type: array<int, string>",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            96,
+            "phpstan.dumpType",
+            "Dumped type: array{'value'}",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            103,
+            "variable.undefined",
+            "Variable $held might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            109,
+            "variable.undefined",
+            "Undefined variable: $existing",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            110,
+            "phpstan.dumpType",
+            "Dumped type: *ERROR*",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            110,
+            "variable.undefined",
+            "Undefined variable: $existing",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            129,
+            "variable.undefined",
+            "Variable $afterInner might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            129,
+            "variable.undefined",
+            "Variable $local might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            129,
+            "variable.undefined",
+            "Variable $outward might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            135,
+            "phpstan.dumpType",
+            "Dumped type: 'replaced'|array{}",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            142,
+            "phpstan.dumpType",
+            "Dumped type: non-empty-array<int, string>",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            148,
+            "phpstan.dumpType",
+            "Dumped type: non-empty-array<int, string>",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            151,
+            "phpstan.dumpType",
+            "Dumped type: array<int, string>",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            152,
+            "variable.undefined",
+            "Variable $created might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            161,
+            "phpstan.dumpType",
+            "Dumped type: non-empty-array<int, string>",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            162,
+            "phpstan.dumpType",
+            "Dumped type: array<int, string>",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            173,
+            "variable.undefined",
+            "Variable $afterInner might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            173,
+            "variable.undefined",
+            "Variable $local might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            173,
+            "variable.undefined",
+            "Variable $outward might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            184,
+            "variable.undefined",
+            "Variable $held might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            191,
+            "phpstan.dumpType",
+            "Dumped type: 'after'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            197,
+            "variable.undefined",
+            "Variable $unknownAfterExtract might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            203,
+            "variable.undefined",
+            "Variable $created might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            203,
+            "variable.undefined",
+            "Variable $key might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            203,
+            "variable.undefined",
+            "Variable $value might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            204,
+            "phpstan.dumpType",
+            "Dumped type: Traversable<int, string>",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            210,
+            "phpstan.dumpType",
+            "Dumped type: array{'nested'}",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            211,
+            "phpstan.dumpType",
+            "Dumped type: array{'body'}",
+            null,
+            false
+        ]
+    ],
+    "enabled": [
+        [
+            "foreach-always-iterable.php",
+            8,
+            "variable.undefined",
+            "Undefined variable: $key",
+            null,
+            true
+        ],
+        [
+            "foreach-always-iterable.php",
+            9,
+            "variable.undefined",
+            "Undefined variable: $val",
+            null,
+            true
+        ],
+        [
+            "foreach-always-iterable.php",
+            10,
+            "variable.undefined",
+            "Undefined variable: $test",
+            null,
+            true
+        ],
+        [
+            "foreach-always-iterable.php",
+            34,
+            "variable.undefined",
+            "Variable $test might not be defined.",
+            null,
+            true
+        ],
+        [
+            "foreach-always-iterable.php",
+            47,
+            "variable.undefined",
+            "Variable $key might not be defined.",
+            null,
+            true
+        ],
+        [
+            "foreach-always-iterable.php",
+            48,
+            "variable.undefined",
+            "Variable $test might not be defined.",
+            null,
+            true
+        ],
+        [
+            "foreach-always-iterable.php",
+            61,
+            "variable.undefined",
+            "Variable $key might not be defined.",
+            null,
+            true
+        ],
+        [
+            "foreach-always-iterable.php",
+            62,
+            "variable.undefined",
+            "Variable $test might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            13,
+            "phpstan.dumpType",
+            "Dumped type: 'after'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            14,
+            "phpstan.dumpType",
+            "Dumped type: 'after'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            15,
+            "phpstan.dumpType",
+            "Dumped type: 'body'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            22,
+            "phpstan.dumpType",
+            "Dumped type: non-empty-array<int, string>",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            26,
+            "variable.undefined",
+            "Variable $created might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            26,
+            "variable.undefined",
+            "Variable $key might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            26,
+            "variable.undefined",
+            "Variable $value might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            27,
+            "phpstan.dumpType",
+            "Dumped type: 'after'|'before'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            28,
+            "phpstan.dumpType",
+            "Dumped type: array<int, string>",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            35,
+            "variable.undefined",
+            "Undefined variable: $created",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            35,
+            "variable.undefined",
+            "Undefined variable: $key",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            35,
+            "variable.undefined",
+            "Undefined variable: $value",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            35,
+            "variable.undefined",
+            "Variable $possible might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            36,
+            "phpstan.dumpType",
+            "Dumped type: 'before'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            46,
+            "variable.undefined",
+            "Variable $breakOnly might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            46,
+            "variable.undefined",
+            "Variable $endOnly might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            47,
+            "phpstan.dumpType",
+            "Dumped type: 'break'|'end'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            54,
+            "phpstan.dumpType",
+            "Dumped type: 'break'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            63,
+            "variable.undefined",
+            "Variable $continueOnly might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            63,
+            "variable.undefined",
+            "Variable $endOnly might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            64,
+            "phpstan.dumpType",
+            "Dumped type: 'continue'|'end'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            71,
+            "phpstan.dumpType",
+            "Dumped type: 'continue'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            81,
+            "phpstan.dumpType",
+            "Dumped type: 'end'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            88,
+            "variable.undefined",
+            "Variable $created might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            88,
+            "variable.undefined",
+            "Variable $key might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            88,
+            "variable.undefined",
+            "Variable $value might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            89,
+            "phpstan.dumpType",
+            "Dumped type: 'before'|'return'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            90,
+            "phpstan.dumpType",
+            "Dumped type: array<int, string>",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            96,
+            "phpstan.dumpType",
+            "Dumped type: array{'value'}",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            103,
+            "variable.undefined",
+            "Variable $held might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            109,
+            "variable.undefined",
+            "Undefined variable: $existing",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            110,
+            "phpstan.dumpType",
+            "Dumped type: *ERROR*",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            110,
+            "variable.undefined",
+            "Undefined variable: $existing",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            129,
+            "variable.undefined",
+            "Variable $afterInner might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            129,
+            "variable.undefined",
+            "Variable $local might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            129,
+            "variable.undefined",
+            "Variable $outward might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            135,
+            "phpstan.dumpType",
+            "Dumped type: 'replaced'|array{}",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            142,
+            "phpstan.dumpType",
+            "Dumped type: non-empty-array<int, string>",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            148,
+            "phpstan.dumpType",
+            "Dumped type: non-empty-array<int, string>",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            151,
+            "phpstan.dumpType",
+            "Dumped type: array<int, string>",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            152,
+            "variable.undefined",
+            "Variable $created might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            161,
+            "phpstan.dumpType",
+            "Dumped type: non-empty-array<int, string>",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            162,
+            "phpstan.dumpType",
+            "Dumped type: array<int, string>",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            173,
+            "variable.undefined",
+            "Variable $afterInner might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            173,
+            "variable.undefined",
+            "Variable $local might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            173,
+            "variable.undefined",
+            "Variable $outward might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            184,
+            "variable.undefined",
+            "Variable $held might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            191,
+            "phpstan.dumpType",
+            "Dumped type: 'after'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            197,
+            "variable.undefined",
+            "Variable $unknownAfterExtract might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            203,
+            "variable.undefined",
+            "Variable $created might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            203,
+            "variable.undefined",
+            "Variable $key might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            203,
+            "variable.undefined",
+            "Variable $value might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            204,
+            "phpstan.dumpType",
+            "Dumped type: Traversable<int, string>",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            210,
+            "phpstan.dumpType",
+            "Dumped type: array{'nested'}",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            211,
+            "phpstan.dumpType",
+            "Dumped type: array{'body'}",
+            null,
+            false
+        ]
+    ],
+    "disabled": [
+        [
+            "foreach-always-iterable.php",
+            8,
+            "variable.undefined",
+            "Undefined variable: $key",
+            null,
+            true
+        ],
+        [
+            "foreach-always-iterable.php",
+            9,
+            "variable.undefined",
+            "Undefined variable: $val",
+            null,
+            true
+        ],
+        [
+            "foreach-always-iterable.php",
+            10,
+            "variable.undefined",
+            "Undefined variable: $test",
+            null,
+            true
+        ],
+        [
+            "foreach-always-iterable.php",
+            19,
+            "variable.undefined",
+            "Variable $key might not be defined.",
+            null,
+            true
+        ],
+        [
+            "foreach-always-iterable.php",
+            20,
+            "variable.undefined",
+            "Variable $val might not be defined.",
+            null,
+            true
+        ],
+        [
+            "foreach-always-iterable.php",
+            21,
+            "variable.undefined",
+            "Variable $test might not be defined.",
+            null,
+            true
+        ],
+        [
+            "foreach-always-iterable.php",
+            32,
+            "variable.undefined",
+            "Variable $key might not be defined.",
+            null,
+            true
+        ],
+        [
+            "foreach-always-iterable.php",
+            33,
+            "variable.undefined",
+            "Variable $val might not be defined.",
+            null,
+            true
+        ],
+        [
+            "foreach-always-iterable.php",
+            34,
+            "variable.undefined",
+            "Variable $test might not be defined.",
+            null,
+            true
+        ],
+        [
+            "foreach-always-iterable.php",
+            47,
+            "variable.undefined",
+            "Variable $key might not be defined.",
+            null,
+            true
+        ],
+        [
+            "foreach-always-iterable.php",
+            48,
+            "variable.undefined",
+            "Variable $test might not be defined.",
+            null,
+            true
+        ],
+        [
+            "foreach-always-iterable.php",
+            61,
+            "variable.undefined",
+            "Variable $key might not be defined.",
+            null,
+            true
+        ],
+        [
+            "foreach-always-iterable.php",
+            62,
+            "variable.undefined",
+            "Variable $test might not be defined.",
+            null,
+            true
+        ],
+        [
+            "foreach-always-iterable.php",
+            75,
+            "variable.undefined",
+            "Variable $key might not be defined.",
+            null,
+            true
+        ],
+        [
+            "foreach-always-iterable.php",
+            76,
+            "variable.undefined",
+            "Variable $test might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            12,
+            "variable.undefined",
+            "Variable $created might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            12,
+            "variable.undefined",
+            "Variable $key might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            12,
+            "variable.undefined",
+            "Variable $possible might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            12,
+            "variable.undefined",
+            "Variable $value might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            13,
+            "phpstan.dumpType",
+            "Dumped type: 'after'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            14,
+            "phpstan.dumpType",
+            "Dumped type: 'after'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            14,
+            "variable.undefined",
+            "Variable $possible might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            15,
+            "phpstan.dumpType",
+            "Dumped type: 'body'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            15,
+            "variable.undefined",
+            "Variable $created might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            22,
+            "phpstan.dumpType",
+            "Dumped type: array<int, string>",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            26,
+            "variable.undefined",
+            "Variable $created might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            26,
+            "variable.undefined",
+            "Variable $key might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            26,
+            "variable.undefined",
+            "Variable $value might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            27,
+            "phpstan.dumpType",
+            "Dumped type: 'after'|'before'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            28,
+            "phpstan.dumpType",
+            "Dumped type: array<int, string>",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            35,
+            "variable.undefined",
+            "Undefined variable: $created",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            35,
+            "variable.undefined",
+            "Undefined variable: $key",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            35,
+            "variable.undefined",
+            "Undefined variable: $value",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            35,
+            "variable.undefined",
+            "Variable $possible might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            36,
+            "phpstan.dumpType",
+            "Dumped type: 'before'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            46,
+            "variable.undefined",
+            "Variable $breakOnly might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            46,
+            "variable.undefined",
+            "Variable $endOnly might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            46,
+            "variable.undefined",
+            "Variable $key might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            46,
+            "variable.undefined",
+            "Variable $value might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            47,
+            "phpstan.dumpType",
+            "Dumped type: 'break'|'end'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            53,
+            "variable.undefined",
+            "Variable $created might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            53,
+            "variable.undefined",
+            "Variable $key might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            53,
+            "variable.undefined",
+            "Variable $value might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            54,
+            "phpstan.dumpType",
+            "Dumped type: 'break'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            63,
+            "variable.undefined",
+            "Variable $continueOnly might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            63,
+            "variable.undefined",
+            "Variable $endOnly might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            63,
+            "variable.undefined",
+            "Variable $key might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            63,
+            "variable.undefined",
+            "Variable $value might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            64,
+            "phpstan.dumpType",
+            "Dumped type: 'continue'|'end'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            70,
+            "variable.undefined",
+            "Variable $created might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            70,
+            "variable.undefined",
+            "Variable $key might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            70,
+            "variable.undefined",
+            "Variable $value might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            71,
+            "phpstan.dumpType",
+            "Dumped type: 'continue'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            80,
+            "variable.undefined",
+            "Variable $created might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            80,
+            "variable.undefined",
+            "Variable $key might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            80,
+            "variable.undefined",
+            "Variable $value might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            81,
+            "phpstan.dumpType",
+            "Dumped type: 'end'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            88,
+            "variable.undefined",
+            "Variable $created might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            88,
+            "variable.undefined",
+            "Variable $key might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            88,
+            "variable.undefined",
+            "Variable $value might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            89,
+            "phpstan.dumpType",
+            "Dumped type: 'before'|'return'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            90,
+            "phpstan.dumpType",
+            "Dumped type: array<int, string>",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            95,
+            "variable.undefined",
+            "Variable $created might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            95,
+            "variable.undefined",
+            "Variable $key might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            95,
+            "variable.undefined",
+            "Variable $value might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            96,
+            "phpstan.dumpType",
+            "Dumped type: array{'value'}",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            103,
+            "variable.undefined",
+            "Variable $created might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            103,
+            "variable.undefined",
+            "Variable $held might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            109,
+            "variable.undefined",
+            "Variable $value might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            110,
+            "phpstan.dumpType",
+            "Dumped type: 'before'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            129,
+            "variable.undefined",
+            "Variable $afterInner might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            129,
+            "variable.undefined",
+            "Variable $inner might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            129,
+            "variable.undefined",
+            "Variable $local might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            129,
+            "variable.undefined",
+            "Variable $outer might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            129,
+            "variable.undefined",
+            "Variable $outward might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            135,
+            "phpstan.dumpType",
+            "Dumped type: 'replaced'|array{}",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            141,
+            "variable.undefined",
+            "Variable $created might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            141,
+            "variable.undefined",
+            "Variable $key might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            141,
+            "variable.undefined",
+            "Variable $value might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            142,
+            "phpstan.dumpType",
+            "Dumped type: non-empty-array<int, string>",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            148,
+            "phpstan.dumpType",
+            "Dumped type: array<int, string>",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            151,
+            "phpstan.dumpType",
+            "Dumped type: array<int, string>",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            152,
+            "variable.undefined",
+            "Variable $created might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            161,
+            "phpstan.dumpType",
+            "Dumped type: array<int, string>",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            162,
+            "phpstan.dumpType",
+            "Dumped type: array<int, string>",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            173,
+            "variable.undefined",
+            "Variable $afterInner might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            173,
+            "variable.undefined",
+            "Variable $inner might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            173,
+            "variable.undefined",
+            "Variable $local might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            173,
+            "variable.undefined",
+            "Variable $outer might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            173,
+            "variable.undefined",
+            "Variable $outward might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            184,
+            "variable.undefined",
+            "Variable $held might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            191,
+            "phpstan.dumpType",
+            "Dumped type: 'after'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            191,
+            "variable.undefined",
+            "Variable $existing might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            197,
+            "variable.undefined",
+            "Undefined variable: $unknownAfterExtract",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            203,
+            "variable.undefined",
+            "Variable $created might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            203,
+            "variable.undefined",
+            "Variable $key might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            203,
+            "variable.undefined",
+            "Variable $value might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            204,
+            "phpstan.dumpType",
+            "Dumped type: Traversable<int, string>",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            209,
+            "variable.undefined",
+            "Variable $created might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            209,
+            "variable.undefined",
+            "Variable $value might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            210,
+            "phpstan.dumpType",
+            "Dumped type: array{'nested'}",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            210,
+            "variable.undefined",
+            "Variable $value might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            211,
+            "phpstan.dumpType",
+            "Dumped type: array{'body'}",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            211,
+            "variable.undefined",
+            "Variable $created might not be defined.",
+            null,
+            true
+        ]
+    ],
+    "quiet": [
+        [
+            "foreach-always-iterable.php",
+            8,
+            "variable.undefined",
+            "Undefined variable: $key",
+            null,
+            true
+        ],
+        [
+            "foreach-always-iterable.php",
+            9,
+            "variable.undefined",
+            "Undefined variable: $val",
+            null,
+            true
+        ],
+        [
+            "foreach-always-iterable.php",
+            10,
+            "variable.undefined",
+            "Undefined variable: $test",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            13,
+            "phpstan.dumpType",
+            "Dumped type: 'after'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            14,
+            "phpstan.dumpType",
+            "Dumped type: 'after'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            15,
+            "phpstan.dumpType",
+            "Dumped type: 'body'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            22,
+            "phpstan.dumpType",
+            "Dumped type: array<int, string>",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            27,
+            "phpstan.dumpType",
+            "Dumped type: 'after'|'before'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            28,
+            "phpstan.dumpType",
+            "Dumped type: array<int, string>",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            35,
+            "variable.undefined",
+            "Undefined variable: $created",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            35,
+            "variable.undefined",
+            "Undefined variable: $key",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            35,
+            "variable.undefined",
+            "Undefined variable: $value",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            36,
+            "phpstan.dumpType",
+            "Dumped type: 'before'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            47,
+            "phpstan.dumpType",
+            "Dumped type: 'break'|'end'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            54,
+            "phpstan.dumpType",
+            "Dumped type: 'break'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            64,
+            "phpstan.dumpType",
+            "Dumped type: 'continue'|'end'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            71,
+            "phpstan.dumpType",
+            "Dumped type: 'continue'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            81,
+            "phpstan.dumpType",
+            "Dumped type: 'end'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            89,
+            "phpstan.dumpType",
+            "Dumped type: 'before'|'return'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            90,
+            "phpstan.dumpType",
+            "Dumped type: array<int, string>",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            96,
+            "phpstan.dumpType",
+            "Dumped type: array{'value'}",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            110,
+            "phpstan.dumpType",
+            "Dumped type: 'before'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            135,
+            "phpstan.dumpType",
+            "Dumped type: 'replaced'|array{}",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            142,
+            "phpstan.dumpType",
+            "Dumped type: non-empty-array<int, string>",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            148,
+            "phpstan.dumpType",
+            "Dumped type: array<int, string>",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            151,
+            "phpstan.dumpType",
+            "Dumped type: array<int, string>",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            161,
+            "phpstan.dumpType",
+            "Dumped type: array<int, string>",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            162,
+            "phpstan.dumpType",
+            "Dumped type: array<int, string>",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            191,
+            "phpstan.dumpType",
+            "Dumped type: 'after'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            197,
+            "variable.undefined",
+            "Undefined variable: $unknownAfterExtract",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            204,
+            "phpstan.dumpType",
+            "Dumped type: Traversable<int, string>",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            210,
+            "phpstan.dumpType",
+            "Dumped type: array{'nested'}",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            211,
+            "phpstan.dumpType",
+            "Dumped type: array{'body'}",
+            null,
+            false
+        ]
+    ],
+    "independent": [
+        [
+            "foreach-always-iterable.php",
+            8,
+            "variable.undefined",
+            "Undefined variable: $key",
+            null,
+            true
+        ],
+        [
+            "foreach-always-iterable.php",
+            9,
+            "variable.undefined",
+            "Undefined variable: $val",
+            null,
+            true
+        ],
+        [
+            "foreach-always-iterable.php",
+            10,
+            "variable.undefined",
+            "Undefined variable: $test",
+            null,
+            true
+        ],
+        [
+            "foreach-always-iterable.php",
+            19,
+            "variable.undefined",
+            "Variable $key might not be defined.",
+            null,
+            true
+        ],
+        [
+            "foreach-always-iterable.php",
+            20,
+            "variable.undefined",
+            "Variable $val might not be defined.",
+            null,
+            true
+        ],
+        [
+            "foreach-always-iterable.php",
+            21,
+            "variable.undefined",
+            "Variable $test might not be defined.",
+            null,
+            true
+        ],
+        [
+            "foreach-always-iterable.php",
+            32,
+            "variable.undefined",
+            "Variable $key might not be defined.",
+            null,
+            true
+        ],
+        [
+            "foreach-always-iterable.php",
+            33,
+            "variable.undefined",
+            "Variable $val might not be defined.",
+            null,
+            true
+        ],
+        [
+            "foreach-always-iterable.php",
+            34,
+            "variable.undefined",
+            "Variable $test might not be defined.",
+            null,
+            true
+        ],
+        [
+            "foreach-always-iterable.php",
+            47,
+            "variable.undefined",
+            "Variable $key might not be defined.",
+            null,
+            true
+        ],
+        [
+            "foreach-always-iterable.php",
+            48,
+            "variable.undefined",
+            "Variable $test might not be defined.",
+            null,
+            true
+        ],
+        [
+            "foreach-always-iterable.php",
+            61,
+            "variable.undefined",
+            "Variable $key might not be defined.",
+            null,
+            true
+        ],
+        [
+            "foreach-always-iterable.php",
+            62,
+            "variable.undefined",
+            "Variable $test might not be defined.",
+            null,
+            true
+        ],
+        [
+            "foreach-always-iterable.php",
+            75,
+            "variable.undefined",
+            "Variable $key might not be defined.",
+            null,
+            true
+        ],
+        [
+            "foreach-always-iterable.php",
+            76,
+            "variable.undefined",
+            "Variable $test might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            12,
+            "variable.undefined",
+            "Variable $created might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            12,
+            "variable.undefined",
+            "Variable $key might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            12,
+            "variable.undefined",
+            "Variable $possible might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            12,
+            "variable.undefined",
+            "Variable $value might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            13,
+            "phpstan.dumpType",
+            "Dumped type: 'after'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            14,
+            "phpstan.dumpType",
+            "Dumped type: 'after'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            14,
+            "variable.undefined",
+            "Variable $possible might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            15,
+            "phpstan.dumpType",
+            "Dumped type: 'body'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            15,
+            "variable.undefined",
+            "Variable $created might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            22,
+            "phpstan.dumpType",
+            "Dumped type: array<int, string>",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            26,
+            "variable.undefined",
+            "Variable $created might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            26,
+            "variable.undefined",
+            "Variable $key might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            26,
+            "variable.undefined",
+            "Variable $value might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            27,
+            "phpstan.dumpType",
+            "Dumped type: 'after'|'before'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            28,
+            "phpstan.dumpType",
+            "Dumped type: array<int, string>",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            35,
+            "variable.undefined",
+            "Undefined variable: $created",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            35,
+            "variable.undefined",
+            "Undefined variable: $key",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            35,
+            "variable.undefined",
+            "Undefined variable: $value",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            35,
+            "variable.undefined",
+            "Variable $possible might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            36,
+            "phpstan.dumpType",
+            "Dumped type: 'before'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            46,
+            "variable.undefined",
+            "Variable $breakOnly might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            46,
+            "variable.undefined",
+            "Variable $endOnly might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            46,
+            "variable.undefined",
+            "Variable $key might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            46,
+            "variable.undefined",
+            "Variable $value might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            47,
+            "phpstan.dumpType",
+            "Dumped type: 'break'|'end'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            53,
+            "variable.undefined",
+            "Variable $created might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            53,
+            "variable.undefined",
+            "Variable $key might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            53,
+            "variable.undefined",
+            "Variable $value might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            54,
+            "phpstan.dumpType",
+            "Dumped type: 'break'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            63,
+            "variable.undefined",
+            "Variable $continueOnly might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            63,
+            "variable.undefined",
+            "Variable $endOnly might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            63,
+            "variable.undefined",
+            "Variable $key might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            63,
+            "variable.undefined",
+            "Variable $value might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            64,
+            "phpstan.dumpType",
+            "Dumped type: 'continue'|'end'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            70,
+            "variable.undefined",
+            "Variable $created might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            70,
+            "variable.undefined",
+            "Variable $key might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            70,
+            "variable.undefined",
+            "Variable $value might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            71,
+            "phpstan.dumpType",
+            "Dumped type: 'continue'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            80,
+            "variable.undefined",
+            "Variable $created might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            80,
+            "variable.undefined",
+            "Variable $key might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            80,
+            "variable.undefined",
+            "Variable $value might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            81,
+            "phpstan.dumpType",
+            "Dumped type: 'end'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            88,
+            "variable.undefined",
+            "Variable $created might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            88,
+            "variable.undefined",
+            "Variable $key might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            88,
+            "variable.undefined",
+            "Variable $value might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            89,
+            "phpstan.dumpType",
+            "Dumped type: 'before'|'return'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            90,
+            "phpstan.dumpType",
+            "Dumped type: array<int, string>",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            95,
+            "variable.undefined",
+            "Variable $created might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            95,
+            "variable.undefined",
+            "Variable $key might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            95,
+            "variable.undefined",
+            "Variable $value might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            96,
+            "phpstan.dumpType",
+            "Dumped type: array{'value'}",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            103,
+            "variable.undefined",
+            "Variable $created might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            103,
+            "variable.undefined",
+            "Variable $held might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            109,
+            "variable.undefined",
+            "Variable $value might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            110,
+            "phpstan.dumpType",
+            "Dumped type: 'before'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            115,
+            "variable.undefined",
+            "Undefined variable: $initial",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            129,
+            "variable.undefined",
+            "Variable $afterInner might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            129,
+            "variable.undefined",
+            "Variable $inner might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            129,
+            "variable.undefined",
+            "Variable $local might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            129,
+            "variable.undefined",
+            "Variable $outer might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            129,
+            "variable.undefined",
+            "Variable $outward might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            135,
+            "phpstan.dumpType",
+            "Dumped type: 'replaced'|array{}",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            141,
+            "variable.undefined",
+            "Variable $created might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            141,
+            "variable.undefined",
+            "Variable $key might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            141,
+            "variable.undefined",
+            "Variable $value might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            142,
+            "phpstan.dumpType",
+            "Dumped type: non-empty-array<int, string>",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            148,
+            "phpstan.dumpType",
+            "Dumped type: array<int, string>",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            151,
+            "phpstan.dumpType",
+            "Dumped type: array<int, string>",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            152,
+            "variable.undefined",
+            "Variable $created might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            161,
+            "phpstan.dumpType",
+            "Dumped type: array<int, string>",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            162,
+            "phpstan.dumpType",
+            "Dumped type: array<int, string>",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            173,
+            "variable.undefined",
+            "Variable $afterInner might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            173,
+            "variable.undefined",
+            "Variable $inner might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            173,
+            "variable.undefined",
+            "Variable $local might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            173,
+            "variable.undefined",
+            "Variable $outer might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            173,
+            "variable.undefined",
+            "Variable $outward might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            184,
+            "variable.undefined",
+            "Variable $held might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            191,
+            "phpstan.dumpType",
+            "Dumped type: 'after'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            191,
+            "variable.undefined",
+            "Variable $existing might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            197,
+            "variable.undefined",
+            "Undefined variable: $unknownAfterExtract",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            203,
+            "variable.undefined",
+            "Variable $created might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            203,
+            "variable.undefined",
+            "Variable $key might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            203,
+            "variable.undefined",
+            "Variable $value might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            204,
+            "phpstan.dumpType",
+            "Dumped type: Traversable<int, string>",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            209,
+            "variable.undefined",
+            "Variable $created might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            209,
+            "variable.undefined",
+            "Variable $value might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            210,
+            "phpstan.dumpType",
+            "Dumped type: array{'nested'}",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            210,
+            "variable.undefined",
+            "Variable $value might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            211,
+            "phpstan.dumpType",
+            "Dumped type: array{'body'}",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            211,
+            "variable.undefined",
+            "Variable $created might not be defined.",
+            null,
+            true
+        ]
+    ]
+}

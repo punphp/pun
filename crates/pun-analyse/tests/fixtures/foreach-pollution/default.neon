@@ -1,0 +1,7 @@
+parameters:
+    level: 0
+    phpVersion: 80500
+    checkMaybeUndefinedVariables: true
+    paths:
+        - matrix.php
+        - ../rules/data/Variables/data/foreach-always-iterable.php

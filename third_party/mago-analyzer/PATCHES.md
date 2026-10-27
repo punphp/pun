@@ -2264,3 +2264,41 @@ unsupported and invalidate the native state on the existing path. This patch doe
 or claim complete DefinedVariableRule parity. Scalar, array, reference, and template generalization beyond the
 constant-string update contract retain the existing inference engine's behavior; this is not a complete port
 of `MutatingScope::generalizeType()`.
+
+## Foreach body and exit-scope pollution
+
+`Settings::pollute_scope_with_always_iterable_foreach` defaults to true. Pun transports PHPStan's
+`polluteScopeWithAlwaysIterableForeach` from resolved parameters through `Project` and each inference entry
+point. The setting is independent of `checkMaybeUndefinedVariables` and loop-initial pollution.
+
+The reference is PHPStan 2.3.1 at `cb3b7e99489b2e3789ee2eec10501cb7a72580ea`:
+
+- [`ForeachHandler.php:157–184`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Analyser/StmtHandler/ForeachHandler.php#L157-L184)
+  narrows the iterable against `[]` at body entry only when pollution is enabled. Pun uses the existing
+  nonempty-countable reconciler, which retains non-array alternatives rather than asserting truthiness.
+- [`ForeachHandler.php:285–335`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Analyser/StmtHandler/ForeachHandler.php#L285-L335)
+  joins reachable body ends with local break and continue exits. The shared loop owner records these actual
+  scopes separately from speculative back edges. Convergence comparisons include the new scope fields.
+  Outward exits still reach their existing target loop.
+- [`ForeachHandler.php:458–474`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Analyser/StmtHandler/ForeachHandler.php#L458-L474)
+  merges a possible zero-iteration edge narrowed to `iteratee === [] || is_object(iteratee)`, regardless of
+  the setting. A definitely empty iterable restores entry. Guaranteed iteration uses final holders when
+  enabled, or projects them onto entry when disabled. Entry is captured after iterable evaluation, so
+  assignments in the iterable expression remain unconditional. Guaranteed termination cannot fall through.
+- [`MutatingScope.php:4960–5008`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Analyser/MutatingScope.php#L4960-L5008)
+  retains final types, combines entry and final certainty with AND, makes new holders maybe-defined, and
+  preserves entry-only holders. Pun aligns existing holder types before its existing scope join. This avoids
+  unioning overwritten entry types or creating conditional implications from artificial type differences.
+  The join intersects existing conditional holders. Projection restores entry's `after_extract_call` state.
+  Projection follows the existing array refinements and unrolling, which supply final types but cannot
+  make array-valued bindings or body assignments definite when pollution is disabled.
+
+Public `variables` and `project` tests use resolved default, enabled, disabled, quiet, and independent configs.
+`tests/fixtures/foreach-pollution/capture.php` regenerates full PHPStan diagnostics and `dumpType()` expectations.
+Controls cover the original `foreach-always-iterable.php`, nonempty and possibly empty parameters, literal
+arrays, key and value bindings, assignment and property iterables, empty-edge types, local and outward exits,
+termination, definite and maybe-defined holders, conditional-holder invalidation, unset, and extract.
+The do-while, standalone block, and loop-initial controls retain their separate behavior.
+
+Native loop transfers still invalidate native state before the loop on the existing path. This patch does
+not reconstruct paired native types, extend iterable reconciliation, or claim complete DefinedVariableRule parity.
