@@ -629,6 +629,22 @@ fn rules_ignore_nodes_outside_their_targets() {
             || Box::new(NoRedundantDefaultArgument),
             &["rector/RemoveArgumentFromDefaultParentCallRector/Fixture"],
         ),
+        (
+            || Box::new(PreferFillableAttribute),
+            &["rector/FillablePropertyToFillableAttributeRector"],
+        ),
+        (
+            || Box::new(PreferCollectedByAttribute),
+            &["rector/CollectedByPropertyToCollectedByAttributeRector"],
+        ),
+        (
+            || Box::new(PreferTableAttribute),
+            &["rector/TablePropertyToTableAttributeRector"],
+        ),
+        (
+            || Box::new(PreferScopeAttribute),
+            &["rector/ScopeNamedClassMethodToScopeAttributedClassMethodRector"],
+        ),
     ];
     for (rule, dirs) in cases {
         let targeted = Linter::new(vec![rule()], 80400);

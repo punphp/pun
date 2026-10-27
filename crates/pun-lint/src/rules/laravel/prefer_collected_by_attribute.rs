@@ -33,7 +33,9 @@ impl Rule for PreferCollectedByAttribute {
         ctx: &Context<'_>,
         out: &mut Vec<Report>,
     ) {
-        let class = ClassView::of(node).unwrap();
+        let Some(class) = ClassView::of(node) else {
+            return;
+        };
         if !class.is_object_type(ctx, ancestors, MODEL)
             || class.has_attribute(ancestors, COLLECTED_BY)
         {

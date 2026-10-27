@@ -39,7 +39,9 @@ impl Rule for PreferScopeAttribute {
         ctx: &Context<'_>,
         out: &mut Vec<Report>,
     ) {
-        let class = ClassView::of(node).unwrap();
+        let Some(class) = ClassView::of(node) else {
+            return;
+        };
         if !class.is_object_type(ctx, ancestors, MODEL) {
             return;
         }
@@ -136,9 +138,8 @@ fn has_method(ctx: &Context<'_>, class: &str, method: &str) -> bool {
     let facts = facts(ctx);
     let codebase = facts.documented();
     let same = |m: &[u8]| m.eq_ignore_ascii_case(method.as_bytes());
-    let Some(own) = codebase.get_class_like(class.as_bytes()) else {
-        return false;
-    };
+    // the class is in the codebase: `is_object_type` found it there
+    let own = codebase.get_class_like(class.as_bytes()).unwrap();
     std::iter::once(&own.name)
         .chain(own.all_parent_classes.iter())
         .chain(own.all_parent_interfaces.iter())

@@ -33,7 +33,9 @@ impl Rule for PreferTableAttribute {
         ctx: &Context<'_>,
         out: &mut Vec<Report>,
     ) {
-        let class = ClassView::of(node).unwrap();
+        let Some(class) = ClassView::of(node) else {
+            return;
+        };
         if !class.is_object_type(ctx, ancestors, MODEL) {
             return;
         }

@@ -227,16 +227,9 @@ impl<'ast, 'arena> PropertyView<'ast, 'arena> {
             .any(|m| matches!(m, Modifier::Protected(_)))
     }
 
+    /// php-parser's `isPublic()`: `public`, or no visibility at all (PHP allows one visibility modifier).
     pub(crate) fn is_public(&self) -> bool {
-        self.modifiers
-            .iter()
-            .any(|m| matches!(m, Modifier::Public(_)))
-            || !self.modifiers.iter().any(|m| {
-                matches!(
-                    m,
-                    Modifier::Public(_) | Modifier::Protected(_) | Modifier::Private(_)
-                )
-            })
+        !(self.modifiers.iter()).any(|m| matches!(m, Modifier::Protected(_) | Modifier::Private(_)))
     }
 
     pub(crate) fn has(&self, visibility: Visibility) -> bool {
@@ -386,7 +379,9 @@ impl Config {
         ctx: &Context<'_>,
         out: &mut Vec<Report>,
     ) {
-        let class = ClassView::of(node).unwrap();
+        let Some(class) = ClassView::of(node) else {
+            return;
+        };
         if (self.final_only && !class.is_final())
             || !class.is_object_type(ctx, ancestors, self.class)
             || (self.skip_existing && class.has_attribute(ancestors, self.attribute))
