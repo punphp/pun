@@ -2498,6 +2498,7 @@ impl ShapeBuilder {
     }
 
     pub fn set(&mut self, key: Option<Type>, value: Type, optional: bool) {
+        let key = key.as_ref().map(crate::resolve::to_array_key);
         let a = &mut self.array;
         // a PHPDoc item without a key is never optional (`value?` is not a shape item)
         let Some(key) = key else {

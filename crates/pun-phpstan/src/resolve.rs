@@ -320,7 +320,7 @@ pub fn resolve_in(node: &Node, scope: &dyn Scope) -> Type {
                         constant(&ConstExpr::Fetch(class.clone(), name.clone()), scope)
                     }
                 });
-                explicit.extend(key.clone());
+                explicit.extend(key.as_ref().map(to_array_key));
                 builder.set(key, r(&item.value), item.optional);
             }
             let is_list = kind.ends_with("list");

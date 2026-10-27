@@ -33,6 +33,24 @@ function shapeKeys(PHPStan\Type\Type $type): array
     return $rows;
 }
 
+function shapeKeyMetadata(PHPStan\Type\Type $type): array
+{
+    $arrays = $type->getConstantArrays();
+    if (count($arrays) !== 1) {
+        throw new RuntimeException('Expected one constant array.');
+    }
+    $array = $arrays[0];
+    $entries = [];
+    foreach ($array->getKeyTypes() as $i => $key) {
+        $value = $key->getValue();
+        $values = array_map(static fn($constant) => bin2hex($constant->getValue()), $array->getValueTypes()[$i]->getConstantStrings());
+        sort($values);
+        $entries[] = [is_int($value) ? ['int', $value] : ['string', bin2hex($value)], $values, $array->isOptionalKey($i)];
+    }
+    $list = $array->isList();
+    return ['entries' => $entries, 'list' => [$list->yes(), $list->maybe(), $list->no()]];
+}
+
 // The parser boundary retains quoted numeric strings; numeric key coercion belongs to type resolution.
 function parsedBytes(PHPStan\PhpDocParser\Ast\Type\TypeNode $node): array|string
 {
@@ -138,6 +156,60 @@ SHAPES;
     $typeParser = new PHPStan\PhpDocParser\Parser\TypeParser($parserConfig, $constParser);
     $docParser = new PHPStan\PhpDocParser\Parser\PhpDocParser($parserConfig, $typeParser, $constParser);
     $nodeResolver = $container->getByType(PHPStan\PhpDoc\TypeNodeResolver::class);
+    $numericInputs = <<<'SHAPES'
+array{"\x31": 'first', 1: 'last'}
+array{1: 'first', "\x31": 'last'}
+array{"\x31"?: 'first', 1: 'last'}
+array{1: 'first', "\x31"?: 'last'}
+array{"\x31"?: 'first', 1?: 'last'}
+array{0: 'first', "\x30"?: 'last'}
+array{0?: 'first', "\x30": 'last'}
+array{'0': 'zero', '00': 'double', '-0': 'negative-zero', '+1': 'plus', '01': 'leading', ' 1': 'space', '1.0': 'decimal', bare: 'bare'}
+array{'9223372036854775807': 'max', '9223372036854775808': 'overflow', '-9223372036854775808': 'min', '-9223372036854775809': 'underflow'}
+array{"\x2d1": 'first', -1: 'last', "1\x00": 'nul', "\xff1": 'ff', "\xfe1": 'fe', "\u{FFFD}1": 'replacement'}
+array{'\x31': 'single', "\x31": 'double', 1: 'last'}
+array{"\x31": 'explicit', ...<1, 'extra'>}
+array{1: 'explicit', ...<"\x31", 'extra'>}
+array{"\x31"?: 'explicit', ...<1|2, 'extra'>}
+array{'01': 'leading', ...<1|'01', 'extra'>}
+array{"\x30": 'zero', ...<0|1, 'extra'>}
+array{"\x2d1": 'negative', ...<-1|0, 'extra'>}
+SHAPES;
+    $numericRows = [];
+    foreach (explode("\n", $numericInputs) as $input) {
+        $node = $typeParser->parse(new PHPStan\PhpDocParser\Parser\TokenIterator($lexer->tokenize($input)));
+        $row = ['source_hex' => bin2hex($input), 'resolved' => shapeKeyMetadata($nodeResolver->resolve($node, new PHPStan\Analyser\NameScope(null, [])))];
+        if ($node->sealed) {
+            $builder = PHPStan\Type\Constant\ConstantArrayTypeBuilder::createEmpty();
+            $builder->disableArrayDegradation();
+            $items = [];
+            foreach ($node->items as $item) {
+                $key = $item->keyName;
+                $keyType = $key instanceof PHPStan\PhpDocParser\Ast\ConstExpr\ConstExprIntegerNode
+                    ? new PHPStan\Type\Constant\ConstantIntegerType((int) $key->value)
+                    : new ConstantStringType($key instanceof PHPStan\PhpDocParser\Ast\Type\IdentifierTypeNode ? $key->name : $key->value);
+                $valueType = $nodeResolver->resolve($item->valueType, new PHPStan\Analyser\NameScope(null, []));
+                $keyValue = $keyType->getValue();
+                $items[] = [is_int($keyValue) ? ['int', $keyValue] : ['string', bin2hex($keyValue)], bin2hex($valueType->getValue()), $item->optional];
+                $builder->setOffsetValueType($keyType, $valueType, $item->optional);
+            }
+            $row['items'] = $items;
+            $row['builder'] = shapeKeyMetadata($builder->getArray());
+        }
+        $numericRows[] = $row;
+    }
+    $numericLateRows = [];
+    foreach ([
+        'array{K: "template", "\x31": "one", "01": "leading"}',
+        'array{"\x31": "one", K?: "template", "01": "leading"}',
+        'array{K?: "template", 1: "one", ...<K|2, "extra">}',
+    ] as $input) {
+        foreach (['1', '01', '-1', "\xff", "\xfe", "\xef\xbf\xbd"] as $replacement) {
+            $type = $resolver->resolve($input, $scope);
+            $resolved = TemplateTypeHelper::resolveTemplateTypes($type, new TemplateTypeMap(['K' => new ConstantStringType($replacement)]), TemplateTypeVarianceMap::createEmpty(), TemplateTypeVariance::createStatic());
+            $numericLateRows[] = ['source_hex' => bin2hex($input), 'replacement' => bin2hex($replacement), 'resolved' => shapeKeyMetadata($resolved)];
+        }
+    }
     $rawInputs = ["'\xff'", "\"\xfe\"", "'\xef\xbf\xbd'", "'\xff\\xff'", "\"\xff\\xff\"",
         "array{'\xff': 'first', '\xfe': 'second', '\xef\xbf\xbd': 'third'}",
         "array{'\xff': 'first', \"\\xff\": 'last', '\xfe': 'other'}",
@@ -181,7 +253,7 @@ SHAPES;
         $resolved = TemplateTypeHelper::resolveTemplateTypes($type, new TemplateTypeMap(['K' => new ConstantStringType($replacement)]), TemplateTypeVarianceMap::createEmpty(), TemplateTypeVariance::createStatic());
         $rawLateRows[] = ['source_hex' => bin2hex($input), 'replacement' => bin2hex($replacement), 'entries' => shapeKeys($resolved)];
     }
-    echo json_encode(['values' => $rows, 'pairs' => $pairs, 'escapes' => $escapes, 'identity_neighbors' => $neighbors, 'callable_neighbors' => $callableNeighbors, 'shape_keys' => $shapeRows, 'late_shape_keys' => $lateRows, 'raw_types' => $rawRows, 'raw_prefixes' => $prefixRows, 'raw_errors' => $errorRows, 'raw_docs' => $docRows, 'raw_late_shape_keys' => $rawLateRows], JSON_PRETTY_PRINT | JSON_INVALID_UTF8_SUBSTITUTE | JSON_THROW_ON_ERROR), "\n";
+    echo json_encode(['values' => $rows, 'pairs' => $pairs, 'escapes' => $escapes, 'identity_neighbors' => $neighbors, 'callable_neighbors' => $callableNeighbors, 'shape_keys' => $shapeRows, 'late_shape_keys' => $lateRows, 'raw_types' => $rawRows, 'raw_prefixes' => $prefixRows, 'raw_errors' => $errorRows, 'raw_docs' => $docRows, 'raw_late_shape_keys' => $rawLateRows, 'numeric_shape_keys' => $numericRows, 'numeric_late_shape_keys' => $numericLateRows], JSON_PRETTY_PRINT | JSON_INVALID_UTF8_SUBSTITUTE | JSON_THROW_ON_ERROR), "\n";
 } finally {
     $items = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($root, FilesystemIterator::SKIP_DOTS), RecursiveIteratorIterator::CHILD_FIRST);
     foreach ($items as $item) {

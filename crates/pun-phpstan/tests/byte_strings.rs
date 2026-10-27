@@ -120,6 +120,30 @@ fn shape_keys(ty: &Type) -> Value {
     )
 }
 
+// The oracle also records list classification, a separate builder contract from key coercion.
+fn shape_key_entries(ty: &Type) -> Value {
+    let arrays = ty.constant_arrays();
+    assert_eq!(arrays.len(), 1);
+    let array = &arrays[0];
+    let entries: Vec<_> = array
+        .keys
+        .iter()
+        .zip(&array.values)
+        .enumerate()
+        .map(|(i, (key, value))| {
+            let key = match key {
+                Type::ConstInt(i) => json!(["int", i]),
+                Type::ConstString(s) => json!(["string", hex(s)]),
+                _ => panic!("nonconstant shape key: {key:?}"),
+            };
+            let mut values: Vec<_> = value.constant_strings().iter().map(|s| hex(s)).collect();
+            values.sort();
+            json!([key, values, array.optional.contains(&i)])
+        })
+        .collect();
+    json!(entries)
+}
+
 #[test]
 fn quoted_shape_keys_preserve_bytes_and_overwrite_only_equal_keys() {
     let oracle: Value =
@@ -129,6 +153,41 @@ fn quoted_shape_keys_preserve_bytes_and_overwrite_only_equal_keys() {
         let ty = pun_phpstan::resolve::resolve_str(input, None);
         assert_eq!(shape_keys(&ty), row["entries"], "{input}");
     }
+    let mut failures = Vec::new();
+    for row in oracle["numeric_shape_keys"].as_array().unwrap() {
+        let input = bytes(&row["source_hex"]);
+        let node = pun_phpstan::phpdoc::parse(&input).unwrap();
+        let resolved = shape_key_entries(&pun_phpstan::resolve::resolve(&node, None));
+        if resolved != row["resolved"]["entries"] {
+            failures.push(format!(
+                "resolver {}: got {resolved}; expected {}",
+                row["source_hex"], row["resolved"]["entries"]
+            ));
+        }
+        if let Some(items) = row["items"].as_array() {
+            let mut builder = pun_phpstan::types::ShapeBuilder::new();
+            for item in items {
+                let key = match item[0][0].as_str().unwrap() {
+                    "int" => Type::ConstInt(item[0][1].as_i64().unwrap()),
+                    "string" => Type::ConstString(bytes(&item[0][1])),
+                    other => panic!("unexpected builder key: {other}"),
+                };
+                builder.set(
+                    Some(key),
+                    Type::ConstString(bytes(&item[1])),
+                    item[2].as_bool().unwrap(),
+                );
+            }
+            let built = shape_key_entries(&builder.get());
+            if built != row["builder"]["entries"] {
+                failures.push(format!(
+                    "builder {}: got {built}; expected {}",
+                    row["source_hex"], row["builder"]["entries"]
+                ));
+            }
+        }
+    }
+    assert!(failures.is_empty(), "{}", failures.join("\n"));
 }
 
 #[test]
@@ -178,6 +237,22 @@ fn late_quoted_shape_keys_preserve_bytes_through_template_substitution() {
             row["replacement"]
         );
     }
+    for row in oracle["numeric_late_shape_keys"].as_array().unwrap() {
+        let input = bytes(&row["source_hex"]);
+        let node = pun_phpstan::phpdoc::parse(&input).unwrap();
+        let ty = resolve_in(&node, &scope);
+        assert!(matches!(ty, Type::LateArrayShape(_)), "{input:?}");
+        let replacement = Type::ConstString(bytes(&row["replacement"]));
+        let map = infer_template_types(&template, &replacement);
+        let resolved = resolve_template_types(&ty, &map);
+        assert_eq!(
+            shape_key_entries(&resolved),
+            row["resolved"]["entries"],
+            "{}; replacement {}",
+            row["source_hex"],
+            row["replacement"]
+        );
+    }
 }
 
 fn raw_value(node: &pun_phpstan::phpdoc::Node) -> Value {
@@ -217,6 +292,7 @@ fn raw_quoted_scalars_and_shapes_match_phpstan_bytes() {
         let input = bytes(&row["source_hex"]);
         let node = pun_phpstan::phpdoc::parse(&input).unwrap();
         assert_eq!(parsed_bytes(&node), row["parsed"], "{}", row["source_hex"]);
+        assert_eq!(raw_value(&node), row["value"], "{}", row["source_hex"]);
     }
 }
 
