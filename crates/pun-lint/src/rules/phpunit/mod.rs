@@ -40,6 +40,7 @@ mod prefer_assert_true_false;
 mod prefer_attribute_over_annotation;
 mod prefer_comparison_assertion;
 mod prefer_covers_attribute;
+mod prefer_create_stub;
 mod prefer_create_stub_expression;
 mod prefer_create_stub_in_coalesce;
 mod prefer_data_provider;
@@ -101,6 +102,7 @@ pub use prefer_assert_true_false::PreferAssertTrueFalse;
 pub use prefer_attribute_over_annotation::PreferAttributeOverAnnotation;
 pub use prefer_comparison_assertion::PreferComparisonAssertion;
 pub use prefer_covers_attribute::PreferCoversAttribute;
+pub use prefer_create_stub::PreferCreateStub;
 pub use prefer_create_stub_expression::PreferCreateStubExpression;
 pub use prefer_create_stub_in_coalesce::PreferCreateStubInCoalesce;
 pub use prefer_data_provider::PreferDataProvider;
@@ -204,6 +206,7 @@ pub(crate) fn all() -> Vec<Box<dyn Rule>> {
         Box::new(PreferCreateStubExpression),
         Box::new(NoMockIntersectionProperty),
         Box::new(NoUnusedMockProperty),
+        Box::new(PreferCreateStub),
     ]
 }
 

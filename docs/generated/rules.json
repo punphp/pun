@@ -11884,7 +11884,7 @@
         "PropertyCreateMockToCreateStubRector",
         "Rector\\PHPUnit\\PHPUnit120\\Rector\\Class_\\PropertyCreateMockToCreateStubRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/phpunit/prefer-create-stub-argument",
