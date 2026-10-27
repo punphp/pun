@@ -67,6 +67,7 @@ mod no_duplicate_case_body;
 mod no_duplicate_match_arm;
 mod no_dynamic_member;
 mod no_extra_arguments;
+mod require_array_filter_callback;
 mod no_dynamic_name;
 mod no_else_after_return;
 mod no_empty;
@@ -286,6 +287,7 @@ pub use no_dynamic_member::{
 };
 pub use no_dynamic_name::NoDynamicName;
 pub use no_extra_arguments::NoExtraArguments;
+pub use require_array_filter_callback::RequireArrayFilterCallback;
 pub use no_else_after_return::NoElseAfterReturn;
 pub use no_empty::NoEmpty;
 pub use no_empty_block::NoEmptyBlock;
@@ -706,5 +708,6 @@ fn ungrouped() -> Vec<Box<dyn Rule>> {
         Box::new(PreferClassNameConstant::default()),
         Box::new(RequireStrictInArray),
         Box::new(NoExtraArguments),
+        Box::new(RequireArrayFilterCallback),
     ]
 }

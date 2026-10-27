@@ -6771,7 +6771,7 @@
         "PHPStan\\Rules\\Functions\\ArrayFilterStrictRule",
         "arrayFilter.strict"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/functions/require-assert-description",

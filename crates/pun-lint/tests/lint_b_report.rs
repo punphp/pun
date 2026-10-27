@@ -26,6 +26,7 @@ const PHPSTAN: &[&str] = &[
     "lint/style/no-dynamic-static-call",
     "lint/style/no-dynamic-static-callable",
     "lint/style/no-dynamic-static-property",
+    "lint/functions/require-array-filter-callback",
 ];
 
 fn line_col(source: &str, offset: usize) -> (usize, usize) {

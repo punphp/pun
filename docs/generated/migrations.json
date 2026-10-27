@@ -15885,7 +15885,7 @@
         "rules": [
           "lint/functions/require-array-filter-callback"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
