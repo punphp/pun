@@ -10,13 +10,11 @@ use mago_codex::metadata::function_like::FunctionLikeMetadata;
 use mago_codex::ttype::atomic::TAtomic;
 use mago_codex::ttype::atomic::object::TObject;
 use mago_codex::ttype::atomic::scalar::TScalar;
-use mago_syntax::cst::{
-    ArgumentList, ClassLikeMemberSelector, Expression, Literal, Node, NodeKind, Variable,
-};
+use mago_syntax::cst::{ArgumentList, Expression, Literal, Node, NodeKind, Variable};
 use pun_problem::{Edit, Safety};
 
 use super::prefer_test_with_attribute::php_g;
-use super::{class_is, class_parents, is_in_test_class, own_class, report, resolve};
+use super::{AnyCall, class_is, class_parents, is_in_test_class, own_class, report, resolve};
 use crate::rules::types::facts::facts;
 use crate::syntax::{node_span, unparenthesize};
 use crate::{Context, Report, Rule};
@@ -47,13 +45,11 @@ impl Rule for RequireExactTestArgumentType {
         out: &mut Vec<Report>,
     ) {
         let args: &ArgumentList<'_> = match node {
-            Node::MethodCall(c) => &c.argument_list,
-            Node::StaticMethodCall(c) => &c.argument_list,
             Node::Instantiation(new) => match &new.argument_list {
                 Some(list) => list,
                 None => return,
             },
-            _ => return,
+            _ => AnyCall::of(node).unwrap().args,
         };
         // shouldSkipCall
         if !is_in_test_or_context(ctx, ancestors)
@@ -107,7 +103,11 @@ impl Rule for RequireExactTestArgumentType {
                     Some(format!("'{}'", php_g(*f.value, 14)))
                 }
                 (TAtomic::Scalar(TScalar::Integer(_)), Literal::String(s)) => {
-                    s.value.map(|v| php_int_cast(v).to_string())
+                    // `pScalar_Int()`: `PHP_INT_MIN` has no literal
+                    s.value.map(|v| match php_int_cast(v) {
+                        i64::MIN => "(-9223372036854775807-1)".to_string(),
+                        i => i.to_string(),
+                    })
                 }
                 _ => None,
             };
@@ -158,33 +158,29 @@ fn called_method(
             };
             (resolve(ancestors, id), b"__construct")
         }
-        Node::MethodCall(call) => {
-            let ClassLikeMemberSelector::Identifier(name) = &call.method else {
-                return None;
-            };
-            let class = match unparenthesize(call.object) {
-                Expression::Variable(Variable::Direct(v)) if v.name == b"$this" => {
+        // a method or a static method call
+        _ => {
+            let call = AnyCall::of(node).unwrap();
+            let name = call.name()?;
+            let class = match unparenthesize(call.receiver) {
+                Expression::Variable(Variable::Direct(v))
+                    if !call.is_static && v.name == b"$this" =>
+                {
                     own_class(ancestors)?
                 }
+                Expression::Self_(_) | Expression::Static(_) if call.is_static => {
+                    own_class(ancestors)?
+                }
+                Expression::Parent(_) if call.is_static => {
+                    class_parents(ctx, &own_class(ancestors)?)
+                        .into_iter()
+                        .next()?
+                }
+                Expression::Identifier(id) if call.is_static => resolve(ancestors, id),
                 object => object_type_class(ctx, object)?,
             };
-            (class, name.value)
+            (class, name)
         }
-        Node::StaticMethodCall(call) => {
-            let ClassLikeMemberSelector::Identifier(name) = &call.method else {
-                return None;
-            };
-            let class = match unparenthesize(call.class) {
-                Expression::Self_(_) | Expression::Static(_) => own_class(ancestors)?,
-                Expression::Parent(_) => class_parents(ctx, &own_class(ancestors)?)
-                    .into_iter()
-                    .next()?,
-                Expression::Identifier(id) => resolve(ancestors, id),
-                object => object_type_class(ctx, object)?,
-            };
-            (class, name.value)
-        }
-        _ => return None,
     };
     facts.codebase.get_class_like(class.as_bytes())?;
     facts
