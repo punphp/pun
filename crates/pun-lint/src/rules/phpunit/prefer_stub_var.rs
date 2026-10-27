@@ -10,7 +10,7 @@ use mago_syntax::cst::{Hint, Node, NodeKind, Property};
 use pun_problem::Safety;
 
 use super::annotations::Annotated;
-use super::phpdoc_type::{TagType, short_name, typed_tag};
+use super::phpdoc_type::{TagType, is_name, short_name, typed_tag, with_tag_type};
 use super::{is_in_test_class, report, resolve};
 use crate::{Context, Report, Rule};
 
@@ -78,7 +78,7 @@ impl Rule for PreferStubVar {
         };
         let stub = format!("\\{STUB}");
         let replaced = |m: &&str| {
-            if !m.ends_with(']') && short_name(m) == "MockObject" {
+            if is_name(m) && short_name(m) == "MockObject" {
                 stub.clone()
             } else {
                 m.to_string()
@@ -99,15 +99,7 @@ impl Rule for PreferStubVar {
             TagType::Name(name) if short_name(name) == "MockObject" => stub,
             _ => return,
         };
-        let text = doc.text_all();
-        let child = doc.text(tag.index).trim_end();
-        let from = child.as_ptr() as usize - text.as_ptr() as usize;
-        let new_doc = format!(
-            "{}{}{}",
-            &text[..from],
-            tag.print_with(&new_type),
-            &text[from + child.len()..]
-        );
+        let new_doc = with_tag_type(Some(doc), "@var", None, &new_type).unwrap();
         let Some(edits) = annotated.edits(ctx.source, Some(&new_doc), &[]) else {
             return;
         };

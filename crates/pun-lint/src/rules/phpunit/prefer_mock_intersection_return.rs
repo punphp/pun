@@ -8,7 +8,7 @@ use mago_syntax::cst::{Node, NodeKind};
 use pun_problem::Safety;
 
 use super::annotations::Annotated;
-use super::phpdoc_type::{TagType, typed_tag};
+use super::phpdoc_type::{TagType, typed_tag, with_tag_type};
 use super::{is_in_test_class, report};
 use crate::{Context, Report, Rule};
 
@@ -61,15 +61,7 @@ impl Rule for PreferMockIntersectionReturn {
         if !members.iter().any(is_mock) {
             return;
         }
-        let text = doc.text_all();
-        let child = doc.text(tag.index).trim_end();
-        let from = child.as_ptr() as usize - text.as_ptr() as usize;
-        let new_doc = format!(
-            "{}{}{}",
-            &text[..from],
-            tag.print_with(&members.join("&")),
-            &text[from + child.len()..]
-        );
+        let new_doc = with_tag_type(Some(doc), "@return", None, &members.join("&")).unwrap();
         let Some(edits) = annotated.edits(ctx.source, Some(&new_doc), &[]) else {
             return;
         };

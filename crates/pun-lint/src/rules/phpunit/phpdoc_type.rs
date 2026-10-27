@@ -118,46 +118,88 @@ fn parse<'s>(index: usize, name: &'s str, rest: &'s str) -> Option<TypedTag<'s>>
     })
 }
 
-/// The length of a name with any `[]`s at the start of `s`; `None` for anything else.
+/// The length of a type at the start of `s` that is no union or intersection: a name, maybe after a `?` and with
+/// brackets after it (generics, shapes, `[]`s), or a parenthesized type. `None` for anything else, or for brackets
+/// with white space or a `,` inside (phpdoc-parser prints those its own way), a `:` or a quote.
 fn member_len(s: &str) -> Option<usize> {
     let b = s.as_bytes();
-    let mut i = 0;
-    loop {
-        if b.get(i) == Some(&b'\\') {
-            i += 1;
-        }
-        let start = i;
-        while i < b.len()
-            && (b[i].is_ascii_alphanumeric()
-                || b[i] == b'_'
-                || b[i] >= 0x80
-                || (i > start && b[i] == b'-'))
-        {
-            i += 1;
-        }
-        if i == start || b[start].is_ascii_digit() {
-            return None;
-        }
-        if b.get(i) != Some(&b'\\') {
-            break;
+    let mut i = usize::from(b.first() == Some(&b'?'));
+    if b.get(i) != Some(&b'(') {
+        loop {
+            if b.get(i) == Some(&b'\\') {
+                i += 1;
+            }
+            let start = i;
+            while i < b.len()
+                && (b[i].is_ascii_alphanumeric()
+                    || b[i] == b'_'
+                    || b[i] >= 0x80
+                    || (i > start && b[i] == b'-'))
+            {
+                i += 1;
+            }
+            if i == start || b[start].is_ascii_digit() {
+                return None;
+            }
+            if b.get(i) != Some(&b'\\') {
+                break;
+            }
         }
     }
-    while b.get(i) == Some(&b'[') && b.get(i + 1) == Some(&b']') {
-        i += 2;
+    let mut depth = 0usize;
+    while let Some(&c) = b.get(i) {
+        match c {
+            b'<' | b'{' | b'(' | b'[' => depth += 1,
+            b'>' | b'}' | b')' | b']' if depth > 0 => depth -= 1,
+            b' ' | b'\t' | b',' | b':' | b'\'' | b'"' if depth > 0 => return None,
+            _ if depth > 0 => {}
+            _ => break,
+        }
+        i += 1;
     }
-    // generics, shapes, callables and constants are not followed
-    if matches!(b.get(i), Some(b'<' | b'{' | b'(' | b'[' | b':')) {
-        return None;
-    }
-    Some(i)
+    (depth == 0 && !matches!(b.get(i), Some(b':'))).then_some(i)
 }
 
-/// Whether a member is a bare name.
-fn is_name(member: &str) -> bool {
-    !member.ends_with(']')
+/// Whether a member is a bare name (`IdentifierTypeNode`).
+pub(crate) fn is_name(member: &str) -> bool {
+    member
+        .bytes()
+        .all(|c| c.is_ascii_alphanumeric() || matches!(c, b'_' | b'-' | b'\\') || c >= 0x80)
 }
 
 /// The short name of a type name (after its last `\`).
 pub(crate) fn short_name(name: &str) -> &str {
     name.rsplit('\\').next().unwrap_or(name)
+}
+
+/// The doc comment after `PhpDocTypeChanger` sets the type of the tag `name` (for `@param`, the one of `variable`)
+/// to `ty`: the tag reprinted, or, without one, a new tag `name ty variable` added (a new doc for a node without
+/// one). `None` where [`typed_tag`] does not read the doc.
+pub(crate) fn with_tag_type(
+    doc: Option<&Doc<'_>>,
+    name: &str,
+    variable: Option<&str>,
+    ty: &str,
+) -> Option<String> {
+    let added = match variable {
+        Some(v) => format!("{name} {ty} {v}"),
+        None => format!("{name} {ty}"),
+    };
+    let Some(doc) = doc else {
+        return Some(format!("/**\n * {added}\n */"));
+    };
+    match typed_tag(doc, name, variable).ok()? {
+        Some(tag) => {
+            let text = doc.text_all();
+            let child = doc.text(tag.index).trim_end();
+            let from = child.as_ptr() as usize - text.as_ptr() as usize;
+            Some(format!(
+                "{}{}{}",
+                &text[..from],
+                tag.print_with(ty),
+                &text[from + child.len()..]
+            ))
+        }
+        None => Some(doc.print_appending(&vec![false; doc.len()], Some(&added))),
+    }
 }

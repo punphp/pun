@@ -65,7 +65,7 @@ impl<'s> Annotated<'s> {
         })
     }
 
-    /// The edits that give the doc comment `new_doc` (`""` removes it) and add `groups` (each `#[...]`) after the
+    /// The edits that give the doc comment `new_doc` (`""` removes it; a node without one gets it) and add `groups` (each `#[...]`) after the
     /// node's attributes: a line each, at the node's indentation. A changed doc is printed as php-parser's
     /// `pComments()` does (`Comment::getReformattedText()`, then a line break and the node's indentation before the
     /// node). `None` where Pun does not follow that printer: a tab in the indentation, another comment before the
@@ -101,6 +101,8 @@ impl<'s> Annotated<'s> {
                 lead = format!("{}{nl}", reformatted(new_doc)?.replace('\n', &nl));
                 at_start = doc.start;
             }
+        } else if let Some(new_doc) = new_doc.filter(|d| !d.is_empty() && self.doc.is_none()) {
+            lead = format!("{}{nl}", reformatted(new_doc)?.replace('\n', &nl));
         }
         match self.last_attribute_end {
             Some(end) if !groups.is_empty() => {
