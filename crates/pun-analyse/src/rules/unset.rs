@@ -506,6 +506,7 @@ mod tests {
         let (_, include_state) = include_file::prepare(&arena, &file, program, &names, &codebase, 80400, &settings);
         let c = Checker {
             file: &file,
+            has_compiler_halt: false,
             anonymous: Default::default(),
             property_access: Default::default(),
             relative_path: &project.relative_path,

@@ -1046,6 +1046,18 @@ pub fn use_functions<'arena>(c: &mut Checker<'_, 'arena>, u: &Use<'arena>) {
     }
 }
 
+/// `MutatingScope::fileHasCompilerHaltStatementCalls()`, on the already parsed program.
+pub(super) fn file_has_compiler_halt_statement_calls(program: &Program) -> bool {
+    program.statements.iter().any(|statement| match statement {
+        Statement::HaltCompiler(_) => true,
+        // PhpParser leaves HaltCompiler at the root of a semicolon namespace; Mago keeps it in the body.
+        Statement::Namespace(namespace) if matches!(namespace.body, NamespaceBody::Implicit(_)) => {
+            namespace.statements().iter().any(|statement| matches!(statement, Statement::HaltCompiler(_)))
+        }
+        _ => false,
+    })
+}
+
 /// ConstantRule (level 1): a constant fetch that `$scope->hasConstant()` does not know: not defined in the project or
 /// built in, at the namespaced name and then the global one for an unqualified name, nor guarded by `defined()`.
 pub fn constant_fetch(c: &mut Checker, id: &Identifier) {
@@ -1060,17 +1072,18 @@ pub fn constant_fetch(c: &mut Checker, id: &Identifier) {
     if fallback {
         candidates.push(written.clone());
     }
-    let found = |name: &String| {
-        if name == "__COMPILER_HALT_OFFSET__" {
-            // ponytail: any `__halt_compiler` in the file, where PHPStan wants a top-level statement
-            return c.file.contents.to_ascii_lowercase().windows(15).any(|w| w == b"__halt_compiler");
-        }
-        ["true", "false", "null"].iter().any(|k| name.eq_ignore_ascii_case(k))
-            || has_constant(c, name)
-            || c.guards.contains(&Guard::Constant(name.clone()))
+    let name = if fallback { written } else { resolved };
+    // Scope tests the Name itself before namespaced fallback, reflection or defined() guards.
+    let found = if name == "__COMPILER_HALT_OFFSET__" {
+        c.has_compiler_halt
+    } else {
+        candidates.iter().any(|name| {
+            ["true", "false", "null"].iter().any(|k| name.eq_ignore_ascii_case(k))
+                || has_constant(c, name)
+                || c.guards.contains(&Guard::Constant(name.clone()))
+        })
     };
-    if !candidates.iter().any(found) {
-        let name = if fallback { written } else { resolved };
+    if !found {
         c.report(id, "constant.notFound", format!("Constant {name} not found."), Some(DISCOVERING_SYMBOLS_TIP));
     }
 }

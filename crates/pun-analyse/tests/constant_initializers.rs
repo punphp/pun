@@ -21,6 +21,48 @@ fn unnamespaced_global_initializers_keep_their_scope() {
 }
 
 #[test]
+fn compiler_halt_offset_requires_a_parsed_statement() {
+    let inputs: Value = serde_json::from_str(include_str!(
+        "fixtures/constant-initializers/compiler-halt-inputs.json"
+    ))
+    .unwrap();
+    let expected: Value = serde_json::from_str(include_str!(
+        "fixtures/constant-initializers/expected-compiler-halt.json"
+    ))
+    .unwrap();
+    let root = std::env::temp_dir().join(format!("pun-compiler-halt-{}", std::process::id()));
+    std::fs::create_dir_all(&root).unwrap();
+    let mut mismatches = Vec::new();
+    for (name, source) in inputs.as_object().unwrap() {
+        let file = root.join(format!("{name}.php"));
+        std::fs::write(&file, source.as_str().unwrap()).unwrap();
+        let mut project = Project::new(vec![file], Vec::new());
+        project.level = 1;
+        project.php_version = 80500;
+        let actual: Vec<_> = run(&project)
+            .unwrap()
+            .into_iter()
+            .map(|error| {
+                serde_json::json!({
+                    "line": error.line, "identifier": error.identifier,
+                    "message": error.message, "tip": error.tip,
+                    "ignorable": error.can_be_ignored,
+                })
+            })
+            .collect();
+        let actual = Value::Array(actual);
+        if actual != expected[name]["errors"] {
+            mismatches.push(format!(
+                "{name}: got {actual}, want {}",
+                expected[name]["errors"]
+            ));
+        }
+    }
+    std::fs::remove_dir_all(root).unwrap();
+    assert!(mismatches.is_empty(), "{}", mismatches.join("\n"));
+}
+
+#[test]
 fn loaded_vendor_initializers_do_not_scan_unrelated_autoload_files() {
     let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/constant-initializers");
     let mut extensions = pun_phpstan::Array::new();

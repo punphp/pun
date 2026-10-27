@@ -203,6 +203,7 @@ fn checker<'a, 'arena>(
         property_access: property_access::state(program),
         relative_path: &project.relative_path,
         file,
+        has_compiler_halt: false,
         types,
         call_terminations,
         defined,

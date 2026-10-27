@@ -782,6 +782,8 @@ pub enum FunctionScopeKind {
 
 pub struct Checker<'a, 'arena> {
     file: &'a File,
+    /// `MutatingScope::fileHasCompilerHaltStatementCalls()` for this file's parsed program.
+    has_compiler_halt: bool,
     /// The display names of the file's anonymous classes, by their codex name (see [`anonymous::names()`]).
     anonymous: HashMap<Vec<u8>, String>,
     property_access: property_access::State,
@@ -2422,6 +2424,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
     }
 
     fn walk_in_program(&mut self, program: &'ast Program<'arena>, _: &mut ()) {
+        self.has_compiler_halt = names::file_has_compiler_halt_statement_calls(program);
         syntax::used_names(self, program);
         self.unreachable = dead_code::unreachable_statements(self, program);
         self.conditions = dead_code::condition_facts(self, program);
