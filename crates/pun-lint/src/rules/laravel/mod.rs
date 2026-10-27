@@ -13,6 +13,7 @@ mod prefer_abort_if;
 mod prefer_anonymous_migration;
 mod prefer_back_helper;
 mod prefer_casts_method;
+mod prefer_collected_by_attribute;
 mod prefer_date_facade;
 mod prefer_default_argument;
 mod prefer_env_helper;
@@ -24,13 +25,17 @@ mod prefer_report_if;
 mod prefer_request_facade;
 mod prefer_request_server;
 mod prefer_resolve_helper;
+mod prefer_scope_attribute;
 mod prefer_session_facade;
 mod prefer_sleep_facade;
 mod prefer_str_starts_with;
+mod prefer_table_attribute;
 mod prefer_throw_if;
 mod prefer_to_route_helper;
 mod prefer_today;
 mod prefer_travel_to;
+mod property_attribute;
+mod property_rules;
 
 pub use no_negated_blank_filled::NoNegatedBlankFilled;
 pub use no_request_all::NoRequestAll;
@@ -38,6 +43,7 @@ pub use prefer_abort_if::PreferAbortIf;
 pub use prefer_anonymous_migration::PreferAnonymousMigration;
 pub use prefer_back_helper::PreferBackHelper;
 pub use prefer_casts_method::PreferCastsMethod;
+pub use prefer_collected_by_attribute::PreferCollectedByAttribute;
 pub use prefer_date_facade::PreferDateFacade;
 pub use prefer_default_argument::PreferDefaultArgument;
 pub use prefer_env_helper::PreferEnvHelper;
@@ -49,13 +55,26 @@ pub use prefer_report_if::PreferReportIf;
 pub use prefer_request_facade::PreferRequestFacade;
 pub use prefer_request_server::PreferRequestServer;
 pub use prefer_resolve_helper::PreferResolveHelper;
+pub use prefer_scope_attribute::PreferScopeAttribute;
 pub use prefer_session_facade::PreferSessionFacade;
 pub use prefer_sleep_facade::PreferSleepFacade;
 pub use prefer_str_starts_with::PreferStrStartsWith;
+pub use prefer_table_attribute::PreferTableAttribute;
 pub use prefer_throw_if::PreferThrowIf;
 pub use prefer_to_route_helper::PreferToRouteHelper;
 pub use prefer_today::PreferToday;
 pub use prefer_travel_to::PreferTravelTo;
+pub use property_rules::{
+    PreferAliasesAttribute, PreferAppendsAttribute, PreferBackoffAttribute,
+    PreferCollectsAttribute, PreferCommandHiddenAttribute, PreferConnectionAttribute,
+    PreferDateFormatAttribute, PreferDelayAttribute, PreferDeleteWhenMissingModelsAttribute,
+    PreferDescriptionAttribute, PreferErrorBagAttribute, PreferFailOnTimeoutAttribute,
+    PreferFillableAttribute, PreferGuardedAttribute, PreferHelpAttribute, PreferHiddenAttribute,
+    PreferJobConnectionAttribute, PreferMaxExceptionsAttribute, PreferPreserveKeysAttribute,
+    PreferQueueAttribute, PreferSignatureAttribute, PreferStopOnFirstFailureAttribute,
+    PreferTimeoutAttribute, PreferTouchesAttribute, PreferTriesAttribute, PreferUniqueForAttribute,
+    PreferVisibleAttribute, PreferWithoutIncrementingAttribute, PreferWithoutTimestampsAttribute,
+};
 
 use mago_syntax::cst::{
     Argument, ArgumentList, Assignment, AssignmentOperator, Call, ClassLikeMemberSelector,
@@ -96,6 +115,38 @@ pub(crate) fn all() -> Vec<Box<dyn Rule>> {
         Box::new(PreferDefaultArgument),
         Box::new(PreferExplicitJsonCall),
         Box::new(PreferTravelTo),
+        Box::new(PreferAliasesAttribute),
+        Box::new(PreferAppendsAttribute),
+        Box::new(PreferBackoffAttribute),
+        Box::new(PreferCollectedByAttribute),
+        Box::new(PreferCollectsAttribute),
+        Box::new(PreferCommandHiddenAttribute),
+        Box::new(PreferConnectionAttribute),
+        Box::new(PreferDateFormatAttribute),
+        Box::new(PreferDelayAttribute),
+        Box::new(PreferDeleteWhenMissingModelsAttribute),
+        Box::new(PreferDescriptionAttribute),
+        Box::new(PreferErrorBagAttribute),
+        Box::new(PreferFailOnTimeoutAttribute),
+        Box::new(PreferFillableAttribute),
+        Box::new(PreferGuardedAttribute),
+        Box::new(PreferHelpAttribute),
+        Box::new(PreferHiddenAttribute),
+        Box::new(PreferJobConnectionAttribute),
+        Box::new(PreferMaxExceptionsAttribute),
+        Box::new(PreferPreserveKeysAttribute),
+        Box::new(PreferQueueAttribute),
+        Box::new(PreferSignatureAttribute),
+        Box::new(PreferStopOnFirstFailureAttribute),
+        Box::new(PreferTimeoutAttribute),
+        Box::new(PreferTableAttribute),
+        Box::new(PreferTouchesAttribute),
+        Box::new(PreferTriesAttribute),
+        Box::new(PreferUniqueForAttribute),
+        Box::new(PreferVisibleAttribute),
+        Box::new(PreferWithoutIncrementingAttribute),
+        Box::new(PreferWithoutTimestampsAttribute),
+        Box::new(PreferScopeAttribute),
     ]
 }
 

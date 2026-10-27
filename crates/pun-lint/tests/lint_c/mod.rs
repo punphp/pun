@@ -74,6 +74,11 @@ pub fn run_class(rules: Vec<Box<dyn Rule>>, class: &str) {
 
 /// As [`run_class`], at the PHP version `php_version`.
 pub fn run_class_at(rules: Vec<Box<dyn Rule>>, class: &str, php_version: u32) {
+    run_class_with(rules, class, php_version, &[]);
+}
+
+/// As [`run_class_at`], with the classes of the directories `stubs` (under tests/) known too.
+pub fn run_class_with(rules: Vec<Box<dyn Rule>>, class: &str, php_version: u32, stubs: &[&str]) {
     let linter = Linter::new(rules, php_version);
     let pipeline = laravel();
     let root = Path::new(env!("CARGO_MANIFEST_DIR"))
@@ -91,6 +96,14 @@ pub fn run_class_at(rules: Vec<Box<dyn Rule>>, class: &str, php_version: u32) {
         for (path, input, expected) in fixtures(&dir) {
             let name = format!("{sub}/{}", path.file_name().unwrap().to_string_lossy());
             let mut extra = Vec::new();
+            for dir in stubs {
+                sources(
+                    &Path::new(env!("CARGO_MANIFEST_DIR"))
+                        .join("tests")
+                        .join(dir),
+                    &mut extra,
+                );
+            }
             sources(&root.join("Source"), &mut extra);
             let fixed = with_sources(extra, || linter.fix(&path, &input)).unwrap();
             // Rector's test falls back to `assertStringMatchesFormat`, whose `$` also matches before a final newline,

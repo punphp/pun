@@ -459,3 +459,19 @@ Lint 7 dead-code class-method rules (2026-10-26; `no-empty-method`, `no-unused-p
   different (PHPStan prints its own order), and intersections compare in declared order; a default or argument that is a
   non-empty array or a class constant is not read by `no-redundant-default-argument` and
   `no-useless-constructor`, which then keep the code; a parent's `@method` tag is not read.
+
+Lint 7 rector-laravel attribute rules (2026-10-27; the 31 `*PropertyTo*AttributeRector` rules and
+`ScopeNamedClassMethodToScopeAttributedClassMethodRector`, all 32 ported):
+
+- **Assistant's call: one port of the shared steps.** rector-laravel has no base class for these rules; each copies
+  the same `refactor()`. `rules/laravel/property_attribute.rs` ports those steps once (`isObjectType` on the class,
+  `hasPhpAttribute`, `getProperty`, the visibility and value checks, the attribute group added and the property
+  removed as php-parser's format-preserving printer writes them, the whole class printed anew when its body empties),
+  and `property_rules.rs` makes 29 rules thin `Config`s of it. `CollectedBy`, `Table` and the scope rule reuse the
+  class view and printer.
+- **Assistant's call: the fixtures see rector-laravel's stubs.** Rector's `isObjectType` reads the class's ancestors
+  through reflection, so the tests load rector-laravel's stubs/Illuminate (tests/rector-laravel-stubs) as its test
+  suite does, and the rules join `PROJECT_RULES` so the CLI scans the project for parents.
+- **Pun leaves alone what Rector breaks:** `new static(...)` in `newCollection()` (Rector writes
+  `#[CollectedBy(static::class)]`, which PHP rejects), a tab in the class's or method's indentation (Rector writes its
+  own spaces), and an array with an empty item (php-parser does not parse it).

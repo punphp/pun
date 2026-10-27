@@ -10695,7 +10695,7 @@
         "rules": [
           "lint/laravel/prefer-aliases-attribute"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -10735,7 +10735,7 @@
         "rules": [
           "lint/laravel/prefer-appends-attribute"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -10821,7 +10821,7 @@
         "rules": [
           "lint/laravel/prefer-backoff-attribute"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -10877,7 +10877,7 @@
         "rules": [
           "lint/laravel/prefer-collected-by-attribute"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -10887,7 +10887,7 @@
         "rules": [
           "lint/laravel/prefer-collects-attribute"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -10897,7 +10897,7 @@
         "rules": [
           "lint/laravel/prefer-command-hidden-attribute"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -10915,7 +10915,7 @@
         "rules": [
           "lint/laravel/prefer-connection-attribute"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -10961,7 +10961,7 @@
         "rules": [
           "lint/laravel/prefer-date-format-attribute"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -10979,7 +10979,7 @@
         "rules": [
           "lint/laravel/prefer-delay-attribute"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -10989,7 +10989,7 @@
         "rules": [
           "lint/laravel/prefer-delete-when-missing-models-attribute"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -10999,7 +10999,7 @@
         "rules": [
           "lint/laravel/prefer-description-attribute"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -11085,7 +11085,7 @@
         "rules": [
           "lint/laravel/prefer-error-bag-attribute"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -11119,7 +11119,7 @@
         "rules": [
           "lint/laravel/prefer-fail-on-timeout-attribute"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -11129,7 +11129,7 @@
         "rules": [
           "lint/laravel/prefer-fillable-attribute"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -11139,7 +11139,7 @@
         "rules": [
           "lint/laravel/prefer-guarded-attribute"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -11149,7 +11149,7 @@
         "rules": [
           "lint/laravel/prefer-help-attribute"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -11169,7 +11169,7 @@
         "rules": [
           "lint/laravel/prefer-hidden-attribute"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -11179,7 +11179,7 @@
         "rules": [
           "lint/laravel/prefer-job-connection-attribute"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -11241,7 +11241,7 @@
         "rules": [
           "lint/laravel/prefer-max-exceptions-attribute"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -11305,7 +11305,7 @@
         "rules": [
           "lint/laravel/prefer-preserve-keys-attribute"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -11323,7 +11323,7 @@
         "rules": [
           "lint/laravel/prefer-queue-attribute"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -11519,7 +11519,7 @@
         "rules": [
           "lint/laravel-12/prefer-scope-attribute"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -11549,7 +11549,7 @@
         "rules": [
           "lint/laravel/prefer-signature-attribute"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -11569,7 +11569,7 @@
         "rules": [
           "lint/laravel/prefer-stop-on-first-failure-attribute"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -11589,7 +11589,7 @@
         "rules": [
           "lint/laravel/prefer-table-attribute"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -11619,7 +11619,7 @@
         "rules": [
           "lint/laravel/prefer-timeout-attribute"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -11629,7 +11629,7 @@
         "rules": [
           "lint/laravel/prefer-touches-attribute"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -11639,7 +11639,7 @@
         "rules": [
           "lint/laravel/prefer-tries-attribute"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -11677,7 +11677,7 @@
         "rules": [
           "lint/laravel/prefer-unique-for-attribute"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -11713,7 +11713,7 @@
         "rules": [
           "lint/laravel/prefer-visible-attribute"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -11739,7 +11739,7 @@
         "rules": [
           "lint/laravel/prefer-without-incrementing-attribute"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -11749,7 +11749,7 @@
         "rules": [
           "lint/laravel/prefer-without-timestamps-attribute"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
