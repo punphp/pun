@@ -10331,7 +10331,7 @@
         "rules": [
           "lint/complexity/require-previous-exception"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {

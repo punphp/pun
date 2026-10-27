@@ -9,12 +9,19 @@
 //! RemoveDeadIfBlockRector/Pun/colon_leftover_branches: Rector prints the kept `elseif` and `else` of an
 //! alternative-syntax `if` it prints anew after a braced body (`} else: echo 2;`), which does not parse; Pun prints them
 //! in braces.
+//!
+//! ThrowWithPreviousExceptionRector/Pun/caught_passed_positionally: where the constructor takes the previous exception
+//! after the arguments, Rector passes the caught exception again even when an argument already is it, so its own
+//! output changes on every run; Pun leaves a `new` with the caught exception as a positional argument alone, so that
+//! its fix rounds settle.
 
 mod lint_c;
 
 use lint_c::run_class;
 use pun_lint::Rule;
-use pun_lint::rules::{NoConstantCondition, NoUnusedTestMethodParam, PreferInstanceMethod};
+use pun_lint::rules::{
+    NoConstantCondition, NoUnusedTestMethodParam, PreferInstanceMethod, RequirePreviousException,
+};
 
 fn check(rule: impl Rule + 'static, class: &str) {
     run_class(vec![Box::new(rule)], class);
@@ -36,4 +43,9 @@ fn remove_tests_overridden_private_method_parameter() {
         NoUnusedTestMethodParam,
         "RemoveTestsOverriddenPrivateMethodParameterRector",
     );
+}
+
+#[test]
+fn throw_with_previous_exception() {
+    check(RequirePreviousException, "ThrowWithPreviousExceptionRector");
 }

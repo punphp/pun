@@ -217,6 +217,7 @@ mod require_attribute_argument_order;
 mod require_is_a_allow_string;
 mod require_named_argument_order;
 mod require_preg_quote_delimiter;
+mod require_previous_exception;
 mod require_statement_padding;
 mod require_strict_function_call;
 mod require_strict_array_search;
@@ -432,6 +433,7 @@ pub use require_attribute_argument_order::RequireAttributeArgumentOrder;
 pub use require_is_a_allow_string::RequireIsAAllowString;
 pub use require_named_argument_order::RequireNamedArgumentOrder;
 pub use require_preg_quote_delimiter::RequirePregQuoteDelimiter;
+pub use require_previous_exception::RequirePreviousException;
 pub use require_statement_padding::RequireStatementPadding;
 pub use require_strict_function_call::RequireStrictFunctionCall;
 pub use require_strict_array_search::RequireStrictArraySearch;
@@ -484,6 +486,7 @@ pub const PROJECT_RULES: &[&str] = &[
     "lint/laravel/prefer-without-timestamps-attribute",
     "lint/laravel-12/prefer-scope-attribute",
     "lint/complexity/prefer-instance-method",
+    "lint/complexity/require-previous-exception",
 ];
 
 /// Every rule, in a fixed order.
@@ -719,5 +722,6 @@ fn ungrouped() -> Vec<Box<dyn Rule>> {
         Box::new(NoConstantCondition),
         Box::new(PreferInstanceMethod),
         Box::new(NoUnusedTestMethodParam),
+        Box::new(RequirePreviousException),
     ]
 }
