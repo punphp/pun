@@ -374,7 +374,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "dead-code/no-duplicate-case-body" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "2 following switch keys with identical  will be reduced to one result" }
 "dead-code/no-empty-block" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove or report if/for/foreach/while statements with an empty body." }
 "dead-code/no-empty-loop" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove loop with no body" }
-"dead-code/no-empty-method" = { fix = "safe", sets = ["dead-code"], ported = false, status = "decided", summary = "Remove empty class methods not required by parents" }
+"dead-code/no-empty-method" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove empty class methods not required by parents" }
 "dead-code/no-false-ternary" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Change ternary of `bool : false` to `&& bool`" }
 "dead-code/no-future-php-version-check" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Unwrap `if` checks on a PHP version that the configured PHP version always meets." }
 "dead-code/no-identical-branches" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove if/else if they have same content" }
@@ -388,7 +388,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "dead-code/no-overwritten-assignment" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove an assignment that the next statement overwrites without reading it." }
 "dead-code/no-parent-call-without-parent" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove unused parent call with no parent class" }
 "dead-code/no-redundant-condition" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Merge an if into the if before it when both check the same condition." }
-"dead-code/no-redundant-default-argument" = { fix = "safe", sets = ["dead-code"], ported = false, status = "decided", summary = "Remove arguments that equal the parameter default value." }
+"dead-code/no-redundant-default-argument" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove arguments that equal the parameter default value." }
 "dead-code/no-redundant-foreach-guard" = { fix = "safe", sets = ["dead-code"], ported = false, status = "decided", summary = "Remove unused if check to non-empty array before foreach of the array" }
 "dead-code/no-redundant-promoted-assign" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove useless re-assign from property promotion" }
 "dead-code/no-redundant-property-default" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove redundant default value from property that is always assigned in the constructor" }
@@ -403,7 +403,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "dead-code/no-unused-foreach-key" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove unused key in foreach" }
 "dead-code/no-unused-global" = { fix = "none", intent = "correctness", sets = ["code-quality"], ported = true, origin = "mago", status = "decided", summary = "Flags `global $x;` declarations whose name is never read or written" }
 "dead-code/no-unused-private-constant" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove unused class constants" }
-"dead-code/no-unused-private-method" = { fix = "safe", sets = ["dead-code"], ported = false, status = "decided", summary = "Remove unused private method" }
+"dead-code/no-unused-private-method" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove unused private method" }
 "dead-code/no-unused-private-method-param" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove unused parameters of private methods, including test-method parameters overwritten before use." }
 "dead-code/no-unused-private-property" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove unused private properties" }
 "dead-code/no-unused-promoted-property" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove unused promoted property" }
@@ -414,11 +414,11 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "dead-code/no-useless-cast" = { fix = "safe", sets = ["dead-code"], ported = false, status = "decided", summary = "Remove casts to the type the value already has, including (string) inside concatenation." }
 "dead-code/no-useless-catch" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove dead try/catch" }
 "dead-code/no-useless-condition" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove if conditions whose branches return the same value." }
-"dead-code/no-useless-constructor" = { fix = "safe", sets = ["dead-code"], ported = false, status = "decided", summary = "Remove constructor that only delegates call to parent class with same values" }
+"dead-code/no-useless-constructor" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove constructor that only delegates call to parent class with same values" }
 "dead-code/no-useless-continue" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove `continue` as the last statement of a loop." }
 "dead-code/no-useless-filter-var" = { fix = "safe", sets = ["dead-code"], ported = false, status = "decided", summary = "Removes filter_var() calls with exact type" }
 "dead-code/no-useless-math" = { fix = "safe", sets = ["dead-code"], ported = false, status = "decided", summary = "Remove arithmetic that does not change the value (`+ 0`, `* 1`, ...)." }
-"dead-code/no-useless-override" = { fix = "safe", sets = ["dead-code"], ported = false, status = "decided", summary = "Remove methods and constructors that only call the parent with the same arguments." }
+"dead-code/no-useless-override" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove methods and constructors that only call the parent with the same arguments." }
 "dead-code/no-useless-phpdoc-type" = { fix = "safe", sets = ["dead-code"], ported = false, status = "decided", summary = "Remove PHPDoc types that add nothing over the native type (`@var null`, unions wider than the native return type)." }
 "dead-code/no-useless-ternary" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Simplify ternaries whose result does not depend on the condition, or that equal a boolean expression." }
 "dead-code/no-useless-variable" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove useless variable assigns" }

@@ -93,6 +93,12 @@ pub fn run_class_at(rules: Vec<Box<dyn Rule>>, class: &str, php_version: u32) {
             let mut extra = Vec::new();
             sources(&root.join("Source"), &mut extra);
             let fixed = with_sources(extra, || linter.fix(&path, &input)).unwrap();
+            // Rector's test falls back to `assertStringMatchesFormat`, whose `$` also matches before a final newline,
+            // so an expected half without the file's last newline still passes.
+            let expected = match fixed.source.strip_suffix('\n') {
+                Some(without) if without == expected => fixed.source.clone(),
+                _ => expected,
+            };
             assert_eq!(fixed.source, expected, "{class} {name}: lint --fix");
             assert_eq!(
                 format(&pipeline, &fixed.source),

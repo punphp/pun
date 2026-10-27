@@ -609,6 +609,26 @@ fn rules_ignore_nodes_outside_their_targets() {
             || Box::new(PreferNullsafe::default()),
             &["rector/OptionalToNullsafeOperatorRector"],
         ),
+        (
+            || Box::new(NoEmptyMethod),
+            &["rector/RemoveEmptyClassMethodRector/Fixture"],
+        ),
+        (
+            || Box::new(NoUnusedPrivateMethod),
+            &["rector/RemoveUnusedPrivateMethodRector/Fixture"],
+        ),
+        (
+            || Box::new(NoUselessConstructor),
+            &["rector/RemoveParentDelegatingConstructorRector/Fixture"],
+        ),
+        (
+            || Box::new(NoUselessOverride),
+            &["rector/RemoveParentDelegatingClassMethodRector/Fixture"],
+        ),
+        (
+            || Box::new(NoRedundantDefaultArgument),
+            &["rector/RemoveArgumentFromDefaultParentCallRector/Fixture"],
+        ),
     ];
     for (rule, dirs) in cases {
         let targeted = Linter::new(vec![rule()], 80400);

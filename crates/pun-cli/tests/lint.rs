@@ -536,3 +536,107 @@ fn dirty_narrows_to_the_lint_files() {
     );
     assert_eq!(code, Some(1));
 }
+
+/// Rector 2.6.1 with PHPStan 2.2.7, all five class-method rules, PHP 8.4. Only Child.php is selected for editing;
+/// the parent and trait in External.php must still protect required and used methods and resolve defaults.
+#[test]
+fn class_method_rules_see_project_declarations() {
+    let external = r#"<?php
+
+abstract class Base
+{
+    public function __construct(int $n = 1) {}
+    abstract public function required();
+    public function passthrough(int $n): int { return $n; }
+    protected function defaults($n = 1) {}
+}
+
+trait CallsKept
+{
+    public function callKept() { $this->kept(); }
+}
+"#;
+    let child = r#"<?php
+
+final class Child extends Base
+{
+    use CallsKept;
+
+    public function __construct(int $n = 1)
+    {
+        parent::__construct($n);
+    }
+
+    public function required()
+    {
+    }
+
+    public function passthrough(int $n): int
+    {
+        return parent::passthrough($n);
+    }
+
+    public function execute()
+    {
+        parent::defaults(1);
+    }
+
+    private function kept()
+    {
+    }
+
+    private function gone()
+    {
+    }
+}
+"#;
+    let expected = r#"<?php
+
+final class Child extends Base
+{
+    use CallsKept;
+
+    public function required()
+    {
+    }
+
+    public function execute()
+    {
+        parent::defaults();
+    }
+
+    private function kept()
+    {
+    }
+}
+"#;
+    let config = r#"[format]
+preset = "empty"
+
+[lint.rules]
+"dead-code/no-empty-method" = "error"
+"dead-code/no-redundant-default-argument" = "error"
+"dead-code/no-unused-private-method" = "error"
+"dead-code/no-useless-constructor" = "error"
+"dead-code/no-useless-override" = "error"
+"#;
+    let d = project(
+        "lint",
+        "class-method-project",
+        &[
+            ("pun.toml", config),
+            ("Child.php", child),
+            ("External.php", external),
+        ],
+    );
+    let out = clean_env(&mut Command::new(PUN), &["PATH", "HOME"])
+        .current_dir(&d)
+        .env("PUN_AGENT", "0")
+        .args(["lint", "--fix", "--no-cache", "Child.php"])
+        .output()
+        .unwrap();
+    assert!(out.status.success(), "{out:?}");
+    assert_eq!(read(&d, "Child.php"), expected);
+    assert_eq!(read(&d, "External.php"), external);
+    std::fs::remove_dir_all(d).unwrap();
+}

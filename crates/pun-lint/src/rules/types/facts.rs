@@ -103,6 +103,7 @@ pub fn project_codebase_autoloaded(
     let mut named = Vec::new();
     for (path, code) in files {
         let file = mago_file(path, &without_docblocks(code), FileType::Host);
+        remember_source(file.id, code);
         named.extend(scan_into(&mut codebase, &file, version));
         scan_into(
             &mut documented,
@@ -117,6 +118,7 @@ pub fn project_codebase_autoloaded(
         }
         if let Some((path, code)) = autoload(&name) {
             let file = mago_file(&path, &without_docblocks(&code), FileType::Vendored);
+            remember_source(file.id, &code);
             if path.contains("/vendor/") {
                 (VENDOR.write().unwrap_or_else(|e| e.into_inner())).insert(file.id);
             }
@@ -148,6 +150,15 @@ static VENDOR: LazyLock<RwLock<HashSet<FileId>>> = LazyLock::new(Default::defaul
 /// Whether `file` is vendor code of the project's codebase (Rector: its path contains `/vendor/`).
 pub(crate) fn is_vendor_file(file: FileId) -> bool {
     (VENDOR.read().unwrap_or_else(|e| e.into_inner())).contains(&file)
+}
+
+/// The sources of the files the codebases were built from, docblocks kept, by file id, for the rules that read
+/// another file's syntax (Rector's `AstResolver`). A file's id is a hash of its path, so a file read again replaces
+/// its old source.
+static SOURCES_BY_ID: LazyLock<RwLock<HashMap<FileId, Arc<str>>>> = LazyLock::new(Default::default);
+
+fn remember_source(file: FileId, code: &str) {
+    (SOURCES_BY_ID.write().unwrap_or_else(|e| e.into_inner())).insert(file, Arc::from(code));
 }
 
 thread_local! {
@@ -320,6 +331,19 @@ impl Facts {
                     .get(span.start.offset as usize..span.end.offset as usize)
             })
             .flatten()
+    }
+
+    /// The codebase with the docblocks read (PHPStan's reflection with PHPDoc types).
+    pub fn documented(&self) -> &CodebaseMetadata {
+        &self.documented
+    }
+
+    /// The source of the file `file` of the codebase, docblocks kept, as the codebase read it (its spans point into
+    /// it).
+    pub fn source_of(&self, file: FileId) -> Option<Arc<str>> {
+        (SOURCES_BY_ID.read().unwrap_or_else(|e| e.into_inner()))
+            .get(&file)
+            .cloned()
     }
 
     /// The name Mago gives the anonymous class at `span` (`{anonymous-class:<path>:<line>:<column>}`).
