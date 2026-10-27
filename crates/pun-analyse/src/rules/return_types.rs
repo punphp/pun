@@ -22,17 +22,19 @@ use mago_codex::ttype::atomic::callable::TCallable;
 use mago_codex::ttype::atomic::scalar::TScalar;
 use mago_codex::ttype::cast::cast_atomic_to_callable;
 use mago_codex::ttype::combiner::CombinerOptions;
+use mago_codex::ttype::comparator::{ComparisonResult, union_comparator};
 use mago_codex::ttype::expander::get_parameter_dependent_signature_of_function_like_identifier;
 use mago_codex::ttype::union::TUnion;
 use mago_codex::ttype::{
     combine_union_types, get_array_parameters, get_false, get_int, get_int_or_string,
     get_int_range, get_iterable_parameters, get_keyed_array, get_literal_int, get_mixed, get_never,
-    get_non_negative_int, get_null, intersect_union_types,
+    get_non_negative_int, get_null, get_truthy_string, intersect_union_types,
 };
 use mago_span::{HasSpan, Span};
 use mago_syntax::cst::{
     CompositeString, Expression, FunctionCall, Literal, PartialApplication, StringPart,
 };
+use pun_phpstan::types::Tri;
 
 /// The registry the rules' inference runs with; `contents` is the analysed file's (`bindTo()` finds its receiver in it).
 pub(super) fn registry(contents: &[u8]) -> PluginRegistry {
@@ -59,7 +61,8 @@ pub(super) fn is_benevolent(t: &TUnion) -> bool {
 static META: ProviderMeta = ProviderMeta::new("pun", "pun", "PHPStan's dynamic return types");
 
 /// PHPStan 2.3.1's ArrayRandFunctionReturnTypeExtension, RandomIntFunctionReturnTypeExtension,
-/// ArraySliceFunctionReturnTypeExtension, StrlenFunctionReturnTypeExtension and the array/list sliceArray methods.
+/// ArraySliceFunctionReturnTypeExtension, StrlenFunctionReturnTypeExtension, the integer/IP filter extensions
+/// and the array/list sliceArray methods.
 /// Mago 1.57's prelude only has a conditional generic return type: it neither slices shapes nor turns integer-keyed
 /// non-lists back into lists. Keep this in the production registry, so assignments and subsequent calls see it too.
 #[derive(Clone, Default)]
@@ -80,6 +83,8 @@ impl FunctionReturnTypeProvider for BuiltinFunctions {
             b"mt_rand",
             b"random_int",
             b"strlen",
+            b"filter_input",
+            b"filter_var",
         ])
     }
 
@@ -88,6 +93,18 @@ impl FunctionReturnTypeProvider for BuiltinFunctions {
         context: &ProviderContext<'_, '_, '_>,
         invocation: &InvocationInfo<'_, '_, '_>,
     ) -> Option<TUnion> {
+        if invocation
+            .function_name()
+            .eq_ignore_ascii_case("filter_input")
+            || invocation
+                .function_name()
+                .eq_ignore_ascii_case("filter_var")
+        {
+            if !self.0.lock().unwrap().contains(&invocation.span()) {
+                return None;
+            }
+            return FilterFunctions::return_type(context, invocation);
+        }
         if invocation.function_name().eq_ignore_ascii_case("strlen") {
             if !self.0.lock().unwrap().contains(&invocation.span()) {
                 return None;
@@ -216,6 +233,437 @@ impl FunctionCallHook for BuiltinFunctions {
             self.0.lock().unwrap().insert(call.span());
         }
         Ok(ExpressionHookResult::Continue)
+    }
+}
+
+/// FilterInput/FilterVarDynamicReturnTypeExtension and the integer/IP validation branches of
+/// FilterFunctionReturnTypeHelper (PHPStan 2.3.1). Other filters' exact casts/sanitization are not ported here.
+struct FilterFunctions;
+
+impl FilterFunctions {
+    const REQUIRE_ARRAY: i64 = 16777216;
+    const FORCE_ARRAY: i64 = 67108864;
+    const NULL_ON_FAILURE: i64 = 134217728;
+
+    fn return_type(
+        context: &ProviderContext<'_, '_, '_>,
+        invocation: &InvocationInfo<'_, '_, '_>,
+    ) -> Option<TUnion> {
+        let input_function = invocation
+            .function_name()
+            .eq_ignore_ascii_case("filter_input");
+        let position = usize::from(input_function);
+        let input = context
+            .get_expression_type(invocation.get_argument(position, &[b"value", b"var_name"])?)?;
+        if input_function {
+            let source = context.get_expression_type(invocation.get_argument(0, &[b"type"])?)?;
+            // getInputType rejects only a definitely disjoint integer domain, not a general int.
+            if !source.is_int()
+                || ![0, 1, 2, 4, 5].iter().any(|value| {
+                    source.types.iter().any(|a| {
+                        a.get_minimum_int_value().is_none_or(|min| min <= *value)
+                            && a.get_maximum_int_value().is_none_or(|max| max >= *value)
+                    })
+                })
+            {
+                return Some(get_never());
+            }
+        }
+        let filter =
+            context.get_expression_type(invocation.get_argument(position + 1, &[b"filter"])?)?;
+        let filter = filter.get_single_literal_int_value();
+        if filter.is_none() && !input_function {
+            return Some(get_mixed());
+        }
+        if let Some(filter) = filter
+            && filter != 257
+            && filter != 275
+            && matches!(filter, 258 | 259 | 272..=274 | 276 | 277 | 513..=520 | 523)
+        {
+            // Do not pretend the unported exact conversions for the other known filters are implemented.
+            return None;
+        }
+        let flags = match invocation.get_argument(position + 2, &[b"options"]) {
+            Some(flags) => context.get_expression_type(flags)?.clone(),
+            None => get_literal_int(0),
+        };
+        // THROW_ON_FAILURE is PHP-version-dependent (8.5+); ProviderContext does not expose the target
+        // version. Leave this unported boundary unavailable rather than imposing 8.5 semantics on 8.4.
+        if Self::has_flag(&flags, 268435456, context.codebase()).yes() {
+            return None;
+        }
+        if !input_function {
+            return Some(filter.map_or_else(get_mixed, |filter| {
+                Self::filter(input, filter, &flags, context.codebase())
+            }));
+        }
+        let missing = match Self::has_flag(&flags, Self::NULL_ON_FAILURE, context.codebase()) {
+            Tri::Yes => get_false(),
+            Tri::No => get_null(),
+            Tri::Maybe => Self::union(&get_false(), &get_null(), context.codebase()),
+        };
+        // getOffsetValueType on ArrayType(string, mixed): a definitely non-string key cannot exist.
+        if Self::query(input, TAtomic::is_any_string).no() {
+            return Some(missing);
+        }
+        Some(Self::union(
+            &filter.map_or_else(get_mixed, |filter| {
+                Self::filter(&get_mixed(), filter, &flags, context.codebase())
+            }),
+            &missing,
+            context.codebase(),
+        ))
+    }
+
+    fn union(a: &TUnion, b: &TUnion, codebase: &CodebaseMetadata) -> TUnion {
+        combine_union_types(a, b, codebase, CombinerOptions::default())
+    }
+
+    /// The query's union arms use extreme identity, not a boolean "any" or "all".
+    fn query(input: &TUnion, predicate: fn(&TAtomic) -> bool) -> Tri {
+        let mut result = None;
+        for atomic in input.types.iter() {
+            let part = match atomic {
+                TAtomic::Mixed(_) => Tri::Maybe,
+                TAtomic::GenericParameter(template) => Self::query(&template.constraint, predicate),
+                _ => Tri::from(predicate(atomic)),
+            };
+            result = Some(match result {
+                Some(previous) if previous != part => Tri::Maybe,
+                _ => part,
+            });
+        }
+        result.unwrap_or(Tri::Yes)
+    }
+
+    /// hasOffsetValueType/getOffsetValueType for the constant option shapes used by the helper.
+    fn offset(input: &TUnion, name: &[u8], codebase: &CodebaseMetadata) -> (Tri, TUnion) {
+        let mut presence = None;
+        let mut value = get_never();
+        for atomic in input.types.iter() {
+            let (part, ty) = match atomic {
+                TAtomic::Array(TArray::Keyed(array)) => {
+                    match array.known_items.as_ref().and_then(|items| {
+                        items
+                            .iter()
+                            .find(|(key, _)| key.get_string() == Some(name))
+                            .map(|(_, item)| item)
+                    }) {
+                        Some((optional, ty)) => {
+                            (if *optional { Tri::Maybe } else { Tri::Yes }, ty.clone())
+                        }
+                        None => (Tri::No, get_never()),
+                    }
+                }
+                TAtomic::Array(TArray::List(_)) => (Tri::No, get_never()),
+                _ => (Tri::Maybe, get_mixed()),
+            };
+            presence = Some(match presence {
+                Some(previous) if previous != part => Tri::Maybe,
+                _ => part,
+            });
+            value = Self::union(&value, &ty, codebase);
+        }
+        (presence.unwrap_or(Tri::No), value)
+    }
+
+    fn constant_array(input: &TUnion) -> bool {
+        input
+            .types
+            .iter()
+            .all(|a| matches!(a, TAtomic::Array(array) if array.is_sealed()))
+    }
+
+    /// getConstantScalarValues is all-or-nothing; finite integer ranges are not enumerated here.
+    fn scalar_ints(input: &TUnion) -> Option<Vec<i64>> {
+        let mut values = Vec::new();
+        for atomic in input.types.iter() {
+            match atomic {
+                TAtomic::Null => values.push(0),
+                TAtomic::Scalar(TScalar::Integer(int)) => values.push(int.get_literal_value()?),
+                TAtomic::Scalar(TScalar::Float(float)) => {
+                    // PHP's float cast wraps modulo 2^64; Rust's signed cast saturates instead.
+                    let value = float.get_literal_value()?;
+                    let magnitude = (value.trunc() % 18446744073709551616.0).abs() as u64;
+                    values.push(if value.is_sign_negative() {
+                        magnitude.wrapping_neg()
+                    } else {
+                        magnitude
+                    } as i64);
+                }
+                TAtomic::Scalar(TScalar::Bool(boolean)) if boolean.is_general() => {
+                    values.extend([0, 1])
+                }
+                TAtomic::Scalar(TScalar::Bool(boolean)) => {
+                    values.push(i64::from(boolean.is_true()))
+                }
+                TAtomic::Scalar(TScalar::String(string)) => {
+                    // Extract PHP's ASCII leading numeric prefix before parsing, preserving large integer
+                    // prefixes exactly. The remaining bytes (including arbitrary binary bytes) are ignored.
+                    let regex = pcre2::bytes::Regex::new(r"\A[ \t\n\r\x0b\x0c]*([+-]?(?:[0-9]+(?:\.[0-9]*)?|\.[0-9]+)(?:[eE][+-]?[0-9]+)?)").unwrap();
+                    let captures = regex.captures(string.get_known_literal_value()?).unwrap();
+                    values.push(captures.map_or(0, |captures| {
+                        let number =
+                            std::str::from_utf8(captures.get(1).unwrap().as_bytes()).unwrap();
+                        number
+                            .parse()
+                            .unwrap_or_else(|_| pun_tokens::php_compat::intval(number))
+                    }));
+                }
+                _ => return None,
+            }
+        }
+        Some(values)
+    }
+
+    fn has_flag(input: &TUnion, flag: i64, codebase: &CodebaseMetadata) -> Tri {
+        let flags = if Self::constant_array(input) {
+            let (present, flags) = Self::offset(input, b"flags", codebase);
+            match present {
+                Tri::No => get_literal_int(0),
+                Tri::Yes => flags,
+                Tri::Maybe => Self::union(&flags, &get_literal_int(0), codebase),
+            }
+        } else {
+            input.clone()
+        };
+        let Some(values) = Self::scalar_ints(&flags).filter(|values| !values.is_empty()) else {
+            return Tri::Maybe;
+        };
+        let first = values[0] & flag == flag;
+        if values.iter().all(|value| (*value & flag == flag) == first) {
+            Tri::from(first)
+        } else {
+            Tri::Maybe
+        }
+    }
+
+    /// Preconditions: isArray()->yes(). TemplateArrayType inherits its bound's iterable domains.
+    fn array_parameters(input: &TUnion, codebase: &CodebaseMetadata) -> (TUnion, TUnion) {
+        input
+            .types
+            .iter()
+            .filter_map(|atomic| {
+                if let TAtomic::Array(array) = atomic {
+                    let (_, value) = get_array_parameters(array, codebase);
+                    let key = BuiltinFunctions::iterable_keys(
+                        &TUnion::from_atomic(atomic.clone()),
+                        codebase,
+                    )
+                    .0;
+                    Some((key, value))
+                } else {
+                    atomic.map_generic_parameter_constraint(|constraint| {
+                        Self::array_parameters(constraint, codebase)
+                    })
+                }
+            })
+            .fold(
+                (get_never(), get_never()),
+                |(keys, values), (key, value)| {
+                    (
+                        Self::union(&keys, &key, codebase),
+                        Self::union(&values, &value, codebase),
+                    )
+                },
+            )
+    }
+
+    fn filter(input: &TUnion, filter: i64, flags: &TUnion, codebase: &CodebaseMetadata) -> TUnion {
+        let (options_present, options) = Self::offset(flags, b"options", codebase);
+        let has_options = Self::query(flags, TAtomic::is_array).and(options_present);
+        let option = |name| {
+            (has_options.yes() && Self::constant_array(&options))
+                .then(|| Self::offset(&options, name, codebase))
+                .filter(|(present, _)| present.yes())
+                .map(|(_, ty)| ty)
+        };
+        let default = option(b"default").unwrap_or_else(|| {
+            match Self::has_flag(flags, Self::NULL_ON_FAILURE, codebase) {
+                Tri::Yes => get_null(),
+                Tri::No => get_false(),
+                Tri::Maybe => Self::union(&get_false(), &get_null(), codebase),
+            }
+        });
+        let require = Self::has_flag(flags, Self::REQUIRE_ARRAY, codebase);
+        if require.maybe() {
+            return get_mixed();
+        }
+        let array = Self::query(input, TAtomic::is_array);
+        if array.no() && require.yes() {
+            return default;
+        }
+        let force = Self::has_flag(flags, Self::FORCE_ARRAY, codebase);
+        if require.no() && force.maybe() {
+            return get_mixed();
+        }
+        let (keys, input) = if array.yes() && (require.yes() || force.yes()) {
+            Self::array_parameters(input, codebase)
+        } else {
+            (get_mixed(), input.clone())
+        };
+        let exact = if Self::query(&input, |a| matches!(a, TAtomic::Scalar(_))).no()
+            && Self::query(&input, TAtomic::is_null).no()
+        {
+            Some(default.clone())
+        } else if filter == 257 {
+            Self::exact_integer(&input, &default, flags, codebase)
+        } else {
+            None
+        };
+        let mut ty = exact.clone().unwrap_or_else(|| {
+            if filter == 257 {
+                get_int()
+            } else if filter == 275 {
+                get_truthy_string()
+            } else {
+                get_mixed()
+            }
+        });
+        if filter == 257 {
+            ty = Self::apply_range(
+                ty,
+                option(b"min_range"),
+                option(b"max_range"),
+                &default,
+                codebase,
+            );
+        }
+        // Validation filters never sanitize strings. IP's non-falsy-string already carries both accessories.
+        if exact.is_none()
+            || has_options.maybe()
+            || (input != ty && Self::contains(&input, &ty, codebase))
+        {
+            if !Self::contains(&default, &ty, codebase) {
+                ty = Self::union(&ty, &default, codebase);
+            }
+        }
+        if require.yes() || force.yes() {
+            ty = get_keyed_array(keys, ty);
+            if require.yes() && !array.yes() {
+                ty = Self::union(&ty, &default, codebase);
+            }
+        }
+        ty
+    }
+
+    fn contains(container: &TUnion, input: &TUnion, codebase: &CodebaseMetadata) -> bool {
+        union_comparator::is_contained_by(
+            codebase,
+            input,
+            container,
+            false,
+            false,
+            false,
+            &mut ComparisonResult::default(),
+        )
+    }
+
+    fn exact_integer(
+        input: &TUnion,
+        default: &TUnion,
+        flags: &TUnion,
+        codebase: &CodebaseMetadata,
+    ) -> Option<TUnion> {
+        if input.is_int() {
+            return Some(input.clone());
+        }
+        if input.is_true() {
+            return Some(get_literal_int(1));
+        }
+        if input.is_false() || input.is_null() {
+            return Some(default.clone());
+        }
+        if let Some(value) = input.get_single_literal_float_value() {
+            let integer = value as i64;
+            return Some(
+                if value < -(i64::MIN as f64) && value - integer as f64 == 0.0 {
+                    get_literal_int(integer)
+                } else {
+                    default.clone()
+                },
+            );
+        }
+        let value = input.get_single_literal_string_value()?;
+        let octal = Self::has_flag(flags, 1, codebase);
+        let hex = Self::has_flag(flags, 2, codebase);
+        if octal.maybe() || hex.maybe() {
+            return None;
+        }
+        // Port the three preg_match calls, including PHPStan's deliberately narrow 0o octal syntax.
+        for (enabled, pattern, radix) in [
+            (octal.yes(), r"\A0[oO][0-7]+\z", 8),
+            (hex.yes(), r"\A0[xX][0-9A-Fa-f]+\z", 16),
+            (true, r"\A[+-]?(?:0|[1-9][0-9]*)\z", 10),
+        ] {
+            if enabled
+                && pcre2::bytes::Regex::new(pattern)
+                    .unwrap()
+                    .is_match(value)
+                    .unwrap()
+            {
+                let text = std::str::from_utf8(value).unwrap(); // the patterns accept ASCII only
+                let integer = if radix == 10 {
+                    Some(text.parse().unwrap_or(if text.starts_with('-') {
+                        i64::MIN
+                    } else {
+                        i64::MAX
+                    }))
+                } else {
+                    i64::from_str_radix(&text[2..], radix).ok()
+                };
+                return Some(integer.map_or_else(|| default.clone(), get_literal_int));
+            }
+        }
+        Some(default.clone())
+    }
+
+    fn apply_range(
+        ty: TUnion,
+        min: Option<TUnion>,
+        max: Option<TUnion>,
+        default: &TUnion,
+        codebase: &CodebaseMetadata,
+    ) -> TUnion {
+        if !ty.is_int() || (min.is_none() && max.is_none()) {
+            return ty;
+        }
+        let bound = |value: &Option<TUnion>, minimum| {
+            value.as_ref().and_then(|value| {
+                if let Some(values) = Self::scalar_ints(value).filter(|values| values.len() == 1) {
+                    Some(values[0])
+                } else {
+                    // Only IntegerRangeType owns these bounds; a sparse union's extrema are not a range option.
+                    value.get_single_int()?;
+                    if minimum {
+                        value.get_minimum_int_value()
+                    } else {
+                        value.get_maximum_int_value()
+                    }
+                }
+            })
+        };
+        let min = bound(&min, true);
+        let max = bound(&max, false);
+        if min.zip(max).is_some_and(|(min, max)| min > max) {
+            return default.clone();
+        }
+        let range = if min.is_some() && min == max {
+            get_literal_int(min.unwrap())
+        } else {
+            get_int_range(min, max)
+        };
+        if intersect_union_types(&range, &ty, codebase).is_none_or(|ty| ty.is_never()) {
+            return default.clone();
+        }
+        if range != ty && Self::contains(&range, &ty, codebase) {
+            return ty;
+        }
+        if min.is_none() || max.is_none() {
+            Self::union(&range, default, codebase)
+        } else {
+            range
+        }
     }
 }
 

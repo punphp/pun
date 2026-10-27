@@ -1,0 +1,7 @@
+parameters:
+    level: 0
+    phpVersion: 80400
+    tmpDir: ../../../../../target/oracle-filter-functions
+    paths: [cases.php]
+    parallel:
+        maximumNumberOfProcesses: 1
