@@ -191,6 +191,11 @@ impl BlockContext<'_> {
         for branch in branches.iter().filter(|branch| !branch.state.impossible) {
             self.variables_possibly_in_scope.extend(&branch.possible);
             for (name, ty) in &branch.locals {
+                // An absent holder has no incoming value. Isset's diagnostic-only
+                // null placeholder must not make a later assignment nullable.
+                if branch.state.absent.contains(name) {
+                    continue;
+                }
                 self.locals
                     .entry(*name)
                     .and_modify(|existing| {

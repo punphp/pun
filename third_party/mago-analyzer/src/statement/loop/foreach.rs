@@ -3,6 +3,7 @@ use std::sync::Arc;
 
 use mago_allocator::Arena;
 use mago_codex::assertion::Assertion;
+use mago_codex::ttype::TType;
 use mago_codex::ttype::atomic::TAtomic;
 use mago_codex::ttype::atomic::array::TArray;
 use mago_codex::ttype::combine_union_types;
@@ -249,7 +250,17 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Foreach<'arena> {
             if let Some(id) = iterator_variable_id
                 && let Some(ty) = empty_entry.locals.get(&id).cloned()
             {
-                let empty = reconcile(context, &Assertion::IsIdentical(get_empty_keyed_array().get_single().clone()), Some(&ty), None, false, None, false, false);
+                let mut empty = reconcile(context, &Assertion::IsIdentical(get_empty_keyed_array().get_single().clone()), Some(&ty), None, false, None, false, false);
+                // TemplateMixedType intersects with [] without erasing its identity.
+                // A standalone [] is not an instantiation of every template argument.
+                if let [TAtomic::GenericParameter(parameter)] = ty.types.as_ref()
+                    && parameter.constraint.is_mixed()
+                    && !empty.is_never()
+                {
+                    let mut parameter = parameter.clone();
+                    parameter.add_intersection_type(empty.get_single().clone());
+                    empty = TUnion::from_atomic(TAtomic::GenericParameter(parameter));
+                }
                 let object = reconcile(context, &Assertion::IsType(get_object().get_single().clone()), Some(&ty), None, false, None, false, false);
                 empty_entry.locals.insert(id, Rc::new(combine_union_types(&empty, &object, context.codebase, CombinerOptions::default())));
             }

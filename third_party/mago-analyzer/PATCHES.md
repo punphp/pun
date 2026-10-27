@@ -2527,3 +2527,27 @@ The incoming-isset target retains its baseline certainty mismatch at `flow.php:2
 reproduced with main's pre-fix executable. Both 246-case Functions partitions at levels 5 and 9
 have zero new mismatches. Their harness failures report only the existing stale `testBug1946` gap
 at each level. No gap or earlier expectation changes are part of this patch.
+
+## Foreach entry holder values and mixed-template identity
+
+`src/context/variable_scope.rs::merge_scope_types()` skips values whose incoming scope explicitly
+marks the holder absent. Reconciliation can leave a diagnostic-only null placeholder in `locals`
+after an impossible positive `isset`. PHPStan has no incoming value to union on that edge.
+Including the placeholder makes a later nonnullable foreach assignment appear nullable and prevents
+a terminating positive `isset` from establishing absence on the remaining edge.
+The source contract is PHPStan 2.3.1's `src/Analyser/ScopeOps.php:204–256` at
+`cb3b7e99489b2e3789ee2eec10501cb7a72580ea`. The check uses explicit absence, not value nullability
+or possibly-undefined flags.
+
+`src/statement/loop/foreach.rs` retains a single mixed-bound template's identity when narrowing the
+zero-iteration edge to the empty array. The empty array intersects that template instead of becoming
+an independent union member. PHPStan's `src/Analyser/StmtHandler/ForeachHandler.php:459–474` joins
+the body with the scope narrowed by `iteratee === [] || is_object(iteratee)`.
+Concrete array bounds and non-template values keep their existing reconciliation.
+
+The public `scope_joins` regression captures all 40 PHPStan records across maybe-variable reporting
+and foreach and loop pollution settings. Controls retain actual nullable foreach values, plain mixed
+iterators, and object-bound templates. Existing incoming-isset and strict-mixed expectations remain
+unchanged. This prerequisite does not enable the shared array-shape join rollout, change loop
+widening, or claim complete parity for concrete template-array intersections or null-context
+assertion specifications.
