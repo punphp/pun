@@ -8,6 +8,7 @@
 
 mod add_data_provider_iterator_return_type;
 mod add_depended_test_return_type;
+mod add_return_type_from_mock_object;
 mod add_test_void_return;
 mod annotations;
 mod no_assert_contains_only;
@@ -66,6 +67,7 @@ mod require_string_assert_argument;
 
 pub use add_data_provider_iterator_return_type::AddDataProviderIteratorReturnType;
 pub use add_depended_test_return_type::AddDependedTestReturnType;
+pub use add_return_type_from_mock_object::AddReturnTypeFromMockObject;
 pub use add_test_void_return::AddTestVoidReturn;
 pub use no_assert_contains_only::NoAssertContainsOnly;
 pub use no_assert_is_type::NoAssertIsType;
@@ -192,6 +194,7 @@ pub(crate) fn all() -> Vec<Box<dyn Rule>> {
         Box::new(RequireFinalTestCase),
         Box::new(AddTestVoidReturn),
         Box::new(AddDataProviderIteratorReturnType),
+        Box::new(AddReturnTypeFromMockObject),
     ]
 }
 
