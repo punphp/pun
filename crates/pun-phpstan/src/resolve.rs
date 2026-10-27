@@ -297,7 +297,7 @@ pub fn resolve_in(node: &Node, scope: &dyn Scope) -> Type {
                     items: items.iter().map(|i| {
                         let key = i.key.as_ref().map(|k| match k {
                             ShapeKey::Ident(n) => scope.template(n).filter(|t| matches!(t, Type::Template(_))).unwrap_or_else(|| Type::ConstString(n.as_bytes().to_vec())),
-                            ShapeKey::Str(n) => Type::ConstString(n.as_bytes().to_vec()),
+                            ShapeKey::Str(n) => Type::ConstString(n.clone()),
                             ShapeKey::Int(n) => Type::ConstInt(int_value(n)),
                             ShapeKey::Fetch(c, n) => constant(&ConstExpr::Fetch(c.clone(), n.clone()), scope),
                         });
@@ -314,7 +314,8 @@ pub fn resolve_in(node: &Node, scope: &dyn Scope) -> Type {
             for item in items {
                 let key = item.key.as_ref().map(|k| match k {
                     ShapeKey::Int(i) => Type::ConstInt(int_value(i)),
-                    ShapeKey::Str(s) | ShapeKey::Ident(s) => Type::ConstString(s.as_bytes().to_vec()),
+                    ShapeKey::Str(s) => Type::ConstString(s.clone()),
+                    ShapeKey::Ident(s) => Type::ConstString(s.as_bytes().to_vec()),
                     ShapeKey::Fetch(class, name) => {
                         constant(&ConstExpr::Fetch(class.clone(), name.clone()), scope)
                     }

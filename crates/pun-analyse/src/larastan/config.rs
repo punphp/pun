@@ -144,8 +144,10 @@ fn doc_type(node: &Node, parts: &[&str]) -> IsArray {
     let mut node = node;
     for part in parts {
         node = match node {
-            Node::ArrayShape { items, .. } => match items.iter().find(|i| {
-                matches!(&i.key, Some(ShapeKey::Int(k) | ShapeKey::Str(k) | ShapeKey::Ident(k)) if k == part)
+            Node::ArrayShape { items, .. } => match items.iter().find(|i| match &i.key {
+                Some(ShapeKey::Int(k) | ShapeKey::Ident(k)) => k == part,
+                Some(ShapeKey::Str(k)) => k == part.as_bytes(),
+                Some(ShapeKey::Fetch(_, _)) | None => false,
             }) {
                 Some(i) => &i.value,
                 None => return IsArray::Maybe,

@@ -5219,5 +5219,425 @@
                 false
             ]
         ]
+    ],
+    "shape_keys": [
+        {
+            "input": "array{\"\\xff\": 'ff', \"\\xfe\": 'fe', \"\\u{FFFD}\": 'replacement'}",
+            "entries": [
+                [
+                    [
+                        "string",
+                        "ff"
+                    ],
+                    "6666"
+                ],
+                [
+                    [
+                        "string",
+                        "fe"
+                    ],
+                    "6665"
+                ],
+                [
+                    [
+                        "string",
+                        "efbfbd"
+                    ],
+                    "7265706c6163656d656e74"
+                ]
+            ]
+        },
+        {
+            "input": "array{\"\\xff\": 'first', \"\\377\": 'last', \"\\xfe\": 'other'}",
+            "entries": [
+                [
+                    [
+                        "string",
+                        "ff"
+                    ],
+                    "6c617374"
+                ],
+                [
+                    [
+                        "string",
+                        "fe"
+                    ],
+                    "6f74686572"
+                ]
+            ]
+        },
+        {
+            "input": "array{'\\xff': 'literal', \"\\xff\": 'decoded', '\\xfe': 'other'}",
+            "entries": [
+                [
+                    [
+                        "string",
+                        "5c786666"
+                    ],
+                    "6c69746572616c"
+                ],
+                [
+                    [
+                        "string",
+                        "ff"
+                    ],
+                    "6465636f646564"
+                ],
+                [
+                    [
+                        "string",
+                        "5c786665"
+                    ],
+                    "6f74686572"
+                ]
+            ]
+        },
+        {
+            "input": "array{\"\\x30\\x31\": 'first', '01': 'last', '+1': 'plus', 1: 'integer'}",
+            "entries": [
+                [
+                    [
+                        "string",
+                        "3031"
+                    ],
+                    "6c617374"
+                ],
+                [
+                    [
+                        "string",
+                        "2b31"
+                    ],
+                    "706c7573"
+                ],
+                [
+                    [
+                        "int",
+                        1
+                    ],
+                    "696e7465676572"
+                ]
+            ]
+        },
+        {
+            "input": "array{bare: 'first', 'bare': 'last', \"\\x00\\xff\": 'binary'}",
+            "entries": [
+                [
+                    [
+                        "string",
+                        "62617265"
+                    ],
+                    "6c617374"
+                ],
+                [
+                    [
+                        "string",
+                        "00ff"
+                    ],
+                    "62696e617279"
+                ]
+            ]
+        }
+    ],
+    "late_shape_keys": [
+        {
+            "input": "array{K: 'template', \"\\xff\": 'ff', \"\\xfe\": 'fe', \"\\u{FFFD}\": 'replacement', bare: 'identifier'}",
+            "replacement": "ff",
+            "entries": [
+                [
+                    [
+                        "string",
+                        "ff"
+                    ],
+                    "6666"
+                ],
+                [
+                    [
+                        "string",
+                        "fe"
+                    ],
+                    "6665"
+                ],
+                [
+                    [
+                        "string",
+                        "efbfbd"
+                    ],
+                    "7265706c6163656d656e74"
+                ],
+                [
+                    [
+                        "string",
+                        "62617265"
+                    ],
+                    "6964656e746966696572"
+                ]
+            ]
+        },
+        {
+            "input": "array{K: 'template', \"\\xff\": 'ff', \"\\xfe\": 'fe', \"\\u{FFFD}\": 'replacement', bare: 'identifier'}",
+            "replacement": "fe",
+            "entries": [
+                [
+                    [
+                        "string",
+                        "fe"
+                    ],
+                    "6665"
+                ],
+                [
+                    [
+                        "string",
+                        "ff"
+                    ],
+                    "6666"
+                ],
+                [
+                    [
+                        "string",
+                        "efbfbd"
+                    ],
+                    "7265706c6163656d656e74"
+                ],
+                [
+                    [
+                        "string",
+                        "62617265"
+                    ],
+                    "6964656e746966696572"
+                ]
+            ]
+        },
+        {
+            "input": "array{K: 'template', \"\\xff\": 'ff', \"\\xfe\": 'fe', \"\\u{FFFD}\": 'replacement', bare: 'identifier'}",
+            "replacement": "efbfbd",
+            "entries": [
+                [
+                    [
+                        "string",
+                        "efbfbd"
+                    ],
+                    "7265706c6163656d656e74"
+                ],
+                [
+                    [
+                        "string",
+                        "ff"
+                    ],
+                    "6666"
+                ],
+                [
+                    [
+                        "string",
+                        "fe"
+                    ],
+                    "6665"
+                ],
+                [
+                    [
+                        "string",
+                        "62617265"
+                    ],
+                    "6964656e746966696572"
+                ]
+            ]
+        },
+        {
+            "input": "array{K: 'template', \"\\xff\": 'ff', \"\\xfe\": 'fe', \"\\u{FFFD}\": 'replacement', bare: 'identifier'}",
+            "replacement": "31",
+            "entries": [
+                [
+                    [
+                        "int",
+                        1
+                    ],
+                    "74656d706c617465"
+                ],
+                [
+                    [
+                        "string",
+                        "ff"
+                    ],
+                    "6666"
+                ],
+                [
+                    [
+                        "string",
+                        "fe"
+                    ],
+                    "6665"
+                ],
+                [
+                    [
+                        "string",
+                        "efbfbd"
+                    ],
+                    "7265706c6163656d656e74"
+                ],
+                [
+                    [
+                        "string",
+                        "62617265"
+                    ],
+                    "6964656e746966696572"
+                ]
+            ]
+        },
+        {
+            "input": "array{K: 'template', \"\\x31\": 'one', '01': 'leading', '-1': 'negative', '+1': 'plus'}",
+            "replacement": "ff",
+            "entries": [
+                [
+                    [
+                        "string",
+                        "ff"
+                    ],
+                    "74656d706c617465"
+                ],
+                [
+                    [
+                        "int",
+                        1
+                    ],
+                    "6f6e65"
+                ],
+                [
+                    [
+                        "string",
+                        "3031"
+                    ],
+                    "6c656164696e67"
+                ],
+                [
+                    [
+                        "int",
+                        -1
+                    ],
+                    "6e65676174697665"
+                ],
+                [
+                    [
+                        "string",
+                        "2b31"
+                    ],
+                    "706c7573"
+                ]
+            ]
+        },
+        {
+            "input": "array{K: 'template', \"\\x31\": 'one', '01': 'leading', '-1': 'negative', '+1': 'plus'}",
+            "replacement": "fe",
+            "entries": [
+                [
+                    [
+                        "string",
+                        "fe"
+                    ],
+                    "74656d706c617465"
+                ],
+                [
+                    [
+                        "int",
+                        1
+                    ],
+                    "6f6e65"
+                ],
+                [
+                    [
+                        "string",
+                        "3031"
+                    ],
+                    "6c656164696e67"
+                ],
+                [
+                    [
+                        "int",
+                        -1
+                    ],
+                    "6e65676174697665"
+                ],
+                [
+                    [
+                        "string",
+                        "2b31"
+                    ],
+                    "706c7573"
+                ]
+            ]
+        },
+        {
+            "input": "array{K: 'template', \"\\x31\": 'one', '01': 'leading', '-1': 'negative', '+1': 'plus'}",
+            "replacement": "efbfbd",
+            "entries": [
+                [
+                    [
+                        "string",
+                        "efbfbd"
+                    ],
+                    "74656d706c617465"
+                ],
+                [
+                    [
+                        "int",
+                        1
+                    ],
+                    "6f6e65"
+                ],
+                [
+                    [
+                        "string",
+                        "3031"
+                    ],
+                    "6c656164696e67"
+                ],
+                [
+                    [
+                        "int",
+                        -1
+                    ],
+                    "6e65676174697665"
+                ],
+                [
+                    [
+                        "string",
+                        "2b31"
+                    ],
+                    "706c7573"
+                ]
+            ]
+        },
+        {
+            "input": "array{K: 'template', \"\\x31\": 'one', '01': 'leading', '-1': 'negative', '+1': 'plus'}",
+            "replacement": "31",
+            "entries": [
+                [
+                    [
+                        "int",
+                        1
+                    ],
+                    "6f6e65"
+                ],
+                [
+                    [
+                        "string",
+                        "3031"
+                    ],
+                    "6c656164696e67"
+                ],
+                [
+                    [
+                        "int",
+                        -1
+                    ],
+                    "6e65676174697665"
+                ],
+                [
+                    [
+                        "string",
+                        "2b31"
+                    ],
+                    "706c7573"
+                ]
+            ]
+        }
     ]
 }

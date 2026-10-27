@@ -262,7 +262,7 @@ pub struct ShapeItem {
 #[derive(Clone, Debug, PartialEq)]
 pub enum ShapeKey {
     Int(String),
-    Str(String),
+    Str(Vec<u8>),
     Ident(String),
     /// `Class::NAME`
     Fetch(String, String),
@@ -1009,7 +1009,7 @@ fn parse_shape_item(t: &mut Tokens) -> R<ShapeItem> {
 fn parse_shape_key(t: &mut Tokens) -> R<ShapeKey> {
     let key = match t.kind() {
         Tok::Int => ShapeKey::Int(t.value().replace('_', "")),
-        Tok::SingleQuoted | Tok::DoubleQuoted => ShapeKey::Str(String::from_utf8_lossy(&unescape(t.value())).into_owned()),
+        Tok::SingleQuoted | Tok::DoubleQuoted => ShapeKey::Str(unescape(t.value())),
         _ => {
             let ident = t.value().to_string();
             t.consume(Tok::Ident)?;
