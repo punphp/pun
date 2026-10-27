@@ -4,11 +4,14 @@
 //! `ControllerClassMethodManipulator` (rules/DeadCode/NodeManipulator), ported function by function.
 //!
 //! PHPStan's types come from Mago's analysis of the file (`getType()`: the type with docblocks read, else the native
-//! one). Mago has no explicit `mixed`, so every `mixed` receiver counts as PHPStan's implicit one; a call through a
-//! fluent chain on `$this` then keeps its method, which is what Rector does (checked on the oracle) even where PHPStan
-//! knows a declared `mixed`. PHPStan's `ArrayMapArgVisitor` stores a list of arguments where `isInArrayMap` asks for
-//! one `Arg`, so that check never matches (checked on the oracle) and is left out. A parent's `@method` tag (without a
-//! `__call` to back it) is not read: Pun's codebase has no doc comments.
+//! one). Every `mixed` receiver counts as implicit, without asking Mago's explicit-mixed flag: the receivers that reach
+//! the fluent fallback are calls, and Rector 2.6.1 on PHPStan 2.2.7 types an ordinary call whose return is `mixed`
+//! (declared natively or in a docblock) as implicit `mixed`. An explicit `mixed` variable, a call whose docblock names
+//! another class, and a nullsafe link at the root are no fluent chain on `$this`, so the method goes
+//! (tests/rector/RemoveUnusedPrivateMethodRector/Oracle/mixed_receivers.php.inc). PHPStan's `ArrayMapArgVisitor` stores
+//! a list of arguments where `isInArrayMap` asks for one `Arg`, so that check never matches (checked on the oracle) and
+//! is left out. A parent's `@method` tag (without a `__call` to back it) is not read: Pun's codebase has no doc
+//! comments.
 
 use mago_codex::ttype::atomic::TAtomic;
 use mago_codex::ttype::atomic::object::TObject;
@@ -361,7 +364,7 @@ struct CallerType {
     /// `getObjectClassNames()`.
     names: Vec<String>,
     never: bool,
-    /// `MixedType`, taken as not explicit.
+    /// `MixedType`, taken as implicit (see the module docs).
     mixed: bool,
 }
 
