@@ -19,8 +19,8 @@ use mago_codex::ttype::atomic::object::TObject;
 use mago_codex::ttype::union::TUnion;
 use mago_syntax::cst::{
     Access, AssignmentOperator, BinaryOperator, ClassLikeMember, ClassLikeMemberSelector,
-    Expression, MethodBody, Modifier, Node, NodeKind, Property, Statement, UnaryPrefixOperator,
-    Variable,
+    Expression, Extends, If, MethodBody, Modifier, Node, NodeKind, Property, Sequence, Statement,
+    UnaryPrefixOperator, Variable,
 };
 use pun_problem::{Fix, Safety};
 
@@ -28,7 +28,7 @@ use super::class_method::walk;
 use super::no_redundant_property_default::is_assigned_in_constructor;
 use super::php_parser::{Token, tokens};
 use super::rector_batch5::{method, resolve_class_name};
-use super::rector_conditions::{if_parts, is_stmts_aware};
+use super::rector_conditions::if_parts;
 use super::stmt_splice::{Change, NewStatement, run_edits};
 use super::types::facts::{Facts, facts};
 use crate::syntax::{node_span, unparenthesize};
@@ -53,19 +53,25 @@ impl Rule for NoTypedPropertyInstanceof {
         out: &mut Vec<Report>,
     ) {
         let Node::If(r#if) = node else { return };
-        let Some(class_index) = ancestors
-            .iter()
-            .rposition(|a| matches!(a, Node::Class(_) | Node::AnonymousClass(_)))
-        else {
+        let Some(class) = ancestors.iter().enumerate().rev().find_map(|(i, a)| {
+            let (members, left_brace, extends) = match a {
+                Node::Class(c) => (&c.members, c.left_brace, c.extends.as_ref()),
+                Node::AnonymousClass(c) => (&c.members, c.left_brace, c.extends.as_ref()),
+                _ => return None,
+            };
+            Some(Class {
+                node: *a,
+                ancestors: &ancestors[..i],
+                members,
+                left_brace,
+                extends,
+            })
+        }) else {
             return;
         };
         let source = ctx.source;
         let tokens = tokens(source);
         let facts = facts(ctx);
-        let class = Class {
-            node: ancestors[class_index],
-            ancestors: &ancestors[..class_index],
-        };
         let visited = visited_ifs(source, &tokens, &facts, &class);
         if !visited.contains(&node_span(r#if).start) {
             return;
@@ -77,7 +83,7 @@ impl Rule for NoTypedPropertyInstanceof {
             if !visited.contains(&node_span(sibling).start) {
                 return None;
             }
-            change(source, &tokens, &facts, &class, chain)
+            change(source, &tokens, &facts, &class, sibling, chain)
         });
         if let Some(edits) = edits {
             out.push(Report {
@@ -97,6 +103,9 @@ impl Rule for NoTypedPropertyInstanceof {
 struct Class<'c, 'ast, 'arena> {
     node: Node<'ast, 'arena>,
     ancestors: &'c [Node<'ast, 'arena>],
+    members: &'ast Sequence<'arena, ClassLikeMember<'arena>>,
+    left_brace: mago_span::Span,
+    extends: Option<&'ast Extends<'arena>>,
 }
 
 /// Where the `if`s the walk of the class's methods changes start: it stops at the first loop and does not go into an
@@ -107,14 +116,9 @@ fn visited_ifs(
     facts: &Facts,
     class: &Class<'_, '_, '_>,
 ) -> Vec<usize> {
-    let members = match class.node {
-        Node::Class(c) => &c.members,
-        Node::AnonymousClass(c) => &c.members,
-        _ => return Vec::new(),
-    };
     let mut changed = Vec::new();
     let mut stopped = false;
-    for member in members.iter() {
+    for member in class.members.iter() {
         let ClassLikeMember::Method(m) = member else {
             continue;
         };
@@ -134,7 +138,7 @@ fn visited_ifs(
                     let mut full = chain.clone();
                     full.extend_from_slice(path);
                     full.push(node);
-                    if change(source, tokens, facts, class, &full).is_some() {
+                    if change(source, tokens, facts, class, r#if, &full).is_some() {
                         changed.push(node_span(r#if).start);
                         return false;
                     }
@@ -156,15 +160,9 @@ fn change(
     tokens: &[Token],
     facts: &Facts,
     class: &Class<'_, '_, '_>,
+    r#if: &If<'_>,
     chain: &[Node<'_, '_>],
 ) -> Option<Change> {
-    let n = chain.len();
-    let Node::Statement(Statement::If(r#if)) = chain[n - 1] else {
-        return None;
-    };
-    if !is_stmts_aware(chain[n - 2], &chain[..n - 2]) {
-        return None;
-    }
     let parts = if_parts(tokens, r#if);
     if parts.has_else || parts.has_elseifs {
         return None;
@@ -233,11 +231,7 @@ fn property_type(
     fetch: pun_problem::Span,
     name: &[u8],
 ) -> Option<TUnion> {
-    let members = match class.node {
-        Node::Class(c) => &c.members,
-        Node::AnonymousClass(c) => &c.members,
-        _ => return None,
-    };
+    let members = class.members;
     let declared = members.iter().find_map(|m| match m {
         ClassLikeMember::Property(Property::Plain(p))
             if p.items.iter().any(|i| &i.variable().name[1..] == name) =>
@@ -297,18 +291,13 @@ fn has_var_tag(
     members: &mago_syntax::cst::Sequence<'_, ClassLikeMember<'_>>,
     class: &Class<'_, '_, '_>,
 ) -> bool {
-    let left_brace = match class.node {
-        Node::Class(c) => c.left_brace,
-        Node::AnonymousClass(c) => c.left_brace,
-        _ => return false,
-    };
     let index = members
         .iter()
         .position(|m| node_span(m).start == start)
         .unwrap_or(0);
     super::rector_batch5::doc_comment(
         source,
-        super::rector_batch5::member_from(members, left_brace, index),
+        super::rector_batch5::member_from(members, class.left_brace, index),
         start,
     )
     .is_some_and(|d| source[d.start..d.end].contains("@var"))
@@ -316,12 +305,7 @@ fn has_var_tag(
 
 /// `isInPropertyPromotedParams`: a promoted parameter of the constructor is named like the property.
 fn is_promoted(class: &Class<'_, '_, '_>, name: &[u8]) -> bool {
-    let members = match class.node {
-        Node::Class(c) => &c.members,
-        Node::AnonymousClass(c) => &c.members,
-        _ => return false,
-    };
-    method(members, b"__construct").is_some_and(|m| {
+    method(class.members, b"__construct").is_some_and(|m| {
         m.parameter_list
             .parameters
             .iter()
@@ -331,15 +315,19 @@ fn is_promoted(class: &Class<'_, '_, '_>, name: &[u8]) -> bool {
 
 /// `isSkippedPropertyFetch`: not assigned in the constructor, and not declared in the class with a native type.
 fn is_skipped(source: &str, class: &Class<'_, '_, '_>, name: &[u8]) -> bool {
-    if is_assigned_in_constructor(source, class.node, class.ancestors, name) {
+    let mut path = class.ancestors.to_vec();
+    path.push(class.node);
+    if is_assigned_in_constructor(
+        source,
+        class.members,
+        class.left_brace,
+        class.extends,
+        &path,
+        name,
+    ) {
         return false;
     }
-    let members = match class.node {
-        Node::Class(c) => &c.members,
-        Node::AnonymousClass(c) => &c.members,
-        _ => return true,
-    };
-    !members.iter().any(|m| {
+    !class.members.iter().any(|m| {
         matches!(m, ClassLikeMember::Property(Property::Plain(p))
             if p.hint.is_some() && p.items.iter().any(|i| &i.variable().name[1..] == name))
     })

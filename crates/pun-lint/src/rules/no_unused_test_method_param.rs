@@ -44,11 +44,11 @@ impl Rule for NoUnusedTestMethodParam {
         ctx: &Context<'_>,
         out: &mut Vec<Report>,
     ) {
-        let (members, left_brace) = match node {
-            Node::Class(c) => (&c.members, c.left_brace),
-            Node::AnonymousClass(c) => (&c.members, c.left_brace),
-            _ => return,
+        let facts = facts(ctx);
+        let Some(class) = class_info(node, ancestors, &facts) else {
+            return;
         };
+        let (members, left_brace) = (class.members, class.left_brace);
         // a cheap look first: a private method with a parameter
         let candidate = |m: &Method<'_>| {
             is_private(m)
@@ -66,10 +66,6 @@ impl Rule for NoUnusedTestMethodParam {
         if !is_in_test_class(ctx, &path, None) {
             return;
         }
-        let facts = facts(ctx);
-        let Some(class) = class_info(node, ancestors, &facts) else {
-            return;
-        };
         let source = ctx.source;
         for (index, member) in members.iter().enumerate() {
             let ClassLikeMember::Method(method) = member else {
@@ -82,15 +78,17 @@ impl Rule for NoUnusedTestMethodParam {
             if !removed.contains(&true) {
                 continue;
             }
-            let Some(mut edits) = caller_edits(&facts, ancestors, &class, method, &removed) else {
+            let Some(callers) = caller_edits(&facts, ancestors, &class, method, &removed) else {
                 continue;
             };
             let from = member_from(members, left_brace, index);
+            let mut edits = callers.clone();
             edits.extend(remove_params(source, method, from, &removed));
-            let edits = merge(edits);
-            // a caller inside the method itself, which may be printed anew: leave both
+            let mut edits = merge(edits);
+            // a caller inside the method, which is printed anew without its parameters: the callers' arguments go
+            // first, and the parameters in the next fix round, where no caller passes them
             if edits.windows(2).any(|w| w[0].span.end > w[1].span.start) {
-                continue;
+                edits = merge(callers);
             }
             out.push(Report {
                 span: node_span(method),
@@ -165,7 +163,9 @@ fn variables_named(node: Node<'_, '_>, name: &[u8]) -> Vec<Span> {
         if let Node::DirectVariable(v) = n
             && v.name == name
             && !matches!(
-                path.iter().rev().find(|p| !matches!(p, Node::Variable(_) | Node::Expression(_))),
+                path.iter()
+                    .rev()
+                    .find(|p| !matches!(p, Node::Variable(_) | Node::Expression(_))),
                 Some(
                     Node::PropertyAbstractItem(_)
                         | Node::PropertyConcreteItem(_)
@@ -197,7 +197,11 @@ fn has_indirect_variable_usage(node: Node<'_, '_>) -> bool {
                 Node::IndirectVariable(_) | Node::NestedVariable(_) => true,
                 Node::FunctionCall(call) => match call.function {
                     Expression::Identifier(id) => {
-                        let name = id.value().rsplit(|b| *b == b'\\').next().unwrap_or_default();
+                        let name = id
+                            .value()
+                            .rsplit(|b| *b == b'\\')
+                            .next()
+                            .unwrap_or_default();
                         NAMES.iter().any(|n| n.eq_ignore_ascii_case(name))
                     }
                     _ => false,
@@ -233,7 +237,9 @@ fn caller_edits(
         walk(Node::Method(m), &mut |n, _| {
             let (receiver, selector, caller, is_static) = match n {
                 Node::MethodCall(c) => (c.object, &c.method, Caller::Call(&c.argument_list), false),
-                Node::StaticMethodCall(c) => (c.class, &c.method, Caller::Call(&c.argument_list), true),
+                Node::StaticMethodCall(c) => {
+                    (c.class, &c.method, Caller::Call(&c.argument_list), true)
+                }
                 Node::MethodPartialApplication(c) => (c.object, &c.method, Caller::Callable, false),
                 Node::StaticMethodPartialApplication(c) => {
                     (c.class, &c.method, Caller::Callable, true)
@@ -304,13 +310,17 @@ fn is_class(
     is_of_class(facts, receiver, name)
 }
 
-/// Whether PHPStan's type of `expr` is an object of the class `name` or a subclass, every part of it.
+/// Whether PHPStan's type of `expr` is an object of the class `name` or a subclass, every part of it but `null` and
+/// `false` (`isMatchingUnionType`).
 fn is_of_class(facts: &Facts, expr: &Expression<'_>, name: &[u8]) -> bool {
     let Some(t) = type_of(facts, expr) else {
         return false;
     };
-    !t.types.is_empty()
-        && t.types.iter().all(|a| match a {
+    let mut types = (t.types.iter())
+        .filter(|a| !matches!(a, TAtomic::Null) && !matches!(a, TAtomic::Scalar(s) if s.is_false()))
+        .peekable();
+    types.peek().is_some()
+        && types.all(|a| match a {
             TAtomic::Object(TObject::Named(n)) => {
                 n.name.as_bytes().eq_ignore_ascii_case(name)
                     || facts.codebase.is_instance_of(n.name.as_bytes(), name)

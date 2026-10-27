@@ -45,10 +45,8 @@ impl Rule for RequirePreviousException {
         ctx: &Context<'_>,
         out: &mut Vec<Report>,
     ) {
-        let Node::Throw(throw) = node else {
-            return;
-        };
-        let Expression::Instantiation(new) = throw.exception else {
+        let Node::Throw(t) = node else { return };
+        let Expression::Instantiation(new) = t.exception else {
             return;
         };
         // Each `catch` around the throw refactors it in turn, the outermost first; the first that changes it wins.
@@ -60,20 +58,20 @@ impl Rule for RequirePreviousException {
             let Some(text) = refactor(
                 ctx,
                 ancestors,
-                throw.span().start.offset as usize,
+                t.span().start.offset as usize,
                 new,
                 variable,
             ) else {
                 continue;
             };
             out.push(Report {
-                span: node_span(throw.exception),
+                span: node_span(t.exception),
                 message: "Pass the caught exception on to the exception thrown in its `catch`."
                     .into(),
                 help: None,
                 fix: Some(Fix {
                     safety: Safety::Safe,
-                    edits: vec![Edit::new(node_span(throw.exception), text)],
+                    edits: vec![Edit::new(node_span(t.exception), text)],
                 }),
             });
             return;
@@ -183,10 +181,8 @@ fn refactor(
         changed = true;
     }
     let code_name = named.then(|| "code".to_string());
+    // fewer than two arguments here means a missing code (checked above)
     if args.len() < 2 {
-        if !has_code_parameter || has_code_argument {
-            return None;
-        }
         args.push(new_arg(code_name.clone(), format!("{var}->getCode()")));
         changed = true;
     }
@@ -311,11 +307,11 @@ fn takes_throwable(codebase: &CodebaseMetadata, t: Option<&TUnion>) -> bool {
             .all(|a| class_name(a).is_some_and(|c| throwable_of(codebase, &c) == Some(true)))
 }
 
-/// The class an object type names (`getObjectClassNames()`), a class Mago does not know too.
+/// The class an object type names (`getObjectClassNames()`), a class Mago does not know too; an enum, which cannot
+/// be a `Throwable`, has none here.
 fn class_name(atomic: &TAtomic) -> Option<String> {
     let name = match atomic {
         TAtomic::Object(TObject::Named(n)) => n.name,
-        TAtomic::Object(TObject::Enum(e)) => e.get_name(),
         TAtomic::Reference(TReference::Symbol { name, .. }) => *name,
         _ => return None,
     };

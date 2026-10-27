@@ -66,10 +66,8 @@ impl Rule for NoUselessCast {
         ctx: &Context<'_>,
         out: &mut Vec<Report>,
     ) {
-        let Node::UnaryPrefix(cast) = node else {
-            return;
-        };
-        let wanted = match cast.operator {
+        let Node::UnaryPrefix(c) = node else { return };
+        let wanted = match c.operator {
             UnaryPrefixOperator::StringCast(..) | UnaryPrefixOperator::BinaryCast(..) => {
                 Kind::String
             }
@@ -82,7 +80,7 @@ impl Rule for NoUselessCast {
             | UnaryPrefixOperator::FloatCast(..) => Kind::Float,
             _ => return,
         };
-        let expr = unparenthesize(cast.operand);
+        let expr = unparenthesize(c.operand);
         let facts = facts(ctx);
         // a constant (other than `true`, `false` and `null`) has no native type
         if matches!(expr, Expression::ConstantAccess(_)) {
@@ -111,7 +109,7 @@ impl Rule for NoUselessCast {
         } else {
             text.to_string()
         };
-        let span = node_span(cast);
+        let span = node_span(c);
         out.push(Report {
             span,
             message: "This cast does not change the value's type; remove it.".to_string(),
@@ -282,25 +280,22 @@ fn names_variable(ancestors: &[Node<'_, '_>], at: usize) -> bool {
     values.iter().any(|v| names.contains(&v.as_slice()))
 }
 
-/// The class `$this` and `self` stand for: the enclosing class (Mago's name for an anonymous one); none in a trait,
-/// whose `$this` PHPStan types as the class using it.
+/// The class `$this` and `self` stand for: the enclosing class-like (Mago's name for an anonymous class). In a trait,
+/// where PHPStan types no `$this` (Mago's facts leave it untyped), `self` is the trait.
 fn this_class(facts: &Facts, ancestors: &[Node<'_, '_>]) -> Option<String> {
-    let index = ancestors.iter().rposition(|a| {
-        matches!(
-            a,
-            Node::Class(_)
-                | Node::AnonymousClass(_)
-                | Node::Trait(_)
-                | Node::Enum(_)
-                | Node::Interface(_)
-        )
-    })?;
-    match ancestors[index] {
-        Node::Class(c) => Some(qualified(&ancestors[..index], c.name.value)),
-        Node::Enum(e) => Some(qualified(&ancestors[..index], e.name.value)),
-        Node::AnonymousClass(c) => Some(facts.anonymous_class_name(mago_span::HasSpan::span(c))),
-        _ => None,
-    }
+    ancestors
+        .iter()
+        .enumerate()
+        .rev()
+        .find_map(|(i, a)| match a {
+            Node::Class(c) => Some(qualified(&ancestors[..i], c.name.value)),
+            Node::Enum(e) => Some(qualified(&ancestors[..i], e.name.value)),
+            Node::Trait(t) => Some(qualified(&ancestors[..i], t.name.value)),
+            Node::AnonymousClass(c) => {
+                Some(facts.anonymous_class_name(mago_span::HasSpan::span(c)))
+            }
+            _ => None,
+        })
 }
 
 /// `hasNativeProperty()` and a native type other than `mixed` on the property `name` (with its `$`) of `class`.
@@ -323,12 +318,19 @@ fn has_native_type(facts: &Facts, class: &str, name: &str) -> bool {
 /// `$nativeType->isSuperTypeOf($type)->yes()`, for the native types the casts keep: every part of `full` is of the
 /// native type's kind.
 fn within(full: &TUnion, native: &TUnion) -> bool {
+    // a constant array is the supertype of itself alone
+    let constant = |a: &TAtomic| match a {
+        TAtomic::Array(TArray::Keyed(k)) => k.parameters.is_none() && k.known_items.is_some(),
+        TAtomic::Array(TArray::List(l)) => l.known_elements.is_some() && l.element_type.is_never(),
+        _ => false,
+    };
+    if native.types.iter().any(constant) {
+        return full.types.iter().all(|a| native.types.contains(a));
+    }
     let wanted = kind(native);
     full.types.iter().all(|a| {
         let k = atomic_kind(a);
         k == wanted
-            || (wanted == Kind::ConstantArray && matches!(a, TAtomic::Array(_)))
-            || (wanted == Kind::Bool && is_bool(a))
             || (wanted == Kind::String && matches!(a, TAtomic::Scalar(TScalar::String(_))))
             || (wanted == Kind::Array && matches!(a, TAtomic::Array(_)))
     })

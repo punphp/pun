@@ -21,6 +21,13 @@
 //! parentheses the new place needs (`filter_var($i + 1, FILTER_VALIDATE_INT) * 2` becomes `$i + 1 * 2`); Pun keeps
 //! the meaning (lint.md: meaning over bytes).
 //!
+//! RemoveDeadInstanceOfRector/Pun/unreachable_code and RemoveTestsOverriddenPrivateMethodParameterRector/Pun/
+//! unreachable_caller: Rector types the statements after a `return` with the scope before it; Mago's analysis does not
+//! reach them, so Pun leaves the `if` there, and the caller's argument (the parameter still goes).
+//!
+//! RemoveDeadInstanceOfRector/Pun/bare_body_holder: where the braceless body of an `if` is an `if` that gives way to
+//! several statements, Rector prints the outer `if` anew with braces; Pun leaves both.
+//!
 //! RemoveDeadInstanceOfRector/Source/vendor/{Node,If_}.php are not upstream: they declare the nikic/php-parser 5
 //! types a fixture names, which Rector's run loads from its vendor directory.
 //!
@@ -28,13 +35,16 @@
 
 mod lint_c;
 
+use std::path::Path;
+
 use lint_c::run_class;
-use pun_lint::Rule;
+use mago_syntax::cst::Node;
 use pun_lint::rules::{
     NoAlwaysTrueInstanceof, NoConstantCondition, NoRedundantForeachGuard,
     NoTypedPropertyInstanceof, NoUnusedTestMethodParam, NoUselessCast, NoUselessFilterVar,
     NoUselessMath, PreferInstanceMethod, RequirePreviousException,
 };
+use pun_lint::{Linter, Rule};
 
 fn check(rule: impl Rule + 'static, class: &str) {
     run_class(vec![Box::new(rule)], class);
@@ -100,4 +110,88 @@ fn remove_unused_non_empty_array_before_foreach() {
         NoRedundantForeachGuard,
         "RemoveUnusedNonEmptyArrayBeforeForeachRector",
     );
+}
+
+/// A rule called on every node, not only the kinds of its `targets()`.
+struct Everywhere(Box<dyn Rule>);
+
+impl Rule for Everywhere {
+    fn id(&self) -> &'static str {
+        self.0.id()
+    }
+
+    fn visit<'ast, 'arena>(
+        &self,
+        node: Node<'ast, 'arena>,
+        ancestors: &[Node<'ast, 'arena>],
+        ctx: &pun_lint::Context<'_>,
+        out: &mut Vec<pun_lint::Report>,
+    ) {
+        self.0.visit(node, ancestors, ctx, out);
+    }
+}
+
+#[test]
+fn rules_ignore_nodes_outside_their_targets() {
+    // `targets()` only spares the engine work: called on every node, each rule reports what it reports on its own.
+    let cases: Vec<(fn() -> Box<dyn Rule>, &str)> = vec![
+        (|| Box::new(NoConstantCondition), "RemoveDeadIfBlockRector"),
+        (
+            || Box::new(PreferInstanceMethod),
+            "LocallyCalledStaticMethodToNonStaticRector",
+        ),
+        (
+            || Box::new(NoUnusedTestMethodParam),
+            "RemoveTestsOverriddenPrivateMethodParameterRector",
+        ),
+        (
+            || Box::new(RequirePreviousException),
+            "ThrowWithPreviousExceptionRector",
+        ),
+        (
+            || Box::new(NoUselessFilterVar),
+            "RemoveFilterVarOnExactTypeRector",
+        ),
+        (
+            || Box::new(NoUselessMath),
+            "RemoveDeadZeroAndOneOperationRector",
+        ),
+        (|| Box::new(NoUselessCast), "RecastingRemovalRector"),
+        (
+            || Box::new(NoAlwaysTrueInstanceof),
+            "RemoveDeadInstanceOfRector",
+        ),
+        (
+            || Box::new(NoTypedPropertyInstanceof),
+            "RemoveTypedPropertyDeadInstanceOfRector",
+        ),
+        (
+            || Box::new(NoRedundantForeachGuard),
+            "RemoveUnusedNonEmptyArrayBeforeForeachRector",
+        ),
+    ];
+    for (rule, class) in cases {
+        let targeted = Linter::new(vec![rule()], 80400);
+        let everywhere = Linter::new(vec![Box::new(Everywhere(rule()))], 80400);
+        let root = Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("tests/rector")
+            .join(class);
+        let mut files = Vec::new();
+        for dir in ["Fixture", "Oracle", "Pun"] {
+            if let Ok(entries) = std::fs::read_dir(root.join(dir)) {
+                files.extend(entries.map(|e| e.unwrap().path()));
+            }
+        }
+        assert!(!files.is_empty(), "{class}");
+        for path in files {
+            let content = std::fs::read_to_string(&path).unwrap();
+            let input = content.split("-----\n").next().unwrap();
+            assert_eq!(
+                everywhere.check(&path, input).unwrap(),
+                targeted.check(&path, input).unwrap(),
+                "{}",
+                path.display()
+            );
+        }
+    }
 }

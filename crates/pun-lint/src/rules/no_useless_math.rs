@@ -61,7 +61,8 @@ impl Rule for NoUselessMath {
                 }
                 operand_text(source, assignment.lhs, parent)
             }
-            Node::Binary(binary) => {
+            _ => {
+                let Node::Binary(binary) = node else { return };
                 let (left, right) = (unparenthesize(binary.lhs), unparenthesize(binary.rhs));
                 let plus = matches!(binary.operator, BinaryOperator::Addition(_));
                 match binary.operator {
@@ -114,13 +115,8 @@ impl Rule for NoUselessMath {
                     _ => return,
                 }
             }
-            _ => return,
         };
-        let span = match node {
-            Node::Assignment(a) => node_span(a),
-            Node::Binary(b) => node_span(b),
-            _ => return,
-        };
+        let span = node_span(&node);
         out.push(Report {
             span,
             message: "This operation does not change the number; keep the number.".to_string(),

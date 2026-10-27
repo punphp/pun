@@ -21,7 +21,7 @@ use pun_problem::{Edit, Fix, Safety, Span};
 
 use super::php_parser::{Token, tokens};
 use super::rector_batch5::resolve_class_name;
-use super::rector_conditions::{if_parts, is_stmts_aware};
+use super::rector_conditions::if_parts;
 use super::stmt_splice::{Change, Code, NewStatement, run_edits};
 use super::types::facts::{Facts, facts};
 use crate::syntax::{node_span, unparenthesize};
@@ -62,13 +62,9 @@ impl Rule for NoAlwaysTrueInstanceof {
 
 /// What `refactor()` does to the `if` statement `chain` ends with.
 fn change(source: &str, tokens: &[Token], facts: &Facts, chain: &[Node<'_, '_>]) -> Option<Change> {
-    let n = chain.len();
-    let Node::Statement(Statement::If(r#if)) = chain[n - 1] else {
+    let Node::Statement(Statement::If(r#if)) = chain[chain.len() - 1] else {
         return None;
     };
-    if !is_stmts_aware(chain[n - 2], &chain[..n - 2]) {
-        return None;
-    }
     let parts = if_parts(tokens, r#if);
     if parts.has_else || parts.has_elseifs {
         return None;

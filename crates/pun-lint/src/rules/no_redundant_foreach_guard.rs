@@ -70,9 +70,6 @@ impl Rule for NoRedundantForeachGuard {
         let tokens = tokens(source);
         let facts = facts(ctx);
         let edits = match node {
-            Node::If(_) => run_edits(source, &tokens, ancestors, &|chain| {
-                guard(source, &tokens, &facts, chain)
-            }),
             Node::Foreach(foreach) => {
                 let n = ancestors.len();
                 if !is_stmts_aware(ancestors[n - 2], &ancestors[..n - 2])
@@ -92,6 +89,9 @@ impl Rule for NoRedundantForeachGuard {
                 }
                 Some(remove(source, &tokens, &list, &[index - 1]))
             }
+            Node::If(_) => run_edits(source, &tokens, ancestors, &|chain| {
+                guard(source, &tokens, &facts, chain)
+            }),
             _ => return,
         };
         let Some(edits) = edits else { return };
@@ -121,13 +121,9 @@ fn in_if_body(ancestors: &[Node<'_, '_>]) -> bool {
 /// `refactorIf`: the `if` `chain` ends with replaced by its `foreach`, with the `if`'s comments before the
 /// `foreach`'s.
 fn guard(source: &str, tokens: &[Token], facts: &Facts, chain: &[Node<'_, '_>]) -> Option<Change> {
-    let n = chain.len();
-    let Node::Statement(Statement::If(r#if)) = chain[n - 1] else {
+    let Node::Statement(Statement::If(r#if)) = chain[chain.len() - 1] else {
         return None;
     };
-    if !is_stmts_aware(chain[n - 2], &chain[..n - 2]) {
-        return None;
-    }
     let parts = if_parts(tokens, r#if);
     if parts.has_else || parts.has_elseifs || parts.stmts.nop {
         return None;
@@ -244,6 +240,7 @@ fn should_skip_items(
         Expression::ArrayAccess(access) => {
             !has_offset(facts, access.array, access.index)
                 && !(native(facts, access.array).is_some_and(|t| t.is_mixed())
+                    && full(facts, access.array).is_some_and(is_array)
                     && assigned_offset(source, facts, preceding, access))
         }
         Expression::Variable(Variable::Direct(v)) if SUPERGLOBALS.contains(&v.name) => true,
@@ -252,9 +249,9 @@ fn should_skip_items(
     }
 }
 
-/// PHPStan's native scope remembers the key an assignment writes into a value of no native type (`mixed` with
-/// `hasOffsetValue()`), which Mago's does not: an earlier statement of the list assigns `$array[$key]` for the same
-/// array and key.
+/// PHPStan's native scope remembers the key an assignment writes into a value of no native type but a documented
+/// array type (`mixed` with `hasOffsetValue()`), which Mago's does not: an earlier statement of the list assigns
+/// `$array[$key]` for the same array and key.
 fn assigned_offset(
     source: &str,
     facts: &Facts,

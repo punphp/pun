@@ -42,14 +42,14 @@ impl Rule for PreferInstanceMethod {
         ctx: &Context<'_>,
         out: &mut Vec<Report>,
     ) {
-        let methods: Vec<&Method<'_>> = class_methods(node);
-        if !methods.iter().any(|m| is_candidate(m)) {
-            return;
-        }
         let facts = facts(ctx);
         let Some(class) = class_info(node, ancestors, &facts) else {
             return;
         };
+        let methods: Vec<&Method<'_>> = class_methods(class.members);
+        if !methods.iter().any(|m| is_candidate(m)) {
+            return;
+        }
         let source = ctx.source;
         let class_name = if class.is_anonymous {
             String::new()
@@ -68,8 +68,14 @@ impl Rule for PreferInstanceMethod {
                 .filter(|m| is_static(m) && !converted.contains(&node_span(**m)))
                 .map(|m| node_span(*m))
                 .collect();
-            if is_called_in_static_method(&facts, ancestors, &class, &class_name, &still_static, name)
-            {
+            if is_called_in_static_method(
+                &facts,
+                ancestors,
+                &class,
+                &class_name,
+                &still_static,
+                name,
+            ) {
                 continue;
             }
             if is_never_called(class.node, name) {
@@ -79,12 +85,12 @@ impl Rule for PreferInstanceMethod {
             let mut in_static_closure = false;
             for m in &methods {
                 walk(Node::Method(m), &mut |n, path| {
-                    if let Some((target, called)) = static_call(n)
+                    if let Some((target, called, arguments)) = static_call(n)
                         && called.eq_ignore_ascii_case(name)
                         && is_own(ancestors, target, &class_name)
                     {
                         in_static_closure |= path.iter().any(is_static_closure);
-                        calls.push(n);
+                        calls.push((node_span(&n), arguments));
                     }
                     true
                 });
@@ -93,8 +99,8 @@ impl Rule for PreferInstanceMethod {
                 continue;
             }
             converted.push(node_span(*method));
-            for call in calls {
-                edits.push(this_call(source, call, name));
+            for (span, arguments) in calls {
+                edits.push(this_call(source, span, arguments, name));
             }
             let modifiers = (method.modifiers.first())
                 .map(|m| node_span(m).start)
@@ -110,8 +116,9 @@ impl Rule for PreferInstanceMethod {
         }
         out.push(Report {
             span: node_span(&node),
-            message: "This private static method is called on the instance; make it an instance method."
-                .to_string(),
+            message:
+                "This private static method is called on the instance; make it an instance method."
+                    .to_string(),
             help: None,
             fix: Some(Fix {
                 safety: Safety::Safe,
@@ -126,12 +133,9 @@ fn is_candidate(method: &Method<'_>) -> bool {
 }
 
 /// The class's own methods (php-parser's `getMethods()`).
-fn class_methods<'ast, 'arena>(node: Node<'ast, 'arena>) -> Vec<&'ast Method<'arena>> {
-    let members = match node {
-        Node::Class(c) => &c.members,
-        Node::AnonymousClass(c) => &c.members,
-        _ => return Vec::new(),
-    };
+fn class_methods<'ast, 'arena>(
+    members: &'ast Sequence<'arena, ClassLikeMember<'arena>>,
+) -> Vec<&'ast Method<'arena>> {
     (members.iter())
         .filter_map(|m| match m {
             ClassLikeMember::Method(m) => Some(m),
@@ -152,17 +156,40 @@ fn is_guarded_by_parent(facts: &Facts, class: &ClassInfo<'_, '_>, name: &[u8]) -
         })
 }
 
-/// The class and method a static call (a first-class callable too) names, when the method is an identifier.
+/// The class and method a static call (a first-class callable too) names, when the method is an identifier, with
+/// where its arguments start (after the `(`) and their spans.
 fn static_call<'ast, 'arena>(
     node: Node<'ast, 'arena>,
-) -> Option<(&'ast Expression<'arena>, &'arena [u8])> {
-    let (class, method) = match node {
-        Node::StaticMethodCall(c) => (c.class, &c.method),
-        Node::StaticMethodPartialApplication(c) => (c.class, &c.method),
+) -> Option<(&'ast Expression<'arena>, &'arena [u8], (usize, Vec<Span>))> {
+    let (class, method, arguments) = match node {
+        Node::StaticMethodCall(c) => (
+            c.class,
+            &c.method,
+            (
+                c.argument_list.left_parenthesis.end.offset as usize,
+                c.argument_list
+                    .arguments
+                    .iter()
+                    .map(|a| node_span(a))
+                    .collect(),
+            ),
+        ),
+        Node::StaticMethodPartialApplication(c) => (
+            c.class,
+            &c.method,
+            (
+                c.argument_list.left_parenthesis.end.offset as usize,
+                c.argument_list
+                    .arguments
+                    .iter()
+                    .map(|a| node_span(a))
+                    .collect(),
+            ),
+        ),
         _ => return None,
     };
     match method {
-        ClassLikeMemberSelector::Identifier(id) => Some((class, id.value)),
+        ClassLikeMemberSelector::Identifier(id) => Some((class, id.value, arguments)),
         _ => None,
     }
 }
@@ -172,7 +199,8 @@ fn is_own(ancestors: &[Node<'_, '_>], class: &Expression<'_>, class_name: &str) 
     match class {
         Expression::Self_(_) | Expression::Static(_) => true,
         Expression::Identifier(id) => {
-            !class_name.is_empty() && resolve_class_name(ancestors, id).eq_ignore_ascii_case(class_name)
+            !class_name.is_empty()
+                && resolve_class_name(ancestors, id).eq_ignore_ascii_case(class_name)
         }
         _ => false,
     }
@@ -207,10 +235,11 @@ fn is_called_in_static_method(
             return true;
         }
         found = match n {
-            Node::Array(Array { elements, .. }) | Node::LegacyArray(LegacyArray { elements, .. }) => {
+            Node::Array(Array { elements, .. })
+            | Node::LegacyArray(LegacyArray { elements, .. }) => {
                 is_array_callable(facts, ancestors, class, elements, path, name)
             }
-            _ => static_call(n).is_some_and(|(target, called)| {
+            _ => static_call(n).is_some_and(|(target, called, _)| {
                 called.eq_ignore_ascii_case(name) && is_own(ancestors, target, class_name)
             }),
         };
@@ -229,7 +258,7 @@ fn is_never_called(class: Node<'_, '_>, name: &[u8]) -> bool {
                     matches!(c.object, Expression::Variable(Variable::Direct(v)) if v.name == b"$this")
                         && matches!(&c.method, ClassLikeMemberSelector::Identifier(id) if id.value.eq_ignore_ascii_case(name))
                 }
-                _ => static_call(n).is_some_and(|(target, called)| {
+                _ => static_call(n).is_some_and(|(target, called, _)| {
                     called.eq_ignore_ascii_case(name)
                         && matches!(target, Expression::Self_(_) | Expression::Static(_))
                 }),
@@ -239,21 +268,10 @@ fn is_never_called(class: Node<'_, '_>, name: &[u8]) -> bool {
     !called
 }
 
-/// `new MethodCall(new Variable('this'), $classMethodName, $node->args)`, printed.
-fn this_call(source: &str, call: Node<'_, '_>, name: &[u8]) -> Edit {
-    let span = node_span(&call);
+/// `new MethodCall(new Variable('this'), $classMethodName, $node->args)`, printed in place of the call at `span`
+/// whose arguments start at `from` and are at `items`.
+fn this_call(source: &str, span: Span, (from, items): (usize, Vec<Span>), name: &[u8]) -> Edit {
     let indent = line_indent(source, span.start);
-    let (from, items): (usize, Vec<Span>) = match call {
-        Node::StaticMethodCall(c) => (
-            c.argument_list.left_parenthesis.end.offset as usize,
-            c.argument_list.arguments.iter().map(|a| node_span(a)).collect(),
-        ),
-        Node::StaticMethodPartialApplication(c) => (
-            c.argument_list.left_parenthesis.end.offset as usize,
-            c.argument_list.arguments.iter().map(|a| node_span(a)).collect(),
-        ),
-        _ => unreachable!("a static call"),
-    };
     let args = maybe_multiline(source, from, &items, indent);
     let name = String::from_utf8_lossy(name);
     Edit::new(span, format!("$this->{name}({args})"))

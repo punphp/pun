@@ -112,28 +112,24 @@ impl Rule for NoRedundantPropertyDefault {
 }
 
 /// `ConstructorAssignDetector::isPropertyAssigned` for the property `name` (without its `$`) of the class or
-/// anonymous class `node`, which `ancestors` lead to: false without a constructor.
+/// anonymous class with `members`, `left_brace` and `extends`, which `path` leads to (and ends with): false without a
+/// constructor.
 pub(crate) fn is_assigned_in_constructor<'a>(
     source: &str,
-    node: Node<'a, 'a>,
-    ancestors: &[Node<'a, 'a>],
+    members: &'a Sequence<'a, ClassLikeMember<'a>>,
+    left_brace: mago_span::Span,
+    extends: Option<&'a Extends<'a>>,
+    path: &[Node<'a, 'a>],
     name: &[u8],
 ) -> bool {
-    let (members, left_brace, extends) = match node {
-        Node::Class(c) => (&c.members, c.left_brace, c.extends.as_ref()),
-        Node::AnonymousClass(c) => (&c.members, c.left_brace, c.extends.as_ref()),
-        _ => return false,
-    };
     let Some(constructor) = method(members, b"__construct") else {
         return false;
     };
-    let mut path = ancestors.to_vec();
-    path.push(node);
     Scope {
         source,
         members,
         left_brace,
-        path: &path,
+        path,
         extends,
         constructor,
     }
