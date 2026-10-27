@@ -400,8 +400,9 @@ fn unsupported_transfers_poison_the_scope_before_children_and_never_recover_by_a
         "$value = $object->property;",
         "$object->method();",
         "Unknown::method();",
-        "$callback = fn () => $value;",
-        "$callback = function () use ($value) { return $value; };",
+        // Creation now preserves the outer holders, but native callable values remain unsupported.
+        "$callback = fn () => $value; $callback;",
+        "$callback = function () use ($value) { return $value; }; $callback;",
         "$value = $value << 1;",
         "$value = ($flag && true) ? 2 : 3;",
         "$value = missingFunction();",

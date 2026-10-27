@@ -1885,3 +1885,42 @@ Arrow-return inference remains a separate limit: `fn () => exit()` supplies expl
 never here, while PHPStan supplies nonaccepting never. A native `: never` arrow hint does not
 change that inferred result. The source-level forwarding controls therefore use a declared named
 function and a statement-body closure. This patch does not change those return-type producers.
+
+## Receiver-aware native property observations
+
+The passive native lane now enters bounded method scopes and transfers scalar/mixed and simple
+named-object parameters without consulting PHPDoc replacements. Instance property observations
+reuse `resolver/property.rs::resolve_declared_property` and the original declaration metadata.
+Full property types, declarations, diagnostics and inferred full return types are unchanged.
+
+PHPStan's native property reflection is receiver-dependent. For `ThisType`/`StaticType`,
+[`CallbackUnresolvedPropertyPrototypeReflection::transformPropertyWithStaticType()`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Reflection/Type/CallbackUnresolvedPropertyPrototypeReflection.php#L80-L101)
+reuses transformed PHPDoc metadata when it equals the native type; mixed equality ignores
+explicitness. Consequently an undocumented declared-mixed property read through `$this` or its
+copy has implicit native mixed, while an ordinary named-object receiver retains explicit native
+mixed. A real `@var mixed` or `@var int` changes this comparison; removing comments cannot model it.
+Untyped properties remain native implicit mixed even when documented. Method prototypes instead
+compare their effective return with the native return, preserving the observed documented-mixed
+method result through `$this`.
+
+Mixed offsets derive their explicitness from the native operand, never its full property type.
+Assignment copies and initial reference aliases transfer that value. Arrow and by-value closure
+captures transfer independent native holders; by-reference closure feedback transfers the shared
+full holder, matching PHPStan's observed native explicitness change. These are evaluation-only
+changes: closure metadata, lookup, overlays, callbacks and scanner machinery are not modified.
+
+The public `native_properties` regression compares 47 fresh observations from PHPStan 2.3.1 and
+Rector's PHPStan 2.2.7, including native availability, type and explicit identity, full-type equality
+with native tracking disabled, and immutable declaration metadata. Regenerate both captures with
+`tests/fixtures/explicit-mixed/oracle.php`, passing each version's bootstrap and `native-properties.php`.
+The unchanged native engine has all 47 observations unavailable.
+Seven additional dual-version observations in `native-receiver-controls.php` cover scalar native
+declarations, a constructed expression receiver, and the different native identities of a documented
+mixed method called through `$this` and an ordinary receiver.
+
+This is not a complete native engine. Native callable values remain unavailable, but creating an
+unexecuted closure preserves unaffected outer holders. Unsupported by-reference bodies invalidate
+the outer continuation. Dynamic/nullsafe members, magic/hooked or class-annotated properties, nonscalar property or
+method results, method arguments, constructors, generic/compound receiver domains and reference
+writes remain unavailable. Constructor-free named instantiation is supported. No comment-blanked
+fallback or direct-property syntax exception is used.

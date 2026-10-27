@@ -72,6 +72,7 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Closure<'arena> {
         }
 
         let mut inner_block_context = BlockContext::new(scope, context.settings.register_super_globals);
+        inner_block_context.native_locals = block_context.native_locals.as_ref().map(|_| Default::default());
 
         let mut variable_spans = HashMap::default();
         if let Some(use_clause) = self.use_clause.as_ref() {
@@ -151,6 +152,15 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Closure<'arena> {
 
                 inner_block_context.locals.insert(variable_atom, Rc::clone(&variable_type));
                 inner_block_context.variables_possibly_in_scope.insert(variable_atom);
+                let native = if is_by_reference {
+                    // PHPStan's by-reference closure feedback uses the shared full holder,
+                    // unlike a by-value capture's independent native holder.
+                    Some(Rc::clone(&variable_type))
+                } else {
+                    block_context.native_locals.as_ref().and_then(|locals| locals.get(&variable_atom)).cloned()
+                };
+                inner_block_context.native_locals = inner_block_context.native_locals.take().zip(native)
+                    .map(|(mut locals, ty)| { locals.insert(variable_atom, ty); locals });
 
                 for (variable_id, variable_type) in &block_context.locals {
                     let Some(stripped_variable_id) = variable_id.as_bytes().strip_prefix(variable_bytes) else {
@@ -220,6 +230,15 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Closure<'arena> {
             inferred_parameter_types,
         )?;
 
+        if !inner_block_context.references_to_external_scope.is_empty() {
+            block_context.native_locals = block_context.native_locals.take()
+                .zip(inner_block_context.native_locals.as_ref()).and_then(|(mut outer, inner)| {
+                    for variable in &inner_block_context.references_to_external_scope {
+                        outer.insert(*variable, inner.get(variable)?.clone());
+                    }
+                    Some(outer)
+                });
+        }
         for referenced_variable in inner_block_context.references_to_external_scope {
             let Some(inner_type) = inner_block_context.locals.remove(&referenced_variable) else {
                 continue;

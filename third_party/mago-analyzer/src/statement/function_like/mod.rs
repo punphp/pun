@@ -12,6 +12,7 @@ use mago_word::word;
 use mago_codex::context::ScopeContext;
 use mago_codex::identifier::function_like::FunctionLikeIdentifier;
 use mago_codex::metadata::class_like::ClassLikeMetadata;
+use mago_codex::metadata::function_like::FunctionLikeKind;
 use mago_codex::metadata::function_like::FunctionLikeMetadata;
 use mago_codex::metadata::parameter::FunctionLikeParameterMetadata;
 use mago_codex::metadata::ttype::TypeMetadata;
@@ -252,7 +253,17 @@ where
     }
 
     if context.settings.track_native_types && context.external_analysis_session.is_none() {
-        block_context.native_locals = crate::native::parameter_types(function_like_metadata);
+        let parameters = crate::native::parameter_types(function_like_metadata, context.codebase);
+        block_context.native_locals = if matches!(function_like_metadata.kind,
+            FunctionLikeKind::Closure | FunctionLikeKind::ArrowFunction)
+        {
+            block_context.native_locals.take().zip(parameters).map(|(mut captures, parameters)| {
+                captures.extend(parameters);
+                captures
+            })
+        } else {
+            parameters
+        };
     }
 
     add_parameter_types_to_context(
@@ -275,6 +286,9 @@ where
                 Some(function_like_metadata),
             )))),
         );
+        if let Some(native) = &mut block_context.native_locals {
+            native.insert(Word::from("$this"), block_context.locals[&Word::from("$this")].clone());
+        }
     }
 
     if let FunctionLikeBody::Statements(statements, _) = body {

@@ -745,10 +745,18 @@ pub fn analyze_assignment_to_variable<'ctx, 'arena, A>(
         } else {
             source_expression.and_then(|source| artifacts.get_rc_native_expression_type(source).cloned())
         };
-        block_context.native_locals = block_context.native_locals.take().zip(native).map(|(mut locals, native)| {
-            locals.insert(variable_id, native);
-            locals
-        });
+        if !from_docblock && source_expression.is_some_and(|source|
+            matches!(source, Expression::Closure(_) | Expression::ArrowFunction(_)))
+        {
+            // Creating a closure does not execute its body. Its native callable value remains
+            // unavailable, while unaffected outer holders survive the separate capture transfer.
+            block_context.native_locals.as_mut().unwrap().remove(&variable_id);
+        } else {
+            block_context.native_locals = block_context.native_locals.take().zip(native).map(|(mut locals, native)| {
+                locals.insert(variable_id, native);
+                locals
+            });
+        }
     }
 
     block_context.invalidate_variable_certainty(variable_id);

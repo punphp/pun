@@ -3,13 +3,16 @@
 use std::cmp::Ordering;
 use std::rc::Rc;
 
+use mago_allocator::Arena;
 use mago_codex::metadata::CodebaseMetadata;
 use mago_codex::metadata::function_like::{FunctionLikeKind, FunctionLikeMetadata};
 use mago_codex::ttype::atomic::TAtomic;
+use mago_codex::ttype::atomic::object::{TObject, named::TNamedObject};
 use mago_codex::ttype::atomic::scalar::string::TStringCasing;
 use mago_codex::ttype::atomic::scalar::{TScalar, float::TFloat, int::TInteger, string::TString};
 use mago_codex::ttype::combine_union_types;
 use mago_codex::ttype::combiner::CombinerOptions;
+use mago_codex::ttype::expander::{TypeExpansionOptions, expand_union};
 use mago_codex::ttype::union::TUnion;
 use mago_codex::ttype::{
     get_bool, get_false, get_float, get_int, get_int_or_float, get_int_range, get_literal_float,
@@ -17,14 +20,16 @@ use mago_codex::ttype::{
     get_true, wrap_atomic,
 };
 use mago_syntax::cst::{
-    AssignmentOperator, Binary, BinaryOperator, Call, Expression, Literal, Statement, UnaryPrefix,
-    UnaryPrefixOperator, Variable,
+    Access, AssignmentOperator, Binary, BinaryOperator, Call, ClassLikeMemberSelector, Expression,
+    Literal, Statement, UnaryPrefix, UnaryPrefixOperator, Variable,
 };
 use mago_word::WordMap;
 use mago_word::word;
 
 use crate::artifacts::AnalysisArtifacts;
+use crate::context::Context;
 use crate::context::block::BlockContext;
+use crate::resolver::property::resolve_declared_property;
 use crate::utils::php_emulation::string_to_int;
 
 pub(crate) fn scalar_type(ty: &TUnion) -> bool {
@@ -37,8 +42,7 @@ pub(crate) fn scalar_type(ty: &TUnion) -> bool {
 }
 
 fn supported_function(function: &FunctionLikeMetadata) -> bool {
-    matches!(function.kind, FunctionLikeKind::Function)
-        && function.flags.is_user_defined()
+    function.flags.is_user_defined()
         && !function.flags.is_by_reference()
         && !function.flags.has_yield()
         && function.assertions.is_empty()
@@ -49,31 +53,39 @@ fn supported_function(function: &FunctionLikeMetadata) -> bool {
             !parameter.flags.is_by_reference()
                 && !parameter.flags.is_variadic()
                 && parameter.out_type.is_none()
-                && parameter
-                    .type_declaration_metadata
-                    .as_ref()
-                    .is_none_or(|ty| scalar_type(&ty.type_union))
         })
 }
 
-pub(crate) fn parameter_types(function: &FunctionLikeMetadata) -> Option<WordMap<Rc<TUnion>>> {
-    supported_function(function).then(|| {
-        function
-            .parameters
-            .iter()
-            .map(|parameter| {
-                let ty = parameter
-                    .type_declaration_metadata
-                    .as_ref()
-                    .map_or_else(get_mixed, |ty| ty.type_union.clone());
-                (parameter.name.0, Rc::new(ty))
-            })
-            .collect()
-    })
+fn named_object(ty: &TUnion) -> Option<&TNamedObject> {
+    match ty.types.as_ref() {
+        [TAtomic::Object(TObject::Named(object))]
+            if object.type_parameters.is_none() && object.intersection_types.is_none() => Some(object),
+        _ => None,
+    }
+}
+
+pub(crate) fn parameter_types(
+    function: &FunctionLikeMetadata,
+    codebase: &CodebaseMetadata,
+) -> Option<WordMap<Rc<TUnion>>> {
+    if !supported_function(function) {
+        return None;
+    }
+    function.parameters.iter().map(|parameter| {
+        let mut ty = parameter.type_declaration_metadata.as_ref()
+            .map_or_else(get_mixed, |ty| ty.type_union.clone());
+        expand_union(codebase, &mut ty, &TypeExpansionOptions::default());
+        (scalar_type(&ty) || named_object(&ty).is_some())
+            .then(|| (parameter.name.0, Rc::new(ty)))
+    }).collect()
 }
 
 pub(crate) fn function_return_type(function: &FunctionLikeMetadata) -> Option<TUnion> {
-    if !supported_function(function) {
+    if !matches!(function.kind, FunctionLikeKind::Function)
+        || !supported_function(function)
+        || function.parameters.iter().any(|parameter| parameter.type_declaration_metadata.as_ref()
+            .is_some_and(|ty| !scalar_type(&ty.type_union)))
+    {
         return None;
     }
     let ty = function
@@ -128,6 +140,7 @@ pub(crate) fn before_expression(expression: &Expression<'_>, block: &mut BlockCo
                     UnaryPrefixOperator::Plus(_)
                         | UnaryPrefixOperator::Negation(_)
                         | UnaryPrefixOperator::Not(_)
+                        | UnaryPrefixOperator::Reference(_)
                 )
         }
         Expression::Binary(binary) => {
@@ -140,8 +153,16 @@ pub(crate) fn before_expression(expression: &Expression<'_>, block: &mut BlockCo
         Expression::Assignment(assignment) => {
             matches!(assignment.operator, AssignmentOperator::Assign(_))
                 && matches!(assignment.lhs, Expression::Variable(Variable::Direct(variable))
-                    if variable.name != b"$this" && variable.name != b"$GLOBALS" && !variable.name.starts_with(b"$_"))
+                    if variable.name != b"$this" && variable.name != b"$GLOBALS" && !variable.name.starts_with(b"$_")
+                        && !block.references_in_scope.contains_key(&word(variable.name))
+                        && !block.referenced_counts.contains_key(&word(variable.name))
+                        && !block.references_to_external_scope.contains(&word(variable.name)))
         }
+        Expression::Access(Access::Property(property)) => property.property.is_identifier(),
+        Expression::ArrayAccess(_) | Expression::Closure(_) | Expression::ArrowFunction(_) => true,
+        Expression::Instantiation(new) => matches!(new.class, Expression::Identifier(_))
+            && new.argument_list.as_ref().is_none_or(|arguments| arguments.arguments.is_empty()),
+        Expression::Call(Call::Method(call)) => call.method.is_identifier() && call.argument_list.arguments.is_empty(),
         Expression::Conditional(conditional) => condition_shape(conditional.condition, true),
         // The resolved target is checked before arguments in function_call.rs.
         Expression::Call(Call::Function(call)) => {
@@ -154,14 +175,19 @@ pub(crate) fn before_expression(expression: &Expression<'_>, block: &mut BlockCo
     }
 }
 
-pub(crate) fn after_expression(
+pub(crate) fn after_expression<A: Arena>(
     expression: &Expression<'_>,
+    context: &Context<'_, '_, A>,
     block: &mut BlockContext<'_>,
     artifacts: &mut AnalysisArtifacts,
 ) {
     // A ternary value can be unavailable while its full-selected continuation is supported.
     // The conditional analyzer owns both transfers independently.
-    if matches!(expression, Expression::Conditional(_)) {
+    if matches!(expression, Expression::Conditional(_) | Expression::Closure(_) | Expression::ArrowFunction(_))
+        || matches!(expression, Expression::Assignment(assignment)
+            if matches!(assignment.rhs, Expression::Closure(_) | Expression::ArrowFunction(_)))
+    {
+        // Closure body observations and capture transfers are supported, not native callable signatures.
         return;
     }
     let Some(locals) = &block.native_locals else {
@@ -182,6 +208,32 @@ pub(crate) fn after_expression(
             .cloned(),
         Expression::UnaryPrefix(unary) => unary_type(unary, artifacts).map(Rc::new),
         Expression::Binary(binary) => binary_type(binary, artifacts).map(Rc::new),
+        Expression::Access(Access::Property(property)) => {
+            property_type(property.object, &property.property, context, block, artifacts).map(Rc::new)
+        }
+        Expression::ArrayAccess(access) => {
+            let ty = artifacts.get_native_expression_type(access.array);
+            let index = artifacts.get_native_expression_type(access.index);
+            match (ty.map(|ty| ty.types.as_ref()), index) {
+                (Some([TAtomic::Mixed(mixed)]), Some(index))
+                    if index.is_int() || index.is_string() => Some(Rc::new(
+                        wrap_atomic(TAtomic::Mixed(mago_codex::ttype::atomic::mixed::TMixed::new()
+                            .with_is_explicit(mixed.is_explicit()))),
+                    )),
+                _ => None,
+            }
+        }
+        Expression::Call(Call::Method(call)) => {
+            method_type(call.object, &call.method, context, block, artifacts).map(Rc::new)
+        }
+        Expression::Instantiation(new) => {
+            let Expression::Identifier(identifier) = new.class else { return };
+            let name = word(context.resolved_names.get(identifier));
+            let class = context.codebase.get_class_like_by_name(name);
+            class.filter(|class| class.kind.is_class() && class.template_types.is_empty()
+                && context.codebase.get_declaring_method(name.as_bytes(), b"__construct").is_none())
+                .map(|_| Rc::new(wrap_atomic(TAtomic::Object(TObject::Named(TNamedObject::new(name))))))
+        }
         _ => artifacts.get_rc_native_expression_type(expression).cloned(),
     };
     if let Some(ty) = ty {
@@ -189,6 +241,57 @@ pub(crate) fn after_expression(
     } else {
         block.native_locals = None;
     }
+}
+
+// A memoized full property read need not visit its receiver again. Read only the native holder
+// for a direct/parenthesized local in that case, never the full memoized expression type.
+fn receiver_type<'a>(expression: &Expression<'_>, block: &'a BlockContext<'_>, artifacts: &'a AnalysisArtifacts) -> Option<&'a TUnion> {
+    direct_local(expression).and_then(|name| block.native_locals.as_ref()?.get(&word(name)).map(Rc::as_ref))
+        .or_else(|| artifacts.get_native_expression_type(expression))
+}
+
+fn property_type<A: Arena>(
+    receiver: &Expression<'_>, selector: &ClassLikeMemberSelector<'_>,
+    context: &Context<'_, '_, A>, block: &BlockContext<'_>, artifacts: &AnalysisArtifacts,
+) -> Option<TUnion> {
+    let receiver = receiver_type(receiver, block, artifacts)?;
+    if receiver.is_mixed() {
+        return Some(get_mixed());
+    }
+    let object = named_object(receiver)?;
+    let ClassLikeMemberSelector::Identifier(name) = selector else { return None };
+    let class = context.codebase.get_class_like_by_name(object.name)?;
+    let declaration = resolve_declared_property(context.codebase, class,
+        mago_word::concat_word!(b"$", name.value), true, block.scope.get_class_like_name())?;
+    let ty = declaration.native_type(object)?;
+    scalar_type(&ty).then_some(ty)
+}
+
+fn method_type<A: Arena>(
+    receiver: &Expression<'_>, selector: &ClassLikeMemberSelector<'_>,
+    context: &Context<'_, '_, A>, block: &BlockContext<'_>, artifacts: &AnalysisArtifacts,
+) -> Option<TUnion> {
+    let receiver = receiver_type(receiver, block, artifacts)?;
+    if receiver.is_mixed() {
+        return Some(get_mixed());
+    }
+    let object = named_object(receiver)?;
+    let ClassLikeMemberSelector::Identifier(name) = selector else { return None };
+    let method = context.codebase.get_declaring_method(object.name.as_bytes(), name.value)?;
+    if !supported_function(method) || !method.parameters.is_empty() {
+        return None;
+    }
+    let mut ty = method.return_type_declaration_metadata.as_ref()
+        .map_or_else(get_mixed, |metadata| metadata.type_union.clone());
+    // CallbackUnresolvedMethodPrototypeReflection reuses the transformed effective return
+    // when it equals the native return; MixedType::equals intentionally ignores explicitness.
+    if object.is_static && ty.is_mixed()
+        && let Some(full) = &method.return_type_metadata
+        && full.type_union.is_mixed()
+    {
+        ty = full.type_union.clone();
+    }
+    scalar_type(&ty).then_some(ty)
 }
 
 pub(crate) type Locals = WordMap<Rc<TUnion>>;
@@ -640,6 +743,9 @@ fn boolean(value: Option<bool>) -> TUnion {
 
 fn unary_type(unary: &UnaryPrefix<'_>, artifacts: &AnalysisArtifacts) -> Option<TUnion> {
     let ty = artifacts.get_native_expression_type(unary.operand)?;
+    if matches!(unary.operator, UnaryPrefixOperator::Reference(_)) {
+        return Some(ty.clone());
+    }
     if let Some(cast) = scalar_cast(&unary.operator) {
         return cast_type(cast, ty);
     }

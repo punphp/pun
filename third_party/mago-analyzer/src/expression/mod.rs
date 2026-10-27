@@ -255,7 +255,7 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Expression<'arena> {
 
         result?;
 
-        crate::native::after_expression(self, block_context, artifacts);
+        crate::native::after_expression(self, context, block_context, artifacts);
 
         if context.plugin_registry.has_expression_hooks() {
             let previous_type = artifacts.get_rc_expression_type(self).cloned();

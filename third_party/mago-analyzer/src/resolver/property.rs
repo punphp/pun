@@ -633,6 +633,26 @@ impl DeclaredProperty<'_> {
         matches!(self.kind, DeclaredPropertyKind::Magic)
     }
 
+    /// Native reflection of a real, unhooked property. StaticType's callback prototype
+    /// reuses the transformed PHPDoc type when MixedType::equals(native) succeeds; that
+    /// equality ignores explicitness. An absent PHPDoc is implicit mixed, not erased text.
+    pub(crate) fn native_type(&self, receiver: &TNamedObject) -> Option<TUnion> {
+        if !matches!(self.kind, DeclaredPropertyKind::Real { annotation: None })
+            || self.property.flags.is_static() || !self.property.hooks.is_empty()
+        {
+            return None;
+        }
+        let Some(native) = &self.property.type_declaration_metadata else {
+            return Some(get_mixed());
+        };
+        if receiver.is_static && native.type_union.is_mixed()
+            && self.property.type_metadata.as_ref().is_none_or(|ty| !ty.from_docblock)
+        {
+            return Some(get_mixed());
+        }
+        Some(native.type_union.clone())
+    }
+
     /// The type the governing declaration gives the property: for a real declaration whose
     /// annotation narrows the declared type (a wide inherited `public $db` narrowed by
     /// `@property` on a subclass), the annotation's type; otherwise the declared type, or

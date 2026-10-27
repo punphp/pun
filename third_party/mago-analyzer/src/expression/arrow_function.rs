@@ -58,6 +58,7 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for ArrowFunction<'arena> {
         }
 
         let mut inner_block_context = BlockContext::new(scope, context.settings.register_super_globals);
+        inner_block_context.native_locals = block_context.native_locals.as_ref().map(|_| Default::default());
 
         let variables = get_variables_referenced_in_expression(self.expression, true);
         let params = self.parameter_list.parameters.iter().map(|param| param.variable.name).collect::<HashSet<_>>();
@@ -79,6 +80,9 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for ArrowFunction<'arena> {
                 inner_block_context.locals.insert(variable_atom, existing_type);
             }
 
+            inner_block_context.native_locals = inner_block_context.native_locals.take()
+                .zip(block_context.native_locals.as_ref().and_then(|locals| locals.get(&variable_atom)))
+                .map(|(mut locals, ty)| { locals.insert(variable_atom, ty.clone()); locals });
             inner_block_context.variables_possibly_in_scope.insert(variable_atom);
         }
 

@@ -1,0 +1,568 @@
+{
+    "native-properties.php": {
+        "690": {
+            "line": 28,
+            "expression": "$this->prop",
+            "full": {
+                "type": "mixed",
+                "explicit": true
+            },
+            "native": {
+                "type": "mixed",
+                "explicit": false
+            }
+        },
+        "737": {
+            "line": 29,
+            "expression": "($this)->prop",
+            "full": {
+                "type": "mixed",
+                "explicit": true
+            },
+            "native": {
+                "type": "mixed",
+                "explicit": false
+            }
+        },
+        "793": {
+            "line": 30,
+            "expression": "$this->inherited",
+            "full": {
+                "type": "mixed",
+                "explicit": true
+            },
+            "native": {
+                "type": "mixed",
+                "explicit": false
+            }
+        },
+        "848": {
+            "line": 31,
+            "expression": "$this->documentedMixed",
+            "full": {
+                "type": "mixed",
+                "explicit": true
+            },
+            "native": {
+                "type": "mixed",
+                "explicit": true
+            }
+        },
+        "919": {
+            "line": 32,
+            "expression": "$this->documentedInt",
+            "full": {
+                "type": "int",
+                "explicit": null
+            },
+            "native": {
+                "type": "mixed",
+                "explicit": true
+            }
+        },
+        "990": {
+            "line": 33,
+            "expression": "$this->documentedOnly",
+            "full": {
+                "type": "mixed",
+                "explicit": true
+            },
+            "native": {
+                "type": "mixed",
+                "explicit": false
+            }
+        },
+        "1062": {
+            "line": 34,
+            "expression": "$this->untyped",
+            "full": {
+                "type": "mixed",
+                "explicit": false
+            },
+            "native": {
+                "type": "mixed",
+                "explicit": false
+            }
+        },
+        "1113": {
+            "line": 35,
+            "expression": "$this->prop['key']",
+            "full": {
+                "type": "mixed",
+                "explicit": true
+            },
+            "native": {
+                "type": "mixed",
+                "explicit": false
+            }
+        },
+        "1167": {
+            "line": 36,
+            "expression": "$this->prop['key']['nested']",
+            "full": {
+                "type": "mixed",
+                "explicit": true
+            },
+            "native": {
+                "type": "mixed",
+                "explicit": false
+            }
+        },
+        "1238": {
+            "line": 37,
+            "expression": "$object->prop",
+            "full": {
+                "type": "mixed",
+                "explicit": true
+            },
+            "native": {
+                "type": "mixed",
+                "explicit": true
+            }
+        },
+        "1289": {
+            "line": 38,
+            "expression": "$object->prop['key']",
+            "full": {
+                "type": "mixed",
+                "explicit": true
+            },
+            "native": {
+                "type": "mixed",
+                "explicit": true
+            }
+        },
+        "1381": {
+            "line": 40,
+            "expression": "$receiver->prop",
+            "full": {
+                "type": "mixed",
+                "explicit": true
+            },
+            "native": {
+                "type": "mixed",
+                "explicit": false
+            }
+        },
+        "1480": {
+            "line": 42,
+            "expression": "$newObject->prop",
+            "full": {
+                "type": "mixed",
+                "explicit": true
+            },
+            "native": {
+                "type": "mixed",
+                "explicit": true
+            }
+        },
+        "1566": {
+            "line": 44,
+            "expression": "$copy",
+            "full": {
+                "type": "mixed",
+                "explicit": true
+            },
+            "native": {
+                "type": "mixed",
+                "explicit": false
+            }
+        },
+        "1605": {
+            "line": 45,
+            "expression": "$copy['key']",
+            "full": {
+                "type": "mixed",
+                "explicit": true
+            },
+            "native": {
+                "type": "mixed",
+                "explicit": false
+            }
+        },
+        "1682": {
+            "line": 47,
+            "expression": "$alias",
+            "full": {
+                "type": "mixed",
+                "explicit": true
+            },
+            "native": {
+                "type": "mixed",
+                "explicit": false
+            }
+        },
+        "1723": {
+            "line": 48,
+            "expression": "$alias['key']",
+            "full": {
+                "type": "mixed",
+                "explicit": true
+            },
+            "native": {
+                "type": "mixed",
+                "explicit": false
+            }
+        },
+        "1810": {
+            "line": 50,
+            "expression": "$newAlias",
+            "full": {
+                "type": "mixed",
+                "explicit": true
+            },
+            "native": {
+                "type": "mixed",
+                "explicit": true
+            }
+        },
+        "1863": {
+            "line": 51,
+            "expression": "$explicit",
+            "full": {
+                "type": "mixed",
+                "explicit": true
+            },
+            "native": {
+                "type": "mixed",
+                "explicit": true
+            }
+        },
+        "1911": {
+            "line": 52,
+            "expression": "$implicit",
+            "full": {
+                "type": "mixed",
+                "explicit": false
+            },
+            "native": {
+                "type": "mixed",
+                "explicit": false
+            }
+        },
+        "1959": {
+            "line": 53,
+            "expression": "$explicit['key']",
+            "full": {
+                "type": "mixed",
+                "explicit": true
+            },
+            "native": {
+                "type": "mixed",
+                "explicit": true
+            }
+        },
+        "2011": {
+            "line": 54,
+            "expression": "$implicit['key']",
+            "full": {
+                "type": "mixed",
+                "explicit": false
+            },
+            "native": {
+                "type": "mixed",
+                "explicit": false
+            }
+        },
+        "2100": {
+            "line": 56,
+            "expression": "$explicitAlias",
+            "full": {
+                "type": "mixed",
+                "explicit": true
+            },
+            "native": {
+                "type": "mixed",
+                "explicit": true
+            }
+        },
+        "2159": {
+            "line": 57,
+            "expression": "$this->declaredReturn()",
+            "full": {
+                "type": "mixed",
+                "explicit": true
+            },
+            "native": {
+                "type": "mixed",
+                "explicit": true
+            }
+        },
+        "2225": {
+            "line": 58,
+            "expression": "$this->inheritedReturn()",
+            "full": {
+                "type": "mixed",
+                "explicit": true
+            },
+            "native": {
+                "type": "mixed",
+                "explicit": true
+            }
+        },
+        "2293": {
+            "line": 59,
+            "expression": "$this->untypedReturn()",
+            "full": {
+                "type": "mixed",
+                "explicit": false
+            },
+            "native": {
+                "type": "mixed",
+                "explicit": false
+            }
+        },
+        "2357": {
+            "line": 60,
+            "expression": "$this->documentedReturn()",
+            "full": {
+                "type": "mixed",
+                "explicit": true
+            },
+            "native": {
+                "type": "mixed",
+                "explicit": true
+            }
+        },
+        "2474": {
+            "line": 62,
+            "expression": "$methodCopy",
+            "full": {
+                "type": "mixed",
+                "explicit": true
+            },
+            "native": {
+                "type": "mixed",
+                "explicit": true
+            }
+        },
+        "2648": {
+            "line": 68,
+            "expression": "$this->prop",
+            "full": {
+                "type": "mixed",
+                "explicit": true
+            },
+            "native": {
+                "type": "mixed",
+                "explicit": false
+            }
+        },
+        "2688": {
+            "line": 69,
+            "expression": "$this->prop['key']",
+            "full": {
+                "type": "mixed",
+                "explicit": true
+            },
+            "native": {
+                "type": "mixed",
+                "explicit": false
+            }
+        },
+        "2735": {
+            "line": 70,
+            "expression": "$copy",
+            "full": {
+                "type": "mixed",
+                "explicit": true
+            },
+            "native": {
+                "type": "mixed",
+                "explicit": false
+            }
+        },
+        "2775": {
+            "line": 71,
+            "expression": "$copy['key']",
+            "full": {
+                "type": "mixed",
+                "explicit": true
+            },
+            "native": {
+                "type": "mixed",
+                "explicit": false
+            }
+        },
+        "2846": {
+            "line": 73,
+            "expression": "$copy",
+            "full": {
+                "type": "mixed",
+                "explicit": true
+            },
+            "native": {
+                "type": "mixed",
+                "explicit": false
+            }
+        },
+        "2915": {
+            "line": 74,
+            "expression": "$copy",
+            "full": {
+                "type": "mixed",
+                "explicit": true
+            },
+            "native": {
+                "type": "mixed",
+                "explicit": false
+            }
+        },
+        "2941": {
+            "line": 76,
+            "expression": "$copy",
+            "full": {
+                "type": "mixed",
+                "explicit": true
+            },
+            "native": {
+                "type": "mixed",
+                "explicit": false
+            }
+        },
+        "3040": {
+            "line": 78,
+            "expression": "$copy",
+            "full": {
+                "type": "mixed",
+                "explicit": true
+            },
+            "native": {
+                "type": "mixed",
+                "explicit": true
+            }
+        },
+        "3113": {
+            "line": 79,
+            "expression": "$copy",
+            "full": {
+                "type": "mixed",
+                "explicit": true
+            },
+            "native": {
+                "type": "mixed",
+                "explicit": true
+            }
+        },
+        "3139": {
+            "line": 81,
+            "expression": "$copy",
+            "full": {
+                "type": "mixed",
+                "explicit": true
+            },
+            "native": {
+                "type": "mixed",
+                "explicit": true
+            }
+        },
+        "3188": {
+            "line": 82,
+            "expression": "$this->prop",
+            "full": {
+                "type": "mixed",
+                "explicit": true
+            },
+            "native": {
+                "type": "mixed",
+                "explicit": false
+            }
+        },
+        "3327": {
+            "line": 84,
+            "expression": "$methodCopy",
+            "full": {
+                "type": "mixed",
+                "explicit": true
+            },
+            "native": {
+                "type": "mixed",
+                "explicit": true
+            }
+        },
+        "3370": {
+            "line": 85,
+            "expression": "$explicit",
+            "full": {
+                "type": "mixed",
+                "explicit": true
+            },
+            "native": {
+                "type": "mixed",
+                "explicit": true
+            }
+        },
+        "3409": {
+            "line": 86,
+            "expression": "$implicit",
+            "full": {
+                "type": "mixed",
+                "explicit": false
+            },
+            "native": {
+                "type": "mixed",
+                "explicit": false
+            }
+        },
+        "3490": {
+            "line": 88,
+            "expression": "$explicit",
+            "full": {
+                "type": "mixed",
+                "explicit": true
+            },
+            "native": {
+                "type": "mixed",
+                "explicit": true
+            }
+        },
+        "3546": {
+            "line": 89,
+            "expression": "$implicit",
+            "full": {
+                "type": "mixed",
+                "explicit": false
+            },
+            "native": {
+                "type": "mixed",
+                "explicit": false
+            }
+        },
+        "3665": {
+            "line": 92,
+            "expression": "$implicit",
+            "full": {
+                "type": "mixed",
+                "explicit": false
+            },
+            "native": {
+                "type": "mixed",
+                "explicit": false
+            }
+        },
+        "3804": {
+            "line": 98,
+            "expression": "$receiver->unknown",
+            "full": {
+                "type": "mixed",
+                "explicit": false
+            },
+            "native": {
+                "type": "mixed",
+                "explicit": false
+            }
+        },
+        "3929": {
+            "line": 103,
+            "expression": "$receiver->unknown()",
+            "full": {
+                "type": "mixed",
+                "explicit": false
+            },
+            "native": {
+                "type": "mixed",
+                "explicit": false
+            }
+        }
+    }
+}
