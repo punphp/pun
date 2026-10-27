@@ -1791,7 +1791,7 @@
         "rules": [
           "lint/phpunit/prefer-new-assertion-names"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -1801,7 +1801,7 @@
         "rules": [
           "lint/phpunit/prefer-attributes"
         ],
-        "note": "Same. Options: renamed for TOML: [options.\"lint/phpunit/prefer-attributes\"]. Planned: not ported yet.",
+        "note": "Same. Options: renamed for TOML: [options.\"lint/phpunit/prefer-attributes\"].",
         "unsupported": false
       },
       {
@@ -1811,7 +1811,7 @@
         "rules": [
           "lint/phpunit/prefer-specific-assertions"
         ],
-        "note": "Same. Options: renamed for TOML: [options.\"lint/phpunit/prefer-specific-assertions\"]. Planned: not ported yet.",
+        "note": "Same. Options: renamed for TOML: [options.\"lint/phpunit/prefer-specific-assertions\"].",
         "unsupported": false
       },
       {
@@ -1821,7 +1821,7 @@
         "rules": [
           "lint/phpunit/require-data-provider-order"
         ],
-        "note": "Same. Options: renamed for TOML: [options.\"lint/phpunit/require-data-provider-order\"]. Planned: not ported yet.",
+        "note": "Same. Options: renamed for TOML: [options.\"lint/phpunit/require-data-provider-order\"].",
         "unsupported": false
       },
       {
@@ -1831,7 +1831,7 @@
         "rules": [
           "lint/phpunit/require-data-provider-naming"
         ],
-        "note": "Same. Options: renamed for TOML: [options.\"lint/phpunit/require-data-provider-naming\"]. Planned: not ported yet.",
+        "note": "Same. Options: renamed for TOML: [options.\"lint/phpunit/require-data-provider-naming\"].",
         "unsupported": false
       },
       {
@@ -1841,7 +1841,7 @@
         "rules": [
           "lint/phpunit/require-iterable-data-provider"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -1851,7 +1851,7 @@
         "rules": [
           "lint/phpunit/require-static-data-provider"
         ],
-        "note": "Same. Options: renamed for TOML: [options.\"lint/phpunit/require-static-data-provider\"]. Planned: not ported yet.",
+        "note": "Same. Options: renamed for TOML: [options.\"lint/phpunit/require-static-data-provider\"].",
         "unsupported": false
       },
       {
@@ -1861,7 +1861,7 @@
         "rules": [
           "lint/phpunit/prefer-dedicated-assertion"
         ],
-        "note": "Same. Options: renamed for TOML: [options.\"lint/phpunit/prefer-dedicated-assertion\"]. Planned: not ported yet.",
+        "note": "Same. Options: renamed for TOML: [options.\"lint/phpunit/prefer-dedicated-assertion\"].",
         "unsupported": false
       },
       {
@@ -1871,7 +1871,7 @@
         "rules": [
           "lint/phpunit/no-assert-internal-type"
         ],
-        "note": "Same. Options: renamed for TOML: [options.\"lint/phpunit/no-assert-internal-type\"]. Planned: not ported yet.",
+        "note": "Same. Options: renamed for TOML: [options.\"lint/phpunit/no-assert-internal-type\"].",
         "unsupported": false
       },
       {
@@ -1881,7 +1881,7 @@
         "rules": [
           "lint/phpunit/prefer-expect-exception"
         ],
-        "note": "Same. Options: renamed for TOML: [options.\"lint/phpunit/prefer-expect-exception\"]. Planned: not ported yet.",
+        "note": "Same. Options: renamed for TOML: [options.\"lint/phpunit/prefer-expect-exception\"].",
         "unsupported": false
       },
       {
@@ -1901,7 +1901,7 @@
         "rules": [
           "lint/phpunit/require-internal"
         ],
-        "note": "Same. Options: renamed for TOML: [options.\"lint/phpunit/require-internal\"]. Planned: not ported yet.",
+        "note": "Same. Options: renamed for TOML: [options.\"lint/phpunit/require-internal\"].",
         "unsupported": false
       },
       {
@@ -1921,7 +1921,7 @@
         "rules": [
           "lint/phpunit/prefer-create-mock"
         ],
-        "note": "Same. Options: renamed for TOML: [options.\"lint/phpunit/prefer-create-mock\"]. Planned: not ported yet.",
+        "note": "Same. Options: renamed for TOML: [options.\"lint/phpunit/prefer-create-mock\"].",
         "unsupported": false
       },
       {
@@ -1931,7 +1931,7 @@
         "rules": [
           "lint/phpunit/prefer-short-will-return"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -1941,7 +1941,7 @@
         "rules": [
           "lint/phpunit/prefer-namespaced"
         ],
-        "note": "Same. Options: renamed for TOML: [options.\"lint/phpunit/prefer-namespaced\"]. Planned: not ported yet.",
+        "note": "Same. Options: renamed for TOML: [options.\"lint/phpunit/prefer-namespaced\"].",
         "unsupported": false
       },
       {
@@ -1951,7 +1951,7 @@
         "rules": [
           "lint/phpunit/no-expected-exception-annotation"
         ],
-        "note": "Same. Options: renamed for TOML: [options.\"lint/phpunit/no-expected-exception-annotation\"]. Planned: not ported yet.",
+        "note": "Same. Options: renamed for TOML: [options.\"lint/phpunit/no-expected-exception-annotation\"].",
         "unsupported": false
       },
       {
@@ -1971,7 +1971,7 @@
         "rules": [
           "lint/phpunit/require-size"
         ],
-        "note": "Same. Options: renamed for TOML: [options.\"lint/phpunit/require-size\"]. Planned: not ported yet.",
+        "note": "Same. Options: renamed for TOML: [options.\"lint/phpunit/require-size\"].",
         "unsupported": false
       },
       {
@@ -1981,7 +1981,7 @@
         "rules": [
           "lint/phpunit/prefer-assert-same"
         ],
-        "note": "Same. Options: renamed for TOML: [options.\"lint/phpunit/prefer-assert-same\"]. Planned: not ported yet.",
+        "note": "Same. Options: renamed for TOML: [options.\"lint/phpunit/prefer-assert-same\"].",
         "unsupported": false
       },
       {
@@ -1991,7 +1991,7 @@
         "rules": [
           "lint/phpunit/require-test-annotation-style"
         ],
-        "note": "Same. Options: renamed for TOML: [options.\"lint/phpunit/require-test-annotation-style\"]. Planned: not ported yet.",
+        "note": "Same. Options: renamed for TOML: [options.\"lint/phpunit/require-test-annotation-style\"].",
         "unsupported": false
       },
       {
@@ -2001,7 +2001,7 @@
         "rules": [
           "lint/phpunit/require-assertion-style"
         ],
-        "note": "Same. Options: renamed for TOML: [options.\"lint/phpunit/require-assertion-style\"]. Planned: not ported yet.",
+        "note": "Same. Options: renamed for TOML: [options.\"lint/phpunit/require-assertion-style\"].",
         "unsupported": false
       },
       {
@@ -2011,7 +2011,7 @@
         "rules": [
           "lint/phpunit/require-covers"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -4777,7 +4777,7 @@
         "rules": [
           "lint/phpunit/prefer-new-assertion-names"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -4787,7 +4787,7 @@
         "rules": [
           "lint/phpunit/prefer-attributes"
         ],
-        "note": "Same. Options: renamed for TOML: [options.\"lint/phpunit/prefer-attributes\"]. Planned: not ported yet.",
+        "note": "Same. Options: renamed for TOML: [options.\"lint/phpunit/prefer-attributes\"].",
         "unsupported": false
       },
       {
@@ -4797,7 +4797,7 @@
         "rules": [
           "lint/phpunit/prefer-specific-assertions"
         ],
-        "note": "Same. Options: renamed for TOML: [options.\"lint/phpunit/prefer-specific-assertions\"]. Planned: not ported yet.",
+        "note": "Same. Options: renamed for TOML: [options.\"lint/phpunit/prefer-specific-assertions\"].",
         "unsupported": false
       },
       {
@@ -4807,7 +4807,7 @@
         "rules": [
           "lint/phpunit/require-data-provider-order"
         ],
-        "note": "Same. Options: renamed for TOML: [options.\"lint/phpunit/require-data-provider-order\"]. Planned: not ported yet.",
+        "note": "Same. Options: renamed for TOML: [options.\"lint/phpunit/require-data-provider-order\"].",
         "unsupported": false
       },
       {
@@ -4817,7 +4817,7 @@
         "rules": [
           "lint/phpunit/require-data-provider-naming"
         ],
-        "note": "Same. Options: renamed for TOML: [options.\"lint/phpunit/require-data-provider-naming\"]. Planned: not ported yet.",
+        "note": "Same. Options: renamed for TOML: [options.\"lint/phpunit/require-data-provider-naming\"].",
         "unsupported": false
       },
       {
@@ -4827,7 +4827,7 @@
         "rules": [
           "lint/phpunit/require-iterable-data-provider"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -4837,7 +4837,7 @@
         "rules": [
           "lint/phpunit/require-static-data-provider"
         ],
-        "note": "Same. Options: renamed for TOML: [options.\"lint/phpunit/require-static-data-provider\"]. Planned: not ported yet.",
+        "note": "Same. Options: renamed for TOML: [options.\"lint/phpunit/require-static-data-provider\"].",
         "unsupported": false
       },
       {
@@ -4847,7 +4847,7 @@
         "rules": [
           "lint/phpunit/prefer-dedicated-assertion"
         ],
-        "note": "Same. Options: renamed for TOML: [options.\"lint/phpunit/prefer-dedicated-assertion\"]. Planned: not ported yet.",
+        "note": "Same. Options: renamed for TOML: [options.\"lint/phpunit/prefer-dedicated-assertion\"].",
         "unsupported": false
       },
       {
@@ -4857,7 +4857,7 @@
         "rules": [
           "lint/phpunit/no-assert-internal-type"
         ],
-        "note": "Same. Options: renamed for TOML: [options.\"lint/phpunit/no-assert-internal-type\"]. Planned: not ported yet.",
+        "note": "Same. Options: renamed for TOML: [options.\"lint/phpunit/no-assert-internal-type\"].",
         "unsupported": false
       },
       {
@@ -4867,7 +4867,7 @@
         "rules": [
           "lint/phpunit/prefer-expect-exception"
         ],
-        "note": "Same. Options: renamed for TOML: [options.\"lint/phpunit/prefer-expect-exception\"]. Planned: not ported yet.",
+        "note": "Same. Options: renamed for TOML: [options.\"lint/phpunit/prefer-expect-exception\"].",
         "unsupported": false
       },
       {
@@ -4887,7 +4887,7 @@
         "rules": [
           "lint/phpunit/require-internal"
         ],
-        "note": "Same. Options: renamed for TOML: [options.\"lint/phpunit/require-internal\"]. Planned: not ported yet.",
+        "note": "Same. Options: renamed for TOML: [options.\"lint/phpunit/require-internal\"].",
         "unsupported": false
       },
       {
@@ -4907,7 +4907,7 @@
         "rules": [
           "lint/phpunit/prefer-create-mock"
         ],
-        "note": "Same. Options: renamed for TOML: [options.\"lint/phpunit/prefer-create-mock\"]. Planned: not ported yet.",
+        "note": "Same. Options: renamed for TOML: [options.\"lint/phpunit/prefer-create-mock\"].",
         "unsupported": false
       },
       {
@@ -4917,7 +4917,7 @@
         "rules": [
           "lint/phpunit/prefer-short-will-return"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -4927,7 +4927,7 @@
         "rules": [
           "lint/phpunit/prefer-namespaced"
         ],
-        "note": "Same. Options: renamed for TOML: [options.\"lint/phpunit/prefer-namespaced\"]. Planned: not ported yet.",
+        "note": "Same. Options: renamed for TOML: [options.\"lint/phpunit/prefer-namespaced\"].",
         "unsupported": false
       },
       {
@@ -4937,7 +4937,7 @@
         "rules": [
           "lint/phpunit/no-expected-exception-annotation"
         ],
-        "note": "Same. Options: renamed for TOML: [options.\"lint/phpunit/no-expected-exception-annotation\"]. Planned: not ported yet.",
+        "note": "Same. Options: renamed for TOML: [options.\"lint/phpunit/no-expected-exception-annotation\"].",
         "unsupported": false
       },
       {
@@ -4957,7 +4957,7 @@
         "rules": [
           "lint/phpunit/require-size"
         ],
-        "note": "Same. Options: renamed for TOML: [options.\"lint/phpunit/require-size\"]. Planned: not ported yet.",
+        "note": "Same. Options: renamed for TOML: [options.\"lint/phpunit/require-size\"].",
         "unsupported": false
       },
       {
@@ -4967,7 +4967,7 @@
         "rules": [
           "lint/phpunit/prefer-assert-same"
         ],
-        "note": "Same. Options: renamed for TOML: [options.\"lint/phpunit/prefer-assert-same\"]. Planned: not ported yet.",
+        "note": "Same. Options: renamed for TOML: [options.\"lint/phpunit/prefer-assert-same\"].",
         "unsupported": false
       },
       {
@@ -4977,7 +4977,7 @@
         "rules": [
           "lint/phpunit/require-test-annotation-style"
         ],
-        "note": "Same. Options: renamed for TOML: [options.\"lint/phpunit/require-test-annotation-style\"]. Planned: not ported yet.",
+        "note": "Same. Options: renamed for TOML: [options.\"lint/phpunit/require-test-annotation-style\"].",
         "unsupported": false
       },
       {
@@ -4987,7 +4987,7 @@
         "rules": [
           "lint/phpunit/require-assertion-style"
         ],
-        "note": "Same. Options: renamed for TOML: [options.\"lint/phpunit/require-assertion-style\"]. Planned: not ported yet.",
+        "note": "Same. Options: renamed for TOML: [options.\"lint/phpunit/require-assertion-style\"].",
         "unsupported": false
       },
       {
@@ -4997,7 +4997,7 @@
         "rules": [
           "lint/phpunit/require-covers"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -6405,7 +6405,7 @@
         "rules": [
           "lint/phpunit/add-test-void-return"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -7329,7 +7329,7 @@
         "rules": [
           "lint/phpunit/require-final-test-case"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -8403,7 +8403,7 @@
         "rules": [
           "lint/dead-code/no-redundant-default-argument"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -8609,7 +8609,7 @@
         "rules": [
           "lint/dead-code/no-empty-method"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -8783,7 +8783,7 @@
         "rules": [
           "lint/dead-code/no-useless-override"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -8793,7 +8793,7 @@
         "rules": [
           "lint/dead-code/no-useless-constructor"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -8971,7 +8971,7 @@
         "rules": [
           "lint/dead-code/no-unused-private-method"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -9427,7 +9427,7 @@
         "rules": [
           "lint/phpunit/add-data-provider-iterator-return-type"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -9467,7 +9467,7 @@
         "rules": [
           "lint/phpunit/add-return-type-from-mock-object"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -12393,7 +12393,7 @@
         "rules": [
           "lint/phpunit/add-mock-intersection-param"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -12403,7 +12403,7 @@
         "rules": [
           "lint/phpunit/add-mock-intersection-type"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -12421,7 +12421,7 @@
         "rules": [
           "lint/phpunit/add-param-type-depends"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -12439,7 +12439,7 @@
         "rules": [
           "lint/phpunit/add-depended-test-return-type"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -12457,7 +12457,7 @@
         "rules": [
           "lint/phpunit/add-stub-intersection-type"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -12467,7 +12467,7 @@
         "rules": [
           "lint/phpunit/add-data-provider-allow-mock-objects"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -12477,7 +12477,7 @@
         "rules": [
           "lint/phpunit/add-allow-mock-objects-attribute"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -12495,7 +12495,7 @@
         "rules": [
           "lint/phpunit/prefer-attribute-over-annotation"
         ],
-        "note": "Same. Options: configurable: options carry 1:1 (same keys, kebab-cased). Planned: not ported yet.",
+        "note": "Same. Options: configurable: options carry 1:1 (same keys, kebab-cased).",
         "unsupported": false
       },
       {
@@ -12523,7 +12523,7 @@
         "rules": [
           "lint/phpunit/prefer-assert-count"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -12533,7 +12533,7 @@
         "rules": [
           "lint/phpunit/prefer-comparison-assertion"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -12543,7 +12543,7 @@
         "rules": [
           "lint/phpunit/no-assert-contains-only"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -12563,7 +12563,7 @@
         "rules": [
           "lint/phpunit/no-float-delta-parameter"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -12581,7 +12581,7 @@
         "rules": [
           "lint/phpunit/prefer-same-for-scalars"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -12591,7 +12591,7 @@
         "rules": [
           "lint/phpunit/prefer-assert-string-contains"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -12601,7 +12601,7 @@
         "rules": [
           "lint/phpunit/prefer-assert"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -12611,7 +12611,7 @@
         "rules": [
           "lint/phpunit/prefer-assert-instanceof"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -12621,7 +12621,7 @@
         "rules": [
           "lint/phpunit/no-assert-is-type"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -12631,7 +12631,7 @@
         "rules": [
           "lint/phpunit/prefer-assert-array-has-key"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -12641,7 +12641,7 @@
         "rules": [
           "lint/phpunit/no-negated-assertion"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -12659,7 +12659,7 @@
         "rules": [
           "lint/phpunit/prefer-assert-null-true-false"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -12669,7 +12669,7 @@
         "rules": [
           "lint/phpunit/prefer-assert-true-false"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -12687,7 +12687,7 @@
         "rules": [
           "lint/phpunit/prefer-specific-true-false-assertion"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -12697,7 +12697,7 @@
         "rules": [
           "lint/phpunit/no-bare-mock-assign"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -12715,7 +12715,7 @@
         "rules": [
           "lint/phpunit/prefer-simple-callback-assert"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -12725,7 +12725,7 @@
         "rules": [
           "lint/phpunit/prefer-mock-intersection-return"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -12743,7 +12743,7 @@
         "rules": [
           "lint/phpunit/no-test-constructor"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -12753,7 +12753,7 @@
         "rules": [
           "lint/phpunit/prefer-covers-attribute"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -12763,7 +12763,7 @@
         "rules": [
           "lint/phpunit/prefer-create-stub-in-coalesce"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -12783,7 +12783,7 @@
         "rules": [
           "lint/phpunit/prefer-data-provider-attribute"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -12793,7 +12793,7 @@
         "rules": [
           "lint/phpunit/require-data-provider-newlines"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -12803,7 +12803,7 @@
         "rules": [
           "lint/phpunit/require-strict-types-in-tests"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -12813,7 +12813,7 @@
         "rules": [
           "lint/phpunit/require-mock-expects"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -12831,7 +12831,7 @@
         "rules": [
           "lint/phpunit/prefer-depends-attribute"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -12841,7 +12841,7 @@
         "rules": [
           "lint/phpunit/no-value-object-mock"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -12869,7 +12869,7 @@
         "rules": [
           "lint/phpunit/add-mock-object-type"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -12895,7 +12895,7 @@
         "rules": [
           "lint/phpunit/prefer-create-stub-expression"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -12905,7 +12905,7 @@
         "rules": [
           "lint/phpunit/no-flipped-assertion"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -12923,7 +12923,7 @@
         "rules": [
           "lint/phpunit/no-bare-mock-builder"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -12933,7 +12933,7 @@
         "rules": [
           "lint/phpunit/prefer-inline-create-stub"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -12943,7 +12943,7 @@
         "rules": [
           "lint/phpunit/no-assert-same-type-mismatch"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -12953,7 +12953,7 @@
         "rules": [
           "lint/phpunit/prefer-merged-will-return-callback"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -12973,7 +12973,7 @@
         "rules": [
           "lint/phpunit/prefer-stub-var"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -12983,7 +12983,7 @@
         "rules": [
           "lint/phpunit/prefer-named-data-provider-keys"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -12993,7 +12993,7 @@
         "rules": [
           "lint/phpunit/prefer-narrow-with-consecutive"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -13003,7 +13003,7 @@
         "rules": [
           "lint/phpunit/prefer-narrow-will-return-callback"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -13013,7 +13013,7 @@
         "rules": [
           "lint/phpunit/prefer-local-over-setup-property"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -13023,7 +13023,7 @@
         "rules": [
           "lint/phpunit/no-setup-override-attribute"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -13049,7 +13049,7 @@
         "rules": [
           "lint/phpunit/prefer-this-call"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -13075,7 +13075,7 @@
         "rules": [
           "lint/phpunit/prefer-create-stub"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -13109,7 +13109,7 @@
         "rules": [
           "lint/phpunit/no-empty-test"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -13119,7 +13119,7 @@
         "rules": [
           "lint/phpunit/no-expects-any"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -13137,7 +13137,7 @@
         "rules": [
           "lint/phpunit/no-unused-mock-property"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -13147,7 +13147,7 @@
         "rules": [
           "lint/phpunit/no-final-constructor-override"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -13165,7 +13165,7 @@
         "rules": [
           "lint/phpunit/no-unused-mock"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -13175,7 +13175,7 @@
         "rules": [
           "lint/phpunit/no-at-matcher"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -13185,7 +13185,7 @@
         "rules": [
           "lint/phpunit/prefer-test-prefix"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -13203,7 +13203,7 @@
         "rules": [
           "lint/phpunit/prefer-requires-attribute"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -13213,7 +13213,7 @@
         "rules": [
           "lint/phpunit/require-exact-test-argument-type"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -13223,7 +13223,7 @@
         "rules": [
           "lint/phpunit/prefer-with-is-instance-of"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -13233,7 +13233,7 @@
         "rules": [
           "lint/phpunit/prefer-assert-instances-of"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -13243,7 +13243,7 @@
         "rules": [
           "lint/phpunit/no-mock-intersection-property"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -13253,7 +13253,7 @@
         "rules": [
           "lint/phpunit/prefer-simple-mock-expectation"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -13295,7 +13295,7 @@
         "rules": [
           "lint/phpunit/require-string-assert-argument"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -13321,7 +13321,7 @@
         "rules": [
           "lint/phpunit/prefer-test-with-attribute"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -13331,7 +13331,7 @@
         "rules": [
           "lint/phpunit/prefer-data-provider"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -13341,7 +13341,7 @@
         "rules": [
           "lint/phpunit/prefer-ticket-attribute"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -13361,7 +13361,7 @@
         "rules": [
           "lint/phpunit/prefer-specific-will-method"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -13371,7 +13371,7 @@
         "rules": [
           "lint/phpunit/prefer-simple-with-matcher"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -13399,7 +13399,7 @@
         "rules": [
           "lint/phpunit/prefer-standalone-asserts-over-callback"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -24915,7 +24915,7 @@
         "rules": [
           "lint/phpunit/require-assertion-style"
         ],
-        "note": "Same. Options: none (Mago options do not carry; Pun uses the CS-Fixer rule options). Planned: not ported yet.",
+        "note": "Same. Options: none (Mago options do not carry; Pun uses the CS-Fixer rule options).",
         "unsupported": false
       },
       {
@@ -25837,7 +25837,7 @@
         "rules": [
           "lint/dead-code/no-useless-override"
         ],
-        "note": "Same. Options: same. Planned: not ported yet.",
+        "note": "Same. Options: same.",
         "unsupported": false
       },
       {
@@ -26507,7 +26507,7 @@
         "rules": [
           "lint/phpunit/prefer-assert-same"
         ],
-        "note": "Same. Options: none (Mago options do not carry; Pun uses the CS-Fixer rule options). Planned: not ported yet.",
+        "note": "Same. Options: none (Mago options do not carry; Pun uses the CS-Fixer rule options).",
         "unsupported": false
       },
       {
@@ -26667,7 +26667,7 @@
         "rules": [
           "lint/phpunit/prefer-specific-assertions"
         ],
-        "note": "Same. Options: none (Mago options do not carry; Pun uses the CS-Fixer rule options). Planned: not ported yet.",
+        "note": "Same. Options: none (Mago options do not carry; Pun uses the CS-Fixer rule options).",
         "unsupported": false
       },
       {
