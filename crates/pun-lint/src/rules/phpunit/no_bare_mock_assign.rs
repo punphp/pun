@@ -209,7 +209,7 @@ fn receiver_name<'a>(expr: &'a Expression<'a>) -> Option<&'a [u8]> {
 
 /// `BetterNodeFinder::findInstancesOfScoped`: each node under `roots` (the roots included), not entering a class, a
 /// closure or a function (an arrow function is entered; an anonymous class's arguments are too).
-fn scoped<'a>(roots: &[Node<'a, 'a>], found: &mut dyn FnMut(Node<'a, 'a>)) {
+pub(super) fn scoped<'a>(roots: &[Node<'a, 'a>], found: &mut dyn FnMut(Node<'a, 'a>)) {
     let mut stack: Vec<Node<'a, 'a>> = roots.iter().rev().copied().collect();
     while let Some(node) = stack.pop() {
         match node {

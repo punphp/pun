@@ -490,3 +490,11 @@ fn return_type_from_mock_object() {
         "ReturnTypeFromMockObjectRector",
     );
 }
+
+#[test]
+fn expression_create_mock_to_create_stub() {
+    check(
+        PreferCreateStubExpression,
+        "ExpressionCreateMockToCreateStubRector",
+    );
+}
