@@ -510,3 +510,8 @@ fn single_mock_property_type() {
 fn remove_never_used_mock_property() {
     check(NoUnusedMockProperty, "RemoveNeverUsedMockPropertyRector");
 }
+
+#[test]
+fn property_create_mock_to_create_stub() {
+    check(PreferCreateStub, "PropertyCreateMockToCreateStubRector");
+}
