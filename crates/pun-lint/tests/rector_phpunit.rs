@@ -531,3 +531,8 @@ fn inline_stub_property_to_create_stub_method_call() {
         "InlineStubPropertyToCreateStubMethodCallRector",
     );
 }
+
+#[test]
+fn mock_object_var_to_stub() {
+    check(PreferStubVar, "MockObjectVarToStubRector");
+}

@@ -16,7 +16,7 @@ use crate::rules::rector_stmts::{line_indent, previous_token_end};
 use crate::rules::types::facts::facts;
 use crate::syntax::node_span;
 
-/// A class or a method that may get attributes: its span's start (attributes included), the end of its last
+/// A class, a method or a property that may get attributes: its span's start (attributes included), the end of its last
 /// attribute list, and its doc comment.
 pub(crate) struct Annotated<'s> {
     pub start: usize,
@@ -27,7 +27,7 @@ pub(crate) struct Annotated<'s> {
 }
 
 impl<'s> Annotated<'s> {
-    /// The class or method `node`, whose ancestors are `ancestors`; `None` for any other node.
+    /// The class, method or property `node`, whose ancestors are `ancestors`; `None` for any other node.
     pub(crate) fn of(
         source: &'s str,
         node: Node<'_, '_>,
@@ -36,6 +36,12 @@ impl<'s> Annotated<'s> {
         let lists: &Sequence<'_, AttributeList<'_>> = match node {
             Node::Class(class) => &class.attribute_lists,
             Node::Method(method) => &method.attribute_lists,
+            Node::Property(mago_syntax::cst::Property::Plain(property)) => {
+                &property.attribute_lists
+            }
+            Node::Property(mago_syntax::cst::Property::Hooked(property)) => {
+                &property.attribute_lists
+            }
             _ => return None,
         };
         let start = node_span(&node).start;

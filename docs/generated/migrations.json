@@ -12973,7 +12973,7 @@
         "rules": [
           "lint/phpunit/prefer-stub-var"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {

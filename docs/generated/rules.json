@@ -12475,7 +12475,7 @@
         "MockObjectVarToStubRector",
         "Rector\\PHPUnit\\PHPUnit120\\Rector\\Property\\MockObjectVarToStubRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/phpunit/prefer-test-attribute",
