@@ -123,7 +123,9 @@ fn get_union_from_union_type(
                 } else {
                     TUnion::from_vec(combined_types)
                 };
-                built.push(combined);
+                built.push(combined.with_never_kind(
+                    left.never_kind().unwrap_or_default().max(right.never_kind().unwrap_or_default()),
+                ));
             }
         }
     }
@@ -429,7 +431,7 @@ pub fn get_union_from_type(
         Type::NonEmptyMixed(_) => wrap_atomic(TAtomic::Mixed(TMixed::truthy().with_is_explicit(true))),
         Type::Null(_) => get_null(),
         Type::Void(_) => get_void(),
-        Type::Never(_) => get_never(),
+        Type::Never(_) => get_non_accepting_never(),
         Type::Resource(_) => get_resource(),
         Type::ClosedResource(_) => get_closed_resource(),
         Type::OpenResource(_) => get_open_resource(),

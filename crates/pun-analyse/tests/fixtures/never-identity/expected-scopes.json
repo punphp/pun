@@ -1,0 +1,182 @@
+{
+    "declarations": {
+        "nativeBottom": {
+            "type": "never",
+            "kind": "nonaccepting"
+        },
+        "nativeBottomUnion": {
+            "type": "never",
+            "kind": "nonaccepting"
+        },
+        "nativeOrdinary": {
+            "type": "int",
+            "kind": null
+        },
+        "nativeOrdinaryReverse": {
+            "type": "int",
+            "kind": null
+        },
+        "impossibleNative": {
+            "type": "*NEVER*",
+            "kind": "implicit"
+        },
+        "docBottom": {
+            "type": "never",
+            "kind": "nonaccepting"
+        },
+        "docUnion": {
+            "type": "never",
+            "kind": "nonaccepting"
+        },
+        "ordinary": {
+            "type": "int",
+            "kind": null
+        },
+        "ordinaryReverse": {
+            "type": "int",
+            "kind": null
+        },
+        "nullableBottom": {
+            "type": "null",
+            "kind": null
+        },
+        "choose": {
+            "type": "($value is true ? never : int)",
+            "kind": null,
+            "if": {
+                "type": "never",
+                "kind": "nonaccepting"
+            },
+            "else": {
+                "type": "int",
+                "kind": null
+            }
+        },
+        "chooseReverse": {
+            "type": "($value is true ? int : never)",
+            "kind": null,
+            "if": {
+                "type": "int",
+                "kind": null
+            },
+            "else": {
+                "type": "never",
+                "kind": "nonaccepting"
+            }
+        },
+        "chooseNegated": {
+            "type": "($value is not true ? never : int)",
+            "kind": null,
+            "if": {
+                "type": "never",
+                "kind": "nonaccepting"
+            },
+            "else": {
+                "type": "int",
+                "kind": null
+            }
+        },
+        "chooseClosure": {
+            "type": "Closure(bool): ($later is true ? never : int)",
+            "kind": null,
+            "return": {
+                "type": "($later is true ? never : int)",
+                "kind": null,
+                "if": {
+                    "type": "never",
+                    "kind": "nonaccepting"
+                },
+                "else": {
+                    "type": "int",
+                    "kind": null
+                }
+            }
+        },
+        "selectedNever": {
+            "type": "mixed",
+            "kind": null
+        },
+        "selectedInt": {
+            "type": "mixed",
+            "kind": null
+        },
+        "selectedReverseNever": {
+            "type": "mixed",
+            "kind": null
+        },
+        "selectedReverseInt": {
+            "type": "mixed",
+            "kind": null
+        },
+        "selectedNegatedNever": {
+            "type": "mixed",
+            "kind": null
+        },
+        "selectedNegatedInt": {
+            "type": "mixed",
+            "kind": null
+        },
+        "selectedBoth": {
+            "type": "mixed",
+            "kind": null
+        },
+        "selectedDeferred": {
+            "type": "mixed",
+            "kind": null
+        }
+    },
+    "calls": {
+        "1043": {
+            "expression": "choose(true)",
+            "type": "never",
+            "kind": "nonaccepting"
+        },
+        "1100": {
+            "expression": "choose(false)",
+            "type": "int",
+            "kind": null
+        },
+        "1167": {
+            "expression": "chooseReverse(false)",
+            "type": "never",
+            "kind": "nonaccepting"
+        },
+        "1239": {
+            "expression": "chooseReverse(true)",
+            "type": "int",
+            "kind": null
+        },
+        "1312": {
+            "expression": "chooseNegated(false)",
+            "type": "never",
+            "kind": "nonaccepting"
+        },
+        "1384": {
+            "expression": "chooseNegated(true)",
+            "type": "int",
+            "kind": null
+        },
+        "1460": {
+            "expression": "choose($value)",
+            "type": "int",
+            "kind": null
+        },
+        "1524": {
+            "expression": "chooseClosure()",
+            "type": "Closure(bool): ($later is true ? never : int)",
+            "kind": null,
+            "return": {
+                "type": "($later is true ? never : int)",
+                "kind": null,
+                "if": {
+                    "type": "never",
+                    "kind": "nonaccepting"
+                },
+                "else": {
+                    "type": "int",
+                    "kind": null
+                }
+            }
+        }
+    }
+}

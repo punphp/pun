@@ -32,6 +32,10 @@ impl UnionFlags {
     /// On a keyed array's extra-key union, retain ConstantArrayType source kind after its last
     /// explicit field is removed. A generic array's asserted offsets are not constant-shape fields.
     pub const CONSTANT_ARRAY_KEY: UnionFlags = UnionFlags(1 << 11);
+    /// PHPStan's explicitly specified bottom, distinct from a computed impossible type.
+    pub const EXPLICIT_NEVER: UnionFlags = UnionFlags(1 << 12);
+    /// The explicit bottom also has NonAcceptingNeverType's acceptance contract.
+    pub const NON_ACCEPTING_NEVER: UnionFlags = UnionFlags(1 << 13);
 }
 
 impl UnionFlags {

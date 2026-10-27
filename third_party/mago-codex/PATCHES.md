@@ -429,3 +429,27 @@ from unions with another member. The public scanner regression in
 `crates/pun-analyse/tests/native_intersections.rs` checks seven native signatures before Pun's
 masked-source recovery. Its fixtures capture both native reflection and parser types from PHPStan 2.3.1,
 plus complete diagnostics that include a missing-function control after the impossible signatures.
+
+## Never identity
+
+`TUnion` retains PHPStan's implicit, explicit accepting, and explicit nonaccepting never identities in
+two `UnionFlags` bits. `get_never()` remains implicit. `get_explicit_never()` and
+`get_non_accepting_never()` construct the two explicit kinds. `never_kind()` identifies the kind only
+on bottom unions, and `is_explicit_never()` accepts both explicit kinds. These APIs describe a type,
+not whether evaluating an expression terminates.
+
+Native and PHPDoc `never` declarations produce the nonaccepting kind, as PHPStan 2.3.1's
+[`ParserNodeTypeToPHPStanType`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Type/ParserNodeTypeToPHPStanType.php#L97-L98)
+and [`TypeNodeResolver`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/PhpDoc/TypeNodeResolver.php#L464-L477)
+do. Computed impossible intersections and missing template bounds remain implicit. Union and
+intersection operations preserve the participating bottom identities, including both operand orders.
+Ordinary values do not retain stale bottom flags. Expansion and template substitution carry the
+replacement union's identity before reducing its atoms. `clone_with_union()` preserves outer metadata
+while taking the replacement's bottom identity.
+
+Serde retains the two bits in the existing numeric `flags` field. Older records without these bits
+remain implicit. The external analyzer wire format still encodes only its existing never atom and
+union flags, so it loses never identity. This patch does not change the wire version or its readers.
+Public type, scanner, template, conditional, and serde controls live in
+`crates/pun-analyse/tests/never_identity.rs`, with independently captured PHPStan constructor,
+combinator, reflection, and scope observations under `tests/fixtures/never-identity/`.

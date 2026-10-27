@@ -1764,3 +1764,18 @@ entries, asymmetric key/value assignment, loop budgets, ordinary observations an
 scopes. References, breaks, returns, hooks, optional entries, shape unions, associative iterators
 and non-direct targets still use the ordinary path. In particular, this does not fix the separate
 ordinary-path over-refinement after unconditional writes through a by-reference union selector.
+
+## Invocation bottom identity
+
+`invocation/resolver.rs` keeps a complete `TUnion` when resolving parameter-linked return types and
+conditional branches. The selected branch's implicit, explicit accepting, or nonaccepting never
+identity survives the outer union reconstruction. An unresolved condition combines the actual branch
+types through the shared union operation. It does not mark every signature-derived bottom explicit.
+
+This follows PHPStan 2.3.1's
+[`ConditionalTypeForParameter`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Type/ConditionalTypeForParameter.php)
+and [`ConditionalType`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Type/ConditionalType.php),
+which return the selected type rather than reconstructing a never type. The public Analyzer controls
+in `crates/pun-analyse/tests/never_identity.rs` compare selected, negated, and unresolved branches with
+fresh scope captures. Call evaluation, closure return inference, termination facts, and the external
+wire protocol are separate owners and remain unchanged here.

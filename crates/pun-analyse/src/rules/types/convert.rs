@@ -442,6 +442,13 @@ impl<'a, 'arena> Checker<'a, 'arena> {
 
     /// A Mago type as PHPStan's.
     pub(in super::super) fn to_phpstan(&self, t: &TUnion) -> Type {
+        if let Some(kind) = t.never_kind() {
+            return Type::Never(match kind {
+                mago_codex::ttype::union::NeverKind::Implicit => NeverKind::Implicit,
+                mago_codex::ttype::union::NeverKind::Explicit => NeverKind::Explicit,
+                mago_codex::ttype::union::NeverKind::NonAccepting => NeverKind::NonAccepting,
+            });
+        }
         // Combinators need declared variance before they decide whether generic alternatives are redundant.
         declared::with_classes(self, || {
             let types = union(t.types.iter().map(|a| self.atom(a)).collect());
@@ -1068,4 +1075,42 @@ fn finish_shape(shape: ConstArray) -> Type {
         builder.make_unsealed(k, v);
     }
     builder.get()
+}
+
+#[cfg(test)]
+mod never_identity_tests {
+    use std::collections::HashMap;
+    use std::path::Path;
+
+    use mago_codex::ttype::{get_explicit_never, get_never, get_non_accepting_never};
+    use mago_word::{empty_word, word};
+    use serde_json::Value;
+
+    #[test]
+    fn source_owned_bottom_metadata_round_trips_through_public_dump_types() {
+        let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/never-identity");
+        let file = root.join("conversion.php");
+        let oracle: Value = serde_json::from_slice(&std::fs::read(root.join("expected-phpstan.json")).unwrap()).unwrap();
+        let project = crate::Project::new(vec![file.clone()], Vec::new());
+        let (mut codebase, sources) = crate::codebase::build_with_sources(&project).unwrap();
+        let mut expected = Vec::new();
+        // Model the producer/consumer boundary directly: accepting explicit never has no declaration
+        // syntax. Its expression producers and call-evaluation facts are independently maintained.
+        for (name, kind, ty) in [
+            ("implicitValue", "implicit", get_never()),
+            ("explicitValue", "explicit", get_explicit_never()),
+            ("nonacceptingValue", "nonaccepting", get_non_accepting_never()),
+        ] {
+            let metadata = codebase.function_likes.get_mut(&(empty_word(), word(name.to_ascii_lowercase()))).unwrap();
+            metadata.return_type_metadata.as_mut().unwrap().type_union = ty;
+            expected.push(format!("Dumped type: {}", oracle["types"][kind]["description"].as_str().unwrap()));
+        }
+        let checks = crate::rules::Checks::of(&project, &codebase);
+        let errors = crate::rules::check_file(&file, &codebase, &checks, &HashMap::new(), &sources);
+        let actual: Vec<_> = errors.into_iter().map(|error| {
+            assert_eq!(error.identifier.as_deref(), Some("phpstan.dumpType"));
+            error.message
+        }).collect();
+        assert_eq!(actual, expected);
+    }
 }

@@ -629,6 +629,18 @@ pub fn get_never() -> TUnion {
     TUnion::from_single(Cow::Borrowed(NEVER_ATOMIC))
 }
 
+/// An explicitly specified accepting bottom (PHPStan's `NeverType(true)`).
+#[must_use]
+pub fn get_explicit_never() -> TUnion {
+    get_never().with_never_kind(union::NeverKind::Explicit)
+}
+
+/// A declared PHP/PHPDoc `never` (PHPStan's `NonAcceptingNeverType`).
+#[must_use]
+pub fn get_non_accepting_never() -> TUnion {
+    get_never().with_never_kind(union::NeverKind::NonAccepting)
+}
+
 #[inline]
 #[must_use]
 pub fn get_resource() -> TUnion {
@@ -1015,7 +1027,10 @@ fn combine_unequal_union_types_cow(
     preserve_array_shapes: bool,
 ) -> TUnion {
     let flags_1 = type_1.flags;
-    let mut combined_type = if type_1.is_never() || type_1.is_never_template() {
+    let mut combined_type = if type_1.is_never() && type_2.is_never() {
+        let kind = type_1.never_kind().unwrap().max(type_2.never_kind().unwrap());
+        type_1.into_owned().with_never_kind(kind)
+    } else if type_1.is_never() || type_1.is_never_template() {
         type_2.clone()
     } else if type_2.is_never() || type_2.is_never_template() {
         type_1.into_owned()
@@ -1122,8 +1137,10 @@ fn add_unequal_union_type_inner(
         combine_unequal_union_types_cow(Cow::Owned(base_type), other_type, codebase, options, preserve_array_shapes)
     };
     let constant_array_key = base_type.flags.contains(UnionFlags::CONSTANT_ARRAY_KEY);
+    let never_kind = base_type.never_kind().unwrap_or_default();
     base_type.flags = original_flags;
     base_type.flags.set(UnionFlags::CONSTANT_ARRAY_KEY, constant_array_key);
+    base_type.set_never_kind(never_kind);
 
     if !other_type.had_template() {
         base_type.set_had_template(false);
@@ -1155,8 +1172,10 @@ pub fn intersect_union_types(type_1: &TUnion, type_2: &TUnion, codebase: &Codeba
         return Some(type_1.clone());
     }
 
-    if type_1.is_never() || type_2.is_never() {
-        return Some(get_never());
+    if let Some(kind) = type_1.never_kind() {
+        return Some(type_1.clone().with_never_kind(kind.min(type_2.never_kind().unwrap_or(kind))));
+    } else if type_2.is_never() {
+        return Some(type_2.clone());
     }
 
     if type_1.is_error() {

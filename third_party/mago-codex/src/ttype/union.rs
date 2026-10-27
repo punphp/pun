@@ -41,6 +41,16 @@ use crate::ttype::shared::get_static_atomic;
 #[cfg(test)]
 mod tests;
 
+/// PHPStan's bottom identities. Ordering matches union: implicit bottom is removed,
+/// and an accepting explicit bottom absorbs a non-accepting bottom in either order.
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, PartialOrd, Ord)]
+pub enum NeverKind {
+    #[default]
+    Implicit,
+    NonAccepting,
+    Explicit,
+}
+
 #[derive(Debug, Clone, Eq, PartialOrd, Ord)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct TUnion {
@@ -163,6 +173,40 @@ impl TUnion {
     #[must_use]
     pub fn from_atomic(atomic: TAtomic) -> TUnion {
         TUnion::from_single(Cow::Owned(atomic))
+    }
+
+    /// The identity of a bottom union; non-bottom values have no never identity.
+    #[must_use]
+    pub fn never_kind(&self) -> Option<NeverKind> {
+        if !self.is_never() {
+            return None;
+        }
+        Some(if self.flags.contains(UnionFlags::NON_ACCEPTING_NEVER) {
+            NeverKind::NonAccepting
+        } else if self.flags.contains(UnionFlags::EXPLICIT_NEVER) {
+            NeverKind::Explicit
+        } else {
+            NeverKind::Implicit
+        })
+    }
+
+    /// This is type identity, not whether evaluating an expression terminates.
+    #[must_use]
+    pub fn is_explicit_never(&self) -> bool {
+        self.is_never() && self.flags.contains(UnionFlags::EXPLICIT_NEVER)
+    }
+
+    /// Set bottom identity without allowing stale bottom flags on other values.
+    #[must_use]
+    pub fn with_never_kind(mut self, kind: NeverKind) -> Self {
+        self.set_never_kind(kind);
+        self
+    }
+
+    pub fn set_never_kind(&mut self, kind: NeverKind) {
+        let is_never = self.is_never();
+        self.flags.set(UnionFlags::EXPLICIT_NEVER, is_never && kind != NeverKind::Implicit);
+        self.flags.set(UnionFlags::NON_ACCEPTING_NEVER, is_never && kind == NeverKind::NonAccepting);
     }
 
     #[inline]
@@ -305,6 +349,14 @@ impl TUnion {
     #[must_use]
     pub fn clone_with_types(&self, types: Vec<TAtomic>) -> TUnion {
         TUnion { types: Cow::Owned(ensure_non_empty_types(types)), flags: self.flags }
+            .with_never_kind(self.never_kind().unwrap_or_default())
+    }
+
+    /// Substitute a union's value, retaining outer metadata but taking the replacement's bottom identity.
+    #[must_use]
+    pub fn clone_with_union(&self, replacement: TUnion) -> TUnion {
+        let kind = replacement.never_kind().unwrap_or_default();
+        self.clone_with_types(replacement.types.into_owned()).with_never_kind(kind)
     }
 
     #[must_use]
@@ -405,6 +457,7 @@ impl TUnion {
             types.push(TAtomic::Null);
         }
 
+        self.set_never_kind(NeverKind::Implicit);
         self
     }
 
@@ -1334,7 +1387,9 @@ impl PartialEq for TUnion {
             .union(UnionFlags::IGNORE_FALSABLE_ISSUES)
             .union(UnionFlags::FROM_TEMPLATE_DEFAULT)
             .union(UnionFlags::FROM_UNSPECIFIED_TEMPLATE)
-            .union(UnionFlags::CONSTANT_ARRAY_KEY);
+            .union(UnionFlags::CONSTANT_ARRAY_KEY)
+            .union(UnionFlags::EXPLICIT_NEVER)
+            .union(UnionFlags::NON_ACCEPTING_NEVER);
 
         if self.flags.intersection(SEMANTIC_FLAGS) != other.flags.intersection(SEMANTIC_FLAGS) {
             return false;

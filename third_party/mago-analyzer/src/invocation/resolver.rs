@@ -27,6 +27,7 @@ use mago_codex::ttype::get_never;
 use mago_codex::ttype::template::TemplateBound;
 use mago_codex::ttype::template::TemplateResult;
 use mago_codex::ttype::template::inferred_type_replacer;
+use mago_codex::ttype::union::NeverKind;
 use mago_codex::ttype::union::TUnion;
 use mago_word::WordMap;
 use mago_word::empty_word;
@@ -124,12 +125,15 @@ where
     let mut resulting_union = union_to_resolve;
     if resulting_union.types.iter().any(needs_invocation_resolution) {
         let mut resulting_atomics = Vec::with_capacity(resulting_union.types.len());
+        let mut never_kind = resulting_union.never_kind().unwrap_or_default();
         for atomic_to_resolve in resulting_union.types.into_owned() {
-            let return_atomics = resolve_atomic(context, invocation, template_result, parameters, atomic_to_resolve);
+            let return_atomics =
+                resolve_atomic(context, invocation, template_result, parameters, atomic_to_resolve, &mut never_kind);
             resulting_atomics.extend(return_atomics);
         }
 
         resulting_union.types = Cow::Owned(resulting_atomics);
+        resulting_union = resulting_union.with_never_kind(never_kind);
     }
 
     if !template_result.lower_bounds.is_empty() || resulting_union.has_template_types() {
@@ -216,6 +220,7 @@ fn resolve_atomic<'ctx, 'arena, A>(
     template_result: &TemplateResult,
     parameters: &WordMap<TUnion>,
     atomic_to_resolve: TAtomic,
+    never_kind: &mut NeverKind,
 ) -> Vec<TAtomic>
 where
     A: Arena,
@@ -236,12 +241,16 @@ where
             parameters
                 .get(&variable)
                 .map(|argument_type| {
-                    inferred_type_replacer::replace(argument_type, template_result, context.codebase).types.into_owned()
+                    let replaced = inferred_type_replacer::replace(argument_type, template_result, context.codebase);
+                    *never_kind = (*never_kind).max(replaced.never_kind().unwrap_or_default());
+                    replaced.types.into_owned()
                 })
                 .unwrap_or_else(|| vec![TAtomic::Mixed(TMixed::new())])
         }
         TAtomic::Conditional(conditional) => {
-            resolve_conditional(context, invocation, template_result, parameters, conditional)
+            let resolved = resolve_conditional(context, invocation, template_result, parameters, conditional);
+            *never_kind = (*never_kind).max(resolved.never_kind().unwrap_or_default());
+            resolved.types.into_owned()
         }
         TAtomic::Derived(mut derived) => {
             resolve_derived(context, invocation, template_result, parameters, &mut derived);
@@ -575,7 +584,7 @@ fn resolve_conditional<'ctx, 'arena, A>(
     template_result: &TemplateResult,
     parameters: &WordMap<TUnion>,
     conditional: TConditional,
-) -> Vec<TAtomic>
+) -> TUnion
 where
     A: Arena,
 {
@@ -593,13 +602,13 @@ where
         .iter()
         .any(|union| union.any_child_node(|node| matches!(node, TypeRef::Atomic(TAtomic::Variable(_)))))
     {
-        return vec![TAtomic::Conditional(TConditional::new(
+        return TUnion::from_atomic(TAtomic::Conditional(TConditional::new(
             Arc::new(subject),
             Arc::new(target),
             Arc::new(then_type),
             Arc::new(otherwise_type),
             negated,
-        ))];
+        )));
     }
 
     if !subject.is_never() {
@@ -627,15 +636,15 @@ where
             || !union_comparator::can_expression_types_be_identical(context.codebase, &subject, &target, false, false);
 
         if are_disjoint {
-            return if negated { then_type.types.into_owned() } else { otherwise_type.types.into_owned() };
+            return if negated { then_type } else { otherwise_type };
         }
 
         if subject_is_contained {
-            return if negated { otherwise_type.types.into_owned() } else { then_type.types.into_owned() };
+            return if negated { otherwise_type } else { then_type };
         }
     }
 
-    add_union_type(then_type, &otherwise_type, context.codebase, CombinerOptions::default()).types.into_owned()
+    add_union_type(then_type, &otherwise_type, context.codebase, CombinerOptions::default())
 }
 
 #[cfg(test)]

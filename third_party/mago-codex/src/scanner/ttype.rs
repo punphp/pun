@@ -29,6 +29,7 @@ use crate::ttype::get_mixed_callable;
 use crate::ttype::get_mixed_iterable;
 use crate::ttype::get_mixed_keyed_array;
 use crate::ttype::get_never;
+use crate::ttype::get_non_accepting_never;
 use crate::ttype::get_null;
 use crate::ttype::get_nullable_float;
 use crate::ttype::get_nullable_int;
@@ -114,7 +115,9 @@ where
 
             let combined_types: Vec<TAtomic> = left.types.iter().chain(right.types.iter()).cloned().collect();
 
-            TUnion::from_vec(combined_types)
+            TUnion::from_vec(combined_types).with_never_kind(
+                left.never_kind().unwrap_or_default().max(right.never_kind().unwrap_or_default()),
+            )
         }
         Hint::Null(_) => get_null(),
         Hint::True(_) => get_true(),
@@ -132,7 +135,7 @@ where
             wrap_atomic(TAtomic::Object(TObject::Named(TNamedObject::new(classname))))
         }
         Hint::Void(_) => get_void(),
-        Hint::Never(_) => get_never(),
+        Hint::Never(_) => get_non_accepting_never(),
         Hint::Float(_) => get_float(),
         Hint::Bool(_) => get_bool(),
         Hint::Integer(_) => get_int(),

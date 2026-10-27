@@ -26,6 +26,7 @@ use crate::ttype::template::GenericTemplate;
 use crate::ttype::template::TemplateBound;
 use crate::ttype::template::TemplateResult;
 use crate::ttype::template::variance::Variance;
+use crate::ttype::union::NeverKind;
 use crate::ttype::union::TUnion;
 
 /// Knobs for [`replace`].
@@ -82,6 +83,7 @@ pub fn replace(
     let mut new_parameter_atomics = Vec::with_capacity(original_parameter_atomics.len());
 
     let mut had_template = false;
+    let mut never_kind = parameter_type.never_kind().unwrap_or_default();
     for atomic_type in original_parameter_atomics {
         new_parameter_atomics.extend(handle_atomic_substitution(
             atomic_type,
@@ -90,6 +92,7 @@ pub fn replace(
             options,
             original_parameter_atomics.len() == 1,
             &mut had_template,
+            &mut never_kind,
         ));
     }
 
@@ -109,7 +112,7 @@ pub fn replace(
         new_union_type.set_had_template(true);
     }
 
-    new_union_type
+    new_union_type.with_never_kind(never_kind)
 }
 
 fn handle_atomic_substitution(
@@ -119,6 +122,7 @@ fn handle_atomic_substitution(
     options: DefinitionReplacementOptions<'_>,
     _was_single: bool,
     had_template: &mut bool,
+    never_kind: &mut NeverKind,
 ) -> Vec<TAtomic> {
     let normalized_key = if let TAtomic::Object(TObject::Named(named_object)) = parameter_atomic {
         named_object.name
@@ -138,6 +142,7 @@ fn handle_atomic_substitution(
             codebase,
             options,
             had_template,
+            never_kind,
         );
     }
 
@@ -261,6 +266,7 @@ fn handle_template_param_substitution(
     codebase: &CodebaseMetadata,
     options: DefinitionReplacementOptions<'_>,
     had_template: &mut bool,
+    never_kind: &mut NeverKind,
 ) -> Vec<TAtomic> {
     #[allow(clippy::unreachable)]
     let TAtomic::GenericParameter(TGenericParameter { defining_entity, intersection_types, constraint, .. }) =
@@ -305,6 +311,7 @@ fn handle_template_param_substitution(
     let mut atomic_types = Vec::new();
 
     if replacement_type.is_mixed() && !constraint.is_mixed() {
+        *never_kind = (*never_kind).max(constraint.never_kind().unwrap_or_default());
         atomic_types.extend(constraint.types.iter().cloned());
     } else {
         expander::expand_union(
@@ -331,6 +338,7 @@ fn handle_template_param_substitution(
             );
         }
 
+        *never_kind = (*never_kind).max(replacement_type.never_kind().unwrap_or_default());
         for replacement_atomic_type in replacement_type.types.as_ref() {
             let mut replacements_found = false;
 
@@ -351,6 +359,7 @@ fn handle_template_param_substitution(
                     None => true,
                 }
             {
+                *never_kind = (*never_kind).max(replacement_as_type.never_kind().unwrap_or_default());
                 for nested_type_atomic in replacement_as_type.types.as_ref() {
                     replacements_found = true;
                     atomic_types.push(nested_type_atomic.clone());
