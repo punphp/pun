@@ -11411,7 +11411,7 @@
         "SingleMockPropertyType",
         "SingleMockPropertyTypeRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/phpunit/no-negated-assertion",

@@ -13243,7 +13243,7 @@
         "rules": [
           "lint/phpunit/no-mock-intersection-property"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {

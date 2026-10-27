@@ -498,3 +498,10 @@ fn expression_create_mock_to_create_stub() {
         "ExpressionCreateMockToCreateStubRector",
     );
 }
+
+/// The installed Rector is scoped and its copy of this rule compares against `RectorPrefix202608\PHPUnit\...\MockObject`,
+/// so it never fires; Oracle/ comes from that file with the prefix taken out of its `use`, run the same way.
+#[test]
+fn single_mock_property_type() {
+    check(NoMockIntersectionProperty, "SingleMockPropertyTypeRector");
+}
