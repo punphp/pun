@@ -505,3 +505,8 @@ fn expression_create_mock_to_create_stub() {
 fn single_mock_property_type() {
     check(NoMockIntersectionProperty, "SingleMockPropertyTypeRector");
 }
+
+#[test]
+fn remove_never_used_mock_property() {
+    check(NoUnusedMockProperty, "RemoveNeverUsedMockPropertyRector");
+}
