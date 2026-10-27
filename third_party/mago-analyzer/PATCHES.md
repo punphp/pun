@@ -2076,3 +2076,15 @@ cargo llvm-cov --offline --dep-coverage mago-analyzer --no-report -p punphp-anal
 	--test variables --test object_intersections --test incoming_isset \
 	--test closure_from_callable --test closure_freshness --test never_calls --test never_identity
 ```
+
+## Nested variable-name observations
+
+Read and assignment-target preparation analyze a nested variable's name through the expression
+dispatcher. Inner indirect names therefore receive ordinary hooks even when the outer target
+allows undefined variables, as in assignment, isset, empty, coalescing and unset.
+
+Pun records a nested target's certainty before evaluating its name, matching DefinedVariableRule's
+incoming scope. Indirect names retain their post-name observations, including assignment side
+effects. The existing public variable fixture includes both forms, three-level nesting, defined
+and maybe-defined names, and multiline name diagnostics. Expectations come from PHPStan 2.3.1
+in all four existing variable configurations; the earlier fixture records remain unchanged.

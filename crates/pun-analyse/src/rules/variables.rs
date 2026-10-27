@@ -441,7 +441,7 @@ pub(super) fn variable(c: &mut Checker, variable: &Variable) {
         {
             let given = declared::with_classes(c, || ty.describe(Level::Precise));
             c.report(
-                variable,
+                name,
                 "variable.nameNotString",
                 format!("Variable variable name must be a string, but {given} was given."),
                 None,

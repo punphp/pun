@@ -1228,7 +1228,8 @@ where
 {
     match expression {
         Expression::Variable(Variable::Nested(nested)) => {
-            nested.variable.analyze(context, block_context, artifacts)?;
+            let name = context.arena.alloc(Expression::Variable(nested.variable.clone()));
+            name.analyze(context, block_context, artifacts)?;
         }
         Expression::Variable(Variable::Indirect(indirect)) => {
             indirect.expression.analyze(context, block_context, artifacts)?;

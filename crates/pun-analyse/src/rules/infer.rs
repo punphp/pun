@@ -408,7 +408,6 @@ impl ExpressionHook for Definedness {
                 source.restore(context);
             }
             let (dynamic, guard) = match expr {
-                Expression::Variable(Variable::Nested(n)) => (true, Some(n.variable)),
                 Expression::Variable(Variable::Indirect(i)) => (true, match super::types::flow::unparen(i.expression) {
                     Expression::Variable(v) => Some(v),
                     _ => None,
@@ -448,8 +447,11 @@ fn literal_reference_reads(elements: &[ArrayElement<'_>], allowed: &mut HashSet<
 fn observe_variable(v: &Variable<'_>, context: &HookContext<'_, '_>, found: &mut Found) {
     match v {
         Variable::Direct(v) => observe_direct(v, context, found),
-        // NestedVariable::analyze() calls Variable::analyze(), bypassing the expression hook for the name.
         Variable::Nested(v) => {
+            // DefinedVariableRule reads the outer target in its incoming scope, before name side effects.
+            if !found.allowed.contains(&v.span()) {
+                found.variables.scopes.insert(v.span(), variables::Certainty::for_name(Some(v.variable), context));
+            }
             if let Variable::Direct(name) = v.variable
                 && let Some(ty) = context.get_variable_type(name.name)
             {

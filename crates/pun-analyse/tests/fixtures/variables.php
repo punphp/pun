@@ -179,3 +179,44 @@ function computedReferenceReceivers(): void
     referenceReceiver()?->readNative($nullsafeInput);
     echo $newOutput, $returnedOutput, $chainedOutput, $nullsafeOutput, $staticOutput;
 }
+
+function nestedNames(bool $flag): void
+{
+    echo $${'missingNestedRead'};
+    isset($${'missingNestedIsset'});
+    empty($${'missingNestedEmpty'});
+    $${'missingNestedAssign'} = 1;
+    $${'missingNestedCoalesce'} ?? null;
+    $${'missingNestedCoalesceAssign'} ??= 1;
+    unset($${'missingNestedUnset'});
+    if ($flag) {
+        $maybeName = 'existingNested';
+    }
+    $existingNested = 'thirdNested';
+    $thirdNested = 1;
+    echo $${'maybeName'};
+    $knownName = 'existingNested';
+    echo $${'knownName'};
+    echo $$${'knownName'};
+    echo $${($createdName = 'createdName')};
+    echo $$${'missingDeep'};
+}
+
+class MultilineNames
+{
+    public function names(\Stringable $castable): void
+    {
+        echo ${
+            $this
+        };
+        ${
+            $this
+        } = 1;
+        isset(${
+            $this
+        });
+        echo ${
+            $castable
+        };
+    }
+}

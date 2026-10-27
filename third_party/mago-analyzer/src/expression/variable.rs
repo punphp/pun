@@ -14,6 +14,7 @@ use mago_reporting::Issue;
 use mago_span::HasSpan;
 use mago_span::Span;
 use mago_syntax::cst::DirectVariable;
+use mago_syntax::cst::Expression;
 use mago_syntax::cst::IndirectVariable;
 use mago_syntax::cst::NestedVariable;
 use mago_syntax::cst::Variable;
@@ -117,7 +118,8 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for NestedVariable<'arena> {
     where
         A: Arena,
     {
-        self.variable.analyze(context, block_context, artifacts)?;
+        let name = context.arena.alloc(Expression::Variable(self.variable.clone()));
+        name.analyze(context, block_context, artifacts)?;
 
         let resulting_type = match artifacts.get_rc_expression_type(&self.variable).cloned() {
             Some(expression_type) => {

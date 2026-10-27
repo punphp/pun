@@ -184,6 +184,51 @@
       179,
       "variable.undefined",
       "Undefined variable: $nullsafeInput"
+    ],
+    [
+      185,
+      "variable.undefined",
+      "Undefined variable: $missingNestedRead"
+    ],
+    [
+      186,
+      "variable.undefined",
+      "Undefined variable: $missingNestedIsset"
+    ],
+    [
+      187,
+      "variable.undefined",
+      "Undefined variable: $missingNestedEmpty"
+    ],
+    [
+      188,
+      "variable.undefined",
+      "Undefined variable: $missingNestedAssign"
+    ],
+    [
+      189,
+      "variable.undefined",
+      "Undefined variable: $missingNestedCoalesce"
+    ],
+    [
+      190,
+      "variable.undefined",
+      "Undefined variable: $missingNestedCoalesceAssign"
+    ],
+    [
+      191,
+      "variable.undefined",
+      "Undefined variable: $missingNestedUnset"
+    ],
+    [
+      201,
+      "variable.undefined",
+      "Undefined variable: $createdName"
+    ],
+    [
+      202,
+      "variable.undefined",
+      "Undefined variable: $missingDeep"
     ]
   ],
   "edge": [
@@ -416,6 +461,71 @@
       179,
       "variable.undefined",
       "Undefined variable: $nullsafeInput"
+    ],
+    [
+      185,
+      "variable.undefined",
+      "Undefined variable: $missingNestedRead"
+    ],
+    [
+      186,
+      "variable.undefined",
+      "Undefined variable: $missingNestedIsset"
+    ],
+    [
+      187,
+      "variable.undefined",
+      "Undefined variable: $missingNestedEmpty"
+    ],
+    [
+      188,
+      "variable.undefined",
+      "Undefined variable: $missingNestedAssign"
+    ],
+    [
+      189,
+      "variable.undefined",
+      "Undefined variable: $missingNestedCoalesce"
+    ],
+    [
+      190,
+      "variable.undefined",
+      "Undefined variable: $missingNestedCoalesceAssign"
+    ],
+    [
+      191,
+      "variable.undefined",
+      "Undefined variable: $missingNestedUnset"
+    ],
+    [
+      197,
+      "variable.undefined",
+      "Variable $maybeName might not be defined."
+    ],
+    [
+      201,
+      "variable.undefined",
+      "Undefined variable: $createdName"
+    ],
+    [
+      202,
+      "variable.undefined",
+      "Undefined variable: $missingDeep"
+    ],
+    [
+      210,
+      "variable.nameNotString",
+      "Variable variable name must be a string, but $this(VariableCertainty\\MultilineNames) was given."
+    ],
+    [
+      213,
+      "variable.nameNotString",
+      "Variable variable name must be a string, but $this(VariableCertainty\\MultilineNames) was given."
+    ],
+    [
+      216,
+      "variable.nameNotString",
+      "Variable variable name must be a string, but $this(VariableCertainty\\MultilineNames) was given."
     ]
   ],
   "maybe": [
@@ -623,6 +733,56 @@
       179,
       "variable.undefined",
       "Undefined variable: $nullsafeInput"
+    ],
+    [
+      185,
+      "variable.undefined",
+      "Undefined variable: $missingNestedRead"
+    ],
+    [
+      186,
+      "variable.undefined",
+      "Undefined variable: $missingNestedIsset"
+    ],
+    [
+      187,
+      "variable.undefined",
+      "Undefined variable: $missingNestedEmpty"
+    ],
+    [
+      188,
+      "variable.undefined",
+      "Undefined variable: $missingNestedAssign"
+    ],
+    [
+      189,
+      "variable.undefined",
+      "Undefined variable: $missingNestedCoalesce"
+    ],
+    [
+      190,
+      "variable.undefined",
+      "Undefined variable: $missingNestedCoalesceAssign"
+    ],
+    [
+      191,
+      "variable.undefined",
+      "Undefined variable: $missingNestedUnset"
+    ],
+    [
+      197,
+      "variable.undefined",
+      "Variable $maybeName might not be defined."
+    ],
+    [
+      201,
+      "variable.undefined",
+      "Undefined variable: $createdName"
+    ],
+    [
+      202,
+      "variable.undefined",
+      "Undefined variable: $missingDeep"
     ]
   ],
   "quiet": [
@@ -825,6 +985,66 @@
       179,
       "variable.undefined",
       "Undefined variable: $nullsafeInput"
+    ],
+    [
+      185,
+      "variable.undefined",
+      "Undefined variable: $missingNestedRead"
+    ],
+    [
+      186,
+      "variable.undefined",
+      "Undefined variable: $missingNestedIsset"
+    ],
+    [
+      187,
+      "variable.undefined",
+      "Undefined variable: $missingNestedEmpty"
+    ],
+    [
+      188,
+      "variable.undefined",
+      "Undefined variable: $missingNestedAssign"
+    ],
+    [
+      189,
+      "variable.undefined",
+      "Undefined variable: $missingNestedCoalesce"
+    ],
+    [
+      190,
+      "variable.undefined",
+      "Undefined variable: $missingNestedCoalesceAssign"
+    ],
+    [
+      191,
+      "variable.undefined",
+      "Undefined variable: $missingNestedUnset"
+    ],
+    [
+      201,
+      "variable.undefined",
+      "Undefined variable: $createdName"
+    ],
+    [
+      202,
+      "variable.undefined",
+      "Undefined variable: $missingDeep"
+    ],
+    [
+      210,
+      "variable.nameNotString",
+      "Variable variable name must be a string, but $this(VariableCertainty\\MultilineNames) was given."
+    ],
+    [
+      213,
+      "variable.nameNotString",
+      "Variable variable name must be a string, but $this(VariableCertainty\\MultilineNames) was given."
+    ],
+    [
+      216,
+      "variable.nameNotString",
+      "Variable variable name must be a string, but $this(VariableCertainty\\MultilineNames) was given."
     ]
   ]
 }
