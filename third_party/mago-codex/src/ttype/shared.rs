@@ -180,6 +180,7 @@ pub static EMPTY_STRING_ATOMIC: LazyLock<TAtomic> = LazyLock::new(|| {
         is_numeric: false,
         is_truthy: false,
         is_non_empty: false,
+        is_non_empty_implied: false,
         is_callable: false,
         casing: TStringCasing::Unspecified,
     }))

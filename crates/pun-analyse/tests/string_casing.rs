@@ -29,6 +29,11 @@ fn check(file: &str, expected_file: &str, level: u8) {
 }
 
 #[test]
+fn numeric_nonemptiness_does_not_invent_an_independent_accessory() {
+    check("numeric.php", "numeric-expected.json", 7);
+}
+
+#[test]
 fn simultaneous_casing_survives_production_inference() {
     check("matrix.php", "expected.json", 7);
 }
@@ -36,4 +41,9 @@ fn simultaneous_casing_survives_production_inference() {
 #[test]
 fn nonempty_concatenation_refines_truthiness_without_strengthening_controls() {
     check("concat.php", "concat-expected.json", 0);
+}
+
+#[test]
+fn incomparable_string_unions_survive_production_inference() {
+    check("unions.php", "unions-expected.json", 7);
 }

@@ -632,7 +632,7 @@ impl<'a, 'arena> Checker<'a, 'arena> {
                 }
                 if s.is_truthy {
                     accessories.push(Accessory::NonFalsyString);
-                } else if s.is_non_empty {
+                } else if s.has_non_empty_accessory() {
                     accessories.push(Accessory::NonEmptyString);
                 }
                 if matches!(s.literal, Some(TStringLiteral::Unspecified)) {

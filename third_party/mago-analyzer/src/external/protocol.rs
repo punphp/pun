@@ -1578,6 +1578,7 @@ fn encode_scalar_snapshot<'type_info>(
             flags |= u8::from(string.is_truthy) << 1;
             flags |= u8::from(string.is_non_empty) << 2;
             flags |= u8::from(string.is_callable) << 3;
+            flags |= u8::from(string.is_non_empty_implied) << 4;
             writer.write_u8(flags);
             writer.write_u8(match string.casing {
                 TStringCasing::Unspecified => 0,
@@ -2651,7 +2652,7 @@ fn decode_complete_scalar(reader: &mut PayloadReader<'_>, depth: usize) -> Resul
                 literal,
                 flags & (1 << 0) != 0,
                 flags & (1 << 1) != 0,
-                flags & (1 << 2) != 0,
+                flags & (1 << 2) != 0 && flags & (1 << 4) == 0,
                 flags & (1 << 3) != 0,
                 casing,
             ))
@@ -3230,6 +3231,7 @@ pub(super) mod testing {
             for (string, literal, flags) in [
                 (TString::general_with_props(false, false, false, false, casing), 0, 0),
                 (TString::unspecified_literal_with_props(true, false, true, false, casing), 1, 5),
+                (TString::general_with_props(true, false, false, false, casing), 0, 21),
             ] {
                 let scalar = TScalar::String(string);
                 let mut writer = PayloadWriter::new();

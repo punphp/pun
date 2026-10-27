@@ -262,6 +262,27 @@ fn constructors_ids_equality_hash_order_and_serde_preserve_both() {
         serde_json::from_str::<C>("\"Unspecified\"").unwrap(),
         C::Unspecified
     );
+
+    // PHPStan accepts both as nonempty, but keeps their independent accessories distinct.
+    let bare = TString::numeric();
+    let explicit = TString::general_with_props(true, false, true, false, C::Unspecified);
+    assert!(bare.is_non_empty());
+    assert!(explicit.is_non_empty());
+    assert_ne!(bare, explicit);
+    assert_ne!(bare.get_id(), explicit.get_id());
+    let codebase = CodebaseMetadata::default();
+    for value in [bare, explicit] {
+        assert!(union(value).is_non_empty_string());
+        assert!(union_comparator::is_contained_by(
+            &codebase,
+            &union(value),
+            &union(TString::non_empty()),
+            false,
+            false,
+            false,
+            &mut ComparisonResult::new(),
+        ));
+    }
 }
 
 #[test]

@@ -37,6 +37,9 @@ pub struct TString {
     pub is_truthy: bool,
     /// Is this string *guaranteed* (by analysis or literal value) to be non-empty?
     pub is_non_empty: bool,
+    /// Nonemptiness follows from numericness, without an independent non-empty accessory.
+    #[cfg_attr(feature = "serde", serde(default))]
+    pub is_non_empty_implied: bool,
     /// Is this string known to be callable (a valid function/method name)?
     pub is_callable: bool,
     /// What is the casing of this string? This is tracked separately from literal value to allow for non-literal strings that are known to be lowercase or uppercase.
@@ -88,9 +91,10 @@ impl TString {
         is_callable: bool,
         casing: TStringCasing,
     ) -> Self {
+        let is_non_empty_implied = is_numeric && !is_non_empty;
         is_non_empty |= is_numeric || is_truthy || is_callable;
 
-        Self { literal, is_numeric, is_truthy, is_non_empty, is_callable, casing }
+        Self { literal, is_numeric, is_truthy, is_non_empty, is_non_empty_implied, is_callable, casing }
     }
 
     /// Creates an instance representing the general `string` type (not known literal, no guaranteed props).
@@ -111,7 +115,7 @@ impl TString {
     #[inline]
     #[must_use]
     pub const fn numeric() -> Self {
-        Self::new(None, true, false, true, false, TStringCasing::Unspecified)
+        Self::new(None, true, false, false, false, TStringCasing::Unspecified)
     }
 
     /// Creates a lowercase string instance.
@@ -280,6 +284,13 @@ impl TString {
         self.is_non_empty
     }
 
+    /// Checks whether a non-empty accessory is retained independently of numericness.
+    #[inline]
+    #[must_use]
+    pub const fn has_non_empty_accessory(&self) -> bool {
+        self.is_non_empty && !self.is_non_empty_implied
+    }
+
     /// Checks if the string is guaranteed to be empty.
     #[inline]
     #[must_use]
@@ -358,7 +369,7 @@ impl TString {
             literal,
             self.is_numeric || other.is_numeric,
             self.is_truthy || other.is_truthy,
-            self.is_non_empty || other.is_non_empty,
+            self.has_non_empty_accessory() || other.has_non_empty_accessory(),
             self.is_callable || other.is_callable,
             casing,
         ))
@@ -384,6 +395,7 @@ impl TString {
             is_numeric: true,
             is_truthy: self.is_truthy,
             is_non_empty: true, // Numeric strings are always non-empty
+            is_non_empty_implied: !self.has_non_empty_accessory(),
             is_callable: self.is_callable,
             casing: self.casing,
         }
@@ -447,7 +459,12 @@ impl TType for TString {
         } else {
             b""
         };
-        concat_word!(stem, literal_infix, b"string", numeric_casing)
+        let non_empty_accessory: &[u8] = if self.is_numeric && !self.is_truthy && self.has_non_empty_accessory() {
+            b"&non-empty-string"
+        } else {
+            b""
+        };
+        concat_word!(stem, literal_infix, b"string", numeric_casing, non_empty_accessory)
     }
 }
 

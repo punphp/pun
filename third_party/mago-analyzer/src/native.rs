@@ -879,7 +879,7 @@ fn cast_type(cast: ScalarCast, ty: &TUnion) -> Option<TUnion> {
             TUnion::from_atomic(Scalar(Text(TString::general_with_props(
                 true,
                 false,
-                true,
+                false, // Numericness implies nonemptiness without a separate accessory.
                 false,
                 TStringCasing::Uppercase,
             ))))

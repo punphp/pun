@@ -2088,3 +2088,23 @@ incoming scope. Indirect names retain their post-name observations, including as
 effects. The existing public variable fixture includes both forms, three-level nesting, defined
 and maybe-defined names, and multiline name diagnostics. Expectations come from PHPStan 2.3.1
 in all four existing variable configurations; the earlier fixture records remain unchanged.
+
+## Numeric-string accessory retention
+
+String assertion reconciliation transfers the independently retained non-empty accessory, not
+nonemptiness implied by numericness. Numeric refinement still proves semantic nonemptiness.
+Pun's type conversion reads the retained-accessory query, so bare numeric-string stays bare while
+an explicitly intersected non-empty accessory survives assignments and branch merges.
+
+The native float-to-string constructor marks nonemptiness as implied by numericness, matching
+PHPStan 2.3.1's `FloatType::toString()` (`src/Type/FloatType.php:129–136`). Its numeric, uppercase,
+and semantic nonempty guarantees are unchanged. The existing native-cast oracle stays unchanged.
+
+String scalar snapshots retain the existing semantic flag at bit 2. Bit 4 records numeric-implied
+nonemptiness without a separate accessory. The decoder reconstructs the constructor's accessory
+argument from both flags. The existing casing wire matrix checks bare numeric flags 21 alongside
+explicit numeric flags 5 for every casing state. Object layouts and message version headers are
+not changed by this patch.
+
+The source contract and public PHPStan 2.3.1 regression are documented in
+`mago-codex/PATCHES.md`, under “Numeric-string nonempty accessories”.

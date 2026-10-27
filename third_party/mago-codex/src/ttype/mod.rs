@@ -534,8 +534,8 @@ pub fn get_string_with_props(
     casing: TStringCasing,
 ) -> TUnion {
     // These refinements do not have a shared static atomic. Do not erase casing
-    // just because the string is also numeric (which can contain e or E).
-    if is_numeric && !casing.is_unspecified() {
+    // or an independent non-empty accessory just because the string is numeric.
+    if is_numeric && (!casing.is_unspecified() || is_non_empty) {
         return TUnion::from_atomic(TAtomic::Scalar(TScalar::String(TString::general_with_props(
             is_numeric, is_truthy, is_non_empty, is_callable, casing,
         ))));

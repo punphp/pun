@@ -1,0 +1,418 @@
+[
+    [
+        "unions.php",
+        19,
+        "phpstan.dumpType",
+        "Dumped type: lowercase-string&uppercase-string",
+        null,
+        false
+    ],
+    [
+        "unions.php",
+        20,
+        "phpstan.dumpType",
+        "Dumped type: lowercase-string|uppercase-string",
+        null,
+        false
+    ],
+    [
+        "unions.php",
+        21,
+        "phpstan.dumpType",
+        "Dumped type: lowercase-string|uppercase-string",
+        null,
+        false
+    ],
+    [
+        "unions.php",
+        22,
+        "phpstan.dumpType",
+        "Dumped type: lowercase-string|uppercase-string",
+        null,
+        false
+    ],
+    [
+        "unions.php",
+        23,
+        "phpstan.dumpType",
+        "Dumped type: (lowercase-string&non-empty-string)|(non-empty-string&uppercase-string)",
+        null,
+        false
+    ],
+    [
+        "unions.php",
+        24,
+        "phpstan.dumpType",
+        "Dumped type: (lowercase-string&non-empty-string)|(non-empty-string&uppercase-string)",
+        null,
+        false
+    ],
+    [
+        "unions.php",
+        26,
+        "phpstan.dumpType",
+        "Dumped type: lowercase-string|uppercase-string",
+        null,
+        false
+    ],
+    [
+        "unions.php",
+        32,
+        "phpstan.dumpType",
+        "Dumped type: lowercase-string|uppercase-string",
+        null,
+        false
+    ],
+    [
+        "unions.php",
+        38,
+        "phpstan.dumpType",
+        "Dumped type: lowercase-string|uppercase-string",
+        null,
+        false
+    ],
+    [
+        "unions.php",
+        40,
+        "phpstan.dumpType",
+        "Dumped type: lowercase-string|numeric-string",
+        null,
+        false
+    ],
+    [
+        "unions.php",
+        41,
+        "phpstan.dumpType",
+        "Dumped type: lowercase-string|numeric-string",
+        null,
+        false
+    ],
+    [
+        "unions.php",
+        42,
+        "phpstan.dumpType",
+        "Dumped type: numeric-string|uppercase-string",
+        null,
+        false
+    ],
+    [
+        "unions.php",
+        43,
+        "phpstan.dumpType",
+        "Dumped type: numeric-string|uppercase-string",
+        null,
+        false
+    ],
+    [
+        "unions.php",
+        44,
+        "phpstan.dumpType",
+        "Dumped type: lowercase-string|non-empty-string",
+        null,
+        false
+    ],
+    [
+        "unions.php",
+        45,
+        "phpstan.dumpType",
+        "Dumped type: lowercase-string|non-empty-string",
+        null,
+        false
+    ],
+    [
+        "unions.php",
+        46,
+        "phpstan.dumpType",
+        "Dumped type: non-empty-string|uppercase-string",
+        null,
+        false
+    ],
+    [
+        "unions.php",
+        47,
+        "phpstan.dumpType",
+        "Dumped type: non-empty-string|uppercase-string",
+        null,
+        false
+    ],
+    [
+        "unions.php",
+        48,
+        "phpstan.dumpType",
+        "Dumped type: lowercase-string|non-falsy-string",
+        null,
+        false
+    ],
+    [
+        "unions.php",
+        49,
+        "phpstan.dumpType",
+        "Dumped type: lowercase-string|non-falsy-string",
+        null,
+        false
+    ],
+    [
+        "unions.php",
+        50,
+        "phpstan.dumpType",
+        "Dumped type: non-falsy-string|uppercase-string",
+        null,
+        false
+    ],
+    [
+        "unions.php",
+        51,
+        "phpstan.dumpType",
+        "Dumped type: non-falsy-string|uppercase-string",
+        null,
+        false
+    ],
+    [
+        "unions.php",
+        52,
+        "phpstan.dumpType",
+        "Dumped type: literal-string|lowercase-string",
+        null,
+        false
+    ],
+    [
+        "unions.php",
+        53,
+        "phpstan.dumpType",
+        "Dumped type: literal-string|lowercase-string",
+        null,
+        false
+    ],
+    [
+        "unions.php",
+        54,
+        "phpstan.dumpType",
+        "Dumped type: literal-string|uppercase-string",
+        null,
+        false
+    ],
+    [
+        "unions.php",
+        55,
+        "phpstan.dumpType",
+        "Dumped type: literal-string|uppercase-string",
+        null,
+        false
+    ],
+    [
+        "unions.php",
+        56,
+        "phpstan.dumpType",
+        "Dumped type: literal-string|numeric-string",
+        null,
+        false
+    ],
+    [
+        "unions.php",
+        57,
+        "phpstan.dumpType",
+        "Dumped type: literal-string|numeric-string",
+        null,
+        false
+    ],
+    [
+        "unions.php",
+        59,
+        "phpstan.dumpType",
+        "Dumped type: lowercase-string",
+        null,
+        false
+    ],
+    [
+        "unions.php",
+        60,
+        "phpstan.dumpType",
+        "Dumped type: lowercase-string",
+        null,
+        false
+    ],
+    [
+        "unions.php",
+        61,
+        "phpstan.dumpType",
+        "Dumped type: uppercase-string",
+        null,
+        false
+    ],
+    [
+        "unions.php",
+        62,
+        "phpstan.dumpType",
+        "Dumped type: uppercase-string",
+        null,
+        false
+    ],
+    [
+        "unions.php",
+        63,
+        "phpstan.dumpType",
+        "Dumped type: string",
+        null,
+        false
+    ],
+    [
+        "unions.php",
+        64,
+        "phpstan.dumpType",
+        "Dumped type: string",
+        null,
+        false
+    ],
+    [
+        "unions.php",
+        65,
+        "phpstan.dumpType",
+        "Dumped type: string",
+        null,
+        false
+    ],
+    [
+        "unions.php",
+        66,
+        "phpstan.dumpType",
+        "Dumped type: string",
+        null,
+        false
+    ],
+    [
+        "unions.php",
+        67,
+        "phpstan.dumpType",
+        "Dumped type: lowercase-string",
+        null,
+        false
+    ],
+    [
+        "unions.php",
+        68,
+        "phpstan.dumpType",
+        "Dumped type: lowercase-string",
+        null,
+        false
+    ],
+    [
+        "unions.php",
+        69,
+        "phpstan.dumpType",
+        "Dumped type: uppercase-string",
+        null,
+        false
+    ],
+    [
+        "unions.php",
+        70,
+        "phpstan.dumpType",
+        "Dumped type: uppercase-string",
+        null,
+        false
+    ],
+    [
+        "unions.php",
+        71,
+        "phpstan.dumpType",
+        "Dumped type: 'E'|'e'",
+        null,
+        false
+    ],
+    [
+        "unions.php",
+        72,
+        "phpstan.dumpType",
+        "Dumped type: non-empty-string",
+        null,
+        false
+    ],
+    [
+        "unions.php",
+        73,
+        "phpstan.dumpType",
+        "Dumped type: non-empty-string",
+        null,
+        false
+    ],
+    [
+        "unions.php",
+        74,
+        "phpstan.dumpType",
+        "Dumped type: string",
+        null,
+        false
+    ],
+    [
+        "unions.php",
+        75,
+        "phpstan.dumpType",
+        "Dumped type: string",
+        null,
+        false
+    ],
+    [
+        "unions.php",
+        76,
+        "phpstan.dumpType",
+        "Dumped type: string",
+        null,
+        false
+    ],
+    [
+        "unions.php",
+        77,
+        "phpstan.dumpType",
+        "Dumped type: string",
+        null,
+        false
+    ],
+    [
+        "unions.php",
+        78,
+        "phpstan.dumpType",
+        "Dumped type: non-empty-string",
+        null,
+        false
+    ],
+    [
+        "unions.php",
+        79,
+        "phpstan.dumpType",
+        "Dumped type: non-empty-string",
+        null,
+        false
+    ],
+    [
+        "unions.php",
+        80,
+        "phpstan.dumpType",
+        "Dumped type: lowercase-string",
+        null,
+        false
+    ],
+    [
+        "unions.php",
+        81,
+        "phpstan.dumpType",
+        "Dumped type: lowercase-string",
+        null,
+        false
+    ],
+    [
+        "unions.php",
+        82,
+        "phpstan.dumpType",
+        "Dumped type: string",
+        null,
+        false
+    ],
+    [
+        "unions.php",
+        83,
+        "phpstan.dumpType",
+        "Dumped type: string",
+        null,
+        false
+    ]
+]

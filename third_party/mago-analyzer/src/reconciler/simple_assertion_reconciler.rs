@@ -229,7 +229,7 @@ where
                     negated,
                     span,
                     assertion.has_equality(),
-                    str.is_non_empty,
+                    str.has_non_empty_accessory(),
                     str.is_truthy,
                     str.is_numeric,
                     str.is_callable,
@@ -1083,7 +1083,7 @@ where
                     get_string_with_props(
                         is_numeric || existing_string.is_numeric,
                         is_truthy || existing_string.is_truthy,
-                        is_non_empty || existing_string.is_non_empty,
+                        is_non_empty || existing_string.has_non_empty_accessory(),
                         is_callable || existing_string.is_callable,
                         casing.intersect(existing_string.casing),
                     )

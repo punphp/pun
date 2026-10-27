@@ -704,3 +704,25 @@ incomparable numeric, literal-origin, casing and nonempty accessories, and empty
 Its complete diagnostics come from the independent PHPStan 2.3.1 capture in
 `fixtures/string-casing/capture-unions.php`. Public type API tests also check absorption by scalar
 containers and keep the casing-join table separate from exact union expectations.
+
+## Numeric-string nonempty accessories
+
+`TString::is_non_empty` remains a semantic guarantee: numeric strings are always nonempty.
+`is_non_empty_implied` records when numericness supplies that guarantee without an independent
+non-empty accessory. Constructors, numeric refinement, intersection, and IDs retain this distinction.
+`get_string_with_props()` preserves an independently requested accessory instead of replacing the
+string with the bare numeric static type. Semantic containment still uses the nonempty guarantee.
+
+PHPStan 2.3.1's
+[`AccessoryNumericStringType::isNonEmptyString()`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Type/Accessory/AccessoryNumericStringType.php#L313-L316)
+returns yes, but
+[`TypeNodeResolver.php:332–341`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/PhpDoc/TypeNodeResolver.php#L332-L341)
+constructs bare numeric-string without `AccessoryNonEmptyStringType`.
+[`IntersectionType::equals()`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Type/IntersectionType.php#L377-L405)
+retains component identity, so `numeric-string` and `non-empty-string&numeric-string` remain distinct.
+
+The public `string_casing` regression captures both declarations, assignments, ternary directions,
+branch merges, and `is_numeric()` refinements from the real PHPStan 2.3.1 at level 7. Both numeric
+forms satisfy a non-empty parameter; the empty-string argument remains an error. Existing casing,
+concatenation, repeat, and native controls retain their expectations. Union normalization remains
+the combiner's separate responsibility.
