@@ -5,15 +5,28 @@
 //! `'a'` is `string`, `1` is `int`, `true` is `bool`), the same descriptions merged, sorted as
 //! `UnionTypeHelper::sortTypes` sorts them (`null` last, the rest by `strcasecmp` of their descriptions), and joined
 //! with `|`; anything with `mixed` in it is `mixed`. An object is its class name, with its type arguments in `<>` when
-//! it has them; `$this` is `$this(Class)` and `static` is `static(Class)`.
+//! it has them, a class the codebase does not know too; `$this` is `$this(Class)` and `static` is `static(Class)`.
 
 use mago_codex::ttype::atomic::TAtomic;
 use mago_codex::ttype::atomic::object::TObject;
+use mago_codex::ttype::atomic::reference::TReference;
 use mago_codex::ttype::atomic::scalar::TScalar;
+use mago_codex::ttype::TType;
 use mago_codex::ttype::union::TUnion;
 
-/// One member of a union, generalized.
+/// One member of a union, generalized; an intersection (`A&B`) is its members described and sorted as
+/// `IntersectionType::describe` sorts them (`UnionTypeHelper::sortTypes`).
 fn atomic(t: &TAtomic, alone: bool) -> String {
+    let Some(others) = t.get_intersection_types().filter(|o| !o.is_empty()) else {
+        return single(t, alone);
+    };
+    let mut parts = vec![single(t, true)];
+    parts.extend(others.iter().map(|o| single(o, true)));
+    parts.sort_by_key(|p| p.to_ascii_lowercase());
+    parts.join("&")
+}
+
+fn single(t: &TAtomic, alone: bool) -> String {
     match t {
         TAtomic::Null => "null".into(),
         TAtomic::Never => "never".into(),
@@ -53,6 +66,8 @@ fn atomic(t: &TAtomic, alone: bool) -> String {
         }
         TAtomic::Object(TObject::Enum(e)) => e.name.to_string(),
         TAtomic::Object(_) => "object".into(),
+        // A class the codebase does not know stays a reference; PHPStan's `ObjectType` describes it by its name.
+        TAtomic::Reference(TReference::Symbol { name, .. }) => name.to_string(),
         _ => "mixed".into(),
     }
 }
