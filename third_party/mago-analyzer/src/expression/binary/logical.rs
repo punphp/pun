@@ -268,7 +268,7 @@ where
 
     artifacts.set_expression_type(binary, result_type);
 
-    let evaluated_locals = conditional::record_boolean_scopes(
+    let evaluated_scope = conditional::record_boolean_scopes(
         context,
         artifacts,
         binary,
@@ -340,7 +340,8 @@ where
         );
     }
 
-    block_context.locals = evaluated_locals;
+    evaluated_scope.restore_certainty(block_context);
+    block_context.locals = evaluated_scope.locals;
 
     Ok(())
 }
@@ -623,7 +624,7 @@ where
         block_context.assigned_variable_ids.extend(right_block_context.assigned_variable_ids.clone());
     }
 
-    let evaluated_locals = conditional::record_boolean_scopes(
+    let evaluated_scope = conditional::record_boolean_scopes(
         context,
         artifacts,
         binary,
@@ -669,7 +670,8 @@ where
 
     artifacts.set_expression_type(binary, result_type);
 
-    block_context.locals = evaluated_locals;
+    evaluated_scope.restore_certainty(block_context);
+    block_context.locals = evaluated_scope.locals;
 
     Ok(())
 }

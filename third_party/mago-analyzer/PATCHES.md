@@ -2049,3 +2049,30 @@ timeout 900 nice cargo llvm-cov --offline --no-report --dep-coverage mago-analyz
 	-p punphp-analyse --test string_casing --test string_guarantees --test str_repeat \
 	--test native_lane -- --test-threads=1
 ```
+
+## Boolean operand definition certainty
+
+Evaluated Boolean scopes retain variable state and possible-variable membership alongside their
+local types. The post-expression join uses the incoming `VariableScope` snapshots before adding
+RHS-only cached types. An output argument evaluated only on the RHS therefore remains possibly
+defined when the LHS can short-circuit. Branch transfers restore the captured certainty state as
+well as the evaluated types, including nested expressions and explicit absence after `unset`.
+The object-exclusion transfer and the continuing `if` branch type join remain unchanged.
+
+The original public `variables` flow fixture retains both PHPStan 2.3.1 diagnostics for `$matches`
+at lines 99 and 100. Fresh captures also confirm the unchanged transfer-fixture expectations.
+The existing live-scope observer adds `&&`, `||`, post-expression, and nested-RHS output-argument
+controls. Their expected certainty follows independent PHPStan 2.3.1 reads, not cached type presence.
+
+All 51 tests pass across `variables`, `object_intersections`, `incoming_isset`, `closure_from_callable`,
+`closure_freshness`, `never_calls`, and `never_identity`. The four original variable configurations
+also match fresh PHPStan 2.3.1 captures without changing their expectations. Fresh profiles cover
+**40/40 changed analyzer executable production lines** against `ea303bb457f6342e24d948076bfbca4ef785d0a1`,
+without exclusions. The measurement intersects the changed lines with a direct LLVM LCOV export.
+The analyzer dependency is explicitly instrumented:
+
+```sh
+cargo llvm-cov --offline --dep-coverage mago-analyzer --no-report -p punphp-analyse \
+	--test variables --test object_intersections --test incoming_isset \
+	--test closure_from_callable --test closure_freshness --test never_calls --test never_identity
+```

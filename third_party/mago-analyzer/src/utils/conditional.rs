@@ -18,6 +18,7 @@ use mago_word::WordSet;
 
 use crate::analyzable::Analyzable;
 use crate::artifacts::AnalysisArtifacts;
+use crate::artifacts::BooleanExpressionScope;
 use crate::assertion::get_class_type_relations;
 use crate::code::IssueCode;
 use crate::context::Context;
@@ -48,17 +49,18 @@ pub(crate) fn apply_boolean_branch(
 ) -> WordSet {
     let mut changed = WordSet::default();
     if let Some(scopes) = boolean_scopes(expression, artifacts) {
-        let locals = if truthy {
+        let scope = if truthy {
             &scopes.truthy
         } else {
             &scopes.falsey
         };
-        for (key, value) in locals {
+        for (key, value) in &scope.locals {
             if block_context.locals.get(key) != Some(value) {
                 changed.insert(*key);
                 block_context.locals.insert(*key, Rc::clone(value));
             }
         }
+        scope.restore_certainty(block_context);
         BlockContext::retain_unreconciled_clauses(&mut block_context.clauses, &changed);
     }
     changed
@@ -70,16 +72,21 @@ pub(crate) fn record_boolean_scopes<'ctx, A: Arena>(
     binary: &mago_syntax::cst::Binary<'_>,
     left: &BlockContext<'ctx>,
     right: &BlockContext<'ctx>,
-) -> WordMap<Rc<TUnion>> {
+) -> BooleanExpressionScope {
     // BooleanAndHandler/BooleanOrHandler join the actual walked scopes. A false &&
     // (or true ||) can have evaluated either one or both operands.
     let mut post = left.clone();
     if let Some(scopes) = boolean_scopes(binary.lhs, artifacts) {
-        post.locals.clone_from(&scopes.post);
+        post.locals.clone_from(&scopes.post.locals);
+        scopes.post.restore_certainty(&mut post);
     }
-    let right_locals =
-        boolean_scopes(binary.rhs, artifacts).map_or(&right.locals, |scopes| &scopes.post);
-    for (key, value) in right_locals {
+    let mut right = right.clone();
+    if let Some(scopes) = boolean_scopes(binary.rhs, artifacts) {
+        right.locals.clone_from(&scopes.post.locals);
+        scopes.post.restore_certainty(&mut right);
+    }
+    let operand_scopes = [post.variable_scope(), right.variable_scope()];
+    for (key, value) in &right.locals {
         let value = match post.locals.get(key) {
             Some(left) => mago_codex::ttype::combine_union_types_rc(
                 left,
@@ -91,6 +98,9 @@ pub(crate) fn record_boolean_scopes<'ctx, A: Arena>(
         };
         post.locals.insert(*key, value);
     }
+    // Join certainty from the incoming edges, before the RHS-only type cache can
+    // make an output-reference variable appear definitely assigned on the LHS.
+    post.merge_variable_scopes(&operand_scopes, context.codebase);
     let expression = Expression::Binary(binary.clone());
     let is_and = matches!(
         binary.operator,
@@ -138,20 +148,29 @@ pub(crate) fn record_boolean_scopes<'ctx, A: Arena>(
         if is_and == truthy {
             apply_boolean_branch(subject, truthy, artifacts, &mut scope);
         }
-        scope.locals
+        BooleanExpressionScope {
+            locals: scope.locals,
+            variable_state: scope.variable_state,
+            variables_possibly_in_scope: scope.variables_possibly_in_scope,
+        }
     };
     let truthy = branch(context, true);
     let falsey = branch(context, false);
+    let post = BooleanExpressionScope {
+        locals: post.locals,
+        variable_state: post.variable_state,
+        variables_possibly_in_scope: post.variables_possibly_in_scope,
+    };
     let span = binary.span();
     artifacts.boolean_expression_scopes.insert(
         (span.start.offset, span.end.offset),
         crate::artifacts::BooleanExpressionScopes {
-            post: post.locals.clone(),
+            post: post.clone(),
             truthy,
             falsey,
         },
     );
-    post.locals
+    post
 }
 
 pub(crate) fn analyze<'ctx, 'arena, A>(
@@ -295,8 +314,10 @@ where
     };
 
     if let Some(scopes) = boolean_scopes(condition, artifacts) {
-        post_if_context.locals.clone_from(&scopes.post);
-        externally_applied_context.locals.clone_from(&scopes.post);
+        post_if_context.locals.clone_from(&scopes.post.locals);
+        scopes.post.restore_certainty(&mut post_if_context);
+        externally_applied_context.locals.clone_from(&scopes.post.locals);
+        scopes.post.restore_certainty(externally_applied_context);
     }
 
     if check_for_paradoxes && let Some(condition_type) = artifacts.get_rc_expression_type(condition) {

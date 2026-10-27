@@ -21,6 +21,7 @@ use crate::artifacts::editor::EditorArtifacts;
 use crate::context::block::BlockContext;
 use crate::context::block::ReferenceConstraintSource;
 use crate::context::block::VariableScope;
+use crate::context::block::VariableState;
 use crate::context::scope::case_scope::CaseScope;
 use crate::context::scope::loop_scope::LoopScope;
 use crate::readonly::PendingReadonlyPropertyWrite;
@@ -81,9 +82,24 @@ pub(crate) struct BranchFlow {
 /// PHPStan ExpressionResult's evaluated-operand scopes, distinct from branch specifications.
 #[derive(Debug, Clone)]
 pub(crate) struct BooleanExpressionScopes {
-    pub post: WordMap<Rc<TUnion>>,
-    pub truthy: WordMap<Rc<TUnion>>,
-    pub falsey: WordMap<Rc<TUnion>>,
+    pub post: BooleanExpressionScope,
+    pub truthy: BooleanExpressionScope,
+    pub falsey: BooleanExpressionScope,
+}
+
+/// A cached type does not prove that its variable was assigned on every incoming edge.
+#[derive(Debug, Clone)]
+pub(crate) struct BooleanExpressionScope {
+    pub locals: WordMap<Rc<TUnion>>,
+    pub variable_state: VariableState,
+    pub variables_possibly_in_scope: WordSet,
+}
+
+impl BooleanExpressionScope {
+    pub(crate) fn restore_certainty(&self, block_context: &mut BlockContext<'_>) {
+        block_context.variable_state.clone_from(&self.variable_state);
+        block_context.variables_possibly_in_scope.clone_from(&self.variables_possibly_in_scope);
+    }
 }
 
 #[derive(Debug, Clone)]

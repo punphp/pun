@@ -169,12 +169,71 @@ function budget(bool $flag): void {
     echo $before;
     echo $after;
 }";
+    const BOOLEAN_AND: &str = "<?php
+function transfer(bool $flag, string $input): void {
+    if ($flag && preg_match('/x/', $input, $matches)) {
+        echo $matches;
+    } else {
+        echo $matches;
+    }
+}";
+    const BOOLEAN_OR: &str = "<?php
+function transfer(bool $flag, string $input): void {
+    $matches = [];
+    unset($matches);
+    if ($flag || preg_match('/x/', $input, $matches)) {
+        echo $matches;
+    } else {
+        echo $matches;
+    }
+}";
+    const BOOLEAN_POST: &str = "<?php
+function transfer(bool $flag, string $input): void {
+    $flag && preg_match('/x/', $input, $matches);
+    echo $matches;
+    preg_match('/x/', $input, $matches);
+    echo $matches;
+}";
+    const BOOLEAN_NESTED: &str = "<?php
+function transfer(bool $flag, bool $other, string $input): void {
+    if ($flag && ($other || preg_match('/x/', $input, $matches))) {
+        echo $matches;
+    } else {
+        echo $matches;
+    }
+}";
     let prelude = mago_prelude::Prelude::build();
     for (source, check_throws, threshold, expected) in [
         (THROWS, false, 200, Some([(true, false), (false, true)])),
         (THROWS, true, 200, Some([(true, false), (false, true)])),
         // Exhausting the condition algebra budget cannot discard the continuing implicit else edge.
         (BRANCH, false, 0, Some([(false, false), (true, false)])),
+        // Fresh PHPStan 2.3.1 reads: &&'s true edge and ||'s false edge ran the output
+        // argument; the opposite edge and the post-expression join may have skipped it.
+        (
+            BOOLEAN_AND,
+            false,
+            200,
+            Some([(true, false), (false, false)]),
+        ),
+        (
+            BOOLEAN_OR,
+            false,
+            200,
+            Some([(false, false), (true, false)]),
+        ),
+        (
+            BOOLEAN_POST,
+            false,
+            200,
+            Some([(false, false), (true, false)]),
+        ),
+        (
+            BOOLEAN_NESTED,
+            false,
+            200,
+            Some([(false, false), (false, false)]),
+        ),
         (
             "<?php switch (true) { case 777: echo 'unreachable'; }",
             false,
