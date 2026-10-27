@@ -9427,7 +9427,7 @@
         "rules": [
           "lint/phpunit/add-data-provider-iterator-return-type"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {

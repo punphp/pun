@@ -6,6 +6,7 @@
 //! parent class by name even when its file is not known; a receiver other than `$this`, `self`, `static` and `parent`
 //! takes the type Mago gives it.
 
+mod add_data_provider_iterator_return_type;
 mod add_depended_test_return_type;
 mod add_test_void_return;
 mod annotations;
@@ -63,6 +64,7 @@ mod require_final_test_case;
 mod require_strict_types_in_tests;
 mod require_string_assert_argument;
 
+pub use add_data_provider_iterator_return_type::AddDataProviderIteratorReturnType;
 pub use add_depended_test_return_type::AddDependedTestReturnType;
 pub use add_test_void_return::AddTestVoidReturn;
 pub use no_assert_contains_only::NoAssertContainsOnly;
@@ -189,6 +191,7 @@ pub(crate) fn all() -> Vec<Box<dyn Rule>> {
         Box::new(PreferDataProvider),
         Box::new(RequireFinalTestCase),
         Box::new(AddTestVoidReturn),
+        Box::new(AddDataProviderIteratorReturnType),
     ]
 }
 

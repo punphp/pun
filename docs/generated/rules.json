@@ -10799,7 +10799,7 @@
         "ReturnIteratorInDataProvider",
         "ReturnIteratorInDataProviderRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/phpunit/add-depended-test-return-type",
