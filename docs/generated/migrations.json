@@ -12933,7 +12933,7 @@
         "rules": [
           "lint/phpunit/prefer-inline-create-stub"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {

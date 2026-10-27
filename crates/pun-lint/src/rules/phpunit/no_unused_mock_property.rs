@@ -212,7 +212,7 @@ fn property_fetch_name<'a>(expr: &'a Expression<'a>) -> Option<&'a [u8]> {
 
 /// The number of `findLocalPropertyFetchesByName($class, $name)`: in the hooked properties and the methods, every
 /// property fetch (`->`, `?->` or `::$`) of `name` whose object is `$this`, or has the class's own type.
-fn local_property_fetches<'a>(
+pub(super) fn local_property_fetches<'a>(
     ctx: &Context<'_>,
     scope: &[Node<'_, '_>],
     members: impl Iterator<Item = &'a ClassLikeMember<'a>>,

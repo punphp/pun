@@ -12065,7 +12065,7 @@
         "InlineStubPropertyToCreateStubMethodCallRector",
         "Rector\\PHPUnit\\CodeQuality\\Rector\\Class_\\InlineStubPropertyToCreateStubMethodCallRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/phpunit/prefer-local-over-setup-property",
