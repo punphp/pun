@@ -41,9 +41,13 @@ impl Rule for NoFloatDeltaParameter {
         let (Some(first), Some(second)) = (args.first().copied(), args.get(1).copied()) else {
             return;
         };
+        // php-parser's `Float_`, which also holds an integer above `PHP_INT_MAX`
         if !matches!(
             unparenthesize(arg_value(first)),
             Expression::Literal(Literal::Float(_))
+        ) && !matches!(
+            unparenthesize(arg_value(first)),
+            Expression::Literal(Literal::Integer(i)) if i.value.is_some_and(|v| v > i64::MAX as u64)
         ) {
             return;
         }

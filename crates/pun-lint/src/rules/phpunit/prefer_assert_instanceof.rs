@@ -8,8 +8,8 @@ use mago_syntax::cst::{BinaryOperator, Call, Expression, Node, NodeKind, Variabl
 use pun_problem::Safety;
 
 use super::{
-    AnyCall, NewArg, arg_value, expr_text, is_test_case_call_named, old_args, renamed, report,
-    resolve, rewrite_args, text,
+    AnyCall, NewArg, arg_value, expr_name, expr_text, is_test_case_call_named, old_args, renamed,
+    report, resolve, rewrite_args, text,
 };
 use crate::rules::rector_code_quality::named;
 use crate::syntax::unparenthesize;
@@ -93,9 +93,13 @@ impl Rule for PreferAssertInstanceof {
             return;
         }
         let class = match unparenthesize(binary.rhs) {
-            class @ Expression::Variable(Variable::Direct(_)) => expr_text(ctx, class).to_string(),
+            class @ Expression::Variable(_) => expr_text(ctx, class).to_string(),
             Expression::Identifier(id) => format!("\\{}::class", resolve(ancestors, id)),
-            _ => return,
+            // `getName()` of any other class expression, or Rector's `ShouldNotHappenException`
+            class => match expr_name(class) {
+                Some(name) => format!("\\{}::class", String::from_utf8_lossy(name)),
+                None => return,
+            },
         };
         let Some(name) = renamed(&call, RENAME) else {
             return;

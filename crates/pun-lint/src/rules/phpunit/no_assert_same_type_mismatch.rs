@@ -50,7 +50,8 @@ impl Rule for NoAssertSameTypeMismatch {
                 if call.is_name(&["assertEquals"]) {
                     return;
                 }
-                let Some(value) = i.value else {
+                // php-parser lexes an integer above `PHP_INT_MAX` as a float, not an `Int_`
+                let Some(value) = i.value.filter(|v| *v <= i64::MAX as u64) else {
                     return;
                 };
                 format!("'{value}'")

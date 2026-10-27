@@ -48,9 +48,7 @@ impl Rule for NoBareMockBuilder {
             let Expression::Call(Call::Method(inner)) = unparenthesize(current) else {
                 return;
             };
-            let Some(inner) = AnyCall::of(Node::MethodCall(inner)) else {
-                return;
-            };
+            let inner = AnyCall::of(Node::MethodCall(inner)).unwrap();
             if !inner.is_name(USELESS_METHOD_NAMES) {
                 break inner;
             }
