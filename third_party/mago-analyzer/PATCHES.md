@@ -1737,3 +1737,30 @@ php .oracle/phpstan/vendor/bin/phpstan analyse \
 	crates/pun-analyse/tests/fixtures/callback-gather/conditional.php |
 	jq '[.files[].messages[]]'
 ```
+
+## Nested constant-list foreach back edges
+
+`statement/loop/foreach.rs` extends the bounded array-exit chain above to nested loops and local
+continue exits, following PHPStan 2.3.1's
+[`ForeachHandler::tryProcessUnrolledConstantArrayForeach()`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Analyser/StmtHandler/ForeachHandler.php#L658-L841).
+Each required entry receives the preceding entry's fallthrough and local-continue scopes. A
+nonlocal continue does not become an inner back edge. The existing sixteen-entry limit remains;
+a nested speculative chain also respects PHPStan's product limit of eight. Normal assignment
+invalidates dependent offset caches when binding each key and value. Speculative artifacts and
+callbacks stay isolated; the ordinary walk still owns diagnostics and non-array observations.
+
+`reconciler/mod.rs` resolves a selector from its current scope before reading or refining its
+containing array, as
+[`MutatingScope::specifyExpressionTypeInPlace()`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Analyser/MutatingScope.php#L3773-L3820)
+does. Only a single constant key identifies a named offset; union selectors do not establish
+every alternative. The original dynamic expression id remains the cache identity. Positive
+isset assertions use the same key resolution, while a false isset retains a possible null entry
+instead of treating nullability as absence.
+
+Public controls in `tests/constant_foreach.rs` retain the original `bug-13643.php` fixture and
+compare complete diagnostics with fresh PHPStan captures under `tests/fixtures/constant-foreach/`.
+They cover conditional writes and continue forms, already-integer, non-integer and missing
+entries, asymmetric key/value assignment, loop budgets, ordinary observations and literal-selector
+scopes. References, breaks, returns, hooks, optional entries, shape unions, associative iterators
+and non-direct targets still use the ordinary path. In particular, this does not fix the separate
+ordinary-path over-refinement after unconditional writes through a by-reference union selector.

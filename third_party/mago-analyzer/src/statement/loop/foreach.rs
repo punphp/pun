@@ -31,6 +31,7 @@ use crate::context::scope::loop_scope::LoopScope;
 use crate::context::scope::var_has_root;
 use crate::error::AnalysisError;
 use crate::expression::assignment::PropertyWriteKind;
+use crate::expression::assignment::analyze_assignment_to_variable;
 use crate::expression::assignment::assign_to_expression;
 use crate::statement::analyze_statements;
 use crate::statement::r#loop;
@@ -229,7 +230,7 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Foreach<'arena> {
 
 /// ForeachHandler::tryProcessUnrolledConstantArrayForeach's sequential chain for array state.
 /// The ordinary walk remains authoritative for observations and other locals. Only a single
-/// sealed, required-key list with straight-through control flow can replace its array exits.
+/// sealed, required-key list without breaks or returns can replace its array exits.
 fn unroll_array_mutations<'ctx, 'ast, 'arena, A: Arena>(
     context: &mut Context<'ctx, 'arena, A>,
     block_context: &BlockContext<'ctx>,
@@ -237,7 +238,7 @@ fn unroll_array_mutations<'ctx, 'ast, 'arena, A: Arena>(
     statement: &'ast Foreach<'arena>,
     by_reference: bool,
 ) -> Result<Option<WordMap<Rc<TUnion>>>, AnalysisError> {
-    if by_reference || block_context.flags.inside_loop() || context.plugin_registry.has_statement_hooks() {
+    if by_reference || context.plugin_registry.has_statement_hooks() {
         return Ok(None);
     }
     let Expression::Variable(Variable::Direct(value)) = statement.target.value() else {
@@ -249,7 +250,7 @@ fn unroll_array_mutations<'ctx, 'ast, 'arena, A: Arena>(
         _ => return Ok(None),
     };
     let actions = ControlAction::from_statements(statement.body.statements().iter().collect(), vec![], None, true);
-    if actions.len() != 1 || !actions.contains(ControlAction::None) {
+    if actions.iter().any(|action| !matches!(action, ControlAction::None | ControlAction::Continue)) {
         return Ok(None);
     }
     let entries = match artifacts.get_expression_type(statement.expression).map(|t| t.types.as_ref()) {
@@ -267,6 +268,14 @@ fn unroll_array_mutations<'ctx, 'ast, 'arena, A: Arena>(
     if entries.is_empty() || entries.len() > 16 || entries.iter().any(|(_, optional, _)| *optional) {
         return Ok(None);
     }
+    let factor = std::iter::successors(artifacts.loop_scope.as_ref(), |scope| scope.parent_loop.as_deref())
+        .map(|scope| scope.foreach_unroll_factor)
+        .max()
+        .unwrap_or(1);
+    if factor > 1 && factor * entries.len() > 8 {
+        return Ok(None);
+    }
+    let factor = factor * entries.len();
     let mut chain = block_context.clone();
     chain.if_body_context = None;
     chain.finally_scope = None;
@@ -275,14 +284,42 @@ fn unroll_array_mutations<'ctx, 'ast, 'arena, A: Arena>(
     context.gather_callback(|context| {
         for (key_type, _, value_type) in entries {
             let mut scratch = AnalysisArtifacts::new().with_native_types(context.settings.track_native_types);
-            scratch.set_loop_scope(LoopScope::new(statement.span(), chain.locals.clone(), None));
-            chain.invalidate_variable_certainty(value.name.into());
-            chain.locals.insert(value.name.into(), Rc::new(value_type));
+            scratch.loop_scope = artifacts.loop_scope.clone();
+            let mut iteration = LoopScope::new(statement.span(), chain.locals.clone(), None);
+            iteration.foreach_unroll_factor = factor;
+            scratch.set_loop_scope(iteration);
+            analyze_assignment_to_variable(
+                context,
+                &mut chain,
+                &mut scratch,
+                value.span(),
+                None,
+                Rc::new(value_type),
+                value.name.into(),
+                false,
+            );
             if let Some(key) = key {
-                chain.invalidate_variable_certainty(key.name.into());
-                chain.locals.insert(key.name.into(), Rc::new(key_type));
+                analyze_assignment_to_variable(
+                    context,
+                    &mut chain,
+                    &mut scratch,
+                    key.span(),
+                    None,
+                    Rc::new(key_type),
+                    key.name.into(),
+                    false,
+                );
             }
             analyze_statements(statement.body.statements(), context, &mut chain, &mut scratch)?;
+            let mut next = scratch.loop_scope.unwrap().continue_locals;
+            if !chain.flags.has_returned() {
+                crate::context::scope::loop_scope::merge_exit_locals(&mut next, &chain.locals, context.codebase);
+            }
+            let Some(next) = next else {
+                return Ok(None);
+            };
+            chain.locals = next;
+            chain.flags.set_has_returned(false);
         }
         Ok(Some(
             chain

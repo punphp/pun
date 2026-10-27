@@ -15,6 +15,8 @@ use crate::context::scope::control_action::ControlActionSet;
 pub struct LoopScope {
     pub span: Span,
     pub iteration_count: usize,
+    /// Product of constant-array entries on the speculative foreach chain.
+    pub foreach_unroll_factor: usize,
     pub parent_context_variables: WordMap<Rc<TUnion>>,
     pub redefined_loop_variables: WordMap<Rc<TUnion>>,
     pub possibly_redefined_loop_variables: WordMap<Rc<TUnion>>,
@@ -39,6 +41,7 @@ impl LoopScope {
             span,
             parent_context_variables: parent_context_vars,
             iteration_count: 0,
+            foreach_unroll_factor: 1,
             redefined_loop_variables: WordMap::default(),
             possibly_redefined_loop_variables: WordMap::default(),
             possibly_redefined_loop_parent_variables: WordMap::default(),

@@ -358,15 +358,23 @@ pub fn reconcile_keyed_types<'ctx, A>(
                     false,
                 );
             } else if key_str.ends_with(b"]") && (has_inverted_isset || has_inverted_key_exists) {
-                let optional_entry_type = reconcile_optional_entry_type(
-                    context,
-                    new_type_parts,
-                    before_adjustment.as_deref(),
-                    key_str,
-                    inside_loop,
-                    span,
-                    negated,
-                );
+                // A false isset can retain a null entry; only a non-nullable value proves absence.
+                let optional_entry_type = if has_inverted_isset
+                    && !has_inverted_key_exists
+                    && before_adjustment.as_deref().is_some_and(TUnion::can_be_null)
+                {
+                    Some(result_type.clone())
+                } else {
+                    reconcile_optional_entry_type(
+                        context,
+                        new_type_parts,
+                        before_adjustment.as_deref(),
+                        key_str,
+                        inside_loop,
+                        span,
+                        negated,
+                    )
+                };
 
                 if let Some(entry_type) = optional_entry_type {
                     adjust_array_type(
@@ -475,7 +483,8 @@ pub fn reconcile_keyed_types<'ctx, A>(
             && !has_empty
         {
             let key_parts = borrow_path_parts(key_str);
-            let offset = key_parts[key_parts.len() - 2];
+            let offset = resolve_array_key(key_parts[key_parts.len() - 2], block_context);
+            let offset = offset.as_bytes();
             let array_key = if offset.starts_with(b"'") || offset.starts_with(b"\"") {
                 Some(ArrayKey::String(word(&offset[1..offset.len() - 1])))
             } else {
@@ -591,6 +600,18 @@ fn has_required_offset(value: &TUnion, key: &ArrayKey) -> bool {
         })
 }
 
+/// MutatingScope::specifyExpressionTypeInPlace resolves an offset from its current scope.
+/// A union-valued selector is not evidence that every named offset has the asserted value.
+fn resolve_array_key(key: &[u8], context: &BlockContext<'_>) -> Word {
+    if key.starts_with(b"$")
+        && let Some(value) = context.locals.get(&word(key)).and_then(|ty| ty.get_single_array_key())
+    {
+        value.id_word()
+    } else {
+        word(key)
+    }
+}
+
 fn adjust_array_type(
     mut key_parts: Vec<&[u8]>,
     context: &mut BlockContext<'_>,
@@ -608,6 +629,8 @@ fn adjust_array_type(
     let base_key: Vec<u8> = key_parts.iter().flat_map(|part| part.iter()).copied().collect();
     let base_key_atom = word(&base_key);
 
+    let array_key = resolve_array_key(array_key, context);
+    let array_key = array_key.as_bytes();
     if array_key.starts_with(b"$") {
         // When the key is a variable, we can't narrow to a specific key,
         // but we CAN remove empty array variants since isset proves the array is non-empty.
@@ -867,6 +890,8 @@ fn adjust_array_type_remove_key(
 
     key_parts.pop();
 
+    let array_key = resolve_array_key(array_key, context);
+    let array_key = array_key.as_bytes();
     if array_key.starts_with(b"$") {
         return;
     }
@@ -1137,6 +1162,8 @@ fn add_nested_assertions(
                 new_base_key.push(b']');
                 let base_key_atom = word(&base_key);
                 let entry = new_types.entry(base_key_atom).or_default();
+                let array_key = resolve_array_key(array_key, context);
+                let array_key = array_key.as_bytes();
                 let new_key = if array_key.starts_with(b"'") || array_key.starts_with(b"\"") {
                     Some(ArrayKey::String(word(&array_key[1..(array_key.len() - 1)])))
                 } else if array_key.starts_with(b"$") {
@@ -1367,16 +1394,18 @@ where
 
             key_parts.pop();
 
-            let array_key_offset = std::str::from_utf8(array_key)
+            let resolved_key = resolve_array_key(array_key, block_context);
+            let resolved_key = resolved_key.as_bytes();
+            let array_key_offset = std::str::from_utf8(resolved_key)
                 .ok()
                 .and_then(|s| if INTEGER_REGEX.is_match(s) { s.parse::<usize>().ok() } else { None });
 
             let array_key_type = if let Some(array_key_offset) = array_key_offset {
                 ArrayKey::Integer(array_key_offset as i64)
-            } else if array_key.starts_with(b"'") || array_key.starts_with(b"\"") {
-                ArrayKey::String(word(&array_key[1..(array_key.len() - 1)]))
+            } else if resolved_key.starts_with(b"'") || resolved_key.starts_with(b"\"") {
+                ArrayKey::String(word(&resolved_key[1..(resolved_key.len() - 1)]))
             } else {
-                ArrayKey::String(word(array_key))
+                ArrayKey::String(word(resolved_key))
             };
 
             let mut new_base_key = base_key.clone();
@@ -1403,7 +1432,7 @@ where
                             return None;
                         }
 
-                        let known_item = if !array_key.starts_with(b"$")
+                        let known_item = if !resolved_key.starts_with(b"$")
                             && let Some(known_items) = known_items
                         {
                             known_items.get(&array_key_type)

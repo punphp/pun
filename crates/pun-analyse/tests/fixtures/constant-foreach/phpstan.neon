@@ -1,0 +1,8 @@
+parameters:
+    level: 9
+    phpVersion: 80400
+    paths:
+        - values.php
+        - boundaries.php
+        - observations.php
+        - scopes.php
