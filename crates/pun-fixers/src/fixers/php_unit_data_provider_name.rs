@@ -122,15 +122,10 @@ impl PhpUnitDataProviderNameFixer {
         }
     }
 
-    /// `getDataProviderNameForUsageIndex`, from a `function` token: no attribute comes after one, so upstream's step
-    /// over an attribute never runs.
-    fn name_for_usage(&self, tokens: &Tokens, mut index: usize) -> String {
-        loop {
-            index = tokens.get_next_meaningful_token(index).unwrap();
-            if tokens[index].is_kind(T_STRING) {
-                break;
-            }
-        }
+    /// `getDataProviderNameForUsageIndex`, from the `function` token of a method `DataProviderAnalyzer` found: its
+    /// name comes right after it, so upstream's loop (over attributes and other tokens) ends on its first step.
+    fn name_for_usage(&self, tokens: &Tokens, index: usize) -> String {
+        let index = tokens.get_next_meaningful_token(index).unwrap();
         let name = Preg::replace(r"/^test_*/i", "", tokens[index].get_content());
         let mut name = String::from_utf8_lossy(&name).into_owned();
         if self.prefix.is_empty() {
