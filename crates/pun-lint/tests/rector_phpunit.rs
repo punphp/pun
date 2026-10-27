@@ -472,3 +472,12 @@ fn add_tests_void_return_type_where_no_return() {
         "AddTestsVoidReturnTypeWhereNoReturnRector",
     );
 }
+
+#[test]
+fn return_iterator_in_data_provider() {
+    // Fixture/ verbatim from rector-src 2.6.1 (rules-tests/...), a Rector core rule of the phpunit sets.
+    check(
+        AddDataProviderIteratorReturnType,
+        "ReturnIteratorInDataProviderRector",
+    );
+}
