@@ -16,7 +16,7 @@ fn cycles_do_not_become_invented_literal_values() {
 }
 
 #[test]
-fn unnamespaced_global_initializers_keep_their_scope() {
+fn global_initializer_copies_keep_scope_and_mixed_exclusions() {
     check("global.php", None, "expected-global.json");
 }
 

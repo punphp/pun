@@ -1,11 +1,11 @@
 {
   "totals": {
     "errors": 0,
-    "file_errors": 3
+    "file_errors": 11
   },
   "files": {
     "global.php": {
-      "errors": 3,
+      "errors": 11,
       "messages": [
         {
           "message": "Dumped type: 3",
@@ -22,6 +22,54 @@
         {
           "message": "Dumped type: 1",
           "line": 9,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: mixed~(0|0.0|''|'0'|array{}|false|null)",
+          "line": 36,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: mixed~(0|0.0|''|'0'|array{}|false|null)",
+          "line": 37,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: mixed",
+          "line": 38,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: mixed~(0|0.0|''|'0'|false|null)",
+          "line": 39,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: mixed~(0|0.0|''|'0'|array{}|null)",
+          "line": 40,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: mixed",
+          "line": 41,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: non-empty-array<mixed, mixed>",
+          "line": 53,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: array<mixed, mixed>",
+          "line": 57,
           "ignorable": false,
           "identifier": "phpstan.dumpType"
         }
