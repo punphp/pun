@@ -10,7 +10,7 @@
 use mago_codex::ttype::atomic::TAtomic;
 use mago_syntax::cst::{Node, NodeKind};
 
-use super::declare::{return_declaration, union_order};
+use super::declare::{expression_order, return_declaration};
 use super::facts::facts;
 use super::native::native_type;
 use super::silent_void::{Place, has_silent_void};
@@ -70,8 +70,8 @@ impl Rule for AddClosureReturn {
         for r in &returns {
             match r.value {
                 None => has_void = true,
-                Some(value) => match native_type(&facts, value) {
-                    Some(t) => types.extend(union_order(t.types.as_ref())),
+                Some(value) => match expression_order(value, |expr| native_type(&facts, expr)) {
+                    Some(t) => types.extend(t),
                     None => return,
                 },
             }
@@ -126,22 +126,18 @@ impl Rule for AddArrowFunctionReturn {
             return;
         }
         let facts = facts(ctx);
-        let Some(t) = native_type(&facts, arrow.expression) else {
+        let Some(types) = expression_order(arrow.expression, |expr| native_type(&facts, expr))
+        else {
             return;
         };
-        if t.types
+        if types
             .iter()
             .any(|t| matches!(t, TAtomic::Void | TAtomic::Never | TAtomic::Mixed(_)))
         {
             return;
         }
-        if let Some(r#type) = return_declaration(
-            union_order(t.types.as_ref()),
-            &facts.codebase,
-            ctx.php_version,
-            &[],
-            true,
-        ) {
+        if let Some(r#type) = return_declaration(types, &facts.codebase, ctx.php_version, &[], true)
+        {
             out.push(add_return_type(
                 node_span(&arrow.r#fn),
                 node_span(&arrow.parameter_list).end,

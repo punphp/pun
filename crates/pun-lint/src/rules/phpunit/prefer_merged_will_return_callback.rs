@@ -14,7 +14,7 @@ use super::{
     AnyCall, NewArg, arg_value, expr_text, is_constant, is_in_test_class, report, rewrite_args,
 };
 use crate::rules::rector_stmts::block_list;
-use crate::rules::types::declare::{return_declaration, union_order};
+use crate::rules::types::declare::{expression_order, return_declaration};
 use crate::rules::types::facts::facts;
 use crate::syntax::{node_span, unparenthesize};
 use crate::{Context, Report, Rule};
@@ -80,16 +80,11 @@ impl Rule for PreferMergedWillReturnCallback {
             return;
         };
         let facts = facts(ctx);
-        let Some(t) = facts.full_type(node_span(returned)) else {
+        let Some(types) = expression_order(returned, |expr| facts.full_type(node_span(expr)))
+        else {
             return;
         };
-        let declared = return_declaration(
-            union_order(t.types.as_ref()),
-            &facts.codebase,
-            ctx.php_version,
-            &[],
-            true,
-        );
+        let declared = return_declaration(types, &facts.codebase, ctx.php_version, &[], true);
 
         let mut edits = vec![Edit::new(node_span(old_value), expr_text(ctx, returned))];
         // `resolveExternalUses`

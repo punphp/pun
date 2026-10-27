@@ -9,6 +9,10 @@ use mago_codex::ttype::atomic::TAtomic;
 use mago_codex::ttype::atomic::object::TObject;
 use mago_codex::ttype::atomic::reference::TReference;
 use mago_codex::ttype::atomic::scalar::TScalar;
+use mago_codex::ttype::union::TUnion;
+use mago_syntax::cst::Expression;
+
+use crate::syntax::unparenthesize;
 
 /// `PhpVersionFeature::OBJECT_TYPE`.
 const OBJECT_TYPE: u32 = 70200;
@@ -206,10 +210,42 @@ fn atomic_declaration(
     })
 }
 
+/// PHPStan 2.2.7's `TernaryHandler::resolveType` unions the truthy arm before the falsey arm.
+/// Recover that encounter order before `TypeCombinator::union` groups constant kinds. Keep Mago's
+/// normalized members, not the arms' unmerged types, and leave written receiver types in their own order.
+/// `type_of` retains the caller's native (`getNativeType`) or docblock-aware (`getType`) scope.
+pub(crate) fn expression_order<'a>(
+    expr: &Expression<'_>,
+    type_of: impl Fn(&Expression<'_>) -> Option<&'a TUnion> + Copy,
+) -> Option<Vec<&'a TAtomic>> {
+    let mut types: Vec<&TAtomic> = type_of(expr)?.types.iter().collect();
+    if let Expression::Conditional(conditional) = unparenthesize(expr) {
+        let condition = type_of(conditional.condition);
+        let branches = [
+            (!condition.is_some_and(|t| t.is_always_falsy()))
+                .then_some(conditional.then.unwrap_or(conditional.condition)),
+            (!condition.is_some_and(|t| t.is_always_truthy())).then_some(conditional.r#else),
+        ];
+        let order: Vec<&TAtomic> = branches
+            .into_iter()
+            .flatten()
+            .filter_map(|branch| expression_order(branch, type_of))
+            .flatten()
+            .collect();
+        types.sort_by_key(|atomic| {
+            order
+                .iter()
+                .position(|candidate| candidate == atomic)
+                .unwrap_or(order.len())
+        });
+    }
+    Some(union_order(types))
+}
+
 /// The members of an expression's type in the order PHPStan's `TypeCombinator::union` leaves them: other types
-/// first (in Mago's order, which is all Pun knows of the order they came in), then integer ranges, arrays, enum cases,
+/// first in their input order, then integer ranges, arrays, enum cases,
 /// and last the constant values, grouped by kind in the order each kind first appears.
-pub(crate) fn union_order(types: &[TAtomic]) -> Vec<&TAtomic> {
+pub(crate) fn union_order<'a>(types: impl IntoIterator<Item = &'a TAtomic>) -> Vec<&'a TAtomic> {
     let constant_kind = |t: &TAtomic| -> Option<u8> {
         match t {
             TAtomic::Null => Some(0),
@@ -229,15 +265,15 @@ pub(crate) fn union_order(types: &[TAtomic]) -> Vec<&TAtomic> {
             _ => 0,
         }
     };
+    let mut ordered: Vec<&TAtomic> = types.into_iter().collect();
     let mut kinds: Vec<u8> = Vec::new();
-    for t in types {
+    for t in &ordered {
         if let Some(k) = constant_kind(t)
             && !kinds.contains(&k)
         {
             kinds.push(k);
         }
     }
-    let mut ordered: Vec<&TAtomic> = types.iter().collect();
     ordered.sort_by_key(|t| {
         let kind = constant_kind(t)
             .and_then(|k| kinds.iter().position(|x| *x == k))
