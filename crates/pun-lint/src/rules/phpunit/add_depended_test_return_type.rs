@@ -71,9 +71,8 @@ impl Rule for AddDependedTestReturnType {
             let [sole] = returns[..] else {
                 continue;
             };
-            let Some(value) = sole.value else {
-                continue;
-            };
+            // `has_only_return_with_expr()`: the return has a value
+            let value = sole.value.unwrap();
             let Some(t) = facts
                 .native_type(node_span(value))
                 .filter(|t| !t.types.is_empty())

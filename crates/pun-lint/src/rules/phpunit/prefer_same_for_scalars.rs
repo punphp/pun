@@ -112,7 +112,11 @@ fn skip_constant_array(
     expected: &Expression<'_>,
     actual: &Expression<'_>,
 ) -> bool {
-    let Some(PType::ConstantArray { values, .. }) = native(ctx, expected) else {
+    let Some(PType::ConstantArray {
+        keys: expected_keys,
+        values,
+    }) = native(ctx, expected)
+    else {
         return false;
     };
     if has_non_scalar_type(&values) {
@@ -124,12 +128,7 @@ fn skip_constant_array(
     else {
         return true;
     };
-    let expected_keys = written_keys(ancestors, expected).unwrap_or_else(|| {
-        let Some(PType::ConstantArray { keys, .. }) = native(ctx, expected) else {
-            unreachable!("checked above");
-        };
-        keys
-    });
+    let expected_keys = written_keys(ancestors, expected).unwrap_or(expected_keys);
     let actual_keys = written_keys(ancestors, actual).unwrap_or(actual_keys);
     expected_keys != actual_keys
 }
@@ -139,13 +138,12 @@ fn skip_constant_array(
 /// PHPStan keeps them in order.
 fn written_keys(ancestors: &[Node<'_, '_>], expr: &Expression<'_>) -> Option<Vec<Key>> {
     let literal = match unparenthesize(expr) {
-        e @ (Expression::Array(_) | Expression::LegacyArray(_)) => e,
         Expression::Variable(mago_syntax::cst::Variable::Direct(v)) => {
             assigned_array(ancestors, v.name, crate::syntax::node_span(expr).start)?
         }
-        _ => return None,
+        other => other,
     };
-    let elements: Vec<&ArrayElement<'_>> = match literal {
+    let elements: Vec<&ArrayElement<'_>> = match unparenthesize(literal) {
         Expression::Array(a) => a.elements.iter().collect(),
         Expression::LegacyArray(a) => a.elements.iter().collect(),
         _ => return None,

@@ -6,8 +6,7 @@
 //! `yield from`) gets `: \Iterator`.
 
 use mago_syntax::cst::{
-    ClassLikeMember, Expression, Literal, Method, MethodBody, Node, NodeKind, PartialArgument,
-    Yield,
+    ClassLikeMember, Expression, Literal, Method, MethodBody, Node, NodeKind, Yield,
 };
 
 use super::annotations::{TagValue, named_tags};
@@ -91,12 +90,7 @@ impl Rule for AddDataProviderIteratorReturnType {
                     else {
                         return;
                     };
-                    let value = match argument {
-                        PartialArgument::Positional(a) => a.value,
-                        PartialArgument::Named(a) => a.value,
-                        _ => continue,
-                    };
-                    if let Expression::Literal(Literal::String(s)) = value
+                    if let Some(Expression::Literal(Literal::String(s))) = argument.value()
                         && let Some(v) = s.value
                     {
                         names.push(String::from_utf8_lossy(v).into_owned());

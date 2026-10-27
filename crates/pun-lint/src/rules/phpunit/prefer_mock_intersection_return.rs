@@ -34,9 +34,7 @@ impl Rule for PreferMockIntersectionReturn {
         if !is_in_test_class(ctx, ancestors, Some(method)) {
             return;
         }
-        let Some(annotated) = Annotated::of(ctx.source, node, ancestors) else {
-            return;
-        };
+        let annotated = Annotated::of(ctx.source, node, ancestors).unwrap();
         let Some(doc) = annotated.doc.as_ref() else {
             return;
         };
