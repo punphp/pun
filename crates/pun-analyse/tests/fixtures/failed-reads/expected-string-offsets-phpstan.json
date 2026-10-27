@@ -1,11 +1,11 @@
 {
   "totals": {
     "errors": 0,
-    "file_errors": 152
+    "file_errors": 170
   },
   "files": {
     "string-offsets.php": {
-      "errors": 152,
+      "errors": 170,
       "messages": [
         {
           "message": "Dumped type: non-empty-string",
@@ -916,6 +916,114 @@
         {
           "message": "Dumped type: null",
           "line": 480,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: int<0, 2>",
+          "line": 489,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: '-'|'.'|'/'",
+          "line": 490,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: int<0, max>",
+          "line": 499,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: ''|'-'|'.'|'/'",
+          "line": 500,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: 0",
+          "line": 511,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: 0",
+          "line": 512,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: '.'",
+          "line": 513,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: int<0, 2>",
+          "line": 521,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: '-'|'.'|'/'",
+          "line": 522,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: 3",
+          "line": 523,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: int<0, 2>",
+          "line": 533,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: '-'|'.'|'/'",
+          "line": 534,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: 3",
+          "line": 535,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: int<0, 2>",
+          "line": 545,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: '-'|'.'|'/'",
+          "line": 546,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: int<0, max>",
+          "line": 557,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: ''|'-'|'.'|'/'",
+          "line": 558,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: ''|'-'|'.'|'/'",
+          "line": 568,
           "ignorable": false,
           "identifier": "phpstan.dumpType"
         }

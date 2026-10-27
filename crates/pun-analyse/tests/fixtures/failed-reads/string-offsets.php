@@ -480,3 +480,92 @@ function genuineNullCache(array $value, string $key): void
         \PHPStan\dumpType($value[$key]);
     }
 }
+
+function evaluatedForBound(): void
+{
+    $chars = './-';
+    $n = strlen($chars);
+    for ($i = 0; $i < $n; $i++) {
+        \PHPStan\dumpType($i);
+        \PHPStan\dumpType($chars[$i]);
+        explode($chars[$i], 'Mercedes-Benz');
+    }
+}
+
+function parameterForBound(int $n): void
+{
+    $chars = './-';
+    for ($i = 0; $i < $n; $i++) {
+        \PHPStan\dumpType($i);
+        \PHPStan\dumpType($chars[$i]);
+    }
+}
+
+function zeroForBound(): void
+{
+    $chars = './-';
+    $n = strlen('');
+    for ($i = 0; $i < $n; $i++) {
+        return;
+    }
+    \PHPStan\dumpType($i);
+    \PHPStan\dumpType($n);
+    \PHPStan\dumpType($chars[$i]);
+}
+
+function bodyChangesForBound(): void
+{
+    $chars = './-';
+    $n = 8;
+    for ($i = 0; $i < ($n = strlen($chars)); $i++) {
+        \PHPStan\dumpType($i);
+        \PHPStan\dumpType($chars[$i]);
+        \PHPStan\dumpType($n);
+        $n = 8;
+    }
+}
+
+function commaChangesForBound(): void
+{
+    $chars = './-';
+    $n = 8;
+    for ($i = 0; $n = strlen($chars), $bound = $n--, $i < $bound; $i++) {
+        \PHPStan\dumpType($i);
+        \PHPStan\dumpType($chars[$i]);
+        \PHPStan\dumpType($bound);
+    }
+}
+
+function evaluatedWhileBound(): void
+{
+    $chars = './-';
+    $n = strlen($chars);
+    $i = 0;
+    while ($i < $n) {
+        \PHPStan\dumpType($i);
+        \PHPStan\dumpType($chars[$i]);
+        $i++;
+    }
+}
+
+function evaluatedDoWhileBound(): void
+{
+    $chars = './-';
+    $n = strlen($chars);
+    $i = 0;
+    do {
+        \PHPStan\dumpType($i);
+        \PHPStan\dumpType($chars[$i]);
+        $i++;
+    } while ($i < $n);
+}
+
+function growingBodyBound(): void
+{
+    $chars = './-';
+    $n = strlen($chars);
+    for ($i = 0; $i < $n; $i++) {
+        \PHPStan\dumpType($chars[$i]);
+        $n = 4;
+    }
+}

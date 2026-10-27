@@ -1436,6 +1436,24 @@ where
     loop_context.flags.set_inside_loop_expressions(false);
     loop_context.flags.set_inside_conditional(false);
 
+    // For/while operand types belong to this evaluation, not an earlier pass. Scraping does not
+    // evaluate side effects again. Do-while replays its first body before the condition, so its
+    // post-condition must not constrain that first body through evaluated operand artifacts.
+    let pre_condition_clauses = if is_do {
+        pre_condition_clauses.to_vec()
+    } else {
+        get_formula(
+            pre_condition_span,
+            pre_condition_span,
+            pre_condition,
+            context.get_assertion_context_from_block(loop_context),
+            artifacts,
+            &context.settings.algebra_thresholds(),
+            context.settings.formula_size_threshold,
+        )
+        .unwrap_or_default()
+    };
+
     if first_application && (controls_loop || is_do) {
         if artifacts.get_loop_scope_mut().is_some_and(|scope| scope.entry_scope.is_some()) {
             let entry_scope = loop_context.variable_scope();

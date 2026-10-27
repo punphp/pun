@@ -2479,3 +2479,51 @@ Plugin-error controls check that a failed body remains an error rather than a co
 This patch does not port PHPStan's separate `VariableFlow` liveness algebra or extend the existing scope joins.
 Unsupported native transfers retain their existing invalidation behavior. This is not a complete variable-flow
 or DefinedVariableRule port.
+
+## Evaluated for and while condition formulas
+
+`src/statement/loop/mod.rs::apply_pre_condition_to_loop_context` now derives each for or while
+condition's formula after the existing expression evaluation. The formula therefore uses the operand
+types from that pass, including assignments in earlier comma-separated conditions. Formula extraction
+does not evaluate the expression again. The first-falsey snapshot uses the same evaluated formula.
+
+Previously, the helper reconciled clauses cached before the first condition evaluation. For
+`$n = strlen('./-'); for ($i = 0; $i < $n; $i++)`, those clauses lacked `$n`'s literal value.
+The symbolic comparison alone did not narrow `$i`, leaving `int<0, max>`. Finite string-offset
+inference then correctly included `''`, which caused an extra `argument.type` diagnostic for
+`explode($chars[$i], 'Mercedes-Benz')`. The evaluated comparison supplies the existing integer
+assertion with the upper bound `3`, restoring `int<0, 2>` and `'-'|'.'|'/'`.
+
+The reference is PHPStan 2.3.1 at `cb3b7e99489b2e3789ee2eec10501cb7a72580ea`:
+
+- [`ForHandler::processStmt()`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Analyser/StmtHandler/ForHandler.php#L175-L194)
+  takes the truthy scope from the evaluated condition result. Its later passes also use each
+  evaluated condition's truthy scope.
+- [`StrlenFunctionReturnTypeExtension::getTypeFromFunctionCall()`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Type/Php/StrlenFunctionReturnTypeExtension.php#L35-L65)
+  derives the literal byte length from constant scalar strings.
+
+Do-while retains its cached post-condition formula: its body includes an unconditional first
+iteration, which must not inherit a later iteration's evaluated upper bound. Cached exit formulas,
+condition-complexity reporting, convergence, and exit generalization are unchanged. The patch does
+not change string-offset inference or introduce a numeric relation engine.
+
+The public `failed_string_offsets` target checks the original `testBug11506` through `run()` at
+levels 5 and 9. PHPStan reports no diagnostics at either level. Its existing offset fixture adds
+18 fresh PHPStan dump records for constant and parameter bounds, a zero-iteration exit, a bound
+reset by the condition after a body write, comma-separated assignment and postfix results, while,
+the unconditional do-while control, and a growing body bound that must still allow `''`.
+All 152 earlier oracle records remain unchanged.
+
+The oracle capture uses the pinned executable, the existing `failed-reads/phpstan.neon`, level 0,
+and the explicit `string-offsets.php` path. Only absolute file keys are reduced to basenames.
+Integer-union bound propagation and precise numeric writes from postfix expressions remain outside
+this correction.
+
+Fresh instrumentation covers **11/11 changed executable production lines**, with no exclusions.
+The measurement uses direct `llvm-cov export` over the offset test executable and the fresh merged
+profile. Cargo, Rayon, and the test harness each use one job, with incremental compilation disabled.
+The offset, variable and loop-pollution, project, statement, dead-code, and native-lane controls pass.
+The incoming-isset target retains its baseline certainty mismatch at `flow.php:228–229`, also
+reproduced with main's pre-fix executable. Both 246-case Functions partitions at levels 5 and 9
+have zero new mismatches. Their harness failures report only the existing stale `testBug1946` gap
+at each level. No gap or earlier expectation changes are part of this patch.
