@@ -1,0 +1,234 @@
+[
+  [
+    "concat.php",
+    17,
+    "phpstan.dumpType",
+    "Dumped type: non-empty-string",
+    null,
+    false
+  ],
+  [
+    "concat.php",
+    18,
+    "phpstan.dumpType",
+    "Dumped type: non-falsy-string",
+    null,
+    false
+  ],
+  [
+    "concat.php",
+    19,
+    "phpstan.dumpType",
+    "Dumped type: non-falsy-string",
+    null,
+    false
+  ],
+  [
+    "concat.php",
+    20,
+    "phpstan.dumpType",
+    "Dumped type: non-falsy-string",
+    null,
+    false
+  ],
+  [
+    "concat.php",
+    21,
+    "phpstan.dumpType",
+    "Dumped type: non-empty-string",
+    null,
+    false
+  ],
+  [
+    "concat.php",
+    22,
+    "phpstan.dumpType",
+    "Dumped type: non-empty-string",
+    null,
+    false
+  ],
+  [
+    "concat.php",
+    23,
+    "phpstan.dumpType",
+    "Dumped type: string",
+    null,
+    false
+  ],
+  [
+    "concat.php",
+    24,
+    "phpstan.dumpType",
+    "Dumped type: non-falsy-string",
+    null,
+    false
+  ],
+  [
+    "concat.php",
+    25,
+    "phpstan.dumpType",
+    "Dumped type: non-falsy-string",
+    null,
+    false
+  ],
+  [
+    "concat.php",
+    26,
+    "phpstan.dumpType",
+    "Dumped type: non-falsy-string",
+    null,
+    false
+  ],
+  [
+    "concat.php",
+    27,
+    "phpstan.dumpType",
+    "Dumped type: non-falsy-string",
+    null,
+    false
+  ],
+  [
+    "concat.php",
+    28,
+    "phpstan.dumpType",
+    "Dumped type: non-empty-string",
+    null,
+    false
+  ],
+  [
+    "concat.php",
+    29,
+    "phpstan.dumpType",
+    "Dumped type: non-empty-string",
+    null,
+    false
+  ],
+  [
+    "concat.php",
+    30,
+    "phpstan.dumpType",
+    "Dumped type: non-falsy-string",
+    null,
+    false
+  ],
+  [
+    "concat.php",
+    31,
+    "phpstan.dumpType",
+    "Dumped type: non-falsy-string",
+    null,
+    false
+  ],
+  [
+    "concat.php",
+    32,
+    "phpstan.dumpType",
+    "Dumped type: non-empty-string",
+    null,
+    false
+  ],
+  [
+    "concat.php",
+    33,
+    "phpstan.dumpType",
+    "Dumped type: non-empty-string",
+    null,
+    false
+  ],
+  [
+    "concat.php",
+    34,
+    "phpstan.dumpType",
+    "Dumped type: lowercase-string&non-falsy-string&uppercase-string",
+    null,
+    false
+  ],
+  [
+    "concat.php",
+    35,
+    "phpstan.dumpType",
+    "Dumped type: lowercase-string&non-falsy-string",
+    null,
+    false
+  ],
+  [
+    "concat.php",
+    36,
+    "phpstan.dumpType",
+    "Dumped type: non-falsy-string&uppercase-string",
+    null,
+    false
+  ],
+  [
+    "concat.php",
+    37,
+    "phpstan.dumpType",
+    "Dumped type: non-falsy-string",
+    null,
+    false
+  ],
+  [
+    "concat.php",
+    38,
+    "phpstan.dumpType",
+    "Dumped type: literal-string&non-falsy-string",
+    null,
+    false
+  ],
+  [
+    "concat.php",
+    39,
+    "phpstan.dumpType",
+    "Dumped type: non-empty-string",
+    null,
+    false
+  ],
+  [
+    "concat.php",
+    40,
+    "phpstan.dumpType",
+    "Dumped type: ''",
+    null,
+    false
+  ],
+  [
+    "concat.php",
+    41,
+    "phpstan.dumpType",
+    "Dumped type: non-falsy-string",
+    null,
+    false
+  ],
+  [
+    "concat.php",
+    42,
+    "phpstan.dumpType",
+    "Dumped type: '00'",
+    null,
+    false
+  ],
+  [
+    "concat.php",
+    43,
+    "phpstan.dumpType",
+    "Dumped type: '0'",
+    null,
+    false
+  ],
+  [
+    "concat.php",
+    44,
+    "phpstan.dumpType",
+    "Dumped type: non-empty-string",
+    null,
+    false
+  ],
+  [
+    "concat.php",
+    45,
+    "phpstan.dumpType",
+    "Dumped type: non-empty-string",
+    null,
+    false
+  ]
+]

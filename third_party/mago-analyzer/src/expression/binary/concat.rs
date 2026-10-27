@@ -485,7 +485,9 @@ fn concat_string_lists(left_strings: Vec<TString>, right_strings: &[TString], th
 
     if !has_literals || left_strings.len().saturating_mul(right_strings.len()) > threshold as usize {
         let is_non_empty = left_strings.iter().any(|s| s.is_non_empty) || right_strings.iter().any(|s| s.is_non_empty);
-        let is_truthy = left_strings.iter().all(|s| s.is_truthy) || right_strings.iter().all(|s| s.is_truthy);
+        let is_truthy = (left_strings.iter().all(|s| s.is_non_empty) && right_strings.iter().all(|s| s.is_non_empty))
+            || left_strings.iter().all(|s| s.is_truthy)
+            || right_strings.iter().all(|s| s.is_truthy);
         let casing = TStringCasing::from_guarantees(
             left_strings.iter().all(|s| s.is_lowercase()) && right_strings.iter().all(|s| s.is_lowercase()),
             left_strings.iter().all(|s| s.is_uppercase()) && right_strings.iter().all(|s| s.is_uppercase()),
@@ -499,7 +501,9 @@ fn concat_string_lists(left_strings: Vec<TString>, right_strings: &[TString], th
         for right_string in right_strings {
             let mut resulting_string = TString::general();
             resulting_string.is_non_empty = left_string.is_non_empty || right_string.is_non_empty;
-            resulting_string.is_truthy = left_string.is_truthy || right_string.is_truthy;
+            resulting_string.is_truthy = (left_string.is_non_empty && right_string.is_non_empty)
+                || left_string.is_truthy
+                || right_string.is_truthy;
             resulting_string.casing = left_string.casing.join(right_string.casing);
             resulting_string.literal = match (&left_string.literal, &right_string.literal) {
                 (Some(TStringLiteral::Value(left_literal)), Some(TStringLiteral::Value(right_literal))) => {

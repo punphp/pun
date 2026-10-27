@@ -2013,3 +2013,39 @@ nested provider round trips, and rejected over-depth, oversized, or empty union 
 responses retain the existing provider warning and native-analysis fallback.
 Their semantic controls use PHPStan 2.3.1's retained `object-intersections` captures: joining
 `mixed~A` with `C~A&C` yields `mixed~A&C`, whereas joining it with `C` or `A&C` yields `mixed`.
+
+## Nonempty concatenation truthiness
+
+`expression/binary/concat.rs` refines the concatenation of two nonempty strings to a non-falsy
+string. Both the aggregate and pairwise paths check this conjunction before propagating an
+existing truthy operand. Aggregate queries require every alternative on each side to be nonempty.
+The existing nonempty fallback, literal folding, literal origin, and independent casing guarantees
+remain unchanged.
+
+The branch order follows PHPStan 2.3.1's
+[`InitializerExprTypeResolver::resolveConcatType()`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Reflection/InitializerExprTypeResolver.php#L582-L600).
+The public `pun-analyse/tests/string_casing.rs` regression runs the unchanged research probe through
+`run()`. Its `fixtures/string-casing/concat-expected.json` contains 29 freshly captured level-0
+PHPStan diagnostics. Before the correction, 11 types differ and 18 controls match. After the
+correction, all 29 match, including asymmetric operands, partly-nonempty unions, empty and zero
+suffixes, literal-origin strings, casing accessories, and flattened chains.
+
+The repeat controls retain PHPStan's separate behavior: `str_repeat($nonempty, 2)` remains
+`non-empty-string`, not `non-falsy-string`. Casing-union normalization and native inference are
+unchanged. The existing casing, guarantees, repeat, and native-lane selection passes all 34 tests.
+
+Fresh raw LLVM profiles from the new public regression alone cover **6/6 changed production
+executable lines** against `ea303bb4`, without exclusions. The maintained analyzer is explicitly
+instrumented with `--dep-coverage mago-analyzer`. The private target uses one Cargo job, one Rayon
+thread, one test thread, debug level 1, and no incremental compilation:
+
+```sh
+export CARGO_TARGET_DIR=/tmp/pun-concat-target
+export CARGO_LLVM_COV_TARGET_DIR="$CARGO_TARGET_DIR"
+export CARGO_BUILD_JOBS=1 RAYON_NUM_THREADS=1 RUST_TEST_THREADS=1
+export CARGO_INCREMENTAL=0 CARGO_PROFILE_DEV_DEBUG=1 CARGO_PROFILE_TEST_DEBUG=1
+export CARGO_NET_OFFLINE=true
+timeout 900 nice cargo llvm-cov --offline --no-report --dep-coverage mago-analyzer \
+	-p punphp-analyse --test string_casing --test string_guarantees --test str_repeat \
+	--test native_lane -- --test-threads=1
+```
