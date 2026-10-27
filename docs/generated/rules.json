@@ -12752,7 +12752,7 @@
         "ScalarArgumentToExpectedParamType",
         "ScalarArgumentToExpectedParamTypeRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/phpunit/require-final-test-case",

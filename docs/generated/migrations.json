@@ -13213,7 +13213,7 @@
         "rules": [
           "lint/phpunit/require-exact-test-argument-type"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
