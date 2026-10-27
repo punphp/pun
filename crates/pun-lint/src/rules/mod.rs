@@ -58,6 +58,7 @@ mod no_cast_in_concat;
 mod no_compact;
 mod no_concat_assign_new_item;
 mod no_condition_exact_return;
+mod no_constant_condition;
 mod no_dead_php_version_check;
 mod no_debug_calls;
 mod no_double_negation;
@@ -147,6 +148,7 @@ mod no_unused_private_method_param;
 mod no_unused_private_property;
 mod no_unused_public_method_param;
 mod no_unused_static;
+mod no_unused_test_method_param;
 mod no_useless_array_values;
 mod no_useless_block;
 mod no_useless_catch;
@@ -188,6 +190,7 @@ mod prefer_func_num_args;
 mod prefer_in_array;
 mod prefer_in_array_over_foreach;
 mod prefer_in_array_over_search;
+mod prefer_instance_method;
 mod prefer_instanceof_stringable;
 mod prefer_min_max;
 mod prefer_new_self;
@@ -274,6 +277,7 @@ pub use no_cast_in_concat::NoCastInConcat;
 pub use no_compact::NoCompact;
 pub use no_concat_assign_new_item::NoConcatAssignNewItem;
 pub use no_condition_exact_return::NoConditionExactReturn;
+pub use no_constant_condition::NoConstantCondition;
 pub use no_dead_php_version_check::NoDeadPhpVersionCheck;
 pub use no_debug_calls::NoDebugCalls;
 pub use no_double_negation::NoDoubleNegation;
@@ -366,6 +370,7 @@ pub use no_unused_private_method_param::NoUnusedPrivateMethodParam;
 pub use no_unused_private_property::NoUnusedPrivateProperty;
 pub use no_unused_public_method_param::NoUnusedPublicMethodParam;
 pub use no_unused_static::NoUnusedStatic;
+pub use no_unused_test_method_param::NoUnusedTestMethodParam;
 pub use no_useless_array_values::NoUselessArrayValues;
 pub use no_useless_block::NoUselessBlock;
 pub use no_useless_catch::NoUselessCatch;
@@ -405,6 +410,7 @@ pub use prefer_func_num_args::PreferFuncNumArgs;
 pub use prefer_in_array::PreferInArray;
 pub use prefer_in_array_over_foreach::PreferInArrayOverForeach;
 pub use prefer_in_array_over_search::PreferInArrayOverSearch;
+pub use prefer_instance_method::PreferInstanceMethod;
 pub use prefer_instanceof_stringable::PreferInstanceofStringable;
 pub use prefer_min_max::PreferMinMax;
 pub use prefer_new_self::PreferNewSelf;
@@ -477,6 +483,7 @@ pub const PROJECT_RULES: &[&str] = &[
     "lint/laravel/prefer-without-incrementing-attribute",
     "lint/laravel/prefer-without-timestamps-attribute",
     "lint/laravel-12/prefer-scope-attribute",
+    "lint/complexity/prefer-instance-method",
 ];
 
 /// Every rule, in a fixed order.
@@ -709,5 +716,8 @@ fn ungrouped() -> Vec<Box<dyn Rule>> {
         Box::new(RequireStrictInArray),
         Box::new(NoExtraArguments),
         Box::new(RequireArrayFilterCallback),
+        Box::new(NoConstantCondition),
+        Box::new(PreferInstanceMethod),
+        Box::new(NoUnusedTestMethodParam),
     ]
 }

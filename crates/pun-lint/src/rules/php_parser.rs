@@ -558,7 +558,7 @@ pub(crate) fn precedence(op: &BinaryOperator<'_>) -> u8 {
 
 /// The precedence of an expression as an operand: a binary operator's, 4 for `?:`, the pipe, assignments, `yield`,
 /// `throw` and arrow functions, which all bind looser than `??`, and above every binary operator for the rest.
-fn operand_precedence(expr: &Expression<'_>) -> u8 {
+pub(crate) fn operand_precedence(expr: &Expression<'_>) -> u8 {
     match expr {
         Expression::Binary(b) => precedence(&b.operator),
         Expression::Conditional(_)

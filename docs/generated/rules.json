@@ -3874,7 +3874,7 @@
         "RemoveDeadIfBlockRector",
         "constant-condition"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/complexity/no-constant-via-variable",
@@ -4721,7 +4721,7 @@
         "LocallyCalledStaticMethodToNonStaticRector",
         "Rector\\CodeQuality\\Rector\\ClassMethod\\LocallyCalledStaticMethodToNonStaticRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/complexity/prefer-min-max",
@@ -6330,7 +6330,7 @@
         "RemoveTestsOverriddenPrivateMethodParameter",
         "RemoveTestsOverriddenPrivateMethodParameterRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/dead-code/no-useless-cast",

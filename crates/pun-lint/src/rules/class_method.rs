@@ -620,6 +620,19 @@ fn is_array_call_of(
     }
 }
 
+/// Whether `ArrayCallableMethodMatcher::match` matches the array at all (a method of any class, or a dynamic one),
+/// asked while looking at the method `method`.
+pub(crate) fn is_array_callable(
+    facts: &Facts,
+    ancestors: &[Node<'_, '_>],
+    class: &ClassInfo<'_, '_>,
+    elements: &TokenSeparatedSequence<'_, ArrayElement<'_>>,
+    path: &[Node<'_, '_>],
+    method: &[u8],
+) -> bool {
+    match_array_callable(facts, ancestors, class, elements, path, method).is_some()
+}
+
 /// What `ArrayCallableMethodMatcher::match` returns.
 enum ArrayCallable {
     /// `ArrayCallableDynamicMethod`: a class with a method name Rector cannot read.

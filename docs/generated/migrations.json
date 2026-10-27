@@ -7707,7 +7707,7 @@
         "rules": [
           "lint/complexity/prefer-instance-method"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -8463,7 +8463,7 @@
         "rules": [
           "lint/complexity/no-constant-condition"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -8875,7 +8875,7 @@
         "rules": [
           "lint/dead-code/no-unused-test-method-param"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -24965,7 +24965,7 @@
         "rules": [
           "lint/complexity/no-constant-condition"
         ],
-        "note": "Same. Options: same. Planned: not ported yet.",
+        "note": "Same. Options: same.",
         "unsupported": false
       },
       {
