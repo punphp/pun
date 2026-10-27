@@ -11968,7 +11968,7 @@
         "TestWithToDataProvider",
         "TestWithToDataProviderRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/phpunit/prefer-data-provider-attribute",

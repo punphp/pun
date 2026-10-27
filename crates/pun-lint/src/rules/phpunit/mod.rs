@@ -36,6 +36,7 @@ mod prefer_attribute_over_annotation;
 mod prefer_comparison_assertion;
 mod prefer_covers_attribute;
 mod prefer_create_stub_in_coalesce;
+mod prefer_data_provider;
 mod prefer_data_provider_attribute;
 mod prefer_depends_attribute;
 mod prefer_merged_will_return_callback;
@@ -89,6 +90,7 @@ pub use prefer_attribute_over_annotation::PreferAttributeOverAnnotation;
 pub use prefer_comparison_assertion::PreferComparisonAssertion;
 pub use prefer_covers_attribute::PreferCoversAttribute;
 pub use prefer_create_stub_in_coalesce::PreferCreateStubInCoalesce;
+pub use prefer_data_provider::PreferDataProvider;
 pub use prefer_data_provider_attribute::PreferDataProviderAttribute;
 pub use prefer_depends_attribute::PreferDependsAttribute;
 pub use prefer_merged_will_return_callback::PreferMergedWillReturnCallback;
@@ -180,6 +182,7 @@ pub(crate) fn all() -> Vec<Box<dyn Rule>> {
         Box::new(PreferCoversAttribute),
         Box::new(PreferTestWithAttribute),
         Box::new(PreferAttributeOverAnnotation::default()),
+        Box::new(PreferDataProvider),
     ]
 }
 

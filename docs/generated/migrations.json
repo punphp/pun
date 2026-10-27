@@ -13331,7 +13331,7 @@
         "rules": [
           "lint/phpunit/prefer-data-provider"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
