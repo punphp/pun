@@ -358,23 +358,24 @@ pub fn reconcile_keyed_types<'ctx, A>(
                     false,
                 );
             } else if key_str.ends_with(b"]") && (has_inverted_isset || has_inverted_key_exists) {
-                // A false isset can retain a null entry; only a non-nullable value proves absence.
-                let optional_entry_type = if has_inverted_isset
+                // Fallback offset reads can synthesize null; they do not prove a stored nullable entry.
+                let nullable_isset = has_inverted_isset
                     && !has_inverted_key_exists
-                    && before_adjustment.as_deref().is_some_and(TUnion::can_be_null)
-                {
-                    Some(result_type.clone())
-                } else {
-                    reconcile_optional_entry_type(
-                        context,
-                        new_type_parts,
-                        before_adjustment.as_deref(),
-                        key_str,
-                        inside_loop,
-                        span,
-                        negated,
-                    )
-                };
+                    && before_adjustment.as_deref().is_some_and(TUnion::can_be_null);
+                let optional_entry_type =
+                    if nullable_isset && has_required_offset_for_path(&borrow_path_parts(key_str), block_context) {
+                        Some(result_type.clone())
+                    } else {
+                        reconcile_optional_entry_type(
+                            context,
+                            new_type_parts,
+                            before_adjustment.as_deref(),
+                            key_str,
+                            inside_loop,
+                            span,
+                            negated,
+                        )
+                    };
 
                 if let Some(entry_type) = optional_entry_type {
                     adjust_array_type(
@@ -385,7 +386,7 @@ pub fn reconcile_keyed_types<'ctx, A>(
                         context.codebase,
                         true,
                     );
-                } else {
+                } else if !nullable_isset {
                     adjust_array_type_remove_key(
                         borrow_path_parts(key_str),
                         block_context,
@@ -483,18 +484,7 @@ pub fn reconcile_keyed_types<'ctx, A>(
             && !has_empty
         {
             let key_parts = borrow_path_parts(key_str);
-            let offset = resolve_array_key(key_parts[key_parts.len() - 2], block_context);
-            let offset = offset.as_bytes();
-            let array_key = if offset.starts_with(b"'") || offset.starts_with(b"\"") {
-                Some(ArrayKey::String(word(&offset[1..offset.len() - 1])))
-            } else {
-                std::str::from_utf8(offset).ok().and_then(|s| s.parse::<i64>().ok()).map(ArrayKey::Integer)
-            };
-            let parent: Vec<u8> =
-                key_parts[..key_parts.len() - 3].iter().flat_map(|part| part.iter()).copied().collect();
-            if array_key.is_some_and(|key| {
-                block_context.locals.get(&word(&parent)).is_some_and(|parent| has_required_offset(parent, &key))
-            }) {
+            if has_required_offset_for_path(&key_parts, block_context) {
                 adjust_array_type(key_parts, block_context, changed_var_ids, &result_type, context.codebase, false);
             }
         }
@@ -581,6 +571,19 @@ where
     }
 
     result.filter(|entry_type| !entry_type.is_never() && !entry_type.is_mixed())
+}
+
+fn has_required_offset_for_path(key_parts: &[&[u8]], context: &BlockContext<'_>) -> bool {
+    let offset = resolve_array_key(key_parts[key_parts.len() - 2], context);
+    let offset = offset.as_bytes();
+    let array_key = if offset.starts_with(b"'") || offset.starts_with(b"\"") {
+        Some(ArrayKey::String(word(&offset[1..offset.len() - 1])))
+    } else {
+        std::str::from_utf8(offset).ok().and_then(|s| s.parse::<i64>().ok()).map(ArrayKey::Integer)
+    };
+    let parent: Vec<u8> = key_parts[..key_parts.len() - 3].iter().flat_map(|part| part.iter()).copied().collect();
+    array_key
+        .is_some_and(|key| context.locals.get(&word(&parent)).is_some_and(|parent| has_required_offset(parent, &key)))
 }
 
 fn has_required_offset(value: &TUnion, key: &ArrayKey) -> bool {

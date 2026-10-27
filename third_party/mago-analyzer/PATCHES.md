@@ -1754,8 +1754,13 @@ containing array, as
 [`MutatingScope::specifyExpressionTypeInPlace()`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Analyser/MutatingScope.php#L3773-L3820)
 does. Only a single constant key identifies a named offset; union selectors do not establish
 every alternative. The original dynamic expression id remains the cache identity. Positive
-isset assertions use the same key resolution, while a false isset retains a possible null entry
-instead of treating nullability as absence.
+isset assertions use the same key resolution. A false isset narrows a required nullable offset
+to null. A nullable offset that might be absent leaves the containing array unchanged: null
+from an iterable-value fallback is not evidence that the entry exists. Optional non-nullable
+offset removal and other value assertions keep their existing refinement paths. This follows
+[`DefaultNarrowingHelper::createIssetSingleSubjectNonTrueTypes()`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Analyser/ExprHandler/Helper/DefaultNarrowingHelper.php#L633-L795).
+The public `coalesce_scope.rs` controls compare repeated missing-offset probes, generic arrays
+and lists, required and optional nullable entries, optional integer entries, and nested offsets.
 
 Public controls in `tests/constant_foreach.rs` retain the original `bug-13643.php` fixture and
 compare complete diagnostics with fresh PHPStan captures under `tests/fixtures/constant-foreach/`.
