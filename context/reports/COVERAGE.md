@@ -6,9 +6,13 @@ The two supported-only `r` modifier lines need the newer engine. Its expectation
 PHP and PCRE2 fixtures, not the orb's PHP 8.5.12 oracle, which links 10.42.
 Combine exports only when their token sources are byte-identical.
 
-The inference batch combines the full gate with a fresh lint and affected CLI rerun after the
-anonymous-class finality repair. Profiles are reused only for byte-identical tracked sources.
-Changed-file records come from the fresh rerun, not the earlier failed run.
+The latest integration batch passes all 372 bounded jobs: 1,315 rule cases, 2,787 level cases,
+529 analyser public/library tests and 431 lint tests. All 71 owning PHPStan tests also pass.
+The original return-type and declaration-order failures remain in the evidence alongside their passing rerun.
+All 13,534 changed executable production lines are covered without new exclusions.
+The export combines 392 fresh profiles from 129 executables with earlier records only for byte-identical
+tracked sources. Changed-source records come from the passing rerun. Existing exclusions retain their
+reasons; their source offsets move with the inference and declaration helpers.
 
 LLVM reports 17 zero-hash mapping warnings for unchanged, always-inline `BlockContextFlags` methods
 in Mago. Every method has a matching nonzero-hash profile record with positive executions.
@@ -18,13 +22,13 @@ The warnings do not name a changed production function.
 | crate | lines | hit | line % | tests |
 |---|---:|---:|---:|---|
 | punphp | 5457 | 5457 | 100.00% | ok |
-| punphp-analyse | 42624 | 42624 | 100.00% | ok |
-| punphp-config | 2604 | 2604 | 100.00% | ok |
-| punphp-fixers | 36563 | 36563 | 100.00% | ok |
+| punphp-analyse | 42695 | 42695 | 100.00% | ok |
+| punphp-config | 2755 | 2755 | 100.00% | ok |
+| punphp-fixers | 39232 | 39232 | 100.00% | ok |
 | punphp-format | 1022 | 1022 | 100.00% | ok |
 | punphp-harness | 235 | 235 | 100.00% | ok |
-| punphp-lint | 29444 | 29444 | 100.00% | ok |
-| punphp-phpstan | 10414 | 10414 | 100.00% | ok |
+| punphp-lint | 39270 | 39270 | 100.00% | ok |
+| punphp-phpstan | 10529 | 10529 | 100.00% | ok |
 | punphp-problem | 105 | 105 | 100.00% | ok |
 | punphp-tokens | 3956 | 3956 | 100.00% | ok |
 | punphp-workspace | 457 | 457 | 100.00% | ok |
@@ -53,9 +57,9 @@ Uncovered lines:
 - `crates/pun-analyse/src/rules/return_types.rs:1277-1279` the same for the Closure method return provider.
 - `crates/pun-analyse/src/rules/larastan/relations.rs:180` RelationExistenceRule's relation method declared by one of PHP's own classes: a model extends Eloquent's Model, which extends none of them, so its methods are always the user's.
 - `crates/pun-analyse/src/laravel/mod.rs:506-513` `Provider::meta()` of the model-attribute hook: Mago's `Provider` trait requires it, but `PluginRegistry` reads `meta()` only for its own library plugins, never for a registered expression hook, and the hook struct is private.
-- `crates/pun-analyse/src/rules/infer.rs:280-283` `Provider::meta()` of the definedness hook: as for the model-attribute hook's above, `PluginRegistry` never reads it for a registered expression hook.
+- `crates/pun-analyse/src/rules/infer.rs:282-285` `Provider::meta()` of the definedness hook: as for the model-attribute hook's above, `PluginRegistry` never reads it for a registered expression hook.
 - `crates/pun-analyse/src/mago.rs:74` the upstream-panic fallback that skips only the failing file. The former debug-panic.php (`int&mixed`) no longer triggers it, and signed integer division overflow is now fixed in the maintained analyzer. The containment guard remains for unexpected upstream failures.
-- `crates/pun-analyse/src/rules/types/convert.rs:745` a symbolic class-constant array key (`array{Foo::BAR: int}`): canonical expansion resolves known literal keys before conversion. Unknown or nonliteral keys can remain symbolic inside Mago, but no public input is known to carry one into this converter. The fallback returns `Error`. This is the existing exclusion shifted by never-kind and string-casing handling, not a newly excluded branch.
+- `crates/pun-analyse/src/rules/types/convert.rs:752` a symbolic class-constant array key (`array{Foo::BAR: int}`): canonical expansion resolves known literal keys before conversion. Unknown or nonliteral keys can remain symbolic inside Mago, but no public input is known to carry one into this converter. The fallback returns `Error`. This is the existing exclusion shifted by object-exclusion handling, not a newly excluded branch.
 - `crates/pun-phpstan/src/symbols.rs:156-158` `Visitor::expecting()` of the symbols.json map reader: serde calls it only to word the error for malformed input, and symbols.json is compiled in (every map in it is an object or `[]`).
 - `crates/pun-lint/src/rules/laravel/prefer_nullsafe.rs:49` the non-target node guard: `Linter` dispatches this rule only for MethodCall and PropertyAccess, as its `targets()` requires.
 - `crates/pun-lint/src/rules/laravel/prefer_env_helper.rs:34` the non-target node guard: `Linter` dispatches only ArrayAccess for this rule.
@@ -103,11 +107,11 @@ Uncovered lines:
 - `crates/pun-lint/src/rules/prefer_property_default.rs:142` overlapping edits: the constructor assignment removed and the property default added never overlap (one is in the constructor body, the other at the property).
 - `crates/pun-lint/src/rules/types/add_return_type_from_ternary.rs:67` a ternary whose native type has `mixed`: no input found, Mago types none of `mixed` branches here (tried `mixed $a` branches at PHP 8.0 in rector_types.rs `left_alone_at_other_versions`).
 - `crates/pun-lint/src/rules/types/add_return_type_from_property.rs:79` a `mixed` returned type: `typed_property()` already refuses a `mixed` property and PHPStan/Mago type a typed property as declared.
-- `crates/pun-lint/src/rules/types/facts.rs:687` LLVM's closing-brace region for missing native artifacts after an upstream analyzer error or panic. No deterministic public input is known on this snapshot; all 352 lint tests pass without taking this failure path. Fresh source-matched measurement restores the exclusion already present on origin/main and removed during the Pest coverage pass. Keep the containment boundary rather than depend on an upstream bug to test it.
-- `crates/pun-lint/src/rules/types/declare.rs:97` an empty type list: callers pass the returns' non-empty native types.
-- `crates/pun-lint/src/rules/types/declare.rs:164` `void` as a declaration: callers drop `void` (no value) before asking for a declaration.
-- `crates/pun-lint/src/rules/types/declare.rs:198` an intersection with a non-object member: Mago builds intersections only of object types.
-- `crates/pun-lint/src/rules/types/declare.rs:315` `void`, `mixed` or `null` (below 7.1) in a union: `add_union_return` refuses `mixed`/`void` before, and the union rule needs PHP 8.0.
+- `crates/pun-lint/src/rules/types/facts.rs:711` LLVM's closing-brace region for missing native artifacts after an upstream analyzer error or panic. No deterministic public input is known on this snapshot; the complete lint suite passes without taking this failure path. This existing exclusion moved with arithmetic inference. Keep the containment boundary rather than depend on an upstream bug to test it.
+- `crates/pun-lint/src/rules/types/declare.rs:101` an empty type list: callers pass the returns' non-empty native types.
+- `crates/pun-lint/src/rules/types/declare.rs:168` `void` as a declaration: callers drop `void` (no value) before asking for a declaration.
+- `crates/pun-lint/src/rules/types/declare.rs:202` an intersection with a non-object member: Mago builds intersections only of object types.
+- `crates/pun-lint/src/rules/types/declare.rs:351` `void`, `mixed` or `null` (below 7.1) in a union: `add_union_return` refuses `mixed`/`void` before, and the union rule needs PHP 8.0.
 - `crates/pun-lint/src/rules/types/mod.rs:369` `unreachable!()` after the class-like kinds `rposition` matched.
 - `crates/pun-lint/src/rules/types/never.rs:190` a method with no class scope (see add_method_void_return).
 - `crates/pun-lint/src/rules/types/never.rs:197` a named class the codebase lacks: the codebase is built from this file, which declares it.

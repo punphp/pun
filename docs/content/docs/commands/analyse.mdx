@@ -58,6 +58,7 @@ Named, `self` and `parent` dependencies resolve in the declaring class's scope b
 Trait constants use the selected implementing class's scope. Inherited non-private constants retain that identity even when a subclass explicitly reuses the trait.
 Trait constant conflicts compare complete initializer unions and array shapes.
 Unsupported initializer expressions retain `mixed` in reflection, including trait conflicts and nested arrays. Ordinary calls retain their flow-inferred types.
+Initializer coalescing removes explicit `null` alternatives without subtracting `null` from `mixed`.
 Named `new` initializers retain bare class identities without constructor-inferred generic arguments. Member lookups use template defaults and bounds without changing those identities.
 Expression-class initializers such as `new (Box::class)(1)` retain `object`. Ordinary construction still infers constructor arguments.
 Finite class-string and object initializer holders resolve named constants across their possible classes, including forward and scanned dependencies.
@@ -68,6 +69,9 @@ Named class-constant reads preserve keyed initializer array order. General mixed
 Trait constructors retain adapted visibility, named-argument policies and parameter types in the consuming class's scope.
 Constructor template checks use the reflected return type, including implicit `void`, rather than the raw `@return` tag.
 Attribute rule support remains incomplete.
+
+`__COMPILER_HALT_OFFSET__` requires a parsed top-level `__halt_compiler()` statement.
+Occurrences inside comments, strings or inline HTML do not define it.
 
 Shared class-name checks honor `checkInternalClassCaseSensitivity` and `featureToggles.checkImportedClassNameCase` from PHPStan configuration.
 Both default to false; bleeding-edge configuration enables imported-name checking unless explicitly disabled.
@@ -104,6 +108,11 @@ Their keys and values are read after the right-hand side and preceding targets, 
 The `compact()` check preserves resolved function-import names and reads variable certainty before evaluating arguments.
 Benevolent unions and callable-array intersections retain their literal variable names.
 Its findings share `analyse/undefined/variable` selection; independent compact-rule selection remains incomplete.
+Nested variable names are checked as reads even when assignment, `isset`, `empty`, coalescing or `unset` permits an undefined outer target.
+Variable-name type errors point to the name expression's line, including multiline names.
+Variable names read from literal array offsets retain branch-dependent definedness after direct offset assignments.
+Writes to the array or another offset invalidate those cached names.
+Literal string offsets use PHP bytes and support negative integer indexes.
 
 Dynamic `new $class` expressions report unknown class names even when another possible name exists.
 
@@ -134,6 +143,13 @@ Generic callable arguments specialize their own templates before comparison; gen
 First-class generic callbacks retain conditional returns until their expected input types are known.
 
 Negative type guards preserve excluded values in `mixed` types.
+Object intersections discard duplicate constraints without losing generic arguments or `static` identity.
+Union method reflection preserves member order when choosing the declaring class; printed type descriptions remain sorted.
+Generic type comparisons treat differently ordered union and intersection members as equal.
+Shared analysis retains exact instantiated-class alternatives without marking their class declarations final.
+Conversion to Pun's PHPStan object types does not yet retain that exactness.
+Short-circuit boolean expressions retain evaluated operand types and their excluded object alternatives.
+Output arguments evaluated only on a short-circuited right operand remain possibly undefined on paths that skip that operand.
 Full type inference preserves explicit `mixed` from native and PHPDoc declarations, built-in return types, assignments and captures.
 Mixed offset reads keep explicitness but drop receiver truthiness and exclusions.
 Unknown properties and methods remain implicit `mixed`.
@@ -158,6 +174,10 @@ Stored callable signatures retain the declared return type rather than specializ
 `str_repeat()` inference returns exact literal alternatives when their combined output occupies fewer than 100 bytes.
 Larger or unknown results retain PHPStan's applicable string refinements, including simultaneous lowercase and uppercase guarantees.
 Constant strings preserve binary bytes through PHPDoc decoding and type comparisons.
+String unions retain incomparable refinements, such as `lowercase-string|uppercase-string`, rather than widening them to `string`.
+Numeric strings are nonempty, but retain an independent `non-empty-string` refinement only when that refinement is present in the inferred type.
+Concatenating two definitely nonempty strings produces `non-falsy-string`.
+Repeating an unknown nonempty string twice retains only `non-empty-string`, matching PHPStan's separate repeat inference.
 
 Integer and IP validation through `filter_input()` and `filter_var()` preserves failure values, array flags, defaults and integer range options.
 Other filters and `FILTER_THROW_ON_FAILURE` retain declaration-based inference.
