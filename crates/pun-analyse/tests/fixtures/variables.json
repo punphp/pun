@@ -344,6 +344,46 @@
       389,
       "variable.undefined",
       "Undefined variable: $emptyStringOffset"
+    ],
+    [
+      395,
+      "variable.undefined",
+      "Undefined variable: $"
+    ],
+    [
+      395,
+      "variable.undefined",
+      "Undefined variable: $f"
+    ],
+    [
+      395,
+      "variable.undefined",
+      "Undefined variable: $o"
+    ],
+    [
+      402,
+      "variable.undefined",
+      "Undefined variable: $b"
+    ],
+    [
+      402,
+      "variable.undefined",
+      "Undefined variable: $c"
+    ],
+    [
+      420,
+      "variable.undefined",
+      "Undefined variable: $cachedStringName"
+    ],
+    [
+      425,
+      "variable.undefined",
+      "Undefined variable: $cachedArrayName"
+    ],
+    [
+      434,
+      "variable.undefined",
+      "Undefined variable: $cachedPostfixName"
     ]
   ],
   "edge": [
@@ -801,6 +841,51 @@
       389,
       "variable.undefined",
       "Undefined variable: $emptyStringOffset"
+    ],
+    [
+      395,
+      "variable.undefined",
+      "Undefined variable: $"
+    ],
+    [
+      395,
+      "variable.undefined",
+      "Undefined variable: $f"
+    ],
+    [
+      395,
+      "variable.undefined",
+      "Undefined variable: $o"
+    ],
+    [
+      402,
+      "variable.undefined",
+      "Undefined variable: $b"
+    ],
+    [
+      402,
+      "variable.undefined",
+      "Undefined variable: $c"
+    ],
+    [
+      413,
+      "variable.undefined",
+      "Variable $o might not be defined."
+    ],
+    [
+      420,
+      "variable.undefined",
+      "Undefined variable: $cachedStringName"
+    ],
+    [
+      425,
+      "variable.undefined",
+      "Undefined variable: $cachedArrayName"
+    ],
+    [
+      434,
+      "variable.undefined",
+      "Undefined variable: $cachedPostfixName"
     ]
   ],
   "maybe": [
@@ -1218,6 +1303,51 @@
       389,
       "variable.undefined",
       "Undefined variable: $emptyStringOffset"
+    ],
+    [
+      395,
+      "variable.undefined",
+      "Undefined variable: $"
+    ],
+    [
+      395,
+      "variable.undefined",
+      "Undefined variable: $f"
+    ],
+    [
+      395,
+      "variable.undefined",
+      "Undefined variable: $o"
+    ],
+    [
+      402,
+      "variable.undefined",
+      "Undefined variable: $b"
+    ],
+    [
+      402,
+      "variable.undefined",
+      "Undefined variable: $c"
+    ],
+    [
+      413,
+      "variable.undefined",
+      "Variable $o might not be defined."
+    ],
+    [
+      420,
+      "variable.undefined",
+      "Undefined variable: $cachedStringName"
+    ],
+    [
+      425,
+      "variable.undefined",
+      "Undefined variable: $cachedArrayName"
+    ],
+    [
+      434,
+      "variable.undefined",
+      "Undefined variable: $cachedPostfixName"
     ]
   ],
   "quiet": [
@@ -1595,6 +1725,46 @@
       389,
       "variable.undefined",
       "Undefined variable: $emptyStringOffset"
+    ],
+    [
+      395,
+      "variable.undefined",
+      "Undefined variable: $"
+    ],
+    [
+      395,
+      "variable.undefined",
+      "Undefined variable: $f"
+    ],
+    [
+      395,
+      "variable.undefined",
+      "Undefined variable: $o"
+    ],
+    [
+      402,
+      "variable.undefined",
+      "Undefined variable: $b"
+    ],
+    [
+      402,
+      "variable.undefined",
+      "Undefined variable: $c"
+    ],
+    [
+      420,
+      "variable.undefined",
+      "Undefined variable: $cachedStringName"
+    ],
+    [
+      425,
+      "variable.undefined",
+      "Undefined variable: $cachedArrayName"
+    ],
+    [
+      434,
+      "variable.undefined",
+      "Undefined variable: $cachedPostfixName"
     ]
   ]
 }

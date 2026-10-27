@@ -43,7 +43,6 @@ use mago_codex::ttype::get_non_empty_string;
 use mago_codex::ttype::get_non_negative_int;
 use mago_codex::ttype::get_null;
 use mago_codex::ttype::get_specialized_template_type;
-use mago_codex::ttype::get_string;
 use mago_codex::ttype::get_undefined_null;
 use mago_codex::ttype::template::TemplateResult;
 use mago_codex::ttype::template::inferred_type_replacer;
@@ -1583,12 +1582,9 @@ pub(crate) fn handle_array_access_on_string<A>(
 where
     A: Arena,
 {
-    let mut non_empty = false;
     let literal = string.get_literal_string_value();
 
     let valid_index_type = if let TAtomic::Scalar(TScalar::String(scalar_string)) = &string {
-        non_empty = scalar_string.is_non_empty();
-
         if let Some(TStringLiteral::Value(val)) = scalar_string.literal {
             if val.is_empty() {
                 get_never()
@@ -1640,26 +1636,82 @@ where
         return if block_context.flags.inside_isset() { get_null() } else { get_error() };
     }
 
+    let mut fallback = get_non_empty_string();
+    fallback.set_possibly_undefined(true, None);
+
     // ConstantStringType::getOffsetValueType indexes PHP bytes, including negative offsets.
     if let Some(value) = literal
-        && let Some(index) = index_type.get_single_literal_int_value()
+        && let Some(integers) = index_type
+            .types
+            .iter()
+            .map(|atomic| match atomic {
+                TAtomic::Scalar(TScalar::Integer(integer)) => Some(*integer),
+                // TemplateConstantIntegerType inherits the literal read. Other integer templates
+                // do not simplify to IntegerRangeType, even when their bounds are finite or invalid.
+                TAtomic::GenericParameter(parameter) => {
+                    parameter.constraint.get_single_literal_int_value().map(TInteger::Literal)
+                }
+                _ => None,
+            })
+            .collect::<Option<Vec<_>>>()
     {
-        let index = if index < 0 { value.len() as i64 + index } else { index };
-        if let Ok(index) = usize::try_from(index)
-            && let Some(value) = value.get(index)
-        {
-            return get_literal_string(word([*value]));
+        if let [TInteger::Literal(index)] = integers.as_slice() {
+            let index = if *index < 0 { value.len() as i64 + index } else { *index };
+            if let Ok(index) = usize::try_from(index)
+                && let Some(value) = value.get(index)
+            {
+                return get_literal_string(word([*value]));
+            }
+
+            return if block_context.flags.inside_isset() { get_null() } else { get_error() };
         }
 
-        return if block_context.flags.inside_isset() { get_null() } else { get_error() };
+        let length = value.len() as i64;
+        let mut fully_valid = true;
+        let mut intersections = Vec::new();
+        for integer in integers {
+            let min = integer.get_minimum_value().unwrap_or(i64::MIN);
+            let max = integer.get_maximum_value().unwrap_or(i64::MAX);
+            fully_valid &= min >= -length && max < length;
+            let min = min.max(-length);
+            let max = max.min(length - 1);
+            if min <= max {
+                intersections.push(TInteger::from_bounds(Some(min), Some(max)));
+            }
+        }
+
+        // StringType's inherited hasOffsetValueType dispatch rejects wholly invalid integer reads.
+        if intersections.is_empty() {
+            return if block_context.flags.inside_isset() { get_null() } else { get_error() };
+        }
+
+        let intersected = TInteger::combine(intersections);
+        if let [TAtomic::Scalar(TScalar::Integer(TInteger::Range(min, max)))] = intersected.as_slice()
+            // PHPStan's getFiniteTypes() allows a span of 128: at most 129 indexes, not distinct bytes.
+            && max - min <= 128
+        {
+            let mut bytes = (*min..=*max)
+                .map(|index| value[if index < 0 { length + index } else { index } as usize])
+                .collect::<Vec<_>>();
+            bytes.sort_unstable();
+            bytes.dedup();
+            let mut types = bytes
+                .into_iter()
+                .map(|byte| TAtomic::Scalar(TScalar::literal_string(word([byte]))))
+                .collect::<Vec<_>>();
+            if !fully_valid {
+                types.push(TAtomic::Scalar(TScalar::literal_string(word(b""))));
+            }
+            let mut result = TUnion::from_vec(types);
+            result.set_possibly_undefined(!fully_valid, None);
+            return result;
+        }
+
+        fallback.set_possibly_undefined(!fully_valid, None);
     }
 
-    let mut result = if non_empty { get_non_empty_string() } else { get_string() };
-    if !non_empty {
-        result.set_possibly_undefined(true, None);
-    }
-
-    result
+    // Singleton intersections, constant unions, large ranges and uncertain indexes inherit StringType.
+    fallback
 }
 
 pub(crate) fn handle_array_access_on_mixed<'ctx, A>(

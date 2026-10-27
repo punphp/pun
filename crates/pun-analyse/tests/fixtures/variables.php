@@ -388,3 +388,49 @@ function missingStringOffsetFallbacks(): void
     $names = '';
     echo ${$names[0] ?? 'emptyStringOffset'};
 }
+
+function generalIntegerStringNames(int $index): void
+{
+    $names = 'foo';
+    echo ${$names[$index]};
+}
+
+/** @param int<1, 2> $index */
+function boundedIntegerStringNames(int $index): void
+{
+    $names = 'abcd';
+    echo ${$names[$index]};
+}
+
+/** @param int<0, 1> $index */
+function maybeBoundedStringNames(int $index, bool $flag): void
+{
+    $names = 'fo';
+    $f = 1;
+    if ($flag) {
+        $o = 1;
+    }
+    echo ${$names[$index]};
+}
+
+function cachedFailedOffsetNames(int $index): void
+{
+    $names = '';
+    $copy = $names[$index];
+    echo ${$names[$index] ?? 'cachedStringName'};
+    echo ${$names[$index]};
+    $names = [];
+    $key = 'missing';
+    $copy = $names[$key];
+    echo ${$names[$key] ?? 'cachedArrayName'};
+    echo ${$names[$key]};
+}
+
+function cachedPostfixOffsetNames(): void
+{
+    $names = 'foo';
+    $index = 4;
+    $copy = $names[$index];
+    echo ${$names[$index++] ?? 'cachedPostfixName'};
+    echo ${$names[$index]};
+}

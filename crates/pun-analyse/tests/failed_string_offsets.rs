@@ -1,4 +1,4 @@
-//! String indexes that cannot be integers produce ErrorType without reevaluating the index.
+//! PHPStan string-offset results: failed reads, PHP bytes, finite integer ranges, and inherited fallbacks.
 
 use std::path::Path;
 

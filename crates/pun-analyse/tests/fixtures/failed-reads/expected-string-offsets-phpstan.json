@@ -1,11 +1,11 @@
 {
   "totals": {
     "errors": 0,
-    "file_errors": 29
+    "file_errors": 152
   },
   "files": {
     "string-offsets.php": {
-      "errors": 29,
+      "errors": 152,
       "messages": [
         {
           "message": "Dumped type: non-empty-string",
@@ -178,6 +178,744 @@
         {
           "message": "Dumped type: *ERROR*",
           "line": 100,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: ''|'a'|'b'|'c'|'d'",
+          "line": 116,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: 'b'|'c'",
+          "line": 117,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: 'a'|'b'|'c'",
+          "line": 118,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: ''|'c'|'d'",
+          "line": 119,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: ''|'a'|'b'",
+          "line": 120,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: ''|'a'|'b'",
+          "line": 121,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: non-empty-string",
+          "line": 122,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: *ERROR*",
+          "line": 123,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: *ERROR*",
+          "line": 124,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: ''|'a'|'b'",
+          "line": 126,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: non-empty-string",
+          "line": 142,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: non-empty-string",
+          "line": 143,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: *ERROR*",
+          "line": 144,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: non-empty-string",
+          "line": 145,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: 'a'|'b'|'c'|'d'",
+          "line": 146,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: non-empty-string",
+          "line": 147,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: ''|'a'|'b'",
+          "line": 148,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: ''|'a'|'b'|'c'|'d'",
+          "line": 149,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: 'a'|'b'",
+          "line": 161,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: 'a'|'b'",
+          "line": 162,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: 'a'|'b'",
+          "line": 164,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: \"\\000\"|'a'",
+          "line": 166,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: *ERROR*",
+          "line": 173,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: *ERROR*",
+          "line": 174,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: non-empty-string",
+          "line": 175,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: *ERROR*",
+          "line": 176,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: non-empty-string",
+          "line": 177,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: non-empty-string",
+          "line": 178,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: 'a'|'b'",
+          "line": 191,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: ''|'a'|'b'",
+          "line": 192,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: non-empty-string",
+          "line": 194,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: 'a'",
+          "line": 195,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: ''|'a'|'b'",
+          "line": 197,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: non-empty-string",
+          "line": 199,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: 'a'|'b'",
+          "line": 200,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: non-empty-string",
+          "line": 201,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: non-empty-string",
+          "line": 211,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: non-empty-string",
+          "line": 221,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: 'a'",
+          "line": 231,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: non-empty-string",
+          "line": 241,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: non-empty-string",
+          "line": 251,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: ''|'b'|'c'|'rangeFallback'",
+          "line": 258,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: 'emptyRangeFallback'",
+          "line": 264,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: string",
+          "line": 269,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: string",
+          "line": 276,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: non-empty-string",
+          "line": 283,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: string",
+          "line": 290,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: string",
+          "line": 300,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: string",
+          "line": 310,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: *ERROR*",
+          "line": 316,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: 'cachedStringFallback'",
+          "line": 317,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: *ERROR*",
+          "line": 318,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: false",
+          "line": 319,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: *ERROR*",
+          "line": 320,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: true",
+          "line": 321,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: *ERROR*",
+          "line": 322,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: *ERROR*",
+          "line": 329,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: 'cachedArrayFallback'",
+          "line": 330,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: *ERROR*",
+          "line": 331,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: false",
+          "line": 332,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: *ERROR*",
+          "line": 333,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: true",
+          "line": 334,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: *ERROR*",
+          "line": 335,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: *ERROR*",
+          "line": 341,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: 'literalStringFallback'",
+          "line": 342,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: false",
+          "line": 343,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: true",
+          "line": 344,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: *ERROR*",
+          "line": 345,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: *ERROR*",
+          "line": 347,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: 'literalArrayFallback'",
+          "line": 348,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: false",
+          "line": 349,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: true",
+          "line": 350,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: *ERROR*",
+          "line": 351,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: int",
+          "line": 358,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: 'unusedNarrowedFallback'|int",
+          "line": 359,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: bool",
+          "line": 360,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: int",
+          "line": 361,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: int",
+          "line": 368,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: 'possiblyAbsentFallback'|int",
+          "line": 369,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: int",
+          "line": 370,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: bool",
+          "line": 371,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: bool",
+          "line": 372,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: *ERROR*",
+          "line": 378,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: ''|'f'|'o'",
+          "line": 380,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: ''|'f'|'newReceiverFallback'|'o'",
+          "line": 381,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: *ERROR*",
+          "line": 383,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: 'f'",
+          "line": 385,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: 'f'",
+          "line": 386,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: *ERROR*",
+          "line": 389,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: 'written'",
+          "line": 391,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: 'written'",
+          "line": 392,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: *ERROR*",
+          "line": 399,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: 'postfixStringFallback'",
+          "line": 400,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: 5",
+          "line": 401,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: *ERROR*",
+          "line": 402,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: *ERROR*",
+          "line": 405,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: 'postfixArrayFallback'",
+          "line": 406,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: 3",
+          "line": 407,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: *ERROR*",
+          "line": 408,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: int",
+          "line": 416,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: 1",
+          "line": 417,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: false",
+          "line": 424,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: true",
+          "line": 425,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: 'freshStringFallback'",
+          "line": 426,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: *ERROR*",
+          "line": 427,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: false",
+          "line": 429,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: true",
+          "line": 430,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: 'freshArrayFallback'",
+          "line": 431,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: *ERROR*",
+          "line": 432,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: string|false",
+          "line": 439,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: string",
+          "line": 440,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: 'b'",
+          "line": 449,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: 'b'",
+          "line": 450,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: true",
+          "line": 451,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: false",
+          "line": 452,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: *ERROR*",
+          "line": 460,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: *ERROR*",
+          "line": 461,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: *ERROR*",
+          "line": 462,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: 'falseFallback'|int",
+          "line": 469,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: int",
+          "line": 470,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: null",
+          "line": 478,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: 'nullFallback'",
+          "line": 479,
+          "ignorable": false,
+          "identifier": "phpstan.dumpType"
+        },
+        {
+          "message": "Dumped type: null",
+          "line": 480,
           "ignorable": false,
           "identifier": "phpstan.dumpType"
         }

@@ -2302,3 +2302,146 @@ The do-while, standalone block, and loop-initial controls retain their separate 
 
 Native loop transfers still invalidate native state before the loop on the existing path. This patch does
 not reconstruct paired native types, extend iterable reconciliation, or claim complete DefinedVariableRule parity.
+
+## Finite integer string-offset reads
+
+This follow-up implements the finite-range inference left open above. The owner remains
+`src/utils/expression/array.rs::handle_array_access_on_string()`. Its reference is PHPStan 2.3.1 at
+`cb3b7e99489b2e3789ee2eec10501cb7a72580ea`:
+
+- `src/Type/Constant/ConstantStringType.php:440–486` intersects integer offsets with the valid byte interval.
+- `src/Type/IntegerRangeType.php:725–743` enumerates only a bounded range whose maximum minus minimum is
+  at most 128. This permits 129 indexes, regardless of how many distinct bytes they select.
+- `src/Type/StringType.php:70–84` supplies ErrorType for wholly invalid integer reads and otherwise
+  supplies the inherited `non-empty-string` fallback.
+
+A single bounded range after intersection produces a deduplicated union of selected PHP bytes.
+The union includes `''` only when the original offset is not wholly valid. Its absence flag preserves
+coalesce fallbacks. Empty receivers and wholly invalid ordinary integer offsets produce ErrorType.
+Singleton intersections, constant-integer unions, disjoint ranges, and ranges over the enumeration
+limit retain the inherited fallback instead of approximating a character union.
+Inherited fallbacks retain possible absence unless the ordinary integer offset is wholly valid.
+An empty coalesce fallback therefore stays possible for partial ranges and uncertain indexes.
+
+Integer templates also retain the fallback, including templates with finite or invalid bounds.
+`IntegerRangeType::tryIntersect()` (`src/Type/IntegerRangeType.php:588–626`) does not simplify these
+templates to a range. A template bounded by one constant integer inherits the literal read instead.
+
+The existing public string-offset fixture covers bounded and unbounded ranges, negative indexes,
+partial and invalid intervals, integer unions, duplicate bytes, empty and binary strings, the
+enumeration boundaries, and noninteger and template controls. Four-mode variable-name captures
+append to the earlier 318 records without changing them. Whole-string reconstruction after writes,
+broader inference completeness, and whole-rule activation remain outside this correction.
+
+A preceding failed read of the same variable-key expression can still leave a cached ErrorType
+that `src/expression/array_access.rs` reuses inside coalesce without consulting this helper.
+The empty-string coalesce control runs independently of earlier reads. Repairing that cache contract
+requires its expression owner and is not part of this patch.
+
+## Cached offset reads and absence
+
+This follow-up repairs that cache boundary in `src/expression/array_access.rs`. Its reference is
+PHPStan 2.3.1 at `cb3b7e99489b2e3789ee2eec10501cb7a72580ea`:
+
+- `src/Analyser/IssetabilityDescriptor.php:105–128` checks offset presence from the evaluated receiver and index.
+- `src/Analyser/IssetabilityResolution.php:68–91` keeps offset presence separate from the cached value type.
+- `src/Analyser/ExprHandler/ArrayDimFetchHandler.php:149–175` computes the read without evaluating its children again.
+
+Failed reads no longer populate or satisfy the offset-value cache. Nullable cache entries use the
+existing array-target helper, which also handles absence probes. The result retains valid narrowed
+values with the helper's presence flags. A coalesce-only null placeholder cannot replace a failed read
+or add null to a nonnullable array value. A present key containing ErrorType remains an error value,
+not an absent key. Postfix indexes keep their saved narrowing and execute once.
+
+The public fixtures retain the earlier 340 variable records and 78 string-offset dumps. Appended
+PHPStan captures cover reads before and after coalesce, isset, and empty, literal and variable keys,
+failed array and string reads, narrowed values, receiver and index changes, writes, and postfix indexes.
+The existing input-state and failed-read cascade regressions remain unchanged.
+
+Successful nonnullable cache entries retain their existing path. General dynamic-key presence after
+value narrowing needs a coalesce scope-join correction outside this expression owner. In the appended
+`validNarrowedCache()` control, PHPStan returns `'unusedNarrowedFallback'|int` and `bool`, while the
+cache returns `int` and `true`. In `cachedValueNarrowing()`, PHPStan returns `string|false`, while the
+cache returns `string`. The public dump regression retains these expectations without exemptions
+and still fails on those three records.
+
+Refreshing those entries' presence flags alone is insufficient: `src/expression/binary/null_coalesce.rs`
+reconciles the false edge to null and joins that null into the successful cached value. Later ordinary
+reads then change from `int` to `int|null`, or from `string` to `string|null`. A separate value-preserving
+absence join is required before the nonnullable cache path can use the same presence refresh.
+
+Whole-string reconstruction after literal-key writes remains outside this correction. The written-byte
+cache control uses a variable key, which the existing assignment owner stores. No variable-rule flow
+engine, diagnostic filter, selector, or pollution setting changes. These controls do not establish
+complete inference or whole-rule parity.
+
+## Coalesce absence and stored null values
+
+This follow-up separates an absent offset from an existing null value in
+`src/expression/binary/null_coalesce.rs`. The reference is PHPStan 2.3.1 at
+`cb3b7e99489b2e3789ee2eec10501cb7a72580ea`:
+
+- `src/Analyser/ExprHandler/CoalesceHandler.php:58–104` narrows the successful read and joins its scope
+  with the RHS scope, including counterfactual RHS effects.
+- `src/Analyser/ExprHandler/Helper/CoalesceCompositionHelper.php:53–71` obtains RHS narrowing from
+  false isset rather than an unconditional null assertion.
+- `src/Analyser/ExprHandler/Helper/DefaultNarrowingHelper.php:633–784` retains maybe-absent values,
+  narrows required offsets to null, and filters top-level constant-array alternatives.
+
+Isset probes refresh presence independently of a cached nonnullable value. Coalesce uses the evaluated
+index without evaluating a postfix operand again. Its successful scope keeps the nonnullable cached
+value. Its RHS scope retains a maybe-absent read without inventing a stored null, but a required offset
+receives actual-null narrowing. Nested probes do not assert intermediate-key existence.
+
+`src/reconciler/simple_negated_assertion_reconciler.rs` reuses the existing required-offset query and
+filters sealed keyed-array and list alternatives. A required nonnullable entry excludes its alternative.
+An optional nonnullable entry is absent only when no alternative permits null at that key.
+
+The strict public regression now matches all 152 existing string-offset records, including both
+cached-narrowing negative controls. All 352 variable records remain unchanged. Fresh PHPStan captures
+extend the existing coalesce-scope fixture with nullable and optional entries, RHS writes, parent and
+index overwrites, nested reads, constant alternatives, and evaluated postfix indexes.
+
+The expanded coalesce-scope regression still has seven mismatches at lines 127, 153, 168, 202, 211, 265,
+and 294, including loss of the empty-list alternative.
+The shared `src/context/variable_scope.rs::merge_variable_scope_types()` join collapses distinct array
+shapes and retains offset-expression caches found in only one continuing branch. PHPStan's
+`src/Analyser/ScopeOps.php:204–256,278–290` discards such maybe-certain offset holders while retaining
+maybe-defined direct variables. The needed shared interface is a coalesce join that preserves array
+shapes and intersects offset-cache presence across continuing branches, without changing direct-variable
+certainty or conditional holders. Value absence flags alone do not describe holder certainty.
+This patch does not change that shared join, and the expanded test remains strict and failing.
+It is not an integration-ready claim of complete coalesce or variable-rule parity.
+
+## Coalesce continuing-scope join
+
+`src/context/variable_scope.rs::merge_coalesce_scope_types()` selects a coalesce-specific mode of
+the existing scope join. Closed array values use `combine_union_types_preserving_array_shapes()`,
+including empty alternatives. Open arrays retain the existing generalizing union. Contained closed
+alternatives are removed, so a stored ErrorType absorbs the counterfactual null alternative without
+changing the offset reader. A pair of closed keyed shapes can combine one additional key into an
+optional entry when every shared entry is identical and neither shape is empty.
+
+Offset-expression cache entries survive only when every continuing branch stores that fact. The
+holder check does not use the stored value's possibly-undefined flag. The coalesce RHS also skips
+parent assertions for mixed reads, including failed reads. Otherwise, asserting an absent parent's
+type can synthesize its definition and hide the next nested probe's undefined-root diagnostic.
+
+The source contract is PHPStan 2.3.1's `src/Analyser/ScopeOps.php:204–256,278–290` at
+`cb3b7e99489b2e3789ee2eec10501cb7a72580ea`. The array union follows
+`src/Type/TypeCombinator.php:1147–1251,1602–1643` and the one-key subset of
+`src/Type/Constant/ConstantArrayType.php:2987–3045`. The mixed-parent guard follows
+`src/Analyser/ExprHandler/Helper/DefaultNarrowingHelper.php:722–725`.
+
+Direct-variable certainty, conditional holders, and impossible-branch handling still use the existing
+join. Only the coalesce caller selects the new mode. Loop and try/catch joins retain their existing
+union behavior, and loop generalization is unchanged.
+
+The 78-record scope fixture and the strict string-offset and variable expectations are unchanged.
+The public scope test now compares every record, including the seven previously filtered coalesce
+diagnostics. On the unchanged parent, seven scope records differ. The new join resolves those
+differences, preserves the 152 strict failed-offset and 352 variable records, and keeps both cached-value
+narrowing controls. The existing dead-code fixture checks repeated probes of an absent array root.
+
+The array reduction is bounded. It does not port every `TypeCombinator` array-union optimization or
+establish complete coalesce, string-offset, or variable-rule inference parity.

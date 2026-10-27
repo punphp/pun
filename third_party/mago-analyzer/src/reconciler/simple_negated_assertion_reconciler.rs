@@ -26,9 +26,11 @@ use mago_codex::ttype::get_undefined_null;
 use mago_codex::ttype::intersect_union_types;
 use mago_codex::ttype::union::TUnion;
 use mago_span::Span;
+use mago_word::Word;
 use mago_word::ascii_lowercase_word;
 use mago_word::word;
 
+use crate::context::block::BlockContext;
 use crate::reconciler::Context;
 use crate::reconciler::map_generic_constraint;
 use crate::reconciler::simple_assertion_reconciler::get_acceptable_type;
@@ -1592,32 +1594,59 @@ where
     )
 }
 
+/// Share reconciliation's parent-presence query with coalesce's evaluated offset ID.
+pub(crate) fn offset_is_required(id: Word, block_context: &BlockContext<'_>) -> bool {
+    super::has_required_offset_for_path(&super::borrow_path_parts(id.as_bytes()), block_context)
+}
+
 fn reconcile_no_nonnull_entry_for_key(existing_var_type: &TUnion, key_name: &ArrayKey) -> TUnion {
-    let mut existing_var_type = existing_var_type.clone();
+    let mut types = existing_var_type.types.to_vec();
+    let has_nullable_entry = types.iter().any(|atomic| {
+        constant_offset_entry(atomic, key_name).is_some_and(|(_, value)| value.can_be_null())
+    });
 
-    for atomic in existing_var_type.types.to_mut() {
-        if let TAtomic::Array(TArray::Keyed(TKeyedArray { known_items, .. })) = atomic {
-            let mut all_known_items_removed = false;
-            if let Some(known_items_inner) = known_items {
-                if let Some(known_item) = Arc::make_mut(known_items_inner).remove(key_name) {
-                    if !known_item.0 {
-                        // impossible to not have this key
-                        // todo emit issue
-                    }
-
-                    if known_items_inner.is_empty() {
-                        all_known_items_removed = true;
-                    }
-                }
+    // DefaultNarrowingHelper removes required nonnullable constant-array alternatives.
+    // Optional nonnullable entries are absent only if no alternative can contain null.
+    types.retain_mut(|atomic| {
+        let Some((optional, value)) = constant_offset_entry(atomic, key_name) else {
+            return true;
+        };
+        if value.can_be_null() {
+            return true;
+        }
+        if !optional {
+            return false;
+        }
+        if !has_nullable_entry {
+            if let TAtomic::Array(TArray::Keyed(array)) = atomic
+                && let Some(items) = &mut array.known_items
+            {
+                Arc::make_mut(items).remove(key_name);
             }
-
-            if all_known_items_removed {
-                *known_items = None;
+            if let TAtomic::Array(TArray::List(array)) = atomic
+                && let Some(index) = key_name.get_integer()
+                && let Some(items) = &mut array.known_elements
+            {
+                let items = Arc::make_mut(items);
+                items.remove(&(index as usize));
+                array.known_count = items.values().all(|(optional, _)| !optional).then_some(items.len());
             }
         }
-    }
+        true
+    });
 
-    existing_var_type
+    existing_var_type.clone_with_types(types)
+}
+
+fn constant_offset_entry<'a>(atomic: &'a TAtomic, key: &ArrayKey) -> Option<&'a (bool, TUnion)> {
+    match atomic {
+        TAtomic::Array(TArray::Keyed(array)) if array.parameters.is_none() => array.known_items.as_ref()?.get(key),
+        TAtomic::Array(TArray::List(array)) if array.element_type.is_never() => {
+            let index = usize::try_from(key.get_integer()?).ok()?;
+            array.known_elements.as_ref()?.get(&index)
+        }
+        _ => None,
+    }
 }
 
 /// Subtracts a specific list type from an existing list type by generating all possible

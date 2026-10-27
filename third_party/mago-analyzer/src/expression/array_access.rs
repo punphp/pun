@@ -63,32 +63,35 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for ArrayAccess<'arena> {
         self.array.analyze(context, block_context, artifacts)?;
         block_context.flags.set_inside_general_use(was_inside_general_use);
 
-        if let Some(keyed_array_var_id) = &keyed_array_var_id
+        let cached_type = if let Some(keyed_array_var_id) = &keyed_array_var_id
             && block_context.has_variable_atom(*keyed_array_var_id)
             && let Some(array_access_type) = block_context.locals.get(keyed_array_var_id).cloned()
         {
-            let is_variable_key = memchr::memmem::find(keyed_array_var_id.as_bytes(), b"[$").is_some();
-            if is_variable_key || !array_access_type.possibly_undefined() {
-                artifacts.set_rc_expression_type(self, Rc::clone(&array_access_type));
+            Some(array_access_type)
+        } else {
+            None
+        };
+        let cached_type = cached_type.into_iter().chain(saved_narrowed_type).find(|cached_type| {
+            !cached_type.is_error()
+                && (!cached_type.possibly_undefined()
+                    || keyed_array_var_id.as_ref().is_some_and(|k| memchr::memmem::find(k.as_bytes(), b"[$").is_some()))
+        });
 
-                return Ok(());
-            }
-        }
+        // Failed reads and null placeholders do not prove offset presence. Isset probes
+        // also need current presence flags, independently of a successfully narrowed value.
+        if let Some(cached_type) = &cached_type
+            && !cached_type.has_null()
+            && !was_inside_isset
+        {
+            artifacts.set_rc_expression_type(self, Rc::clone(cached_type));
 
-        if let Some(saved_type) = saved_narrowed_type {
-            let is_variable_key =
-                keyed_array_var_id.as_ref().is_some_and(|k| memchr::memmem::find(k.as_bytes(), b"[$").is_some());
-            if is_variable_key || !saved_type.possibly_undefined() {
-                artifacts.set_rc_expression_type(self, saved_type);
-
-                return Ok(());
-            }
+            return Ok(());
         }
 
         let container_type = artifacts.get_rc_expression_type(&self.array).cloned();
 
         if let Some(container_type) = container_type {
-            let access_type = Rc::new(get_array_target_type_given_index(
+            let mut access_type = get_array_target_type_given_index(
                 context,
                 block_context,
                 self.span(),
@@ -100,13 +103,29 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for ArrayAccess<'arena> {
                 extended_var_id,
                 None,
                 container_type.can_be_null() && expression_is_nullsafe(self.array),
-            ));
+            );
+
+            if let Some(cached_type) = cached_type
+                && !access_type.is_null()
+                && !access_type.is_error()
+                && (!cached_type.is_null() || access_type.has_nullish())
+            {
+                let mut narrowed_type =
+                    if !access_type.has_nullish() { cached_type.to_non_nullable() } else { (*cached_type).clone() };
+                narrowed_type.set_possibly_undefined(
+                    access_type.possibly_undefined(),
+                    Some(access_type.possibly_undefined_from_try()),
+                );
+                access_type = narrowed_type;
+            }
+            let access_type = Rc::new(access_type);
 
             if let Some(keyed_array_var_id) = &keyed_array_var_id {
                 let can_store_result = block_context.flags.inside_assignment() || !container_type.is_mixed();
 
                 if !block_context.flags.inside_isset()
                     && can_store_result
+                    && !access_type.is_error()
                     && memchr::memmem::find(keyed_array_var_id.as_bytes(), b"[$").is_some()
                     && !block_context.locals.contains_key(keyed_array_var_id)
                 {

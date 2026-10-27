@@ -14,18 +14,15 @@ fn coalesce_assignment_scopes_match_phpstan() {
     let mut project = Project::new(vec![root.join("scope.php")], Vec::new());
     project.level = 1;
     project.check_maybe_undefined_variables = true;
-    let relevant = |id: &str| matches!(id, "variable.undefined" | "phpstan.dumpType");
     let mut got: Vec<_> = run(&project)
         .unwrap()
         .into_iter()
-        .filter(|e| relevant(&e.identifier))
         .map(|e| (e.line, e.identifier, e.message))
         .collect();
     let mut want: Vec<_> = expected["errors"]
         .as_array()
         .unwrap()
         .iter()
-        .filter(|e| relevant(e["identifier"].as_str().unwrap()))
         .map(|e| {
             (
                 e["line"].as_i64().unwrap(),

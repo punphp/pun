@@ -5,10 +5,13 @@ use std::rc::Rc;
 use foldhash::HashSet;
 use mago_codex::metadata::CodebaseMetadata;
 use mago_codex::ttype::atomic::TAtomic;
+use mago_codex::ttype::atomic::array::TArray;
 use mago_codex::ttype::atomic::scalar::TScalar;
 use mago_codex::ttype::combine_union_types;
+use mago_codex::ttype::combine_union_types_preserving_array_shapes;
 use mago_codex::ttype::combiner::{CombinerOptions, combine};
 use mago_codex::ttype::comparator::ComparisonResult;
+use mago_codex::ttype::comparator::atomic_comparator;
 use mago_codex::ttype::comparator::union_comparator::{can_expression_types_be_identical, is_contained_by};
 use mago_codex::ttype::union::TUnion;
 use mago_span::Span;
@@ -171,6 +174,15 @@ impl BlockContext<'_> {
 
     /// TryCatchHandler joins the scopes at the matching throw points, including narrowed guard types.
     pub fn merge_variable_scope_types(&mut self, branches: &[VariableScope], codebase: &CodebaseMetadata) {
+        self.merge_scope_types(branches, codebase, false);
+    }
+
+    /// CoalesceHandler keeps array alternatives and ScopeOps drops branch-only offset holders.
+    pub fn merge_coalesce_scope_types(&mut self, branches: &[VariableScope], codebase: &CodebaseMetadata) {
+        self.merge_scope_types(branches, codebase, true);
+    }
+
+    fn merge_scope_types(&mut self, branches: &[VariableScope], codebase: &CodebaseMetadata, coalesce: bool) {
         if branches.is_empty() {
             return;
         }
@@ -182,12 +194,70 @@ impl BlockContext<'_> {
                 self.locals
                     .entry(*name)
                     .and_modify(|existing| {
-                        *existing = Rc::new(combine_union_types(existing, ty, codebase, CombinerOptions::default()));
+                        // TypeCombinator::processArrayTypes generalizes open arrays. Closed
+                        // alternatives retain their distinct values, discriminators and empty arm.
+                        let combined = if coalesce
+                            && !existing.types.iter().chain(ty.types.iter())
+                                .any(|atomic| matches!(atomic, TAtomic::Array(array) if !array.is_sealed()))
+                        {
+                            combine_union_types_preserving_array_shapes(existing, ty, codebase, CombinerOptions::default())
+                        } else {
+                            combine_union_types(existing, ty, codebase, CombinerOptions::default())
+                        };
+                        *existing = Rc::new(combined);
                     })
                     .or_insert_with(|| Rc::clone(ty));
             }
         }
         self.merge_variable_scopes(branches, codebase);
+        if coalesce {
+            for ty in self.locals.values_mut() {
+                if ty.types.len() < 2 {
+                    continue;
+                }
+                let mut reduced = (**ty).clone();
+                let mut types = reduced.types.to_vec();
+                let mut i = 0;
+                while i < types.len() {
+                    if matches!(&types[i], TAtomic::Array(array) if array.is_sealed())
+                        && types.iter().enumerate().any(|(j, other)| {
+                            i != j && matches!(other, TAtomic::Array(array) if array.is_sealed())
+                                && atomic_comparator::is_contained_by(
+                                    codebase, &types[i], other, false, &mut ComparisonResult::default(),
+                                )
+                        })
+                    {
+                        types.remove(i);
+                    } else {
+                        i += 1;
+                    }
+                }
+                // ConstantArrayType::isKeysSupersetOf/mergeWith can fold one extra key
+                // into an optional entry without widening any shared value or discriminator.
+                if let [TAtomic::Array(TArray::Keyed(left)), TAtomic::Array(TArray::Keyed(right))] = types.as_slice()
+                    && left.parameters.is_none()
+                    && right.parameters.is_none()
+                    && let (Some(left), Some(right)) = (&left.known_items, &right.known_items)
+                {
+                    let (small, large) = if left.len() < right.len() { (left, right) } else { (right, left) };
+                    if !small.is_empty()
+                        && large.len() == small.len() + 1
+                        && small.iter().all(|(key, entry)| large.get(key) == Some(entry))
+                    {
+                        types = combine(types, codebase, CombinerOptions::default());
+                    }
+                }
+                *reduced.types.to_mut() = types;
+                *ty = Rc::new(reduced);
+            }
+            // get_array_access_id ends an offset holder with ']'. A stored value's
+            // possibly-undefined flag is not the certainty of this expression holder.
+            self.locals.retain(|name, _| {
+                !name.as_bytes().ends_with(b"]")
+                    || branches.iter().filter(|branch| !branch.state.impossible)
+                        .all(|branch| branch.locals.contains_key(name))
+            });
+        }
     }
 
     /// ScopeOps::mergeVariableHolders/createConditionalExpressions. Only continuing branches contribute.
