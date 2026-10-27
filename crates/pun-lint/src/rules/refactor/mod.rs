@@ -9,6 +9,7 @@
 
 mod add_override_attribute;
 mod remove_function_argument;
+mod replace_array_access;
 mod remove_function_call;
 mod rename_cast;
 mod rename_class_constant;
@@ -18,6 +19,7 @@ mod replace_function;
 
 pub use add_override_attribute::AddOverrideAttribute;
 pub use remove_function_argument::RemoveFunctionArgument;
+pub use replace_array_access::{ArrayAccessCall, ReplaceArrayAccess};
 pub use remove_function_call::RemoveFunctionCall;
 pub use rename_cast::RenameCast;
 pub use rename_class_constant::RenameClassConstant;
@@ -43,6 +45,7 @@ pub fn all() -> Vec<Box<dyn Rule>> {
     vec![
         Box::new(AddOverrideAttribute),
         Box::new(RemoveFunctionArgument::default()),
+        Box::new(ReplaceArrayAccess::default()),
         Box::new(RemoveFunctionCall::default()),
         Box::new(RenameCast::default()),
         Box::new(RenameClassConstant::default()),
@@ -247,4 +250,13 @@ pub(crate) fn report(span: Span, message: String, edits: Vec<Edit>) -> Report {
             edits,
         }),
     }
+}
+
+/// `isObjectTypeOfObjectType`: the same name, or, when the codebase knows `required`, a class it knows to extend or
+/// implement it (a class whose parent it does not know extends nothing it knows of).
+pub(crate) fn is_class(ctx: &Context<'_>, resolved: &str, required: &str) -> bool {
+    let codebase = &facts(ctx).codebase;
+    resolved == required
+        || (codebase.get_class_like(required.as_bytes()).is_some()
+            && codebase.is_instance_of(resolved.as_bytes(), required.as_bytes()))
 }

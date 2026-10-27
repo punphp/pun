@@ -13248,7 +13248,7 @@
         "ArrayDimFetchToMethodCallRector",
         "Rector\\Transform\\Rector\\ArrayDimFetch\\ArrayDimFetchToMethodCallRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/refactor/replace-function-with-constant",

@@ -13,7 +13,7 @@ mod lint_c;
 use lint_c::{run_class, run_class_at, run_class_with};
 use pun_lint::{Linter, Rule};
 use pun_lint::rules::{
-    AddOverrideAttribute,
+    AddOverrideAttribute, ReplaceArrayAccess,
     RemoveFunctionArgument, RemoveFunctionCall, RenameCast, RenameClassConstant, RenameConstant,
     PreferClassNameConstant, RenameFunction, RequireStrictInArray, ReplaceFunctionWithConstant, ReplaceFunctionWithNew, ReplaceFunctionWithStatic,
 };
@@ -229,4 +229,28 @@ fn add_override_attribute_to_overridden_properties() {
         .check(std::path::Path::new("f.php"), code)
         .unwrap();
     assert!(found.is_empty());
+}
+
+/// config/configured_rule.php: `SomeClass` with all four methods, `Container` with `get` only, each `ObjectType` as
+/// `pun migrate` writes it.
+#[test]
+fn array_dim_fetch_to_method_call() {
+    let object = |class: &str| json!({"class-name": class, "current-ancestors": [], "method-cache": []});
+    check(
+        ReplaceArrayAccess::default(),
+        json!({"items": [
+            {"object-type": object("SomeClass"), "method": "get", "set-method": "set", "exists-method": "has", "unset-method": "unset"},
+            {"object-type": object("Container"), "method": "get"},
+        ]}),
+        "ArrayDimFetchToMethodCallRector",
+    );
+    rejects(
+        ReplaceArrayAccess::default(),
+        &[
+            (json!({"items": [{"method": "get"}]}), "each of `items` needs `object-type`"),
+            (json!({"items": [{"object-type": "A", "method": "get"}]}), "`object-type` must be a table with a `class-name`"),
+            (json!({"items": [{"object-type": {"class-name": "A", "x": 1}, "method": "get"}]}), "unknown key `x` in `object-type`; it takes `class-name`"),
+            (json!({"items": [{"object-type": {"class-name": "A"}, "method": "get", "set-method": 1}]}), "`set-method` must be a string"),
+        ],
+    );
 }

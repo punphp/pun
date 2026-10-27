@@ -17,7 +17,7 @@ use mago_codex::ttype::atomic::object::TObject;
 use mago_syntax::cst::{ClassLikeConstantSelector, Expression, Identifier, Node, NodeKind};
 use pun_problem::Edit;
 
-use super::{assert_class, assert_constant, items, object, report, string};
+use super::{assert_class, assert_constant, is_class, items, object, report, string};
 use crate::rules::rector_batch5::resolve_class_name;
 use crate::rules::types::class_scope;
 use crate::rules::types::facts::facts;
@@ -129,13 +129,6 @@ impl Rule for RenameClassConstant {
     }
 }
 
-/// `isObjectTypeOfObjectType`: the same name, or a class the codebase knows to extend or implement `required`.
-fn is_class(ctx: &Context<'_>, resolved: &str, required: &str) -> bool {
-    resolved == required
-        || facts(ctx)
-            .codebase
-            .is_instance_of(resolved.as_bytes(), required.as_bytes())
-}
 
 /// `NodeTypeResolver::isObjectType($class, new ObjectType($required))` for the class part of a class constant fetch.
 fn is_object_type(

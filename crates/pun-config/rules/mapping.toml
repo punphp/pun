@@ -756,7 +756,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "refactor/rename-function" = { fix = "unsafe", gated_by = "laravel-version", ported = true, status = "decided", summary = "Turn defined function call new one" }
 "refactor/rename-method" = { fix = "unsafe", gated_by = "laravel-version", ported = false, status = "decided", summary = "Turn method names to new ones" }
 "refactor/rename-phpdoc-tag" = { fix = "safe", ported = true, status = "decided", summary = "Renames PHPDoc tags." }
-"refactor/replace-array-access" = { fix = "unsafe", ported = false, status = "decided", summary = "Change array dim fetch to method call" }
+"refactor/replace-array-access" = { fix = "unsafe", ported = true, status = "decided", summary = "Change array dim fetch to method call" }
 "refactor/replace-function-with-constant" = { fix = "unsafe", ported = true, status = "decided", summary = "Changes use of function calls to use constants" }
 "refactor/replace-function-with-new" = { fix = "unsafe", ported = true, status = "decided", summary = "Change configured function calls to new Instance" }
 "refactor/replace-function-with-static" = { fix = "unsafe", ported = true, status = "decided", summary = "Turn defined function call to static method call" }

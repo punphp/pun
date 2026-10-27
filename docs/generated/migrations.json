@@ -6487,7 +6487,7 @@
         "rules": [
           "lint/refactor/replace-array-access"
         ],
-        "note": "Same. Options: configurable: options carry 1:1 (same keys, kebab-cased). Planned: not ported yet.",
+        "note": "Same. Options: configurable: options carry 1:1 (same keys, kebab-cased).",
         "unsupported": false
       },
       {
