@@ -11,6 +11,16 @@ fn input(row: &Value) -> Type {
         if ty == "array<int, *ERROR*>" {
             return Type::array(Type::Int, Type::Error);
         }
+        if ty == "array{5?: string}" {
+            // The oracle calls ConstantArrayType directly, not ConstantArrayTypeBuilder.
+            return Type::ConstArray(Box::new(ConstArray {
+                keys: vec![Type::ConstInt(5)],
+                values: vec![Type::String],
+                optional: vec![0],
+                is_list: Tri::No,
+                ..ConstArray::empty()
+            }));
+        }
         if ty == "array{...<int, string>}" {
             let mut array = ConstArray::empty();
             array.unsealed = Some((Type::Int, Type::String));

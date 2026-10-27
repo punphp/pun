@@ -7232,6 +7232,1497 @@
                     true
                 ]
             }
+        },
+        {
+            "source_hex": "61727261797b313f3a20276f6e65277d",
+            "resolved": {
+                "entries": [
+                    [
+                        [
+                            "int",
+                            1
+                        ],
+                        [
+                            "6f6e65"
+                        ],
+                        true
+                    ]
+                ],
+                "list": [
+                    false,
+                    true,
+                    false
+                ]
+            },
+            "items": [
+                [
+                    [
+                        "int",
+                        1
+                    ],
+                    "6f6e65",
+                    true
+                ]
+            ],
+            "builder": {
+                "entries": [
+                    [
+                        [
+                            "int",
+                            1
+                        ],
+                        [
+                            "6f6e65"
+                        ],
+                        true
+                    ]
+                ],
+                "list": [
+                    false,
+                    true,
+                    false
+                ]
+            }
+        },
+        {
+            "source_hex": "61727261797b313a20276f6e65277d",
+            "resolved": {
+                "entries": [
+                    [
+                        [
+                            "int",
+                            1
+                        ],
+                        [
+                            "6f6e65"
+                        ],
+                        false
+                    ]
+                ],
+                "list": [
+                    false,
+                    false,
+                    true
+                ]
+            },
+            "items": [
+                [
+                    [
+                        "int",
+                        1
+                    ],
+                    "6f6e65",
+                    false
+                ]
+            ],
+            "builder": {
+                "entries": [
+                    [
+                        [
+                            "int",
+                            1
+                        ],
+                        [
+                            "6f6e65"
+                        ],
+                        false
+                    ]
+                ],
+                "list": [
+                    false,
+                    false,
+                    true
+                ]
+            }
+        },
+        {
+            "source_hex": "61727261797b666f6f3f3a2027737472696e67277d",
+            "resolved": {
+                "entries": [
+                    [
+                        [
+                            "string",
+                            "666f6f"
+                        ],
+                        [
+                            "737472696e67"
+                        ],
+                        true
+                    ]
+                ],
+                "list": [
+                    false,
+                    true,
+                    false
+                ]
+            },
+            "items": [
+                [
+                    [
+                        "string",
+                        "666f6f"
+                    ],
+                    "737472696e67",
+                    true
+                ]
+            ],
+            "builder": {
+                "entries": [
+                    [
+                        [
+                            "string",
+                            "666f6f"
+                        ],
+                        [
+                            "737472696e67"
+                        ],
+                        true
+                    ]
+                ],
+                "list": [
+                    false,
+                    true,
+                    false
+                ]
+            }
+        },
+        {
+            "source_hex": "61727261797b666f6f3a2027737472696e67277d",
+            "resolved": {
+                "entries": [
+                    [
+                        [
+                            "string",
+                            "666f6f"
+                        ],
+                        [
+                            "737472696e67"
+                        ],
+                        false
+                    ]
+                ],
+                "list": [
+                    false,
+                    false,
+                    true
+                ]
+            },
+            "items": [
+                [
+                    [
+                        "string",
+                        "666f6f"
+                    ],
+                    "737472696e67",
+                    false
+                ]
+            ],
+            "builder": {
+                "entries": [
+                    [
+                        [
+                            "string",
+                            "666f6f"
+                        ],
+                        [
+                            "737472696e67"
+                        ],
+                        false
+                    ]
+                ],
+                "list": [
+                    false,
+                    false,
+                    true
+                ]
+            }
+        },
+        {
+            "source_hex": "61727261797b2d313f3a20276e65676174697665277d",
+            "resolved": {
+                "entries": [
+                    [
+                        [
+                            "int",
+                            -1
+                        ],
+                        [
+                            "6e65676174697665"
+                        ],
+                        true
+                    ]
+                ],
+                "list": [
+                    false,
+                    true,
+                    false
+                ]
+            },
+            "items": [
+                [
+                    [
+                        "int",
+                        -1
+                    ],
+                    "6e65676174697665",
+                    true
+                ]
+            ],
+            "builder": {
+                "entries": [
+                    [
+                        [
+                            "int",
+                            -1
+                        ],
+                        [
+                            "6e65676174697665"
+                        ],
+                        true
+                    ]
+                ],
+                "list": [
+                    false,
+                    true,
+                    false
+                ]
+            }
+        },
+        {
+            "source_hex": "61727261797b2d313a20276e65676174697665277d",
+            "resolved": {
+                "entries": [
+                    [
+                        [
+                            "int",
+                            -1
+                        ],
+                        [
+                            "6e65676174697665"
+                        ],
+                        false
+                    ]
+                ],
+                "list": [
+                    false,
+                    false,
+                    true
+                ]
+            },
+            "items": [
+                [
+                    [
+                        "int",
+                        -1
+                    ],
+                    "6e65676174697665",
+                    false
+                ]
+            ],
+            "builder": {
+                "entries": [
+                    [
+                        [
+                            "int",
+                            -1
+                        ],
+                        [
+                            "6e65676174697665"
+                        ],
+                        false
+                    ]
+                ],
+                "list": [
+                    false,
+                    false,
+                    true
+                ]
+            }
+        },
+        {
+            "source_hex": "61727261797b303f3a20277a65726f277d",
+            "resolved": {
+                "entries": [
+                    [
+                        [
+                            "int",
+                            0
+                        ],
+                        [
+                            "7a65726f"
+                        ],
+                        true
+                    ]
+                ],
+                "list": [
+                    true,
+                    false,
+                    false
+                ]
+            },
+            "items": [
+                [
+                    [
+                        "int",
+                        0
+                    ],
+                    "7a65726f",
+                    true
+                ]
+            ],
+            "builder": {
+                "entries": [
+                    [
+                        [
+                            "int",
+                            0
+                        ],
+                        [
+                            "7a65726f"
+                        ],
+                        true
+                    ]
+                ],
+                "list": [
+                    true,
+                    false,
+                    false
+                ]
+            }
+        },
+        {
+            "source_hex": "61727261797b303a20277a65726f272c20313f3a20276f6e65277d",
+            "resolved": {
+                "entries": [
+                    [
+                        [
+                            "int",
+                            0
+                        ],
+                        [
+                            "7a65726f"
+                        ],
+                        false
+                    ],
+                    [
+                        [
+                            "int",
+                            1
+                        ],
+                        [
+                            "6f6e65"
+                        ],
+                        true
+                    ]
+                ],
+                "list": [
+                    true,
+                    false,
+                    false
+                ]
+            },
+            "items": [
+                [
+                    [
+                        "int",
+                        0
+                    ],
+                    "7a65726f",
+                    false
+                ],
+                [
+                    [
+                        "int",
+                        1
+                    ],
+                    "6f6e65",
+                    true
+                ]
+            ],
+            "builder": {
+                "entries": [
+                    [
+                        [
+                            "int",
+                            0
+                        ],
+                        [
+                            "7a65726f"
+                        ],
+                        false
+                    ],
+                    [
+                        [
+                            "int",
+                            1
+                        ],
+                        [
+                            "6f6e65"
+                        ],
+                        true
+                    ]
+                ],
+                "list": [
+                    true,
+                    false,
+                    false
+                ]
+            }
+        },
+        {
+            "source_hex": "61727261797b303f3a20277a65726f272c20313a20276f6e65277d",
+            "resolved": {
+                "entries": [
+                    [
+                        [
+                            "int",
+                            0
+                        ],
+                        [
+                            "7a65726f"
+                        ],
+                        true
+                    ],
+                    [
+                        [
+                            "int",
+                            1
+                        ],
+                        [
+                            "6f6e65"
+                        ],
+                        false
+                    ]
+                ],
+                "list": [
+                    false,
+                    true,
+                    false
+                ]
+            },
+            "items": [
+                [
+                    [
+                        "int",
+                        0
+                    ],
+                    "7a65726f",
+                    true
+                ],
+                [
+                    [
+                        "int",
+                        1
+                    ],
+                    "6f6e65",
+                    false
+                ]
+            ],
+            "builder": {
+                "entries": [
+                    [
+                        [
+                            "int",
+                            0
+                        ],
+                        [
+                            "7a65726f"
+                        ],
+                        true
+                    ],
+                    [
+                        [
+                            "int",
+                            1
+                        ],
+                        [
+                            "6f6e65"
+                        ],
+                        false
+                    ]
+                ],
+                "list": [
+                    false,
+                    true,
+                    false
+                ]
+            }
+        },
+        {
+            "source_hex": "61727261797b313f3a20276f6e65272c20303a20277a65726f277d",
+            "resolved": {
+                "entries": [
+                    [
+                        [
+                            "int",
+                            1
+                        ],
+                        [
+                            "6f6e65"
+                        ],
+                        true
+                    ],
+                    [
+                        [
+                            "int",
+                            0
+                        ],
+                        [
+                            "7a65726f"
+                        ],
+                        false
+                    ]
+                ],
+                "list": [
+                    false,
+                    true,
+                    false
+                ]
+            },
+            "items": [
+                [
+                    [
+                        "int",
+                        1
+                    ],
+                    "6f6e65",
+                    true
+                ],
+                [
+                    [
+                        "int",
+                        0
+                    ],
+                    "7a65726f",
+                    false
+                ]
+            ],
+            "builder": {
+                "entries": [
+                    [
+                        [
+                            "int",
+                            1
+                        ],
+                        [
+                            "6f6e65"
+                        ],
+                        true
+                    ],
+                    [
+                        [
+                            "int",
+                            0
+                        ],
+                        [
+                            "7a65726f"
+                        ],
+                        false
+                    ]
+                ],
+                "list": [
+                    false,
+                    true,
+                    false
+                ]
+            }
+        },
+        {
+            "source_hex": "61727261797b303f3a20277a65726f272c20323f3a202774776f272c20313a20276f6e65277d",
+            "resolved": {
+                "entries": [
+                    [
+                        [
+                            "int",
+                            0
+                        ],
+                        [
+                            "7a65726f"
+                        ],
+                        true
+                    ],
+                    [
+                        [
+                            "int",
+                            2
+                        ],
+                        [
+                            "74776f"
+                        ],
+                        true
+                    ],
+                    [
+                        [
+                            "int",
+                            1
+                        ],
+                        [
+                            "6f6e65"
+                        ],
+                        false
+                    ]
+                ],
+                "list": [
+                    false,
+                    true,
+                    false
+                ]
+            },
+            "items": [
+                [
+                    [
+                        "int",
+                        0
+                    ],
+                    "7a65726f",
+                    true
+                ],
+                [
+                    [
+                        "int",
+                        2
+                    ],
+                    "74776f",
+                    true
+                ],
+                [
+                    [
+                        "int",
+                        1
+                    ],
+                    "6f6e65",
+                    false
+                ]
+            ],
+            "builder": {
+                "entries": [
+                    [
+                        [
+                            "int",
+                            0
+                        ],
+                        [
+                            "7a65726f"
+                        ],
+                        true
+                    ],
+                    [
+                        [
+                            "int",
+                            2
+                        ],
+                        [
+                            "74776f"
+                        ],
+                        true
+                    ],
+                    [
+                        [
+                            "int",
+                            1
+                        ],
+                        [
+                            "6f6e65"
+                        ],
+                        false
+                    ]
+                ],
+                "list": [
+                    false,
+                    true,
+                    false
+                ]
+            }
+        },
+        {
+            "source_hex": "61727261797b666f6f3f3a20276f7074696f6e616c272c20303a20277265717569726564277d",
+            "resolved": {
+                "entries": [
+                    [
+                        [
+                            "string",
+                            "666f6f"
+                        ],
+                        [
+                            "6f7074696f6e616c"
+                        ],
+                        true
+                    ],
+                    [
+                        [
+                            "int",
+                            0
+                        ],
+                        [
+                            "7265717569726564"
+                        ],
+                        false
+                    ]
+                ],
+                "list": [
+                    false,
+                    true,
+                    false
+                ]
+            },
+            "items": [
+                [
+                    [
+                        "string",
+                        "666f6f"
+                    ],
+                    "6f7074696f6e616c",
+                    true
+                ],
+                [
+                    [
+                        "int",
+                        0
+                    ],
+                    "7265717569726564",
+                    false
+                ]
+            ],
+            "builder": {
+                "entries": [
+                    [
+                        [
+                            "string",
+                            "666f6f"
+                        ],
+                        [
+                            "6f7074696f6e616c"
+                        ],
+                        true
+                    ],
+                    [
+                        [
+                            "int",
+                            0
+                        ],
+                        [
+                            "7265717569726564"
+                        ],
+                        false
+                    ]
+                ],
+                "list": [
+                    false,
+                    true,
+                    false
+                ]
+            }
+        },
+        {
+            "source_hex": "61727261797b666f6f3a20277265717569726564272c20313f3a20276f6e65272c206261723f3a2027737472696e67272c202d313f3a20276e65676174697665277d",
+            "resolved": {
+                "entries": [
+                    [
+                        [
+                            "string",
+                            "666f6f"
+                        ],
+                        [
+                            "7265717569726564"
+                        ],
+                        false
+                    ],
+                    [
+                        [
+                            "int",
+                            1
+                        ],
+                        [
+                            "6f6e65"
+                        ],
+                        true
+                    ],
+                    [
+                        [
+                            "string",
+                            "626172"
+                        ],
+                        [
+                            "737472696e67"
+                        ],
+                        true
+                    ],
+                    [
+                        [
+                            "int",
+                            -1
+                        ],
+                        [
+                            "6e65676174697665"
+                        ],
+                        true
+                    ]
+                ],
+                "list": [
+                    false,
+                    false,
+                    true
+                ]
+            },
+            "items": [
+                [
+                    [
+                        "string",
+                        "666f6f"
+                    ],
+                    "7265717569726564",
+                    false
+                ],
+                [
+                    [
+                        "int",
+                        1
+                    ],
+                    "6f6e65",
+                    true
+                ],
+                [
+                    [
+                        "string",
+                        "626172"
+                    ],
+                    "737472696e67",
+                    true
+                ],
+                [
+                    [
+                        "int",
+                        -1
+                    ],
+                    "6e65676174697665",
+                    true
+                ]
+            ],
+            "builder": {
+                "entries": [
+                    [
+                        [
+                            "string",
+                            "666f6f"
+                        ],
+                        [
+                            "7265717569726564"
+                        ],
+                        false
+                    ],
+                    [
+                        [
+                            "int",
+                            1
+                        ],
+                        [
+                            "6f6e65"
+                        ],
+                        true
+                    ],
+                    [
+                        [
+                            "string",
+                            "626172"
+                        ],
+                        [
+                            "737472696e67"
+                        ],
+                        true
+                    ],
+                    [
+                        [
+                            "int",
+                            -1
+                        ],
+                        [
+                            "6e65676174697665"
+                        ],
+                        true
+                    ]
+                ],
+                "list": [
+                    false,
+                    false,
+                    true
+                ]
+            }
+        },
+        {
+            "source_hex": "61727261797b313a20277265717569726564272c20666f6f3f3a20276f7074696f6e616c277d",
+            "resolved": {
+                "entries": [
+                    [
+                        [
+                            "int",
+                            1
+                        ],
+                        [
+                            "7265717569726564"
+                        ],
+                        false
+                    ],
+                    [
+                        [
+                            "string",
+                            "666f6f"
+                        ],
+                        [
+                            "6f7074696f6e616c"
+                        ],
+                        true
+                    ]
+                ],
+                "list": [
+                    false,
+                    false,
+                    true
+                ]
+            },
+            "items": [
+                [
+                    [
+                        "int",
+                        1
+                    ],
+                    "7265717569726564",
+                    false
+                ],
+                [
+                    [
+                        "string",
+                        "666f6f"
+                    ],
+                    "6f7074696f6e616c",
+                    true
+                ]
+            ],
+            "builder": {
+                "entries": [
+                    [
+                        [
+                            "int",
+                            1
+                        ],
+                        [
+                            "7265717569726564"
+                        ],
+                        false
+                    ],
+                    [
+                        [
+                            "string",
+                            "666f6f"
+                        ],
+                        [
+                            "6f7074696f6e616c"
+                        ],
+                        true
+                    ]
+                ],
+                "list": [
+                    false,
+                    false,
+                    true
+                ]
+            }
+        },
+        {
+            "source_hex": "61727261797b2d313a20277265717569726564272c20313f3a20276f7074696f6e616c277d",
+            "resolved": {
+                "entries": [
+                    [
+                        [
+                            "int",
+                            -1
+                        ],
+                        [
+                            "7265717569726564"
+                        ],
+                        false
+                    ],
+                    [
+                        [
+                            "int",
+                            1
+                        ],
+                        [
+                            "6f7074696f6e616c"
+                        ],
+                        true
+                    ]
+                ],
+                "list": [
+                    false,
+                    false,
+                    true
+                ]
+            },
+            "items": [
+                [
+                    [
+                        "int",
+                        -1
+                    ],
+                    "7265717569726564",
+                    false
+                ],
+                [
+                    [
+                        "int",
+                        1
+                    ],
+                    "6f7074696f6e616c",
+                    true
+                ]
+            ],
+            "builder": {
+                "entries": [
+                    [
+                        [
+                            "int",
+                            -1
+                        ],
+                        [
+                            "7265717569726564"
+                        ],
+                        false
+                    ],
+                    [
+                        [
+                            "int",
+                            1
+                        ],
+                        [
+                            "6f7074696f6e616c"
+                        ],
+                        true
+                    ]
+                ],
+                "list": [
+                    false,
+                    false,
+                    true
+                ]
+            }
+        },
+        {
+            "source_hex": "61727261797b2d393232333337323033363835343737353830383f3a20276d696e277d",
+            "resolved": {
+                "entries": [
+                    [
+                        [
+                            "int",
+                            -9223372036854775808
+                        ],
+                        [
+                            "6d696e"
+                        ],
+                        true
+                    ]
+                ],
+                "list": [
+                    false,
+                    true,
+                    false
+                ]
+            },
+            "items": [
+                [
+                    [
+                        "int",
+                        -9223372036854775808
+                    ],
+                    "6d696e",
+                    true
+                ]
+            ],
+            "builder": {
+                "entries": [
+                    [
+                        [
+                            "int",
+                            -9223372036854775808
+                        ],
+                        [
+                            "6d696e"
+                        ],
+                        true
+                    ]
+                ],
+                "list": [
+                    false,
+                    true,
+                    false
+                ]
+            }
+        },
+        {
+            "source_hex": "61727261797b2d393232333337323033363835343737353830383a20276d696e277d",
+            "resolved": {
+                "entries": [
+                    [
+                        [
+                            "int",
+                            -9223372036854775808
+                        ],
+                        [
+                            "6d696e"
+                        ],
+                        false
+                    ]
+                ],
+                "list": [
+                    false,
+                    false,
+                    true
+                ]
+            },
+            "items": [
+                [
+                    [
+                        "int",
+                        -9223372036854775808
+                    ],
+                    "6d696e",
+                    false
+                ]
+            ],
+            "builder": {
+                "entries": [
+                    [
+                        [
+                            "int",
+                            -9223372036854775808
+                        ],
+                        [
+                            "6d696e"
+                        ],
+                        false
+                    ]
+                ],
+                "list": [
+                    false,
+                    false,
+                    true
+                ]
+            }
+        },
+        {
+            "source_hex": "61727261797b393232333337323033363835343737353830373f3a20276d6178277d",
+            "resolved": {
+                "entries": [
+                    [
+                        [
+                            "int",
+                            9223372036854775807
+                        ],
+                        [
+                            "6d6178"
+                        ],
+                        true
+                    ]
+                ],
+                "list": [
+                    false,
+                    true,
+                    false
+                ]
+            },
+            "items": [
+                [
+                    [
+                        "int",
+                        9223372036854775807
+                    ],
+                    "6d6178",
+                    true
+                ]
+            ],
+            "builder": {
+                "entries": [
+                    [
+                        [
+                            "int",
+                            9223372036854775807
+                        ],
+                        [
+                            "6d6178"
+                        ],
+                        true
+                    ]
+                ],
+                "list": [
+                    false,
+                    true,
+                    false
+                ]
+            }
+        },
+        {
+            "source_hex": "61727261797b393232333337323033363835343737353830373a20276d6178277d",
+            "resolved": {
+                "entries": [
+                    [
+                        [
+                            "int",
+                            9223372036854775807
+                        ],
+                        [
+                            "6d6178"
+                        ],
+                        false
+                    ]
+                ],
+                "list": [
+                    false,
+                    false,
+                    true
+                ]
+            },
+            "items": [
+                [
+                    [
+                        "int",
+                        9223372036854775807
+                    ],
+                    "6d6178",
+                    false
+                ]
+            ],
+            "builder": {
+                "entries": [
+                    [
+                        [
+                            "int",
+                            9223372036854775807
+                        ],
+                        [
+                            "6d6178"
+                        ],
+                        false
+                    ]
+                ],
+                "list": [
+                    false,
+                    false,
+                    true
+                ]
+            }
+        },
+        {
+            "source_hex": "61727261797b393232333337323033363835343737353830373f3a20276d6178272c20303a20277a65726f277d",
+            "resolved": {
+                "entries": [
+                    [
+                        [
+                            "int",
+                            9223372036854775807
+                        ],
+                        [
+                            "6d6178"
+                        ],
+                        true
+                    ],
+                    [
+                        [
+                            "int",
+                            0
+                        ],
+                        [
+                            "7a65726f"
+                        ],
+                        false
+                    ]
+                ],
+                "list": [
+                    false,
+                    true,
+                    false
+                ]
+            },
+            "items": [
+                [
+                    [
+                        "int",
+                        9223372036854775807
+                    ],
+                    "6d6178",
+                    true
+                ],
+                [
+                    [
+                        "int",
+                        0
+                    ],
+                    "7a65726f",
+                    false
+                ]
+            ],
+            "builder": {
+                "entries": [
+                    [
+                        [
+                            "int",
+                            9223372036854775807
+                        ],
+                        [
+                            "6d6178"
+                        ],
+                        true
+                    ],
+                    [
+                        [
+                            "int",
+                            0
+                        ],
+                        [
+                            "7a65726f"
+                        ],
+                        false
+                    ]
+                ],
+                "list": [
+                    false,
+                    true,
+                    false
+                ]
+            }
+        },
+        {
+            "source_hex": "61727261797b393232333337323033363835343737353830373a20276d6178272c20303f3a20277a65726f272c202d313f3a20276e65676174697665272c207461696c3f3a2027737472696e67277d",
+            "resolved": {
+                "entries": [
+                    [
+                        [
+                            "int",
+                            9223372036854775807
+                        ],
+                        [
+                            "6d6178"
+                        ],
+                        false
+                    ],
+                    [
+                        [
+                            "int",
+                            0
+                        ],
+                        [
+                            "7a65726f"
+                        ],
+                        true
+                    ],
+                    [
+                        [
+                            "int",
+                            -1
+                        ],
+                        [
+                            "6e65676174697665"
+                        ],
+                        true
+                    ],
+                    [
+                        [
+                            "string",
+                            "7461696c"
+                        ],
+                        [
+                            "737472696e67"
+                        ],
+                        true
+                    ]
+                ],
+                "list": [
+                    false,
+                    false,
+                    true
+                ]
+            },
+            "items": [
+                [
+                    [
+                        "int",
+                        9223372036854775807
+                    ],
+                    "6d6178",
+                    false
+                ],
+                [
+                    [
+                        "int",
+                        0
+                    ],
+                    "7a65726f",
+                    true
+                ],
+                [
+                    [
+                        "int",
+                        -1
+                    ],
+                    "6e65676174697665",
+                    true
+                ],
+                [
+                    [
+                        "string",
+                        "7461696c"
+                    ],
+                    "737472696e67",
+                    true
+                ]
+            ],
+            "builder": {
+                "entries": [
+                    [
+                        [
+                            "int",
+                            9223372036854775807
+                        ],
+                        [
+                            "6d6178"
+                        ],
+                        false
+                    ],
+                    [
+                        [
+                            "int",
+                            0
+                        ],
+                        [
+                            "7a65726f"
+                        ],
+                        true
+                    ],
+                    [
+                        [
+                            "int",
+                            -1
+                        ],
+                        [
+                            "6e65676174697665"
+                        ],
+                        true
+                    ],
+                    [
+                        [
+                            "string",
+                            "7461696c"
+                        ],
+                        [
+                            "737472696e67"
+                        ],
+                        true
+                    ]
+                ],
+                "list": [
+                    false,
+                    false,
+                    true
+                ]
+            }
         }
     ],
     "numeric_late_shape_keys": [
@@ -7949,6 +9440,729 @@
                         ],
                         [
                             "6578747261"
+                        ],
+                        true
+                    ]
+                ],
+                "list": [
+                    false,
+                    false,
+                    true
+                ]
+            }
+        },
+        {
+            "source_hex": "61727261797b4b3f3a202274656d706c617465227d",
+            "replacement": "31",
+            "resolved": {
+                "entries": [
+                    [
+                        [
+                            "int",
+                            1
+                        ],
+                        [
+                            "74656d706c617465"
+                        ],
+                        true
+                    ]
+                ],
+                "list": [
+                    false,
+                    true,
+                    false
+                ]
+            }
+        },
+        {
+            "source_hex": "61727261797b4b3f3a202274656d706c617465227d",
+            "replacement": "3031",
+            "resolved": {
+                "entries": [
+                    [
+                        [
+                            "string",
+                            "3031"
+                        ],
+                        [
+                            "74656d706c617465"
+                        ],
+                        true
+                    ]
+                ],
+                "list": [
+                    false,
+                    true,
+                    false
+                ]
+            }
+        },
+        {
+            "source_hex": "61727261797b4b3f3a202274656d706c617465227d",
+            "replacement": "2d31",
+            "resolved": {
+                "entries": [
+                    [
+                        [
+                            "int",
+                            -1
+                        ],
+                        [
+                            "74656d706c617465"
+                        ],
+                        true
+                    ]
+                ],
+                "list": [
+                    false,
+                    true,
+                    false
+                ]
+            }
+        },
+        {
+            "source_hex": "61727261797b4b3f3a202274656d706c617465227d",
+            "replacement": "ff",
+            "resolved": {
+                "entries": [
+                    [
+                        [
+                            "string",
+                            "ff"
+                        ],
+                        [
+                            "74656d706c617465"
+                        ],
+                        true
+                    ]
+                ],
+                "list": [
+                    false,
+                    true,
+                    false
+                ]
+            }
+        },
+        {
+            "source_hex": "61727261797b4b3f3a202274656d706c617465227d",
+            "replacement": "fe",
+            "resolved": {
+                "entries": [
+                    [
+                        [
+                            "string",
+                            "fe"
+                        ],
+                        [
+                            "74656d706c617465"
+                        ],
+                        true
+                    ]
+                ],
+                "list": [
+                    false,
+                    true,
+                    false
+                ]
+            }
+        },
+        {
+            "source_hex": "61727261797b4b3f3a202274656d706c617465227d",
+            "replacement": "efbfbd",
+            "resolved": {
+                "entries": [
+                    [
+                        [
+                            "string",
+                            "efbfbd"
+                        ],
+                        [
+                            "74656d706c617465"
+                        ],
+                        true
+                    ]
+                ],
+                "list": [
+                    false,
+                    true,
+                    false
+                ]
+            }
+        },
+        {
+            "source_hex": "61727261797b303f3a20227a65726f222c204b3f3a202274656d706c617465227d",
+            "replacement": "31",
+            "resolved": {
+                "entries": [
+                    [
+                        [
+                            "int",
+                            0
+                        ],
+                        [
+                            "7a65726f"
+                        ],
+                        true
+                    ],
+                    [
+                        [
+                            "int",
+                            1
+                        ],
+                        [
+                            "74656d706c617465"
+                        ],
+                        true
+                    ]
+                ],
+                "list": [
+                    false,
+                    true,
+                    false
+                ]
+            }
+        },
+        {
+            "source_hex": "61727261797b303f3a20227a65726f222c204b3f3a202274656d706c617465227d",
+            "replacement": "3031",
+            "resolved": {
+                "entries": [
+                    [
+                        [
+                            "int",
+                            0
+                        ],
+                        [
+                            "7a65726f"
+                        ],
+                        true
+                    ],
+                    [
+                        [
+                            "string",
+                            "3031"
+                        ],
+                        [
+                            "74656d706c617465"
+                        ],
+                        true
+                    ]
+                ],
+                "list": [
+                    false,
+                    true,
+                    false
+                ]
+            }
+        },
+        {
+            "source_hex": "61727261797b303f3a20227a65726f222c204b3f3a202274656d706c617465227d",
+            "replacement": "2d31",
+            "resolved": {
+                "entries": [
+                    [
+                        [
+                            "int",
+                            0
+                        ],
+                        [
+                            "7a65726f"
+                        ],
+                        true
+                    ],
+                    [
+                        [
+                            "int",
+                            -1
+                        ],
+                        [
+                            "74656d706c617465"
+                        ],
+                        true
+                    ]
+                ],
+                "list": [
+                    false,
+                    true,
+                    false
+                ]
+            }
+        },
+        {
+            "source_hex": "61727261797b303f3a20227a65726f222c204b3f3a202274656d706c617465227d",
+            "replacement": "ff",
+            "resolved": {
+                "entries": [
+                    [
+                        [
+                            "int",
+                            0
+                        ],
+                        [
+                            "7a65726f"
+                        ],
+                        true
+                    ],
+                    [
+                        [
+                            "string",
+                            "ff"
+                        ],
+                        [
+                            "74656d706c617465"
+                        ],
+                        true
+                    ]
+                ],
+                "list": [
+                    false,
+                    true,
+                    false
+                ]
+            }
+        },
+        {
+            "source_hex": "61727261797b303f3a20227a65726f222c204b3f3a202274656d706c617465227d",
+            "replacement": "fe",
+            "resolved": {
+                "entries": [
+                    [
+                        [
+                            "int",
+                            0
+                        ],
+                        [
+                            "7a65726f"
+                        ],
+                        true
+                    ],
+                    [
+                        [
+                            "string",
+                            "fe"
+                        ],
+                        [
+                            "74656d706c617465"
+                        ],
+                        true
+                    ]
+                ],
+                "list": [
+                    false,
+                    true,
+                    false
+                ]
+            }
+        },
+        {
+            "source_hex": "61727261797b303f3a20227a65726f222c204b3f3a202274656d706c617465227d",
+            "replacement": "efbfbd",
+            "resolved": {
+                "entries": [
+                    [
+                        [
+                            "int",
+                            0
+                        ],
+                        [
+                            "7a65726f"
+                        ],
+                        true
+                    ],
+                    [
+                        [
+                            "string",
+                            "efbfbd"
+                        ],
+                        [
+                            "74656d706c617465"
+                        ],
+                        true
+                    ]
+                ],
+                "list": [
+                    false,
+                    true,
+                    false
+                ]
+            }
+        },
+        {
+            "source_hex": "61727261797b4b3f3a202274656d706c617465222c20303a20227a65726f227d",
+            "replacement": "31",
+            "resolved": {
+                "entries": [
+                    [
+                        [
+                            "int",
+                            1
+                        ],
+                        [
+                            "74656d706c617465"
+                        ],
+                        true
+                    ],
+                    [
+                        [
+                            "int",
+                            0
+                        ],
+                        [
+                            "7a65726f"
+                        ],
+                        false
+                    ]
+                ],
+                "list": [
+                    false,
+                    true,
+                    false
+                ]
+            }
+        },
+        {
+            "source_hex": "61727261797b4b3f3a202274656d706c617465222c20303a20227a65726f227d",
+            "replacement": "3031",
+            "resolved": {
+                "entries": [
+                    [
+                        [
+                            "string",
+                            "3031"
+                        ],
+                        [
+                            "74656d706c617465"
+                        ],
+                        true
+                    ],
+                    [
+                        [
+                            "int",
+                            0
+                        ],
+                        [
+                            "7a65726f"
+                        ],
+                        false
+                    ]
+                ],
+                "list": [
+                    false,
+                    true,
+                    false
+                ]
+            }
+        },
+        {
+            "source_hex": "61727261797b4b3f3a202274656d706c617465222c20303a20227a65726f227d",
+            "replacement": "2d31",
+            "resolved": {
+                "entries": [
+                    [
+                        [
+                            "int",
+                            -1
+                        ],
+                        [
+                            "74656d706c617465"
+                        ],
+                        true
+                    ],
+                    [
+                        [
+                            "int",
+                            0
+                        ],
+                        [
+                            "7a65726f"
+                        ],
+                        false
+                    ]
+                ],
+                "list": [
+                    false,
+                    true,
+                    false
+                ]
+            }
+        },
+        {
+            "source_hex": "61727261797b4b3f3a202274656d706c617465222c20303a20227a65726f227d",
+            "replacement": "ff",
+            "resolved": {
+                "entries": [
+                    [
+                        [
+                            "string",
+                            "ff"
+                        ],
+                        [
+                            "74656d706c617465"
+                        ],
+                        true
+                    ],
+                    [
+                        [
+                            "int",
+                            0
+                        ],
+                        [
+                            "7a65726f"
+                        ],
+                        false
+                    ]
+                ],
+                "list": [
+                    false,
+                    true,
+                    false
+                ]
+            }
+        },
+        {
+            "source_hex": "61727261797b4b3f3a202274656d706c617465222c20303a20227a65726f227d",
+            "replacement": "fe",
+            "resolved": {
+                "entries": [
+                    [
+                        [
+                            "string",
+                            "fe"
+                        ],
+                        [
+                            "74656d706c617465"
+                        ],
+                        true
+                    ],
+                    [
+                        [
+                            "int",
+                            0
+                        ],
+                        [
+                            "7a65726f"
+                        ],
+                        false
+                    ]
+                ],
+                "list": [
+                    false,
+                    true,
+                    false
+                ]
+            }
+        },
+        {
+            "source_hex": "61727261797b4b3f3a202274656d706c617465222c20303a20227a65726f227d",
+            "replacement": "efbfbd",
+            "resolved": {
+                "entries": [
+                    [
+                        [
+                            "string",
+                            "efbfbd"
+                        ],
+                        [
+                            "74656d706c617465"
+                        ],
+                        true
+                    ],
+                    [
+                        [
+                            "int",
+                            0
+                        ],
+                        [
+                            "7a65726f"
+                        ],
+                        false
+                    ]
+                ],
+                "list": [
+                    false,
+                    true,
+                    false
+                ]
+            }
+        },
+        {
+            "source_hex": "61727261797b313a20226f6e65222c204b3f3a202274656d706c617465227d",
+            "replacement": "31",
+            "resolved": {
+                "entries": [
+                    [
+                        [
+                            "int",
+                            1
+                        ],
+                        [
+                            "6f6e65",
+                            "74656d706c617465"
+                        ],
+                        false
+                    ]
+                ],
+                "list": [
+                    false,
+                    false,
+                    true
+                ]
+            }
+        },
+        {
+            "source_hex": "61727261797b313a20226f6e65222c204b3f3a202274656d706c617465227d",
+            "replacement": "3031",
+            "resolved": {
+                "entries": [
+                    [
+                        [
+                            "int",
+                            1
+                        ],
+                        [
+                            "6f6e65"
+                        ],
+                        false
+                    ],
+                    [
+                        [
+                            "string",
+                            "3031"
+                        ],
+                        [
+                            "74656d706c617465"
+                        ],
+                        true
+                    ]
+                ],
+                "list": [
+                    false,
+                    false,
+                    true
+                ]
+            }
+        },
+        {
+            "source_hex": "61727261797b313a20226f6e65222c204b3f3a202274656d706c617465227d",
+            "replacement": "2d31",
+            "resolved": {
+                "entries": [
+                    [
+                        [
+                            "int",
+                            1
+                        ],
+                        [
+                            "6f6e65"
+                        ],
+                        false
+                    ],
+                    [
+                        [
+                            "int",
+                            -1
+                        ],
+                        [
+                            "74656d706c617465"
+                        ],
+                        true
+                    ]
+                ],
+                "list": [
+                    false,
+                    false,
+                    true
+                ]
+            }
+        },
+        {
+            "source_hex": "61727261797b313a20226f6e65222c204b3f3a202274656d706c617465227d",
+            "replacement": "ff",
+            "resolved": {
+                "entries": [
+                    [
+                        [
+                            "int",
+                            1
+                        ],
+                        [
+                            "6f6e65"
+                        ],
+                        false
+                    ],
+                    [
+                        [
+                            "string",
+                            "ff"
+                        ],
+                        [
+                            "74656d706c617465"
+                        ],
+                        true
+                    ]
+                ],
+                "list": [
+                    false,
+                    false,
+                    true
+                ]
+            }
+        },
+        {
+            "source_hex": "61727261797b313a20226f6e65222c204b3f3a202274656d706c617465227d",
+            "replacement": "fe",
+            "resolved": {
+                "entries": [
+                    [
+                        [
+                            "int",
+                            1
+                        ],
+                        [
+                            "6f6e65"
+                        ],
+                        false
+                    ],
+                    [
+                        [
+                            "string",
+                            "fe"
+                        ],
+                        [
+                            "74656d706c617465"
+                        ],
+                        true
+                    ]
+                ],
+                "list": [
+                    false,
+                    false,
+                    true
+                ]
+            }
+        },
+        {
+            "source_hex": "61727261797b313a20226f6e65222c204b3f3a202274656d706c617465227d",
+            "replacement": "efbfbd",
+            "resolved": {
+                "entries": [
+                    [
+                        [
+                            "int",
+                            1
+                        ],
+                        [
+                            "6f6e65"
+                        ],
+                        false
+                    ],
+                    [
+                        [
+                            "string",
+                            "efbfbd"
+                        ],
+                        [
+                            "74656d706c617465"
                         ],
                         true
                     ]

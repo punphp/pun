@@ -2521,6 +2521,11 @@ impl ShapeBuilder {
         }
         a.keys.push(key.clone());
         a.values.push(value);
+        let non_list = if optional {
+            a.is_list.and(Tri::Maybe)
+        } else {
+            Tri::No
+        };
         match key {
             Type::ConstInt(offset) if !a.next_auto_indexes.is_empty() => {
                 let min = *a.next_auto_indexes.iter().min().expect("auto index");
@@ -2530,11 +2535,11 @@ impl ShapeBuilder {
                         a.is_list = if offset <= max {
                             a.is_list.and(Tri::Maybe)
                         } else {
-                            Tri::No
+                            non_list
                         };
                     }
                 } else {
-                    a.is_list = Tri::No;
+                    a.is_list = non_list;
                 }
                 // (past PHP_INT_MAX there is no next index)
                 if offset >= max {
@@ -2546,7 +2551,7 @@ impl ShapeBuilder {
                     }
                 }
             }
-            _ => a.is_list = Tri::No,
+            _ => a.is_list = non_list,
         }
         if optional {
             a.optional.push(a.keys.len() - 1);

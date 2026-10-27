@@ -120,8 +120,7 @@ fn shape_keys(ty: &Type) -> Value {
     )
 }
 
-// The oracle also records list classification, a separate builder contract from key coercion.
-fn shape_key_entries(ty: &Type) -> Value {
+fn shape_key_metadata(ty: &Type) -> Value {
     let arrays = ty.constant_arrays();
     assert_eq!(arrays.len(), 1);
     let array = &arrays[0];
@@ -141,7 +140,10 @@ fn shape_key_entries(ty: &Type) -> Value {
             json!([key, values, array.optional.contains(&i)])
         })
         .collect();
-    json!(entries)
+    json!({
+        "entries": entries,
+        "list": [array.is_list.yes(), array.is_list.maybe(), array.is_list.no()],
+    })
 }
 
 #[test]
@@ -157,11 +159,11 @@ fn quoted_shape_keys_preserve_bytes_and_overwrite_only_equal_keys() {
     for row in oracle["numeric_shape_keys"].as_array().unwrap() {
         let input = bytes(&row["source_hex"]);
         let node = pun_phpstan::phpdoc::parse(&input).unwrap();
-        let resolved = shape_key_entries(&pun_phpstan::resolve::resolve(&node, None));
-        if resolved != row["resolved"]["entries"] {
+        let resolved = shape_key_metadata(&pun_phpstan::resolve::resolve(&node, None));
+        if resolved != row["resolved"] {
             failures.push(format!(
                 "resolver {}: got {resolved}; expected {}",
-                row["source_hex"], row["resolved"]["entries"]
+                row["source_hex"], row["resolved"]
             ));
         }
         if let Some(items) = row["items"].as_array() {
@@ -178,11 +180,11 @@ fn quoted_shape_keys_preserve_bytes_and_overwrite_only_equal_keys() {
                     item[2].as_bool().unwrap(),
                 );
             }
-            let built = shape_key_entries(&builder.get());
-            if built != row["builder"]["entries"] {
+            let built = shape_key_metadata(&builder.get());
+            if built != row["builder"] {
                 failures.push(format!(
                     "builder {}: got {built}; expected {}",
-                    row["source_hex"], row["builder"]["entries"]
+                    row["source_hex"], row["builder"]
                 ));
             }
         }
@@ -246,8 +248,8 @@ fn late_quoted_shape_keys_preserve_bytes_through_template_substitution() {
         let map = infer_template_types(&template, &replacement);
         let resolved = resolve_template_types(&ty, &map);
         assert_eq!(
-            shape_key_entries(&resolved),
-            row["resolved"]["entries"],
+            shape_key_metadata(&resolved),
+            row["resolved"],
             "{}; replacement {}",
             row["source_hex"],
             row["replacement"]

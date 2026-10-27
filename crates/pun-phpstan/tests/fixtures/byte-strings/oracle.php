@@ -174,6 +174,27 @@ array{"\x31"?: 'explicit', ...<1|2, 'extra'>}
 array{'01': 'leading', ...<1|'01', 'extra'>}
 array{"\x30": 'zero', ...<0|1, 'extra'>}
 array{"\x2d1": 'negative', ...<-1|0, 'extra'>}
+array{1?: 'one'}
+array{1: 'one'}
+array{foo?: 'string'}
+array{foo: 'string'}
+array{-1?: 'negative'}
+array{-1: 'negative'}
+array{0?: 'zero'}
+array{0: 'zero', 1?: 'one'}
+array{0?: 'zero', 1: 'one'}
+array{1?: 'one', 0: 'zero'}
+array{0?: 'zero', 2?: 'two', 1: 'one'}
+array{foo?: 'optional', 0: 'required'}
+array{foo: 'required', 1?: 'one', bar?: 'string', -1?: 'negative'}
+array{1: 'required', foo?: 'optional'}
+array{-1: 'required', 1?: 'optional'}
+array{-9223372036854775808?: 'min'}
+array{-9223372036854775808: 'min'}
+array{9223372036854775807?: 'max'}
+array{9223372036854775807: 'max'}
+array{9223372036854775807?: 'max', 0: 'zero'}
+array{9223372036854775807: 'max', 0?: 'zero', -1?: 'negative', tail?: 'string'}
 SHAPES;
     $numericRows = [];
     foreach (explode("\n", $numericInputs) as $input) {
@@ -203,6 +224,10 @@ SHAPES;
         'array{K: "template", "\x31": "one", "01": "leading"}',
         'array{"\x31": "one", K?: "template", "01": "leading"}',
         'array{K?: "template", 1: "one", ...<K|2, "extra">}',
+        'array{K?: "template"}',
+        'array{0?: "zero", K?: "template"}',
+        'array{K?: "template", 0: "zero"}',
+        'array{1: "one", K?: "template"}',
     ] as $input) {
         foreach (['1', '01', '-1', "\xff", "\xfe", "\xef\xbf\xbd"] as $replacement) {
             $type = $resolver->resolve($input, $scope);
