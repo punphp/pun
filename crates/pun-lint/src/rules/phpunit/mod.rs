@@ -22,6 +22,7 @@ mod no_expects_any;
 mod no_final_constructor_override;
 mod no_flipped_assertion;
 mod no_float_delta_parameter;
+mod no_mock_intersection_property;
 mod no_negated_assertion;
 mod no_setup_override_attribute;
 mod no_test_constructor;
@@ -81,6 +82,7 @@ pub use no_expects_any::NoExpectsAny;
 pub use no_final_constructor_override::NoFinalConstructorOverride;
 pub use no_flipped_assertion::NoFlippedAssertion;
 pub use no_float_delta_parameter::NoFloatDeltaParameter;
+pub use no_mock_intersection_property::NoMockIntersectionProperty;
 pub use no_negated_assertion::NoNegatedAssertion;
 pub use no_setup_override_attribute::NoSetupOverrideAttribute;
 pub use no_test_constructor::NoTestConstructor;
@@ -198,6 +200,7 @@ pub(crate) fn all() -> Vec<Box<dyn Rule>> {
         Box::new(AddDataProviderIteratorReturnType),
         Box::new(AddReturnTypeFromMockObject),
         Box::new(PreferCreateStubExpression),
+        Box::new(NoMockIntersectionProperty),
     ]
 }
 
