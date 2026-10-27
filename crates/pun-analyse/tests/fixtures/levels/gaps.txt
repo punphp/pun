@@ -138,7 +138,6 @@
 5 Functions/CallToFunctionParametersRuleTest::testCurlSetOptArray
 5 Methods/CallMethodsRuleTest::testBug14549
 5 Methods/CallMethodsRuleTest::testBug14893
-5 Methods/CallMethodsRuleTest::testInvokeMagicInvokeMethod
 5 Methods/CallStaticMethodsRuleTest::testBug1971Php8
 9 Functions/CallToFunctionParametersRuleTest::testArrayAllCallback
 9 Functions/CallToFunctionParametersRuleTest::testArrayAnyCallback
@@ -660,7 +659,6 @@
 5 Functions/CallToFunctionParametersRuleTest::testBug13114#0
 5 Functions/CallToFunctionParametersRuleTest::testBug13114#1
 5 Functions/CallToFunctionParametersRuleTest::testBug13114#2
-5 Functions/CallToFunctionParametersRuleTest::testBug1946
 5 Functions/CallToFunctionParametersRuleTest::testClosureSignatureFromUsages
 5 Functions/CallToFunctionParametersRuleTest::testClosureSignatureFromUsagesOfGenericObject
 5 Methods/CallMethodsRuleTest::testBug8441
@@ -676,7 +674,6 @@
 9 Functions/CallToFunctionParametersRuleTest::testBug13114#2
 9 Functions/CallToFunctionParametersRuleTest::testBug13334
 9 Functions/CallToFunctionParametersRuleTest::testBug15168
-9 Functions/CallToFunctionParametersRuleTest::testBug1946
 9 Functions/CallToFunctionParametersRuleTest::testBug9377
 9 Functions/CallToFunctionParametersRuleTest::testClosureSignatureFromUsages
 9 Functions/CallToFunctionParametersRuleTest::testClosureSignatureFromUsagesOfGenericObject

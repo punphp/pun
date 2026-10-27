@@ -122,6 +122,15 @@ Shared scope inference honors PHPStan's `polluteScopeWithLoopInitialAssignments`
 When disabled, `for` exits include the pre-loop scope; `while` adds that scope only when zero iterations are possible.
 The setting does not change `checkMaybeUndefinedVariables`, `foreach`, or `do-while` behavior.
 
+The independent `polluteScopeWithAlwaysIterableForeach` parameter also defaults to true.
+When disabled, a nonempty `foreach` retains its final inferred types without making new variables definitely defined after the loop.
+Assignments in the iterable expression still take effect unconditionally.
+
+The independent `polluteScopeWithBlock` parameter defaults to true.
+When disabled, a standalone braced block joins its incoming and final variable types and certainty.
+Its actual termination, loop exits, throws, and expression effects remain unchanged.
+Braces belonging to control statements do not count as standalone blocks.
+
 Dynamic `new $class` expressions report unknown class names even when another possible name exists.
 
 Dynamic constant fetches such as `Example::{$name}` check each possible name when the selector has a finite set of string values. The checks preserve branch narrowing and report missing or inaccessible constants.
@@ -155,7 +164,9 @@ Object intersections discard duplicate constraints without losing generic argume
 Union method reflection preserves member order when choosing the declaring class; printed type descriptions remain sorted.
 Generic type comparisons treat differently ordered union and intersection members as equal.
 Shared analysis retains exact instantiated-class alternatives without marking their class declarations final.
-Conversion to Pun's PHPStan object types does not yet retain that exactness.
+Conversion to Pun's PHPStan object types preserves per-value reflection overrides through containment and unions.
+Ordinary type traversal preserves these overrides; template inference removes them recursively, matching PHPStan.
+Named-argument checks apply finality to the method's actual declaring class, including inherited methods.
 Short-circuit boolean expressions retain evaluated operand types and their excluded object alternatives.
 Output arguments evaluated only on a short-circuited right operand remain possibly undefined on paths that skip that operand.
 Full type inference preserves explicit `mixed` from native and PHPDoc declarations, built-in return types, assignments and captures.
@@ -175,7 +186,12 @@ Reversed bounds are swapped only for `rand()`, matching PHPStan.
 PHPDoc union lowering preserves literal alternatives and nullable boundaries without recursive stack growth over flat unions.
 Parsing and nested non-union types retain their existing stack limits.
 The PHPStan-compatible PHPDoc resolver preserves decoded quoted array-shape keys as bytes, including through template substitution.
-Quoted shape-key decoding in shared inference and non-UTF-8 identifier handling remain incomplete.
+Shared inference decodes quoted array-shape keys before numeric-key conversion.
+PHPDoc parsing and tag ingestion preserve raw quoted scalar and array-shape bytes, including non-UTF-8 source bytes.
+Prefix and error offsets count original bytes. Diagnostic text can still substitute invalid UTF-8.
+Numeric string keys normalize before overwrite lookup and finite unsealed-extra exclusion.
+Optional non-list shape keys do not make a shape definitely non-list.
+Class, identifier, and object-property names retain their existing text representation.
 
 `strlen()` inference uses PHP scalar casts and byte lengths, including binary strings.
 Literal alternatives produce exact lengths or a contiguous integer range. General integer ranges are not enumerated.
@@ -203,6 +219,15 @@ Unknown effect producers remain unchecked. Full pure-function and pure-method va
 Array writes distinguish definite literal keys from literal alternatives within a general string or integer key.
 A false `isset` probe leaves the array unchanged when its nullable entry might be absent.
 A required nullable entry narrows to `null`.
+Failed offset reads do not satisfy the value cache. Later absence probes refresh presence independently of a cached narrowed value.
+Coalesce scopes distinguish missing offsets from stored null and discard offset-cache facts absent from a continuing branch.
+Closed array alternatives survive these joins; general array-union normalization remains incomplete.
+Literal-string reads through a finite integer range infer the selected byte union when the intersected range spans at most 128.
+Partially valid ranges include the empty-string result. Other ranges retain PHPStan's inherited string fallback.
+For and while condition formulas use evaluated operand types without evaluating expressions again.
+Do-while preserves its unconditional first body.
+Scope joins exclude values from explicitly absent variable holders without discarding genuine nullable values.
+An empty-iteration path preserves the identity of a mixed-bound template iterator.
 `foreach` loops over sealed constant lists of up to 16 required entries retain sequential array mutation state, including local `continue` edges.
 Nested replay applies PHPStan's product limit of eight once an outer replay has more than one entry.
 References, `break`, `return`, optional entries, shape unions, associative iterators, and non-direct targets retain general loop inference.

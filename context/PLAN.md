@@ -11,15 +11,27 @@ Pushpak resumed all commands on 2026-10-25. CI stays disabled.
 
 - **Counts** (local mapping.toml `ported = true`): format 168 of 168, lint 514 of 703, analyse 299 of 385.
   Pending: format 0, lint 189, analyse 86 (275 total). Ported rules still have the explicit parity gaps below.
-- **Latest verified batch:** all 392 combined partitions pass: 1,315 rule cases, 2,787 level cases, 536
-  analyser public/library tests, 431 lint tests and all 73 owning PHPStan tests. Finite static-property names,
-  failed reads, virtual inc/dec writes, loop-initial-assignment pollution and decoded PHPDoc shape-key byte
-  storage pass together without changing upstream expectations. Source-matched coverage is analyse
-  42,771/42,771, lint 39,270/39,270 and PHPStan 10,530/10,530 after existing exclusions. All 361 changed
-  executable source lines are covered without new exclusions. Four verified obsolete markers are removed;
-  656 level gaps and 16 rule gaps remain, so this is not full upstream parity. All 51 analyse, lint, migrate
-  and init CLI tests pass. The docs build passes on 1,446 pages, with six rendered contract checks.
-  Converted-object exactness, foreach pollution, coalescing and shared quoted-key decoding remain private.
+- **Latest verified batch:** all 393 combined partitions pass: 1,315 rule cases, 2,787 level cases, 549
+  analyser public/library tests, 431 lint tests and all 78 owning PHPStan tests. Per-value object reflection,
+  foreach and standalone-block pollution, raw quoted PHPDoc bytes, normalized numeric shape keys, optional
+  list metadata and failed-offset coalescing pass together without changing upstream expectations.
+  Source-owned loop and foreach corrections resolve all three regressions found by the first combined run:
+  the lost loop-condition upper bound in `testBug11506`, an extra empty-array template alternative and
+  incorrect certainty after a terminating isset guard. Both 246-case Functions partitions pass.
+  Source-matched coverage is analyse 42,846/42,846, lint 39,270/39,270 and PHPStan 10,557/10,557 after
+  existing exclusions. All 874 changed executable lines are covered without new exclusions. Three verified
+  obsolete level markers are removed; 653 level gaps and 16 rule gaps remain, so this is not full parity.
+  All 51 analyse, lint, migrate and init CLI tests and all 20 Pint CLI comparisons pass. Pinkary formatting
+  matches all 799 files; its absent-dependency analyse errors are not analyse/check parity evidence.
+  Fresh byte, raw-comment, block, list and foreach-entry oracle captures are byte-identical.
+  The docs build passes on 1,446 pages, with all 18 rendered contract checks passing.
+  The coordinator reached 30 minutes after 340 passing partitions; the remaining 53 pass against the same
+  frozen sources and executables. Original interruption logs are retained. Normal coverage export succeeds;
+  all 18 zero-hash warnings name unchanged inline flag methods with positive matching profile records.
+- **Next isolated work:** shared real-edge joins still have eight strict rollout mismatches, including
+  missing post-join null-context specifications. The wide-integer literal correction is ready privately:
+  128 tests pass, including 45 diagnostic and 171 literal records, with 41/41 changed lines covered.
+  Last-declaration selection for duplicate class-like constants is assigned independently. CI stays disabled.
 - **Rule docs:** steps 1–5 built locally: all 1,256 rule pages, 67 command/group pages, 8 presets, 8 sets, six
   migration mappings and the URL-filtered directory. CLI links need the public docs origin; none is configured.
   The docs build passes on Linux (1,446 pages); public deployment has not been verified.
@@ -428,7 +440,7 @@ Pushpak resumed all commands on 2026-10-25. CI stays disabled.
   tools' JSON diffs with zero fuzz produces byte-identical output for all 29 changed files, before and after
   pinned Pint normalization. All 342 original source digests remain unchanged. The original parallel result
   remains in the evidence; it is not evidence of a rule bug. The reason for its incomplete output is unresolved.
-- **Priorities, in order:** (1) done (all level cases pass in bounded partitions; documented older gaps remain); (2) done (lint vs Rector: `scripts/lint-vs-rector.py`, residuals in §3); (3) done (lint declaration-order regressions and source-matched coverage); (4) doing: analyse level 0, then the
+- **Priorities, in order:** (1) done (the repaired combined level, rule and coverage gate passes with documented older gaps); (2) done (lint vs Rector: `scripts/lint-vs-rector.py`, residuals in §3); (3) done (lint declaration-order regressions and source-matched coverage); (4) doing: analyse level 0, then the
   Larastan groundwork and levels 1-10; (5) lint rules by usage; (6) `pun check` in one pass; (7) perf rounds with
   `scripts/bench.py`.
 - **Waiting on Pushpak:** audit 26 (agent-mode `OnceLock`), `style/prefer-class-constant`, independent batch-8
@@ -715,15 +727,12 @@ Gate passed ea7a84bc2d4c4f4b90ad177d911e6ade3accf253
 | Work | Status |
 | --- | --- |
 | analyse 3: finish level 0 and the level-2 class rules; the current rule counts are in §0. Not yet: DebugScopeRule, DumpNativeTypeRule and FileAssertRule | todo |
-| analyse level 0 named arguments: port MethodCallWithPossiblyRenamedNamedArgumentRule's analysed call/override collectors and cross-file join, preserving named-argument acceptance and private/final controls | doing (collector, provenance and template-offset corrections integrated locally; combined verification running) |
-| analyse converted object exactness: preserve runtime reflection overrides through Pun's Object payload, containment and unions, erasing them only at template inference | doing (private source-owned repair passes 72 PHPStan tests, 22 object-intersection tests, 16 named-argument tests and all 126 level-3 return cases; 238/238 changed source lines covered; equality keeps the sealed ordering repair; two strict level-5 gates report stale gaps with zero new mismatches; current-main integration remains; declaration finality, initializer identities and worker protocol stay unchanged) |
-| analyse level 0 arrays: complete DuplicateKeysInLiteralArraysRule beyond the verified scalar/constant keys, sealed unpacking and byte-exact literal keys; raw-comment and identifier boundaries still use UTF-8 text | doing (quoted ShapeKey byte storage, normal/late resolution and Larastan's config-key migration pass the complete combined gate; all 73 PHPStan tests pass; Mago's quoted-key decoding is ready privately against 13 fresh diagnostics and 15 byte-key records, with 7/7 changed dependency lines covered; raw-comment/class-identity boundaries remain; whole rule stays unported) |
-| analyse constant inference: retain compound initializer precision when the constant follows its consuming function or lives in a scanned-only file; duplicate-key checks already recover these values, but copied-variable type dumps remain too broad | doing (integrated locally against 29 PHPStan diagnostics; shared production initializer inference; combined verification running) |
-| analyse level 0 variables: port DefinedVariableRule and CompactVariablesRule on shared variable-certainty observations, including assign/undefined-allowed contexts, dynamic names and the CLI/maybe-undefined switches | doing (nested dynamic-name reads, stable array-offset filtering and literal string-byte offsets are integrated locally; isolated checks match all 318 fresh four-mode PHPStan records, preserving the 208 preceding records; changes cover 75/75 and 15/15 lines, with 26 affected public tests passing; general integer offsets, scope-pollution settings and compact's independent selector decision remain separate; combined gates running) |
-| analyse variable scope pollution: consume PHPStan's loop-initial-assignment and always-iterable foreach settings through shared scope inference | doing (loop-initial-assignment configuration and shared for/while scopes pass the complete combined gate, including all 292 resolved-config oracle records; always-iterable foreach body-entry narrowing and exit projection remain isolated; maybe reporting and do-while remain independent) |
-| analyse literal-string offsets: port ConstantStringType's general-integer and bounded-range character unions through shared inference | doing (literal integer offsets are integrated locally; private general integer/range correction matches 340 variable records and all 78 dump records, covering 55/55 changed lines without exclusions; prior failed-read cache reuse before coalescing remains isolated; no whole-rule activation) |
-| analyse failed-offset coalescing: distinguish absent offsets from stored null and join continuing scopes without losing array alternatives or retaining branch-only cache facts | doing (private failed-read and absence corrections match all 352 variable records and 152 strict offset dumps; expanded 78-record scope fixture still exposes seven join differences, including one introduced regression; shared coalesce-specific scope join is implemented privately and under verification; no incomplete patch is on main) |
-| analyse compact function names: use php-parser's resolved import names for call selection and pre-argument scope observations | doing (returned source port integrated locally; isolated oracle comparisons and 36/36 changed lines pass; combined gates running) |
+| analyse level 0 named arguments: audit the complete MethodCallWithPossiblyRenamedNamedArgumentRule contract before activating its mapping | doing (analysed call/override collectors, provenance, cross-file joins and template-offset corrections pass all 393 combined partitions and source-matched coverage; whole-rule activation remains separate) |
+| analyse level 0 arrays: complete DuplicateKeysInLiteralArraysRule beyond the verified scalar/constant keys, sealed unpacking and byte-exact literal keys; identifier boundaries still use UTF-8 text | doing (shared quoted-key decoding, byte-based tokenization and comment ingestion pass the complete combined gate and coverage; identifier handling and whole-rule activation remain incomplete) |
+| analyse wide integer literals: preserve overflowing token magnitude through shared syntax lowering before key conversion and copied-value inference | doing (private correction matches 45 complete PHPStan diagnostics and 171 parser literal records; identical public tests fail before and pass after; 128 parser, analyser and lint controls pass, with 41/41 changed lines covered; combined-main integration remains) |
+| analyse duplicate class-like constant selection: retain the last immediate declaration's complete metadata without changing independent duplicate diagnostics or parent/trait precedence | doing (independent source owner assigned; fresh PHPStan reflection probes confirm last-declaration values and spans for classes and traits; public before/after verification remains) |
+| analyse level 0 variables: port DefinedVariableRule and CompactVariablesRule on shared variable-certainty observations, including assign/undefined-allowed contexts, dynamic names and the CLI/maybe-undefined switches | doing (nested dynamic-name reads, stable array-offset filtering, literal string-byte offsets and scope-pollution settings pass the complete combined gate and coverage; general scope joins and compact's independent selector decision remain separate; no whole-rule activation) |
+| analyse shared scope joins: extend PHPStan's array-preserving holder unions and branch-only offset removal to every applicable join | doing (foreach gate repairs integrated separately; isolated rollout retains eight strict matrix mismatches, including OR/assert null-context specifications and bounded-template replacement; post-join specification plumbing is assigned with artifacts, invocation and expression-statement ownership; foreach projection and loop generalization stay separate; PHPStan uses one ScopeOps contract across genuine branch joins) |
 | analyse level 0 unset: port UnsetRule's readonly and hooked-property checks, recursive offset checks and definitely-undefined local checks through shared reflection, types and certainty | doing (27 integrated public tests and ten exported cases pass; required-interface native reflection and annotation writable types are integrated; fresh captures cover the bounded reflection contracts; complete rule activation and combined coverage remain) |
 | analyse level 0 attributes: complete the twelve existing attribute-rule contracts against AttributesCheck, including constructor types and version/named-argument controls, before activating their mappings | doing (explicit aliases, parenthesized flags and shared trait-constructor reflection integrated; isolated reflection controls match 9/41/45 oracle diagnostics at levels 0/5/6; conditional/coalesce initializer inference remains isolated; combined gates running; mapping stays unported) |
 | analyse shared class names: carry imported-name and internal-class case options through the shared ClassCaseSensitivityCheck, preserving explicit aliases and written-name distinctions | doing (isolated source port against fresh PHPStan controls; qualified special-name parser validation and source-only class_alias provenance remain separate attribute boundaries) |
