@@ -67,7 +67,6 @@
 # an-dead: CallTo*StatementWithoutImpurePointsRule: the treatPhpDocTypesAsCertain tip of the fixtures' is_int(); a union receiver's classes in PHPStan's order (the message names the last one)
 4 DeadCode/CallToConstructorStatementWithoutImpurePointsRuleTest::testThrows
 4 DeadCode/CallToFunctionStatementWithoutImpurePointsRuleTest::testThrows
-4 DeadCode/CallToMethodStatementWithoutImpurePointsRuleTest::testRule
 4 DeadCode/CallToMethodStatementWithoutImpurePointsRuleTest::testThrows
 4 DeadCode/CallToStaticMethodStatementWithoutImpurePointsRuleTest::testThrows
 4 DeadCode/UnusedPrivateMethodRuleTest::testRule
@@ -95,7 +94,6 @@
 5 Methods/CallMethodsRuleTest::testBug8888
 5 Methods/CallMethodsRuleTest::testSiblingMethodPrototype
 5 Methods/CallMethodsRuleTest::testTypedClassConstants
-5 Methods/CallStaticMethodsRuleTest::testBug14150
 5 Methods/CallStaticMethodsRuleTest::testBug5536
 5 Methods/CallStaticMethodsRuleTest::testBug6249
 5 Methods/CallStaticMethodsRuleTest::testBug7489
@@ -114,7 +112,6 @@
 9 Methods/CallMethodsRuleTest::testBug8888
 9 Methods/CallMethodsRuleTest::testSiblingMethodPrototype
 9 Methods/CallMethodsRuleTest::testTypedClassConstants
-9 Methods/CallStaticMethodsRuleTest::testBug14150
 9 Methods/CallStaticMethodsRuleTest::testBug5536
 9 Methods/CallStaticMethodsRuleTest::testBug6249
 9 Methods/CallStaticMethodsRuleTest::testBug7489
@@ -332,7 +329,6 @@
 9 Methods/CallMethodsRuleTest::testIterables#0
 9 Methods/CallMethodsRuleTest::testIterables#1
 9 Methods/CallMethodsRuleTest::testLiteralString
-9 Methods/CallMethodsRuleTest::testLowercaseString
 9 Methods/CallMethodsRuleTest::testMixin
 9 Methods/CallMethodsRuleTest::testNegatedInstanceof
 9 Methods/CallMethodsRuleTest::testNewInstanceArgsIssue8679
@@ -341,7 +337,6 @@
 9 Methods/CallMethodsRuleTest::testRecursiveIteratorIterator
 9 Methods/CallMethodsRuleTest::testRequireExtends
 9 Methods/CallMethodsRuleTest::testStringableStrictTypes
-9 Methods/CallMethodsRuleTest::testUppercaseString
 9 Methods/CallStaticMethodsRuleTest::testBug12558
 9 Methods/CallStaticMethodsRuleTest::testBug13267
 9 Methods/CallStaticMethodsRuleTest::testBug2164
