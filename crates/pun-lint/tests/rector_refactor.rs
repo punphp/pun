@@ -161,10 +161,32 @@ fn rename_cast() {
     );
     rejects(
         RenameCast::default(),
-        &[(
-            json!({"items": [{"from-cast-expr-class": "PhpParser\\Node\\Expr\\Variable", "from-cast-kind": 1, "to-cast-kind": 2}]}),
-            "\"PhpParser\\Node\\Expr\\Variable\" is not a subclass of \"PhpParser\\Node\\Expr\\Cast\"",
-        )],
+        &[
+            (
+                json!({"items": [{"from-cast-expr-class": "PhpParser\\Node\\Expr\\Variable", "from-cast-kind": 1, "to-cast-kind": 2}]}),
+                "\"PhpParser\\Node\\Expr\\Variable\" is not a subclass of \"PhpParser\\Node\\Expr\\Cast\"",
+            ),
+            (
+                json!({"items": [{"from-cast-expr-class": "PhpParser\\Node\\Expr\\Cast\\Double", "from-cast-kind": 2, "to-cast-kind": 3}]}),
+                "`to-cast-kind` 3 of \"PhpParser\\Node\\Expr\\Cast\\Double\" prints `(real)`, which PHP 8 removed",
+            ),
+        ],
+    );
+}
+
+/// What Rector 2.6.1 wrote with `RenameCast` `Bool_` 2 to 1, `Int_` 1 to 2, `String_` 2 to 1 and `Double` 2 to 1: the
+/// other kind of each spelling, `(int)` printed as it was.
+#[test]
+fn rename_cast_kinds() {
+    let cast = |class: &str, from: i64, to: i64| json!({"from-cast-expr-class": format!("PhpParser\\Node\\Expr\\Cast\\{class}"), "from-cast-kind": from, "to-cast-kind": to});
+    let options = json!({"items": [cast("Bool_", 2, 1), cast("Int_", 1, 2), cast("String_", 2, 1), cast("Double", 2, 1)]});
+    let code = "<?php\n\n$a = (boolean) $x;\n$b = (bool) $x;\n$c = (int) $x;\n$d = (binary) $x;\n$e = (string) $x;\n$f = (float) $x;\n$g = (array) $x;\n$h = (object) $x;\n$i = (integer) $x;\n";
+    let fixed = Linter::new(vec![configured(RenameCast::default(), &options)], 80400)
+        .fix(Path::new("f.php"), code)
+        .unwrap();
+    assert_eq!(
+        fixed.source,
+        "<?php\n\n$a = (bool) $x;\n$b = (bool) $x;\n$c = (int) $x;\n$d = (string) $x;\n$e = (string) $x;\n$f = (double) $x;\n$g = (array) $x;\n$h = (object) $x;\n$i = (integer) $x;\n"
     );
 }
 
@@ -220,10 +242,16 @@ fn rename_class_const_fetch() {
     );
     rejects(
         RenameClassConstant::default(),
-        &[(
-            json!({"items": [{"old-class": "A", "old-constant": "B", "new-class": "1", "new-constant": "C"}]}),
-            "\"1\" is not a valid class name",
-        )],
+        &[
+            (
+                json!({"items": [{"old-class": "A", "old-constant": "B", "new-class": "1", "new-constant": "C"}]}),
+                "\"1\" is not a valid class name",
+            ),
+            (
+                json!({"items": [{"old-class": "A", "new-constant": "C"}]}),
+                "each of `items` needs `old-constant`",
+            ),
+        ],
     );
 }
 
@@ -326,6 +354,10 @@ fn array_dim_fetch_to_method_call() {
             ),
             (
                 json!({"items": [{"object-type": "A", "method": "get"}]}),
+                "`object-type` must be a table with a `class-name`",
+            ),
+            (
+                json!({"items": [{"object-type": {"class-name": 1}, "method": "get"}]}),
                 "`object-type` must be a table with a `class-name`",
             ),
             (
@@ -501,4 +533,83 @@ fn unconfigured_rules_do_nothing() {
             }
         }
     }
+}
+
+/// What Rector 2.6.1 wrote with `RemoveFuncCallArg('foo', 0)`: a first-class callable loses its `...`.
+#[test]
+fn remove_func_call_arg_of_first_class_callable() {
+    let options = json!({"items": [{"function": "foo", "argument-position": 0}]});
+    let fixed = Linter::new(
+        vec![configured(RemoveFunctionArgument::default(), &options)],
+        80400,
+    )
+    .fix(Path::new("f.php"), "<?php\n\n$f = foo(...);\nfoo(1, 2);\n")
+    .unwrap();
+    assert_eq!(fixed.source, "<?php\n\n$f = foo();\nfoo(2);\n");
+}
+
+/// What Rector 2.6.1 wrote with `RenameClassConstFetch('App\\A', 'x', 'X')`: the constant written another way is
+/// renamed, the one already written as the new name and a dynamic `A::{$n}` stay (no report for them).
+#[test]
+fn rename_class_const_fetch_to_another_case() {
+    let rule = || {
+        let options =
+            json!({"items": [{"old-class": "App\\A", "old-constant": "x", "new-constant": "X"}]});
+        configured(RenameClassConstant::default(), &options)
+    };
+    let code = "<?php\n\nnamespace App;\n\nclass A\n{\n    const X = 1;\n}\n\necho A::X;\necho A::x;\necho A::{$n};\n";
+    let path = Path::new("f.php");
+    assert_eq!(
+        Linter::new(vec![rule()], 80400)
+            .check(path, code)
+            .unwrap()
+            .len(),
+        1
+    );
+    let fixed = Linter::new(vec![rule()], 80400).fix(path, code).unwrap();
+    assert_eq!(fixed.source, code.replace("A::x", "A::X"));
+}
+
+/// RenameMethodRector/OracleConfigured/skips: what Rector 2.6.1 wrote with `MethodCallRename('App\\B', 'old', 'new')`,
+/// `('App\\Suit', 'oldCase', 'newCase')` and `('App\\Q', 'old', 'new')`. A call stays when the receiver's class
+/// declares the old method (privately too) and has the new one, its own or an interface's; an enum case is matched
+/// on an enum named as written, not on `$class::Case`.
+#[test]
+fn rename_method_skips() {
+    let rename = |class: &str, old: &str, new: &str| json!({"class": class, "old-method": old, "new-method": new});
+    let options = json!({"items": [
+        rename("App\\B", "old", "new"),
+        rename("App\\Suit", "oldCase", "newCase"),
+        rename("App\\Q", "old", "new"),
+    ]});
+    let path = Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("tests/rector/RenameMethodRector/OracleConfigured/skips.php.inc");
+    let content = std::fs::read_to_string(&path).unwrap();
+    let (input, expected) = content.split_once("-----\n").unwrap();
+    let fixed = Linter::new(vec![configured(RenameMethod::default(), &options)], 80400)
+        .fix(&path, input)
+        .unwrap();
+    assert_eq!(fixed.source, expected);
+}
+
+/// StringClassNameToClassConstantRector/OracleConfigured/patterns: what Rector 2.6.1 wrote with the skip patterns
+/// below, matched as `fnmatch` matches them (`[!...]`, `[^...]`, a leading `]`, ranges, `?`, an unclosed `[`).
+#[test]
+fn string_class_name_skip_patterns() {
+    let options = json!({"items": [
+        "Random\\[!E]*", "Random\\Engine\\?t*", "Dom\\[A-G]*", "Random\\Engine\\[Ss-x]ecure*",
+        "Dom\\[^]A-S]ext*", "Dom\\No[de*", "Dom\\Doc[^u]*", "Dom\\El[e]ment*",
+    ]});
+    let path = Path::new(env!("CARGO_MANIFEST_DIR")).join(
+        "tests/rector/StringClassNameToClassConstantRector/OracleConfigured/patterns.php.inc",
+    );
+    let content = std::fs::read_to_string(&path).unwrap();
+    let (input, expected) = content.split_once("-----\n").unwrap();
+    let fixed = Linter::new(
+        vec![configured(PreferClassNameConstant::default(), &options)],
+        80400,
+    )
+    .fix(&path, input)
+    .unwrap();
+    assert_eq!(fixed.source, expected);
 }

@@ -29,6 +29,7 @@
 
 use mago_syntax::cst::{
     ArrayAccess, Construct, Expression, IssetConstruct, Node, NodeKind, Statement, StringPart,
+    Unset,
 };
 use pun_problem::{Edit, Fix, Safety, Span};
 use serde_json::Value;
@@ -282,7 +283,9 @@ impl Rule for ReplaceArrayAccess {
                 out.push(report(node_span(a), method, edits));
             }
             Node::IssetConstruct(isset) => self.isset(isset, ancestors, ctx, out),
-            Node::Statement(stmt @ Statement::Unset(_)) => self.unset(stmt, ancestors, ctx, out),
+            Node::Statement(stmt @ Statement::Unset(unset)) => {
+                self.unset(stmt, unset, ancestors, ctx, out)
+            }
             _ => {}
         }
     }
@@ -362,13 +365,11 @@ impl ReplaceArrayAccess {
     fn unset(
         &self,
         stmt: &Statement<'_>,
+        unset: &Unset<'_>,
         ancestors: &[Node<'_, '_>],
         ctx: &Context<'_>,
         out: &mut Vec<Report>,
     ) {
-        let Statement::Unset(unset) = stmt else {
-            return;
-        };
         let values: Vec<&Expression<'_>> = unset.values.iter().copied().collect();
         let calls: Vec<Option<String>> = values
             .iter()

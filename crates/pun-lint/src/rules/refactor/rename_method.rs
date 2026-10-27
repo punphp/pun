@@ -21,7 +21,7 @@
 use mago_codex::metadata::class_like::ClassLikeMetadata;
 use mago_codex::symbol::SymbolKind;
 use mago_syntax::cst::{
-    ClassLikeMember, ClassLikeMemberSelector, Expression, Identifier, Node, NodeKind, Sequence,
+    ClassLikeMember, ClassLikeMemberSelector, Expression, LocalIdentifier, Node, NodeKind, Sequence,
 };
 use pun_problem::{Edit, Span};
 use serde_json::Value;
@@ -49,21 +49,12 @@ pub struct RenameMethod {
     pub renames: Vec<MethodRename>,
 }
 
-/// Whether the codebase's class `class` has a method `name` (`ClassReflection::hasMethod` for native methods).
-fn has_method(ctx: &Context<'_>, class: &ClassLikeMetadata, name: &str) -> bool {
-    let codebase = &facts(ctx).codebase;
-    let declares = |c: &ClassLikeMetadata| {
-        c.declaring_method_ids
-            .keys()
-            .chain(c.appearing_method_ids.keys())
-            .any(|m| m.as_bytes().eq_ignore_ascii_case(name.as_bytes()))
-    };
-    declares(class)
-        || class
-            .all_parent_interfaces
-            .iter()
-            .filter_map(|i| codebase.get_class_like(i.as_bytes()))
-            .any(declares)
+/// Whether the codebase's class `class` has a method `name` (`ClassReflection::hasMethod` for native methods; the
+/// codebase lists the methods a class gets from its interfaces among its own).
+fn has_method(class: &ClassLikeMetadata, name: &str) -> bool {
+    (class.declaring_method_ids.keys())
+        .chain(class.appearing_method_ids.keys())
+        .any(|m| m.as_bytes().eq_ignore_ascii_case(name.as_bytes()))
 }
 
 /// `isEnumTypeMatch`: `$call->var` is a case (a class constant fetch on a class name) of an enum named `class`.
@@ -80,10 +71,6 @@ fn is_enum_case_of(
     let Expression::Identifier(id) = fetch.class else {
         return false;
     };
-    if matches!(id, Identifier::Local(l) if [&b"self"[..], b"static", b"parent"].iter().any(|k| l.value.eq_ignore_ascii_case(k)))
-    {
-        return false;
-    }
     let name = super::super::rector_batch5::resolve_class_name(ancestors, id);
     facts(ctx)
         .codebase
@@ -171,26 +158,27 @@ impl RenameMethod {
                 .get_class_like(declaring.as_bytes())
                 .unwrap_or(class),
         };
-        let Some(target) = codebase.get_class_like(rename.class.as_bytes()) else {
-            return false;
-        };
-        source.original_name != target.original_name && has_method(ctx, source, &rename.new)
+        // The rename's class is known: the receiver matched it (`is_class`).
+        codebase
+            .get_class_like(rename.class.as_bytes())
+            .is_some_and(|target| source.original_name != target.original_name)
+            && has_method(source, &rename.new)
     }
 
+    /// A class, an interface or a trait: its name, members and kind.
     fn visit_class_like(
         &self,
-        node: Node<'_, '_>,
+        (name, members, kind): (
+            &LocalIdentifier<'_>,
+            &Sequence<'_, ClassLikeMember<'_>>,
+            SymbolKind,
+        ),
         ancestors: &[Node<'_, '_>],
         ctx: &Context<'_>,
         out: &mut Vec<Report>,
     ) {
-        let (name, members, kind): (&[u8], &Sequence<'_, ClassLikeMember<'_>>, SymbolKind) =
-            match node {
-                Node::Class(c) => (c.name.value, &c.members, SymbolKind::Class),
-                Node::Interface(i) => (i.name.value, &i.members, SymbolKind::Interface),
-                Node::Trait(t) => (t.name.value, &t.members, SymbolKind::Trait),
-                _ => return,
-            };
+        let span = node_span(name);
+        let name = name.value;
         let codebase = &facts(ctx).codebase;
         let fqcn = qualified(ancestors, name);
         let own = codebase.get_class_like(fqcn.as_bytes());
@@ -225,7 +213,7 @@ impl RenameMethod {
                                 .iter()
                                 .chain(c.all_parent_interfaces.iter())
                                 .filter_map(|p| codebase.get_class_like(p.as_bytes()))
-                                .any(|p| has_method(ctx, p, &rename.old))
+                                .any(|p| has_method(p, &rename.old))
                         })
                 {
                     return false;
@@ -239,12 +227,6 @@ impl RenameMethod {
         if edits.is_empty() {
             return;
         }
-        let span = match node {
-            Node::Class(c) => node_span(&c.name),
-            Node::Interface(i) => node_span(&i.name),
-            Node::Trait(t) => node_span(&t.name),
-            _ => return,
-        };
         out.push(report(
             span,
             "Rename the methods the configuration renames.".to_string(),
@@ -278,6 +260,11 @@ fn key_text(key: &Value) -> String {
 impl Rule for RenameMethod {
     fn id(&self) -> &'static str {
         "lint/refactor/rename-method"
+    }
+
+    /// Rector runs the rule once per file; a method its fix renamed changes which calls match.
+    fn once(&self) -> bool {
+        true
     }
 
     fn configure(&mut self, options: &Value) -> Result<(), String> {
@@ -326,11 +313,12 @@ impl Rule for RenameMethod {
         if self.renames.is_empty() {
             return;
         }
-        match node {
-            Node::Class(_) | Node::Interface(_) | Node::Trait(_) => {
-                self.visit_class_like(node, ancestors, ctx, out)
-            }
-            _ => self.visit_call(node, ancestors, ctx, out),
-        }
+        let class_like = match node {
+            Node::Class(c) => (&c.name, &c.members, SymbolKind::Class),
+            Node::Interface(i) => (&i.name, &i.members, SymbolKind::Interface),
+            Node::Trait(t) => (&t.name, &t.members, SymbolKind::Trait),
+            _ => return self.visit_call(node, ancestors, ctx, out),
+        };
+        self.visit_class_like(class_like, ancestors, ctx, out);
     }
 }

@@ -64,30 +64,11 @@ impl Rule for RemoveFunctionArgument {
             return;
         }
         let resolved = name_of(ancestors, name, Kind::Function);
-        // The argument spans, and the span inside the parentheses.
-        let (args, inner): (Vec<Span>, Span) = match node {
-            Node::FunctionCall(call) => {
-                let list = &call.argument_list;
-                (
-                    list.arguments.iter().map(|a| node_span(a)).collect(),
-                    Span::new(
-                        list.left_parenthesis.end.offset as usize,
-                        list.right_parenthesis.start.offset as usize,
-                    ),
-                )
-            }
-            Node::FunctionPartialApplication(p) => {
-                let list = &p.argument_list;
-                (
-                    list.arguments.iter().map(|a| node_span(a)).collect(),
-                    Span::new(
-                        list.left_parenthesis.end.offset as usize,
-                        list.right_parenthesis.start.offset as usize,
-                    ),
-                )
-            }
-            _ => return,
-        };
+        // The argument list is the call's last child: its arguments, and the span inside its parentheses.
+        let list = node.children().pop().unwrap_or(node);
+        let args: Vec<Span> = list.children().iter().map(node_span).collect();
+        let outer = node_span(&list);
+        let inner = Span::new(outer.start + 1, outer.end - 1);
         let mut removed = vec![false; args.len()];
         for (function, position) in &self.removals {
             if is_name(&resolved, function)

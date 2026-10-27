@@ -5,7 +5,8 @@
 //! is an array whose value type is a subtype of the needle's native type (`TypeComparator::isSubtype`, which is never
 //! true for a `mixed` needle). The native types are Mago's analyser's with docblocks blanked out, and the subtype
 //! check is Mago's `union_comparator::is_contained_by`. After a named argument Pun writes `strict: true`, where Rector
-//! writes a positional `true` that PHP rejects.
+//! writes a positional `true` that PHP rejects. In unreachable code (after a `return` or `exit()`) Pun leaves the call
+//! alone, where Rector still types it and adds `true`: Mago's analyser gives unreachable statements no types.
 
 use mago_codex::ttype::atomic::TAtomic;
 use mago_codex::ttype::comparator::ComparisonResult;
@@ -38,74 +39,75 @@ impl Rule for RequireStrictInArray {
         ctx: &Context<'_>,
         out: &mut Vec<Report>,
     ) {
-        let Node::FunctionCall(call) = node else {
-            return;
-        };
-        let Expression::Identifier(name) = call.function else {
-            return;
-        };
-        if !is_name(&function_name(ctx, ancestors, name), "in_array") {
-            return;
-        }
-        let args: Vec<_> = call.argument_list.arguments.iter().collect();
-        let [needle, haystack] = args[..] else {
-            return;
-        };
-        let facts = facts(ctx);
-        let native = |e: &Expression<'_>| facts.native_type(node_span(unparenthesize(e))).cloned();
-        let (Some(needle_type), Some(haystack_type)) =
-            (native(needle.value()), native(haystack.value()))
-        else {
-            return;
-        };
-        if haystack_type.types.is_empty()
-            || !haystack_type
-                .types
-                .iter()
-                .all(|a| matches!(a, TAtomic::Array(_)))
-            || needle_type.is_mixed()
-        {
-            return;
-        }
-        // `getIterableValueType()`: the union of the value types of the arrays (an empty array has none: `never`).
-        let mut values: Vec<TAtomic> = Vec::new();
-        for atomic in haystack_type.types.iter() {
-            if let Some((_, value)) = get_iterable_parameters(atomic, &facts.codebase) {
-                for t in value.types.iter() {
-                    if !values.contains(t) {
-                        values.push(t.clone());
-                    }
-                }
-            }
-        }
-        let value_type = TUnion::from_vec(values);
-        if !is_contained_by(
-            &facts.codebase,
-            &value_type,
-            &needle_type,
-            false,
-            false,
-            false,
-            &mut ComparisonResult::new(),
-        ) {
-            return;
-        }
-        let end = node_span(haystack).end;
-        // After named arguments a positional one is a compile error, where Rector writes one.
-        let text =
-            match matches!(needle, Argument::Named(_)) || matches!(haystack, Argument::Named(_)) {
-                true => ", strict: true",
-                false => ", true",
-            };
-        out.push(Report {
-            span: node_span(call),
-            message: "Pass `true` to `in_array()`: the needle and the haystack's values have the same type."
-                .to_string(),
-            help: None,
-            fix: Some(Fix {
-                safety: Safety::Safe,
-                edits: vec![Edit::new(Span::new(end, end), text)],
-            }),
-        });
+        out.extend(strict(node, ancestors, ctx));
     }
+}
+
+/// The report for `node` when it is an `in_array()` call that can be strict.
+fn strict(node: Node<'_, '_>, ancestors: &[Node<'_, '_>], ctx: &Context<'_>) -> Option<Report> {
+    let Node::FunctionCall(call) = node else {
+        return None;
+    };
+    let Expression::Identifier(name) = call.function else {
+        return None;
+    };
+    if !is_name(&function_name(ctx, ancestors, name), "in_array") {
+        return None;
+    }
+    let args: Vec<_> = call.argument_list.arguments.iter().collect();
+    let [needle, haystack] = args[..] else {
+        return None;
+    };
+    let facts = facts(ctx);
+    let native = |e: &Expression<'_>| facts.native_type(node_span(unparenthesize(e))).cloned();
+    let needle_type = native(needle.value())?;
+    let haystack_type = native(haystack.value())?;
+    if haystack_type.types.is_empty()
+        || !haystack_type
+            .types
+            .iter()
+            .all(|a| matches!(a, TAtomic::Array(_)))
+        || needle_type.is_mixed()
+    {
+        return None;
+    }
+    // `getIterableValueType()`: the union of the value types of the arrays (an empty array has none: `never`).
+    let mut values: Vec<TAtomic> = Vec::new();
+    let iterables = (haystack_type.types.iter())
+        .filter_map(|atomic| get_iterable_parameters(atomic, &facts.codebase));
+    for t in iterables.flat_map(|(_, value)| value.types.into_owned()) {
+        if !values.contains(&t) {
+            values.push(t);
+        }
+    }
+    let value_type = TUnion::from_vec(values);
+    if !is_contained_by(
+        &facts.codebase,
+        &value_type,
+        &needle_type,
+        false,
+        false,
+        false,
+        &mut ComparisonResult::new(),
+    ) {
+        return None;
+    }
+    let end = node_span(haystack).end;
+    // After named arguments a positional one is a compile error, where Rector writes one.
+    let text = match matches!(needle, Argument::Named(_)) || matches!(haystack, Argument::Named(_))
+    {
+        true => ", strict: true",
+        false => ", true",
+    };
+    Some(Report {
+        span: node_span(call),
+        message:
+            "Pass `true` to `in_array()`: the needle and the haystack's values have the same type."
+                .to_string(),
+        help: None,
+        fix: Some(Fix {
+            safety: Safety::Safe,
+            edits: vec![Edit::new(Span::new(end, end), text)],
+        }),
+    })
 }

@@ -89,9 +89,6 @@ fn allowed(values: &[TAtomic]) -> bool {
     if let [one] = values {
         return matches!(one, TAtomic::Array(_));
     }
-    if values.is_empty() {
-        return false;
-    }
     let has = |b: bool| {
         values
             .iter()

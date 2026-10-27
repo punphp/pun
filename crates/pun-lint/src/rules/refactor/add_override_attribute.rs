@@ -45,13 +45,11 @@ impl Rule for AddOverrideAttribute {
     ) {
         let Node::Class(class) = node else { return };
         let codebase = &facts(ctx).codebase;
-        let Some(own) = codebase.get_class_like(qualified(ancestors, class.name.value).as_bytes())
-        else {
-            return;
-        };
         // `getParents()`: the parent class, its parent, and so on, as far as the codebase knows them.
         let mut parents = Vec::new();
-        let mut next = own.direct_parent_class.clone();
+        let mut next = codebase
+            .get_class_like(qualified(ancestors, class.name.value).as_bytes())
+            .and_then(|own| own.direct_parent_class.clone());
         while let Some(name) = next {
             let Some(parent) = codebase.get_class_like(name.as_bytes()) else {
                 break;

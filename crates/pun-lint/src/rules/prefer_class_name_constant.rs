@@ -45,14 +45,17 @@ fn fnmatch(pattern: &[u8], name: &[u8]) -> bool {
         Some(b'*') => (0..=name.len()).any(|i| fnmatch(&pattern[1..], &name[i..])),
         Some(b'?') => !name.is_empty() && fnmatch(&pattern[1..], &name[1..]),
         Some(b'[') => {
-            let Some(close) = pattern[1..].iter().position(|b| *b == b']').map(|i| i + 1) else {
+            let negate = matches!(pattern.get(1), Some(b'!' | b'^'));
+            let first = 1 + usize::from(negate);
+            // A `]` right after `[` or `[!` is a member of the set; without a closing `]` the `[` is literal.
+            let close = (pattern.get(first + 1..))
+                .and_then(|rest| rest.iter().position(|b| *b == b']'))
+                .map(|i| i + first + 1);
+            let Some(close) = close else {
                 return name.first() == Some(&b'[') && fnmatch(&pattern[1..], &name[1..]);
             };
             let Some(&c) = name.first() else { return false };
-            let (negate, set) = match pattern[1] {
-                b'!' | b'^' => (true, &pattern[2..close]),
-                _ => (false, &pattern[1..close]),
-            };
+            let set = &pattern[first..close];
             let mut hit = false;
             let mut i = 0;
             while i < set.len() {
@@ -146,19 +149,17 @@ impl Rule for PreferClassNameConstant {
             .iter()
             .position(|b| *b != b'\\')
             .unwrap_or(value.len());
-        let name = &value[start..];
-        if name.is_empty() || !name.contains(&b'\\') || name[0].is_ascii_lowercase() {
+        // A name that is not UTF-8 names no class: the codebase's names come from UTF-8 sources.
+        let name = String::from_utf8_lossy(&value[start..]);
+        if name.is_empty() || !name.contains('\\') || name.as_bytes()[0].is_ascii_lowercase() {
             return;
         }
-        if !facts(ctx).codebase.class_like_exists(name) {
+        if !facts(ctx).codebase.class_like_exists(name.as_bytes()) {
             return;
         }
-        let Ok(name) = std::str::from_utf8(name) else {
-            return;
-        };
         if self.skip.iter().any(|skip| match skip.contains('*') {
             true => fnmatch(skip.as_bytes(), name.as_bytes()),
-            false => is_name(name, skip),
+            false => is_name(&name, skip),
         }) {
             return;
         }

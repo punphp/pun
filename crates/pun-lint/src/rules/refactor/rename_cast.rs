@@ -4,7 +4,8 @@
 //! to-cast-kind = 2 }]` (`RenameCast`, with php-parser's `KIND_*` numbers). A cast of that class whose `kind` (what
 //! php-parser's parser reads from the written cast) is the old one is printed anew with the new kind: php-parser's
 //! printer writes `(double)`, `(float)` or `(real)` by kind for a `Double`, and always `(int)`, `(bool)` and
-//! `(string)` for the other three. The cast is printed anew (`pPrefixOp`): its operand keeps its own text, without the
+//! `(string)` for the other three. A `Double` to any kind but 1 or 2 is refused: php-parser would print `(real)`, which
+//! PHP 8 removed. The cast is printed anew (`pPrefixOp`): its operand keeps its own text, without the
 //! parentheses and comments around it, in new parentheses only where precedence needs them. The casts without a
 //! `kind` (`Array_`, `Object_`, `Unset_`, `Void_`) never match.
 
@@ -28,35 +29,28 @@ pub struct RenameCast {
     pub renames: Vec<(String, i64, i64)>,
 }
 
-/// The php-parser class and `kind` of a Mago cast operator, `None` for any other prefix operator.
-fn class_and_kind(op: &UnaryPrefixOperator<'_>) -> Option<(&'static str, Option<i64>)> {
+/// The php-parser class and `kind` of a Mago cast operator, `None` for a cast without a `kind` (`(array)`,
+/// `(object)`, `(void)`) and any other prefix operator. `(real)` and `(unset)` are parse errors since PHP 8, so no file
+/// with one lints.
+fn class_and_kind(op: &UnaryPrefixOperator<'_>) -> Option<(&'static str, i64)> {
     Some(match op {
-        UnaryPrefixOperator::ArrayCast(..) => ("Array_", None),
-        UnaryPrefixOperator::BoolCast(..) => ("Bool_", Some(1)),
-        UnaryPrefixOperator::BooleanCast(..) => ("Bool_", Some(2)),
-        UnaryPrefixOperator::DoubleCast(..) => ("Double", Some(1)),
-        UnaryPrefixOperator::FloatCast(..) => ("Double", Some(2)),
-        UnaryPrefixOperator::RealCast(..) => ("Double", Some(3)),
-        UnaryPrefixOperator::IntCast(..) => ("Int_", Some(1)),
-        UnaryPrefixOperator::IntegerCast(..) => ("Int_", Some(2)),
-        UnaryPrefixOperator::ObjectCast(..) => ("Object_", None),
-        UnaryPrefixOperator::StringCast(..) => ("String_", Some(1)),
-        UnaryPrefixOperator::BinaryCast(..) => ("String_", Some(2)),
-        UnaryPrefixOperator::UnsetCast(..) => ("Unset_", None),
-        UnaryPrefixOperator::VoidCast(..) => ("Void_", None),
+        UnaryPrefixOperator::BoolCast(..) => ("Bool_", 1),
+        UnaryPrefixOperator::BooleanCast(..) => ("Bool_", 2),
+        UnaryPrefixOperator::DoubleCast(..) => ("Double", 1),
+        UnaryPrefixOperator::FloatCast(..) => ("Double", 2),
+        UnaryPrefixOperator::IntCast(..) => ("Int_", 1),
+        UnaryPrefixOperator::IntegerCast(..) => ("Int_", 2),
+        UnaryPrefixOperator::StringCast(..) => ("String_", 1),
+        UnaryPrefixOperator::BinaryCast(..) => ("String_", 2),
         _ => return None,
     })
 }
 
-/// The cast as php-parser's printer writes it.
+/// The cast as php-parser's printer writes it (a `Double` of kind 3 is refused by `configure`).
 fn printed(class: &str, kind: i64) -> &'static str {
     match class {
-        "Double" => match kind {
-            1 => "(double)",
-            2 => "(float)",
-            // `assert($kind === Cast\Double::KIND_REAL)`
-            _ => "(real)",
-        },
+        "Double" if kind == 1 => "(double)",
+        "Double" => "(float)",
         "Int_" => "(int)",
         "Bool_" => "(bool)",
         _ => "(string)",
@@ -82,11 +76,14 @@ impl Rule for RenameCast {
                 .ok_or_else(|| {
                     format!("\"{class}\" is not a subclass of \"PhpParser\\Node\\Expr\\Cast\"")
                 })?;
-            renames.push((
-                short.to_string(),
-                int(map, "from-cast-kind")?,
-                int(map, "to-cast-kind")?,
-            ));
+            let to = int(map, "to-cast-kind")?;
+            // php-parser prints a `Double` of any other kind as `(real)`, which PHP 8 no longer parses.
+            if short == "Double" && !(1..=2).contains(&to) {
+                return Err(format!(
+                    "`to-cast-kind` {to} of \"{class}\" prints `(real)`, which PHP 8 removed"
+                ));
+            }
+            renames.push((short.to_string(), int(map, "from-cast-kind")?, to));
         }
         self.renames = renames;
         Ok(())
@@ -106,7 +103,7 @@ impl Rule for RenameCast {
         let Node::UnaryPrefix(cast) = node else {
             return;
         };
-        let Some((class, Some(kind))) = class_and_kind(&cast.operator) else {
+        let Some((class, kind)) = class_and_kind(&cast.operator) else {
             return;
         };
         let Some((_, _, to)) = self
