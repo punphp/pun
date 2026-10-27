@@ -131,8 +131,12 @@ These checks preserve template bounds and defaults in diagnostics without changi
 Static calls and first-class callables through `class-string<stdClass>` report non-object method errors; `class-string<mixed>` remains unchecked.
 Argument checks preserve declared `mixed` inside generic types and callable signatures.
 Generic callable arguments specialize their own templates before comparison; generic class arguments respect declared covariance and contravariance.
+First-class generic callbacks retain conditional returns until their expected input types are known.
 
 Negative type guards preserve excluded values in `mixed` types.
+Full type inference preserves explicit `mixed` from native and PHPDoc declarations, built-in return types, assignments and captures.
+Mixed offset reads keep explicitness but drop receiver truthiness and exclusions.
+Unknown properties and methods remain implicit `mixed`.
 Only declared or inherited assertion contracts narrow a caller's arguments; a predicate inferred from a callee's body does not.
 Native `unset` checks retain a property's modifiers and hooks beneath a PHPDoc property annotation.
 Annotation-only properties do not acquire native modifiers.
@@ -150,12 +154,22 @@ Parsing and nested non-union types retain their existing stack limits.
 Literal alternatives produce exact lengths or a contiguous integer range. General integer ranges are not enumerated.
 Stored callable signatures retain the declared return type rather than specializing it from invocation arguments.
 
+Integer and IP validation through `filter_input()` and `filter_var()` preserves failure values, array flags, defaults and integer range options.
+Other filters and `FILTER_THROW_ON_FAILURE` retain declaration-based inference.
+
+Implicit `never` from an empty value domain does not make later statements unreachable.
+Call termination follows the resolved declaration, separately from a dynamic return type.
+An expression statement whose value is explicit `never` also terminates, matching PHPStan's treatment of forwarded calls.
+
 From level 2, `analyse/functions/invalid-pure` reports `void.pure` for supported functions and private methods whose bodies provably have no side effects.
 Unknown effect producers remain unchecked. Full pure-function and pure-method validation remains incomplete.
 
 Array writes distinguish definite literal keys from literal alternatives within a general string or integer key.
-Straight-through `foreach` loops over sealed constant lists of up to 16 required entries retain sequential array mutation state.
-Nested loops, references and loop exits retain general loop inference.
+A false `isset` probe leaves the array unchanged when its nullable entry might be absent.
+A required nullable entry narrows to `null`.
+`foreach` loops over sealed constant lists of up to 16 required entries retain sequential array mutation state, including local `continue` edges.
+Nested replay applies PHPStan's product limit of eight once an outer replay has more than one entry.
+References, `break`, `return`, optional entries, shape unions, associative iterators, and non-direct targets retain general loop inference.
 
 An [ignore comment](/docs/configuration/ignore-comments) suppresses a matching ignorable finding:
 

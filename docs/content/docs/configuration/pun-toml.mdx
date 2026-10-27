@@ -170,6 +170,7 @@ the rule's level comes from pun.toml. `style/require-naming-convention` stands f
 takes one table per Mago code, each with `enabled` and that rule's options:
 `"style/require-naming-convention" = { method-name = { enabled = true, camel = false }, class-name = { psr = true } }`.
 As in Mago, its method, property and variable checks are off until enabled.
+Mago's Drupal integration, which exempts `hook_` functions in `*.api.php` files, is not supported.
 
 `pun migrate` translates names and values. The [rule reference](/docs/rules) lists options for each rule.
 

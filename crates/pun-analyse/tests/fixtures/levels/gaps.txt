@@ -227,7 +227,6 @@
 5 Functions/ParameterCastableToStringRuleTest::testBug3946
 5 Functions/ParameterCastableToStringRuleTest::testEnum
 5 Functions/ParameterCastableToStringRuleTest::testRule
-5 Functions/RandomIntParametersRuleTest::testFile
 5 Methods/CallMethodsRuleTest::testAcceptThrowable
 5 Methods/CallMethodsRuleTest::testBug11463
 5 Methods/CallMethodsRuleTest::testBug13171
@@ -554,7 +553,6 @@
 4 Comparison/StrictComparisonOfDifferentTypesRuleTest::testBug14248
 4 DeadCode/UnreachableStatementRuleTest::testBugWithoutGitHubIssue1
 4 DeadCode/UnreachableStatementRuleTest::testBug15169TreatPhpDocTypesAsCertain
-4 DeadCode/UnreachableStatementRuleTest::testNullsafeShortCircuitTerminating
 # PHPStan 2.3 counts an expression that can throw an Error (`/` and `%` by a non-constant, sprintf(), strpos() and
 # array_combine() with a ValueError) as an impure point, so it is no noop
 4 DeadCode/NoopRuleTest::testErrorThrows
@@ -744,12 +742,10 @@
 6 Classes/LocalTypeTraitUseAliasesRuleTest::testBug11591
 # an-dead: NullCoalesceRule: Mago orders a shape's keys, keeps no assigned offset as its own expression, narrows offsets differently (after `?? null` comparisons, `non-empty-array` after a write), and loses a property's type on the right side of `??=`
 1 Variables/NullCoalesceRuleTest::testCoalesceAssignRule
-1 Variables/NullCoalesceRuleTest::testCoalesceRule
 4 Variables/NullCoalesceRuleTest::testBug13488
 4 Variables/NullCoalesceRuleTest::testBug13488Loose
 4 Variables/NullCoalesceRuleTest::testBug7190
 4 Variables/NullCoalesceRuleTest::testCoalesceAssignRule
-4 Variables/NullCoalesceRuleTest::testCoalesceRule
 4 Variables/NullCoalesceRuleTest::testNullCoalesceAssignRightSideScope
 # array_combine()'s dynamic throw type extension (ValueError on PHP 8) is not read.
 3 Exceptions/ThrowsVoidMethodWithExplicitThrowPointRuleTest::testBug13642
