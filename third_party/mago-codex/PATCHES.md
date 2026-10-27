@@ -632,3 +632,10 @@ one Rayon thread. Fresh source-matched profiles cover **86/86 changed production
 and **200/200 added test executable lines**, without new exclusions. The run instruments
 `mago-codex`, `mago-analyzer`, and `mago-prelude` through `cargo llvm-cov --dep-coverage` and keeps
 dependency and test paths visible with `report --no-default-ignore-filename-regex --lcov`.
+
+Lint applies PHPStan's anonymous-class finality policy after both the project scan and the current-file
+scan. Both native and documented replacements therefore retain the finality needed for `static::`
+constant reads. This remains a lint adaptation, not a change to Mago's scanner or the fresh snapshot.
+The existing `late_static_constants.php.inc` expectation stays unchanged. `moved_closure.rs` also
+checks its anonymous-class section before and after a move, with the constant-return and native
+string-return rules separately. Rector 2.6.1 confirms both rules' expected output on both inputs.

@@ -924,18 +924,23 @@ fn scan_into(codebase: &mut CodebaseMetadata, file: &File, version: PHPVersion) 
         scan_program(&arena, file, program, &names, version)
     }))
     .unwrap_or_default();
-    // PHPStan's ClassReflection::isFinalByKeyword treats anonymous classes as final, including their
-    // late-static constant reads. Keep that reflection contract in both native and documented scans.
-    for class in scanned.class_likes.values_mut() {
-        if class.kind.is_class() && class.name_span.is_none() {
-            class.flags |= MetadataFlags::FINAL;
-        }
-    }
+    mark_anonymous_classes_final(&mut scanned);
     codebase.extend(scanned);
     names
         .iter()
         .map(|(_, _, name, _)| name.to_ascii_lowercase())
         .collect()
+}
+
+// PHPStan's ClassReflection::isFinalByKeyword treats anonymous classes as final, including their
+// late-static constant reads. Keep that reflection contract in native and documented scans,
+// both when building the project and when refreshing the current file.
+fn mark_anonymous_classes_final(scanned: &mut CodebaseMetadata) {
+    for class in scanned.class_likes.values_mut() {
+        if class.kind.is_class() && class.name_span.is_none() {
+            class.flags |= MetadataFlags::FINAL;
+        }
+    }
 }
 
 /// A file-sized replacement over shared project declarations, prepared before any analyzer
@@ -955,6 +960,7 @@ fn refresh_closures(
         scan_program(&arena, &file, program, &names, version)
     }))
     .unwrap_or_default();
+    mark_anonymous_classes_final(&mut scanned);
     scanned.set_file_signature(file.id, build_file_signature(&file, program, &names));
     Arc::new(codebase.with_file_closures(file.id, scanned))
 }
