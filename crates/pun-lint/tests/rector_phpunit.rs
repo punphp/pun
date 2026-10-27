@@ -321,6 +321,8 @@ fn callback_single_assert_to_simpler() {
     );
 }
 
+/// Pun/no_expected and Pun/empty_element: an `assertSame()` without arguments, or an expected array with an empty
+/// element, makes Rector fail on the file; Pun leaves the call alone.
 #[test]
 fn narrow_single_will_return_callback() {
     check(

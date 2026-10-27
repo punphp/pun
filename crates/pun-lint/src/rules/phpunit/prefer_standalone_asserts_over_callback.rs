@@ -264,9 +264,6 @@ fn create<'a>(ancestors: &[Node<'_, '_>], exprs: &[&'a Expression<'a>]) -> Optio
             _ => return None,
         }
     }
-    if assert_method_calls.is_empty() {
-        return None;
-    }
     // to keep order from binary
     assert_method_calls.reverse();
     Some(assert_method_calls)
