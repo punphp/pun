@@ -49,9 +49,7 @@ impl Rule for NoAssertIsType {
         ctx: &Context<'_>,
         out: &mut Vec<Report>,
     ) {
-        let Some(call) = AnyCall::of(node) else {
-            return;
-        };
+        let call = AnyCall::of(node).unwrap();
         if !call.is_name(&["isType"]) || !is_test_case_call(ctx, ancestors, &call) {
             return;
         }

@@ -100,9 +100,6 @@ impl Rule for PreferAttributeOverAnnotation {
         ctx: &Context<'_>,
         out: &mut Vec<Report>,
     ) {
-        if self.annotations.is_empty() {
-            return;
-        }
         let (members, _, _) = class_body(node).unwrap();
         let mut scope = ancestors.to_vec();
         scope.push(node);
@@ -126,9 +123,7 @@ impl Rule for PreferAttributeOverAnnotation {
             let ClassLikeMember::Method(method) = member else {
                 continue;
             };
-            let Some(annotated) = Annotated::of(ctx.source, Node::Method(method), &scope) else {
-                continue;
-            };
+            let annotated = Annotated::of(ctx.source, Node::Method(method), &scope).unwrap();
             let mut groups = Vec::new();
             let Some(doc) = self.refactor(ctx, &scope, &annotated, false, &mut class_groups) else {
                 return;
@@ -173,9 +168,8 @@ impl Rule for PreferAttributeOverAnnotation {
                 }
             }
         }
-        let Some(span) = class_doc_span.or(span) else {
-            return;
-        };
+        // a group or an edit comes from a doc that changed
+        let span = class_doc_span.or(span).unwrap();
         out.push(report(
             span,
             "Use attributes instead of the PHPUnit annotations with a value.",

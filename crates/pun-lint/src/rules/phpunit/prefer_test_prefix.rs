@@ -10,6 +10,7 @@ use pun_problem::{Edit, Safety, Span};
 
 use super::{class_body, is_in_test_class, report};
 use crate::rules::rector_batch5::{doc_comment, list_removal, member_from, merge};
+use crate::rules::rector_stmts::line_indent;
 use crate::syntax::node_span;
 use crate::{Context, Report, Rule};
 
@@ -38,15 +39,15 @@ impl Rule for PreferTestPrefix {
         }
         let source = ctx.source;
         let span = node_span(method);
-        let Some((members, left, _)) = ancestors.iter().rev().find_map(|a| class_body(*a)) else {
+        // php-parser reprints the doc and the signature at its own indentation, in spaces
+        if line_indent(source, span.start).contains('\t') {
             return;
-        };
-        let Some(at) = members
+        }
+        let (members, left, _) = ancestors.iter().rev().find_map(|a| class_body(*a)).unwrap();
+        let at = members
             .iter()
             .position(|m| node_span(m).start == span.start)
-        else {
-            return;
-        };
+            .unwrap();
         let from = member_from(members, left, at);
         let Some(doc) = doc_comment(source, from, span.start) else {
             return;
@@ -58,14 +59,12 @@ impl Rule for PreferTestPrefix {
         {
             return;
         }
-        let mut edits = Vec::new();
-        if let Some(new) = without_test_tags(text) {
-            edits.push(if new.is_empty() {
-                Edit::new(Span::new(doc.start, span.start), "")
-            } else {
-                Edit::new(doc, new)
-            });
-        }
+        let new = without_test_tags(text);
+        let mut edits = vec![if new.is_empty() {
+            Edit::new(Span::new(doc.start, span.start), "")
+        } else {
+            Edit::new(doc, new)
+        }];
         let mut renamed = String::from("test");
         let name = String::from_utf8_lossy(name);
         let mut chars = name.chars();
@@ -83,10 +82,10 @@ impl Rule for PreferTestPrefix {
     }
 }
 
-/// The doc comment without its `@test` tags, as Rector's phpdoc printer removes tag nodes (with
-/// [`list_removal`]'s rules), or `None` when it has none; `Some("")` when nothing is left. PHPStan's phpdoc parser
+/// The doc comment, which has a `* @test` line, without its `@test` tags, as Rector's phpdoc printer removes tag
+/// nodes (with [`list_removal`]'s rules); `""` when nothing is left. PHPStan's phpdoc parser
 /// keeps a blank line after a text as an empty text node, and a blank line after a tag with the tag.
-fn without_test_tags(doc: &str) -> Option<String> {
+fn without_test_tags(doc: &str) -> String {
     let inner_end = doc.len() - 2;
     // (span, is a tag)
     let mut nodes: Vec<(Span, bool)> = Vec::new();
@@ -128,9 +127,6 @@ fn without_test_tags(doc: &str) -> Option<String> {
                 .is_some_and(|name| name.trim_matches('@') == "test")
         })
         .collect();
-    if !removed.contains(&true) {
-        return None;
-    }
     let spans: Vec<Span> = nodes.iter().map(|(span, _)| *span).collect();
     // an empty text node left alone is no content: the doc goes
     let kept_content = nodes
@@ -138,11 +134,11 @@ fn without_test_tags(doc: &str) -> Option<String> {
         .zip(&removed)
         .any(|((span, _), r)| !r && span.start != span.end);
     let Some(edits) = list_removal(&spans, &removed).filter(|_| kept_content) else {
-        return Some(String::new());
+        return String::new();
     };
     let mut out = doc.to_string();
     for edit in edits.iter().rev() {
         out.replace_range(edit.span.start..edit.span.end, &edit.text);
     }
-    Some(out)
+    out
 }

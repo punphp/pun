@@ -33,9 +33,7 @@ impl Rule for PreferComparisonAssertion {
         ctx: &Context<'_>,
         out: &mut Vec<Report>,
     ) {
-        let Some(call) = AnyCall::of(node) else {
-            return;
-        };
+        let call = AnyCall::of(node).unwrap();
         if !is_test_case_call_named(ctx, ancestors, &call, &["assertTrue", "assertFalse"]) {
             return;
         }

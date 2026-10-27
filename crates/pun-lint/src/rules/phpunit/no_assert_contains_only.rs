@@ -52,9 +52,7 @@ impl Rule for NoAssertContainsOnly {
         ctx: &Context<'_>,
         out: &mut Vec<Report>,
     ) {
-        let Some(call) = AnyCall::of(node) else {
-            return;
-        };
+        let call = AnyCall::of(node).unwrap();
         if !is_test_case_call(ctx, ancestors, &call) || !call.is_name(&["assertContainsOnly"]) {
             return;
         }

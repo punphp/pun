@@ -41,9 +41,7 @@ impl Rule for PreferSameForScalars {
         ctx: &Context<'_>,
         out: &mut Vec<Report>,
     ) {
-        let Some(call) = AnyCall::of(node) else {
-            return;
-        };
+        let call = AnyCall::of(node).unwrap();
         if !is_in_test_class(ctx, ancestors, None)
             || !call.is_name(&["assertEquals", "assertNotEquals"])
         {
