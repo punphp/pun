@@ -10883,7 +10883,7 @@
         "AddIntersectionParamToMockObjectParamRector",
         "Rector\\PHPUnit\\CodeQuality\\Rector\\Class_\\AddIntersectionParamToMockObjectParamRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/phpunit/add-mock-intersection-type",

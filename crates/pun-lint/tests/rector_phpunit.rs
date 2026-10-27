@@ -565,3 +565,11 @@ fn add_stub_intersection_var_to_stub_property() {
 fn expects_param_to_mock_object() {
     check(AddMockObjectType, "ExpectsParamToMockObjectRector");
 }
+
+#[test]
+fn add_intersection_param_to_mock_object_param() {
+    check(
+        AddMockIntersectionParam,
+        "AddIntersectionParamToMockObjectParamRector",
+    );
+}

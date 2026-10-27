@@ -12393,7 +12393,7 @@
         "rules": [
           "lint/phpunit/add-mock-intersection-param"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
