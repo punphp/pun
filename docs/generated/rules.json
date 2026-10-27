@@ -11537,7 +11537,7 @@
         "RemoveNeverUsedMockProperty",
         "RemoveNeverUsedMockPropertyRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/phpunit/no-value-object-mock",

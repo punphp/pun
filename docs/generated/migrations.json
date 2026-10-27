@@ -13137,7 +13137,7 @@
         "rules": [
           "lint/phpunit/no-unused-mock-property"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
