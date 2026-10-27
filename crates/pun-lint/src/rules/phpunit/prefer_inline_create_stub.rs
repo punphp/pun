@@ -237,13 +237,13 @@ impl Rule for PreferInlineCreateStub {
     }
 }
 
-/// `isObjectType($property->type, new ObjectType(Stub))` for a declared type.
+/// `isObjectType($property->type, new ObjectType(Stub))` for a declared type. Rector matches no intersection type,
+/// with or without `null` (checked against Rector's output).
 fn is_stub(ctx: &Context<'_>, scope: &[Node<'_, '_>], hint: &Hint<'_>) -> bool {
     match hint {
         Hint::Identifier(id) => is_a(ctx, &resolve(scope, id), &[STUB]),
         Hint::Nullable(n) => is_stub(ctx, scope, n.hint),
         Hint::Parenthesized(p) => is_stub(ctx, scope, p.hint),
-        Hint::Intersection(i) => is_stub(ctx, scope, i.left) || is_stub(ctx, scope, i.right),
         Hint::Union(u) => {
             let mut members = Vec::new();
             let mut stack = vec![u.left, u.right];

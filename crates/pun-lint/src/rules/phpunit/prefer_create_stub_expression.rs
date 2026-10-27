@@ -87,9 +87,7 @@ impl Rule for PreferCreateStubExpression {
             let Expression::Call(Call::Method(call)) = unparenthesize(assign.rhs) else {
                 continue;
             };
-            let Some(call) = AnyCall::of(Node::MethodCall(call)) else {
-                continue;
-            };
+            let call = AnyCall::of(Node::MethodCall(call)).unwrap();
             if !call.is_name(&["createMock"]) || call.args().is_empty() {
                 continue;
             }

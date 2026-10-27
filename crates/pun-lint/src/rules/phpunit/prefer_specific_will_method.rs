@@ -65,9 +65,7 @@ impl Rule for PreferSpecificWillMethod {
                 ("willReturnMap", args)
             }
             Expression::Call(Call::Method(m)) => {
-                let Some(nested) = AnyCall::of(Node::MethodCall(m)) else {
-                    return;
-                };
+                let nested = AnyCall::of(Node::MethodCall(m)).unwrap();
                 let Some(&(_, name)) = NESTED_METHOD_TO_RENAME_MAP
                     .iter()
                     .find(|(old, _)| nested.is_name(&[old]))
@@ -77,9 +75,7 @@ impl Rule for PreferSpecificWillMethod {
                 (name, nested.args())
             }
             Expression::Call(Call::StaticMethod(s)) => {
-                let Some(nested) = AnyCall::of(Node::StaticMethodCall(s)) else {
-                    return;
-                };
+                let nested = AnyCall::of(Node::StaticMethodCall(s)).unwrap();
                 let Some(&(_, name)) = NESTED_METHOD_TO_RENAME_MAP
                     .iter()
                     .find(|(old, _)| nested.is_name(&[old]))

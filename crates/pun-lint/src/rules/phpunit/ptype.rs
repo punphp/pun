@@ -109,9 +109,6 @@ pub(crate) fn without_null(t: &TUnion) -> PType {
         .filter(|a| !matches!(a, TAtomic::Null))
         .cloned()
         .collect();
-    if types.is_empty() {
-        return of(t);
-    }
     kept.types = types.into();
     of(&kept)
 }
@@ -174,6 +171,12 @@ fn atomic_of(atomic: &TAtomic) -> PType {
 /// still does).
 fn literal(expr: &Expression<'_>) -> Option<PType> {
     Some(match unparenthesize(expr) {
+        // php-parser lexes an integer above `PHP_INT_MAX` as a float
+        Expression::Literal(Literal::Integer(i))
+            if i.value.is_some_and(|v| v > i64::MAX as u64) =>
+        {
+            PType::Float { constant: true }
+        }
         Expression::Literal(Literal::Integer(_)) => PType::Integer { constant: true },
         Expression::Literal(Literal::Float(_)) => PType::Float { constant: true },
         Expression::Literal(Literal::String(s)) => PType::String {
@@ -196,11 +199,14 @@ pub(crate) fn native(ctx: &Context<'_>, expr: &Expression<'_>) -> Option<PType> 
 
 /// [`native`] with `null` removed from the type.
 pub(crate) fn native_without_null(ctx: &Context<'_>, expr: &Expression<'_>) -> Option<PType> {
-    literal(expr).or_else(|| {
-        facts(ctx)
-            .native_type(node_span(unparenthesize(expr)))
-            .map(without_null)
-    })
+    // `TypeCombinator::removeNull(null)` is `never`
+    literal(expr)
+        .map(|t| if t == PType::Null { PType::Never } else { t })
+        .or_else(|| {
+            facts(ctx)
+                .native_type(node_span(unparenthesize(expr)))
+                .map(without_null)
+        })
 }
 
 /// `$type->isInteger()->yes()` on the native type of `expr` without `null`: every part is an integer.

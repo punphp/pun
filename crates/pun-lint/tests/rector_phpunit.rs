@@ -9,6 +9,9 @@
 //! beside its Source/ classes, and the Symfony and Behat classes of rector-phpunit's own stubs/ (tests/rector-phpunit-stubs,
 //! verbatim at e68085d).
 //!
+//! Pun/noargs: a call that lacks the arguments a rule reads (`$this->assertSame()`, `is_a($a)`) makes Rector fail on the
+//! file; Pun leaves the call alone.
+//!
 //! Pun/case_mismatch: a renaming rule's method name written in other letter case (`$this->AssertTrue(...)`) makes
 //! Rector fail on the file (`IdentifierManipulator::renameNodeWithMap` looks the name up in its map as written and
 //! builds an `Identifier` of `null`); Pun leaves the call alone.
