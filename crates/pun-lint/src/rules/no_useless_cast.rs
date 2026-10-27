@@ -177,9 +177,6 @@ fn should_skip(
     match expr {
         Expression::ArrayAccess(_) => true,
         Expression::Access(Access::Property(p)) => {
-            let ClassLikeMemberSelector::Identifier(id) = &p.property else {
-                return true;
-            };
             let class = match unparenthesize(p.object) {
                 Expression::Variable(Variable::Direct(v)) if v.name == b"$this" => {
                     this_class(facts, ancestors)
@@ -193,19 +190,20 @@ fn should_skip(
                     }
                 }
             };
-            let Some(class) = class else {
-                return true;
-            };
-            !has_native_type(
-                facts,
-                &class,
-                &format!("${}", String::from_utf8_lossy(id.value)),
-            )
+            // a dynamic name, or a value of no single class: no native property
+            if let ClassLikeMemberSelector::Identifier(id) = &p.property
+                && let Some(class) = class
+            {
+                !has_native_type(
+                    facts,
+                    &class,
+                    &format!("${}", String::from_utf8_lossy(id.value)),
+                )
+            } else {
+                true
+            }
         }
         Expression::Access(Access::StaticProperty(p)) => {
-            let Variable::Direct(v) = &p.property else {
-                return true;
-            };
             let class = match p.class {
                 Expression::Identifier(id) => Some(resolve_class_name(ancestors, id)),
                 Expression::Self_(_) | Expression::Static(_) => this_class(facts, ancestors),
@@ -220,10 +218,13 @@ fn should_skip(
                     _ => None,
                 },
             };
-            let Some(class) = class else {
-                return true;
-            };
-            !has_native_type(facts, &class, &String::from_utf8_lossy(v.name))
+            if let Variable::Direct(v) = &p.property
+                && let Some(class) = class
+            {
+                !has_native_type(facts, &class, &String::from_utf8_lossy(v.name))
+            } else {
+                true
+            }
         }
         Expression::Variable(Variable::Direct(_)) => {
             // `hasVariableType()` must be a yes, and the type within the native type

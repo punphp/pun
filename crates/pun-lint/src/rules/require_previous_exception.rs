@@ -193,7 +193,9 @@ fn refactor(
                 new_arg(code_name, format!("{var}->getCode()")),
             );
             args.push(previous);
-        } else if !changed {
+        } else {
+            // nothing changed before: a named `previous` second follows a positional or named first argument that
+            // is not `previous` too
             return None;
         }
     } else if has_parameter("previous") && !has_argument(&args, "previous") {

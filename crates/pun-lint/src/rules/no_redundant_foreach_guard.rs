@@ -21,8 +21,8 @@ use mago_codex::ttype::atomic::scalar::TScalar;
 use mago_codex::ttype::atomic::scalar::string::TStringLiteral;
 use mago_codex::ttype::union::TUnion;
 use mago_syntax::cst::{
-    Access, Argument, ArrayAccess, AssignmentOperator, BinaryOperator, Construct, Expression,
-    Literal, Node, NodeKind, Statement, UnaryPrefixOperator, Variable,
+    Access, ArrayAccess, AssignmentOperator, BinaryOperator, Construct, Expression, Literal, Node,
+    NodeKind, Statement, UnaryPrefixOperator, Variable,
 };
 use pun_problem::{Fix, Safety};
 
@@ -341,13 +341,9 @@ fn is_counter_higher_than_one(
     let Some(call) = call_to(count, "count") else {
         return false;
     };
-    let Some(first) = args(call).first().map(|a| match a {
-        Argument::Positional(p) => p.value,
-        Argument::Named(n) => n.value,
-    }) else {
-        return false;
-    };
-    same_expression(source, first, items)
+    args(call)
+        .first()
+        .is_some_and(|a| same_expression(source, a.value(), items))
         && native(facts, items).is_some_and(|t| is_array(t) || t.is_never())
 }
 

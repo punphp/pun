@@ -17,9 +17,11 @@ class ChildTest extends BaseTest
 {
     private int $count = 0;
 
-    public function testCalls(?self $maybe, self $object, int $number)
+    public function testCalls(?self $maybe, self $object, int $number, GrandChildTest $grand)
     {
         parent::inherited(1);
+        parent::fromParent(1, 2);
+        $grand->fromInstance(1, 2);
         ChildTest::fromName(1, 2);
         GrandChildTest::fromSubclass(1, 2);
         $object::fromValue(1, 2);
@@ -29,6 +31,18 @@ class ChildTest extends BaseTest
         $this->loop(1);
         $f = 'strlen';
         $f('x');
+    }
+
+    private function fromParent($a, $b)
+    {
+        $b = 1;
+        return $a + $b;
+    }
+
+    private function fromInstance($a, $b)
+    {
+        $b = 1;
+        return $a + $b;
     }
 
     private function fromName($a, $b)
@@ -129,9 +143,11 @@ class ChildTest extends BaseTest
 {
     private int $count = 0;
 
-    public function testCalls(?self $maybe, self $object, int $number)
+    public function testCalls(?self $maybe, self $object, int $number, GrandChildTest $grand)
     {
         parent::inherited(1);
+        parent::fromParent(1, 2);
+        $grand->fromInstance(1);
         ChildTest::fromName(1);
         GrandChildTest::fromSubclass(1);
         $object::fromValue(1);
@@ -141,6 +157,18 @@ class ChildTest extends BaseTest
         $this->loop();
         $f = 'strlen';
         $f('x');
+    }
+
+    private function fromParent($a)
+    {
+        $b = 1;
+        return $a + $b;
+    }
+
+    private function fromInstance($a)
+    {
+        $b = 1;
+        return $a + $b;
     }
 
     private function fromName($a)

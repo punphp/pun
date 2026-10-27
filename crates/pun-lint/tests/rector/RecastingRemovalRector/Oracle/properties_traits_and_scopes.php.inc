@@ -28,15 +28,29 @@ class Base
     protected static string $inherited = '';
 }
 
+class Left
+{
+    public static string $shared = '';
+    public string $field = '';
+}
+
+class Right
+{
+    public static string $shared = '';
+    public string $field = '';
+}
+
 class Holder extends Base
 {
     public static string $name = '';
     public static $untyped;
     public string $title = '';
 
-    public function properties(string $s, string $prop, Holder $other, $mixed): array
+    public function properties(string $s, string $prop, Holder $other, $mixed, Left|Right $either): array
     {
         return [
+            (string) $either::$shared,
+            (string) $either->field,
             (string) strtolower($s),
             (string) $this->{$prop},
             (string) self::$$prop,
@@ -107,15 +121,29 @@ class Base
     protected static string $inherited = '';
 }
 
+class Left
+{
+    public static string $shared = '';
+    public string $field = '';
+}
+
+class Right
+{
+    public static string $shared = '';
+    public string $field = '';
+}
+
 class Holder extends Base
 {
     public static string $name = '';
     public static $untyped;
     public string $title = '';
 
-    public function properties(string $s, string $prop, Holder $other, $mixed): array
+    public function properties(string $s, string $prop, Holder $other, $mixed, Left|Right $either): array
     {
         return [
+            (string) $either::$shared,
+            (string) $either->field,
             (string) strtolower($s),
             (string) $this->{$prop},
             (string) self::$$prop,

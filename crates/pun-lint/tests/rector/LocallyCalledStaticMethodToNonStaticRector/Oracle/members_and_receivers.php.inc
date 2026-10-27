@@ -15,6 +15,11 @@ final class Members
         self::helper();
     }
 
+    public static function make()
+    {
+        return array(1, 2);
+    }
+
     private static function helper()
     {
         return self::LIMIT;
@@ -36,6 +41,11 @@ final class Members
         self::$name();
         $other::helper();
         $this->helper();
+    }
+
+    public static function make()
+    {
+        return array(1, 2);
     }
 
     private function helper()
