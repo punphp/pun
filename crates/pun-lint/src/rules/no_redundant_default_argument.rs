@@ -10,7 +10,7 @@
 use mago_syntax::cst::*;
 use pun_problem::{Edit, Fix, Safety, Span};
 
-use super::class_method::{class_info, default_value, element_parts, expr_value, is_private};
+use super::class_method::{default_value, element_parts, expr_value, is_private, with_class_info};
 use super::rector_batch5::list_removal;
 use super::types::facts::facts;
 use crate::syntax::{node_span, unparenthesize};
@@ -35,96 +35,95 @@ impl Rule for NoRedundantDefaultArgument {
         out: &mut Vec<Report>,
     ) {
         let facts = facts(ctx);
-        let Some(class) = class_info(node, ancestors, &facts) else {
-            return;
-        };
-        let codebase = &facts.codebase;
-        let Some(own) =
-            (class.extends.as_ref()).and_then(|_| codebase.get_class_like(class.name.as_bytes()))
-        else {
-            return;
-        };
-        let ancestor_names: Vec<&[u8]> = own
-            .all_parent_interfaces
-            .iter()
-            .chain(own.used_traits.iter())
-            .chain(own.all_parent_classes.iter())
-            .map(|w| w.as_bytes())
-            .collect();
-        for member in class.members.iter() {
-            let ClassLikeMember::Method(method) = member else {
-                continue;
+        with_class_info(node, ancestors, &facts, |class| {
+            let codebase = &facts.codebase;
+            let Some(own) = (class.extends.as_ref())
+                .and_then(|_| codebase.get_class_like(class.name.as_bytes()))
+            else {
+                return;
             };
-            let MethodBody::Concrete(body) = &method.body else {
-                continue;
-            };
-            if is_private(method) {
-                continue;
-            }
-            for statement in body.statements.iter() {
-                let Statement::Expression(statement) = statement else {
+            let ancestor_names: Vec<&[u8]> = own
+                .all_parent_interfaces
+                .iter()
+                .chain(own.used_traits.iter())
+                .chain(own.all_parent_classes.iter())
+                .map(|w| w.as_bytes())
+                .collect();
+            for member in class.members.iter() {
+                let ClassLikeMember::Method(method) = member else {
                     continue;
                 };
-                let Expression::Call(Call::StaticMethod(call)) =
-                    unparenthesize(statement.expression)
-                else {
+                let MethodBody::Concrete(body) = &method.body else {
                     continue;
                 };
-                let (Expression::Parent(_), ClassLikeMemberSelector::Identifier(name)) =
-                    (call.class, &call.method)
-                else {
-                    continue;
-                };
-                let args: Option<Vec<&PositionalArgument<'_>>> =
-                    (call.argument_list.arguments.iter())
-                        .map(|a| match a {
-                            Argument::Positional(a) => Some(a),
-                            Argument::Named(_) => None,
-                        })
-                        .collect();
-                let Some(args) = args.filter(|a| !a.is_empty()) else {
-                    continue;
-                };
-                let Some(parent_method) = ancestor_names
-                    .iter()
-                    .find_map(|a| codebase.get_declaring_method(a, name.value))
-                else {
-                    continue;
-                };
-                let params = &parent_method.parameters;
-                let mut kept = args.len();
-                for index in (0..params.len()).rev() {
-                    let param = &params[index];
-                    if !param.flags.has_default() || param.flags.is_variadic() || index >= kept {
-                        break;
-                    }
-                    let arg = args[index];
-                    if index + 1 < kept
-                        || arg.ellipsis.is_some()
-                        || is_dynamic_expr(arg.value)
-                        || expr_value(arg.value)
-                            .is_none_or(|v| Some(v) != default_value(&facts, param))
-                    {
-                        break;
-                    }
-                    kept = index;
-                }
-                if kept == args.len() {
+                if is_private(method) {
                     continue;
                 }
-                let spans: Vec<Span> = args.iter().map(|a| node_span(*a)).collect();
-                let removed: Vec<bool> = (0..args.len()).map(|i| i >= kept).collect();
-                let edits = list_removal(&spans, &removed).unwrap_or_else(|| {
-                    let list = &call.argument_list;
-                    vec![Edit::new(
-                        Span::new(
-                            list.left_parenthesis.end.offset as usize,
-                            list.right_parenthesis.start.offset as usize,
-                        ),
-                        "",
-                    )]
-                });
-                out.push(Report {
+                for statement in body.statements.iter() {
+                    let Statement::Expression(statement) = statement else {
+                        continue;
+                    };
+                    let Expression::Call(Call::StaticMethod(call)) =
+                        unparenthesize(statement.expression)
+                    else {
+                        continue;
+                    };
+                    let (Expression::Parent(_), ClassLikeMemberSelector::Identifier(name)) =
+                        (call.class, &call.method)
+                    else {
+                        continue;
+                    };
+                    let args: Option<Vec<&PositionalArgument<'_>>> =
+                        (call.argument_list.arguments.iter())
+                            .map(|a| match a {
+                                Argument::Positional(a) => Some(a),
+                                Argument::Named(_) => None,
+                            })
+                            .collect();
+                    let Some(args) = args.filter(|a| !a.is_empty()) else {
+                        continue;
+                    };
+                    let Some(parent_method) = ancestor_names
+                        .iter()
+                        .find_map(|a| codebase.get_declaring_method(a, name.value))
+                    else {
+                        continue;
+                    };
+                    let params = &parent_method.parameters;
+                    let mut kept = args.len();
+                    for index in (0..params.len()).rev() {
+                        let param = &params[index];
+                        if !param.flags.has_default() || param.flags.is_variadic() || index >= kept
+                        {
+                            break;
+                        }
+                        let arg = args[index];
+                        if index + 1 < kept
+                            || arg.ellipsis.is_some()
+                            || is_dynamic_expr(arg.value)
+                            || expr_value(arg.value)
+                                .is_none_or(|v| Some(v) != default_value(&facts, param))
+                        {
+                            break;
+                        }
+                        kept = index;
+                    }
+                    if kept == args.len() {
+                        continue;
+                    }
+                    let spans: Vec<Span> = args.iter().map(|a| node_span(*a)).collect();
+                    let removed: Vec<bool> = (0..args.len()).map(|i| i >= kept).collect();
+                    let edits = list_removal(&spans, &removed).unwrap_or_else(|| {
+                        let list = &call.argument_list;
+                        vec![Edit::new(
+                            Span::new(
+                                list.left_parenthesis.end.offset as usize,
+                                list.right_parenthesis.start.offset as usize,
+                            ),
+                            "",
+                        )]
+                    });
+                    out.push(Report {
                     span: node_span(call),
                     message: format!(
                         "Remove the arguments of `parent::{}()` that equal the parameters' defaults.",
@@ -136,8 +135,9 @@ impl Rule for NoRedundantDefaultArgument {
                         edits,
                     }),
                 });
+                }
             }
-        }
+        });
     }
 }
 
