@@ -119,11 +119,13 @@ fn atomic_of(atomic: &TAtomic) -> PType {
         TAtomic::Scalar(TScalar::Bool(_)) => PType::ConstantBoolean,
         TAtomic::Array(TArray::Keyed(k)) if k.parameters.is_none() => {
             let (mut keys, mut values) = (Vec::new(), Vec::new());
+            // a native type's keys are expanded: an integer or a string, never a class constant
             for (key, (_, value)) in k.known_items.iter().flat_map(|m| m.iter()) {
                 keys.push(match key {
                     ArrayKey::Integer(i) => Key::Int(*i),
-                    ArrayKey::String(s) => Key::Str(s.to_string()),
-                    _ => return PType::Array,
+                    key => {
+                        Key::Str(String::from_utf8_lossy(key.get_string().unwrap()).into_owned())
+                    }
                 });
                 values.push(of(value));
             }

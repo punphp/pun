@@ -26,6 +26,8 @@
 //! Pun/mixed7 (`TestWithToDataProviderRector`) has a tab where the new provider method goes, and Pun/declined7
 //! (`CoversAnnotationWithValueToAttributeRector`) a doc whose lines do not start with `*`, a `@covers` value over two
 //! lines, and an anonymous class with a modifier, which php-parser prints before the new attribute.
+//! Pun/decl11 (`CoversAnnotationWithValueToAttributeRector`) has the same in a trait's methods (a tag Pun's doc
+//! reader does not follow, a tab) and in an anonymous class's method.
 //!
 //! Pun/never8: Mago types no expression in code after a call that returns `never` (`$this->fail()`), where PHPStan
 //! still does, so the rules that need such a type (`AddReturnTypeToDependedRector`,
@@ -35,6 +37,9 @@
 //! (`AssertInstanceOfComparisonRector`, `instanceof` a class expression without a name) and Pun/cyc7
 //! (`ConstructClassMethodToSetUpTestCaseRector`, classes that extend each other) make Rector fail on the file; Pun
 //! leaves it alone.
+//!
+//! Pun/missing11 (`NamedArgumentForDataProviderRector`): a data provider whose arrays have empty items, which
+//! php-parser does not parse; Pun leaves it alone.
 
 use std::path::{Path, PathBuf};
 
