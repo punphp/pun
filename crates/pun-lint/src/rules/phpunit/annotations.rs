@@ -12,7 +12,7 @@ use pun_problem::{Edit, Span};
 use crate::Context;
 use crate::rules::lint_b_doc::Doc;
 use crate::rules::prefer_absolute_include::print_string;
-use crate::rules::rector_stmts::line_indent;
+use crate::rules::rector_stmts::{line_indent, previous_token_end};
 use crate::rules::types::facts::facts;
 use crate::syntax::node_span;
 
@@ -22,6 +22,8 @@ pub(crate) struct Annotated<'s> {
     pub start: usize,
     pub last_attribute_end: Option<usize>,
     pub doc: Option<Doc<'s>>,
+    /// Whether another comment comes before the doc comment (php-parser reprints them all when the doc changes).
+    other_comments: bool,
 }
 
 impl<'s> Annotated<'s> {
@@ -37,25 +39,49 @@ impl<'s> Annotated<'s> {
             _ => return None,
         };
         let start = node_span(&node).start;
+        let doc = Doc::of(source, ancestors, start);
+        let other_comments = doc.as_ref().is_some_and(|d| {
+            let outer = ancestors
+                .iter()
+                .rev()
+                .map(|a| node_span(a).start)
+                .find(|&s| s < start)
+                .unwrap_or(0);
+            !source[previous_token_end(source, outer, start)..d.span.start]
+                .trim()
+                .is_empty()
+        });
         Some(Annotated {
             start,
             last_attribute_end: lists.last().map(|l| node_span(l).end),
-            doc: Doc::of(source, ancestors, start),
+            doc,
+            other_comments,
         })
     }
 
     /// The edits that give the doc comment `new_doc` (`""` removes it) and add `groups` (each `#[...]`) after the
-    /// node's attributes: a line each, at the node's indentation.
+    /// node's attributes: a line each, at the node's indentation. A changed doc is printed as php-parser's
+    /// `pComments()` does (`Comment::getReformattedText()`, then a line break and the node's indentation before the
+    /// node). `None` where Pun does not follow that printer: a tab in the indentation, another comment before the
+    /// doc, or a doc it reformats otherwise.
     pub(crate) fn edits(
         &self,
         source: &str,
         new_doc: Option<&str>,
         groups: &[String],
-    ) -> Vec<Edit> {
+    ) -> Option<Vec<Edit>> {
         let indent = line_indent(source, self.start);
+        if indent.contains('\t') {
+            return None;
+        }
+        let nl = format!("\n{indent}");
         let mut edits = Vec::new();
         let mut at_start = self.start;
+        let mut lead = String::new();
         if let (Some(doc), Some(new_doc)) = (self.doc.as_ref().map(|d| d.span), new_doc) {
+            if self.other_comments {
+                return None;
+            }
             if new_doc.is_empty() {
                 // The doc goes with the whitespace after it; what the node gets in front then takes its place.
                 let after =
@@ -66,24 +92,59 @@ impl<'s> Annotated<'s> {
                     edits.push(Edit::new(Span::new(doc.start, after), ""));
                 }
             } else {
-                edits.push(Edit::new(doc, new_doc));
+                lead = format!("{}{nl}", reformatted(new_doc)?.replace('\n', &nl));
+                at_start = doc.start;
             }
-        }
-        if groups.is_empty() {
-            return edits;
         }
         match self.last_attribute_end {
-            Some(end) => {
-                let text: String = groups.iter().map(|g| format!("\n{indent}{g}")).collect();
+            Some(end) if !groups.is_empty() => {
+                let text: String = groups.iter().map(|g| format!("{nl}{g}")).collect();
                 edits.push(Edit::new(Span::new(end, end), text));
             }
-            None => {
-                let text: String = groups.iter().map(|g| format!("{g}\n{indent}")).collect();
-                edits.push(Edit::new(Span::new(at_start, self.start), text));
-            }
+            Some(_) => {}
+            None => lead.extend(groups.iter().map(|g| format!("{g}{nl}"))),
         }
-        edits
+        if !lead.is_empty() {
+            edits.push(Edit::new(Span::new(at_start, self.start), lead));
+        }
+        Some(edits)
     }
+}
+
+/// php-parser's `Comment::getReformattedText()` for a doc comment, as far as Pun follows it: one line as it is;
+/// lines after the first that each start with white space and a `*` get ` *` for it; or, with `/**` alone on the
+/// first line, the white space before the closing `*/` comes off the start of every line. `None` otherwise.
+pub(crate) fn reformatted(text: &str) -> Option<String> {
+    if text.contains('\r') {
+        return None;
+    }
+    let Some((first, rest)) = text.split_once('\n') else {
+        return Some(text.to_string());
+    };
+    let starred: Option<Vec<String>> = rest
+        .split('\n')
+        .map(|line| {
+            let trimmed = line.trim_start_matches([' ', '\t', '\x0B', '\x0C']);
+            (trimmed.len() < line.len() && trimmed.starts_with('*')).then(|| format!(" {trimmed}"))
+        })
+        .collect();
+    if let Some(lines) = starred {
+        return Some(format!("{first}\n{}", lines.join("\n")));
+    }
+    let opens_alone = first
+        .strip_prefix("/*")
+        .map(|r| r.strip_prefix('*').unwrap_or(r))
+        .is_some_and(|r| r.trim().is_empty());
+    let last = rest.rsplit('\n').next().unwrap_or_default();
+    let prefix = last.strip_suffix("*/")?;
+    if !opens_alone || !prefix.trim().is_empty() {
+        return None;
+    }
+    let lines: Vec<&str> = rest
+        .split('\n')
+        .map(|line| line.strip_prefix(prefix).unwrap_or(line))
+        .collect();
+    Some(format!("{first}\n{}", lines.join("\n")))
 }
 
 /// How Rector reads a tag child of a doc comment for `PhpDocInfo::getTagsByName()`.

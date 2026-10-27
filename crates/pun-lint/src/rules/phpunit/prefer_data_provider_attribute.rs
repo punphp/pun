@@ -98,11 +98,14 @@ impl Rule for PreferDataProviderAttribute {
             return;
         }
         let new_doc = doc.print(&removed);
+        let Some(edits) = annotated.edits(ctx.source, Some(&new_doc), &groups) else {
+            return;
+        };
         out.push(report(
             doc.span,
             "Use the `#[DataProvider]` attribute instead of the `@dataProvider` annotation.",
             Safety::Safe,
-            annotated.edits(ctx.source, Some(&new_doc), &groups),
+            edits,
         ));
     }
 }

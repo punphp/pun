@@ -89,7 +89,10 @@ impl Rule for PreferDependsAttribute {
             }
             span.get_or_insert(doc.span);
             let new_doc = doc.print(&removed);
-            edits.extend(annotated.edits(ctx.source, Some(&new_doc), &groups));
+            let Some(method_edits) = annotated.edits(ctx.source, Some(&new_doc), &groups) else {
+                return;
+            };
+            edits.extend(method_edits);
         }
         let Some(span) = span else {
             return;

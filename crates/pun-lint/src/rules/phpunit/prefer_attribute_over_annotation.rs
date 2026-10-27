@@ -138,7 +138,11 @@ impl Rule for PreferAttributeOverAnnotation {
             if let Some((doc_span, new_doc, own)) = doc {
                 groups.extend(own);
                 span.get_or_insert(doc_span);
-                edits.extend(annotated.edits(ctx.source, Some(&new_doc), &groups));
+                let Some(method_edits) = annotated.edits(ctx.source, Some(&new_doc), &groups)
+                else {
+                    return;
+                };
+                edits.extend(method_edits);
             }
         }
         let (class_doc_span, class_new_doc) = match class_doc {
@@ -162,7 +166,12 @@ impl Rule for PreferAttributeOverAnnotation {
             }
             _ => {
                 if let Some(class) = &class {
-                    edits.extend(class.edits(ctx.source, class_new_doc.as_deref(), &groups));
+                    let Some(class_edits) =
+                        class.edits(ctx.source, class_new_doc.as_deref(), &groups)
+                    else {
+                        return;
+                    };
+                    edits.extend(class_edits);
                 }
             }
         }

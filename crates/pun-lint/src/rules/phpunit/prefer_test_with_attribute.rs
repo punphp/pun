@@ -84,11 +84,14 @@ impl Rule for PreferTestWithAttribute {
             return;
         }
         let new_doc = doc.print(&removed);
+        let Some(edits) = annotated.edits(ctx.source, Some(&new_doc), &groups) else {
+            return;
+        };
         out.push(report(
             doc.span,
             "Use the `#[TestWith]` attribute instead of the `@testWith` annotation.",
             Safety::Safe,
-            annotated.edits(ctx.source, Some(&new_doc), &groups),
+            edits,
         ));
     }
 }

@@ -74,11 +74,14 @@ impl Rule for PreferTicketAttribute {
             return;
         }
         let new_doc = doc.print(&removed);
+        let Some(edits) = annotated.edits(ctx.source, Some(&new_doc), &groups) else {
+            return;
+        };
         out.push(report(
             doc.span,
             "Use the `#[Ticket]` attribute instead of the `@ticket` annotation.",
             Safety::Safe,
-            annotated.edits(ctx.source, Some(&new_doc), &groups),
+            edits,
         ));
     }
 }
