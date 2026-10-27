@@ -424,7 +424,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "dead-code/no-useless-variable" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove useless variable assigns" }
 "functions/no-assign-in-argument" = { fix = "none", intent = "correctness", sets = ["code-quality"], ported = true, origin = "mago", status = "decided", summary = "Detects assignments in function call arguments which can lead to unexpected behavior and make" }
 "functions/no-call-user-func-method" = { fix = "unsafe", sets = ["coding-style"], ported = true, status = "decided", summary = "Refactor `call_user_func()` on known class method to a method call" }
-"functions/no-extra-arguments" = { fix = "safe", sets = ["code-quality"], gated_by = "php-version", ported = false, status = "decided", summary = "Remove extra parameters" }
+"functions/no-extra-arguments" = { fix = "safe", sets = ["code-quality"], gated_by = "php-version", ported = true, status = "decided", summary = "Remove extra parameters" }
 "functions/no-missing-format-argument" = { fix = "none", intent = "correctness", sets = ["code-quality"], ported = true, origin = "mago", status = "decided", summary = "Detects `sprintf`-style format calls where the number of placeholders" }
 "functions/no-required-after-optional" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Report or fix optional parameters declared before required ones." }
 "functions/no-swapped-explode-arguments" = { fix = "none", intent = "correctness", sets = ["code-quality"], ported = true, origin = "mago", status = "decided", summary = "Detects `explode` calls whose arguments appear to be swapped." }

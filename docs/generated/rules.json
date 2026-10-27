@@ -6614,7 +6614,7 @@
         "RemoveExtraParameters",
         "RemoveExtraParametersRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/functions/no-missing-format-argument",

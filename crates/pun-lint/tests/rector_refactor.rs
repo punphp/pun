@@ -14,7 +14,7 @@ mod lint_c;
 use lint_c::{run_class, run_class_at, run_class_with};
 use pun_lint::{Linter, Rule};
 use pun_lint::rules::{
-    AddOverrideAttribute, RenameMethod, ReplaceArrayAccess,
+    AddOverrideAttribute, NoExtraArguments, RenameMethod, ReplaceArrayAccess,
     RemoveFunctionArgument, RemoveFunctionCall, RenameCast, RenameClassConstant, RenameConstant,
     PreferClassNameConstant, RenameFunction, RequireStrictInArray, ReplaceFunctionWithConstant, ReplaceFunctionWithNew, ReplaceFunctionWithStatic,
 };
@@ -313,4 +313,9 @@ fn rename_method_parent_interface_and_integer_key() {
         .unwrap();
     let expected = format!("{interfaces}class K\n{{\n    public function b() {{}}\n}}\n\nfunction f(K $k)\n{{\n    return $k->b()[3];\n}}\n");
     assert_eq!(fixed.source, expected);
+}
+
+#[test]
+fn remove_extra_parameters() {
+    check(NoExtraArguments, Value::Null, "RemoveExtraParametersRector");
 }

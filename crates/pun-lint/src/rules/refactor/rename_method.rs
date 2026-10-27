@@ -28,7 +28,9 @@ use serde_json::Value;
 
 use super::super::class_method::qualified;
 use super::super::types::facts::facts;
-use super::{assert_class, assert_method, is_class, is_object_type, items, object, report, string};
+use super::{
+    assert_class, assert_method, is_class, is_object_type, items, object, object_class_name, report, string,
+};
 use crate::syntax::{node_span, unparenthesize};
 use crate::{Context, Report, Rule};
 
@@ -80,23 +82,6 @@ fn is_enum_case_of(ctx: &Context<'_>, ancestors: &[Node<'_, '_>], var: &Expressi
         .codebase
         .get_class_like(name.as_bytes())
         .is_some_and(|c| c.kind == SymbolKind::Enum && c.original_name.to_string() == class)
-}
-
-/// The one class the type of `expr` names (`ClassNameFromObjectTypeResolver`).
-fn source_class(ctx: &Context<'_>, expr: &Expression<'_>) -> Option<String> {
-    use mago_codex::ttype::atomic::TAtomic;
-    use mago_codex::ttype::atomic::object::TObject;
-    let facts = facts(ctx);
-    let t = facts.full_type(node_span(unparenthesize(expr)))?;
-    let mut names = t.types.iter().filter_map(|a| match a {
-        TAtomic::Object(TObject::Named(n)) => Some(n.name.to_string()),
-        TAtomic::Object(TObject::Enum(e)) => Some(e.name.to_string()),
-        _ => None,
-    });
-    match (names.next(), names.next()) {
-        (Some(name), None) => Some(name),
-        _ => None,
-    }
 }
 
 impl RenameMethod {
@@ -151,7 +136,7 @@ impl RenameMethod {
     fn skips_call(&self, ctx: &Context<'_>, receiver: &Expression<'_>, rename: &MethodRename) -> bool {
         let facts = facts(ctx);
         let codebase = &facts.codebase;
-        let Some(class) = source_class(ctx, receiver).and_then(|n| codebase.get_class_like(n.as_bytes())) else {
+        let Some(class) = object_class_name(ctx, receiver).and_then(|n| codebase.get_class_like(n.as_bytes())) else {
             return false;
         };
         let Some((_, id)) = (class.appearing_method_ids.iter())
@@ -160,7 +145,7 @@ impl RenameMethod {
             return false;
         };
         let declaring = id.get_class_name();
-        let private = (codebase.get_method(declaring.as_bytes(), rename.old.as_bytes()))
+        let private = (codebase.get_declaring_method(declaring.as_bytes(), rename.old.as_bytes()))
             .and_then(|m| m.method_metadata.as_ref())
             .is_some_and(|m| m.visibility.is_private());
         let source = match private {

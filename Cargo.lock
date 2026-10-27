@@ -1516,6 +1516,7 @@ dependencies = [
  "punphp-config",
  "punphp-fixers",
  "punphp-format",
+ "punphp-phpstan",
  "punphp-problem",
  "punphp-tokens",
  "regex",

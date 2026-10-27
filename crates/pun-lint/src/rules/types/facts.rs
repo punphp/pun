@@ -102,6 +102,7 @@ pub fn project_codebase_autoloaded(
     for (path, code) in files {
         let file = mago_file(path, &without_docblocks(code), FileType::Host);
         remember_source(file.id, code);
+        remember_phar(&file, path);
         named.extend(scan_into(&mut codebase, &file, version));
         scan_into(
             &mut documented,
@@ -117,6 +118,7 @@ pub fn project_codebase_autoloaded(
         if let Some((path, code)) = autoload(&name) {
             let file = mago_file(&path, &without_docblocks(&code), FileType::Vendored);
             remember_source(file.id, &code);
+            remember_phar(&file, &path);
             if path.contains("/vendor/") {
                 (VENDOR.write().unwrap_or_else(|e| e.into_inner())).insert(file.id);
             }
@@ -148,6 +150,21 @@ static VENDOR: LazyLock<RwLock<HashSet<FileId>>> = LazyLock::new(Default::defaul
 /// Whether `file` is vendor code of the project's codebase (Rector: its path contains `/vendor/`).
 pub(crate) fn is_vendor_file(file: FileId) -> bool {
     (VENDOR.read().unwrap_or_else(|e| e.into_inner())).contains(&file)
+}
+
+/// The files [`project_codebase_autoloaded`] read from a path with `phpstan.phar` in it, which Rector's
+/// `RemoveExtraParametersRector` takes for PHPStan's own (its built-in stubs).
+static PHPSTAN_PHAR: LazyLock<RwLock<HashSet<FileId>>> = LazyLock::new(Default::default);
+
+fn remember_phar(file: &File, path: &str) {
+    if path.contains("phpstan.phar") {
+        (PHPSTAN_PHAR.write().unwrap_or_else(|e| e.into_inner())).insert(file.id);
+    }
+}
+
+/// Whether `file`'s path has `phpstan.phar` in it.
+pub(crate) fn is_phpstan_phar_file(file: FileId) -> bool {
+    (PHPSTAN_PHAR.read().unwrap_or_else(|e| e.into_inner())).contains(&file)
 }
 
 /// The sources of the files the codebases were built from, docblocks kept, by file id, for the rules that read

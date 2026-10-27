@@ -346,3 +346,34 @@ fn parents(ctx: &Context<'_>, ancestors: &[Node<'_, '_>]) -> Option<Vec<String>>
     }
     Some(chain)
 }
+
+/// `ClassNameFromObjectTypeResolver::resolve()` on the type Mago gives `expr`: the one class an object type names. A
+/// union names one when its members are all objects of that class or its subclasses (`TypeCombinator` keeps the
+/// parent), none when a member is anything else (`null` too).
+pub(crate) fn object_class_name(ctx: &Context<'_>, expr: &Expression<'_>) -> Option<String> {
+    let facts = facts(ctx);
+    let t = facts.full_type(node_span(unparenthesize(expr)))?;
+    let mut names: Vec<String> = Vec::new();
+    for atomic in t.types.iter() {
+        let name = match atomic {
+            TAtomic::Object(TObject::Named(n)) => n.name.to_string(),
+            TAtomic::Object(TObject::Enum(e)) => e.name.to_string(),
+            _ => return None,
+        };
+        if !names.iter().any(|n| n.eq_ignore_ascii_case(&name)) {
+            names.push(name);
+        }
+    }
+    let codebase = &facts.codebase;
+    let kept: Vec<&String> = (names.iter())
+        .filter(|n| {
+            !names.iter().any(|other| {
+                !other.eq_ignore_ascii_case(n) && codebase.is_instance_of(n.as_bytes(), other.as_bytes())
+            })
+        })
+        .collect();
+    match kept[..] {
+        [one] => Some(one.clone()),
+        _ => None,
+    }
+}

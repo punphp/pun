@@ -8619,7 +8619,7 @@
         "rules": [
           "lint/functions/no-extra-arguments"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
