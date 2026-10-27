@@ -523,3 +523,11 @@ fn decorate_will_return_map_with_expects_mock() {
         "DecorateWillReturnMapWithExpectsMockRector",
     );
 }
+
+#[test]
+fn inline_stub_property_to_create_stub_method_call() {
+    check(
+        PreferInlineCreateStub,
+        "InlineStubPropertyToCreateStubMethodCallRector",
+    );
+}

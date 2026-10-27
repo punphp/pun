@@ -46,6 +46,7 @@ mod prefer_create_stub_in_coalesce;
 mod prefer_data_provider;
 mod prefer_data_provider_attribute;
 mod prefer_depends_attribute;
+mod prefer_inline_create_stub;
 mod prefer_merged_will_return_callback;
 mod prefer_named_data_provider_keys;
 mod prefer_narrow_will_return_callback;
@@ -109,6 +110,7 @@ pub use prefer_create_stub_in_coalesce::PreferCreateStubInCoalesce;
 pub use prefer_data_provider::PreferDataProvider;
 pub use prefer_data_provider_attribute::PreferDataProviderAttribute;
 pub use prefer_depends_attribute::PreferDependsAttribute;
+pub use prefer_inline_create_stub::PreferInlineCreateStub;
 pub use prefer_merged_will_return_callback::PreferMergedWillReturnCallback;
 pub use prefer_named_data_provider_keys::PreferNamedDataProviderKeys;
 pub use prefer_narrow_will_return_callback::PreferNarrowWillReturnCallback;
@@ -210,6 +212,7 @@ pub(crate) fn all() -> Vec<Box<dyn Rule>> {
         Box::new(NoUnusedMockProperty),
         Box::new(PreferCreateStub),
         Box::new(RequireMockExpects),
+        Box::new(PreferInlineCreateStub),
     ]
 }
 
