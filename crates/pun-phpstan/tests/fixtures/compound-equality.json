@@ -1,0 +1,17 @@
+[
+  ["union",["A","B"],["B","A"],true,true,false],
+  ["union",["A","B"],["A","C"],false,false,false],
+  ["union",["A","A","B"],["B","A","A"],true,true,false],
+  ["union",["A","A","B"],["A","B","B"],false,false,false],
+  ["union",["A","B"],["A","A","B"],false,false,false],
+  ["benevolent",["A","B"],["B","A"],true,true,false],
+  ["benevolent",["A","B"],["A","C"],false,false,false],
+  ["benevolent",["A","A","B"],["B","A","A"],true,true,false],
+  ["benevolent",["A","A","B"],["A","B","B"],false,false,false],
+  ["benevolent",["A","B"],["A","A","B"],false,false,false],
+  ["intersection",["A","B"],["B","A"],true,true,false],
+  ["intersection",["A","B"],["A","C"],false,false,false],
+  ["intersection",["A","A","B"],["B","A","A"],true,true,false],
+  ["intersection",["A","A","B"],["A","B","B"],false,false,false],
+  ["intersection",["A","B"],["A","A","B"],false,false,false]
+]

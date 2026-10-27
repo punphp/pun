@@ -4,6 +4,17 @@ use std::path::Path;
 
 use serde_json::Value;
 
+#[test]
+fn invariant_generic_arguments_compare_compound_types_independently_of_written_order() {
+    let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/rules/data");
+    let mut project = pun_analyse::Project::new(vec![root.join("Methods/data/bug-12984.php")], vec![]);
+    project.level = 3;
+    project.php_version = 80500;
+    // Unchanged PHPStan input; a fresh 2.3.1 --level=3 run reports no diagnostics.
+    let errors = pun_analyse::run(&project).unwrap();
+    assert!(errors.is_empty(), "{errors:#?}");
+}
+
 fn compare(file: &str, capture: &str) {
     let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/object-intersections");
     let mut project = pun_analyse::Project::new(vec![root.join(file)], vec![]);

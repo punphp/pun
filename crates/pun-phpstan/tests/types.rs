@@ -516,3 +516,29 @@ fn constant_float_identity() {
         assert_eq!(accepts(&Type::Union(vec![Type::Int, a]), &b, true), want);
     }
 }
+
+/// UnionType/IntersectionType::equals() matches members without changing reflection's written order.
+#[test]
+fn compound_equality_keeps_order_for_reflection_not_invariant_generic_identity() {
+    use pun_phpstan::types::Type;
+    use serde_json::Value;
+    let object = |name: &str| Type::Object(name.into(), vec![]);
+    for row in fixture("compound-equality.json").as_array().unwrap() {
+        let make = |names: &Value| {
+            let members = names.as_array().unwrap().iter().map(|n| object(n.as_str().unwrap())).collect();
+            match row[0].as_str().unwrap() {
+                "union" => Type::Union(members),
+                "benevolent" => Type::Benevolent(members),
+                "intersection" => Type::Intersection(members),
+                _ => unreachable!(),
+            }
+        };
+        let (a, b) = (make(&row[1]), make(&row[2]));
+        let generic = |key, value| Type::Object("ArrayIterator".into(), vec![key, value]);
+        assert_eq!(a == b, row[3].as_bool().unwrap(), "{row}");
+        assert_eq!(generic(object("Key"), a.clone()) == generic(object("Key"), b.clone()), row[4].as_bool().unwrap(), "{row}");
+        assert_eq!(generic(object("Key"), a.clone()) == generic(b, object("Key")), row[5].as_bool().unwrap(), "{row}");
+        let (Type::Union(members) | Type::Benevolent(members) | Type::Intersection(members)) = a else { unreachable!() };
+        assert_eq!(members.iter().map(Type::object_class_names).collect::<Vec<_>>(), row[1].as_array().unwrap().iter().map(|n| vec![n.as_str().unwrap().to_string()]).collect::<Vec<_>>());
+    }
+}

@@ -74,7 +74,16 @@ impl PartialEq for Type {
             (T::Closure(a), T::Closure(b)) => a == b,
             (T::Union(a), T::Union(b))
             | (T::Benevolent(a), T::Benevolent(b))
-            | (T::Intersection(a), T::Intersection(b)) => a == b,
+            | (T::Intersection(a), T::Intersection(b)) => a.len() == b.len() && {
+                // UnionType/IntersectionType::equals(): match each alternative once, without sorting the
+                // stored members. Their written order still selects the first reflected union method.
+                let mut remaining: Vec<_> = b.iter().collect();
+                a.iter().all(|inner| {
+                    let Some(i) = remaining.iter().position(|other| inner == *other) else { return false };
+                    remaining.remove(i);
+                    true
+                })
+            },
             (T::Accessory(a), T::Accessory(b)) => a == b,
             (T::Conditional(a), T::Conditional(b)) => a == b,
             // TemplateTypeTrait::equals() omits the strategy. StrictMixedType::equals() also accepts its
