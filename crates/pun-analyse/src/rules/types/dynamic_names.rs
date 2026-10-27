@@ -64,7 +64,7 @@ pub(super) fn typed(e: &Expression, out: &mut Vec<Span>) {
 
 /// The type at `span`. Mago leaves both `$this` of `$this->$this->name` untyped (the outer fetch reads the inner
 /// one's name from the block's locals).
-fn type_at(c: &Checker, span: Span) -> Option<Type> {
+pub(in super::super) fn type_at(c: &Checker, span: Span) -> Option<Type> {
     c.phpstan_type_at(span).or_else(|| {
         (c.written(span) == "$this" && c.this_defined())
             .then(|| c.class_scope().map(|k| Type::This(k.original_name.to_string())))

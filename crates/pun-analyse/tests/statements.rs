@@ -166,6 +166,45 @@ fn property_access_php_8_1() {
     check_in("properties", "phpstan-81");
 }
 
+/// PHPStan 2.3.1's original AccessStaticPropertiesInAssignRuleTest::testRuleExpressionNames fixture,
+/// unchanged: the finite foreach keys include a missing static property (fresh level-0 oracle capture).
+#[test]
+fn static_property_expression_names_original() {
+    let file = Path::new(env!("CARGO_MANIFEST_DIR")).join(
+        "tests/fixtures/rules/data/Properties/data/properties-from-array-into-static-object.php",
+    );
+    let got: Vec<_> = run(&Project::new(vec![file], Vec::new()))
+        .unwrap()
+        .into_iter()
+        .map(|e| (e.line, e.identifier, e.message, e.tip))
+        .collect();
+    assert_eq!(
+        got,
+        [(
+            29,
+            "staticProperty.notFound".to_string(),
+            "Access to an undefined static property PropertiesFromArrayIntoStaticObject\\Foo::$noop."
+                .to_string(),
+            None,
+        )]
+    );
+}
+
+/// Finite dynamic selectors use the same receiver, visibility and undefined-property checks as direct names.
+/// Expectations are fresh PHPStan 2.3.1 captures, at levels 0 and 2 (including non-stringable-name checks).
+#[test]
+fn static_property_expression_names() {
+    check_in("static-property-names", "phpstan");
+    check_in("static-property-names", "phpstan-level2");
+}
+
+/// Writes and isset guards keep selector identity, branch joins and invalidation; multiline diagnostics point
+/// at the name expression. Inc/dec produces both a read check and a PropertyAssignNode check upstream.
+#[test]
+fn static_property_expression_name_boundaries() {
+    check_in("static-property-names", "phpstan-boundaries");
+}
+
 /// AllowedSubTypesRule (`@phpstan-sealed`, `@psalm-inheritors`), MethodVisibilityInInterfaceRule and
 /// DuplicateTraitDeclarationRule (reported in each using class's context). The anonymous class's hashed name is the
 /// oracle's from this crate's directory, the working directory of `cargo test`.

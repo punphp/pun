@@ -307,14 +307,33 @@ fn static_fetch(e: &Expression, resolve: &dyn Fn(&Identifier) -> String) -> Opti
 }
 
 fn static_key(p: &StaticPropertyAccess, resolve: &dyn Fn(&Identifier) -> String) -> Option<Guard> {
-    let Variable::Direct(v) = &p.property else {
-        return None;
-    };
     let class = class_key(p.class, resolve)?;
-    Some(Guard::Expr(format!(
-        "{class}::{}",
-        String::from_utf8_lossy(v.name)
-    )))
+    Some(Guard::Expr(format!("{class}::{}", static_selector_key(&p.property)?)))
+}
+
+/// Expression identity, not the selector's inferred names: writing `self::${$name}` does not define
+/// `self::${$other}` even when both variables have the same finite type. Identifier-shaped literals share the
+/// direct key (Printer::pObjectProperty); other literal bytes must not look like variable dependencies.
+fn static_selector_key(v: &Variable) -> Option<String> {
+    match v {
+        Variable::Direct(v) => Some(String::from_utf8_lossy(v.name).into_owned()),
+        Variable::Nested(v) => Some(format!("${{{}}}", static_selector_key(v.variable)?)),
+        Variable::Indirect(v) => match unparenthesized(v.expression) {
+            Expression::Variable(v) => Some(format!("${{{}}}", static_selector_key(v)?)),
+            Expression::Literal(Literal::String(s)) => {
+                static IDENTIFIER: std::sync::LazyLock<pcre2::bytes::Regex> = std::sync::LazyLock::new(|| {
+                    pcre2::bytes::Regex::new(r"^[a-zA-Z_\x80-\xff][a-zA-Z0-9_\x80-\xff]*$").expect("identifier regexp")
+                });
+                let value = s.value?;
+                Some(if IDENTIFIER.is_match(value).unwrap_or(false) {
+                    format!("${}", String::from_utf8_lossy(value))
+                } else {
+                    format!("${{string({})}}", value.iter().map(|b| format!("{b:02x}")).collect::<String>())
+                })
+            }
+            _ => None,
+        },
+    }
 }
 
 /// The scope key of a true `property_exists(C::class, 'name')`.
@@ -372,6 +391,12 @@ impl Checker<'_, '_> {
     // ponytail: the rest of the function, not just the paths after it; and `$this[] = ...` on a class without
     // ArrayAccess, after which PHPStan describes `$this` as `ArrayAccess&C`
     pub(super) fn incremented(&mut self, operand: &Expression) {
+        // Inc/dec also produces a PropertyAssignNode. Keep the existing direct-name lane unchanged.
+        if let Expression::Access(Access::StaticProperty(p)) = unparenthesized(operand)
+            && !matches!(p.property, Variable::Direct(_))
+        {
+            static_check(self, p);
+        }
         if matches!(unparenthesized(operand), Expression::Variable(Variable::Direct(v)) if v.name == b"$this")
             && let Some(this) = self.property_access.this.last_mut()
         {
@@ -414,6 +439,14 @@ pub fn assigned(c: &mut Checker, a: &Assignment) {
 fn remember(c: &mut Checker, e: &Expression) {
     let e = unparenthesized(e);
     if let Some(g) = fetch_guard(e) {
+        c.guards.push(g);
+        return;
+    }
+    // PHPStan remembers a dynamic static fetch's expression after a write, but not a direct static name.
+    if let Expression::Access(Access::StaticProperty(p)) = e
+        && !matches!(p.property, Variable::Direct(_))
+        && let Some(g) = static_key(p, &|id| c.resolved(id))
+    {
         c.guards.push(g);
         return;
     }
@@ -692,14 +725,25 @@ pub(super) fn has_static_property(c: &Checker, k: &ClassLikeMetadata, property: 
     native_property(c, k, property) == Some(true)
 }
 
-/// AccessStaticPropertiesCheck::processSingleProperty().
+/// AccessStaticPropertiesCheck::check(): dispatch each constant string of a dynamic selector without casting
+/// non-string names or selecting one alternative of a nonconstant union.
 fn static_check(c: &mut Checker, p: &StaticPropertyAccess) {
-    let Variable::Direct(v) = &p.property else {
-        return; // ponytail: a dynamic name (`Foo::$$name`) needs its constant strings
-    };
-    let property = v.name;
+    if let Variable::Direct(v) = &p.property {
+        return static_check_named(c, p, v.name);
+    }
+    let names = super::types::dynamic_names::static_property(&p.property)
+        .and_then(|at| super::types::dynamic_names::type_at(c, at))
+        .map_or_else(Vec::new, |ty| ty.constant_strings());
+    for mut property in names {
+        property.insert(0, b'$');
+        static_check_named(c, p, &property);
+    }
+}
+
+/// AccessStaticPropertiesCheck::processSingleProperty(); `property` includes its leading `$`.
+fn static_check_named(c: &mut Checker, p: &StaticPropertyAccess, property: &[u8]) {
     let name = String::from_utf8_lossy(&property[1..]).into_owned();
-    let at = p.property.span();
+    let at = super::types::dynamic_names::static_property(&p.property).unwrap_or_else(|| p.property.span());
     let holder = match (unparenthesized(p.class), c.class_scope()) {
         (e @ (Expression::Self_(_) | Expression::Static(_)), scope) => {
             let written = if matches!(e, Expression::Self_(_)) {
@@ -788,7 +832,16 @@ fn static_check(c: &mut Checker, p: &StaticPropertyAccess) {
                 }
             }
         }
-        _ => return super::types::static_property_fetch(c, p, property),
+        _ => {
+            // The receiver checker still owns type/visibility checks; give it the selected name's location,
+            // not the surrounding `${...}` span (the expression can start on another line).
+            let named = StaticPropertyAccess {
+                class: p.class,
+                double_colon: p.double_colon,
+                property: Variable::Direct(DirectVariable { span: at, name: property }),
+            };
+            return super::types::static_property_fetch(c, &named, property);
+        }
     };
     let Holder::Class(class, is_static) = holder else {
         return;
