@@ -426,8 +426,9 @@ PHPStan 2.3.1's
 and [`ParserNodeTypeToPHPStanType`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Type/ParserNodeTypeToPHPStanType.php#L54-L67)
 produce never for native intersections containing a non-object operand. `TypeCombinator` removes never
 from unions with another member. The public scanner regression in
-`crates/pun-analyse/tests/native_intersections.rs` checks seven native signatures before Pun's
-masked-source recovery. Its fixtures capture both native reflection and parser types from PHPStan 2.3.1,
+`crates/pun-analyse/tests/native_intersections.rs` checks seven native signatures directly, without panic
+recovery or source rewriting. Pun no longer retries scanning with intersections masked to `mixed`.
+Its fixtures capture both native reflection and parser types from PHPStan 2.3.1,
 plus complete diagnostics that include a missing-function control after the impossible signatures.
 
 ## Never identity
