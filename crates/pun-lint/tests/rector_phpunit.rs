@@ -457,3 +457,18 @@ fn test_with_to_data_provider() {
     // on the file (`JsonException`, a `TypeError`); Pun leaves the class alone.
     check(PreferDataProvider, "TestWithToDataProviderRector");
 }
+
+#[test]
+fn finalize_test_case_class() {
+    // Fixture/ verbatim from rector-src 2.6.1 (rules-tests/...), a Rector core rule of the phpunit sets.
+    check(RequireFinalTestCase, "FinalizeTestCaseClassRector");
+}
+
+#[test]
+fn add_tests_void_return_type_where_no_return() {
+    // Fixture/ verbatim from rector-src 2.6.1 (rules-tests/...), a Rector core rule of the phpunit sets.
+    check(
+        AddTestVoidReturn,
+        "AddTestsVoidReturnTypeWhereNoReturnRector",
+    );
+}
