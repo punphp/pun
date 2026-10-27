@@ -51,6 +51,8 @@ pub struct Project {
     pub cli_arguments_variables_registered: bool,
     /// `checkMaybeUndefinedVariables`: enabled by config.level1.neon, independently overridable.
     pub check_maybe_undefined_variables: bool,
+    /// `polluteScopeWithLoopInitialAssignments`: keep for/while entry assignments (on by default).
+    pub pollute_scope_with_loop_initial_assignments: bool,
     /// The rule level: `level` (`max` is 10), 0 when unset.
     pub level: u8,
     /// `featureToggles.checkGenericIterableClasses` (on with bleedingEdge).
@@ -242,6 +244,7 @@ impl Project {
             check_function_name_case: flag("checkFunctionNameCase"),
             cli_arguments_variables_registered: flag("cliArgumentsVariablesRegistered"),
             check_maybe_undefined_variables: flag("checkMaybeUndefinedVariables"),
+            pollute_scope_with_loop_initial_assignments: !matches!(params.get_str("polluteScopeWithLoopInitialAssignments"), Some(Value::Bool(false))),
             level,
             check_generic_iterable_classes: toggle("checkGenericIterableClasses"),
             internal_tag: toggle("internalTag"),
@@ -299,6 +302,7 @@ impl Project {
             check_function_name_case: false,
             cli_arguments_variables_registered: true,
             check_maybe_undefined_variables: false,
+            pollute_scope_with_loop_initial_assignments: true,
             level: 0,
             check_generic_iterable_classes: false,
             internal_tag: false,

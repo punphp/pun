@@ -68,6 +68,7 @@ pub(super) fn prepare<'arena>(
     names: &ResolvedNames<'arena>,
     codebase: &CodebaseMetadata,
     php_version: u32,
+    pollute_scope_with_loop_initial_assignments: bool,
     settings: &Settings,
 ) -> (Vec<Span>, State) {
     let mut wanted = Wanted {
@@ -96,6 +97,7 @@ pub(super) fn prepare<'arena>(
         names,
         codebase,
         php_version,
+        pollute_scope_with_loop_initial_assignments,
         wanted.spans,
         Vec::new(),
     );

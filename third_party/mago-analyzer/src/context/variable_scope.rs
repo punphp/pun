@@ -4,8 +4,10 @@ use std::rc::Rc;
 
 use foldhash::HashSet;
 use mago_codex::metadata::CodebaseMetadata;
+use mago_codex::ttype::atomic::TAtomic;
+use mago_codex::ttype::atomic::scalar::TScalar;
 use mago_codex::ttype::combine_union_types;
-use mago_codex::ttype::combiner::CombinerOptions;
+use mago_codex::ttype::combiner::{CombinerOptions, combine};
 use mago_codex::ttype::comparator::ComparisonResult;
 use mago_codex::ttype::comparator::union_comparator::{can_expression_types_be_identical, is_contained_by};
 use mago_codex::ttype::union::TUnion;
@@ -52,7 +54,7 @@ pub struct VariableState {
 }
 
 /// An actual incoming edge, not a reconstruction of the statements on that edge.
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub struct VariableScope {
     locals: WordMap<Rc<TUnion>>,
     possible: WordSet,
@@ -63,6 +65,46 @@ pub struct VariableScope {
 impl VariableScope {
     fn certainty(&self, name: Word) -> VariableCertainty {
         certainty(&self.locals, &self.possible, &self.state, self.otherwise, name)
+    }
+
+    /// Fixed-point discovery is not an incoming holder. Keep untyped possibilities from entry only.
+    pub(crate) fn loop_exit_scope(&self, entry: &Self) -> Self {
+        let mut exit = self.clone();
+        exit.possible.retain(|name| self.locals.contains_key(name) || entry.possible.contains(name));
+        exit
+    }
+
+    /// MutatingScope::generalizeWith keeps the incoming holders; update-only names do not become exits.
+    pub(crate) fn generalize_with(&self, updated: &Self, codebase: &CodebaseMetadata) -> Self {
+        let mut generalized = self.clone();
+        for (name, ty) in &mut generalized.locals {
+            if let Some(other) = updated.locals.get(name) {
+                let mut combined = combine_union_types(ty, other, codebase, CombinerOptions::default());
+                // MutatingScope::generalizeType widens differing nonempty constant-string buckets,
+                // but retains their literal origin and common casing/nonempty accessories.
+                let strings = |union: &TUnion| {
+                    union.types.iter().filter_map(|atomic| match atomic {
+                        TAtomic::Scalar(TScalar::String(string)) => string.get_known_literal_atom(),
+                        _ => None,
+                    }).collect::<HashSet<_>>()
+                };
+                let before = strings(ty);
+                let after = strings(other);
+                if !before.is_empty() && !after.is_empty() && before != after {
+                    let atoms = combined.types.iter().map(|atomic| match atomic {
+                        TAtomic::Scalar(TScalar::String(string)) if string.get_known_literal_atom().is_some() => {
+                            TAtomic::Scalar(TScalar::String(string.with_unspecified_literal()))
+                        }
+                        _ => atomic.clone(),
+                    }).collect();
+                    combined.types = combine(atoms, codebase, CombinerOptions::default()).into();
+                }
+                combined.set_possibly_undefined(ty.possibly_undefined(), None);
+                combined.set_possibly_undefined_from_try(ty.possibly_undefined_from_try());
+                *ty = Rc::new(combined);
+            }
+        }
+        generalized
     }
 }
 

@@ -60,6 +60,30 @@ fn project_from_phpstan_neon() {
 }
 
 #[test]
+fn loop_initial_pollution_defaults_and_explicit_config() {
+    use pun_phpstan::{Array, Value};
+
+    let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/loop-pollution");
+    assert!(Project::new(Vec::new(), Vec::new()).pollute_scope_with_loop_initial_assignments);
+    assert!(Project::from_config(&root, &Array::new()).pollute_scope_with_loop_initial_assignments);
+    for (mode, pollution, maybe) in [
+        ("default", true, true),
+        ("enabled", true, true),
+        ("disabled", false, true),
+        ("quiet", false, false),
+    ] {
+        let config = resolve(&Options {
+            config: Some(root.join(format!("{mode}.neon")).to_string_lossy().into_owned()),
+            ..Options::for_project(&root.to_string_lossy())
+        }).unwrap();
+        assert_eq!(config.parameters.get_str("polluteScopeWithLoopInitialAssignments"), Some(&Value::Bool(pollution)));
+        let project = Project::from_config(&root, &config.parameters);
+        assert_eq!(project.pollute_scope_with_loop_initial_assignments, pollution);
+        assert_eq!(project.check_maybe_undefined_variables, maybe);
+    }
+}
+
+#[test]
 fn php_version_range_and_ignore_flags() {
     check("phpstan-min");
 }

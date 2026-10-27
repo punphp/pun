@@ -123,6 +123,9 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Break<'arena> {
                 loop_scope.final_actions.insert(ControlAction::LeaveSwitch);
             } else {
                 loop_scope.final_actions.insert(ControlAction::Break);
+                if let Some(entry) = &loop_scope.entry_scope {
+                    loop_scope.break_scopes.push(block_context.variable_scope().loop_exit_scope(entry));
+                }
                 crate::context::scope::loop_scope::merge_exit_locals(
                     &mut loop_scope.break_locals,
                     &block_context.locals,

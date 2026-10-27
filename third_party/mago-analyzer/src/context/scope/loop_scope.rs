@@ -10,6 +10,7 @@ use mago_codex::ttype::union::TUnion;
 use mago_span::Span;
 
 use crate::context::scope::control_action::ControlActionSet;
+use crate::context::block::VariableScope;
 
 #[derive(Clone, Debug)]
 pub struct LoopScope {
@@ -24,6 +25,7 @@ pub struct LoopScope {
     pub possibly_defined_loop_parent_variables: WordMap<Rc<TUnion>>,
     /// Actual states at loop exits, separate from the back edge and the entry state.
     pub break_locals: Option<WordMap<Rc<TUnion>>>,
+    pub break_scopes: Vec<VariableScope>,
     pub continue_locals: Option<WordMap<Rc<TUnion>>>,
     pub by_reference_loop_mutations: WordMap<Rc<TUnion>>,
     pub assignment_targets: WordSet,
@@ -32,6 +34,11 @@ pub struct LoopScope {
     pub final_actions: ControlActionSet,
     pub truthy_pre_conditions: bool,
     pub condition_always_false: bool,
+    /// Actual first header evaluation, before truthy reconciliation; for/while only.
+    pub entry_scope: Option<VariableScope>,
+    pub first_falsey_scope: Option<VariableScope>,
+    pub pre_update_scope: Option<VariableScope>,
+    pub back_edge_dead: bool,
     pub parent_loop: Option<Box<LoopScope>>,
 }
 
@@ -47,6 +54,7 @@ impl LoopScope {
             possibly_redefined_loop_parent_variables: WordMap::default(),
             possibly_defined_loop_parent_variables: WordMap::default(),
             break_locals: None,
+            break_scopes: Vec::new(),
             continue_locals: None,
             by_reference_loop_mutations: WordMap::default(),
             assignment_targets: WordSet::default(),
@@ -56,6 +64,10 @@ impl LoopScope {
             parent_loop,
             truthy_pre_conditions: true,
             condition_always_false: false,
+            entry_scope: None,
+            first_falsey_scope: None,
+            pre_update_scope: None,
+            back_edge_dead: false,
         }
     }
 

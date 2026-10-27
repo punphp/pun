@@ -1730,6 +1730,7 @@ pub(in super::super) fn match_subject_types(
     program: &Program,
     codebase: &CodebaseMetadata,
     php_version: u32,
+    pollute_scope_with_loop_initial_assignments: bool,
 ) -> (HashMap<Span, TUnion>, Vec<Span>) {
     /// The matches with arms: subject, the start and end between their braces, nesting depth.
     struct Matches(Vec<(Span, usize, usize, usize)>, usize);
@@ -1782,7 +1783,7 @@ pub(in super::super) fn match_subject_types(
         let copy = File::new(file.name.clone(), file.file_type, file.path.clone(), Cow::Owned(contents));
         let arena = LocalArena::new();
         let (program, names) = parse(&arena, &copy);
-        types.extend(super::super::infer::analyse(&arena, &copy, program, &names, codebase, php_version, subjects, Vec::new()).0);
+        types.extend(super::super::infer::analyse(&arena, &copy, program, &names, codebase, php_version, pollute_scope_with_loop_initial_assignments, subjects, Vec::new()).0);
     }
     (types, unknown)
 }

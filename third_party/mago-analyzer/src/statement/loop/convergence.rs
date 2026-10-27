@@ -435,6 +435,11 @@ fn same_scope(left: &LoopScope, right: &LoopScope) -> bool {
         && left.final_actions == right.final_actions
         && left.truthy_pre_conditions == right.truthy_pre_conditions
         && left.condition_always_false == right.condition_always_false
+        && left.entry_scope == right.entry_scope
+        && left.first_falsey_scope == right.first_falsey_scope
+        && left.pre_update_scope == right.pre_update_scope
+        && left.break_scopes == right.break_scopes
+        && left.back_edge_dead == right.back_edge_dead
         && same_optional_scope(left.parent_loop.as_deref(), right.parent_loop.as_deref())
 }
 

@@ -1,0 +1,2378 @@
+{
+    "default": [
+        [
+            "loop-initial-assignments.php",
+            9,
+            "function.notFound",
+            "Function foo not found.",
+            "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+            true
+        ],
+        [
+            "matrix.php",
+            11,
+            "phpstan.dumpType",
+            "Dumped type: 'init'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            12,
+            "phpstan.dumpType",
+            "Dumped type: 'init'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            13,
+            "phpstan.dumpType",
+            "Dumped type: 1",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            14,
+            "phpstan.dumpType",
+            "Dumped type: false",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            15,
+            "variable.undefined",
+            "Undefined variable: $body",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            15,
+            "variable.undefined",
+            "Undefined variable: $update",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            26,
+            "phpstan.dumpType",
+            "Dumped type: 'before'|'body'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            27,
+            "phpstan.dumpType",
+            "Dumped type: 'init'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            28,
+            "phpstan.dumpType",
+            "Dumped type: 1",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            29,
+            "phpstan.dumpType",
+            "Dumped type: bool",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            30,
+            "variable.undefined",
+            "Undefined variable: $update",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            30,
+            "variable.undefined",
+            "Variable $body might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            41,
+            "phpstan.dumpType",
+            "Dumped type: 'body'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            42,
+            "phpstan.dumpType",
+            "Dumped type: 'init'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            43,
+            "phpstan.dumpType",
+            "Dumped type: 1",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            44,
+            "phpstan.dumpType",
+            "Dumped type: true",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            54,
+            "phpstan.dumpType",
+            "Dumped type: 'before'|'condition'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            55,
+            "phpstan.dumpType",
+            "Dumped type: 1|'condition'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            55,
+            "variable.undefined",
+            "Variable $maybe might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            56,
+            "phpstan.dumpType",
+            "Dumped type: false",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            57,
+            "variable.undefined",
+            "Variable $body might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            67,
+            "phpstan.dumpType",
+            "Dumped type: 'before'|'body'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            68,
+            "phpstan.dumpType",
+            "Dumped type: bool",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            69,
+            "variable.undefined",
+            "Variable $body might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            81,
+            "phpstan.dumpType",
+            "Dumped type: 'body'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            82,
+            "phpstan.dumpType",
+            "Dumped type: 'body'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            83,
+            "phpstan.dumpType",
+            "Dumped type: true",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            92,
+            "phpstan.dumpType",
+            "Dumped type: 'update'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            103,
+            "phpstan.dumpType",
+            "Dumped type: 0",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            104,
+            "phpstan.dumpType",
+            "Dumped type: true",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            105,
+            "phpstan.dumpType",
+            "Dumped type: 'break'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            115,
+            "phpstan.dumpType",
+            "Dumped type: 'outer'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            123,
+            "variable.undefined",
+            "Undefined variable: $update",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            142,
+            "phpstan.dumpType",
+            "Dumped type: *NEVER*",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            143,
+            "phpstan.dumpType",
+            "Dumped type: true",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            144,
+            "variable.undefined",
+            "Undefined variable: $update",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            153,
+            "phpstan.dumpType",
+            "Dumped type: 'before'|'condition'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            154,
+            "phpstan.dumpType",
+            "Dumped type: bool",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            155,
+            "variable.undefined",
+            "Variable $body might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            160,
+            "phpstan.dumpType",
+            "Dumped type: false",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            161,
+            "variable.undefined",
+            "Variable $body might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            170,
+            "phpstan.dumpType",
+            "Dumped type: 'before'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            171,
+            "variable.undefined",
+            "Undefined variable: $update",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            176,
+            "phpstan.dumpType",
+            "Dumped type: 'before'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            188,
+            "phpstan.dumpType",
+            "Dumped type: 'loop'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            191,
+            "variable.undefined",
+            "Variable $value might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            205,
+            "phpstan.dumpType",
+            "Dumped type: 1|'back'|'break'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            206,
+            "phpstan.dumpType",
+            "Dumped type: bool",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            207,
+            "phpstan.dumpType",
+            "Dumped type: *ERROR*",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            207,
+            "variable.undefined",
+            "Undefined variable: $update",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            208,
+            "variable.undefined",
+            "Variable $branchOnly might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            231,
+            "phpstan.dumpType",
+            "Dumped type: 1|'back'|'break'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            232,
+            "phpstan.dumpType",
+            "Dumped type: bool",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            233,
+            "phpstan.dumpType",
+            "Dumped type: *ERROR*",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            233,
+            "variable.undefined",
+            "Undefined variable: $update",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            234,
+            "variable.undefined",
+            "Variable $branchOnly might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            243,
+            "phpstan.dumpType",
+            "Dumped type: literal-string&lowercase-string&non-falsy-string",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            252,
+            "phpstan.dumpType",
+            "Dumped type: 1|(literal-string&lowercase-string&non-falsy-string)",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            256,
+            "variable.undefined",
+            "Undefined variable: $unknownUpdate",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            257,
+            "phpstan.dumpType",
+            "Dumped type: 1",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            261,
+            "variable.undefined",
+            "Undefined variable: $unknownAfterReturn",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            262,
+            "phpstan.dumpType",
+            "Dumped type: 1",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            272,
+            "phpstan.dumpType",
+            "Dumped type: 0|1",
+            null,
+            false
+        ]
+    ],
+    "enabled": [
+        [
+            "loop-initial-assignments.php",
+            9,
+            "function.notFound",
+            "Function foo not found.",
+            "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+            true
+        ],
+        [
+            "matrix.php",
+            11,
+            "phpstan.dumpType",
+            "Dumped type: 'init'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            12,
+            "phpstan.dumpType",
+            "Dumped type: 'init'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            13,
+            "phpstan.dumpType",
+            "Dumped type: 1",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            14,
+            "phpstan.dumpType",
+            "Dumped type: false",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            15,
+            "variable.undefined",
+            "Undefined variable: $body",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            15,
+            "variable.undefined",
+            "Undefined variable: $update",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            26,
+            "phpstan.dumpType",
+            "Dumped type: 'before'|'body'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            27,
+            "phpstan.dumpType",
+            "Dumped type: 'init'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            28,
+            "phpstan.dumpType",
+            "Dumped type: 1",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            29,
+            "phpstan.dumpType",
+            "Dumped type: bool",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            30,
+            "variable.undefined",
+            "Undefined variable: $update",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            30,
+            "variable.undefined",
+            "Variable $body might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            41,
+            "phpstan.dumpType",
+            "Dumped type: 'body'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            42,
+            "phpstan.dumpType",
+            "Dumped type: 'init'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            43,
+            "phpstan.dumpType",
+            "Dumped type: 1",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            44,
+            "phpstan.dumpType",
+            "Dumped type: true",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            54,
+            "phpstan.dumpType",
+            "Dumped type: 'before'|'condition'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            55,
+            "phpstan.dumpType",
+            "Dumped type: 1|'condition'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            55,
+            "variable.undefined",
+            "Variable $maybe might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            56,
+            "phpstan.dumpType",
+            "Dumped type: false",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            57,
+            "variable.undefined",
+            "Variable $body might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            67,
+            "phpstan.dumpType",
+            "Dumped type: 'before'|'body'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            68,
+            "phpstan.dumpType",
+            "Dumped type: bool",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            69,
+            "variable.undefined",
+            "Variable $body might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            81,
+            "phpstan.dumpType",
+            "Dumped type: 'body'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            82,
+            "phpstan.dumpType",
+            "Dumped type: 'body'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            83,
+            "phpstan.dumpType",
+            "Dumped type: true",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            92,
+            "phpstan.dumpType",
+            "Dumped type: 'update'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            103,
+            "phpstan.dumpType",
+            "Dumped type: 0",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            104,
+            "phpstan.dumpType",
+            "Dumped type: true",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            105,
+            "phpstan.dumpType",
+            "Dumped type: 'break'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            115,
+            "phpstan.dumpType",
+            "Dumped type: 'outer'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            123,
+            "variable.undefined",
+            "Undefined variable: $update",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            142,
+            "phpstan.dumpType",
+            "Dumped type: *NEVER*",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            143,
+            "phpstan.dumpType",
+            "Dumped type: true",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            144,
+            "variable.undefined",
+            "Undefined variable: $update",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            153,
+            "phpstan.dumpType",
+            "Dumped type: 'before'|'condition'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            154,
+            "phpstan.dumpType",
+            "Dumped type: bool",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            155,
+            "variable.undefined",
+            "Variable $body might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            160,
+            "phpstan.dumpType",
+            "Dumped type: false",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            161,
+            "variable.undefined",
+            "Variable $body might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            170,
+            "phpstan.dumpType",
+            "Dumped type: 'before'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            171,
+            "variable.undefined",
+            "Undefined variable: $update",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            176,
+            "phpstan.dumpType",
+            "Dumped type: 'before'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            188,
+            "phpstan.dumpType",
+            "Dumped type: 'loop'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            191,
+            "variable.undefined",
+            "Variable $value might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            205,
+            "phpstan.dumpType",
+            "Dumped type: 1|'back'|'break'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            206,
+            "phpstan.dumpType",
+            "Dumped type: bool",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            207,
+            "phpstan.dumpType",
+            "Dumped type: *ERROR*",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            207,
+            "variable.undefined",
+            "Undefined variable: $update",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            208,
+            "variable.undefined",
+            "Variable $branchOnly might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            231,
+            "phpstan.dumpType",
+            "Dumped type: 1|'back'|'break'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            232,
+            "phpstan.dumpType",
+            "Dumped type: bool",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            233,
+            "phpstan.dumpType",
+            "Dumped type: *ERROR*",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            233,
+            "variable.undefined",
+            "Undefined variable: $update",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            234,
+            "variable.undefined",
+            "Variable $branchOnly might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            243,
+            "phpstan.dumpType",
+            "Dumped type: literal-string&lowercase-string&non-falsy-string",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            252,
+            "phpstan.dumpType",
+            "Dumped type: 1|(literal-string&lowercase-string&non-falsy-string)",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            256,
+            "variable.undefined",
+            "Undefined variable: $unknownUpdate",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            257,
+            "phpstan.dumpType",
+            "Dumped type: 1",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            261,
+            "variable.undefined",
+            "Undefined variable: $unknownAfterReturn",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            262,
+            "phpstan.dumpType",
+            "Dumped type: 1",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            272,
+            "phpstan.dumpType",
+            "Dumped type: 0|1",
+            null,
+            false
+        ]
+    ],
+    "disabled": [
+        [
+            "bug-11545.php",
+            24,
+            "variable.undefined",
+            "Variable $result might not be defined.",
+            null,
+            true
+        ],
+        [
+            "loop-initial-assignments.php",
+            7,
+            "variable.undefined",
+            "Variable $i might not be defined.",
+            null,
+            true
+        ],
+        [
+            "loop-initial-assignments.php",
+            9,
+            "function.notFound",
+            "Function foo not found.",
+            "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+            true
+        ],
+        [
+            "loop-initial-assignments.php",
+            13,
+            "variable.undefined",
+            "Variable $whileVar might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            11,
+            "phpstan.dumpType",
+            "Dumped type: 'before'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            12,
+            "phpstan.dumpType",
+            "Dumped type: 1",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            12,
+            "variable.undefined",
+            "Variable $maybe might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            13,
+            "phpstan.dumpType",
+            "Dumped type: *ERROR*",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            13,
+            "variable.undefined",
+            "Undefined variable: $initial",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            14,
+            "phpstan.dumpType",
+            "Dumped type: *ERROR*",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            14,
+            "variable.undefined",
+            "Undefined variable: $condition",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            15,
+            "variable.undefined",
+            "Undefined variable: $body",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            15,
+            "variable.undefined",
+            "Undefined variable: $update",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            26,
+            "phpstan.dumpType",
+            "Dumped type: 'before'|'body'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            27,
+            "phpstan.dumpType",
+            "Dumped type: 1|'init'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            27,
+            "variable.undefined",
+            "Variable $maybe might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            28,
+            "phpstan.dumpType",
+            "Dumped type: 1",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            28,
+            "variable.undefined",
+            "Variable $initial might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            29,
+            "phpstan.dumpType",
+            "Dumped type: true",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            29,
+            "variable.undefined",
+            "Variable $condition might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            30,
+            "variable.undefined",
+            "Undefined variable: $update",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            30,
+            "variable.undefined",
+            "Variable $body might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            41,
+            "phpstan.dumpType",
+            "Dumped type: 5|'body'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            42,
+            "phpstan.dumpType",
+            "Dumped type: 1|'init'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            42,
+            "variable.undefined",
+            "Variable $maybe might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            43,
+            "phpstan.dumpType",
+            "Dumped type: 1",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            43,
+            "variable.undefined",
+            "Variable $initial might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            44,
+            "phpstan.dumpType",
+            "Dumped type: true",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            44,
+            "variable.undefined",
+            "Variable $condition might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            45,
+            "variable.undefined",
+            "Variable $body might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            54,
+            "phpstan.dumpType",
+            "Dumped type: 'before'|'condition'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            55,
+            "phpstan.dumpType",
+            "Dumped type: 1|'condition'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            55,
+            "variable.undefined",
+            "Variable $maybe might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            56,
+            "phpstan.dumpType",
+            "Dumped type: false",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            56,
+            "variable.undefined",
+            "Variable $condition might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            57,
+            "variable.undefined",
+            "Variable $body might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            67,
+            "phpstan.dumpType",
+            "Dumped type: 'before'|'body'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            68,
+            "phpstan.dumpType",
+            "Dumped type: bool",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            68,
+            "variable.undefined",
+            "Variable $condition might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            69,
+            "variable.undefined",
+            "Variable $body might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            81,
+            "phpstan.dumpType",
+            "Dumped type: 'body'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            82,
+            "phpstan.dumpType",
+            "Dumped type: 'body'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            83,
+            "phpstan.dumpType",
+            "Dumped type: true",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            92,
+            "phpstan.dumpType",
+            "Dumped type: 'update'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            92,
+            "variable.undefined",
+            "Variable $update might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            93,
+            "variable.undefined",
+            "Variable $body might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            93,
+            "variable.undefined",
+            "Variable $i might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            103,
+            "phpstan.dumpType",
+            "Dumped type: 0",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            103,
+            "variable.undefined",
+            "Variable $outer might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            104,
+            "phpstan.dumpType",
+            "Dumped type: true",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            104,
+            "variable.undefined",
+            "Variable $inner might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            105,
+            "phpstan.dumpType",
+            "Dumped type: 'break'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            105,
+            "variable.undefined",
+            "Variable $escaped might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            115,
+            "phpstan.dumpType",
+            "Dumped type: 'outer'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            115,
+            "variable.undefined",
+            "Variable $update might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            116,
+            "variable.undefined",
+            "Variable $continued might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            116,
+            "variable.undefined",
+            "Variable $outer might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            123,
+            "variable.undefined",
+            "Undefined variable: $condition",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            123,
+            "variable.undefined",
+            "Undefined variable: $initial",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            123,
+            "variable.undefined",
+            "Undefined variable: $update",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            127,
+            "variable.undefined",
+            "Variable $whileCondition might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            142,
+            "phpstan.dumpType",
+            "Dumped type: *NEVER*",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            142,
+            "variable.undefined",
+            "Variable $discarded might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            143,
+            "phpstan.dumpType",
+            "Dumped type: true",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            143,
+            "variable.undefined",
+            "Variable $condition might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            144,
+            "variable.undefined",
+            "Undefined variable: $update",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            144,
+            "variable.undefined",
+            "Variable $body might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            144,
+            "variable.undefined",
+            "Variable $initial might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            153,
+            "phpstan.dumpType",
+            "Dumped type: 'before'|'condition'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            154,
+            "phpstan.dumpType",
+            "Dumped type: bool",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            154,
+            "variable.undefined",
+            "Variable $condition might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            155,
+            "variable.undefined",
+            "Variable $body might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            160,
+            "phpstan.dumpType",
+            "Dumped type: false",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            160,
+            "variable.undefined",
+            "Variable $condition might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            161,
+            "variable.undefined",
+            "Variable $body might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            170,
+            "phpstan.dumpType",
+            "Dumped type: 'before'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            171,
+            "variable.undefined",
+            "Undefined variable: $condition",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            171,
+            "variable.undefined",
+            "Undefined variable: $initial",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            171,
+            "variable.undefined",
+            "Undefined variable: $update",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            176,
+            "phpstan.dumpType",
+            "Dumped type: 'before'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            177,
+            "variable.undefined",
+            "Variable $whileCondition might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            188,
+            "phpstan.dumpType",
+            "Dumped type: 'loop'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            191,
+            "variable.undefined",
+            "Variable $value might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            205,
+            "phpstan.dumpType",
+            "Dumped type: 1|'back'|'break'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            206,
+            "phpstan.dumpType",
+            "Dumped type: true",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            206,
+            "variable.undefined",
+            "Variable $condition might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            207,
+            "phpstan.dumpType",
+            "Dumped type: *ERROR*",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            207,
+            "variable.undefined",
+            "Undefined variable: $update",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            208,
+            "variable.undefined",
+            "Variable $branchOnly might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            208,
+            "variable.undefined",
+            "Variable $i might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            231,
+            "phpstan.dumpType",
+            "Dumped type: 1|'back'|'break'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            232,
+            "phpstan.dumpType",
+            "Dumped type: true",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            232,
+            "variable.undefined",
+            "Variable $condition might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            233,
+            "phpstan.dumpType",
+            "Dumped type: *ERROR*",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            233,
+            "variable.undefined",
+            "Undefined variable: $update",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            234,
+            "variable.undefined",
+            "Variable $branchOnly might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            234,
+            "variable.undefined",
+            "Variable $i might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            243,
+            "phpstan.dumpType",
+            "Dumped type: literal-string&lowercase-string&non-falsy-string",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            252,
+            "phpstan.dumpType",
+            "Dumped type: 1|(literal-string&lowercase-string&non-falsy-string)",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            256,
+            "variable.undefined",
+            "Undefined variable: $unknownUpdate",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            257,
+            "phpstan.dumpType",
+            "Dumped type: 1",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            257,
+            "variable.undefined",
+            "Variable $initial might not be defined.",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            261,
+            "variable.undefined",
+            "Undefined variable: $unknownAfterReturn",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            262,
+            "phpstan.dumpType",
+            "Dumped type: *ERROR*",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            262,
+            "variable.undefined",
+            "Undefined variable: $initial",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            272,
+            "phpstan.dumpType",
+            "Dumped type: 0|1",
+            null,
+            false
+        ]
+    ],
+    "quiet": [
+        [
+            "loop-initial-assignments.php",
+            9,
+            "function.notFound",
+            "Function foo not found.",
+            "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+            true
+        ],
+        [
+            "matrix.php",
+            11,
+            "phpstan.dumpType",
+            "Dumped type: 'before'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            12,
+            "phpstan.dumpType",
+            "Dumped type: 1",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            13,
+            "phpstan.dumpType",
+            "Dumped type: *ERROR*",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            13,
+            "variable.undefined",
+            "Undefined variable: $initial",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            14,
+            "phpstan.dumpType",
+            "Dumped type: *ERROR*",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            14,
+            "variable.undefined",
+            "Undefined variable: $condition",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            15,
+            "variable.undefined",
+            "Undefined variable: $body",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            15,
+            "variable.undefined",
+            "Undefined variable: $update",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            26,
+            "phpstan.dumpType",
+            "Dumped type: 'before'|'body'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            27,
+            "phpstan.dumpType",
+            "Dumped type: 1|'init'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            28,
+            "phpstan.dumpType",
+            "Dumped type: 1",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            29,
+            "phpstan.dumpType",
+            "Dumped type: true",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            30,
+            "variable.undefined",
+            "Undefined variable: $update",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            41,
+            "phpstan.dumpType",
+            "Dumped type: 5|'body'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            42,
+            "phpstan.dumpType",
+            "Dumped type: 1|'init'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            43,
+            "phpstan.dumpType",
+            "Dumped type: 1",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            44,
+            "phpstan.dumpType",
+            "Dumped type: true",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            54,
+            "phpstan.dumpType",
+            "Dumped type: 'before'|'condition'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            55,
+            "phpstan.dumpType",
+            "Dumped type: 1|'condition'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            56,
+            "phpstan.dumpType",
+            "Dumped type: false",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            67,
+            "phpstan.dumpType",
+            "Dumped type: 'before'|'body'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            68,
+            "phpstan.dumpType",
+            "Dumped type: bool",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            81,
+            "phpstan.dumpType",
+            "Dumped type: 'body'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            82,
+            "phpstan.dumpType",
+            "Dumped type: 'body'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            83,
+            "phpstan.dumpType",
+            "Dumped type: true",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            92,
+            "phpstan.dumpType",
+            "Dumped type: 'update'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            103,
+            "phpstan.dumpType",
+            "Dumped type: 0",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            104,
+            "phpstan.dumpType",
+            "Dumped type: true",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            105,
+            "phpstan.dumpType",
+            "Dumped type: 'break'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            115,
+            "phpstan.dumpType",
+            "Dumped type: 'outer'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            123,
+            "variable.undefined",
+            "Undefined variable: $condition",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            123,
+            "variable.undefined",
+            "Undefined variable: $initial",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            123,
+            "variable.undefined",
+            "Undefined variable: $update",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            142,
+            "phpstan.dumpType",
+            "Dumped type: *NEVER*",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            143,
+            "phpstan.dumpType",
+            "Dumped type: true",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            144,
+            "variable.undefined",
+            "Undefined variable: $update",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            153,
+            "phpstan.dumpType",
+            "Dumped type: 'before'|'condition'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            154,
+            "phpstan.dumpType",
+            "Dumped type: bool",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            160,
+            "phpstan.dumpType",
+            "Dumped type: false",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            170,
+            "phpstan.dumpType",
+            "Dumped type: 'before'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            171,
+            "variable.undefined",
+            "Undefined variable: $condition",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            171,
+            "variable.undefined",
+            "Undefined variable: $initial",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            171,
+            "variable.undefined",
+            "Undefined variable: $update",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            176,
+            "phpstan.dumpType",
+            "Dumped type: 'before'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            188,
+            "phpstan.dumpType",
+            "Dumped type: 'loop'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            205,
+            "phpstan.dumpType",
+            "Dumped type: 1|'back'|'break'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            206,
+            "phpstan.dumpType",
+            "Dumped type: true",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            207,
+            "phpstan.dumpType",
+            "Dumped type: *ERROR*",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            207,
+            "variable.undefined",
+            "Undefined variable: $update",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            231,
+            "phpstan.dumpType",
+            "Dumped type: 1|'back'|'break'",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            232,
+            "phpstan.dumpType",
+            "Dumped type: true",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            233,
+            "phpstan.dumpType",
+            "Dumped type: *ERROR*",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            233,
+            "variable.undefined",
+            "Undefined variable: $update",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            243,
+            "phpstan.dumpType",
+            "Dumped type: literal-string&lowercase-string&non-falsy-string",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            252,
+            "phpstan.dumpType",
+            "Dumped type: 1|(literal-string&lowercase-string&non-falsy-string)",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            256,
+            "variable.undefined",
+            "Undefined variable: $unknownUpdate",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            257,
+            "phpstan.dumpType",
+            "Dumped type: 1",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            261,
+            "variable.undefined",
+            "Undefined variable: $unknownAfterReturn",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            262,
+            "phpstan.dumpType",
+            "Dumped type: *ERROR*",
+            null,
+            false
+        ],
+        [
+            "matrix.php",
+            262,
+            "variable.undefined",
+            "Undefined variable: $initial",
+            null,
+            true
+        ],
+        [
+            "matrix.php",
+            272,
+            "phpstan.dumpType",
+            "Dumped type: 0|1",
+            null,
+            false
+        ]
+    ]
+}

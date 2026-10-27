@@ -2221,3 +2221,46 @@ receiver errors, readonly properties, and multiline positions.
 The retained level-8 operand fixture now reports both missing null-property assignment errors.
 The level-10 fixture also reports the mixed operand error for static access to an instance property.
 The complete `statements` suite passes with these unchanged expectations.
+
+## For and while entry-scope pollution
+
+`Settings::pollute_scope_with_loop_initial_assignments` defaults to true. Pun transports PHPStan's
+`polluteScopeWithLoopInitialAssignments` from resolved parameters through `Project` and every inference
+entry point. `checkMaybeUndefinedVariables` controls reporting independently.
+
+The reference is PHPStan 2.3.1 at `cb3b7e99489b2e3789ee2eec10501cb7a72580ea`:
+
+- `src/Analyser/StmtHandler/ForHandler.php:306–322` selects or joins whole scopes. A false first condition
+  or a terminating body selects the evaluated header scope when enabled, or the pre-loop scope when disabled.
+  A possible first iteration joins the selected entry with the computed exit. A guaranteed first iteration
+  joins the pre-loop scope only when pollution is disabled.
+- `src/Analyser/StmtHandler/WhileHandler.php:215–221` joins the first falsey condition scope on a possible
+  zero-iteration edge. Disabling pollution adds the pre-loop scope on that edge only. A definitely-entering
+  while does not acquire the for loop's extra pre-loop edge.
+- `ForHandler.php:175–190` evaluates all header expressions but uses only the last condition's truthiness.
+- `ForHandler.php:273–295` generalizes the final body's holders with the update scope before falsey
+  condition reconciliation. `MutatingScope.php:5014–5129,5157–5245` retains the incoming holder set and
+  certainty; differing constant-string buckets retain literal origin and common string accessories.
+
+The existing shared loop owner captures actual variable scopes after header evaluation and before truthy
+reconciliation. Its existing joins union types and combine variable certainty, including conditional holders.
+No variable-name scan or diagnostic rewrite is involved. The existing break and continue scopes still route
+local and outward exits. A dead back edge does not publish update writes or widen the next iteration. Updates
+are still analyzed on a detached copy for diagnostics, as in PHPStan's final walk. An outward exit from a
+guaranteed first iteration cannot fall through into an enclosing loop's update expressions.
+
+The public `variables` test compares resolved default, enabled, disabled, and quiet configs against fresh
+PHPStan diagnostics and `dumpType()` output in `tests/fixtures/loop-pollution/expected.json`. The fixture includes
+PHPStan's original `loop-initial-assignments.php` and `bug-11545.php`, plus entry writes, existing definite and
+maybe-defined variables, zero and guaranteed iteration, comma conditions, update-only versus existing holders,
+dead-update diagnostics, termination, nested exits, a conditional holder, and an update that invalidates a
+dynamic-offset holder's parent. `capture.php` canonicalizes paths before configuring `pathRoutingParser` so
+reflection does not discard the original fixture bodies. The disabled bug-11545 contract reports `$result`
+as maybe defined at line 24. The existing dead-code fixture now also reports its original terminating-for
+comparison at `src/conditions.php:602`, verified with fresh PHPStan; the test no longer masks that expectation.
+
+This setting does not alter do-while, foreach, or standalone block pollution. Native loop transfers remain
+unsupported and invalidate the native state on the existing path. This patch does not add a second flow engine
+or claim complete DefinedVariableRule parity. Scalar, array, reference, and template generalization beyond the
+constant-string update contract retain the existing inference engine's behavior; this is not a complete port
+of `MutatingScope::generalizeType()`.

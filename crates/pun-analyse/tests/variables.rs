@@ -9,6 +9,38 @@ use pun_analyse::{Project, run};
 use serde_json::Value;
 
 #[test]
+fn loop_initial_pollution_matches_resolved_phpstan_configuration() {
+    use pun_phpstan::config::{Options, resolve};
+
+    let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/loop-pollution");
+    let expected: Value = serde_json::from_slice(&std::fs::read(root.join("expected.json")).unwrap()).unwrap();
+    let selected = |id: &str| matches!(id, "variable.undefined" | "phpstan.dumpType");
+    let mut failures = Vec::new();
+    for mode in ["default", "enabled", "disabled", "quiet"] {
+        let config = resolve(&Options {
+            config: Some(root.join(format!("{mode}.neon")).to_string_lossy().into_owned()),
+            ..Options::for_project(&root.to_string_lossy())
+        }).unwrap();
+        let project = Project::from_config(&root, &config.parameters);
+        let mut actual: Vec<_> = run(&project).unwrap().into_iter()
+            .filter(|e| selected(&e.identifier))
+            .map(|e| (Path::new(&e.file).file_name().unwrap().to_string_lossy().into_owned(), e.line, e.identifier, e.message, e.tip, e.can_be_ignored))
+            .collect();
+        actual.sort();
+        let wanted: Vec<_> = expected[mode].as_array().unwrap().iter()
+            .filter(|e| selected(e[2].as_str().unwrap())).cloned().collect();
+        let actual = serde_json::to_value(actual).unwrap();
+        if actual != serde_json::to_value(&wanted).unwrap() {
+            let actual = actual.as_array().unwrap();
+            let missing: Vec<_> = wanted.iter().filter(|e| !actual.contains(e)).collect();
+            let extra: Vec<_> = actual.iter().filter(|e| !wanted.contains(e)).collect();
+            failures.push(format!("{mode}: {}/{} exact\nmissing {missing:?}\nextra {extra:?}", wanted.len() - missing.len(), wanted.len()));
+        }
+    }
+    assert!(failures.is_empty(), "{}", failures.join("\n"));
+}
+
+#[test]
 fn variable_contexts_and_configuration_match_phpstan() {
     let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures");
     let expected: Value =

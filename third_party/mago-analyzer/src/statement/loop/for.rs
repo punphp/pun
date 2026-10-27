@@ -32,6 +32,7 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for For<'arena> {
             self.body.statements(),
             self.span(),
             infinite_loop,
+            true,
         )
     }
 }

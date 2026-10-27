@@ -809,6 +809,7 @@ fn copied_key(c: &Checker, at: Span) -> Option<Type> {
         &names,
         c.codebase,
         c.php_version,
+        c.pollute_scope_with_loop_initial_assignments,
         vec![expression.span()],
         Vec::new(),
     )

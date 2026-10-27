@@ -152,10 +152,12 @@ fn analyze_for_or_while_loop<'ctx, 'ast, 'arena, A>(
     statements: &'ast [Statement<'arena>],
     span: Span,
     infinite_loop: bool,
+    is_for: bool,
 ) -> Result<(), AnalysisError>
 where
     A: Arena,
 {
+    let before_loop = block_context.variable_scope();
     let pre_assigned_var_ids = block_context.assigned_variable_ids.clone();
     block_context.assigned_variable_ids.clear();
     for initialization_expression in initializations {
@@ -171,6 +173,7 @@ where
     loop_block_context.loop_bounds = span.to_offset_tuple();
 
     let mut loop_scope = LoopScope::new(span, block_context.locals.clone(), None);
+    loop_scope.entry_scope = Some(block_context.variable_scope());
     loop_scope.variables_possibly_in_scope =
         if infinite_loop { block_context.variables_possibly_in_scope.clone() } else { WordSet::default() };
 
@@ -190,6 +193,22 @@ where
     loop_block_context.loop_bounds = previous_loop_bounds;
 
     let always_enters_loop = infinite_loop || loop_scope.truthy_pre_conditions;
+    let condition_always_false = loop_scope.condition_always_false;
+    let entry_scope = loop_scope.entry_scope.clone().expect("for/while entry scope");
+    let first_falsey_scope = loop_scope.first_falsey_scope.clone();
+    let dead_back_edge = loop_scope.back_edge_dead;
+    let has_break = loop_scope.break_locals.is_some();
+    let mut exit_scopes = Vec::new();
+    if !dead_back_edge {
+        let exit = inner_loop_block_context.variable_scope();
+        exit_scopes.push(if is_for {
+            loop_scope.pre_update_scope.as_ref().expect("for body exit scope").generalize_with(&exit, context.codebase)
+        } else {
+            exit
+        });
+    }
+    let break_scopes = loop_scope.break_scopes.clone();
+    exit_scopes.extend(break_scopes.iter().cloned());
 
     if loop_scope.condition_always_false {
         for condition in conditions {
@@ -229,6 +248,55 @@ where
         }
     }
 
+    // ForHandler joins the whole pre-loop scope, not just initializer targets. WhileHandler
+    // joins it only on a possible zero-iteration edge. Keep the engine's existing back-edge
+    // and outward-exit routing; entry snapshots contain the actual expression side effects.
+    let pollute = context.settings.pollute_scope_with_loop_initial_assignments;
+    if is_for {
+        let entry = if pollute { entry_scope } else { before_loop };
+        if condition_always_false || (dead_back_edge && !has_break) {
+            block_context.merge_variable_scope_types(&[entry], context.codebase);
+        } else if !always_enters_loop {
+            exit_scopes.push(entry);
+            block_context.merge_variable_scope_types(&exit_scopes, context.codebase);
+        } else if !pollute {
+            let final_scope = block_context.variable_scope();
+            block_context.merge_variable_scope_types(&[final_scope, entry], context.codebase);
+        }
+    } else if !always_enters_loop {
+        let mut branches = exit_scopes;
+        branches.extend(first_falsey_scope);
+        if !pollute {
+            branches.push(before_loop);
+        }
+        block_context.merge_variable_scope_types(&branches, context.codebase);
+    }
+
+    // A guaranteed first iteration with no local exit cannot fall through here. In particular,
+    // break/continue targeting an outer loop must not execute this loop's caller's update edge.
+    if always_enters_loop && dead_back_edge && !has_break {
+        block_context.flags.set_has_returned(true);
+    }
+
+    Ok(())
+}
+
+/// PHPStan visits even dead update expressions for diagnostics, without publishing their writes.
+fn analyze_post_expressions<'ctx, 'ast, 'arena, A>(
+    context: &mut Context<'ctx, 'arena, A>,
+    block_context: &mut BlockContext<'ctx>,
+    artifacts: &mut AnalysisArtifacts,
+    expressions: &[&'ast Expression<'arena>],
+    back_edge_dead: bool,
+) -> Result<(), AnalysisError>
+where
+    A: Arena,
+{
+    let mut detached = back_edge_dead.then(|| block_context.clone());
+    let update_context = detached.as_mut().unwrap_or(block_context);
+    for expression in expressions {
+        expression.analyze(context, update_context, artifacts)?;
+    }
     Ok(())
 }
 
@@ -426,6 +494,7 @@ where
                 artifacts,
                 is_do,
                 !pre_conditions_applied,
+                condition_offset + 1 == pre_conditions.len(),
             )?;
         }
 
@@ -447,12 +516,10 @@ where
             artifacts.take_loop_scope_unchecked()
         };
 
-        update_loop_scope_contexts(&loop_scope, loop_context, &mut continue_context, loop_parent_context, context);
+        update_loop_scope_contexts(&mut loop_scope, loop_context, &mut continue_context, loop_parent_context, context);
 
         loop_context.flags.set_inside_loop_expressions(true);
-        for post_expression in post_expressions {
-            post_expression.analyze(context, loop_context, artifacts)?;
-        }
+        analyze_post_expressions(context, &mut continue_context, artifacts, &post_expressions, loop_scope.back_edge_dead)?;
         loop_context.flags.set_inside_loop_expressions(true);
     } else {
         let original_parent_context = loop_parent_context.clone();
@@ -476,6 +543,7 @@ where
                         artifacts,
                         is_do,
                         !pre_conditions_applied,
+                        condition_offset + 1 == pre_conditions.len(),
                     )?;
                 }
 
@@ -499,7 +567,7 @@ where
             };
 
             update_loop_scope_contexts(
-                &loop_scope,
+                &mut loop_scope,
                 loop_context,
                 &mut continue_context,
                 &original_parent_context,
@@ -523,6 +591,7 @@ where
                         artifacts,
                         is_do,
                         !pre_conditions_applied,
+                        condition_offset + 1 == pre_conditions.len(),
                     )?);
                 }
 
@@ -530,9 +599,7 @@ where
             }
 
             continue_context.flags.set_inside_loop_expressions(true);
-            for post_expression in &post_expressions {
-                post_expression.analyze(context, &mut continue_context, artifacts)?;
-            }
+            analyze_post_expressions(context, &mut continue_context, artifacts, &post_expressions, loop_scope.back_edge_dead)?;
 
             continue_context.flags.set_inside_loop_expressions(false);
 
@@ -622,7 +689,7 @@ where
         ) && convergence::supports_nodes(statements, pre_conditions, &post_expressions);
         let mut previous_input: Option<Box<convergence::Snapshot<'ctx>>> = None;
         let mut converged_passes = 0;
-        while i <= assignment_depth {
+        while i <= assignment_depth && !(loop_scope.entry_scope.is_some() && loop_scope.back_edge_dead) {
             let previous_output = previous_input
                 .as_ref()
                 .filter(|previous| previous.outputs_match(artifacts, recorded_issues.is_empty()))
@@ -743,9 +810,7 @@ where
                     artifacts.finish_expression_type_checkpoint(CheckpointAction::Keep);
                 }
                 continue_context.flags.set_inside_loop_expressions(true);
-                for post_expression in &post_expressions {
-                    post_expression.analyze(context, &mut continue_context, artifacts)?;
-                }
+                analyze_post_expressions(context, &mut continue_context, artifacts, &post_expressions, loop_scope.back_edge_dead)?;
                 continue_context.flags.set_inside_loop_expressions(false);
 
                 break;
@@ -824,6 +889,7 @@ where
                         artifacts,
                         is_do,
                         !pre_conditions_applied,
+                        condition_offset + 1 == pre_conditions.len(),
                     );
 
                     if is_do {
@@ -857,9 +923,10 @@ where
 
                 clean_nodes(statements, artifacts);
 
-                let loop_scope = {
+                let mut loop_scope = {
                     // PHPStan's final pass publishes its own exit points, not speculative earlier passes.
                     loop_scope.break_locals = None;
+                    loop_scope.break_scopes.clear();
                     loop_scope.continue_locals = None;
                     artifacts.set_loop_scope(loop_scope);
                     analyze_statements(statements, context, &mut continue_context, artifacts)?;
@@ -871,7 +938,7 @@ where
                 };
 
                 update_loop_scope_contexts(
-                    &loop_scope,
+                    &mut loop_scope,
                     loop_context,
                     &mut continue_context,
                     &original_parent_context,
@@ -895,6 +962,7 @@ where
                             artifacts,
                             is_do,
                             !pre_conditions_applied,
+                            condition_offset + 1 == pre_conditions.len(),
                         )?;
                     }
 
@@ -902,9 +970,7 @@ where
                 }
 
                 continue_context.flags.set_inside_loop_expressions(true);
-                for post_expression in &post_expressions {
-                    post_expression.analyze(context, &mut continue_context, artifacts)?;
-                }
+                analyze_post_expressions(context, &mut continue_context, artifacts, &post_expressions, loop_scope.back_edge_dead)?;
                 continue_context.flags.set_inside_loop_expressions(false);
 
                 Ok(loop_scope)
@@ -1353,6 +1419,7 @@ fn apply_pre_condition_to_loop_context<'ctx, 'arena, A>(
     artifacts: &mut AnalysisArtifacts,
     is_do: bool,
     first_application: bool,
+    controls_loop: bool,
 ) -> Result<WordSet, AnalysisError>
 where
     A: Arena,
@@ -1368,7 +1435,20 @@ where
     loop_context.flags.set_inside_loop_expressions(false);
     loop_context.flags.set_inside_conditional(false);
 
-    if first_application {
+    if first_application && (controls_loop || is_do) {
+        if artifacts.get_loop_scope_mut().is_some_and(|scope| scope.entry_scope.is_some()) {
+            let entry_scope = loop_context.variable_scope();
+            let mut falsey = loop_context.clone();
+            let negated = negate_formula(pre_condition_clauses.to_vec(), &context.settings.algebra_thresholds())
+                .unwrap_or_default();
+            let (types, _) = find_satisfying_assignments(&negated, None, &mut WordSet::default());
+            reconcile_keyed_types(context, &types, AssertionMap::default(), &mut falsey,
+                &mut WordSet::default(), &WordSet::default(), &pre_condition_span, true, false);
+            crate::utils::conditional::apply_boolean_branch(pre_condition, false, artifacts, &mut falsey);
+            let scope = artifacts.get_loop_scope_mut().expect("loop scope during condition analysis");
+            scope.entry_scope = Some(entry_scope);
+            scope.first_falsey_scope = Some(falsey.variable_scope());
+        }
         let condition_type = artifacts.get_expression_type(pre_condition);
         let is_always_falsy = condition_type.is_some_and(|ct| ct.is_always_falsy());
         let is_always_truthy = condition_type.is_some_and(|ct| ct.is_always_truthy());
@@ -1439,7 +1519,7 @@ where
 }
 
 fn update_loop_scope_contexts<'ctx, A>(
-    loop_scope: &LoopScope,
+    loop_scope: &mut LoopScope,
     loop_context: &mut BlockContext<'ctx>,
     continue_context: &mut BlockContext<'ctx>,
     pre_outer_context: &BlockContext<'ctx>,
@@ -1447,6 +1527,7 @@ fn update_loop_scope_contexts<'ctx, A>(
 ) where
     A: Arena,
 {
+    loop_scope.back_edge_dead = continue_context.flags.has_returned() && loop_scope.continue_locals.is_none();
     if loop_scope.final_actions.contains(ControlAction::Continue) {
         let mut back_edge = loop_scope.continue_locals.clone();
         if !continue_context.flags.has_returned() {
@@ -1465,6 +1546,9 @@ fn update_loop_scope_contexts<'ctx, A>(
         {
             continue_context.locals.insert(*variable_id, Rc::clone(pre_type));
         }
+    }
+    if let Some(entry) = &loop_scope.entry_scope {
+        loop_scope.pre_update_scope = Some(continue_context.variable_scope().loop_exit_scope(entry));
     }
 }
 

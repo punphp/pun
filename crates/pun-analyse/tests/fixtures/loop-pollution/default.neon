@@ -1,0 +1,8 @@
+parameters:
+    level: 0
+    phpVersion: 80500
+    checkMaybeUndefinedVariables: true
+    paths:
+        - matrix.php
+        - ../rules/data/Variables/data/loop-initial-assignments.php
+        - ../rules/data/Variables/data/bug-11545.php
