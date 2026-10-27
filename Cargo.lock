@@ -1517,8 +1517,8 @@ dependencies = [
  "punphp-fixers",
  "punphp-format",
  "punphp-problem",
- "regex",
  "punphp-tokens",
+ "regex",
  "serde_json",
 ]
 
