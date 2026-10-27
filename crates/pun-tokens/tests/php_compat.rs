@@ -1,4 +1,4 @@
-//! `php_compat` against the real PHP functions: PHP's output is the expectation.
+//! `php_compat` against real PHP functions and pinned upstream PCRE fixtures.
 
 mod common;
 
@@ -308,6 +308,28 @@ fn preg_compile_matches_php() {
         ("/(?<n>a)|(?<n>b)/J", "b"),
         ("/(a)/n", "a"),
         ("/a/SXr", "a"),
+        ("/a/SX", "a"),
+        ("/a/r", "a"),
+        ("/a/rr", "a"),
+        ("/a(/r", "a"),
+        ("/a(/rZ", "a"),
+        ("/a(/Zr", "a"),
+        ("/^k$/iu", "K"),
+        ("/^k$/iur", "K"),
+        ("/^\\x{212A}$/iur", "k"),
+        ("/^s$/iur", "ſ"),
+        ("/^\\x{017F}$/iur", "s"),
+        ("/^[^k]$/iur", "K"),
+        ("/^k$/iur", "K"),
+        ("/^é$/iur", "É"),
+        ("/(*UTF)(?i)^k$/r", "K"),
+        ("/^(?-r:k)$/iur", "K"),
+        ("/k(?^i)k/iur", "KK"),
+        ("/k(?^i)k/iur", "KK"),
+        ("/(?r)a/", "a"),
+        ("/s(?r)s(?-r)s(?r:s)s/iu", "ſSſSſ"),
+        ("/(*UTF)a(/r", "a"),
+        ("/(*FOO)a/r", "a"),
         ("  \n/a/ \n\r", "a"),
         ("(a(b)c)", "abc"),
         ("[a]i", "A"),
@@ -357,6 +379,113 @@ fn preg_compile_matches_php() {
     }
     // PHP accepts `D` (PCRE2_DOLLAR_ENDONLY); the pcre2 crate can't set it, so only the parse is checked.
     assert!(preg_parse(b"/a$/D").unwrap().1.dollar_end_only);
+}
+
+#[test]
+fn preg_caseless_restrict_matches_upstream() {
+    // Probe raw PCRE independently of preg_parse/preg_compile: PHP and Rust can link different engines.
+    let supports_r = pcre2::bytes::Regex::new("(?r)").is_ok();
+    // PHP php-8.5.12 at 136e049ac10b032c83018e65b63b6df858943750:
+    // ext/pcre/tests/preg_match_caseless_restrict.phpt, including its EXPECT values.
+    // Exact matched substrings: PCRE2 10.43 at 3864abdb713f78831dd12d898ab31bbb0fa630b6,
+    // testdata/testoutput5:5042-5107 and 5210-5215.
+    let cases = [
+        ("/AskZ/iur", "AskZ", Some("AskZ")),
+        ("/AskZ/iur", "aSKz", Some("aSKz")),
+        ("/AskZ/iur", "AſkZ", None),
+        ("/AskZ/iur", "AsKZ", None),
+        ("/k/iur", "K", None),
+        ("/A\\x{17f}\\x{212a}Z/iur", "AskZ", None),
+        ("/[AskZ]+/iur", "AſkZ", Some("A")),
+        ("/[AskZ]+/iur", "AsKZ", Some("As")),
+        ("/[\\x{17f}\\x{212a}]+/iur", "AskZ", None),
+        ("/[^s]+/iur", "AſZ", Some("AſZ")),
+        ("/k(?^i)k/iur", "KK", Some("KK")),
+        ("/k(?^i)k/iur", "KK", None),
+        // Anchored, inline and ordinary-case controls follow the same ASCII/non-ASCII boundary contract:
+        // PCRE2 10.43, doc/pcre2api.3:2005-2014; (?r) does not enable caseless matching itself.
+        ("/^k$/iur", "K", None),
+        ("/^\\x{212A}$/iur", "k", None),
+        ("/^s$/iur", "ſ", None),
+        ("/^\\x{017F}$/iur", "s", None),
+        ("/^[^k]$/iur", "K", Some("K")),
+        ("/^k$/iur", "K", Some("K")),
+        ("/^é$/iur", "É", Some("É")),
+        ("/^k$/ur", "K", None),
+        ("/a/SXr", "a", Some("a")),
+        ("/a/rr", "a", Some("a")),
+        ("/(*UTF)(?i)^k$/r", "K", None),
+        ("/(*UTF)(?i)^k$/r", "K", Some("K")),
+        ("/(*UTF)(?i)k/rA", "aK", None),
+        ("/(*UTF)(?i)k/rA", "K", Some("K")),
+        ("/(*UTF)(?i)k/rA", "K", None),
+        ("/^(?-r:k)$/iur", "K", Some("K")),
+    ];
+    for (pattern, subject, want) in cases {
+        if supports_r {
+            assert!(preg_parse(pattern.as_bytes()).unwrap().1.caseless_restrict);
+            let re = preg_compile(pattern).unwrap();
+            let got = re.find(subject.as_bytes()).unwrap();
+            assert_eq!(
+                got.map(|m| m.as_bytes()),
+                want.map(str::as_bytes),
+                "{pattern}: {subject}"
+            );
+        } else {
+            assert_eq!(
+                preg_parse(pattern.as_bytes()).unwrap_err(),
+                "Unknown modifier 'r'",
+                "{pattern}"
+            );
+            assert_eq!(
+                preg_compile(pattern).unwrap_err(),
+                "Unknown modifier 'r'",
+                "{pattern}"
+            );
+        }
+    }
+    // The PHP fixture's inline enable/disable/scoped controls: lines 55-57 and EXPECT lines 102-104.
+    for (subject, want) in [("ſSſSſ", Some("ſSſSſ")), ("ſſſSſ", None), ("ſSſſſ", None)]
+    {
+        let re = preg_compile("/s(?r)s(?-r)s(?r:s)s/iu");
+        if supports_r {
+            let re = re.unwrap();
+            assert_eq!(
+                re.find(subject.as_bytes()).unwrap().map(|m| m.as_bytes()),
+                want.map(str::as_bytes)
+            );
+        } else {
+            // PHP 8.5.12 / PCRE2 10.42: the unknown inline option is a compile error, not a modifier error.
+            assert_eq!(
+                re.unwrap_err(),
+                "Compilation failed: unrecognized character after (? or (?- at offset 3"
+            );
+        }
+    }
+    // PHP 8.5.12 / PCRE2 10.42 supplied these body errors without `r`; adding a supported `r` preserves them.
+    for (pattern, error) in [
+        (
+            "/a(/r",
+            "Compilation failed: missing closing parenthesis at offset 2",
+        ),
+        (
+            "/(*UTF)a(/r",
+            "Compilation failed: missing closing parenthesis at offset 8",
+        ),
+        (
+            "/(*FOO)a/r",
+            "Compilation failed: (*VERB) not recognized or malformed at offset 5",
+        ),
+        ("/a(/rZ", "Unknown modifier 'Z'"),
+    ] {
+        let want = if supports_r {
+            error
+        } else {
+            "Unknown modifier 'r'"
+        };
+        assert_eq!(preg_compile(pattern).unwrap_err(), want, "{pattern}");
+    }
+    assert_eq!(preg_compile("/a(/Zr").unwrap_err(), "Unknown modifier 'Z'");
 }
 
 /// INF, -INF and NAN, which JSON cannot carry to PHP: `(string) INF` etc. on PHP 8.5.

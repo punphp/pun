@@ -334,6 +334,8 @@ pub struct PregModifiers {
     pub dup_names: bool,
     /// `n`
     pub no_auto_capture: bool,
+    /// `r` (PCRE2 10.43+)
+    pub caseless_restrict: bool,
 }
 
 /// `pcre_get_compiled_regex_cache` up to the compile: the pattern's body between its delimiters (a bracket pair
@@ -377,6 +379,9 @@ pub fn preg_parse(pattern: &[u8]) -> Result<(&[u8], PregModifiers), String> {
             format!("No ending matching delimiter '{end}' found")
         });
     }
+    // PHP accepts `r` only with PCRE2_EXTRA_CASELESS_RESTRICT. Probe the linked engine:
+    // pcre2::version() returns generated binding constants, not the system library's version.
+    static SUPPORTS_R: std::sync::OnceLock<bool> = std::sync::OnceLock::new();
     let mut m = PregModifiers::default();
     for &c in &pattern[p + 1..] {
         match c {
@@ -390,8 +395,11 @@ pub fn preg_parse(pattern: &[u8]) -> Result<(&[u8], PregModifiers), String> {
             b'u' => m.utf = true,
             b'J' => m.dup_names = true,
             b'n' => m.no_auto_capture = true,
-            // `S` and `X` are no-ops since PCRE2; `r` (PCRE2_EXTRA_CASELESS_RESTRICT) has no PCRE2 crate option.
-            b'S' | b'X' | b'r' | b' ' | b'\n' | b'\r' => {}
+            b'r' if *SUPPORTS_R.get_or_init(|| pcre2::bytes::Regex::new("(?r)").is_ok()) => {
+                m.caseless_restrict = true;
+            }
+            // `S` and `X` are no-ops since PCRE2.
+            b'S' | b'X' | b' ' | b'\n' | b'\r' => {}
             0 => return Err("NUL byte is not a valid modifier".into()),
             c => {
                 let c = String::from_utf8_lossy(&[c]).into_owned();
@@ -421,6 +429,7 @@ pub fn preg_compile(pattern: &str) -> Result<pcre2::bytes::Regex, String> {
         (m.ungreedy, "(?U)"),
         (m.dup_names, "(?J)"),
         (m.no_auto_capture, "(?n)"),
+        (m.caseless_restrict, "(?r)"),
     ]
     .iter()
     .filter(|f| f.0)
