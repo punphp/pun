@@ -105,6 +105,10 @@ Analysis preserves PHP's overflowing-octal-prefix float classification. Lint and
 Invalid files contribute no scanned symbols; command output contains only the severe parser errors.
 General PHP syntax-error translation remains incomplete.
 
+Integer literals above the signed 64-bit maximum become floats using their original magnitude.
+Decimal and radix literals preserve PHP's distinct rounding behavior, including values larger than `u128`.
+Their source bytes and spans remain unchanged.
+
 Assignment checks allow references on individual destructuring targets and nested `array(...)` targets inside short-array destructuring.
 Arrays nested directly inside an explicit `list()` remain literal expressions, not destructuring targets.
 Their keys and values are read after the right-hand side and preceding targets, including reference-item values.

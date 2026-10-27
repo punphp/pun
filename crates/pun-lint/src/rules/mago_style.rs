@@ -286,12 +286,21 @@ impl Rule for RequireSortedIntegerKeys {
             let ArrayElement::KeyValue(kv) = element else {
                 return;
             };
-            let Expression::Literal(Literal::Integer(LiteralInteger { value: Some(v), .. })) =
-                kv.key
-            else {
+            let key = match kv.key {
+                Expression::Literal(Literal::Integer(i)) => i.value,
+                // Mago orders lexer integer values, even when PHP lowers the token to a float.
+                Expression::Literal(Literal::Float(f))
+                    if matches!(f.raw, [b'0', b'x' | b'X' | b'b' | b'B' | b'o' | b'O', ..])
+                        || f.raw.iter().all(|b| b.is_ascii_digit() || *b == b'_') =>
+                {
+                    mago_syntax_core::utils::parse_literal_integer(f.raw)
+                }
+                _ => None,
+            };
+            let Some(key) = key else {
                 return;
             };
-            keys.push(*v);
+            keys.push(key);
         }
         if keys.windows(2).all(|w| w[0] <= w[1]) {
             return;

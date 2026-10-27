@@ -111,6 +111,68 @@ fn full_arithmetic_and_constant_resolution_match_phpstan() {
     );
 }
 
+#[test]
+fn wide_integer_literals_and_copies_match_phpstan() {
+    let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/duplicate-array-keys");
+    let oracle: Value =
+        serde_json::from_slice(&std::fs::read(root.join("expected-wide-integers.json")).unwrap())
+            .unwrap();
+    let mut project = Project::new(vec![root.join("wide-integers.php")], Vec::new());
+    project.php_version = 80400;
+    check(project, &oracle["errors"]);
+}
+
+#[test]
+fn wide_integer_cst_preserves_php_parser_values_bytes_and_spans() {
+    use mago_allocator::LocalArena;
+    use mago_database::file::File;
+    use mago_span::HasSpan;
+    use mago_syntax::cst::{Expression, Literal};
+    use mago_syntax::parser::parse_file;
+    use mago_syntax::walker::MutWalker;
+    use serde_json::json;
+
+    struct Literals(Vec<Value>);
+    impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Literals {
+        fn walk_in_expression(&mut self, expr: &'ast Expression<'arena>, _: &mut ()) {
+            let Expression::Literal(literal) = expr else {
+                return;
+            };
+            let (kind, raw, value) = match literal {
+                Literal::Integer(i) => ("Scalar_Int", i.raw, i.value.unwrap().to_string()),
+                Literal::Float(f) => (
+                    "Scalar_Float",
+                    f.raw,
+                    format!("{:016x}", f.value.0.to_bits()),
+                ),
+                _ => return,
+            };
+            self.0.push(json!({
+                "kind": kind,
+                "raw": std::str::from_utf8(raw).unwrap(),
+                "value": value,
+                "start": literal.span().start.offset,
+                "end": literal.span().end.offset,
+            }));
+        }
+    }
+    let source = include_bytes!("fixtures/duplicate-array-keys/wide-integers.php");
+    let oracle: Value = serde_json::from_str(include_str!(
+        "fixtures/duplicate-array-keys/expected-wide-integers.json"
+    ))
+    .unwrap();
+    let file = File::ephemeral(
+        b"wide-integers.php".as_slice().into(),
+        source.as_slice().into(),
+    );
+    let arena = LocalArena::new();
+    let program = parse_file(&arena, &file);
+    assert!(!program.has_errors());
+    let mut literals = Literals(Vec::new());
+    literals.walk_program(program, &mut ());
+    assert_eq!(json!(literals.0), oracle["literals"]);
+}
+
 fn unpacking(config: &str, php_version: u32, bleeding_edge: bool) {
     let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/duplicate-array-keys");
     let expected: Value = serde_json::from_slice(

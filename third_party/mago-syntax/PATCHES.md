@@ -46,3 +46,33 @@ The public parser tests cover reduction order, target versions, fatal escapes, d
 name-resolution suppression and whole-file scan rejection. `pun-lint/tests/numeric_admission.rs` checks
 native token classes, prefix values, source fidelity and strict consumers. General grammar recovery
 remains outside this patch.
+
+## Overflowing integer literal values
+
+`parser::internal::literal` lowers valid integer tokens above signed `INT_MAX` to `Literal::Float`.
+It reads the original magnitude instead of converting the clamped `parse_literal_integer()` result.
+Tokens, raw bytes, and spans remain unchanged. The positive operand of `-9223372036854775808` remains
+a float, as in PHPParser. The earlier malformed-legacy-octal path keeps its separate prefix conversion.
+
+The reference is PHPParser 5.9.0's
+[`Float_::parse()`](https://github.com/nikic/PHP-Parser/blob/9e33da9553fe7786f0962b35f4e4ecf01be89def/lib/PhpParser/Node/Scalar/Float_.php#L45-L72),
+used by PHPStan 2.3.1 at `cb3b7e99489b2e3789ee2eec10501cb7a72580ea`. Decimal literals use
+`parse_literal_float()`. Binary, octal, and hexadecimal literals follow PHP 8.5.12's
+[`_php_math_basetozval()`](https://github.com/php/php-src/blob/136e049ac10b032c83018e65b63b6df858943750/ext/standard/math.c#L797-L878):
+accumulate integers through `INT_MAX`, then continue in floating point. The pinned syntax-core
+`parse_literal_integer_as_float()` is not equivalent: it rounds radix literals after `u128`
+accumulation and returns infinity on `u128` overflow. PHP can retain finite values beyond that limit.
+For example, decimal `18446744073709553665` and hexadecimal `0x10000000000000801` produce different
+floats in PHP, so a single integer-to-float conversion cannot replace radix accumulation.
+
+`pun-analyse/tests/fixtures/duplicate-array-keys/capture-wide-integers.php` captures the complete public
+level-0 analyser output and PHPParser literal kinds, float bits, raw bytes, and spans. The public
+`duplicate_array_keys` tests check direct and copied keys, global and class initializers, rounding,
+negative values, separators, finite values above `u128`, and infinity. Run them with
+`cargo test -p punphp-analyse --test duplicate_array_keys`. The existing analyser parser tests and
+lint numeric-admission tests retain their original expectations.
+
+Mago's `sorted-integer-keys` rule still orders lexical integer tokens using its pinned `u64` values.
+Its Pun port recovers that value from the preserved raw bytes, excluding decimal-point and exponent
+spellings. Fresh Mago 1.57.0 captures in `pun-lint/tests/mago/style-require-sorted-integer-keys/Own/wide.*`
+cover all radices, separators, clamping and ordinary-float negative controls. Existing captures are unchanged.

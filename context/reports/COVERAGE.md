@@ -6,14 +6,16 @@ The two supported-only `r` modifier lines need the newer engine. Its expectation
 PHP and PCRE2 fixtures, not the orb's PHP 8.5.12 oracle, which links 10.42.
 Combine exports only when their token sources are byte-identical.
 
-The latest integration batch passes all 393 bounded jobs: 1,315 rule cases, 2,787 level cases,
-549 analyser public/library tests, 431 lint tests and all 78 owning PHPStan tests.
-All 874 changed executable source lines are covered without new exclusions. All 51 affected CLI tests pass.
-The coordinator reached its 30-minute limit after 340 passing jobs. The remaining 53 pass after resuming
-against the same source hashes and executables; the original timeout and interrupted logs are retained.
-The export combines 399 fresh profiles from 130 executables with earlier records only for byte-identical
-tracked sources. Source hashes are unchanged across the complete gate. Existing exclusions retain their
-reasons; three offsets move with the inference, object conversion and PHPDoc resolution changes.
+The overflowing-integer batch executes all 393 bounded jobs: 1,315 rule cases, 2,787 level cases,
+551 analyser public/library tests, 431 lint tests and all 78 owning PHPStan tests.
+The initial gate finds one sorted-integer-keys regression. After preserving that rule's lexical integer
+contract, its complete 34-test target passes in native and instrumented builds, including fresh Mago
+radix, clamping and ordinary-float controls. The other 392 passing partitions retain their frozen sources.
+All 50 changed executable lines are covered without new exclusions: 41 parser lines and nine lint lines.
+All 51 affected CLI tests pass. Coordinator timeouts retain successful partitions and original logs.
+The export combines 803 profiles from 130 executables with earlier records only for byte-identical
+tracked sources. The full gate's source hashes are unchanged; the bounded lint follow-up records the only
+subsequent production change. Existing exclusions and their reasons are unchanged.
 
 LLVM reports 18 zero-hash mapping warnings for unchanged, always-inline `BlockContextFlags` methods
 in Mago. Every method has a matching nonzero-hash profile record with positive executions.
@@ -29,7 +31,7 @@ The warnings do not name a changed production function. Normal LCOV export succe
 | punphp-fixers | 39232 | 39232 | 100.00% | ok |
 | punphp-format | 1022 | 1022 | 100.00% | ok |
 | punphp-harness | 235 | 235 | 100.00% | ok |
-| punphp-lint | 39270 | 39270 | 100.00% | ok |
+| punphp-lint | 39271 | 39271 | 100.00% | ok |
 | punphp-phpstan | 10557 | 10557 | 100.00% | ok |
 | punphp-problem | 105 | 105 | 100.00% | ok |
 | punphp-tokens | 3956 | 3956 | 100.00% | ok |

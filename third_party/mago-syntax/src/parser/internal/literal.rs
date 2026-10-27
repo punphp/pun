@@ -53,11 +53,22 @@ where
                 // ever drifts.
                 value: OrderedFloat(parse_literal_float(token.value).unwrap_or(0.0)),
             }),
-            T![LiteralInteger] => Literal::Integer(LiteralInteger {
-                span: token.span_for(self.stream.file_id()),
-                raw: token.value,
-                value: parse_literal_integer(token.value),
-            }),
+            T![LiteralInteger] => {
+                let value = parse_literal_integer(token.value);
+                if value.is_some_and(|value| value > i64::MAX as u64) {
+                    Literal::Float(LiteralFloat {
+                        span: token.span_for(self.stream.file_id()),
+                        raw: token.value,
+                        value: OrderedFloat(overflowing_integer(token.value)),
+                    })
+                } else {
+                    Literal::Integer(LiteralInteger {
+                        span: token.span_for(self.stream.file_id()),
+                        raw: token.value,
+                        value,
+                    })
+                }
+            }
             T!["true"] => Literal::True(Keyword { span: token.span_for(self.stream.file_id()), value: token.value }),
             T!["false"] => Literal::False(Keyword { span: token.span_for(self.stream.file_id()), value: token.value }),
             T!["null"] => Literal::Null(Keyword { span: token.span_for(self.stream.file_id()), value: token.value }),
@@ -94,4 +105,39 @@ where
             }
         })
     }
+}
+
+/// PHPParser Float_::parse: decimal conversion, or PHP's _php_math_basetozval for radix literals.
+/// Called only for lexer-validated integers above INT_MAX; keep the source magnitude, not a clamped u64.
+fn overflowing_integer(bytes: &[u8]) -> f64 {
+    let (base, start) = match bytes {
+        [b'0', b'x' | b'X', ..] => (16_u64, 2),
+        [b'0', b'b' | b'B', ..] => (2, 2),
+        [b'0', b'o' | b'O', ..] => (8, 2),
+        [b'0', ..] => (8, 1),
+        _ => return parse_literal_float(bytes).expect("valid decimal integer token"),
+    };
+    let mut integer = 0_u64;
+    let mut float = 0.0;
+    let mut floating = false;
+    for &byte in &bytes[start..] {
+        if byte == b'_' {
+            continue;
+        }
+        let digit = u64::from(match byte {
+            b'0'..=b'9' => byte - b'0',
+            b'a'..=b'f' => byte - b'a' + 10,
+            _ => byte - b'A' + 10,
+        });
+        if !floating {
+            if integer <= (i64::MAX as u64 - digit) / base {
+                integer = integer * base + digit;
+                continue;
+            }
+            float = integer as f64;
+            floating = true;
+        }
+        float = float * base as f64 + digit as f64;
+    }
+    float
 }

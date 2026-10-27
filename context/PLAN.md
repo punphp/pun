@@ -4,34 +4,37 @@ The one file for where Pun stands: how this folder works, every decision, the bu
 open questions. Rewritten 2026-10-17 after walking through every command with Pushpak; it replaces README.md,
 DECISIONS.md, TASKS.md and REQUESTS.md (their history is in git). Finished work is not listed; `git log` has it.
 
-## 0. Resume here (2026-10-27)
+## 0. Resume here (2026-10-28)
 
 One lead agent works on `main` and spawns subagents for independent slices in worktrees (AGENTS.md "How work runs").
 Pushpak resumed all commands on 2026-10-25. CI stays disabled.
 
 - **Counts** (local mapping.toml `ported = true`): format 168 of 168, lint 514 of 703, analyse 299 of 385.
   Pending: format 0, lint 189, analyse 86 (275 total). Ported rules still have the explicit parity gaps below.
-- **Latest verified batch:** all 393 combined partitions pass: 1,315 rule cases, 2,787 level cases, 549
-  analyser public/library tests, 431 lint tests and all 78 owning PHPStan tests. Per-value object reflection,
-  foreach and standalone-block pollution, raw quoted PHPDoc bytes, normalized numeric shape keys, optional
-  list metadata and failed-offset coalescing pass together without changing upstream expectations.
-  Source-owned loop and foreach corrections resolve all three regressions found by the first combined run:
-  the lost loop-condition upper bound in `testBug11506`, an extra empty-array template alternative and
-  incorrect certainty after a terminating isset guard. Both 246-case Functions partitions pass.
-  Source-matched coverage is analyse 42,846/42,846, lint 39,270/39,270 and PHPStan 10,557/10,557 after
-  existing exclusions. All 874 changed executable lines are covered without new exclusions. Three verified
-  obsolete level markers are removed; 653 level gaps and 16 rule gaps remain, so this is not full parity.
-  All 51 analyse, lint, migrate and init CLI tests and all 20 Pint CLI comparisons pass. Pinkary formatting
-  matches all 799 files; its absent-dependency analyse errors are not analyse/check parity evidence.
-  Fresh byte, raw-comment, block, list and foreach-entry oracle captures are byte-identical.
-  The docs build passes on 1,446 pages, with all 18 rendered contract checks passing.
-  The coordinator reached 30 minutes after 340 passing partitions; the remaining 53 pass against the same
-  frozen sources and executables. Original interruption logs are retained. Normal coverage export succeeds;
-  all 18 zero-hash warnings name unchanged inline flag methods with positive matching profile records.
-- **Next isolated work:** shared real-edge joins still have eight strict rollout mismatches, including
-  missing post-join null-context specifications. The wide-integer literal correction is ready privately:
-  128 tests pass, including 45 diagnostic and 171 literal records, with 41/41 changed lines covered.
-  Last-declaration selection for duplicate class-like constants is assigned independently. CI stays disabled.
+- **Latest verified batch:** overflowing integer literals retain their PHP magnitude and radix-specific
+  rounding, including values beyond `u128`. Fresh PHPStan captures match all 45 diagnostics and 171 literal
+  kind/value/raw-byte/span records. All 393 combined partitions execute: 1,315 rule cases, 2,787 level cases,
+  551 analyser public/library tests, 431 lint tests and all 78 owning PHPStan tests. The first gate finds one
+  sorted-integer-keys regression; Mago's lexical integer contract is preserved, then all 34 affected tests
+  pass in native and instrumented builds with fresh radix, clamping and ordinary-float controls. The other
+  392 partitions pass before that bounded lint-only correction. Existing expectations and gaps are unchanged.
+  Source-matched coverage is analyse 42,846/42,846, lint 39,271/39,271 and PHPStan 10,557/10,557 after
+  existing exclusions. All 50 changed executable lines are covered without new exclusions. All 51 analyse,
+  lint, migrate and init CLI tests pass. The docs build passes on 1,446 pages, with all three new rendered
+  contract checks passing. Coordinator timeouts retain successful partitions against frozen source hashes;
+  original failures, interruptions and logs remain available. Normal coverage export succeeds, with the same
+  18 warnings for unchanged inline flag methods as the previous batch. There are still 653 level gaps and
+  16 rule gaps, so this is not full parity. The preceding format gate matches 20 Pint CLI comparisons and
+  all 799 Pinkary files; its absent-dependency analyse errors are not analyse/check parity evidence.
+- **Current isolated work:** shared joins and the source-owned non-plain empty-array combiner correction
+  match all 131 join, 86 null-context and 40 foreach records. Their private gates pass 125 analyser controls
+  and 79 PHPStan controls, with all 176 changed executable lines covered without exclusions.
+  Duplicate constant selection and its visibility consumer pass 49 private controls. Forced late-shape return
+  resolution matches the unchanged original fixture and fresh function/method captures. Trait-alias prototype
+  identity passes all 20 named-argument tests privately. These corrections await combined-main integration.
+  Reflected call-producer policy also passes 27 private controls and all four changed lines are covered.
+  Immediate-interface selection remains assigned. Named-argument activation still needs mixed-case alias
+  spelling, per-name filtered scopes and independent producer/configuration gates. CI stays disabled.
 - **Rule docs:** steps 1–5 built locally: all 1,256 rule pages, 67 command/group pages, 8 presets, 8 sets, six
   migration mappings and the URL-filtered directory. CLI links need the public docs origin; none is configured.
   The docs build passes on Linux (1,446 pages); public deployment has not been verified.
@@ -727,12 +730,18 @@ Gate passed ea7a84bc2d4c4f4b90ad177d911e6ade3accf253
 | Work | Status |
 | --- | --- |
 | analyse 3: finish level 0 and the level-2 class rules; the current rule counts are in §0. Not yet: DebugScopeRule, DumpNativeTypeRule and FileAssertRule | todo |
-| analyse level 0 named arguments: audit the complete MethodCallWithPossiblyRenamedNamedArgumentRule contract before activating its mapping | doing (analysed call/override collectors, provenance, cross-file joins and template-offset corrections pass all 393 combined partitions and source-matched coverage; whole-rule activation remains separate) |
+| analyse level 0 named arguments: complete MethodCallWithPossiblyRenamedNamedArgumentRule before activating its mapping | doing (fresh whole-rule audit identifies trait-alias prototype identity, immediate-interface selection, dynamic-name filtered scopes and independent producer/configuration gates; existing analysed collectors, provenance and joins pass the prior combined gate; mapping stays inactive) |
+| analyse named-argument trait aliases: preserve reflected prototype names, adapted visibility and reflected named-argument policy separately from stored trait functions | doing (private producer correction matches all 12 fresh diagnostics across four controls; all 20 named-argument tests and affected Methods/Traits gates pass; 15/15 changed executable lines covered; combined-main integration remains) |
+| analyse named-argument immediate interfaces: remove interfaces already supplied by parents or inherited interfaces before selecting prototypes | doing (independent source owner assigned after the trait-alias correction; repeated implements, transitive interfaces and asymmetric declaration order distinguish prototype selection) |
+| analyse named-argument call policy: use the existing reflected method-name PHPDoc policy when collecting calls, matching ordinary signature selection | doing (private correction matches all 11 fresh level-5 diagnostics and the empty level-4 control; 27 public controls pass and all 4/4 changed executable lines are covered; combined-main integration remains) |
+| analyse named-argument alias spelling: preserve written mixed-case alias names through shared reflection and both collector producers | todo |
+| analyse named-argument dynamic selectors: apply PHPStan's per-name truthy scope to receivers and unpacked arguments before collector binding | todo |
+| analyse named-argument independent gates: honor argument-type/reference checks and producer enablement instead of using only the aggregate level/identifier | todo |
 | analyse level 0 arrays: complete DuplicateKeysInLiteralArraysRule beyond the verified scalar/constant keys, sealed unpacking and byte-exact literal keys; identifier boundaries still use UTF-8 text | doing (shared quoted-key decoding, byte-based tokenization and comment ingestion pass the complete combined gate and coverage; identifier handling and whole-rule activation remain incomplete) |
-| analyse wide integer literals: preserve overflowing token magnitude through shared syntax lowering before key conversion and copied-value inference | doing (private correction matches 45 complete PHPStan diagnostics and 171 parser literal records; identical public tests fail before and pass after; 128 parser, analyser and lint controls pass, with 41/41 changed lines covered; combined-main integration remains) |
-| analyse duplicate class-like constant selection: retain the last immediate declaration's complete metadata without changing independent duplicate diagnostics or parent/trait precedence | doing (independent source owner assigned; fresh PHPStan reflection probes confirm last-declaration values and spans for classes and traits; public before/after verification remains) |
+| analyse duplicate class-like constant selection: retain the last immediate declaration's complete metadata without changing independent duplicate diagnostics or parent/trait precedence | doing (private scanner and selected-reflection visibility correction passes 49 controls; original, asymmetric and visibility/reuse captures match all 9/51/30 diagnostics; 6/6 changed consumer lines and scanner insertion covered without exclusions; combined-main integration remains) |
+| analyse forced late-shape return resolution: resolve LateArrayShape before return eligibility and description without erasing deferred types globally | doing (private correction passes the unchanged original fixture, both fresh 28-case function/method matrices and affected return/type controls; 1/1 changed executable lines covered; combined Methods verification and obsolete marker removal remain) |
 | analyse level 0 variables: port DefinedVariableRule and CompactVariablesRule on shared variable-certainty observations, including assign/undefined-allowed contexts, dynamic names and the CLI/maybe-undefined switches | doing (nested dynamic-name reads, stable array-offset filtering, literal string-byte offsets and scope-pollution settings pass the complete combined gate and coverage; general scope joins and compact's independent selector decision remain separate; no whole-rule activation) |
-| analyse shared scope joins: extend PHPStan's array-preserving holder unions and branch-only offset removal to every applicable join | doing (foreach gate repairs integrated separately; isolated rollout retains eight strict matrix mismatches, including OR/assert null-context specifications and bounded-template replacement; post-join specification plumbing is assigned with artifacts, invocation and expression-statement ownership; foreach projection and loop generalization stay separate; PHPStan uses one ScopeOps contract across genuine branch joins) |
+| analyse shared scope joins: extend PHPStan's array-preserving holder unions and branch-only offset removal to every applicable join | doing (private combiner prerequisite and rollout match all 131 join, 86 null-context and 40 foreach records; all 125 analyser and 79 PHPStan controls pass, with 176/176 changed executable lines covered without exclusions; combined-main integration remains) |
 | analyse level 0 unset: port UnsetRule's readonly and hooked-property checks, recursive offset checks and definitely-undefined local checks through shared reflection, types and certainty | doing (27 integrated public tests and ten exported cases pass; required-interface native reflection and annotation writable types are integrated; fresh captures cover the bounded reflection contracts; complete rule activation and combined coverage remain) |
 | analyse level 0 attributes: complete the twelve existing attribute-rule contracts against AttributesCheck, including constructor types and version/named-argument controls, before activating their mappings | doing (explicit aliases, parenthesized flags and shared trait-constructor reflection integrated; isolated reflection controls match 9/41/45 oracle diagnostics at levels 0/5/6; conditional/coalesce initializer inference remains isolated; combined gates running; mapping stays unported) |
 | analyse shared class names: carry imported-name and internal-class case options through the shared ClassCaseSensitivityCheck, preserving explicit aliases and written-name distinctions | doing (isolated source port against fresh PHPStan controls; qualified special-name parser validation and source-only class_alias provenance remain separate attribute boundaries) |
