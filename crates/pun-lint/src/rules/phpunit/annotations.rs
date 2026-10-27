@@ -119,40 +119,88 @@ impl<'s> Annotated<'s> {
     }
 }
 
-/// php-parser's `Comment::getReformattedText()` for a doc comment, as far as Pun follows it: one line as it is;
-/// lines after the first that each start with white space and a `*` get ` *` for it; or, with `/**` alone on the
-/// first line, the white space before the closing `*/` comes off the start of every line. `None` otherwise.
+/// php-parser's `Comment::getReformattedText()` for a doc comment (`\r\n` read as `\n`), as far as Pun follows it:
+/// one line as it is; lines after the first that each start with white space and a `*` get ` *` for it; or, with
+/// `/**` alone on the first line, the white space before the closing `*/` comes off the start of every line. `None`
+/// for its last kind (`/* text` on the first line, lines lined up under it).
 pub(crate) fn reformatted(text: &str) -> Option<String> {
-    if text.contains('\r') {
-        return None;
-    }
-    let Some((first, rest)) = text.split_once('\n') else {
+    let text = &text.replace("\r\n", "\n");
+    let Some((first, _)) = text.split_once('\n') else {
         return Some(text.to_string());
     };
-    let starred: Option<Vec<String>> = rest
-        .split('\n')
-        .map(|line| {
-            let trimmed = line.trim_start_matches([' ', '\t', '\x0B', '\x0C']);
-            (trimmed.len() < line.len() && trimmed.starts_with('*')).then(|| format!(" {trimmed}"))
-        })
-        .collect();
-    if let Some(lines) = starred {
-        return Some(format!("{first}\n{}", lines.join("\n")));
+    if starred(text) {
+        // `preg_replace('(^\s+\*)m', ' *', $text)`: at each line start, white space (newlines too) and a `*`
+        let b = text.as_bytes();
+        let mut out = Vec::with_capacity(b.len());
+        let mut i = 0;
+        while i < b.len() {
+            if i == 0 || b[i - 1] == b'\n' {
+                let end = i + b[i..].iter().take_while(|c| is_pcre_space(**c)).count();
+                if end > i && b.get(end) == Some(&b'*') {
+                    out.extend_from_slice(b" *");
+                    i = end + 1;
+                    continue;
+                }
+            }
+            out.push(b[i]);
+            i += 1;
+        }
+        return Some(String::from_utf8(out).unwrap());
     }
+    // `preg_match('(^/\*\*?\s*\n)')`: nothing but white space after the opening on the first line
     let opens_alone = first
         .strip_prefix("/*")
         .map(|r| r.strip_prefix('*').unwrap_or(r))
-        .is_some_and(|r| r.trim().is_empty());
-    let last = rest.rsplit('\n').next().unwrap_or_default();
-    let prefix = last.strip_suffix("*/")?;
-    if !opens_alone || !prefix.trim().is_empty() {
+        .is_some_and(|r| r.bytes().all(is_pcre_space));
+    // `preg_match('(\n(\s*)\*/$)', ..., $matches)`: from the leftmost line break that only white space separates
+    // from the closing `*/`
+    let body = text.strip_suffix("*/")?;
+    let run = &body[body
+        .trim_end_matches(|c: char| c.is_ascii() && is_pcre_space(c as u8))
+        .len()..];
+    let prefix = &run[run.find('\n')? + 1..];
+    if !opens_alone {
         return None;
     }
-    let lines: Vec<&str> = rest
-        .split('\n')
-        .map(|line| line.strip_prefix(prefix).unwrap_or(line))
-        .collect();
-    Some(format!("{first}\n{}", lines.join("\n")))
+    // `preg_replace('(^' . preg_quote($prefix) . ')m', '', $text)`
+    let b = text.as_bytes();
+    let mut out = Vec::with_capacity(b.len());
+    let mut i = 0;
+    while i < b.len() {
+        if !prefix.is_empty()
+            && (i == 0 || b[i - 1] == b'\n')
+            && b[i..].starts_with(prefix.as_bytes())
+        {
+            i += prefix.len();
+            continue;
+        }
+        out.push(b[i]);
+        i += 1;
+    }
+    Some(String::from_utf8(out).unwrap())
+}
+
+/// PCRE's `\s`.
+fn is_pcre_space(c: u8) -> bool {
+    matches!(c, b' ' | b'\t' | b'\n' | b'\r' | 0x0B | 0x0C)
+}
+
+/// `preg_match('(^.*(?:\n\s+\*.*)+$)', $text)` on a text with a newline: after the first line, each line break is
+/// followed by white space (which may hold more line breaks) and a `*`, up to the end.
+fn starred(text: &str) -> bool {
+    let b = text.as_bytes();
+    let mut i = text.find('\n').unwrap();
+    loop {
+        let start = i + 1;
+        let star = start + b[start..].iter().take_while(|c| is_pcre_space(**c)).count();
+        if star == start || b.get(star) != Some(&b'*') {
+            return false;
+        }
+        match b[star..].iter().position(|c| *c == b'\n') {
+            Some(at) => i = star + at,
+            None => return true,
+        }
+    }
 }
 
 /// How Rector reads a tag child of a doc comment for `PhpDocInfo::getTagsByName()`.
