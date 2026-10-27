@@ -452,17 +452,19 @@ pub(crate) fn class_parents(ctx: &Context<'_>, class: &str) -> Vec<String> {
     let facts = facts(ctx);
     let mut out = Vec::new();
     let mut at = class.to_string();
-    while let Some(c) = facts.codebase.get_class_like(at.as_bytes()) {
-        let Some(parent) = c.direct_parent_class else {
-            break;
-        };
-        let name = facts
-            .codebase
-            .get_class_like(parent.as_bytes())
-            .map_or(parent.to_string(), |p| p.original_name.to_string());
-        if out.contains(&name) {
-            break;
-        }
+    // a parent seen before ends a cycle
+    while let Some(name) = facts
+        .codebase
+        .get_class_like(at.as_bytes())
+        .and_then(|c| c.direct_parent_class)
+        .map(|parent| {
+            facts
+                .codebase
+                .get_class_like(parent.as_bytes())
+                .map_or(parent.to_string(), |p| p.original_name.to_string())
+        })
+        .filter(|name| !out.contains(name))
+    {
         out.push(name.clone());
         at = name;
     }
@@ -626,13 +628,9 @@ pub(crate) fn class_string(
     use mago_syntax::cst::{Access, ClassLikeConstantSelector};
     match unparenthesize(expr) {
         Expression::Access(Access::ClassConstant(access)) => {
-            let ClassLikeConstantSelector::Identifier(constant) = &access.constant else {
-                return None;
-            };
-            if !constant.value.eq_ignore_ascii_case(b"class") {
-                return None;
-            }
+            let is_class = matches!(&access.constant, ClassLikeConstantSelector::Identifier(c) if c.value.eq_ignore_ascii_case(b"class"));
             match access.class {
+                _ if !is_class => None,
                 Expression::Identifier(class) => Some(resolve(ancestors, class)),
                 Expression::Self_(_) | Expression::Static(_) => {
                     own_class_reflection(ctx, ancestors)
@@ -672,15 +670,14 @@ pub(crate) fn is_constant_value(ctx: &Context<'_>, expr: &Expression<'_>) -> boo
         return true;
     }
     let facts = facts(ctx);
-    let Some(t) = facts.full_type(node_span(expr)) else {
-        return false;
-    };
-    match t.types.as_ref() {
-        [atomic] if atomic.is_literal() => true,
-        [TAtomic::Array(TArray::Keyed(k))] => k.parameters.is_none(),
-        [TAtomic::Array(TArray::List(l))] => l.element_type.is_never(),
-        _ => false,
-    }
+    facts
+        .full_type(node_span(expr))
+        .is_some_and(|t| match t.types.as_ref() {
+            [atomic] if atomic.is_literal() => true,
+            [TAtomic::Array(TArray::Keyed(k))] => k.parameters.is_none(),
+            [TAtomic::Array(TArray::List(l))] => l.element_type.is_never(),
+            _ => false,
+        })
 }
 
 /// An argument of a rewritten call: an argument the call keeps (by its index), or the text php-parser prints for an
