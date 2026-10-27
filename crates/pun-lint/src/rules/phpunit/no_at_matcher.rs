@@ -31,9 +31,7 @@ impl Rule for NoAtMatcher {
         ctx: &Context<'_>,
         out: &mut Vec<Report>,
     ) {
-        let Node::MethodCall(call) = node else {
-            return;
-        };
+        let Node::MethodCall(call) = node else { return };
         let Expression::Call(Call::Method(var)) = unparenthesize(call.object) else {
             return;
         };

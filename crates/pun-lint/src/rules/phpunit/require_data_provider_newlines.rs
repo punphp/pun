@@ -34,9 +34,7 @@ impl Rule for RequireDataProviderNewlines {
         ctx: &Context<'_>,
         out: &mut Vec<Report>,
     ) {
-        let Node::Method(method) = node else {
-            return;
-        };
+        let Node::Method(method) = node else { return };
         let MethodBody::Concrete(block) = &method.body else {
             return;
         };

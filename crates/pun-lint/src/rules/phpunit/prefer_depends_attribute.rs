@@ -34,9 +34,7 @@ impl Rule for PreferDependsAttribute {
         ctx: &Context<'_>,
         out: &mut Vec<Report>,
     ) {
-        let Some((members, _, _)) = class_body(node) else {
-            return;
-        };
+        let (members, _, _) = class_body(node).unwrap();
         let methods: Vec<&Method<'_>> = members
             .iter()
             .filter_map(|m| match m {

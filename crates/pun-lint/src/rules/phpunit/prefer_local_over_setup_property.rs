@@ -38,9 +38,7 @@ impl Rule for PreferLocalOverSetupProperty {
         ctx: &Context<'_>,
         out: &mut Vec<Report>,
     ) {
-        let Some((members, _, _)) = class_body(node) else {
-            return;
-        };
+        let (members, _, _) = class_body(node).unwrap();
         let mut scope = ancestors.to_vec();
         scope.push(node);
         if !is_in_test_class(ctx, &scope, None) {

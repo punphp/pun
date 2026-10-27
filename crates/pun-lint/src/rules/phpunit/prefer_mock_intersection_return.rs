@@ -30,9 +30,7 @@ impl Rule for PreferMockIntersectionReturn {
         ctx: &Context<'_>,
         out: &mut Vec<Report>,
     ) {
-        let Node::Method(method) = node else {
-            return;
-        };
+        let Node::Method(method) = node else { return };
         if !is_in_test_class(ctx, ancestors, Some(method)) {
             return;
         }

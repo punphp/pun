@@ -31,9 +31,7 @@ impl Rule for PreferTestPrefix {
         ctx: &Context<'_>,
         out: &mut Vec<Report>,
     ) {
-        let Node::Method(method) = node else {
-            return;
-        };
+        let Node::Method(method) = node else { return };
         let name = method.name.value;
         if name.starts_with(b"test") || !is_in_test_class(ctx, ancestors, Some(method)) {
             return;
