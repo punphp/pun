@@ -16,7 +16,6 @@ use mago_codex::populator::populate_codebase;
 use mago_codex::reference::SymbolReferences;
 use mago_codex::scanner::scan_program;
 use mago_codex::ttype::TType;
-use mago_codex::ttype::atomic::scalar::string::TStringCasing;
 use mago_codex::ttype::union::TUnion;
 use mago_database::file::{File, FileType};
 use mago_names::resolver::NameResolver;
@@ -139,14 +138,7 @@ fn span(range: (u32, u32)) -> mago_span::Span {
 }
 
 fn native_id(ty: &TUnion) -> String {
-    let mut id = oracle_mago_id(&ty.get_id().to_string());
-    // TString stores casing on numeric strings, but its display omits that property.
-    if ty.get_single_string().is_some_and(|string| {
-        string.literal.is_none() && string.is_numeric && string.casing == TStringCasing::Uppercase
-    }) {
-        id.push_str("&uppercase-string");
-    }
-    id
+    oracle_mago_id(&ty.get_id().to_string())
 }
 
 // Only adapt the two tools' scalar display syntax, not their inferred types.

@@ -142,7 +142,7 @@ pub fn get_platform_constant_type(name: &[u8]) -> Option<TUnion> {
                 is_truthy: true,
                 is_non_empty: true,
                 is_callable: false,
-                casing: TStringCasing::Lowercase,
+                casing: TStringCasing::Both,
             })),
             TAtomic::Scalar(TScalar::String(TString {
                 literal: Some(TStringLiteral::Value(word("\\"))),
@@ -150,7 +150,7 @@ pub fn get_platform_constant_type(name: &[u8]) -> Option<TUnion> {
                 is_truthy: true,
                 is_non_empty: true,
                 is_callable: false,
-                casing: TStringCasing::Lowercase,
+                casing: TStringCasing::Both,
             })),
         ]
     });
@@ -389,13 +389,7 @@ fn infer_with_constant_sources<'arena>(
                                 true,  // truthy
                                 true,  // not empty
                                 false, // callable, we can't tell here.
-                                if value.iter().all(|b| b.is_ascii_lowercase() || !b.is_ascii_alphabetic()) {
-                                    TStringCasing::Lowercase
-                                } else if value.iter().all(|b| b.is_ascii_uppercase() || !b.is_ascii_alphabetic()) {
-                                    TStringCasing::Uppercase
-                                } else {
-                                    TStringCasing::Unspecified
-                                },
+                                TStringCasing::from_bytes(value),
                             ))))
                         }
                     }
@@ -551,11 +545,7 @@ fn infer_with_constant_sources<'arena>(
             let is_non_empty = lhs_string.is_non_empty() || rhs_string.is_non_empty();
             let is_truthy = lhs_string.is_truthy() || rhs_string.is_truthy();
             let is_literal_origin = lhs_string.is_literal_origin() && rhs_string.is_literal_origin();
-            let casing = match (lhs_string.casing, rhs_string.casing) {
-                (TStringCasing::Lowercase, TStringCasing::Lowercase) => TStringCasing::Lowercase,
-                (TStringCasing::Uppercase, TStringCasing::Uppercase) => TStringCasing::Uppercase,
-                _ => TStringCasing::Unspecified,
-            };
+            let casing = lhs_string.casing.join(rhs_string.casing);
 
             let final_string_type = if is_literal_origin {
                 TString::unspecified_literal_with_props(false, is_truthy, is_non_empty, false, casing)

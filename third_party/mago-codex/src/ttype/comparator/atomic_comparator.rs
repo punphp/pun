@@ -841,6 +841,7 @@ fn strings_can_be_identical(lhs: &TString, rhs: &TString) -> bool {
         match constraints.casing {
             TStringCasing::Lowercase if value.iter().any(u8::is_ascii_uppercase) => return false,
             TStringCasing::Uppercase if value.iter().any(u8::is_ascii_lowercase) => return false,
+            TStringCasing::Both if value.iter().any(u8::is_ascii_alphabetic) => return false,
             _ => {}
         }
 

@@ -875,7 +875,7 @@ fn cast_type(cast: ScalarCast, ty: &TUnion) -> Option<TUnion> {
             }
         }
         (String, Scalar(Decimal(TFloat::Float))) => {
-            // The shared union constructor drops casing when is_numeric is true.
+            // PHP's scientific float notation uses uppercase E, not lowercase e.
             TUnion::from_atomic(Scalar(Text(TString::general_with_props(
                 true,
                 false,

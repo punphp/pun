@@ -466,13 +466,10 @@ fn fold_concat_operands(operands: &[&Expression<'_>], artifacts: &AnalysisArtifa
     if current_strings.iter().all(|s| !s.is_literal_origin()) {
         let is_non_empty = current_strings.iter().any(|s| s.is_non_empty);
         let is_truthy = current_strings.iter().all(|s| s.is_truthy);
-        let casing = if current_strings.iter().all(|s| s.is_lowercase()) {
-            TStringCasing::Lowercase
-        } else if current_strings.iter().all(|s| s.is_uppercase()) {
-            TStringCasing::Uppercase
-        } else {
-            TStringCasing::Unspecified
-        };
+        let casing = TStringCasing::from_guarantees(
+            current_strings.iter().all(|s| s.is_lowercase()),
+            current_strings.iter().all(|s| s.is_uppercase()),
+        );
 
         // lose the callable flag on concat.
         return get_string_with_props(false, is_truthy, is_non_empty, false, casing);
@@ -489,14 +486,10 @@ fn concat_string_lists(left_strings: Vec<TString>, right_strings: &[TString], th
     if !has_literals || left_strings.len().saturating_mul(right_strings.len()) > threshold as usize {
         let is_non_empty = left_strings.iter().any(|s| s.is_non_empty) || right_strings.iter().any(|s| s.is_non_empty);
         let is_truthy = left_strings.iter().all(|s| s.is_truthy) || right_strings.iter().all(|s| s.is_truthy);
-        let casing = if left_strings.iter().all(|s| s.is_lowercase()) && right_strings.iter().all(|s| s.is_lowercase())
-        {
-            TStringCasing::Lowercase
-        } else if left_strings.iter().all(|s| s.is_uppercase()) && right_strings.iter().all(|s| s.is_uppercase()) {
-            TStringCasing::Uppercase
-        } else {
-            TStringCasing::Unspecified
-        };
+        let casing = TStringCasing::from_guarantees(
+            left_strings.iter().all(|s| s.is_lowercase()) && right_strings.iter().all(|s| s.is_lowercase()),
+            left_strings.iter().all(|s| s.is_uppercase()) && right_strings.iter().all(|s| s.is_uppercase()),
+        );
 
         return vec![TString::general_with_props(false, is_truthy, is_non_empty, false, casing)];
     }
@@ -507,11 +500,7 @@ fn concat_string_lists(left_strings: Vec<TString>, right_strings: &[TString], th
             let mut resulting_string = TString::general();
             resulting_string.is_non_empty = left_string.is_non_empty || right_string.is_non_empty;
             resulting_string.is_truthy = left_string.is_truthy || right_string.is_truthy;
-            resulting_string.casing = match (left_string.casing, right_string.casing) {
-                (TStringCasing::Lowercase, TStringCasing::Lowercase) => TStringCasing::Lowercase,
-                (TStringCasing::Uppercase, TStringCasing::Uppercase) => TStringCasing::Uppercase,
-                _ => TStringCasing::Unspecified,
-            };
+            resulting_string.casing = left_string.casing.join(right_string.casing);
             resulting_string.literal = match (&left_string.literal, &right_string.literal) {
                 (Some(TStringLiteral::Value(left_literal)), Some(TStringLiteral::Value(right_literal))) => {
                     result_strings.push(TString::known_literal(concat_word!(left_literal, right_literal)));

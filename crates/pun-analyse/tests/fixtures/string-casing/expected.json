@@ -1,0 +1,226 @@
+[
+    [
+        "matrix.php",
+        15,
+        "phpstan.dumpType",
+        "Dumped type: lowercase-string&uppercase-string",
+        null,
+        false
+    ],
+    [
+        "matrix.php",
+        16,
+        "phpstan.dumpType",
+        "Dumped type: lowercase-string",
+        null,
+        false
+    ],
+    [
+        "matrix.php",
+        17,
+        "phpstan.dumpType",
+        "Dumped type: uppercase-string",
+        null,
+        false
+    ],
+    [
+        "matrix.php",
+        18,
+        "phpstan.dumpType",
+        "Dumped type: lowercase-string&uppercase-string",
+        null,
+        false
+    ],
+    [
+        "matrix.php",
+        19,
+        "phpstan.dumpType",
+        "Dumped type: lowercase-string",
+        null,
+        false
+    ],
+    [
+        "matrix.php",
+        20,
+        "phpstan.dumpType",
+        "Dumped type: uppercase-string",
+        null,
+        false
+    ],
+    [
+        "matrix.php",
+        21,
+        "phpstan.dumpType",
+        "Dumped type: lowercase-string",
+        null,
+        false
+    ],
+    [
+        "matrix.php",
+        22,
+        "phpstan.dumpType",
+        "Dumped type: uppercase-string",
+        null,
+        false
+    ],
+    [
+        "matrix.php",
+        23,
+        "phpstan.dumpType",
+        "Dumped type: lowercase-string&non-falsy-string&uppercase-string",
+        null,
+        false
+    ],
+    [
+        "matrix.php",
+        24,
+        "phpstan.dumpType",
+        "Dumped type: lowercase-string&non-falsy-string&uppercase-string",
+        null,
+        false
+    ],
+    [
+        "matrix.php",
+        25,
+        "phpstan.dumpType",
+        "Dumped type: lowercase-string&uppercase-string",
+        null,
+        false
+    ],
+    [
+        "matrix.php",
+        26,
+        "phpstan.dumpType",
+        "Dumped type: lowercase-string&uppercase-string",
+        null,
+        false
+    ],
+    [
+        "matrix.php",
+        27,
+        "phpstan.dumpType",
+        "Dumped type: lowercase-string",
+        null,
+        false
+    ],
+    [
+        "matrix.php",
+        28,
+        "phpstan.dumpType",
+        "Dumped type: uppercase-string",
+        null,
+        false
+    ],
+    [
+        "matrix.php",
+        29,
+        "phpstan.dumpType",
+        "Dumped type: non-empty-string&numeric-string",
+        null,
+        false
+    ],
+    [
+        "matrix.php",
+        32,
+        "argument.type",
+        "Parameter #1 $value of function StringCasing\\takeBoth expects lowercase-string&uppercase-string, lowercase-string given.",
+        null,
+        true
+    ],
+    [
+        "matrix.php",
+        33,
+        "argument.type",
+        "Parameter #1 $value of function StringCasing\\takeBoth expects lowercase-string&uppercase-string, uppercase-string given.",
+        null,
+        true
+    ],
+    [
+        "matrix.php",
+        34,
+        "argument.type",
+        "Parameter #1 $value of function StringCasing\\takeBoth expects lowercase-string&uppercase-string, non-empty-string&numeric-string given.",
+        null,
+        true
+    ],
+    [
+        "matrix.php",
+        36,
+        "argument.type",
+        "Parameter #1 $value of function StringCasing\\takeBoth expects lowercase-string&uppercase-string, 'e' given.",
+        null,
+        true
+    ],
+    [
+        "matrix.php",
+        37,
+        "argument.type",
+        "Parameter #1 $value of function StringCasing\\takeBoth expects lowercase-string&uppercase-string, 'E' given.",
+        null,
+        true
+    ],
+    [
+        "matrix.php",
+        41,
+        "phpstan.dumpType",
+        "Dumped type: lowercase-string&uppercase-string",
+        null,
+        false
+    ],
+    [
+        "matrix.php",
+        42,
+        "phpstan.dumpType",
+        "Dumped type: lowercase-string",
+        null,
+        false
+    ],
+    [
+        "matrix.php",
+        45,
+        "phpstan.dumpType",
+        "Dumped type: lowercase-string&uppercase-string",
+        null,
+        false
+    ],
+    [
+        "matrix.php",
+        46,
+        "phpstan.dumpType",
+        "Dumped type: uppercase-string",
+        null,
+        false
+    ],
+    [
+        "matrix.php",
+        47,
+        "phpstan.dumpType",
+        "Dumped type: literal-string&lowercase-string&non-empty-string&numeric-string&uppercase-string",
+        null,
+        false
+    ],
+    [
+        "matrix.php",
+        48,
+        "phpstan.dumpType",
+        "Dumped type: literal-string&lowercase-string&non-falsy-string&uppercase-string",
+        null,
+        false
+    ],
+    [
+        "matrix.php",
+        49,
+        "phpstan.dumpType",
+        "Dumped type: lowercase-string",
+        null,
+        false
+    ],
+    [
+        "matrix.php",
+        67,
+        "phpstan.dumpType",
+        "Dumped type: callable-string&lowercase-string&uppercase-string",
+        null,
+        false
+    ]
+]

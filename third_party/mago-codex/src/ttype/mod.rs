@@ -22,7 +22,6 @@ use crate::ttype::atomic::scalar::class_like_string::TClassLikeStringKind;
 use crate::ttype::atomic::scalar::int::TInteger;
 use crate::ttype::atomic::scalar::string::TString;
 use crate::ttype::atomic::scalar::string::TStringCasing;
-use crate::ttype::atomic::scalar::string::TStringLiteral;
 use crate::ttype::comparator::ComparisonResult;
 use crate::ttype::comparator::union_comparator;
 use crate::ttype::expander::StaticClassType;
@@ -521,10 +520,10 @@ pub fn get_string() -> TUnion {
     TUnion::from_single(Cow::Borrowed(STRING_ATOMIC))
 }
 
-/// Returns a zero-allocation `TUnion` for a `string` with the specified properties.
+/// Returns a `TUnion` for a `string` with the specified properties.
 ///
-/// This function maps all possible boolean property combinations to a canonical,
-/// static `TAtomic` instance, avoiding heap allocations for common string types.
+/// Common combinations borrow canonical static atomics. Other combinations retain
+/// their independent casing guarantees in an owned atomic.
 #[must_use]
 #[allow(clippy::fn_params_excessive_bools)]
 pub fn get_string_with_props(
@@ -534,11 +533,21 @@ pub fn get_string_with_props(
     is_callable: bool,
     casing: TStringCasing,
 ) -> TUnion {
+    // These refinements do not have a shared static atomic. Do not erase casing
+    // just because the string is also numeric (which can contain e or E).
+    if is_numeric && !casing.is_unspecified() {
+        return TUnion::from_atomic(TAtomic::Scalar(TScalar::String(TString::general_with_props(
+            is_numeric, is_truthy, is_non_empty, is_callable, casing,
+        ))));
+    }
     if is_callable {
         return match casing {
             TStringCasing::Lowercase => TUnion::from_single(Cow::Borrowed(LOWERCASE_CALLABLE_STRING_ATOMIC)),
             TStringCasing::Uppercase => TUnion::from_single(Cow::Borrowed(UPPERCASE_CALLABLE_STRING_ATOMIC)),
             TStringCasing::Unspecified => TUnion::from_single(Cow::Borrowed(CALLABLE_STRING_ATOMIC)),
+            TStringCasing::Both => TUnion::from_atomic(TAtomic::Scalar(TScalar::String(TString::general_with_props(
+                is_numeric, is_truthy, is_non_empty, is_callable, casing,
+            )))),
         };
     }
 
@@ -557,6 +566,11 @@ pub fn get_string_with_props(
         (false, false, true, TStringCasing::Unspecified) => NON_EMPTY_STRING_ATOMIC,
         (false, false, true, TStringCasing::Uppercase) => NON_EMPTY_UPPERCASE_STRING_ATOMIC,
         (false, false, true, TStringCasing::Lowercase) => NON_EMPTY_LOWERCASE_STRING_ATOMIC,
+        (false, _, _, TStringCasing::Both) => {
+            return TUnion::from_atomic(TAtomic::Scalar(TScalar::String(TString::general_with_props(
+                is_numeric, is_truthy, is_non_empty, is_callable, casing,
+            ))));
+        }
     };
 
     TUnion::from_single(Cow::Borrowed(atomic_ref))
@@ -1407,28 +1421,7 @@ fn intersect_atomic_types(
     }
 
     if let (TAtomic::Scalar(TScalar::String(s1)), TAtomic::Scalar(TScalar::String(s2))) = (type_1, type_2) {
-        if let (Some(v1), Some(v2)) = (&s1.get_known_literal_value(), &s2.get_known_literal_value())
-            && v1 != v2
-        {
-            return None;
-        }
-
-        let combined = TAtomic::Scalar(TScalar::String(TString {
-            is_numeric: s1.is_numeric || s2.is_numeric,
-            is_truthy: s1.is_truthy || s2.is_truthy,
-            is_non_empty: s1.is_non_empty || s2.is_non_empty,
-            is_callable: false,
-            casing: match (s1.casing, s2.casing) {
-                (TStringCasing::Lowercase, TStringCasing::Lowercase) => TStringCasing::Lowercase,
-                (TStringCasing::Uppercase, TStringCasing::Uppercase) => TStringCasing::Uppercase,
-                _ => TStringCasing::Unspecified,
-            },
-            literal: if s1.is_literal_origin() && s2.is_literal_origin() {
-                Some(TStringLiteral::Unspecified)
-            } else {
-                None
-            },
-        }));
+        let combined = TAtomic::Scalar(TScalar::String(s1.intersect(s2)?));
         *intersection_performed = true;
         return Some(combined);
     }

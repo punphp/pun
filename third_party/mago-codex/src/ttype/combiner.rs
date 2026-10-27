@@ -1308,15 +1308,7 @@ fn scrape_type_properties(
                         string_scalar.is_numeric = string_scalar.is_numeric && str_is_numeric(value.as_bytes());
                     }
 
-                    string_scalar.casing = match string_scalar.casing {
-                        TStringCasing::Lowercase if value.as_bytes().iter().all(u8::is_ascii_lowercase) => {
-                            TStringCasing::Lowercase
-                        }
-                        TStringCasing::Uppercase if value.as_bytes().iter().all(u8::is_ascii_uppercase) => {
-                            TStringCasing::Uppercase
-                        }
-                        _ => TStringCasing::Unspecified,
-                    };
+                    string_scalar.casing = string_scalar.casing.join(TStringCasing::from_bytes(value.as_bytes()));
                 }
             }
 
@@ -1721,11 +1713,7 @@ fn combine_string_scalars(s1: &TString, s2: TString) -> TString {
         is_truthy: s1.is_truthy && s2.is_truthy,
         is_non_empty: s1.is_non_empty && s2.is_non_empty,
         is_callable: s1.is_callable && s2.is_callable,
-        casing: match (s1.casing, s2.casing) {
-            (TStringCasing::Lowercase, TStringCasing::Lowercase) => TStringCasing::Lowercase,
-            (TStringCasing::Uppercase, TStringCasing::Uppercase) => TStringCasing::Uppercase,
-            _ => TStringCasing::Unspecified,
-        },
+        casing: s1.casing.join(s2.casing),
     }
 }
 

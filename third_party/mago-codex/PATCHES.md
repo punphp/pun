@@ -520,3 +520,37 @@ one Cargo job and two Rayon threads. Instrument `mago-codex`, `mago-analyzer`, `
 instantiates the metadata's serde methods. The LCOV report uses
 `cargo llvm-cov report --no-default-ignore-filename-regex --lcov` so maintained path dependencies
 and test sources remain visible when intersecting the report with the added diff lines.
+
+## Independent ASCII string casing guarantees
+
+`TStringCasing::Both` records simultaneous `lowercase-string` and `uppercase-string` guarantees.
+PHPStan compares a string with PHP's ASCII `strtolower()` and `strtoupper()`, so digits, punctuation,
+empty strings, and high bytes can satisfy both. Numeric strings do not imply both: exponent syntax
+can contain `e` or `E`. Literal byte storage is unchanged.
+
+String intersections combine requirements. Union widening and concatenation retain shared guarantees.
+Both string-intersection paths use `TString::intersect()`. Literal absorption checks the absence of
+opposite-case ASCII letters rather than requiring every byte to be a letter. Constructors, IDs,
+containment, identity comparisons, and scanner inference retain both guarantees.
+
+This follows PHPStan 2.3.1's
+[`ConstantStringType::isLowercaseString()` and `isUppercaseString()`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Type/Constant/ConstantStringType.php#L430-L438).
+Fresh public captures live in `crates/pun-analyse/tests/fixtures/string-casing/`.
+`string_guarantees.rs` also checks the lattice, literal absorption, both containment directions,
+IDs, equality, hashing, ordering, and serde round trips.
+
+The combiner still widens a union of unrelated lower-only and upper-only strings to plain `string`.
+PHPStan preserves that disjunction. Numeric-string's existing implied non-empty flag also remains;
+the public casing control states non-emptiness explicitly to isolate the casing contract.
+Concatenating two unknown non-empty strings still lacks PHPStan's non-falsy refinement. The literal-origin
+casing control uses a known truthy suffix so it checks casing without relying on that separate refinement.
+
+The public production-inference regression matches all 28 freshly captured PHPStan diagnostics,
+including literal-origin numeric strings with both guarantees. Fresh LLVM profiles cover **73/73 changed
+codex executable lines** against `19a99280`, without exclusions. The tests use one Cargo job and two Rayon
+threads in a private target directory:
+
+```sh
+cargo llvm-cov --dep-coverage mago-codex,mago-analyzer --no-report -p punphp-analyse \
+	--test string_casing --test string_guarantees --test native_lane -- --test-threads=2
+```

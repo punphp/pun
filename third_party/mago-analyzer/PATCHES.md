@@ -1940,3 +1940,34 @@ the outer continuation. Dynamic/nullsafe members, magic/hooked or class-annotate
 method results, method arguments, constructors, generic/compound receiver domains and reference
 writes remain unavailable. Constructor-free named instantiation is supported. No comment-blanked
 fallback or direct-property syntax exception is used.
+
+## Simultaneous ASCII string casing guarantees
+
+Concatenation and positive string assertions preserve `TStringCasing::Both` through the codex's
+independent casing guarantees. PSL splice retains the guarantees shared by the source and replacement.
+Unicode and grapheme case conversion still sets only its requested guarantee; it does not assume
+that an input unchanged by ASCII case conversion stays unchanged by Unicode case conversion.
+Pun's type conversion emits both PHPStan string accessories.
+
+Complete snapshots use protocol 2.1. String casing tags 0, 1, and 2 still mean unspecified,
+lowercase, and uppercase. Tag 3 means both. Both header readers reject protocol 2.0 instead of
+silently dropping the extra guarantee. The casing snapshot tests check fixed legacy bytes,
+all four round trips, current-version acceptance, and old-version rejection.
+
+This patch does not add a `str_repeat` return-type provider or change literal byte storage.
+
+Fresh profiles cover **16/16 changed analyzer executable lines**, **99/99 changed production lines**
+including codex and Pun conversion, and **294/294 changed Rust test lines**, without exclusions.
+The 38 selected Pun tests pass. The standalone analyzer suite passes 420 of 426 tests.
+The same six failures occur on pristine `19a99280` (419 of 425 tests pass): three destructuring tests,
+the static-interface-call test, and two foreach-variable tests. The new casing snapshot test passes.
+The standalone run adds protocol coverage to the codex run. Temporary Cargo patches point `mago-codex`
+and `mago-syntax` at their maintained directories:
+
+```sh
+cargo llvm-cov --manifest-path third_party/mago-analyzer/Cargo.toml --dep-coverage mago-codex \
+	--no-report --lib --features mago-codex/serde -- --test-threads=2
+```
+
+Coverage is the intersection of changed lines against `19a99280` and LLVM's executable-line records.
+The reports use `llvm-cov export` directly because cargo-llvm-cov's dependency report filters out path dependencies.

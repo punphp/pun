@@ -1082,12 +1082,7 @@ where
                         is_truthy || existing_string.is_truthy,
                         is_non_empty || existing_string.is_non_empty,
                         is_callable || existing_string.is_callable,
-                        match (casing, existing_string.casing) {
-                            (a, b) if a == b => a,
-                            (TStringCasing::Unspecified, b) => b,
-                            (a, TStringCasing::Unspecified) => a,
-                            _ => TStringCasing::Unspecified,
-                        },
+                        casing.intersect(existing_string.casing),
                     )
                     .get_single_owned(),
                 );

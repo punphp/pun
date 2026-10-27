@@ -77,6 +77,7 @@ pub fn is_contained_by(
                 TStringCasing::Lowercase => !i.is_lowercase(),
                 TStringCasing::Uppercase => !i.is_uppercase(),
                 TStringCasing::Unspecified => false,
+                TStringCasing::Both => !i.is_lowercase() || !i.is_uppercase(),
             };
 
             if !i.is_empty() && casing_mismatch {
@@ -104,13 +105,17 @@ pub fn is_contained_by(
                         TStringCasing::Lowercase => value.as_bytes().iter().all(|byte| !byte.is_ascii_uppercase()),
                         TStringCasing::Uppercase => value.as_bytes().iter().all(|byte| !byte.is_ascii_lowercase()),
                         TStringCasing::Unspecified => true,
+                        TStringCasing::Both => value.as_bytes().iter().all(|byte| !byte.is_ascii_alphabetic()),
                     }
             });
         }
-        (TAtomic::Scalar(TScalar::String(c)), TAtomic::Scalar(TScalar::ClassLikeString(_)))
+        (TAtomic::Scalar(TScalar::String(c)), TAtomic::Scalar(TScalar::ClassLikeString(i)))
             if !c.is_literal_origin() && !c.is_numeric =>
         {
-            return true;
+            return c.casing.is_unspecified()
+                || i.literal_value().is_some_and(|value| {
+                    c.casing.join(TStringCasing::from_bytes(value.as_bytes())) == c.casing
+                });
         }
         (TAtomic::Scalar(TScalar::ClassLikeString(container_class_string)), TAtomic::Scalar(input_scalar)) => {
             return class_string_comparator::is_contained_by(

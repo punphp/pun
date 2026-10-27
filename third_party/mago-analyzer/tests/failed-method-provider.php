@@ -2,7 +2,7 @@
 // A real framed worker: callable signatures establish otherwise absent methods;
 // the return provider supplies 73 independently of their native/magic declarations.
 function bytes(string $value): string { return pack('N', strlen($value)).$value; }
-function message(int $kind, string $body): string { return 'MANA'.pack('nnnn', 2, 0, $kind, 0).$body; }
+function message(int $kind, string $body): string { return 'MANA'.pack('nnnn', 2, 1, $kind, 0).$body; }
 function readBytes(int $length): string {
     $result = '';
     while (strlen($result) < $length) {

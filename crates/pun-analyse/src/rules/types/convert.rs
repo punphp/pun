@@ -641,10 +641,19 @@ impl<'a, 'arena> Checker<'a, 'arena> {
                 match s.casing {
                     TStringCasing::Lowercase => accessories.push(Accessory::LowercaseString),
                     TStringCasing::Uppercase => accessories.push(Accessory::UppercaseString),
+                    TStringCasing::Both => {
+                        accessories.push(Accessory::LowercaseString);
+                        accessories.push(Accessory::UppercaseString);
+                    }
                     TStringCasing::Unspecified => {}
                 }
                 if s.is_callable {
-                    return Type::Intersection(vec![Type::String, Type::Callable(None)]);
+                    let mut members = vec![Type::String, Type::Callable(None)];
+                    members.extend(accessories.into_iter().filter_map(|accessory| {
+                        matches!(accessory, Accessory::LowercaseString | Accessory::UppercaseString)
+                            .then_some(Type::Accessory(accessory))
+                    }));
+                    return Type::Intersection(members);
                 }
                 if accessories.is_empty() {
                     Type::String

@@ -39,3 +39,4 @@ md-5.workspace = true
 
 [dev-dependencies]
 mago-reporting.workspace = true
+mago-codex = { workspace = true, features = ["serde"] }
