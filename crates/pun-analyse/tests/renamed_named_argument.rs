@@ -11,6 +11,11 @@ use serde_json::Value;
 
 const ID: &str = "argument.parameterRenamedInSubtype";
 
+#[test]
+fn exact_objects_survive_assignments_unions_and_declaring_reflections() {
+    check("exact-objects");
+}
+
 fn check(mode: &str) {
     let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/renamed-named-argument");
     let cases: Value =

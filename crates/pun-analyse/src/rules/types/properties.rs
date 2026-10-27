@@ -151,12 +151,12 @@ fn holder_type(c: &Checker, f: &Fetch) -> Option<Type> {
     let scope = c.class_scope();
     let name = |k: &ClassLikeMetadata| c.reflected_name(k.name.as_bytes());
     match unparen(class) {
-        Expression::Identifier(id) => Some(Type::Object(c.reflected_name(c.resolved(id).as_bytes()), vec![])),
-        Expression::Self_(_) => scope.map(|k| Type::Object(name(k), vec![])),
+        Expression::Identifier(id) => Some(Type::Object(c.reflected_name(c.resolved(id).as_bytes()), vec![], false)),
+        Expression::Self_(_) => scope.map(|k| Type::Object(name(k), vec![], false)),
         Expression::Static(_) => scope.map(|k| Type::Static(name(k), vec![])),
         Expression::Parent(_) => {
             let parent = scope?.direct_parent_class.as_ref()?;
-            Some(Type::Object(c.reflected_name(parent.as_bytes()), vec![]))
+            Some(Type::Object(c.reflected_name(parent.as_bytes()), vec![], false))
         }
         e => c.phpstan_type(e),
     }
@@ -224,7 +224,7 @@ fn unset_reflection<'a>(
     })?;
     if !active.insert(class.name) { return None }
     let property = if has_instance_property(c, class, &f.name) {
-        Some(match find_on(c, f, Type::Object(class.name.to_string(), vec![]), true, out_of_class) {
+        Some(match find_on(c, f, Type::Object(class.name.to_string(), vec![], false), true, out_of_class) {
             Some(p) => UnsetReflection::Native(p),
             None => UnsetReflection::NonNative,
         })
@@ -305,7 +305,7 @@ fn find_on<'a>(c: &Checker<'a, '_>, f: &Fetch, holder: Type, native_only: bool, 
     let mut display = c.display(declaring);
     let overlay_args = if magic && shadowed.is_some() {
         match &holder {
-            Type::Object(_, args) | Type::Static(_, args) => Some(args.clone()),
+            Type::Object(_, args, _) | Type::Static(_, args) => Some(args.clone()),
             Type::This(_) => Some(declared::class_templates(c, class).into_iter().map(|t| Type::Template(Box::new(t))).collect()),
             _ => None,
         }
@@ -332,7 +332,7 @@ fn find_on<'a>(c: &Checker<'a, '_>, f: &Fetch, holder: Type, native_only: bool, 
         with_args(&ty, &format!("class {scope}"), &names, &args)
     } else {
         match &holder {
-            Type::Object(_, args) if !args.is_empty() => {
+            Type::Object(_, args, _) if !args.is_empty() => {
                 let names: Vec<String> = declaring.get_template_type_names().iter().map(|n| n.to_string()).collect();
                 with_args(&ty, &format!("class {}", c.reflected_name(declaring.name.as_bytes())), &names, args)
             }
@@ -503,7 +503,7 @@ fn read_only(c: &mut Checker, f: &Fetch, p: &Prop, offset: bool) {
     // isAllowedPrivateMutation()
     let allowed = p.phpdoc_readonly && p.private_mutation;
     // isArrayAccessOffsetWrite()
-    let array_access = Type::Object("ArrayAccess".into(), vec![]);
+    let array_access = Type::Object("ArrayAccess".into(), vec![], false);
     if !allowed && !(offset && p.writable.as_ref().is_some_and(|t| is_super_type_of(&array_access, t).yes())) {
         report(c, "AssignNotInConstructor", "is assigned outside of the constructor.");
     }
@@ -518,7 +518,7 @@ fn not_writable(c: &mut Checker, f: &Fetch, p: &Prop) {
         return;
     }
     let Some(on) = c.phpstan_type(holder) else { return };
-    let declaring = Type::Object(c.reflected_name(p.declaring.name.as_bytes()), vec![]);
+    let declaring = Type::Object(c.reflected_name(p.declaring.name.as_bytes()), vec![], false);
     let class = declared::with_classes(c, || {
         if is_super_type_of(&declaring, &on).yes() {
             c.display(p.declaring)

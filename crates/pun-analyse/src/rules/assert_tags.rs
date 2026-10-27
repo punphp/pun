@@ -39,7 +39,7 @@ pub fn method(c: &mut Checker, m: &Method) {
     let Some(context) = c.class_scope() else { return };
     let declaring = missing_types::declaring(c, m.span()).expect("a method is declared by its class or a used trait");
     let this = (!m.modifiers.iter().any(|x| matches!(x, Modifier::Static(_))))
-        .then(|| Type::Object(declared::original_name(context), vec![]));
+        .then(|| Type::Object(declared::original_name(context), vec![], false));
     let own = doc_before(&c.file.contents, m.span().start.offset as usize).filter(|doc| !asserts(doc).is_empty());
     let errors = declared::with_classes(c, || {
         let sig = declared::method(c, m, declaring, context);

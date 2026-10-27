@@ -167,7 +167,7 @@ fn late_parameter_type(t: &Type, argument: &dyn Fn(&str) -> Option<Type>) -> Typ
     };
     let t = t.traverse(&|t| late_parameter_type(t, argument));
     let t = match &t {
-        Type::Object(name, args) if matches!(name.as_str(), "key-of" | "value-of")
+        Type::Object(name, args, _) if matches!(name.as_str(), "key-of" | "value-of")
             && args.len() == 1 && !is_late(&args[0]) => {
                 pun_phpstan::resolve::key_or_value_of(&args[0], name == "value-of")
             }

@@ -640,10 +640,10 @@ fn phpdoc_applies(
             };
             let natives = members(&native_type);
             members(&phpdoc_type).iter().all(|m| match m {
-                Type::Object(class, _) => known(c, class).is_some_and(|k| {
+                Type::Object(class, _, _) => known(c, class).is_some_and(|k| {
                     natives
                         .iter()
-                        .any(|n| matches!(n, Type::Object(parent, _) if instance_of(c, &k, parent)))
+                        .any(|n| matches!(n, Type::Object(parent, _, _) if instance_of(c, &k, parent)))
                 }),
                 m => is_super_type_of(&native_type, m).yes(),
             })

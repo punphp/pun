@@ -393,7 +393,7 @@ fn has_offset(c: &Checker, ty: &Type, offset: &Type) -> Tri {
         t if t.is_string().yes() => is_super_type_of(&Type::Int, offset).and(Tri::Maybe),
         Type::Null => Tri::No,
         Type::Object(..) | Type::Static(..) | Type::This(_) | Type::EnumCase(..) => {
-            if is_super_type_of(&Type::Object("ArrayAccess".into(), vec![]), ty).yes()
+            if is_super_type_of(&Type::Object("ArrayAccess".into(), vec![], false), ty).yes()
                 && let Some((key, _)) = types::offset_types(c, ty)
             {
                 return is_super_type_of(&key, offset).and(Tri::Maybe);
@@ -593,7 +593,7 @@ mod tests {
         }));
         let array = Type::array(mixed(), mixed());
         let excluded = Type::mixed_subtracted(false, Type::Union(vec![
-            Type::String, array.clone(), Type::Object("ArrayAccess".into(), vec![]),
+            Type::String, array.clone(), Type::Object("ArrayAccess".into(), vec![], false),
         ]));
         let shape = pun_phpstan::resolve::resolve_str("array{0: int}", None);
         let open = Type::ConstArray(Box::new(pun_phpstan::types::ConstArray {
@@ -616,7 +616,7 @@ mod tests {
             ("conditional-key", conditional(Type::Int, Type::ConstInt(1), Type::ConstInt(0))),
             ("late-array", Type::OffsetAccess(Box::new(template(Type::array(Type::String, shape.clone()))), Box::new(Type::ConstString("inner".into())))),
             ("late-key", Type::OffsetAccess(Box::new(template(Type::array(Type::String, Type::ConstInt(1)))), Box::new(Type::ConstString("inner".into())))),
-            ("late-object-mixed", Type::OffsetAccess(Box::new(Type::Object("ArrayAccess".into(), vec![Type::Int, mixed()])), Box::new(Type::ConstInt(0)))),
+            ("late-object-mixed", Type::OffsetAccess(Box::new(Type::Object("ArrayAccess".into(), vec![Type::Int, mixed()], false)), Box::new(Type::ConstInt(0)))),
             ("late-array-error", Type::OffsetAccess(Box::new(Type::array(Type::String, Type::Error)), Box::new(Type::ConstString("inner".into())))),
             ("late-array-invalid-key", Type::OffsetAccess(Box::new(Type::array(Type::Int, Type::ConstInt(1))), Box::new(Type::ConstString("inner".into())))),
             ("late-shape-error", Type::OffsetAccess(Box::new(Type::ConstArray(Box::new(pun_phpstan::types::ConstArray {

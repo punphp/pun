@@ -172,7 +172,7 @@ fn is_throws_valid(c: &Checker, ty: &Type) -> bool {
         }
     }
     is_super_type_of(
-        &Type::Object("Throwable".into(), vec![]),
+        &Type::Object("Throwable".into(), vec![], false),
         &intersect(constrained),
     )
     .yes()

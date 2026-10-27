@@ -78,7 +78,7 @@ impl<'a> Checker<'a, '_> {
     fn capable(&self, t: &Type, methods: bool) -> Tri {
         t.query_members(&|t| match t {
             // ObjectType::canCallMethods(): not on a plain `stdClass`
-            Type::Object(n, _) if methods && n.eq_ignore_ascii_case("stdClass") => Tri::No,
+            Type::Object(n, _, _) if methods && n.eq_ignore_ascii_case("stdClass") => Tri::No,
             Type::Object(..)
             | Type::Static(..)
             | Type::This(_)
@@ -95,7 +95,7 @@ impl<'a> Checker<'a, '_> {
     /// The class a receiver type names, for its methods.
     fn class_of<'t>(t: &'t Type) -> Option<&'t str> {
         match t {
-            Type::Object(n, _) | Type::Static(n, _) | Type::This(n) | Type::EnumCase(n, _) => Some(n),
+            Type::Object(n, _, _) | Type::Static(n, _) | Type::This(n) | Type::EnumCase(n, _) => Some(n),
             t => matches!(t, Type::Closure(_)).then_some("Closure"),
         }
     }
@@ -106,7 +106,7 @@ impl<'a> Checker<'a, '_> {
         let Lookup::Found(k) = self.class_like(n) else { return Err(()) };
         // Mago's populated interfaces can include ancestors of requirements, which are not native ancestors.
         let nominal = |class: &str| declared::with_classes(self, || {
-            is_super_type_of(&Type::Object(class.to_string(), vec![]), &Type::Object(n.to_string(), vec![])).yes()
+            is_super_type_of(&Type::Object(class.to_string(), vec![], false), &Type::Object(n.to_string(), vec![], false)).yes()
         });
         let native = members::method(self, k, name).or_else(|| members::annotation_method(self, k, name));
         if let Some(m) = native.filter(|m| nominal(&m.declaring_name())) {
@@ -128,7 +128,7 @@ impl<'a> Checker<'a, '_> {
         let mut found = Ok(None);
         for t in self.mixins(k) {
             match t {
-                Type::Object(n, _) => {
+                Type::Object(n, _, _) => {
                     if let Some(m) = self.class_like(&n).found().and_then(|m| members::method(self, m, name)) {
                         return Ok(Some(m));
                     }
@@ -220,7 +220,7 @@ fn without_atomic_requirements(c: &Checker, atomic: &TAtomic) -> Option<TAtomic>
 fn generic_display(c: &Checker, t: &Type, method: &members::Method) -> String {
     let display = method.declaring_display(c);
     match t {
-        Type::Object(n, args) if !args.is_empty() && n.eq_ignore_ascii_case(&method.declaring_name()) => {
+        Type::Object(n, args, _) if !args.is_empty() && n.eq_ignore_ascii_case(&method.declaring_name()) => {
             let args: Vec<String> = declared::with_classes(c, || args.iter().map(|a| a.describe(Level::TypeOnly)).collect());
             format!("{display}<{}>", args.join(","))
         }
@@ -231,8 +231,8 @@ fn generic_display(c: &Checker, t: &Type, method: &members::Method) -> String {
 /// `$type instanceof StaticType ? $type->getStaticObjectType() : $type`, described.
 fn describe(c: &Checker, t: &Type) -> String {
     let t = match t {
-        Type::Static(n, args) => Type::Object(n.clone(), args.clone()),
-        Type::This(n) => Type::Object(n.clone(), vec![]),
+        Type::Static(n, args) => Type::Object(n.clone(), args.clone(), false),
+        Type::This(n) => Type::Object(n.clone(), vec![], false),
         t => t.clone(),
     };
     declared::with_classes(c, || t.describe(Level::TypeOnly))
@@ -341,7 +341,7 @@ pub(in super::super) fn check_method<'arena>(
     if method.name().eq_ignore_ascii_case("bindTo")
         && !args.arguments.is_empty()
         && let Expression::Variable(Variable::Direct(v)) = object
-        && declared::with_classes(c, || is_super_type_of(&Type::Object("Closure".into(), vec![]), &t).yes())
+        && declared::with_classes(c, || is_super_type_of(&Type::Object("Closure".into(), vec![], false), &t).yes())
     {
         let var = String::from_utf8_lossy(&v.name[1..]);
         variants = super::super::selector::closure_bind(c, &var, span.start.offset, 0, variants);

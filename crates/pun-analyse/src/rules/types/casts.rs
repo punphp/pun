@@ -113,7 +113,7 @@ pub(in super::super) fn unary(c: &mut Checker, u: &UnaryPrefix) {
             return false;
         };
         // BcMathNumber/GmpUnaryOperatorTypeSpecifyingExtension
-        let extension = |class: &str| is_super_type_of(&Type::Object(class.into(), vec![]), &t).yes();
+        let extension = |class: &str| is_super_type_of(&Type::Object(class.into(), vec![], false), &t).yes();
         if unary && (extension("GMP") || (cast == Cast::Number && extension("BcMath\\Number"))) {
             return false;
         }

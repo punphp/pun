@@ -23,7 +23,7 @@ pub use accepts::{StrictMixed, accepts, accepts_with};
 pub use casts::{Cast, cast_is_error, is_numeric};
 pub use late_shape::LateArrayShape;
 pub use reasons::accepts_reasons;
-pub use templates::{TemplateMap, infer_template_types, resolve_template_types};
+pub use templates::{TemplateMap, infer_template_types, remove_final_by_keyword_overrides, resolve_template_types};
 pub use unresolvable::{PropertyReflection, with_property_reflections};
 pub use verbosity::recommended_level;
 
@@ -251,8 +251,9 @@ pub enum Type {
     StringNotAcceptingStringable,
     Resource,
     ObjectWithoutClass,
-    /// `ObjectType` (no args) or `GenericObjectType`, with the class name as written
-    Object(String, Vec<Type>),
+    /// `ObjectType` / `GenericObjectType`: written name, arguments and per-value `asFinal()` override.
+    /// The override affects reflection/containment, not equals() or the printed class name.
+    Object(String, Vec<Type>, bool),
     /// ObjectType's negative constraint, independent of generic/static and positive intersection identity.
     SubtractedObject {
         object: Box<Type>,
@@ -653,7 +654,7 @@ impl Type {
             | Type::ConstArray(_)
             | Type::Iterable(..)
             | Type::Accessory(Accessory::List | Accessory::NonEmptyArray) => Tri::Yes,
-            Type::Object(class, _) | Type::Static(class, _) | Type::This(class) => {
+            Type::Object(class, _, _) | Type::Static(class, _) | Type::This(class) => {
                 is_instance_of(class, "Traversable")
             }
             Type::ObjectWithoutClass
@@ -844,10 +845,10 @@ impl Type {
             Type::ConstString(s) => string_is_callable(s),
             Type::Array(_, item) => Tri::Maybe.and(item.is_string()),
             Type::ConstArray(a) => a.is_callable(),
-            Type::Object(class, _) | Type::Static(class, _) | Type::This(class) => {
+            Type::Object(class, _, _) | Type::Static(class, _) | Type::This(class) => {
                 match symbols::lookup(class) {
                     Some(c) if has_method(&c, "__invoke") => Tri::Yes,
-                    Some(c) if c.is_final => Tri::No,
+                    Some(c) if c.is_final || matches!(t, Type::Object(_, _, true)) => Tri::No,
                     _ => Tri::Maybe,
                 }
             }
@@ -865,10 +866,10 @@ impl Type {
                     Tri::Maybe
                 }
             }
-            Type::Object(n, _) | Type::Static(n, _) | Type::This(n) | Type::EnumCase(n, _) => {
+            Type::Object(n, _, _) | Type::Static(n, _) | Type::This(n) | Type::EnumCase(n, _) => {
                 match symbols::lookup(n) {
                     Some(c) if has_method(&c, &name.to_ascii_lowercase()) => Tri::Yes,
-                    Some(c) if c.is_final => Tri::No,
+                    Some(c) if c.is_final || matches!(t, Type::Object(_, _, true)) => Tri::No,
                     _ => Tri::Maybe,
                 }
             }
@@ -906,7 +907,7 @@ impl Type {
     pub fn object_class_names(&self) -> Vec<String> {
         match self {
             Type::SubtractedObject { object, .. } => object.object_class_names(),
-            Type::Object(class, _)
+            Type::Object(class, _, _)
             | Type::Static(class, _)
             | Type::This(class)
             | Type::EnumCase(class, _) => vec![class.clone()],
@@ -962,7 +963,7 @@ impl Type {
             }
             Type::Union(types) => union(types.iter().map(Type::iterable_key_type).collect()),
             Type::Template(t) => t.bound.iterable_key_type(),
-            Type::Object(class, args) => iterable_arg(class, args, true),
+            Type::Object(class, args, _) => iterable_arg(class, args, true),
             Type::Static(class, args) => static_of(class, args).iterable_key_type(),
             Type::This(class) => static_object(class).iterable_key_type(),
             Type::Never(_) => Type::Never(NeverKind::Implicit),
@@ -994,7 +995,7 @@ impl Type {
             }
             Type::Union(types) => union(types.iter().map(Type::iterable_value_type).collect()),
             Type::Template(t) => t.bound.iterable_value_type(),
-            Type::Object(class, args) => {
+            Type::Object(class, args, _) => {
                 let value = iterable_arg(class, args, false);
                 // an Iterator's `current()` and an IteratorAggregate's `getIterator()` resolve a missing argument
                 // to its bound, an explicit `mixed` (`ObjectType::getIterableValueType()`)
@@ -1088,7 +1089,7 @@ impl Type {
             Type::ClassString(Some(t)) => format!("class-string<{}>", t.describe(level)),
             Type::Resource => "resource".to_string(),
             Type::ObjectWithoutClass => "object".to_string(),
-            Type::Object(class, args) => {
+            Type::Object(class, args, _) => {
                 let mut name = match level {
                     Level::Precise => class.clone(),
                     _ => canonical_class(class),
@@ -1238,7 +1239,7 @@ impl Type {
             Type::ConstString(_) => Type::String,
             Type::Accessory(a) if a.is_string_accessory() => Type::String,
             Type::ConstArray(a) => a.generalize(),
-            Type::EnumCase(class, _) => Type::Object(class.clone(), vec![]),
+            Type::EnumCase(class, _) => Type::Object(class.clone(), vec![], false),
             _ => self.traverse(&Type::generalize),
         }
     }
@@ -1281,8 +1282,8 @@ impl Type {
             }
             Type::Callable(Some(s)) => Type::Callable(Some(Box::new(sig(s)))),
             Type::Closure(s) => Type::Closure(Box::new(sig(s))),
-            Type::Object(class, args) if !args.is_empty() => {
-                Type::Object(class.clone(), args.iter().map(f).collect())
+            Type::Object(class, args, exact) if !args.is_empty() => {
+                Type::Object(class.clone(), args.iter().map(f).collect(), *exact)
             }
             Type::Projection(c, t) => Type::Projection(*c, bx(f(t))),
             Type::OffsetAccess(t, o) => Type::OffsetAccess(bx(f(t)), bx(f(o))),
@@ -1361,7 +1362,7 @@ impl Accessory {
 fn static_object(class: &str) -> Type {
     // a class the lookup does not know (outside `declared::with_classes()`) has no templates to pass on
     let Some(c) = symbols::lookup(class) else {
-        return Type::Object(class.to_string(), Vec::new());
+        return Type::Object(class.to_string(), Vec::new(), false);
     };
     let args = c
         .templates
@@ -1379,7 +1380,7 @@ fn static_object(class: &str) -> Type {
             }))
         })
         .collect();
-    Type::Object(c.name.clone(), args)
+    Type::Object(c.name.clone(), args, false)
 }
 
 /// `getStaticObjectType()` of a `static` (`GenericStaticType`'s is the class with its arguments).
@@ -1387,7 +1388,7 @@ fn static_of(class: &str, args: &[Type]) -> Type {
     if args.is_empty() {
         static_object(class)
     } else {
-        Type::Object(class.to_string(), args.to_vec())
+        Type::Object(class.to_string(), args.to_vec(), false)
     }
 }
 
@@ -1965,13 +1966,13 @@ pub fn to_phpdoc(t: &Type) -> String {
             max.map_or("max".to_string(), |v| v.to_string())
         ),
         Type::ClassString(Some(g)) => format!("class-string<{}>", to_phpdoc(g)),
-        Type::Object(class, args) if !args.is_empty() => {
+        Type::Object(class, args, _) if !args.is_empty() => {
             format!(
                 "{class}<{}>",
                 args.iter().map(to_phpdoc).collect::<Vec<_>>().join(", ")
             )
         }
-        Type::Object(class, _) => class.clone(),
+        Type::Object(class, _, _) => class.clone(),
         Type::Static(..) => "static".to_string(),
         Type::This(_) => "$this".to_string(),
         Type::Array(key, item) => {
@@ -2183,7 +2184,7 @@ impl ConstArray {
         };
         match &self.values[0] {
             Type::ConstString(n) => Some((std::str::from_utf8(n).ok()?, true, methods)),
-            Type::Object(n, _) | Type::Static(n, _) | Type::This(n) => Some((n, false, methods)),
+            Type::Object(n, _, _) | Type::Static(n, _) | Type::This(n) => Some((n, false, methods)),
             _ => None,
         }
     }
@@ -2721,7 +2722,7 @@ pub fn is_super_type_of(a: &Type, b: &Type) -> Tri {
             // the class named by the string against the generic type, its uncertainty dropped
             T::ClassString(Some(g)) if matches!(**g, T::Mixed { .. }) => Tri::Maybe,
             T::ClassString(Some(g)) => {
-                let named = T::Object(String::from_utf8_lossy(x).into_owned(), vec![]);
+                let named = T::Object(String::from_utf8_lossy(x).into_owned(), vec![], false);
                 let r = match &**g {
                     T::Template(tpl) => is_super_type_of(&tpl.bound, &named),
                     T::Static(c, args) => is_super_type_of(&static_of(c, args), &named),
@@ -2756,7 +2757,7 @@ pub fn is_super_type_of(a: &Type, b: &Type) -> Tri {
                 };
                 let r = is_super_type_of(
                     g,
-                    &T::Object(String::from_utf8_lossy(s).into_owned(), vec![]),
+                    &T::Object(String::from_utf8_lossy(s).into_owned(), vec![], false),
                 );
                 if b.is_class_string().yes() {
                     r
@@ -2774,7 +2775,7 @@ pub fn is_super_type_of(a: &Type, b: &Type) -> Tri {
             T::ObjectWithoutClass | T::ObjectShape(_) => Tri::Yes,
             _ => Tri::from(!b.object_class_names().is_empty()),
         },
-        T::Object(class, args) => object_super(class, args, b, true),
+        T::Object(class, args, exact) => object_super(class, args, b, true, *exact),
         T::This(class) if !matches!(b, T::This(_)) => {
             is_super_type_of(&T::Static(class.clone(), vec![]), b).and(Tri::Maybe)
         }
@@ -2786,9 +2787,9 @@ pub fn is_super_type_of(a: &Type, b: &Type) -> Tri {
             match b {
                 T::Static(..) | T::This(_) => is_super_type_of(&object, b),
                 T::ObjectWithoutClass => Tri::Maybe,
-                T::Object(c, _) => {
+                T::Object(c, _, exact) => {
                     let r = is_super_type_of(&object, b);
-                    if r.yes() && symbols::lookup(c).is_some_and(|c| c.is_final) {
+                    if r.yes() && (*exact || symbols::lookup(c).is_some_and(|c| c.is_final)) {
                         r
                     } else {
                         r.and(Tri::Maybe)
@@ -2837,12 +2838,12 @@ pub fn is_super_type_of(a: &Type, b: &Type) -> Tri {
         }
         T::Closure(ours) => match b {
             T::Closure(_) => signature_super(ours, b, None),
-            T::Object(c, _) if canonical_class(c) == "Closure" => Tri::Maybe,
-            _ => object_super("Closure", &[], b, true),
+            T::Object(c, _, _) if canonical_class(c) == "Closure" => Tri::Maybe,
+            _ => object_super("Closure", &[], b, true, false),
         },
         T::EnumCase(class, _) => match b {
             T::EnumCase(..) => Tri::from(a == b),
-            T::Object(c, _) if canonical_class(c) == canonical_class(class) => Tri::Maybe,
+            T::Object(c, _, _) if canonical_class(c) == canonical_class(class) => Tri::Maybe,
             T::ObjectWithoutClass => Tri::Maybe,
             _ => Tri::No,
         },
@@ -3147,7 +3148,7 @@ fn int_range_super(a: &Type, b: &Type) -> Tri {
     if lower && upper { Tri::Yes } else { Tri::Maybe }
 }
 
-fn object_super(class: &str, args: &[Type], b: &Type, strict: bool) -> Tri {
+fn object_super(class: &str, args: &[Type], b: &Type, strict: bool, exact: bool) -> Tri {
     let names = match b {
         Type::Closure(_) => vec!["Closure".to_string()],
         b => b.object_class_names(),
@@ -3159,17 +3160,20 @@ fn object_super(class: &str, args: &[Type], b: &Type, strict: bool) -> Tri {
         return Tri::Maybe;
     }
     let that = &names[0];
+    let input_exact = matches!(b, Type::Object(_, _, true));
     let result = match (symbols::lookup(class), symbols::lookup(that)) {
         (Some(this), Some(other)) => {
             if this.name == other.name {
-                Tri::Yes
+                // Same written class: an override is only maybe wider than a broad reflection.
+                // Differently written aliases keep ObjectType's separate canonical-name shortcut.
+                if class == that && exact && !this.is_final && !input_exact { Tri::Maybe } else { Tri::Yes }
             } else if this.is_trait || other.is_trait {
                 Tri::No
-            } else if other.ancestors.contains(&this.name) {
+            } else if !exact && !this.is_final && other.ancestors.contains(&this.name) {
                 Tri::Yes
-            } else if this.ancestors.contains(&other.name)
-                || (this.is_interface && !other.is_final)
-                || (other.is_interface && !this.is_final)
+            } else if (!input_exact && !other.is_final && this.ancestors.contains(&other.name))
+                || (this.is_interface && !other.is_final && !input_exact)
+                || (other.is_interface && !this.is_final && !exact)
             {
                 Tri::Maybe
             } else {
@@ -3188,7 +3192,7 @@ fn object_super(class: &str, args: &[Type], b: &Type, strict: bool) -> Tri {
         return result;
     }
     // GenericObjectType: `$b` as this class (`getAncestorWithClassName()`), each argument a valid variance
-    let Type::Object(b_class, b_args) = b else {
+    let Type::Object(b_class, b_args, _) = b else {
         return result;
     };
     let strict = strict && !b_args.is_empty();
@@ -3332,7 +3336,7 @@ fn is_sub_type_of(a: &Type, b: &Type) -> Tri {
                     b,
                     &T::Union(vec![
                         T::array(a.iterable_key_type(), a.iterable_value_type()),
-                        T::Object("Traversable".into(), vec![]),
+                        T::Object("Traversable".into(), vec![], false),
                     ]),
                 );
             }

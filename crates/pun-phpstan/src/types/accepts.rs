@@ -122,7 +122,7 @@ pub fn accepts_with(a: &Type, b: &Type, strict: bool, sm: StrictMixed) -> Tri {
         T::ClassString(Some(object)) => match b {
             T::ConstString(name) => {
                 if b.is_class_string().yes() {
-                    rec(object, &T::Object(String::from_utf8_lossy(name).into_owned(), vec![]))
+                    rec(object, &T::Object(String::from_utf8_lossy(name).into_owned(), vec![], false))
                 } else {
                     Tri::No
                 }
@@ -159,27 +159,27 @@ pub fn accepts_with(a: &Type, b: &Type, strict: bool, sm: StrictMixed) -> Tri {
             }
             if compound { by() } else { Tri::No }
         }
-        T::Object(class, args) if args.is_empty() => match b {
-            T::Static(bc, _) | T::This(bc) => subclass(class, bc),
-            T::Closure(_) => is_super_type_of(a, &T::Object("Closure".into(), vec![])),
+        T::Object(class, args, exact) if args.is_empty() => match b {
+            T::Static(bc, _) | T::This(bc) => subclass(class, bc, *exact),
+            T::Closure(_) => is_super_type_of(a, &T::Object("Closure".into(), vec![], false)),
             T::ObjectWithoutClass => Tri::Maybe,
             _ => match b.object_class_names().first() {
-                Some(that) => subclass(class, that),
+                Some(that) => subclass(class, that, *exact),
                 None => Tri::No,
             },
         },
         // GenericObjectType in an accepts context: a raw reference to the class is its plain object's answer
-        T::Object(class, _) if matches!(b, T::Object(bc, bargs) if bargs.is_empty() && canonical_class(bc) == canonical_class(class)) => {
-            is_super_type_of(&T::Object(class.clone(), vec![]), b)
+        T::Object(class, _, exact) if matches!(b, T::Object(bc, bargs, _) if bargs.is_empty() && canonical_class(bc) == canonical_class(class)) => {
+            is_super_type_of(&T::Object(class.clone(), vec![], *exact), b)
         }
-        T::Object(class, args) => super::object_super(class, args, b, false),
+        T::Object(class, args, exact) => super::object_super(class, args, b, false, *exact),
         T::ObjectWithoutClass => Tri::from(
             matches!(b, T::ObjectWithoutClass | T::ObjectShape(_)) || !b.object_class_names().is_empty(),
         ),
         T::ObjectShape(props) => object_shape(a, props, b, strict),
         T::Closure(ours) => match b {
             T::Closure(_) => signature_super(ours, b, Some(strict)),
-            _ => rec(&T::Object("Closure".into(), vec![]), b),
+            _ => rec(&T::Object("Closure".into(), vec![], false), b),
         },
         // CallableType::isSuperTypeOfInternal() with `$treatMixedAsAny`; a compound other than a callable answers itself
         T::Callable(sig) => {
@@ -275,12 +275,12 @@ fn string_accepts(a: &Type, b: &Type, strict: bool) -> Tri {
 }
 
 /// `ObjectType::checkSubclassAcceptability()`: an unknown class accepts only itself.
-fn subclass(class: &str, that: &str) -> Tri {
+fn subclass(class: &str, that: &str, exact: bool) -> Tri {
     if that == class {
         return Tri::Yes;
     }
     match (symbols::lookup(class), symbols::lookup(that)) {
-        (Some(this), Some(other)) => Tri::from(this.name == other.name || other.ancestors.contains(&this.name)),
+        (Some(this), Some(other)) => Tri::from(this.name == other.name || (!exact && !this.is_final && other.ancestors.contains(&this.name))),
         _ => Tri::No,
     }
 }
@@ -298,7 +298,7 @@ fn object_shape(a: &Type, props: &[(String, Type, bool)], b: &Type, strict: bool
     }
     // SimpleXMLElementClassPropertyReflectionExtension: every property, `__benevolent<static|null>`
     if class.name == "SimpleXMLElement" || class.ancestors.iter().any(|c| c == "SimpleXMLElement") {
-        let property = Type::Benevolent(vec![Type::Object(class.name.clone(), vec![]), Type::Null]);
+        let property = Type::Benevolent(vec![Type::Object(class.name.clone(), vec![], false), Type::Null]);
         return props.iter().map(|(_, ty, _)| accepts(ty, &property, strict)).fold(Tri::Yes, Tri::and);
     }
     props
@@ -316,14 +316,14 @@ fn union(a: &Type, types: &[Type], b: &Type, strict: bool, sm: StrictMixed) -> T
         // IterableType::toArrayOrTraversable()
         let alt = T::Union(vec![
             T::Array(k.clone(), v.clone()),
-            T::Object("Traversable".into(), vec![(**k).clone(), (**v).clone()]),
+            T::Object("Traversable".into(), vec![(**k).clone(), (**v).clone()], false),
         ]);
         return rec(a, &alt);
     }
     // EQUAL_UNION_CLASSES
     for (base, classes) in [("DateTimeInterface", ["DateTimeImmutable", "DateTime"]), ("Throwable", ["Error", "Exception"])] {
-        if matches!(b, T::Object(n, args) if args.is_empty() && n == base) {
-            let all = T::Union(classes.iter().map(|c| T::Object((*c).into(), vec![])).collect());
+        if matches!(b, T::Object(n, args, _) if args.is_empty() && n == base) {
+            let all = T::Union(classes.iter().map(|c| T::Object((*c).into(), vec![], false)).collect());
             if rec(a, &all).yes() {
                 return Tri::Yes;
             }

@@ -331,7 +331,7 @@ fn class_constant_expression(c: &mut Checker, access: &ClassConstantAccess, name
             .class_like(n)
             .found()
             .map(|k| c.describe_object(k))
-            .unwrap_or(Type::Object(n.clone(), vec![]).describe(Level::TypeOnly)),
+            .unwrap_or(Type::Object(n.clone(), vec![], false).describe(Level::TypeOnly)),
         t => t.describe(Level::TypeOnly),
     });
     // TypeCombinator::remove(StringType): string alternatives do not participate in the object checks.
@@ -444,7 +444,7 @@ fn has_class_constant(c: &Checker, ty: &Type, name: &str) -> Tri {
         | Type::Callable(_)
         | Type::Iterable(..)
         | Type::Accessory(pun_phpstan::types::Accessory::HasMethod(_)) => Tri::Maybe,
-        Type::Object(n, _)
+        Type::Object(n, _, _)
         | Type::Static(n, _)
         | Type::This(n)
         | Type::EnumCase(n, _) => match known(c, n) {
@@ -452,7 +452,7 @@ fn has_class_constant(c: &Checker, ty: &Type, name: &str) -> Tri {
             Some(k) if k.is_final() => Tri::No,
             _ => Tri::Maybe,
         },
-        Type::ConstString(n) => has_class_constant(c, &Type::Object(String::from_utf8_lossy(n).into_owned(), vec![]), name),
+        Type::ConstString(n) => has_class_constant(c, &Type::Object(String::from_utf8_lossy(n).into_owned(), vec![], false), name),
         Type::Mixed { .. } | Type::SubtractedMixed { .. } | Type::Error => Tri::Yes,
         _ => Tri::No,
     }

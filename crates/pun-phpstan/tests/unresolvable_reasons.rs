@@ -253,7 +253,7 @@ fn offset_comparison_reasons_are_not_the_direct_mixed_intersection_fast_path() {
         Box::new(Type::ConstString("value".into())),
     );
     let object_offset = Type::OffsetAccess(
-        Box::new(Type::Object("ArrayObject".into(), vec![])),
+        Box::new(Type::Object("ArrayObject".into(), vec![], false)),
         Box::new(Type::ConstString("value".into())),
     );
     for (label, members) in [
@@ -423,7 +423,7 @@ fn native_property_intersections_keep_source_reasons_and_operand_asymmetry() {
         || {
             with_property_reflections(rows.iter().map(property_scope).collect(), || {
                 for row in rows {
-                    let object = Type::Object(row["class"].as_str().unwrap().into(), vec![]);
+                    let object = Type::Object(row["class"].as_str().unwrap().into(), vec![], false);
                     for case in row["intersections"].as_array().unwrap() {
                         let shape = resolve_str(case["shape"].as_str().unwrap(), None);
                         assert_eq!(
@@ -452,7 +452,7 @@ fn nested_property_reflection_scopes_restore_source_comparisons() {
     let check = |row: &Value| {
         let case = &row["intersections"][0];
         let result = intersect(vec![
-            Type::Object(row["class"].as_str().unwrap().into(), vec![]),
+            Type::Object(row["class"].as_str().unwrap().into(), vec![], false),
             resolve_str(case["shape"].as_str().unwrap(), None),
         ]);
         assert_eq!(observation(&result), case["objectFirst"], "{row}");

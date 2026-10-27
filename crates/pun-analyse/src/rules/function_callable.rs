@@ -78,7 +78,7 @@ pub(super) fn check<'arena>(c: &mut Checker<'_, 'arena>, f: &FunctionPartialAppl
         ),
         (
             mago_codex::ttype::get_mixed_closure(),
-            Type::Object("Closure".into(), vec![]),
+            Type::Object("Closure".into(), vec![], false),
         ),
     ] {
         if c.type_of(unparen(f.function))

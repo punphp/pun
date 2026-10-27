@@ -170,7 +170,7 @@ fn passes_as_boolean(c: &Checker, e: &Expression, t: &Type) -> bool {
 /// `$expr + 1` (or `++$expr`) of an object is not an ErrorType: GmpOperatorTypeSpecifyingExtension and
 /// BcMathNumberOperatorTypeSpecifyingExtension.
 fn object_operand(t: &Type) -> bool {
-    let objects = Type::Union(vec![Type::Object("GMP".into(), vec![]), Type::Object("BcMath\\Number".into(), vec![])]);
+    let objects = Type::Union(vec![Type::Object("GMP".into(), vec![], false), Type::Object("BcMath\\Number".into(), vec![], false)]);
     is_super_type_of(&objects, t).yes()
 }
 

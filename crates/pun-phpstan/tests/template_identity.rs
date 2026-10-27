@@ -30,7 +30,7 @@ fn template_identity_ignores_strategy_but_keeps_scope_name_bound_and_default() {
         assert_eq!(base == other, row["equals"].as_bool().unwrap(), "{row}");
         if row["equals"].as_bool().unwrap() {
             // A generic's invariant arguments must not reject the same template after toArgument().
-            let object = |t| Type::Object("ArrayObject".into(), vec![Type::Int, t]);
+            let object = |t| Type::Object("ArrayObject".into(), vec![Type::Int, t], false);
             assert_eq!(
                 format!(
                     "{:?}",

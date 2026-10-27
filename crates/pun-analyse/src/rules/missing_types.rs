@@ -133,7 +133,7 @@ pub fn generics_without_args(ty: &Type, check_iterable_classes: bool) -> Vec<(St
 fn generic_walk(ty: &Type, iterables: bool, out: &RefCell<Vec<(String, String)>>) {
     match ty {
         Type::Template(_) => return,
-        Type::Object(class, args) if args.is_empty() => {
+        Type::Object(class, args, _) if args.is_empty() => {
             let Some(c) = symbols::lookup(class) else {
                 return;
             };
@@ -194,7 +194,7 @@ pub fn callables_without_signature(ty: &Type, on: bool) -> Vec<String> {
         if matches!(ty, Type::Template(_)) {
             return;
         }
-        if matches!(ty, Type::Callable(None)) || matches!(ty, Type::Object(class, _) if class == "Closure") {
+        if matches!(ty, Type::Callable(None)) || matches!(ty, Type::Object(class, _, _) if class == "Closure") {
             out.borrow_mut().push(ty.describe(Level::TypeOnly));
         }
         ty.traverse(&|inner| {
@@ -622,7 +622,7 @@ fn class_level(
                 });
             }
             for node in &parsed.ancestors {
-                if let Type::Object(name, args) = pun_phpstan::resolve::resolve_in(node, &scope)
+                if let Type::Object(name, args, _) = pun_phpstan::resolve::resolve_in(node, &scope)
                     && !args.is_empty()
                 {
                     described.push(name);

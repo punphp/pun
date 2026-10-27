@@ -526,7 +526,7 @@ fn allows_dynamic_properties_at(c: &Checker, k: &ClassLikeMetadata, seen: &mut H
     }
     // Only this class-like's own ObjectType requirements contribute dynamic capability, before readonly.
     if super::require_tags::tag_types(c, k, super::require_tags::EXTENDS).into_iter().any(|ty| {
-        let pun_phpstan::types::Type::Object(name, _) = ty else { return false };
+        let pun_phpstan::types::Type::Object(name, _, _) = ty else { return false };
         c.codebase.get_class_like(name.as_bytes()).is_some_and(|required| {
             seen.insert(required.name) && allows_dynamic_properties_at(c, required, seen)
         })

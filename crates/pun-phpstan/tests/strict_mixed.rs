@@ -34,7 +34,7 @@ fn input(spec: &Value) -> Type {
     match spec["kind"].as_str().unwrap() {
         "array" => { let mut parts: Vec<_> = parts; Type::array(parts.remove(0), parts.remove(0)) },
         "iterable" => { let mut parts: Vec<_> = parts; Type::Iterable(Box::new(parts.remove(0)), Box::new(parts.remove(0))) },
-        "generic" => Type::Object("ArrayObject".into(), parts),
+        "generic" => Type::Object("ArrayObject".into(), parts, false),
         "union" => Type::Union(parts),
         "benevolent" => Type::Benevolent(parts),
         "intersection" => Type::Intersection(parts),
@@ -53,7 +53,7 @@ fn tree(t: &Type) -> Value {
         Type::Template(t) => serde_json::json!(["template", t.name, t.scope, t.argument, tree(&t.bound), t.default.as_ref().map(tree)]),
         Type::Array(k, v) => serde_json::json!(["array", tree(k), tree(v)]),
         Type::Iterable(k, v) => serde_json::json!(["iterable", tree(k), tree(v)]),
-        Type::Object(name, args) => serde_json::json!(["generic", name, args.iter().map(tree).collect::<Vec<_>>()]),
+        Type::Object(name, args, _) => serde_json::json!(["generic", name, args.iter().map(tree).collect::<Vec<_>>()]),
         Type::Union(parts) => serde_json::json!(["union", parts.iter().map(tree).collect::<Vec<_>>()]),
         Type::Intersection(parts) => serde_json::json!(["intersection", parts.iter().map(tree).collect::<Vec<_>>()]),
         t => serde_json::json!([t.describe(Level::Precise)]),

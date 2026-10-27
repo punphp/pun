@@ -34,7 +34,7 @@ fn types(c: &mut Checker, operand: &Expression, kind: &str, operator: &str) {
     } else {
         Type::String
     };
-    let object = |name: &str| Type::Object(name.into(), vec![]);
+    let object = |name: &str| Type::Object(name.into(), vec![], false);
     let mut allowed = vec![Type::Float, Type::Int, string, object("SimpleXMLElement"), object("GMP")];
     let deprecated_null = version >= 80300 && dec;
     if !deprecated_null {

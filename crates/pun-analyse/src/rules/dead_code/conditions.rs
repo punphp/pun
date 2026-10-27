@@ -737,8 +737,8 @@ fn compare(c: &mut Checker, b: &Binary) {
     let value = c.exact(b.span());
     let right = match (kind, b.rhs) {
         // ImpossibleInstanceOfRule: a class name, as ObjectType
-        ("Instanceof", Expression::Identifier(id)) => Some(Type::Object(c.resolved(id), vec![])),
-        ("Instanceof", Expression::Self_(_) | Expression::Static(_)) => c.class_scope().map(|k| Type::Object(c.display(k), vec![])),
+        ("Instanceof", Expression::Identifier(id)) => Some(Type::Object(c.resolved(id), vec![], false)),
+        ("Instanceof", Expression::Self_(_) | Expression::Static(_)) => c.class_scope().map(|k| Type::Object(c.display(k), vec![], false)),
         _ => c.phpstan_type(b.rhs),
     };
     let (Some(value), Some(left), Some(right)) = (value, c.phpstan_type(b.lhs), right) else {
@@ -1013,7 +1013,7 @@ impl Checker<'_, '_> {
     fn subtractable(&self, t: &Type) -> bool {
         match t {
             Type::Union(ts) => ts.iter().all(|t| self.subtractable(t)),
-            Type::Object(class, _) | Type::Static(class, _) => self.enum_cases(class).is_some(),
+            Type::Object(class, _, _) | Type::Static(class, _) => self.enum_cases(class).is_some(),
             t => matches!(
                 t,
                 Type::Int
@@ -1033,7 +1033,7 @@ impl Checker<'_, '_> {
     fn expand_enums(&self, t: Type) -> Type {
         match t {
             Type::Union(ts) => union(ts.into_iter().map(|t| self.expand_enums(t)).collect()),
-            Type::Object(ref class, _) | Type::Static(ref class, _) => {
+            Type::Object(ref class, _, _) | Type::Static(ref class, _) => {
                 let cases = self.enum_cases(class);
                 cases.map_or(t, union)
             }
@@ -1060,7 +1060,7 @@ impl Checker<'_, '_> {
                     Type::int_range(n.checked_add(1), max),
                 ])
             }
-            Type::Object(ref class, _) | Type::Static(ref class, _)
+            Type::Object(ref class, _, _) | Type::Static(ref class, _)
                 if matches!(value, Type::EnumCase(c, _) if c.eq_ignore_ascii_case(class)) =>
             {
                 let cases = self.enum_cases(class);
@@ -1220,7 +1220,7 @@ impl Checker<'_, '_> {
         }
         let Type::ConstString(method) = method else { return None };
         let object = match object {
-            Type::ConstString(class) => Type::Object(String::from_utf8_lossy(&class).into_owned(), Vec::new()),
+            Type::ConstString(class) => Type::Object(String::from_utf8_lossy(&class).into_owned(), Vec::new(), false),
             t => t,
         };
         // ponytail: a generic class-string's object (`class-string<T>&literal-string`) is not decided, Mago's
@@ -1256,7 +1256,7 @@ impl Checker<'_, '_> {
                     }
                     Tri::No
                 }
-                Type::Object(class, _) | Type::Static(class, _) | Type::This(class) => {
+                Type::Object(class, _, _) | Type::Static(class, _) | Type::This(class) => {
                     let Some(k) = self.codebase.get_class_like(class.as_bytes()) else { return None };
                     if self.declared_property(k, dollar.as_bytes()).is_some() {
                         Tri::Yes
@@ -1349,7 +1349,7 @@ impl Checker<'_, '_> {
         match t {
             Type::Union(ts) => ts.iter().all(|t| self.is_enum(t)),
             Type::EnumCase(..) => true,
-            Type::Object(class, _) | Type::Static(class, _) => self.enum_cases(class).is_some(),
+            Type::Object(class, _, _) | Type::Static(class, _) => self.enum_cases(class).is_some(),
             _ => false,
         }
     }

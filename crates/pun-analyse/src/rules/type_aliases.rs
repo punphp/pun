@@ -456,7 +456,7 @@ pub(super) fn each(ty: &Type, f: &mut dyn FnMut(&Type)) {
 fn referenced_classes(ty: &Type) -> Vec<String> {
     let mut out = Vec::new();
     each(ty, &mut |t| match t {
-        Type::Object(name, _)
+        Type::Object(name, _, _)
         | Type::Static(name, _)
         | Type::This(name)
         | Type::EnumCase(name, _)
@@ -670,7 +670,7 @@ fn use_context(r: &Resolver, doc: &AliasDoc, out: &mut Vec<Found>) {
         // GenericObjectTypeCheck: a generic type of a class without templates
         let mut generics = Vec::new();
         each(&ty, &mut |t| {
-            if let Type::Object(class, args) = t
+            if let Type::Object(class, args, _) = t
                 && !args.is_empty()
             {
                 generics.push((class.clone(), t.clone()));

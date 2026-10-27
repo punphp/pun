@@ -21,7 +21,7 @@ pub const IDENTIFIERS: &[&str] = &["offsetAssign.dimType", "offsetAssign.valueTy
 /// Mago's `never` argument of a template nothing resolved (`new SplObjectStorage()`) as PHPStan's bound.
 fn bounds(c: &Checker, t: Type) -> Type {
     match t {
-        Type::Object(name, args) if args.iter().any(|a| matches!(a, Type::Never(_))) => {
+        Type::Object(name, args, exact) if args.iter().any(|a| matches!(a, Type::Never(_))) => {
             let class = c.codebase.get_class_like(name.as_bytes());
             let bound = |i: usize| class.and_then(|k| k.template_types.get_index(i)).map(|(_, t)| c.to_phpstan(&t.constraint));
             let args = args
@@ -29,7 +29,7 @@ fn bounds(c: &Checker, t: Type) -> Type {
                 .enumerate()
                 .map(|(i, a)| if matches!(a, Type::Never(_)) { bound(i).unwrap_or(a) } else { a })
                 .collect();
-            Type::Object(name, args)
+            Type::Object(name, args, exact)
         }
         t => t,
     }
@@ -73,7 +73,7 @@ fn class_accessible(t: &Type) -> Tri {
         "SimpleXMLElement",
         "Threaded",
     ];
-    let is = |class: &str| is_super_type_of(&Type::Object(class.into(), vec![]), t).yes();
+    let is = |class: &str| is_super_type_of(&Type::Object(class.into(), vec![], false), t).yes();
     let class = t.object_class_names().first().and_then(|n| symbols::lookup(n));
     let Some(class) = class else { return Tri::Maybe };
     if is("ArrayAccess") || EXTRA.iter().any(|c| is(c)) {
@@ -106,7 +106,7 @@ pub(in super::super) fn accessible(t: &Type) -> Tri {
             let domain = pun_phpstan::types::union(vec![
                 Type::String,
                 Type::array(mixed(), mixed()),
-                Type::Object("ArrayAccess".into(), vec![]),
+                Type::Object("ArrayAccess".into(), vec![], false),
             ]);
             is_super_type_of(excluded, &domain).negate().and(Tri::Maybe)
         }
@@ -124,7 +124,7 @@ pub(in super::super) fn accessible(t: &Type) -> Tri {
 pub(in super::super) fn offset_set(c: &Checker, t: &Type) -> Option<(Type, Type)> {
     let names = t.object_class_names();
     let name = names.first()?;
-    let args = if let Type::Object(_, a) | Type::Static(_, a) = t { a.as_slice() } else { &[] };
+    let args = if let Type::Object(_, a, _) | Type::Static(_, a) = t { a.as_slice() } else { &[] };
     let id = MethodIdentifier::new(c.codebase.get_class_like(name.as_bytes())?.name, word(b"offsetset"));
     let id = c.codebase.get_declaring_method_identifier(&id);
     let method = c.codebase.get_method_by_id(&id)?;
@@ -169,7 +169,7 @@ fn set_fails(c: &Checker, t: &Type, offset: Option<&Type>, value: &Type) -> bool
             if class_accessible(t).no() {
                 return true;
             }
-            let is_array_access = is_super_type_of(&Type::Object("ArrayAccess".into(), vec![]), t).yes();
+            let is_array_access = is_super_type_of(&Type::Object("ArrayAccess".into(), vec![], false), t).yes();
             let Some((key, item)) = offset_set(c, t).filter(|_| is_array_access) else { return false };
             let offset = offset.cloned().unwrap_or(Type::Null);
             (!matches!(offset, Type::Mixed { .. }) && !is_super_type_of(&key, &offset).yes())
@@ -187,7 +187,7 @@ fn has_no_offset(c: &Checker, t: &Type, offset: &Type) -> bool {
         _ if t.is_string().yes() => is_super_type_of(&Type::Int, offset).no(),
         _ if accessible(t).no() => true,
         Type::Object(..) | Type::Static(..) | Type::This(_) | Type::EnumCase(..) => {
-            match offset_set(c, t).filter(|_| is_super_type_of(&Type::Object("ArrayAccess".into(), vec![]), t).yes()) {
+            match offset_set(c, t).filter(|_| is_super_type_of(&Type::Object("ArrayAccess".into(), vec![], false), t).yes()) {
                 Some((key, _)) => is_super_type_of(&key, offset).no(),
                 None => class_accessible(t).no(),
             }

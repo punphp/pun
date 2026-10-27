@@ -56,7 +56,7 @@ pub fn accepts_reasons(a: &Type, b: &Type, strict: bool, sm: StrictMixed) -> Vec
             T::Closure(theirs) => signature(ours, theirs, strict),
             _ => vec![],
         },
-        T::Object(class, args) if !args.is_empty() => generic(class, args, b),
+        T::Object(class, args, _) if !args.is_empty() => generic(class, args, b),
         _ => vec![],
     }
 }
@@ -76,7 +76,7 @@ fn merged(all: impl IntoIterator<Item = Vec<String>>) -> Vec<String> {
 fn union(a: &Type, types: &[Type], b: &Type, strict: bool, sm: StrictMixed) -> Vec<String> {
     use Type as T;
     if let T::Iterable(k, v) = b {
-        let alt = T::Union(vec![T::Array(k.clone(), v.clone()), T::Object("Traversable".into(), vec![(**k).clone(), (**v).clone()])]);
+        let alt = T::Union(vec![T::Array(k.clone(), v.clone()), T::Object("Traversable".into(), vec![(**k).clone(), (**v).clone()], false)]);
         return accepts_reasons(a, &alt, strict, sm);
     }
     let inner: Vec<Vec<String>> = sort_types(types).iter().map(|t| accepts_reasons(t, b, strict, sm)).collect();
@@ -212,7 +212,7 @@ fn our_keys(c: &ConstArray, b: &Type, strict: bool) -> Vec<String> {
 /// GenericObjectType::isSuperTypeOfInternal() in an accepts context: an invariant template given a subtype is not
 /// covariant (TemplateTypeVariance::isValidVariance()).
 pub(super) fn generic(class: &str, args: &[Type], b: &Type) -> Vec<String> {
-    let (Type::Object(name, other) | Type::Static(name, other)) = b else {
+    let (Type::Object(name, other, _) | Type::Static(name, other)) = b else {
         return vec![];
     };
     let (Some(c), Some(theirs)) = (symbols::lookup(class), ancestor(name, other, class)) else {

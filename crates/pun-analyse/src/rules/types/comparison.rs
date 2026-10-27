@@ -35,7 +35,7 @@ fn number() -> Type {
 }
 
 fn instance(t: &Type, class: &str) -> bool {
-    is_super_type_of(&Type::Object(class.into(), vec![]), t).yes()
+    is_super_type_of(&Type::Object(class.into(), vec![], false), t).yes()
 }
 
 /// `isNumberType()`: the expression is (possibly) an int or float, as the level checks it.

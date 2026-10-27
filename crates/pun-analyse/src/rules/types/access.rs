@@ -15,7 +15,7 @@ pub const IDENTIFIERS: &[&str] = &["property.nonObject", "property.protected", "
 /// The class a receiver type names, for its properties.
 fn class_of(t: &Type) -> Option<&str> {
     match t {
-        Type::Object(n, _) | Type::Static(n, _) | Type::This(n) | Type::EnumCase(n, _) => Some(n),
+        Type::Object(n, _, _) | Type::Static(n, _) | Type::This(n) | Type::EnumCase(n, _) => Some(n),
         Type::Closure(_) => Some("Closure"),
         _ => None,
     }
@@ -147,8 +147,8 @@ pub(in super::super) fn property_fetch(
     };
     let describe = |c: &Checker, t: &Type| {
         let t = match t {
-            Type::Static(n, args) => Type::Object(n.clone(), args.clone()),
-            Type::This(n) => Type::Object(n.clone(), vec![]),
+            Type::Static(n, args) => Type::Object(n.clone(), args.clone(), false),
+            Type::This(n) => Type::Object(n.clone(), vec![], false),
             t => t.clone(),
         };
         declared::with_classes(c, || t.describe(Level::TypeOnly))
@@ -262,7 +262,7 @@ pub(in super::super) fn static_property_fetch(c: &mut Checker, p: &StaticPropert
         return;
     }
     let for_describe = match &t {
-        Type::This(n) => Type::Object(n.clone(), vec![]),
+        Type::This(n) => Type::Object(n.clone(), vec![], false),
         t => t.clone(),
     };
     let described = declared::with_classes(c, || for_describe.describe(Level::TypeOnly));

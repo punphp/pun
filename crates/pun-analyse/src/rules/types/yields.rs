@@ -58,7 +58,7 @@ pub(in super::super) fn program(c: &mut Checker, program: &Program) {
 /// `getTemplateType(Generator::class, 'TSend')`, `None` for ErrorType.
 fn generator_send(t: &Type) -> Option<Type> {
     match t {
-        Type::Object(name, args) if name.eq_ignore_ascii_case("Generator") => Some(args.get(2).cloned().unwrap_or_else(mixed)),
+        Type::Object(name, args, _) if name.eq_ignore_ascii_case("Generator") => Some(args.get(2).cloned().unwrap_or_else(mixed)),
         Type::Never(_) => Some(Type::Never(NeverKind::Implicit)),
         _ => None,
     }

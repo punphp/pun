@@ -72,7 +72,7 @@ impl Checker<'_, '_> {
             .into_iter()
             .map(|t| Type::Template(Box::new(t)))
             .collect();
-        Type::Object(display, args).describe(Level::TypeOnly)
+        Type::Object(display, args, false).describe(Level::TypeOnly)
     }
 }
 

@@ -184,7 +184,7 @@ pub fn resolve_in(node: &Node, scope: &dyn Scope) -> Type {
                         continue;
                     }
                     *t = match t {
-                        Type::Object(_, args) if args.is_empty() => Type::Intersection(vec![
+                        Type::Object(_, args, _) if args.is_empty() => Type::Intersection(vec![
                             t.clone(),
                             Type::Iterable(Box::new(mixed()), Box::new(array_item.clone())),
                         ]),
@@ -280,7 +280,7 @@ pub fn resolve_in(node: &Node, scope: &dyn Scope) -> Type {
             let sig = Box::new(Signature { params, ret, templates });
             match main {
                 Type::Callable(_) => Type::Callable(Some(sig)),
-                Type::Object(c, args) if args.is_empty() && c == "Closure" => Type::Closure(sig),
+                Type::Object(c, args, _) if args.is_empty() && c == "Closure" => Type::Closure(sig),
                 _ => Type::Error,
             }
         }
@@ -443,13 +443,13 @@ pub(crate) fn to_array_key(t: &Type) -> Type {
 /// `tryResolvePseudoTypeClassType()`: a keyword imported by `use`, or naming a class of the namespace, is that class.
 fn pseudo_type_class(name: &str, scope: &dyn Scope) -> Option<Type> {
     if scope.has_use_alias(name) {
-        return Some(Type::Object(scope.resolve_name(name), vec![]));
+        return Some(Type::Object(scope.resolve_name(name), vec![], false));
     }
     if !scope.in_namespace() {
         return None;
     }
     let class = scope.resolve_name(name);
-    symbols::lookup(&class).map(|_| Type::Object(class, vec![]))
+    symbols::lookup(&class).map(|_| Type::Object(class, vec![], false))
 }
 
 fn identifier(name: &str, scope: &dyn Scope) -> Type {
@@ -496,7 +496,7 @@ fn identifier(name: &str, scope: &dyn Scope) -> Type {
         "literal-string" => return accessory(string(), &[A::LiteralString]),
         "class-string" | "interface-string" | "trait-string" => return Type::ClassString(None),
         "enum-string" => {
-            return Type::ClassString(Some(Box::new(Type::Object("UnitEnum".into(), vec![]))));
+            return Type::ClassString(Some(Box::new(Type::Object("UnitEnum".into(), vec![], false))));
         }
         "callable-string" => return Type::Intersection(vec![string(), Type::Callable(None)]),
         "array-key" => return Type::Benevolent(vec![Type::Int, Type::String]),
@@ -530,7 +530,7 @@ fn identifier(name: &str, scope: &dyn Scope) -> Type {
         "non-empty-array" => return accessory(Type::array(mixed(), mixed()), &[A::NonEmptyArray]),
         "iterable" => return Type::Iterable(Box::new(mixed()), Box::new(mixed())),
         "callable" | "pure-callable" => return Type::Callable(None),
-        "pure-closure" | "static-closure" | "static-pure-closure" => return Type::Object("Closure".into(), vec![]),
+        "pure-closure" | "static-closure" | "static-pure-closure" => return Type::Object("Closure".into(), vec![], false),
         "resource" | "open-resource" | "closed-resource" => return Type::Resource,
         "mixed" => return explicit_mixed(),
         "void" => return Type::Void,
@@ -558,13 +558,13 @@ fn identifier(name: &str, scope: &dyn Scope) -> Type {
     }
     if let Some(class) = scope.class() {
         match name.to_ascii_lowercase().as_str() {
-            "self" => return Type::Object(class.to_string(), vec![]),
+            "self" => return Type::Object(class.to_string(), vec![], false),
             "parent" => {
                 return match scope.parent() {
-                    Some(parent) => Type::Object(parent, vec![]),
+                    Some(parent) => Type::Object(parent, vec![], false),
                     // NonexistentParentClassType, described as `parent`
                     // ponytail: it is an object of a class that does not exist; add its own type if a rule asks more
-                    None => Type::Object("parent".to_string(), vec![]),
+                    None => Type::Object("parent".to_string(), vec![], false),
                 };
             }
             "static" => {
@@ -611,7 +611,7 @@ fn identifier(name: &str, scope: &dyn Scope) -> Type {
             },
         };
     }
-    Type::Object(name.to_string(), vec![])
+    Type::Object(name.to_string(), vec![], false)
 }
 
 /// `(?:^|\\)[A-Z_][A-Z0-9_]*$`
@@ -733,7 +733,7 @@ fn generic(base: &str, args: &[Node], scope: &dyn Scope) -> Type {
         "key-of" | "value-of" => match types.as_slice() {
             // ponytail: a KeyOfType/ValueOfType of a template (resolved late) is not modelled; kept as a
             // `key-of` / `value-of` class the checks skip
-            [t] if crate::types::contains_template(t) => Type::Object(lower.clone(), types),
+            [t] if crate::types::contains_template(t) => Type::Object(lower.clone(), types, false),
             [t] => key_or_value_of(t, lower == "value-of"),
             _ => Type::Error,
         },
@@ -818,13 +818,13 @@ pub fn key_or_value_of(t: &Type, value: bool) -> Type {
         let backed = |c: &symbols::Class| {
             !c.is_enum && (c.name.eq_ignore_ascii_case("BackedEnum") || c.ancestors.iter().any(|a| a.eq_ignore_ascii_case("BackedEnum")))
         };
-        if value && matches!(&tt.bound, Type::Object(n, _) if symbols::lookup(n).is_some_and(|c| backed(&c))) {
+        if value && matches!(&tt.bound, Type::Object(n, _, _) if symbols::lookup(n).is_some_and(|c| backed(&c))) {
             return Type::Union(vec![Type::Int, Type::String]);
         }
         return key_or_value_of(&tt.bound, value);
     }
     let cases = match t {
-        Type::Object(class, _) => symbols::lookup(class)
+        Type::Object(class, _, _) => symbols::lookup(class)
             .filter(|c| c.is_enum)
             .map(|c| (c.case_values.clone(), c.name.clone())),
         Type::EnumCase(class, case) => symbols::lookup(class).map(|c| {
@@ -872,16 +872,16 @@ impl Type {
 fn generic_object(base: &str, mut types: Vec<Type>, scope: &dyn Scope) -> Type {
     let main = identifier(base, scope);
     let class_name = match &main {
-        Type::Object(name, _) => name.clone(),
+        Type::Object(name, _, _) => name.clone(),
         // a template's `getObjectClassNames()`: its object bound's class (`T<U>` is `Bound<U>`)
         Type::Template(t) => match &t.bound {
-            Type::Object(name, _) => name.clone(),
+            Type::Object(name, _, _) => name.clone(),
             _ => return Type::Error,
         },
         _ => return Type::Error,
     };
     let Some(reflection) = symbols::lookup(&class_name) else {
-        return Type::Object(class_name, types);
+        return Type::Object(class_name, types, false);
     };
     let iterable = main.is_iterable().yes();
     // the defaults of the templates after the given arguments (a required one is skipped, not filled)
@@ -900,6 +900,7 @@ fn generic_object(base: &str, mut types: Vec<Type>, scope: &dyn Scope) -> Type {
             return Type::Object(
                 class_name,
                 vec![explicit_mixed(), types.pop().expect("one type")],
+                false,
             );
         }
         if class_name == "Generator" && (types.len() == 1 || types.len() == 2) {
@@ -907,10 +908,10 @@ fn generic_object(base: &str, mut types: Vec<Type>, scope: &dyn Scope) -> Type {
                 types.insert(0, explicit_mixed());
             }
             types.extend([explicit_mixed(), explicit_mixed()]);
-            return Type::Object(class_name, types);
+            return Type::Object(class_name, types, false);
         }
         if !iterable || types.len() != 1 || reflection.templates.len() == 1 {
-            return Type::Object(class_name, types);
+            return Type::Object(class_name, types, false);
         }
     }
     if iterable {
@@ -932,7 +933,7 @@ fn generic_object(base: &str, mut types: Vec<Type>, scope: &dyn Scope) -> Type {
             _ => {}
         }
     }
-    Type::Object(class_name, types)
+    Type::Object(class_name, types, false)
 }
 
 /// `expandIntMaskToType()`

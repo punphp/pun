@@ -75,7 +75,7 @@ fn referenced<'t>(ty: &'t Type, position: Variance, out: &mut Vec<(&'t Template,
     let co = position.compose(Covariant);
     match ty {
         Type::Template(t) => out.push((t, position)),
-        Type::Object(class, args) | Type::Static(class, args) => {
+        Type::Object(class, args, _) | Type::Static(class, args) => {
             // `key-of<T>` / `value-of<T>` of a template
             if class == "key-of" || class == "value-of" {
                 return args.iter().for_each(|a| referenced(a, position, out));

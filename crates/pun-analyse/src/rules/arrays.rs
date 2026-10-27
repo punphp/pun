@@ -501,7 +501,7 @@ pub(super) fn key_type(
                     Type::ConstString(declared::parent_name(c.codebase, context?)?.into_bytes()),
                     false,
                 ),
-                Expression::Static(_) => (Type::Object(c.display(context?), vec![]), true),
+                Expression::Static(_) => (Type::Object(c.display(context?), vec![], false), true),
                 e => (key_type(c, e, names, context)?, true),
             };
             receiver_constant(c, &holder, name.value, late)?
@@ -556,7 +556,7 @@ fn signed(t: Type, negative: bool) -> Option<Type> {
 fn receiver_constant(c: &Checker, holder: &Type, name: &[u8], late: bool) -> Option<Type> {
     match holder {
         Type::ConstString(class) => class_constant(c, std::str::from_utf8(class).ok()?, name, false),
-        Type::Object(class, _) | Type::Static(class, _) | Type::This(class) => {
+        Type::Object(class, _, _) | Type::Static(class, _) | Type::This(class) => {
             class_constant(c, class, name, late)
         }
         Type::ClassString(Some(bound)) => receiver_constant(c, bound, name, true),

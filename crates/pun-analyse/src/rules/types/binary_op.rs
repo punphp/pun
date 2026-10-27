@@ -200,7 +200,7 @@ fn check(c: &mut Checker, op: Op, left: &Expression, right: &Expression, sigil: 
         let (Some(l), Some(r)) = (checked(c, left, op, sm), checked(c, right, op, sm)) else { return false };
         // the GMP and BcMath\Number operator extensions type the operations of those objects
         let extension = |t: &Type| {
-            ["GMP", "BcMath\\Number"].iter().any(|k| is_super_type_of(&Type::Object((*k).into(), vec![]), t).yes())
+            ["GMP", "BcMath\\Number"].iter().any(|k| is_super_type_of(&Type::Object((*k).into(), vec![], false), t).yes())
         };
         !extension(&l) && !extension(&r) && fails(op, &l, &r, sm)
     });

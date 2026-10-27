@@ -110,7 +110,7 @@ fn check(c: &mut Checker, ret: &Type, value: Option<&Expression>, at: Span, of: 
     };
     // assistant's call: Mago types `new static`, `new $class` (of `static::class`) and a call returning `static` as
     // the class itself, where PHPStan keeps `static`; a returned object of the class is taken as `static`
-    if let (Type::Static(..), Type::Object(name, args)) = (&ret, &value_type) {
+    if let (Type::Static(..), Type::Object(name, args, _)) = (&ret, &value_type) {
         value_type = Type::Static(name.clone(), args.clone());
     }
     let strict = strict_types(c);
@@ -199,7 +199,7 @@ pub(in super::super) fn arrow_function(c: &mut Checker, f: &ArrowFunction) {
     {
         return;
     }
-    let generator = matches!(&ret, Type::Object(n, _) if n.eq_ignore_ascii_case("Generator"));
+    let generator = matches!(&ret, Type::Object(n, _, _) if n.eq_ignore_ascii_case("Generator"));
     check(c, &ret, Some(f.expression), f.expression.span(), "Anonymous function", generator);
     let strict = strict_types(c);
     super::yields::check(c, &arrow_yields(f.expression), &[], &ret, strict);

@@ -730,7 +730,7 @@ impl<'a, 'arena> Checker<'a, 'arena> {
             Expression::Self_(_) | Expression::Static(_) => self.class_scope()?.name.to_string(),
             Expression::Parent(_) => self.class_scope()?.direct_parent_class?.to_string(),
             e => match self.phpstan_type(e)? {
-                Type::Object(n, _) | Type::Static(n, _) | Type::This(n) | Type::EnumCase(n, _) => n,
+                Type::Object(n, _, _) | Type::Static(n, _) | Type::This(n) | Type::EnumCase(n, _) => n,
                 _ => return None,
             },
         };

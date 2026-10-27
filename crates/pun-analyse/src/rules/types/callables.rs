@@ -140,13 +140,13 @@ fn acceptors(c: &Checker, t: &Type, source: Span, inaccessible: &mut Option<Stri
         Type::ConstArray(a) if a.values.len() == 2 => {
             let class = match &a.values[0] {
                 Type::ConstString(s) => String::from_utf8_lossy(s).into_owned(),
-                Type::Object(n, _) | Type::Static(n, _) | Type::This(n) => n.clone(),
+                Type::Object(n, _, _) | Type::Static(n, _) | Type::This(n) => n.clone(),
                 _ => return None,
             };
             let Type::ConstString(name) = &a.values[1] else { return None };
             method(&class, &String::from_utf8_lossy(name), inaccessible)
         }
-        Type::Object(n, _) | Type::Static(n, _) | Type::This(n) => method(n, "__invoke", inaccessible),
+        Type::Object(n, _, _) | Type::Static(n, _) | Type::This(n) => method(n, "__invoke", inaccessible),
         Type::Union(ts) => ts.iter().map(|t| acceptors(c, t, source, inaccessible)).collect::<Option<Vec<Vec<_>>>>().map(|v| v.concat()),
         _ => None,
     }

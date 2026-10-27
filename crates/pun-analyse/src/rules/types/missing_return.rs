@@ -139,15 +139,15 @@ pub(super) fn late(c: &Checker, t: &Type, class: Option<&ClassLikeMetadata>, php
         // ponytail: a template's OffsetAccessType is not resolved to its bound's offset type
         Type::OffsetAccess(..) => Type::Error,
         // a KeyOfType / ValueOfType of a template, resolved now
-        Type::Object(name, args) if (name == "key-of" || name == "value-of") && args.len() == 1 => {
+        Type::Object(name, args, _) if (name == "key-of" || name == "value-of") && args.len() == 1 => {
             pun_phpstan::resolve::key_or_value_of(&go(&args[0]), name == "value-of")
         }
-        Type::Object(name, args) => Type::Object(c.reflected_name(name.as_bytes()), args.iter().map(go).collect()),
+        Type::Object(name, args, exact) => Type::Object(c.reflected_name(name.as_bytes()), args.iter().map(go).collect(), *exact),
         Type::Static(_, args) if phpdoc && let Some(k) = class => {
             let args = args.iter().map(go).collect();
             let name = c.reflected_name(k.name.as_bytes());
             if k.flags.is_final() || k.kind == SymbolKind::Enum {
-                Type::Object(name, args)
+                Type::Object(name, args, false)
             } else {
                 Type::Static(name, args)
             }
@@ -177,7 +177,7 @@ fn contains_null(t: &Type) -> bool {
 /// `getTemplateType(Generator::class, 'TReturn')`, `None` for ErrorType.
 pub(super) fn generator_return(t: &Type) -> Option<Type> {
     match t {
-        Type::Object(name, args) if name.eq_ignore_ascii_case("Generator") => {
+        Type::Object(name, args, _) if name.eq_ignore_ascii_case("Generator") => {
             Some(args.get(3).cloned().unwrap_or_else(pun_phpstan::types::mixed))
         }
         Type::Never(_) => Some(Type::Never(NeverKind::Implicit)),

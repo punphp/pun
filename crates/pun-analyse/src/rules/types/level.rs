@@ -39,7 +39,7 @@ impl Levels {
         fn go(t: &Type, accepting: &Type) -> Type {
             match t {
                 Type::Callable(_) | Type::Closure(_) => t.clone(),
-                Type::Object(name, args) if !args.is_empty() => generic(name, args, accepting),
+                Type::Object(name, args, exact) if !args.is_empty() => generic(name, args, *exact, accepting),
                 Type::Null | Type::Benevolent(_) => t.traverse(&|i| go(i, accepting)),
                 _ if !matches!(accepting, Type::Null) => t.clone().remove_null().traverse(&|i| go(i, accepting)),
                 _ => t.traverse(&|i| go(i, accepting)),
@@ -47,11 +47,11 @@ impl Levels {
         }
         // `traverseWithoutMapping()`: a generic object's argument loses its null only where the accepting type's
         // does not take one
-        fn generic(name: &str, args: &[Type], accepting: &Type) -> Type {
+        fn generic(name: &str, args: &[Type], exact: bool, accepting: &Type) -> Type {
             let contains_null = |t: &Type| matches!(t, Type::Null) || matches!(t, Type::Union(ts) if ts.contains(&Type::Null));
             let theirs = match accepting {
-                Type::Object(a, theirs) if a.eq_ignore_ascii_case(name) => Some(theirs.clone()),
-                Type::Object(a, theirs) => symbols::lookup(a).and_then(|c| ancestor_args(&c, name, theirs)),
+                Type::Object(a, theirs, _) if a.eq_ignore_ascii_case(name) => Some(theirs.clone()),
+                Type::Object(a, theirs, _) => symbols::lookup(a).and_then(|c| ancestor_args(&c, name, theirs)),
                 _ => None,
             };
             match theirs.filter(|theirs| theirs.len() == args.len()) {
@@ -64,8 +64,9 @@ impl Levels {
                             t => t.clone(),
                         })
                         .collect(),
+                    exact,
                 ),
-                None => Type::Object(name.to_string(), args.to_vec()),
+                None => Type::Object(name.to_string(), args.to_vec(), exact),
             }
         }
         if self.check_nullables { accepted.clone() } else { go(accepted, accepting) }

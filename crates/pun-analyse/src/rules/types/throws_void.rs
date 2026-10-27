@@ -196,7 +196,7 @@ pub(in super::super) fn catches(c: &mut Checker, t: &Try) {
         return;
     }
     let class = c.class_scope();
-    let throwable = Type::Object("Throwable".into(), vec![]);
+    let throwable = Type::Object("Throwable".into(), vec![], false);
     let mut past: Vec<Type> = Vec::new();
     for k in t.catch_clauses.iter() {
         let items = flatten(declared::with_classes(c, || declared::native(c, &k.hint, class)));

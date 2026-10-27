@@ -62,7 +62,7 @@ pub fn cast_is_error(t: &Type, cast: Cast, sm: StrictMixed) -> bool {
 /// ObjectType's casts: numbers only of `SimpleXMLElement` and `GMP` (and an int of a curl handle), a string of a
 /// class with `__toString()` (or `BcMath\Number`, `GMP`).
 fn object(t: &Type, cast: Cast) -> bool {
-    let is = |class: &str| is_super_type_of(&Type::Object(class.into(), vec![]), t).yes();
+    let is = |class: &str| is_super_type_of(&Type::Object(class.into(), vec![], false), t).yes();
     let numeric = is("SimpleXMLElement") || is("GMP");
     match cast {
         Cast::String => {

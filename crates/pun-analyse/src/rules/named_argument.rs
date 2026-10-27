@@ -8,7 +8,7 @@ use std::path::Path;
 
 use mago_codex::metadata::class_like::ClassLikeMetadata;
 use mago_codex::metadata::function_like::FunctionLikeMetadata;
-use mago_span::{HasSpan, Span};
+use mago_span::Span;
 use mago_syntax::cst::*;
 use pun_phpstan::comments::{LinesToIgnore, lines_to_ignore};
 use pun_phpstan::ignore::{Error, ignores_without_comments, local_ignores};
@@ -134,7 +134,7 @@ fn method(c: &Checker, ty: &Type, name: &[u8], counts: &params::Counts) -> Optio
             })
         }
         Type::Template(t) => method(c, &t.bound, name, counts),
-        Type::Object(n, _) | Type::Static(n, _) | Type::This(n) | Type::EnumCase(n, _) => {
+        Type::Object(n, _, _) | Type::Static(n, _) | Type::This(n) | Type::EnumCase(n, _) => {
             let m = c.method_of(n, name).ok().flatten()?;
             let (accepts, final_class) = match &m {
                 members::Method::User { declaring, f, .. } => {
@@ -142,6 +142,9 @@ fn method(c: &Checker, ty: &Type, name: &[u8], counts: &params::Counts) -> Optio
                 }
                 members::Method::Builtin { declaring, .. } => (true, declaring.is_final),
             };
+            // ObjectType resolves the declaring ancestor: an exact Child does not finalize Parent's method.
+            let final_class = final_class || (matches!(ty, Type::Object(_, _, true))
+                && n.eq_ignore_ascii_case(&m.declaring_name()));
             Some(Method {
                 class: m.declaring_name(),
                 name: m.name(),
@@ -272,8 +275,6 @@ pub(super) fn call(
     while let Expression::Parenthesized(p) = object {
         object = p.expression;
     }
-    let exact = c.conditions.exact.contains(&object.span())
-        || matches!(object, Expression::Instantiation(_));
     for name in names {
         let ty = c.phpstan_type(object).map(|t| {
             if nullsafe || super::assign::contains_nullsafe(object) {
@@ -289,10 +290,7 @@ pub(super) fn call(
         else {
             continue;
         };
-        // NewHandler's asFinal() applies to the called-on class, not the class of an inherited declaration.
-        let final_called_on =
-            exact && ty.as_ref().unwrap().object_class_names() == vec![m.class.clone()];
-        if m.private || m.final_class || final_called_on || !m.accepts {
+        if m.private || m.final_class || !m.accepts {
             continue;
         }
         // processArguments(): names bind the actual parameter (including a user variadic's unknown names).

@@ -136,7 +136,7 @@ pub(super) fn referenced_classes(ty: &Type) -> Vec<String> {
             walk(&t.bound, out);
             return;
         }
-        if let Type::Object(name, _)
+        if let Type::Object(name, _, _)
         | Type::Static(name, _)
         | Type::This(name)
         | Type::EnumCase(name, _) = t
@@ -179,8 +179,8 @@ fn infer(pattern: &Type, received: &Type, out: &mut TemplateMap) {
                 out.extend(inner);
             }
         }
-        Type::Object(class, args) if !args.is_empty() => {
-            let Type::Object(other, other_args) = received else {
+        Type::Object(class, args, _) if !args.is_empty() => {
+            let Type::Object(other, other_args, _) = received else {
                 return;
             };
             let ancestor = if other.eq_ignore_ascii_case(class) {
@@ -229,7 +229,7 @@ impl GenericMessages {
 /// its class and its arguments.
 fn generic_types(ty: &Type) -> Vec<(Type, String, Vec<Type>)> {
     fn walk(t: &Type, out: &RefCell<Vec<(Type, String, Vec<Type>)>>) {
-        if let Type::Object(name, args) | Type::Static(name, args) = t
+        if let Type::Object(name, args, _) | Type::Static(name, args) = t
             && !args.is_empty()
         {
             let args = args.iter().map(Type::resolve_to_bounds).collect();
@@ -912,7 +912,7 @@ fn ancestors_check(names: &[String], types: &[Type], m: &AncestorMessages, out: 
     let tag = m.tag;
     let mut unused: Vec<&String> = names.iter().collect();
     for ty in types {
-        let Type::Object(class, args) = ty else {
+        let Type::Object(class, args, _) = ty else {
             out.push(
                 "generics.notCompatible",
                 sprintf(&m.incompatible, &[ty.describe(Level::TypeOnly)]),

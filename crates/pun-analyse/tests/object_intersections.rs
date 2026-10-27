@@ -16,8 +16,13 @@ fn invariant_generic_arguments_compare_compound_types_independently_of_written_o
 }
 
 fn compare(file: &str, capture: &str) {
+    compare_at_level(file, capture, 0);
+}
+
+fn compare_at_level(file: &str, capture: &str, level: u8) {
     let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/object-intersections");
     let mut project = pun_analyse::Project::new(vec![root.join(file)], vec![]);
+    project.level = level;
     project.php_version = 80400;
     let got: Vec<_> = pun_analyse::run(&project)
         .unwrap()
@@ -45,6 +50,15 @@ fn compare(file: &str, capture: &str) {
 }
 
 #[test]
+fn object_metadata_does_not_leak_into_receiver_and_generic_descriptions() {
+    compare_at_level(
+        "metadata.php",
+        include_str!("fixtures/object-intersections/metadata.json"),
+        5,
+    );
+}
+
+#[test]
 fn conditional_mixed_exclusions_match_phpstan() {
     compare(
         "flow.php",
@@ -62,8 +76,7 @@ fn genuine_intersections_keep_inheritance_generics_and_receiver_identity() {
 
 #[test]
 fn exact_instantiations_keep_distinct_classes_and_receiver_producers() {
-    // Exercise the public Analyzer-backed API: Pun's separate PHPStan Type::Object
-    // representation cannot carry the per-value final override into later unions.
+    // Both public analysis paths must retain per-value finality, independently of receiver identity.
     let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/object-intersections");
     let mut project = pun_analyse::Project::new(vec![root.join("exact.php")], vec![]);
     project.php_version = 80400;
@@ -93,6 +106,10 @@ fn exact_instantiations_keep_distinct_classes_and_receiver_producers() {
         })
         .collect();
     assert_eq!(got, want);
+    compare(
+        "exact.php",
+        include_str!("fixtures/object-intersections/exact.json"),
+    );
 }
 
 #[test]
@@ -617,7 +634,7 @@ fn public_object_type_queries_and_unions_match_phpstan() {
     };
     use std::collections::BTreeMap;
 
-    let object = |name: &str| Type::Object(name.into(), vec![]);
+    let object = |name: &str| Type::Object(name.into(), vec![], false);
     let types = BTreeMap::from([
         ("A", object("A")),
         ("B", object("B")),

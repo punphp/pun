@@ -62,7 +62,8 @@ impl PartialEq for Type {
                     excluded: y,
                 },
             ) => a == b && x == y,
-            (T::Object(a, x), T::Object(b, y)) | (T::Static(a, x), T::Static(b, y)) => {
+            // ObjectType::equals() omits the final reflection override; union containment must still see it.
+            (T::Object(a, x, _), T::Object(b, y, _)) | (T::Static(a, x), T::Static(b, y)) => {
                 a == b && x == y
             }
             (T::EnumCase(a, x), T::EnumCase(b, y)) => a == b && x == y,
@@ -161,7 +162,7 @@ pub(super) fn compare(a: &Type, b: &Type) -> (Tri, Vec<String>) {
             return compare(a, &resolved);
         }
     }
-    if let (Type::ObjectShape(shape), Type::Object(class, _)) = (a, b)
+    if let (Type::ObjectShape(shape), Type::Object(class, _, _)) = (a, b)
         && let Some((missing, properties)) = PROPERTIES.with(|p| {
             p.borrow()
                 .iter()
@@ -220,7 +221,7 @@ pub(super) fn compare(a: &Type, b: &Type) -> (Tri, Vec<String>) {
             excluded.describe(Level::Precise),
             a.describe(Level::TypeOnly)
         )],
-        Type::Object(class, args) if result.no() && !args.is_empty() => {
+        Type::Object(class, args, _) if result.no() && !args.is_empty() => {
             super::reasons::generic(class, args, b)
         }
         _ => vec![],

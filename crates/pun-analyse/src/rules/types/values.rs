@@ -53,7 +53,7 @@ fn invalid(c: &mut Checker, e: &Expression, ok: &dyn Fn(&Type) -> bool, unknown:
 }
 
 fn throwable(t: &Type) -> bool {
-    is_super_type_of(&Type::Object("Throwable".into(), vec![]), t).yes()
+    is_super_type_of(&Type::Object("Throwable".into(), vec![], false), t).yes()
 }
 
 pub(in super::super) fn throw(c: &mut Checker, t: &Throw) {

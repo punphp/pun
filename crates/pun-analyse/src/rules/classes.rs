@@ -115,7 +115,7 @@ fn class_string_object(c: &Checker, ty: &Type) -> Option<Type> {
                 .unwrap_or(Type::ObjectWithoutClass),
         ),
         Type::ConstString(n) if class_like(c, &String::from_utf8_lossy(n)).found().is_some() => {
-            Some(Type::Object(String::from_utf8_lossy(n).into_owned(), vec![]))
+            Some(Type::Object(String::from_utf8_lossy(n).into_owned(), vec![], false))
         }
         // TemplateTypeFactory has no TemplateGenericClassStringType: a direct class-string bound falls back
         // to TemplateMixedType. Its union/intersection and ordinary string template subclasses retain bounds.

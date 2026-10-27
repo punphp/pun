@@ -45,13 +45,14 @@ impl<'a, 'arena> Checker<'a, 'arena> {
     /// Convert an observed scope value using the expression's own source metadata.
     pub(in super::super) fn phpstan_type_from(&self, e: &mago_syntax::cst::Expression, t: &TUnion) -> Type {
         use mago_syntax::cst::Expression as E;
-        // Mago types `new` of an unknown class `never` (NonExistentClass), PHPStan as an object of that class
+        // NewHandler retains the named object for unknown/abstract instantiations, despite their errors.
+        // An abstract declaration's asFinal() is a no-op, not an exact reflection or an unreachable value.
         if let E::Instantiation(new) = e
             && let E::Identifier(id) = new.class
             && t.is_never()
-            && self.codebase.get_class_like(self.names.get(id)).is_none()
+            && self.codebase.get_class_like(self.names.get(id)).is_none_or(|class| class.flags.is_abstract())
         {
-            return Type::Object(text(self.names.get(id)), vec![]);
+            return Type::Object(self.reflected_name(self.names.get(id)), vec![], false);
         }
         declared::with_classes(self, || {
             let source = self.source_type(e.span(), &self.origins).or_else(|| {
@@ -129,7 +130,7 @@ impl<'a, 'arena> Checker<'a, 'arena> {
                 _ => return None,
             }
         };
-        let (Type::Object(name, args), Type::Template(template)) = (actual, source) else {
+        let (Type::Object(name, args, false), Type::Template(template)) = (actual, source) else {
             return None;
         };
         let function = self.codebase.function_likes.get(key)?;
@@ -302,7 +303,7 @@ impl<'a, 'arena> Checker<'a, 'arena> {
                                 receiver = template.bound;
                             }
                             let name = match &receiver {
-                                Type::Object(name, _)
+                                Type::Object(name, _, _)
                                 | Type::Static(name, _)
                                 | Type::This(name) => name,
                                 _ => return None,
@@ -330,7 +331,7 @@ impl<'a, 'arena> Checker<'a, 'arena> {
                             } else {
                                 Vec::new()
                             };
-                            (Type::Object(declared::original_name(context), args), class)
+                            (Type::Object(declared::original_name(context), args, false), class)
                         };
                         if matches!(receiver, Type::This(_)) {
                             receiver = Type::Object(
@@ -339,6 +340,7 @@ impl<'a, 'arena> Checker<'a, 'arena> {
                                     .into_iter()
                                     .map(|t| Type::Template(Box::new(t)))
                                     .collect(),
+                                false,
                             );
                         }
                         let super::super::members::Method::User { declaring, f, .. } =
@@ -352,6 +354,7 @@ impl<'a, 'arena> Checker<'a, 'arena> {
                                 .into_iter()
                                 .map(|t| Type::Template(Box::new(t)))
                                 .collect(),
+                            false,
                         );
                         let map = pun_phpstan::types::infer_template_types(&pattern, &receiver);
                         (f, Some(declaring), map)
@@ -549,6 +552,7 @@ impl<'a, 'arena> Checker<'a, 'arena> {
                     .flatten()
                     .map(|p| self.to_phpstan(p))
                     .collect(),
+                false,
             ),
             TAtomic::GenericParameter(g) => {
                 self.generic_parameter(g, explicit_mixed(self.to_phpstan(&g.constraint)))
@@ -713,14 +717,30 @@ impl<'a, 'arena> Checker<'a, 'arena> {
                     .type_parameters
                     .iter()
                     .flat_map(|p| p.iter())
-                    .map(|p| self.to_phpstan(p))
+                    .map(|p| {
+                        let argument = self.to_phpstan(p);
+                        // Constructor arguments have already undergone template inference in Mago.
+                        if n.is_exact {
+                            pun_phpstan::types::remove_final_by_keyword_overrides(&argument)
+                        } else {
+                            argument
+                        }
+                    })
                     .collect();
                 let t = if n.is_this {
                     Type::This(name)
                 } else if n.is_static {
                     Type::Static(name, args)
                 } else {
-                    Type::Object(name, args)
+                    // ClassReflection::asFinal() does not override abstract/non-class/native-final types.
+                    // NewHandler's own generic constructor resolves the class templates by traversing a
+                    // GenericObjectType; recreate() drops its outer reflection override. A dummy or
+                    // inherited constructor instead returns a freshly exact GenericObjectType.
+                    let exact = n.is_exact && self.codebase.get_class_like(n.name.as_bytes()).is_some_and(|class| {
+                        class.kind.is_class() && !class.flags.is_abstract() && !class.flags.is_final()
+                            && (args.is_empty() || self.codebase.get_method(n.name.as_bytes(), b"__construct").is_none())
+                    });
+                    Type::Object(name, args, exact)
                 };
                 let t = n.subtracted_type.as_ref().map_or_else(
                     || t.clone(),
@@ -733,7 +753,7 @@ impl<'a, 'arena> Checker<'a, 'arena> {
             }
             TObject::Enum(e) => match &e.case {
                 Some(case) => Type::EnumCase(self.reflected_name(e.name.as_bytes()), text(case.as_bytes())),
-                None => Type::Object(self.reflected_name(e.name.as_bytes()), vec![]),
+                None => Type::Object(self.reflected_name(e.name.as_bytes()), vec![], false),
             },
             TObject::WithProperties(p) => Type::ObjectShape(
                 p.known_properties
@@ -899,7 +919,9 @@ fn restore_metadata(actual: Type, source: &Type, restore_list: bool) -> Type {
             };
             Type::Template(actual)
         }
-        (actual, Type::Template(source)) => restore_metadata(actual, &source.bound, restore_list),
+        (actual, Type::Template(source)) => restore_metadata(
+            pun_phpstan::types::remove_final_by_keyword_overrides(&actual), &source.bound, restore_list,
+        ),
         (Type::Union(actual) | Type::Benevolent(actual), Type::Benevolent(source)) => {
             pun_phpstan::types::to_benevolent(restore_metadata(
                 Type::Union(actual), &Type::Union(source.clone()), restore_list,
@@ -940,7 +962,7 @@ fn restore_metadata(actual: Type, source: &Type, restore_list: bool) -> Type {
                 Type::Callable(Some(actual))
             }
         }
-        (Type::Object(name, actual), Type::Object(source_name, source))
+        (Type::Object(name, actual, _), Type::Object(source_name, source, exact))
             if name.eq_ignore_ascii_case(source_name) && actual.len() == source.len() =>
         {
             Type::Object(
@@ -950,6 +972,7 @@ fn restore_metadata(actual: Type, source: &Type, restore_list: bool) -> Type {
                     .zip(source)
                     .map(|(a, s)| restore(a, s))
                     .collect(),
+                *exact,
             )
         }
         (Type::Union(parts), source @ Type::ConstArray(_)) => {

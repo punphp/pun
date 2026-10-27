@@ -392,7 +392,7 @@ impl<'a> Checker<'a, '_> {
             let map = |t: &Type| -> Type {
                 fn go(t: &Type, name: &str, class: &str) -> Type {
                     match t {
-                        Type::Object(n, args) if n.eq_ignore_ascii_case(name) => Type::Object(class.to_string(), args.clone()),
+                        Type::Object(n, args, exact) if n.eq_ignore_ascii_case(name) => Type::Object(class.to_string(), args.clone(), *exact),
                         Type::Static(n, args) if n.eq_ignore_ascii_case(name) => Type::Static(class.to_string(), args.clone()),
                         _ => t.traverse(&|t| go(t, name, class)),
                     }
@@ -835,7 +835,7 @@ fn analysed(c: &Checker, m: &Method, name: &str, k: &ClassLikeMetadata) -> Facts
     // transformStaticType(): `static` is the class's object type in a final class
     fn static_to_object(t: &Type) -> Type {
         match t {
-            Type::Static(n, args) => Type::Object(n.clone(), args.clone()),
+            Type::Static(n, args) => Type::Object(n.clone(), args.clone(), false),
             _ => t.traverse(&static_to_object),
         }
     }

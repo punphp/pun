@@ -450,7 +450,7 @@ impl<'a> IssetCheck<'_, 'a, '_> {
             Expression::Access(Access::Property(fetch)) => {
                 let ClassLikeMemberSelector::Identifier(name) = &fetch.property else { unreachable!("a found property") };
                 let on = self.ty(fetch.object).expect("a found property's holder is typed");
-                let class = if is_super_type_of(&Type::Object(declaring.clone(), vec![]), &on).yes() { declaring } else { on.describe(Level::TypeOnly) };
+                let class = if is_super_type_of(&Type::Object(declaring.clone(), vec![], false), &on).yes() { declaring } else { on.describe(Level::TypeOnly) };
                 format!("Property {class}::${}", String::from_utf8_lossy(name.value))
             }
             _ => format!("Static property {declaring}::{}", String::from_utf8_lossy(p.metadata.name.0.as_bytes())),
