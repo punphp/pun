@@ -598,3 +598,11 @@ fn allow_mock_objects_for_data_provider() {
 fn add_param_type_from_depends() {
     check(AddParamTypeDepends, "AddParamTypeFromDependsRector");
 }
+
+#[test]
+fn narrow_unused_set_up_defined_property() {
+    check(
+        PreferLocalOverSetupProperty,
+        "NarrowUnusedSetUpDefinedPropertyRector",
+    );
+}

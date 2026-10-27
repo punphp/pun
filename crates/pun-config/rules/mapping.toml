@@ -696,7 +696,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "phpunit/prefer-depends-attribute" = { fix = "safe", ported = true, status = "decided", summary = "Change depends annotations with value to attribute" }
 "phpunit/prefer-expect-exception" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "Replace setExpectedException*() with expectException*()." }
 "phpunit/prefer-inline-create-stub" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Inline stub property only used to pass as new argument to a method call" }
-"phpunit/prefer-local-over-setup-property" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Turn property used only in setUp() to variable" }
+"phpunit/prefer-local-over-setup-property" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Turn property used only in setUp() to variable" }
 "phpunit/prefer-merged-will-return-callback" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Merge split mocking method ->with($this->callback(...)) and ->willReturn(expr) to single ->willReturnCallback() call" }
 "phpunit/prefer-mock-intersection-return" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Change a MockObject @return union docblock to an intersection type" }
 "phpunit/prefer-named-data-provider-keys" = { fix = "safe", ported = true, status = "decided", summary = "Change the array-index names to the argument name of the dataProvider" }
