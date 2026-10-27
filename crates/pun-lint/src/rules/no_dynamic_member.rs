@@ -21,15 +21,14 @@
 use mago_codex::ttype::atomic::TAtomic;
 use mago_codex::ttype::atomic::object::TObject;
 use mago_codex::ttype::atomic::scalar::TScalar;
-use mago_syntax::cst::{
-    ClassLikeMemberSelector, Expression, Identifier, Node, NodeKind, PartialArgument,
-    PartialArgumentList, Variable,
-};
+use mago_syntax::cst::{ClassLikeMemberSelector, Expression, Node, NodeKind, Variable};
 
 use super::phpstan_describe::describe;
 use super::rector_batch5::resolve_class_name;
 use super::types::class_scope;
 use super::types::facts::facts;
+use pun_problem::Span;
+
 use crate::syntax::{node_span, unparenthesize};
 use crate::{Context, Report, Rule};
 
@@ -37,28 +36,22 @@ use crate::{Context, Report, Rule};
 /// `SimpleXMLElement` check.
 const CRATES: &[&str] = &["stdClass", "SimpleXMLElement"];
 
-fn dynamic(selector: &ClassLikeMemberSelector<'_>) -> bool {
-    matches!(
-        selector,
-        ClassLikeMemberSelector::Variable(_) | ClassLikeMemberSelector::Expression(_)
-    )
-}
-
-/// Whether a partial application is a first-class callable, `(...)`.
-fn first_class(list: &PartialArgumentList<'_>) -> bool {
-    list.arguments.len() == 1
-        && matches!(
-            list.arguments.get(0),
-            Some(PartialArgument::VariadicPlaceholder(_))
-        )
+/// The name of a dynamic member (a variable or an `{expr}`), `None` for an identifier.
+fn dynamic(selector: &ClassLikeMemberSelector<'_>) -> Option<Span> {
+    match selector {
+        ClassLikeMemberSelector::Variable(v) => Some(node_span(v)),
+        ClassLikeMemberSelector::Expression(e) => Some(node_span(unparenthesize(e.expression))),
+        _ => None,
+    }
 }
 
 /// `$scope->getType($expr)->describe(VerbosityLevel::typeOnly())`. A nullsafe access is analysed as the plain access
-/// on its receiver without `null` (`TypeCombinator::removeNull`), so `nullsafe` drops it.
-fn type_of(ctx: &Context<'_>, expr: &Expression<'_>, nullsafe: bool) -> String {
-    let Some(mut t) = facts(ctx).full_type(node_span(unparenthesize(expr))).cloned() else {
-        return "mixed".into();
-    };
+/// on its receiver without `null` (`TypeCombinator::removeNull`), so `nullsafe` drops it. `None` where the analyser
+/// did not reach the expression: unreachable code, which PHPStan does not analyse either.
+fn type_of(ctx: &Context<'_>, expr: &Expression<'_>, nullsafe: bool) -> Option<String> {
+    let mut t = facts(ctx)
+        .full_type(node_span(unparenthesize(expr)))
+        .cloned()?;
     if nullsafe && t.types.len() > 1 {
         t.types = t.types.iter().filter(|a| !a.is_null()).cloned().collect();
     }
@@ -70,38 +63,35 @@ fn type_of(ctx: &Context<'_>, expr: &Expression<'_>, nullsafe: bool) -> String {
         .and_then(|rest| rest.strip_suffix('}'))
         .and_then(|rest| rest.rsplitn(3, ':').nth(1))
     {
-        Some(line) => format!(
+        Some(line) => Some(format!(
             "class@anonymous/{}:{line}",
             ctx.path.display().to_string().trim_start_matches("./")
-        ),
-        None => described,
+        )),
+        None => Some(described),
     }
 }
 
-/// What a static member is accessed on: `Scope::resolveName` for a name, the expression's type otherwise.
-fn class_of(ctx: &Context<'_>, ancestors: &[Node<'_, '_>], class: &Expression<'_>) -> String {
-    let enclosing = || class_scope(ancestors).and_then(|c| c.name);
-    match unparenthesize(class) {
+/// What a static member is accessed on: `Scope::resolveName` for a name, the expression's type otherwise. `None` in
+/// code the analyser did not reach (it typed no member `name`), which PHPStan does not analyse.
+fn class_of(
+    ctx: &Context<'_>,
+    ancestors: &[Node<'_, '_>],
+    name: Span,
+    class: &Expression<'_>,
+) -> Option<String> {
+    facts(ctx).full_type(name)?;
+    let class = unparenthesize(class);
+    let written = || ctx.source[node_span(class).start..node_span(class).end].to_string();
+    let scope = class_scope(ancestors);
+    Some(match class {
+        // Outside a class (or `parent` in one without a parent) the keyword stays as written.
         Expression::Self_(_) | Expression::Static(_) => {
-            enclosing().unwrap_or_else(|| ctx.source[node_span(class).start..node_span(class).end].to_string())
+            scope.and_then(|c| c.name).unwrap_or_else(written)
         }
-        Expression::Parent(_) => class_scope(ancestors)
-            .and_then(|c| c.parent_class)
-            .unwrap_or_else(|| "parent".into()),
-        Expression::Identifier(id) => {
-            let written = String::from_utf8_lossy(id.value());
-            match (id, written.to_ascii_lowercase().as_str()) {
-                (Identifier::Local(_), "self" | "static") => {
-                    enclosing().unwrap_or_else(|| written.into_owned())
-                }
-                (Identifier::Local(_), "parent") => class_scope(ancestors)
-                    .and_then(|c| c.parent_class)
-                    .unwrap_or_else(|| written.into_owned()),
-                _ => resolve_class_name(ancestors, id),
-            }
-        }
-        other => type_of(ctx, other, false),
-    }
+        Expression::Parent(_) => scope.and_then(|c| c.parent_class).unwrap_or_else(written),
+        Expression::Identifier(id) => resolve_class_name(ancestors, id),
+        other => return type_of(ctx, other, false),
+    })
 }
 
 fn report(node: Node<'_, '_>, message: String) -> Report {
@@ -136,8 +126,10 @@ impl Rule for NoDynamicMethodCall {
             Node::NullSafeMethodCall(c) => (c.object, &c.method, true),
             _ => return,
         };
-        if dynamic(method) {
-            let on = type_of(ctx, object, nullsafe);
+        if dynamic(method).is_some() {
+            let Some(on) = type_of(ctx, object, nullsafe) else {
+                return;
+            };
             out.push(report(node, format!("Variable method call on {on}.")));
         }
     }
@@ -164,8 +156,10 @@ impl Rule for NoDynamicMethodCallable {
         let Node::MethodPartialApplication(c) = node else {
             return;
         };
-        if first_class(&c.argument_list) && dynamic(&c.method) {
-            let on = type_of(ctx, c.object, false);
+        if c.argument_list.is_first_class_callable() && dynamic(&c.method).is_some() {
+            let Some(on) = type_of(ctx, c.object, false) else {
+                return;
+            };
             out.push(report(node, format!("Variable method call on {on}.")));
         }
     }
@@ -192,9 +186,14 @@ impl Rule for NoDynamicStaticCall {
         let Node::StaticMethodCall(c) = node else {
             return;
         };
-        if dynamic(&c.method) {
-            let on = class_of(ctx, ancestors, c.class);
-            out.push(report(node, format!("Variable static method call on {on}.")));
+        if let Some(name) = dynamic(&c.method) {
+            let Some(on) = class_of(ctx, ancestors, name, c.class) else {
+                return;
+            };
+            out.push(report(
+                node,
+                format!("Variable static method call on {on}."),
+            ));
         }
     }
 }
@@ -220,9 +219,16 @@ impl Rule for NoDynamicStaticCallable {
         let Node::StaticMethodPartialApplication(c) = node else {
             return;
         };
-        if first_class(&c.argument_list) && dynamic(&c.method) {
-            let on = class_of(ctx, ancestors, c.class);
-            out.push(report(node, format!("Variable static method call on {on}.")));
+        if let Some(name) = dynamic(&c.method)
+            && c.argument_list.is_first_class_callable()
+        {
+            let Some(on) = class_of(ctx, ancestors, name, c.class) else {
+                return;
+            };
+            out.push(report(
+                node,
+                format!("Variable static method call on {on}."),
+            ));
         }
     }
 }
@@ -248,13 +254,18 @@ impl Rule for NoDynamicStaticProperty {
         let Node::StaticPropertyAccess(p) = node else {
             return;
         };
-        if !matches!(p.property, Variable::Direct(_)) {
-            let on = class_of(ctx, ancestors, p.class);
-            out.push(report(
-                node,
-                format!("Variable static property access on {on}."),
-            ));
-        }
+        let name = match &p.property {
+            Variable::Direct(_) => return,
+            Variable::Indirect(i) => node_span(unparenthesize(i.expression)),
+            Variable::Nested(n) => node_span(n.variable),
+        };
+        let Some(on) = class_of(ctx, ancestors, name, p.class) else {
+            return;
+        };
+        out.push(report(
+            node,
+            format!("Variable static property access on {on}."),
+        ));
     }
 }
 
@@ -281,10 +292,8 @@ impl Rule for NoDynamicProperty {
             Node::NullSafePropertyAccess(p) => (p.object, &p.property, true),
             _ => return,
         };
-        let name = match property {
-            ClassLikeMemberSelector::Variable(v) => node_span(v),
-            ClassLikeMemberSelector::Expression(e) => node_span(unparenthesize(e.expression)),
-            _ => return,
+        let Some(name) = dynamic(property) else {
+            return;
         };
         let facts = facts(ctx);
         // `isLiteralString()->yes()`: every member of the name's type is a string from literals.
@@ -297,20 +306,24 @@ impl Rule for NoDynamicProperty {
         if literal {
             return;
         }
-        let crate_class = facts.full_type(node_span(unparenthesize(object))).is_some_and(|t| {
-            t.types.iter().any(|a| match a {
-                TAtomic::Object(TObject::Named(n)) => CRATES.iter().any(|c| {
-                    facts
-                        .codebase
-                        .is_instance_of(n.name.as_bytes(), c.as_bytes())
-                }),
-                _ => false,
-            })
-        });
+        let crate_class = facts
+            .full_type(node_span(unparenthesize(object)))
+            .is_some_and(|t| {
+                t.types.iter().any(|a| match a {
+                    TAtomic::Object(TObject::Named(n)) => CRATES.iter().any(|c| {
+                        facts
+                            .codebase
+                            .is_instance_of(n.name.as_bytes(), c.as_bytes())
+                    }),
+                    _ => false,
+                })
+            });
         if crate_class {
             return;
         }
-        let on = type_of(ctx, object, nullsafe);
+        let Some(on) = type_of(ctx, object, nullsafe) else {
+            return;
+        };
         out.push(report(node, format!("Variable property access on {on}.")));
     }
 }

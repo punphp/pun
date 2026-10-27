@@ -59,7 +59,10 @@ impl Rule for RequireStrictInArray {
             return;
         };
         if haystack_type.types.is_empty()
-            || !haystack_type.types.iter().all(|a| matches!(a, TAtomic::Array(_)))
+            || !haystack_type
+                .types
+                .iter()
+                .all(|a| matches!(a, TAtomic::Array(_)))
             || needle_type.is_mixed()
         {
             return;
@@ -89,10 +92,11 @@ impl Rule for RequireStrictInArray {
         }
         let end = node_span(haystack).end;
         // After named arguments a positional one is a compile error, where Rector writes one.
-        let text = match matches!(needle, Argument::Named(_)) || matches!(haystack, Argument::Named(_)) {
-            true => ", strict: true",
-            false => ", true",
-        };
+        let text =
+            match matches!(needle, Argument::Named(_)) || matches!(haystack, Argument::Named(_)) {
+                true => ", strict: true",
+                false => ", true",
+            };
         out.push(Report {
             span: node_span(call),
             message: "Pass `true` to `in_array()`: the needle and the haystack's values have the same type."

@@ -24,7 +24,11 @@ impl Rule for RemoveFunctionCall {
     fn configure(&mut self, options: &serde_json::Value) -> Result<(), String> {
         self.functions = items(options)?
             .into_iter()
-            .map(|v| v.as_str().map(str::to_string).ok_or("each of `items` must be a string"))
+            .map(|v| {
+                v.as_str()
+                    .map(str::to_string)
+                    .ok_or("each of `items` must be a string")
+            })
             .collect::<Result<_, _>>()?;
         Ok(())
     }

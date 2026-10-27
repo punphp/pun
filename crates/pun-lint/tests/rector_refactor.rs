@@ -12,17 +12,69 @@
 mod lint_c;
 
 use lint_c::{run_class, run_class_at, run_class_with};
-use pun_lint::{Linter, Rule};
+use mago_syntax::cst::Node;
 use pun_lint::rules::{
-    AddOverrideAttribute, NoExtraArguments, RenameMethod, ReplaceArrayAccess,
-    RemoveFunctionArgument, RemoveFunctionCall, RenameCast, RenameClassConstant, RenameConstant,
-    PreferClassNameConstant, RenameFunction, RequireStrictInArray, ReplaceFunctionWithConstant, ReplaceFunctionWithNew, ReplaceFunctionWithStatic,
+    AddOverrideAttribute, NoExtraArguments, PreferClassNameConstant, RemoveFunctionArgument,
+    RemoveFunctionCall, RenameCast, RenameClassConstant, RenameConstant, RenameFunction,
+    RenameMethod, ReplaceArrayAccess, ReplaceFunctionWithConstant, ReplaceFunctionWithNew,
+    ReplaceFunctionWithStatic, RequireStrictInArray,
 };
+use pun_lint::{Linter, Rule};
 use serde_json::{Value, json};
+use std::path::Path;
 
-fn check(mut rule: impl Rule + 'static, options: Value, class: &str) {
-    rule.configure(&options).unwrap();
-    run_class(vec![Box::new(rule)], class);
+fn configured<R: Rule + 'static>(mut rule: R, options: &Value) -> Box<dyn Rule> {
+    rule.configure(options).unwrap();
+    Box::new(rule)
+}
+
+fn check<R: Rule + 'static>(make: fn() -> R, options: Value, class: &str) {
+    run_class(vec![configured(make(), &options)], class);
+    everywhere(|| configured(make(), &options), class, 80400);
+}
+
+/// A rule called on every node, not only the kinds of its `targets()`.
+struct Everywhere(Box<dyn Rule>);
+
+impl Rule for Everywhere {
+    fn id(&self) -> &'static str {
+        self.0.id()
+    }
+
+    fn visit<'ast, 'arena>(
+        &self,
+        node: Node<'ast, 'arena>,
+        ancestors: &[Node<'ast, 'arena>],
+        ctx: &pun_lint::Context<'_>,
+        out: &mut Vec<pun_lint::Report>,
+    ) {
+        self.0.visit(node, ancestors, ctx, out);
+    }
+}
+
+/// `targets()` only spares the engine work: called on every node, the rule reports on each input of `class` what it
+/// reports when called on its targets.
+fn everywhere(make: impl Fn() -> Box<dyn Rule>, class: &str, php_version: u32) {
+    let targeted = Linter::new(vec![make()], php_version);
+    let everywhere = Linter::new(vec![Box::new(Everywhere(make()))], php_version);
+    let root = Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("tests/rector")
+        .join(class);
+    for dir in ["Fixture", "Oracle", "Pun"] {
+        let Ok(entries) = std::fs::read_dir(root.join(dir)) else {
+            continue;
+        };
+        for path in entries.map(|e| e.unwrap().path()) {
+            let content = std::fs::read_to_string(&path).unwrap();
+            let input = content.split("-----\n").next().unwrap();
+            assert_eq!(
+                everywhere.check(&path, input).unwrap(),
+                targeted.check(&path, input).unwrap(),
+                "{}",
+                path.display()
+            );
+        }
+    }
 }
 
 /// `configure` rejects each of `bad` with the message `error`.
@@ -37,7 +89,7 @@ fn rejects(mut rule: impl Rule, bad: &[(Value, &str)]) {
 #[test]
 fn remove_func_call_arg() {
     check(
-        RemoveFunctionArgument::default(),
+        RemoveFunctionArgument::default,
         json!({"items": [{"function": "ldap_first_attribute", "argument-position": 2}]}),
         "RemoveFuncCallArgRector",
     );
@@ -45,7 +97,10 @@ fn remove_func_call_arg() {
         RemoveFunctionArgument::default(),
         &[
             (json!(["f"]), "options must be a table"),
-            (json!({"f": 1}), "unknown option `f`; the list goes under `items`"),
+            (
+                json!({"f": 1}),
+                "unknown option `f`; the list goes under `items`",
+            ),
             (json!({"items": 1}), "`items` must be an array"),
             (json!({"items": [1]}), "each of `items` must be a table"),
             (
@@ -75,7 +130,7 @@ fn remove_func_call_arg() {
 #[test]
 fn remove_func_call() {
     check(
-        RemoveFunctionCall::default(),
+        RemoveFunctionCall::default,
         json!({"items": ["var_dump"]}),
         "RemoveFuncCallRector",
     );
@@ -88,15 +143,18 @@ fn remove_func_call() {
 /// The laravel preset's `short_scalar_cast` writes the same short casts.
 #[test]
 fn rename_cast() {
-    let mut rule = RenameCast::default();
-    rule.configure(&json!({"items": [
-            {"from-cast-expr-class": "PhpParser\\Node\\Expr\\Cast\\Double", "from-cast-kind": 3, "to-cast-kind": 2},
-            {"from-cast-expr-class": "PhpParser\\Node\\Expr\\Cast\\Double", "from-cast-kind": 1, "to-cast-kind": 2},
-            {"from-cast-expr-class": "PhpParser\\Node\\Expr\\Cast\\Int_", "from-cast-kind": 2, "to-cast-kind": 1},
-        ]}))
-        .unwrap();
+    let options = json!({"items": [
+        {"from-cast-expr-class": "PhpParser\\Node\\Expr\\Cast\\Double", "from-cast-kind": 3, "to-cast-kind": 2},
+        {"from-cast-expr-class": "PhpParser\\Node\\Expr\\Cast\\Double", "from-cast-kind": 1, "to-cast-kind": 2},
+        {"from-cast-expr-class": "PhpParser\\Node\\Expr\\Cast\\Int_", "from-cast-kind": 2, "to-cast-kind": 1},
+    ]});
+    everywhere(
+        || configured(RenameCast::default(), &options),
+        "RenameCastRector",
+        80400,
+    );
     run_class_with(
-        vec![Box::new(rule)],
+        vec![configured(RenameCast::default(), &options)],
         "RenameCastRector",
         80400,
         &["Fixture/keep_parentheses.php.inc", "Oracle/casts.php.inc"],
@@ -113,7 +171,7 @@ fn rename_cast() {
 #[test]
 fn rename_constant() {
     check(
-        RenameConstant::default(),
+        RenameConstant::default,
         json!({"MYSQL_ASSOC": "MYSQLI_ASSOC", "OLD_CONSTANT": "NEW_CONSTANT"}),
         "RenameConstantRector",
     );
@@ -121,7 +179,10 @@ fn rename_constant() {
         RenameConstant::default(),
         &[
             (json!({"A": 1}), "`A` must be a string"),
-            (json!({"A\\B": "C"}), "\"A\\B\" is not a valid constant name"),
+            (
+                json!({"A\\B": "C"}),
+                "\"A\\B\" is not a valid constant name",
+            ),
         ],
     );
 }
@@ -129,11 +190,14 @@ fn rename_constant() {
 /// `in_for` renames `sizeof` to `count`, which the laravel preset's `no_alias_functions` does too.
 #[test]
 fn rename_function() {
-    let mut rule = RenameFunction::default();
-    rule.configure(&json!({"view": "Laravel\\Templating\\render", "sprintf": "Safe\\sprintf", "abc2": "abc", "sizeof": "count"}))
-        .unwrap();
+    let options = json!({"view": "Laravel\\Templating\\render", "sprintf": "Safe\\sprintf", "abc2": "abc", "sizeof": "count"});
+    everywhere(
+        || configured(RenameFunction::default(), &options),
+        "RenameFunctionRector",
+        80400,
+    );
     run_class_with(
-        vec![Box::new(rule)],
+        vec![configured(RenameFunction::default(), &options)],
         "RenameFunctionRector",
         80400,
         &["Fixture/in_for.php.inc"],
@@ -142,9 +206,10 @@ fn rename_function() {
 
 #[test]
 fn rename_class_const_fetch() {
-    let source = "Rector\\Tests\\Renaming\\Rector\\ClassConstFetch\\RenameClassConstFetchRector\\Source";
+    let source =
+        "Rector\\Tests\\Renaming\\Rector\\ClassConstFetch\\RenameClassConstFetchRector\\Source";
     check(
-        RenameClassConstant::default(),
+        RenameClassConstant::default,
         json!({"items": [
             {"old-class": format!("{source}\\LocalFormEvents"), "old-constant": "PRE_BIND", "new-constant": "PRE_SUBMIT"},
             {"old-class": format!("{source}\\LocalFormEvents"), "old-constant": "BIND", "new-constant": "SUBMIT"},
@@ -165,7 +230,7 @@ fn rename_class_const_fetch() {
 #[test]
 fn func_call_to_const_fetch() {
     check(
-        ReplaceFunctionWithConstant::default(),
+        ReplaceFunctionWithConstant::default,
         json!({"php_sapi_name": "PHP_SAPI", "pi": "M_PI"}),
         "FuncCallToConstFetchRector",
     );
@@ -174,7 +239,7 @@ fn func_call_to_const_fetch() {
 #[test]
 fn func_call_to_new() {
     check(
-        ReplaceFunctionWithNew::default(),
+        ReplaceFunctionWithNew::default,
         json!({"collection": "Collection"}),
         "FuncCallToNewRector",
     );
@@ -183,7 +248,7 @@ fn func_call_to_new() {
 #[test]
 fn func_call_to_static_call() {
     check(
-        ReplaceFunctionWithStatic::default(),
+        ReplaceFunctionWithStatic::default,
         json!({"items": [
             {"old-func-name": "view", "new-class-name": "SomeStaticClass", "new-method-name": "render"},
             {"old-func-name": "SomeNamespaced\\view", "new-class-name": "AnotherStaticClass", "new-method-name": "render"},
@@ -202,7 +267,7 @@ fn func_call_to_static_call() {
 #[test]
 fn string_class_name_to_class_constant() {
     check(
-        PreferClassNameConstant::default(),
+        PreferClassNameConstant::default,
         json!({"items": ["Nette\\*", "Error", "Exception"]}),
         "StringClassNameToClassConstantRector",
     );
@@ -214,7 +279,7 @@ fn string_class_name_to_class_constant() {
 
 #[test]
 fn strict_in_array() {
-    check(RequireStrictInArray, Value::Null, "StrictInArrayRector");
+    check(|| RequireStrictInArray, Value::Null, "StrictInArrayRector");
 }
 
 /// From PHP 8.5 (`OVERRIDE_ATTRIBUTE_ON_PROPERTIES`); Oracle/names at `phpVersion(80400)` was left as it is.
@@ -225,7 +290,13 @@ fn add_override_attribute_to_overridden_properties() {
         "AddOverrideAttributeToOverriddenPropertiesRector",
         80500,
     );
-    let code = "<?php\n\nclass B\n{\n    public $a;\n}\n\nclass C extends B\n{\n    public $a;\n}\n";
+    everywhere(
+        || Box::new(AddOverrideAttribute),
+        "AddOverrideAttributeToOverriddenPropertiesRector",
+        80500,
+    );
+    let code =
+        "<?php\n\nclass B\n{\n    public $a;\n}\n\nclass C extends B\n{\n    public $a;\n}\n";
     let found = Linter::new(vec![Box::new(AddOverrideAttribute)], 80400)
         .check(std::path::Path::new("f.php"), code)
         .unwrap();
@@ -236,9 +307,10 @@ fn add_override_attribute_to_overridden_properties() {
 /// `pun migrate` writes it.
 #[test]
 fn array_dim_fetch_to_method_call() {
-    let object = |class: &str| json!({"class-name": class, "current-ancestors": [], "method-cache": []});
+    let object =
+        |class: &str| json!({"class-name": class, "current-ancestors": [], "method-cache": []});
     check(
-        ReplaceArrayAccess::default(),
+        ReplaceArrayAccess::default,
         json!({"items": [
             {"object-type": object("SomeClass"), "method": "get", "set-method": "set", "exists-method": "has", "unset-method": "unset"},
             {"object-type": object("Container"), "method": "get"},
@@ -248,10 +320,22 @@ fn array_dim_fetch_to_method_call() {
     rejects(
         ReplaceArrayAccess::default(),
         &[
-            (json!({"items": [{"method": "get"}]}), "each of `items` needs `object-type`"),
-            (json!({"items": [{"object-type": "A", "method": "get"}]}), "`object-type` must be a table with a `class-name`"),
-            (json!({"items": [{"object-type": {"class-name": "A", "x": 1}, "method": "get"}]}), "unknown key `x` in `object-type`; it takes `class-name`"),
-            (json!({"items": [{"object-type": {"class-name": "A"}, "method": "get", "set-method": 1}]}), "`set-method` must be a string"),
+            (
+                json!({"items": [{"method": "get"}]}),
+                "each of `items` needs `object-type`",
+            ),
+            (
+                json!({"items": [{"object-type": "A", "method": "get"}]}),
+                "`object-type` must be a table with a `class-name`",
+            ),
+            (
+                json!({"items": [{"object-type": {"class-name": "A", "x": 1}, "method": "get"}]}),
+                "unknown key `x` in `object-type`; it takes `class-name`",
+            ),
+            (
+                json!({"items": [{"object-type": {"class-name": "A"}, "method": "get", "set-method": 1}]}),
+                "`set-method` must be a string",
+            ),
         ],
     );
 }
@@ -265,7 +349,7 @@ fn rename_method() {
     let mut keyed = rename("Nette\\Utils\\Html".into(), "addToArray", "addToHtmlArray");
     keyed["array-key"] = json!("hey");
     check(
-        RenameMethod::default(),
+        RenameMethod::default,
         json!({"items": [
             rename(format!("{source}AbstractType"), "setDefaultOptions", "configureOptions"),
             rename("Nette\\Utils\\Html".into(), "add", "addHtml"),
@@ -288,9 +372,18 @@ fn rename_method() {
     rejects(
         RenameMethod::default(),
         &[
-            (json!({"items": [{"class": "A", "old-method": "a"}]}), "each of `items` needs `new-method`"),
-            (json!({"items": [{"class": "A", "old-method": "a", "new-method": "b", "array-key": []}]}), "`array-key` must be a string or an integer"),
-            (json!({"items": [{"class": "A", "old-method": "a-b", "new-method": "b"}]}), "\"a-b\" is not a valid method name"),
+            (
+                json!({"items": [{"class": "A", "old-method": "a"}]}),
+                "each of `items` needs `new-method`",
+            ),
+            (
+                json!({"items": [{"class": "A", "old-method": "a", "new-method": "b", "array-key": []}]}),
+                "`array-key` must be a string or an integer",
+            ),
+            (
+                json!({"items": [{"class": "A", "old-method": "a-b", "new-method": "b"}]}),
+                "\"a-b\" is not a valid method name",
+            ),
         ],
     );
 }
@@ -307,15 +400,105 @@ fn rename_method_parent_interface_and_integer_key() {
     ]}))
     .unwrap();
     let interfaces = "<?php\n\nnamespace App;\n\ninterface Base\n{\n    public function old();\n}\n\ninterface Child extends Base\n{\n    public function old();\n}\n\ninterface Sub extends Child\n{\n    public function old();\n}\n\n";
-    let code = format!("{interfaces}class K\n{{\n    public function a() {{}}\n}}\n\nfunction f(K $k)\n{{\n    return $k->a();\n}}\n");
+    let code = format!(
+        "{interfaces}class K\n{{\n    public function a() {{}}\n}}\n\nfunction f(K $k)\n{{\n    return $k->a();\n}}\n"
+    );
     let fixed = Linter::new(vec![Box::new(rule)], 80400)
         .fix(std::path::Path::new("f.php"), &code)
         .unwrap();
-    let expected = format!("{interfaces}class K\n{{\n    public function b() {{}}\n}}\n\nfunction f(K $k)\n{{\n    return $k->b()[3];\n}}\n");
+    let expected = format!(
+        "{interfaces}class K\n{{\n    public function b() {{}}\n}}\n\nfunction f(K $k)\n{{\n    return $k->b()[3];\n}}\n"
+    );
     assert_eq!(fixed.source, expected);
 }
 
 #[test]
 fn remove_extra_parameters() {
-    check(NoExtraArguments, Value::Null, "RemoveExtraParametersRector");
+    check(
+        || NoExtraArguments,
+        Value::Null,
+        "RemoveExtraParametersRector",
+    );
+}
+
+/// What Rector 2.6.1 wrote with `RenameFunctionRector` `['strlen' => 'STRLEN']` and `RenameConstantRector`
+/// `['my_const' => 'MY_CONST']`: every spelling is renamed, and the one already written as the new name is left as it is
+/// (no report: the diff does not touch it).
+#[test]
+fn rename_to_another_case() {
+    let rules = || -> Vec<Box<dyn Rule>> {
+        vec![
+            configured(RenameFunction::default(), &json!({"strlen": "STRLEN"})),
+            configured(RenameConstant::default(), &json!({"my_const": "MY_CONST"})),
+        ]
+    };
+    let code = "<?php\n\nstrlen('a');\nSTRLEN('b');\nStrlen('c');\necho my_const;\necho MY_CONST;\necho My_Const;\n";
+    let path = Path::new("f.php");
+    let found = Linter::new(rules(), 80400).check(path, code).unwrap();
+    assert_eq!(found.len(), 4);
+    let fixed = Linter::new(rules(), 80400).fix(path, code).unwrap();
+    assert_eq!(
+        fixed.source,
+        "<?php\n\nSTRLEN('a');\nSTRLEN('b');\nSTRLEN('c');\necho MY_CONST;\necho MY_CONST;\necho MY_CONST;\n"
+    );
+}
+
+/// A configurable rule without options (pun.toml turns it on with none) reports nothing.
+#[test]
+fn unconfigured_rules_do_nothing() {
+    let cases: Vec<(Box<dyn Rule>, &str)> = vec![
+        (
+            Box::new(RemoveFunctionArgument::default()),
+            "RemoveFuncCallArgRector",
+        ),
+        (
+            Box::new(RemoveFunctionCall::default()),
+            "RemoveFuncCallRector",
+        ),
+        (Box::new(RenameCast::default()), "RenameCastRector"),
+        (
+            Box::new(RenameClassConstant::default()),
+            "RenameClassConstFetchRector",
+        ),
+        (Box::new(RenameConstant::default()), "RenameConstantRector"),
+        (Box::new(RenameFunction::default()), "RenameFunctionRector"),
+        (Box::new(RenameMethod::default()), "RenameMethodRector"),
+        (
+            Box::new(ReplaceArrayAccess::default()),
+            "ArrayDimFetchToMethodCallRector",
+        ),
+        (
+            Box::new(ReplaceFunctionWithConstant::default()),
+            "FuncCallToConstFetchRector",
+        ),
+        (
+            Box::new(ReplaceFunctionWithNew::default()),
+            "FuncCallToNewRector",
+        ),
+        (
+            Box::new(ReplaceFunctionWithStatic::default()),
+            "FuncCallToStaticCallRector",
+        ),
+    ];
+    for (rule, class) in cases {
+        let linter = Linter::new(vec![rule], 80400);
+        let root = Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("tests/rector")
+            .join(class);
+        for dir in ["Fixture", "Oracle"] {
+            for path in std::fs::read_dir(root.join(dir))
+                .unwrap()
+                .map(|e| e.unwrap().path())
+            {
+                let content = std::fs::read_to_string(&path).unwrap();
+                let input = content.split("-----\n").next().unwrap();
+                assert_eq!(
+                    linter.check(&path, input).unwrap(),
+                    [],
+                    "{}",
+                    path.display()
+                );
+            }
+        }
+    }
 }

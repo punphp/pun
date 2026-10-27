@@ -59,7 +59,10 @@ fn reorder<'a>(args: &[&'a Argument<'a>]) -> Option<Vec<Arg<'a>>> {
         return Some(appended);
     }
     slots[0]?;
-    let mut out: Vec<Arg<'a>> = slots.into_iter().map(|s| s.map_or(Arg::Default, Arg::Given)).collect();
+    let mut out: Vec<Arg<'a>> = slots
+        .into_iter()
+        .map(|s| s.map_or(Arg::Default, Arg::Given))
+        .collect();
     out.append(&mut appended);
     Some(out)
 }
@@ -89,15 +92,22 @@ fn allowed(values: &[TAtomic]) -> bool {
     if values.is_empty() {
         return false;
     }
-    let has = |b: bool| values.iter().any(|a| matches!(a, TAtomic::Scalar(TScalar::Bool(x)) if x.value == Some(b)));
+    let has = |b: bool| {
+        values
+            .iter()
+            .any(|a| matches!(a, TAtomic::Scalar(TScalar::Bool(x)) if x.value == Some(b)))
+    };
     if has(true) && has(false) {
         return false;
     }
     // A `0` next to or inside an integer range merges into it.
-    let zero = values.iter().any(|a| matches!(a, TAtomic::Scalar(TScalar::Integer(TInteger::Literal(0)))));
+    let zero = values
+        .iter()
+        .any(|a| matches!(a, TAtomic::Scalar(TScalar::Integer(TInteger::Literal(0)))));
     let touches_zero = values.iter().any(|a| match a {
         TAtomic::Scalar(TScalar::Integer(i)) if !i.is_literal() => {
-            i.get_minimum_value().is_none_or(|min| min <= 1) && i.get_maximum_value().is_none_or(|max| max >= -1)
+            i.get_minimum_value().is_none_or(|min| min <= 1)
+                && i.get_maximum_value().is_none_or(|max| max >= -1)
         }
         _ => false,
     });
@@ -131,7 +141,9 @@ impl Rule for RequireArrayFilterCallback {
         ctx: &Context<'_>,
         out: &mut Vec<Report>,
     ) {
-        let Node::FunctionCall(call) = node else { return };
+        let Node::FunctionCall(call) = node else {
+            return;
+        };
         let Expression::Identifier(name) = call.function else {
             return;
         };
@@ -146,19 +158,23 @@ impl Rule for RequireArrayFilterCallback {
         let message = match &args[..] {
             [Arg::Given(array)] => {
                 let mut values: Vec<TAtomic> = Vec::new();
-                let known = facts.full_type(node_span(unparenthesize(array))).is_some_and(|t| {
-                    t.types.iter().all(|atomic| match get_iterable_parameters(atomic, &facts.codebase) {
-                        Some((_, value)) => {
-                            for v in value.types.iter() {
-                                if !values.contains(v) {
-                                    values.push(v.clone());
+                let known = facts
+                    .full_type(node_span(unparenthesize(array)))
+                    .is_some_and(|t| {
+                        t.types.iter().all(|atomic| {
+                            match get_iterable_parameters(atomic, &facts.codebase) {
+                                Some((_, value)) => {
+                                    for v in value.types.iter() {
+                                        if !values.contains(v) {
+                                            values.push(v.clone());
+                                        }
+                                    }
+                                    true
                                 }
+                                None => false,
                             }
-                            true
-                        }
-                        None => false,
-                    })
-                });
+                        })
+                    });
                 if known && allowed(&values) {
                     return;
                 }
@@ -167,9 +183,13 @@ impl Rule for RequireArrayFilterCallback {
             [_, callback, ..] => {
                 let null = match callback {
                     Arg::Default => true,
-                    Arg::Given(e) => facts
-                        .full_type(node_span(unparenthesize(e)))
-                        .is_some_and(|t| !t.types.is_empty() && t.types.iter().all(TAtomic::is_null)),
+                    Arg::Given(e) => {
+                        facts
+                            .full_type(node_span(unparenthesize(e)))
+                            .is_some_and(|t| {
+                                !t.types.is_empty() && t.types.iter().all(TAtomic::is_null)
+                            })
+                    }
                 };
                 if !null {
                     return;

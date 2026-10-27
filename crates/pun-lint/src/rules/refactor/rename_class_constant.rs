@@ -123,5 +123,3 @@ impl Rule for RenameClassConstant {
         }
     }
 }
-
-

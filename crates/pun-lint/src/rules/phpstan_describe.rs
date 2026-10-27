@@ -2,53 +2,60 @@
 //! ported from phpstan-strict-rules print them in their messages (`Variable method call on %s.`).
 //!
 //! A union is described as PHPStan's `UnionType` describes itself at that level: each member generalized (a literal
-//! `'a'` is `string`, `1` is `int`, `true` is `bool`), the same descriptions merged, sorted as
-//! `UnionTypeHelper::sortTypes` sorts them (`null` last, the rest by `strcasecmp` of their descriptions), and joined
-//! with `|`; anything with `mixed` in it is `mixed`. An object is its class name, with its type arguments in `<>` when
-//! it has them, a class the codebase does not know too; `$this` is `$this(Class)` and `static` is `static(Class)`.
+//! `'a'` is `string`, `1` is `int`, an enum case stays `Enum::Case`, `true` and `false` stay, both are `bool`), the
+//! arrays merged into one as `TypeCombinator::union` merges them, the same descriptions merged, sorted as
+//! `UnionTypeHelper::sortTypes` sorts them (`null` last, `true` and `false` before it, the rest by `strcasecmp` of their
+//! descriptions), and joined with `|`; anything with `mixed` in it is `mixed`. An object is its class name, with its
+//! type arguments in `<>` when it has them, a class the codebase does not know too; `$this` is `$this(Class)` and
+//! `static` is `static(Class)`.
 
+use mago_codex::ttype::TType;
 use mago_codex::ttype::atomic::TAtomic;
+use mago_codex::ttype::atomic::array::TArray;
+use mago_codex::ttype::atomic::array::key::ArrayKey;
 use mago_codex::ttype::atomic::object::TObject;
 use mago_codex::ttype::atomic::reference::TReference;
 use mago_codex::ttype::atomic::scalar::TScalar;
-use mago_codex::ttype::TType;
 use mago_codex::ttype::union::TUnion;
 
-/// One member of a union, generalized; an intersection (`A&B`) is its members described and sorted as
-/// `IntersectionType::describe` sorts them (`UnionTypeHelper::sortTypes`).
-fn atomic(t: &TAtomic, alone: bool) -> String {
+/// One member of a union, generalized, as the parts of the union it stands for (`array-key` is `int` and `string`); an
+/// intersection (`A&B`) is one part, its members described and sorted as `IntersectionType::describe` sorts them
+/// (`UnionTypeHelper::sortTypes`).
+fn atomic(t: &TAtomic) -> Vec<String> {
     let Some(others) = t.get_intersection_types().filter(|o| !o.is_empty()) else {
-        return single(t, alone);
+        return single(t);
     };
-    let mut parts = vec![single(t, true)];
-    parts.extend(others.iter().map(|o| single(o, true)));
+    let mut parts = single(t);
+    parts.extend(others.iter().flat_map(single));
     parts.sort_by_key(|p| p.to_ascii_lowercase());
-    parts.join("&")
+    vec![parts.join("&")]
 }
 
-fn single(t: &TAtomic, alone: bool) -> String {
+fn single(t: &TAtomic) -> Vec<String> {
+    let one = |s: &str| vec![s.to_string()];
     match t {
-        TAtomic::Null => "null".into(),
-        TAtomic::Never => "never".into(),
-        TAtomic::Void => "void".into(),
+        // The value of a call of a `void` function is `null` in PHPStan's scope.
+        TAtomic::Null | TAtomic::Void => one("null"),
+        TAtomic::Never => one("never"),
         TAtomic::Scalar(s) => match s {
-            // A lone literal boolean is `true` or `false` (`ConstantBooleanType`); in a union it is generalized.
-            TScalar::Bool(b) if alone && b.is_true() => "true".into(),
-            TScalar::Bool(b) if alone && b.is_false() => "false".into(),
-            TScalar::Bool(_) => "bool".into(),
-            TScalar::Integer(_) => "int".into(),
-            TScalar::Float(_) => "float".into(),
-            TScalar::String(_) | TScalar::ClassLikeString(_) => "string".into(),
-            TScalar::ArrayKey => "int|string".into(),
-            TScalar::Numeric => "float|int|numeric-string".into(),
-            TScalar::Generic => "bool|float|int|string".into(),
+            // `ConstantBooleanType` is not generalized.
+            TScalar::Bool(b) if b.is_true() => one("true"),
+            TScalar::Bool(b) if b.is_false() => one("false"),
+            TScalar::Bool(_) => one("bool"),
+            TScalar::Integer(_) => one("int"),
+            TScalar::Float(_) => one("float"),
+            TScalar::String(_) | TScalar::ClassLikeString(_) => one("string"),
+            TScalar::ArrayKey => vec!["int".into(), "string".into()],
+            // `numeric-string` is `string` once generalized.
+            TScalar::Numeric => vec!["float".into(), "int".into(), "string".into()],
+            TScalar::Generic => vec!["bool".into(), "float".into(), "int".into(), "string".into()],
         },
-        TAtomic::Array(_) => "array".into(),
-        TAtomic::Iterable(_) => "iterable".into(),
-        TAtomic::Resource(_) => "resource".into(),
+        TAtomic::Array(a) => vec![Array::of(a).print()],
+        TAtomic::Iterable(_) => one("iterable"),
+        TAtomic::Resource(_) => one("resource"),
         TAtomic::Callable(c) => match c.is_closure() {
-            true => "Closure".into(),
-            false => "callable".into(),
+            true => one("Closure"),
+            false => one("callable"),
         },
         TAtomic::Object(TObject::Named(n)) => {
             let mut name = n.name.to_string();
@@ -57,43 +64,169 @@ fn single(t: &TAtomic, alone: bool) -> String {
                 name = format!("{name}<{}>", params.join(", "));
             }
             if n.is_this {
-                format!("$this({name})")
+                vec![format!("$this({name})")]
             } else if n.is_static {
-                format!("static({name})")
+                vec![format!("static({name})")]
             } else {
-                name
+                vec![name]
             }
         }
-        TAtomic::Object(TObject::Enum(e)) => e.name.to_string(),
-        TAtomic::Object(_) => "object".into(),
+        // An enum case is `EnumCaseObjectType`, `Enum::Case`.
+        TAtomic::Object(TObject::Enum(e)) => match &e.case {
+            Some(case) => vec![format!("{}::{case}", e.name)],
+            None => vec![e.name.to_string()],
+        },
+        TAtomic::Object(_) => one("object"),
         // A class the codebase does not know stays a reference; PHPStan's `ObjectType` describes it by its name.
-        TAtomic::Reference(TReference::Symbol { name, .. }) => name.to_string(),
-        _ => "mixed".into(),
+        TAtomic::Reference(TReference::Symbol { name, .. }) => vec![name.to_string()],
+        _ => one("mixed"),
     }
 }
 
-/// `$type->describe(VerbosityLevel::typeOnly())` for `t`.
-pub(crate) fn describe(t: &TUnion) -> String {
-    let alone = t.types.len() == 1;
-    let mut parts: Vec<String> = Vec::new();
-    for t in t.types.iter() {
-        for part in atomic(t, alone).split('|') {
-            if !parts.iter().any(|p| p == part) {
-                parts.push(part.to_string());
+/// An array as PHPStan sees it: its keys (`None` for any key, `array-key`), its values (`None` for `mixed`), whether it
+/// is a `list<V>`, and whether it is empty (`array{}`).
+struct Array {
+    keys: Option<Vec<String>>,
+    values: Option<Vec<String>>,
+    list: bool,
+    empty: bool,
+}
+
+impl Array {
+    fn of(a: &TArray) -> Array {
+        let parts = |t: &TUnion| t.types.iter().flat_map(atomic).collect::<Vec<String>>();
+        let (mut keys, mut values) = (Vec::new(), Vec::new());
+        match a {
+            TArray::List(l) => {
+                let Some(known) = &l.known_elements else {
+                    return Array {
+                        keys: Some(vec!["int".into()]),
+                        values: Some(parts(&l.element_type)),
+                        list: true,
+                        empty: false,
+                    };
+                };
+                // A list of known items is a constant array, `array<int, V>`.
+                keys.push("int".into());
+                for (_, value) in known.values() {
+                    values.extend(parts(value));
+                }
+            }
+            TArray::Keyed(k) => {
+                if let Some((key, value)) = &k.parameters {
+                    let key = parts(key);
+                    let any_key =
+                        key.iter().any(|k| k == "int") && key.iter().any(|k| k == "string");
+                    let value = (!value.is_mixed()).then(|| parts(value));
+                    if k.known_items.is_none() {
+                        return Array {
+                            keys: (!any_key).then_some(key),
+                            values: value,
+                            list: false,
+                            empty: false,
+                        };
+                    }
+                    keys.extend(key);
+                    values.extend(value.unwrap_or_else(|| vec!["mixed".into()]));
+                }
+                for (key, (_, value)) in k.known_items.iter().flat_map(|known| known.iter()) {
+                    keys.push(match key {
+                        ArrayKey::Integer(_) => "int".into(),
+                        _ => "string".into(),
+                    });
+                    values.extend(parts(value));
+                }
             }
         }
+        Array {
+            empty: values.is_empty(),
+            keys: Some(keys),
+            values: Some(values),
+            list: false,
+        }
     }
+
+    /// `TypeCombinator::union` of two arrays: the keys and values joined, a list while both are.
+    fn merge(self, other: Array) -> Array {
+        if self.empty {
+            return other;
+        }
+        if other.empty {
+            return self;
+        }
+        let both = |a: Option<Vec<String>>, b: Option<Vec<String>>| Some([a?, b?].concat());
+        Array {
+            keys: both(self.keys, other.keys),
+            values: both(self.values, other.values),
+            list: self.list && other.list,
+            empty: false,
+        }
+    }
+
+    /// `ArrayType::describe`: `array` for any key and value, `array<V>` for any key, `array<K, V>` else, `list<V>`.
+    fn print(self) -> String {
+        if self.empty {
+            return "array".into();
+        }
+        let values = self.values.map_or("mixed".into(), join);
+        match (self.list, self.keys) {
+            (true, _) => format!("list<{values}>"),
+            (false, None) if values == "mixed" => "array".into(),
+            (false, None) => format!("array<{values}>"),
+            (false, Some(keys)) => format!("array<{}, {values}>", join(keys)),
+        }
+    }
+}
+
+/// A union of `parts` as `UnionType::describe` prints it.
+fn join(mut parts: Vec<String>) -> String {
+    let mut seen: Vec<String> = Vec::new();
+    parts.retain(|p| {
+        let new = !seen.contains(p);
+        seen.push(p.clone());
+        new
+    });
+    drop(seen);
     if parts.iter().any(|p| p == "mixed") {
         return "mixed".into();
     }
-    if parts.iter().any(|p| p == "bool") {
+    let has = |s: &str| parts.iter().any(|p| p == s);
+    if has("bool") || (has("true") && has("false")) {
         parts.retain(|p| p != "true" && p != "false");
+        if !parts.iter().any(|p| p == "bool") {
+            parts.push("bool".into());
+        }
     }
+    // `null` last, a `true` or `false` (`ConstantBooleanType`) before it, the rest by `strcasecmp`.
+    let rank = |p: &str| (p == "null", p == "true" || p == "false");
     parts.sort_by(|a, b| {
-        (a == "null")
-            .cmp(&(b == "null"))
+        (rank(a).cmp(&rank(b)))
             .then_with(|| a.to_ascii_lowercase().cmp(&b.to_ascii_lowercase()))
             .then_with(|| a.cmp(b))
     });
     parts.join("|")
+}
+
+/// `$type->describe(VerbosityLevel::typeOnly())` for `t`. A lone `array-key` is the benevolent union
+/// `(int|string)`.
+pub(crate) fn describe(t: &TUnion) -> String {
+    if let [TAtomic::Scalar(TScalar::ArrayKey)] = t.types.as_ref() {
+        return "(int|string)".into();
+    }
+    let mut parts = Vec::new();
+    let mut arrays: Option<Array> = None;
+    for a in t.types.iter() {
+        match a {
+            TAtomic::Array(array) if a.get_intersection_types().is_none_or(|o| o.is_empty()) => {
+                let array = Array::of(array);
+                arrays = Some(match arrays {
+                    Some(before) => before.merge(array),
+                    None => array,
+                });
+            }
+            _ => parts.extend(atomic(a)),
+        }
+    }
+    parts.extend(arrays.map(Array::print));
+    join(parts)
 }

@@ -9,24 +9,24 @@
 
 mod add_override_attribute;
 mod remove_function_argument;
-mod replace_array_access;
 mod remove_function_call;
-mod rename_method;
 mod rename_cast;
 mod rename_class_constant;
 mod rename_constant;
 mod rename_function;
+mod rename_method;
+mod replace_array_access;
 mod replace_function;
 
 pub use add_override_attribute::AddOverrideAttribute;
 pub use remove_function_argument::RemoveFunctionArgument;
-pub use replace_array_access::{ArrayAccessCall, ReplaceArrayAccess};
 pub use remove_function_call::RemoveFunctionCall;
-pub use rename_method::{MethodRename, RenameMethod};
 pub use rename_cast::RenameCast;
 pub use rename_class_constant::RenameClassConstant;
 pub use rename_constant::RenameConstant;
 pub use rename_function::RenameFunction;
+pub use rename_method::{MethodRename, RenameMethod};
+pub use replace_array_access::{ArrayAccessCall, ReplaceArrayAccess};
 pub use replace_function::{
     ReplaceFunctionWithConstant, ReplaceFunctionWithNew, ReplaceFunctionWithStatic,
 };
@@ -93,7 +93,9 @@ pub(crate) fn items(options: &Value) -> Result<Vec<&Value>, String> {
         return Ok(Vec::new());
     };
     if let Some(key) = map.keys().find(|k| *k != "items") {
-        return Err(format!("unknown option `{key}`; the list goes under `items`"));
+        return Err(format!(
+            "unknown option `{key}`; the list goes under `items`"
+        ));
     }
     match map.get("items") {
         Some(Value::Array(items)) => Ok(items.iter().collect()),
@@ -197,18 +199,22 @@ pub(crate) fn name_of(ancestors: &[Node<'_, '_>], name: &Identifier<'_>, kind: K
         Identifier::Local(local) => {
             imported_member(ancestors, local.value, kind == Kind::Function).unwrap_or(written)
         }
-        Identifier::Qualified(_) => imported(ancestors, &written).unwrap_or_else(|| {
-            match scope_statements(ancestors).0 {
+        Identifier::Qualified(_) => {
+            imported(ancestors, &written).unwrap_or_else(|| match scope_statements(ancestors).0 {
                 Some(ns) => format!("{ns}\\{written}"),
                 None => written,
-            }
-        }),
+            })
+        }
     }
 }
 
 /// `FuncCallNameResolver`: [`name_of`] the called name, except that an unqualified name the namespace declares a
 /// function of (`ReflectionProvider::hasFunction` on its namespaced name) is that function.
-pub(crate) fn function_name(ctx: &Context<'_>, ancestors: &[Node<'_, '_>], name: &Identifier<'_>) -> String {
+pub(crate) fn function_name(
+    ctx: &Context<'_>,
+    ancestors: &[Node<'_, '_>],
+    name: &Identifier<'_>,
+) -> String {
     let resolved = name_of(ancestors, name, Kind::Function);
     if let Identifier::Local(local) = name
         && resolved.as_bytes() == local.value
@@ -229,8 +235,9 @@ pub(crate) fn called<'ast, 'arena>(node: Node<'ast, 'arena>) -> Option<&'ast Exp
         Node::FunctionCall(call) => Some(call.function),
         Node::FunctionPartialApplication(p) => {
             let args = &p.argument_list.arguments;
-            (args.len() == 1 && matches!(args.get(0), Some(PartialArgument::VariadicPlaceholder(_))))
-                .then_some(p.function)
+            (args.len() == 1
+                && matches!(args.get(0), Some(PartialArgument::VariadicPlaceholder(_))))
+            .then_some(p.function)
         }
         _ => None,
     }
@@ -281,23 +288,7 @@ pub(crate) fn is_object_type(
     match unparenthesize(class) {
         // `isObjectType()` answers no for a class constant fetch (an enum case among them).
         Expression::Access(mago_syntax::cst::Access::ClassConstant(_)) => false,
-        Expression::Identifier(id) => {
-            let written = String::from_utf8_lossy(id.value());
-            match written.to_ascii_lowercase().as_str() {
-                "self" | "static" if matches!(id, Identifier::Local(_)) => {
-                    match class_scope(ancestors).and_then(|c| c.name) {
-                        Some(name) => is_class(ctx, &name, required),
-                        None => is_class(ctx, &written, required),
-                    }
-                }
-                "parent" if matches!(id, Identifier::Local(_)) => {
-                    parents(ctx, ancestors).is_some_and(|chain| {
-                        chain.iter().all(|p| is_class(ctx, p, required))
-                    })
-                }
-                _ => is_class(ctx, &resolve_class_name(ancestors, id), required),
-            }
-        }
+        Expression::Identifier(id) => is_class(ctx, &resolve_class_name(ancestors, id), required),
         Expression::Static(_) | Expression::Self_(_) => class_scope(ancestors)
             .and_then(|c| c.name)
             .is_some_and(|name| is_class(ctx, &name, required)),
@@ -316,33 +307,27 @@ pub(crate) fn is_object_type(
                     TAtomic::Object(TObject::Named(n)) => {
                         is_class(ctx, &n.name.to_string(), required)
                     }
-                    TAtomic::Object(TObject::Enum(e)) => is_class(ctx, &e.name.to_string(), required),
-                    TAtomic::Reference(TReference::Symbol { name, .. }) => name.to_string() == required,
+                    TAtomic::Object(TObject::Enum(e)) => {
+                        is_class(ctx, &e.name.to_string(), required)
+                    }
+                    TAtomic::Reference(TReference::Symbol { name, .. }) => {
+                        name.to_string() == required
+                    }
                     _ => false,
                 })
         }
     }
 }
 
-/// `NameTypeResolver::resolveParent`: the enclosing class's parent classes, nearest first; `None` outside a class,
-/// in an anonymous class, or for a class without a parent.
+/// `NameTypeResolver::resolveParent`: the enclosing class's parent classes; `None` outside a class, in an anonymous
+/// class, or for a class without a parent.
 fn parents(ctx: &Context<'_>, ancestors: &[Node<'_, '_>]) -> Option<Vec<String>> {
     let scope = class_scope(ancestors)?;
     scope.name.as_ref()?;
     let first = scope.parent_class?;
-    let facts = facts(ctx);
     let mut chain = vec![first.clone()];
-    let mut next = first;
-    while let Some(parent) = facts
-        .codebase
-        .get_class_like(next.as_bytes())
-        .and_then(|c| c.direct_parent_class)
-    {
-        next = parent.to_string();
-        if chain.iter().any(|c| c.eq_ignore_ascii_case(&next)) {
-            break;
-        }
-        chain.push(next.clone());
+    if let Some(class) = facts(ctx).codebase.get_class_like(first.as_bytes()) {
+        chain.extend(class.all_parent_classes.iter().map(|p| p.to_string()));
     }
     Some(chain)
 }
@@ -368,7 +353,8 @@ pub(crate) fn object_class_name(ctx: &Context<'_>, expr: &Expression<'_>) -> Opt
     let kept: Vec<&String> = (names.iter())
         .filter(|n| {
             !names.iter().any(|other| {
-                !other.eq_ignore_ascii_case(n) && codebase.is_instance_of(n.as_bytes(), other.as_bytes())
+                !other.eq_ignore_ascii_case(n)
+                    && codebase.is_instance_of(n.as_bytes(), other.as_bytes())
             })
         })
         .collect();

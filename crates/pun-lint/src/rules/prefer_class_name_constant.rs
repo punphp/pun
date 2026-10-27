@@ -11,8 +11,7 @@
 //! `FNM_NOESCAPE` matches it, any other name without regard to case.
 
 use mago_syntax::cst::{
-    CompositeString, DocumentIndentation, Expression, Identifier, Literal, Node, NodeKind,
-    StringPart,
+    CompositeString, Expression, Identifier, Literal, Node, NodeKind, StringPart,
 };
 use pun_problem::{Edit, Fix, Safety};
 
@@ -26,8 +25,8 @@ pub struct PreferClassNameConstant {
     pub skip: Vec<String>,
 }
 
-/// php-parser's value of a heredoc or nowdoc with text only: its text without the indentation of its closing label
-/// and without the newline before it.
+/// php-parser's value of a heredoc or nowdoc with text only (Mago's literal parts hold it, the closing label's
+/// indentation and the newline before it taken out).
 fn document_value(doc: &mago_syntax::cst::DocumentString<'_>) -> Option<Vec<u8>> {
     let mut value = Vec::new();
     for part in doc.parts.iter() {
@@ -36,26 +35,7 @@ fn document_value(doc: &mago_syntax::cst::DocumentString<'_>) -> Option<Vec<u8>>
         };
         value.extend_from_slice(literal.value.unwrap_or(literal.raw));
     }
-    let indent = match doc.indentation {
-        DocumentIndentation::None => 0,
-        DocumentIndentation::Whitespace(n) | DocumentIndentation::Tab(n) => n,
-        DocumentIndentation::Mixed(a, b) => a + b,
-    };
-    let lines: Vec<&[u8]> = value.split(|b| *b == b'\n').collect();
-    let mut out: Vec<u8> = Vec::new();
-    for (i, line) in lines.iter().enumerate() {
-        if i > 0 {
-            out.push(b'\n');
-        }
-        out.extend_from_slice(&line[indent.min(line.len())..]);
-    }
-    if out.ends_with(b"\n") {
-        out.pop();
-        if out.ends_with(b"\r") {
-            out.pop();
-        }
-    }
-    Some(out)
+    Some(value)
 }
 
 /// `fnmatch($pattern, $name, FNM_NOESCAPE)`: `*` and `?` as wildcards (they cross `\`), `[...]` a class.
@@ -148,9 +128,13 @@ impl Rule for PreferClassNameConstant {
         out: &mut Vec<Report>,
     ) {
         let (span, value) = match node {
-            Node::Literal(Literal::String(s)) => (node_span(s), s.value.unwrap_or_default().to_vec()),
+            Node::Literal(Literal::String(s)) => {
+                (node_span(s), s.value.unwrap_or_default().to_vec())
+            }
             Node::CompositeString(CompositeString::Document(d)) => {
-                let Some(value) = document_value(d) else { return };
+                let Some(value) = document_value(d) else {
+                    return;
+                };
                 (node_span(d), value)
             }
             _ => return,
@@ -158,7 +142,10 @@ impl Rule for PreferClassNameConstant {
         if is_a_argument(ancestors, span) {
             return;
         }
-        let start = value.iter().position(|b| *b != b'\\').unwrap_or(value.len());
+        let start = value
+            .iter()
+            .position(|b| *b != b'\\')
+            .unwrap_or(value.len());
         let name = &value[start..];
         if name.is_empty() || !name.contains(&b'\\') || name[0].is_ascii_lowercase() {
             return;
@@ -166,7 +153,9 @@ impl Rule for PreferClassNameConstant {
         if !facts(ctx).codebase.class_like_exists(name) {
             return;
         }
-        let Ok(name) = std::str::from_utf8(name) else { return };
+        let Ok(name) = std::str::from_utf8(name) else {
+            return;
+        };
         if self.skip.iter().any(|skip| match skip.contains('*') {
             true => fnmatch(skip.as_bytes(), name.as_bytes()),
             false => is_name(name, skip),

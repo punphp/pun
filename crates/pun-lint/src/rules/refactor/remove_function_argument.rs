@@ -33,7 +33,11 @@ impl Rule for RemoveFunctionArgument {
     fn configure(&mut self, options: &serde_json::Value) -> Result<(), String> {
         let mut removals = Vec::new();
         for item in items(options)? {
-            let map = object(item, &["function", "argument-position"], &["function", "argument-position"])?;
+            let map = object(
+                item,
+                &["function", "argument-position"],
+                &["function", "argument-position"],
+            )?;
             let function = string(map, "function")?;
             assert_function(&function)?;
             removals.push((function, int(map, "argument-position")?));

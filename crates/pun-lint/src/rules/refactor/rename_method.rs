@@ -29,7 +29,8 @@ use serde_json::Value;
 use super::super::class_method::qualified;
 use super::super::types::facts::facts;
 use super::{
-    assert_class, assert_method, is_class, is_object_type, items, object, object_class_name, report, string,
+    assert_class, assert_method, is_class, is_object_type, items, object, object_class_name,
+    report, string,
 };
 use crate::syntax::{node_span, unparenthesize};
 use crate::{Context, Report, Rule};
@@ -66,8 +67,14 @@ fn has_method(ctx: &Context<'_>, class: &ClassLikeMetadata, name: &str) -> bool 
 }
 
 /// `isEnumTypeMatch`: `$call->var` is a case (a class constant fetch on a class name) of an enum named `class`.
-fn is_enum_case_of(ctx: &Context<'_>, ancestors: &[Node<'_, '_>], var: &Expression<'_>, class: &str) -> bool {
-    let Expression::Access(mago_syntax::cst::Access::ClassConstant(fetch)) = unparenthesize(var) else {
+fn is_enum_case_of(
+    ctx: &Context<'_>,
+    ancestors: &[Node<'_, '_>],
+    var: &Expression<'_>,
+    class: &str,
+) -> bool {
+    let Expression::Access(mago_syntax::cst::Access::ClassConstant(fetch)) = unparenthesize(var)
+    else {
         return false;
     };
     let Expression::Identifier(id) = fetch.class else {
@@ -119,7 +126,10 @@ impl RenameMethod {
             let mut edits = vec![Edit::new(node_span(name), rename.new.clone())];
             if let Some(key) = &rename.array_key {
                 let end = node_span(&node).end;
-                edits.push(Edit::new(Span::new(end, end), format!("[{}]", key_text(key))));
+                edits.push(Edit::new(
+                    Span::new(end, end),
+                    format!("[{}]", key_text(key)),
+                ));
             }
             out.push(report(
                 node_span(&node),
@@ -133,10 +143,17 @@ impl RenameMethod {
     /// `shouldSkipClassMethod`: the class that declares the old method on the receiver's one class
     /// (`resolveClassReflectionSourceObject`: the receiver's class itself for a private method; a trait's method is
     /// the using class's) is another known class than the rename's, and has the new method too.
-    fn skips_call(&self, ctx: &Context<'_>, receiver: &Expression<'_>, rename: &MethodRename) -> bool {
+    fn skips_call(
+        &self,
+        ctx: &Context<'_>,
+        receiver: &Expression<'_>,
+        rename: &MethodRename,
+    ) -> bool {
         let facts = facts(ctx);
         let codebase = &facts.codebase;
-        let Some(class) = object_class_name(ctx, receiver).and_then(|n| codebase.get_class_like(n.as_bytes())) else {
+        let Some(class) =
+            object_class_name(ctx, receiver).and_then(|n| codebase.get_class_like(n.as_bytes()))
+        else {
             return false;
         };
         let Some((_, id)) = (class.appearing_method_ids.iter())
@@ -150,7 +167,9 @@ impl RenameMethod {
             .is_some_and(|m| m.visibility.is_private());
         let source = match private {
             true => class,
-            false => codebase.get_class_like(declaring.as_bytes()).unwrap_or(class),
+            false => codebase
+                .get_class_like(declaring.as_bytes())
+                .unwrap_or(class),
         };
         let Some(target) = codebase.get_class_like(rename.class.as_bytes()) else {
             return false;
@@ -165,12 +184,13 @@ impl RenameMethod {
         ctx: &Context<'_>,
         out: &mut Vec<Report>,
     ) {
-        let (name, members, kind): (&[u8], &Sequence<'_, ClassLikeMember<'_>>, SymbolKind) = match node {
-            Node::Class(c) => (c.name.value, &c.members, SymbolKind::Class),
-            Node::Interface(i) => (i.name.value, &i.members, SymbolKind::Interface),
-            Node::Trait(t) => (t.name.value, &t.members, SymbolKind::Trait),
-            _ => return,
-        };
+        let (name, members, kind): (&[u8], &Sequence<'_, ClassLikeMember<'_>>, SymbolKind) =
+            match node {
+                Node::Class(c) => (c.name.value, &c.members, SymbolKind::Class),
+                Node::Interface(i) => (i.name.value, &i.members, SymbolKind::Interface),
+                Node::Trait(t) => (t.name.value, &t.members, SymbolKind::Trait),
+                _ => return,
+            };
         let codebase = &facts(ctx).codebase;
         let fqcn = qualified(ancestors, name);
         let own = codebase.get_class_like(fqcn.as_bytes());
@@ -198,13 +218,15 @@ impl RenameMethod {
                 }
                 // `shouldKeepForParentInterface`.
                 if kind == SymbolKind::Interface
-                    && codebase.get_class_like(rename.class.as_bytes()).is_some_and(|c| {
-                        c.all_parent_classes
-                            .iter()
-                            .chain(c.all_parent_interfaces.iter())
-                            .filter_map(|p| codebase.get_class_like(p.as_bytes()))
-                            .any(|p| has_method(ctx, p, &rename.old))
-                    })
+                    && codebase
+                        .get_class_like(rename.class.as_bytes())
+                        .is_some_and(|c| {
+                            c.all_parent_classes
+                                .iter()
+                                .chain(c.all_parent_interfaces.iter())
+                                .filter_map(|p| codebase.get_class_like(p.as_bytes()))
+                                .any(|p| has_method(ctx, p, &rename.old))
+                        })
                 {
                     return false;
                 }
@@ -223,7 +245,11 @@ impl RenameMethod {
             Node::Trait(t) => node_span(&t.name),
             _ => return,
         };
-        out.push(report(span, "Rename the methods the configuration renames.".to_string(), edits));
+        out.push(report(
+            span,
+            "Rename the methods the configuration renames.".to_string(),
+            edits,
+        ));
     }
 }
 

@@ -67,7 +67,10 @@ impl Rule for AddOverrideAttribute {
                     .iter()
                     .find(|(k, _)| k.as_bytes() == name)?;
                 let declaring = codebase.get_class_like(declaring.as_bytes())?;
-                let (_, property) = declaring.properties.iter().find(|(k, _)| k.as_bytes() == name)?;
+                let (_, property) = declaring
+                    .properties
+                    .iter()
+                    .find(|(k, _)| k.as_bytes() == name)?;
                 Some(!property.read_visibility.is_private())
             }) == Some(true)
         };
@@ -84,21 +87,19 @@ impl Rule for AddOverrideAttribute {
                 continue;
             }
             let has_override = lists.iter().any(|list| {
-                list.attributes
-                    .iter()
-                    .any(|a| resolve_class_name(ancestors, &a.name).eq_ignore_ascii_case("Override"))
+                list.attributes.iter().any(|a| {
+                    resolve_class_name(ancestors, &a.name).eq_ignore_ascii_case("Override")
+                })
             });
-            if has_override
-                || !property
-                    .variables()
-                    .iter()
-                    .any(|v| overridden(v.name))
-            {
+            if has_override || !property.variables().iter().any(|v| overridden(v.name)) {
                 continue;
             }
             let start = node_span(property).start;
             let indent = line_indent(ctx.source, start);
-            let width = indent.bytes().map(|b| if b == b'\t' { 4 } else { 1 }).sum::<usize>();
+            let width = indent
+                .bytes()
+                .map(|b| if b == b'\t' { 4 } else { 1 })
+                .sum::<usize>();
             let nl = format!("\n{}", " ".repeat(width));
             edits.push(match lists.last() {
                 Some(last) => {

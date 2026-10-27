@@ -45,9 +45,6 @@ impl Rule for RenameFunction {
         let Some(Expression::Identifier(name)) = called(node) else {
             return;
         };
-        if self.renames.is_empty() {
-            return;
-        }
         let resolved = function_name(ctx, ancestors, name);
         let Some((old, new)) = self.renames.iter().find(|(old, _)| is_name(&resolved, old)) else {
             return;

@@ -51,9 +51,6 @@ impl Rule for RenameConstant {
         let Node::ConstantAccess(constant) = node else {
             return;
         };
-        if self.renames.is_empty() {
-            return;
-        }
         let resolved = name_of(ancestors, &constant.name, Kind::Constant);
         let Some((old, new)) = self.renames.iter().find(|(old, _)| is_name(&resolved, old)) else {
             return;

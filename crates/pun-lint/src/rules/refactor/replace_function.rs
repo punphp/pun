@@ -18,8 +18,8 @@ use mago_syntax::cst::{Expression, FunctionCall, Node, NodeKind};
 use pun_problem::{Edit, Span};
 
 use super::{
-    assert_class, assert_function, assert_method, called, function_name, is_name, items, object,
-    report, string, string_map,
+    assert_class, assert_function, assert_method, function_name, is_name, items, object, report,
+    string, string_map,
 };
 use crate::rules::phpunit::maybe_multiline;
 use crate::rules::rector_stmts::line_indent;
@@ -39,12 +39,19 @@ fn printed_args(ctx: &Context<'_>, call: &FunctionCall<'_>) -> String {
     )
 }
 
-/// The resolved name of the function `node` calls, when it is a name.
-fn resolved(ctx: &Context<'_>, ancestors: &[Node<'_, '_>], node: Node<'_, '_>) -> Option<String> {
-    match called(node)? {
-        Expression::Identifier(name) => Some(function_name(ctx, ancestors, name)),
-        _ => None,
-    }
+/// A call of a function by name (a first-class callable is no call) and that name resolved.
+fn resolved<'ast, 'arena>(
+    ctx: &Context<'_>,
+    ancestors: &[Node<'_, '_>],
+    node: Node<'ast, 'arena>,
+) -> Option<(&'ast FunctionCall<'arena>, String)> {
+    let Node::FunctionCall(call) = node else {
+        return None;
+    };
+    let Expression::Identifier(name) = call.function else {
+        return None;
+    };
+    Some((call, function_name(ctx, ancestors, name)))
 }
 
 /// `code` in parentheses where it becomes the object or class of a member access or a call (php-parser's
@@ -98,7 +105,7 @@ impl Rule for ReplaceFunctionWithConstant {
         if self.replacements.is_empty() {
             return;
         }
-        let Some(name) = resolved(ctx, ancestors, node) else {
+        let Some((_, name)) = resolved(ctx, ancestors, node) else {
             return;
         };
         let Some((_, constant)) = self.replacements.iter().find(|(f, _)| *f == name) else {
@@ -141,14 +148,13 @@ impl Rule for ReplaceFunctionWithNew {
         if self.replacements.is_empty() {
             return;
         }
-        let Some(name) = resolved(ctx, ancestors, node) else {
+        let Some((call, name)) = resolved(ctx, ancestors, node) else {
             return;
         };
         let Some((function, class)) = self.replacements.iter().find(|(f, _)| is_name(&name, f))
         else {
             return;
         };
-        let Node::FunctionCall(call) = node else { return };
         let args = printed_args(ctx, call);
         let span = node_span(&node);
         let code = dereferenced(span, ancestors, format!("new \\{class}({args})"));
@@ -210,17 +216,20 @@ impl Rule for ReplaceFunctionWithStatic {
         if self.replacements.is_empty() {
             return;
         }
-        let Some(name) = resolved(ctx, ancestors, node) else {
+        let Some((call, name)) = resolved(ctx, ancestors, node) else {
             return;
         };
-        let Some(r) = self.replacements.iter().find(|r| is_name(&name, &r.function)) else {
+        let Some(r) = self
+            .replacements
+            .iter()
+            .find(|r| is_name(&name, &r.function))
+        else {
             return;
         };
         let class = match r.class.as_str() {
             "self" | "parent" | "static" => r.class.clone(),
             other => format!("\\{other}"),
         };
-        let Node::FunctionCall(call) = node else { return };
         let args = printed_args(ctx, call);
         out.push(report(
             node_span(&node),

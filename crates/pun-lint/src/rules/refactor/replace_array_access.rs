@@ -33,10 +33,10 @@ use mago_syntax::cst::{
 use pun_problem::{Edit, Fix, Safety, Span};
 use serde_json::Value;
 
+use super::super::lint_b_helpers::replace_run;
 use super::super::php_parser::precedence;
 use super::super::rector_batch5::{list_removal, merge};
 use super::super::rector_stmts::{Frame, enclosing, line_indent, replace_statement};
-use super::super::lint_b_helpers::replace_run;
 use super::{is_object_type, items, object, string};
 use crate::syntax::node_span;
 use crate::{Context, Report, Rule};
@@ -73,7 +73,11 @@ fn object_type(value: &Value) -> Result<String, String> {
         match key.as_str() {
             "class-name" => {}
             "current-ancestors" | "method-cache" if v.as_array().is_some_and(Vec::is_empty) => {}
-            _ => return Err(format!("unknown key `{key}` in `object-type`; it takes `class-name`")),
+            _ => {
+                return Err(format!(
+                    "unknown key `{key}` in `object-type`; it takes `class-name`"
+                ));
+            }
         }
     }
     match map.get("class-name").and_then(Value::as_str) {
@@ -83,7 +87,12 @@ fn object_type(value: &Value) -> Result<String, String> {
 }
 
 impl ReplaceArrayAccess {
-    fn method(&self, ctx: &Context<'_>, access: &ArrayAccess<'_>, handler: Handler) -> Option<&str> {
+    fn method(
+        &self,
+        ctx: &Context<'_>,
+        access: &ArrayAccess<'_>,
+        handler: Handler,
+    ) -> Option<&str> {
         self.calls.iter().find_map(|call| {
             if !is_object_type(ctx, &[], access.array, &call.class) {
                 return None;
@@ -142,14 +151,19 @@ fn skipped_read(ancestors: &[Node<'_, '_>], span: Span) -> bool {
         Some(Node::UnaryPostfix(_)) => true,
         // The value of an item of a list an assignment destructures into (`IS_BEING_ASSIGNED` on `$item->value`).
         Some(Node::ValueArrayElement(_)) => is_destructured(chain),
-        Some(Node::KeyValueArrayElement(kv)) => node_span(kv.value) == span && is_destructured(chain),
+        Some(Node::KeyValueArrayElement(kv)) => {
+            node_span(kv.value) == span && is_destructured(chain)
+        }
         _ => false,
     }
 }
 
 /// Whether the list above an item (`chain` starting at the item's `ArrayElement`) is what an assignment writes.
-fn is_destructured<'ast, 'arena: 'ast>(mut chain: impl Iterator<Item = Node<'ast, 'arena>>) -> bool {
-    let (Some(Node::ArrayElement(_)), Some(list @ (Node::Array(_) | Node::List(_)))) = (chain.next(), chain.next())
+fn is_destructured<'ast, 'arena: 'ast>(
+    mut chain: impl Iterator<Item = Node<'ast, 'arena>>,
+) -> bool {
+    let (Some(Node::ArrayElement(_)), Some(list @ (Node::Array(_) | Node::List(_)))) =
+        (chain.next(), chain.next())
     else {
         return false;
     };
@@ -159,7 +173,10 @@ fn is_destructured<'ast, 'arena: 'ast>(mut chain: impl Iterator<Item = Node<'ast
 /// PHPStan gives the nodes of a foreach target no scope, so Rector resolves no type there.
 fn in_foreach_target(ancestors: &[Node<'_, '_>]) -> bool {
     ancestors.iter().any(|n| {
-        matches!(n, Node::ForeachValueTarget(_) | Node::ForeachKeyValueTarget(_))
+        matches!(
+            n,
+            Node::ForeachValueTarget(_) | Node::ForeachKeyValueTarget(_)
+        )
     })
 }
 
@@ -197,7 +214,13 @@ impl Rule for ReplaceArrayAccess {
     }
 
     fn configure(&mut self, options: &Value) -> Result<(), String> {
-        const KEYS: &[&str] = &["object-type", "method", "set-method", "exists-method", "unset-method"];
+        const KEYS: &[&str] = &[
+            "object-type",
+            "method",
+            "set-method",
+            "exists-method",
+            "unset-method",
+        ];
         let mut calls = Vec::new();
         for item in items(options)? {
             let map = object(item, KEYS, &["object-type", "method"])?;
@@ -321,7 +344,10 @@ impl ReplaceArrayAccess {
         if let Some(edits) = list_removal(&spans, &removed) {
             let mut kept = text(ctx, span).to_string();
             for edit in merge(edits).iter().rev() {
-                kept.replace_range(edit.span.start - span.start..edit.span.end - span.start, &edit.text);
+                kept.replace_range(
+                    edit.span.start - span.start..edit.span.end - span.start,
+                    &edit.text,
+                );
             }
             parts.push(kept);
         }
@@ -340,7 +366,9 @@ impl ReplaceArrayAccess {
         ctx: &Context<'_>,
         out: &mut Vec<Report>,
     ) {
-        let Statement::Unset(unset) = stmt else { return };
+        let Statement::Unset(unset) = stmt else {
+            return;
+        };
         let values: Vec<&Expression<'_>> = unset.values.iter().copied().collect();
         let calls: Vec<Option<String>> = values
             .iter()
@@ -370,7 +398,8 @@ impl ReplaceArrayAccess {
                     vec![replace_statement(ctx.source, &list, index, |indent| {
                         lines.join(&format!("\n{indent}"))
                     })]
-                } else if list.len() == 1 && list.nop_span(ctx.source).is_none()
+                } else if list.len() == 1
+                    && list.nop_span(ctx.source).is_none()
                     && let Some(Node::Block(block)) = ancestors.last()
                 {
                     // php-parser reprints the list's holder; its block is a line per statement.
@@ -379,7 +408,10 @@ impl ReplaceArrayAccess {
                     let outer = line_indent(ctx.source, open);
                     let inner = format!("{outer}    ");
                     let body: String = lines.iter().map(|l| format!("\n{inner}{l}")).collect();
-                    vec![Edit::new(Span::new(open, close), format!("{{{body}\n{outer}}}"))]
+                    vec![Edit::new(
+                        Span::new(open, close),
+                        format!("{{{body}\n{outer}}}"),
+                    )]
                 } else {
                     vec![replace_run(
                         ctx.source,
