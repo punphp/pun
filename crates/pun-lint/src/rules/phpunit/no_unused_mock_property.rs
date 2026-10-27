@@ -119,11 +119,6 @@ impl Rule for NoUnusedMockProperty {
             edits.extend(remove_class_members(ctx.source, node, &removed_members));
         }
         for method in &methods {
-            if removed_members.iter().zip(members.iter()).any(|(r, m)| {
-                *r && matches!(m, ClassLikeMember::Method(x) if std::ptr::eq(x, *method))
-            }) {
-                continue;
-            }
             let MethodBody::Concrete(body) = &method.body else {
                 continue;
             };

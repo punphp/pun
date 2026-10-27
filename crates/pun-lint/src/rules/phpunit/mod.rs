@@ -616,20 +616,32 @@ pub(crate) fn string_value(expr: &Expression<'_>) -> Option<String> {
     }
 }
 
-/// `ValueResolver::getValue` for a class name: a string literal, or `X::class` resolved.
-pub(crate) fn class_string(ancestors: &[Node<'_, '_>], expr: &Expression<'_>) -> Option<String> {
+/// `ValueResolver::getValue` for a class name: a string literal, or `X::class` resolved (`self` and `static` to the
+/// class the node is in, `parent` to its parent; `None` where Rector has no class for them and fails).
+pub(crate) fn class_string(
+    ctx: &Context<'_>,
+    ancestors: &[Node<'_, '_>],
+    expr: &Expression<'_>,
+) -> Option<String> {
     use mago_syntax::cst::{Access, ClassLikeConstantSelector};
     match unparenthesize(expr) {
         Expression::Access(Access::ClassConstant(access)) => {
-            let (Expression::Identifier(class), ClassLikeConstantSelector::Identifier(constant)) =
-                (access.class, &access.constant)
-            else {
+            let ClassLikeConstantSelector::Identifier(constant) = &access.constant else {
                 return None;
             };
-            constant
-                .value
-                .eq_ignore_ascii_case(b"class")
-                .then(|| resolve(ancestors, class))
+            if !constant.value.eq_ignore_ascii_case(b"class") {
+                return None;
+            }
+            match access.class {
+                Expression::Identifier(class) => Some(resolve(ancestors, class)),
+                Expression::Self_(_) | Expression::Static(_) => {
+                    own_class_reflection(ctx, ancestors)
+                }
+                Expression::Parent(_) => class_parents(ctx, &own_class_reflection(ctx, ancestors)?)
+                    .into_iter()
+                    .next(),
+                _ => None,
+            }
         }
         expr => string_value(expr),
     }
@@ -777,19 +789,14 @@ pub(crate) fn rewrite_args(
             }
         }
     }
-    if skip_removed || !delayed.is_empty() && !old.is_empty() {
+    if skip_removed || !delayed.is_empty() {
         return fallback();
     }
     let mut edits = Vec::new();
     if let Some(name) = name {
         edits.push(Edit::new(call.name_span(), name));
     }
-    if !delayed.is_empty() {
-        // An empty list: the new arguments go right after the `(`.
-        edits.push(Edit::new(Span::new(open, open), delayed.join(", ")));
-    } else {
-        edits.push(Edit::new(Span::new(open, pos), result));
-    }
+    edits.push(Edit::new(Span::new(open, pos), result));
     edits
 }
 
@@ -1119,7 +1126,7 @@ pub(crate) fn maybe_multiline(source: &str, from: usize, items: &[Span], indent:
 /// prints them: with a member kept, [`remove_members`]; with only the comments after the last member kept
 /// (php-parser's `Nop`), the members go up to those comments; with nothing kept, the class-like is printed anew
 /// (`pClassCommon`): its attributes a line each, then its modifiers, name or arguments, `extends` and `implements`
-/// lists on one line, and an empty body on the next. Another class-like keeps its members.
+/// lists on one line, and an empty body on the next. An interface or an enum, which holds no test, gets no edits.
 pub(crate) fn remove_class_members(
     source: &str,
     node: Node<'_, '_>,
@@ -1169,13 +1176,16 @@ pub(crate) fn remove_class_members(
                 c.implements.as_ref(),
             )
         }
-        Node::Trait(t) => (
-            &t.attribute_lists,
-            format!("trait {}", text(t.name.span)),
-            None,
-            None,
-        ),
-        _ => return Vec::new(),
+        // a trait: no other class-like holds a test
+        _ => {
+            let Node::Trait(t) = node else { return vec![] };
+            (
+                &t.attribute_lists,
+                format!("trait {}", text(t.name.span)),
+                None,
+                None,
+            )
+        }
     };
     let (members, left, right) = class_body(node).expect("a class-like");
     if removed.contains(&false) {

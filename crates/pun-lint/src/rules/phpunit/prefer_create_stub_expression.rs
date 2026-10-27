@@ -204,15 +204,14 @@ pub(super) fn is_mock_object(codebase: &CodebaseMetadata, atomic: &TAtomic) -> b
     let TAtomic::Object(TObject::Named(named)) = atomic else {
         return false;
     };
-    std::iter::once(named.name.as_bytes())
-        .chain(named.intersection_types.iter().flat_map(|i| {
-            i.iter().filter_map(|a| match a {
-                TAtomic::Object(TObject::Named(n)) => Some(n.name.as_bytes()),
-                _ => None,
-            })
-        }))
-        .any(|c| {
-            c.eq_ignore_ascii_case(MOCK_OBJECT.as_bytes())
-                || codebase.is_instance_of(c, MOCK_OBJECT.as_bytes())
-        })
+    let is_mock = |c: &[u8]| {
+        c.eq_ignore_ascii_case(MOCK_OBJECT.as_bytes())
+            || codebase.is_instance_of(c, MOCK_OBJECT.as_bytes())
+    };
+    is_mock(named.name.as_bytes())
+        || named
+            .intersection_types
+            .iter()
+            .flat_map(|i| i.iter())
+            .any(|a| matches!(a, TAtomic::Object(TObject::Named(n)) if is_mock(n.name.as_bytes())))
 }

@@ -19,7 +19,22 @@
 //! Pun/declined (the annotation-to-attribute rules): Pun leaves a doc alone that has another comment before it
 //! (php-parser reprints those with the doc), a tag Pun's doc reader does not follow (`@\...`, `@_...`), or a tab in the
 //! node's indentation (Rector writes the new attribute and the reprinted doc at its own indentation, in spaces).
-//! Pun/tabbed is that last case for `ReplaceTestAnnotationWithPrefixedFunctionRector`.
+//! Pun/tabbed is that last case for `ReplaceTestAnnotationWithPrefixedFunctionRector`; Pun/tabbed7 is the same for
+//! `AllowMockObjectsWhereParentClassRector`, `ChangeMockObjectReturnUnionToIntersectionRector` and
+//! `CoversAnnotationWithValueToAttributeRector`, and Pun/decl7 the tags Pun's doc reader does not follow (`@_1`, a
+//! `})` in a text line, a `__remove_array__` value) for the annotation rules that Rector changes there.
+//! Pun/mixed7 (`TestWithToDataProviderRector`) has a tab where the new provider method goes, and Pun/declined7
+//! (`CoversAnnotationWithValueToAttributeRector`) a doc whose lines do not start with `*`, a `@covers` value over two
+//! lines, and an anonymous class with a modifier, which php-parser prints before the new attribute.
+//!
+//! Pun/never8: Mago types no expression in code after a call that returns `never` (`$this->fail()`), where PHPStan
+//! still does, so the rules that need such a type (`AddReturnTypeToDependedRector`,
+//! `MergeWithCallableAndWillReturnRector`) leave that code alone.
+//!
+//! Pun/noargs2 (`NarrowSingleWillReturnCallbackRector`, a returned `match` without arms), Pun/unnamed7
+//! (`AssertInstanceOfComparisonRector`, `instanceof` a class expression without a name) and Pun/cyc7
+//! (`ConstructClassMethodToSetUpTestCaseRector`, classes that extend each other) make Rector fail on the file; Pun
+//! leaves it alone.
 
 use std::path::{Path, PathBuf};
 

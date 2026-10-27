@@ -4,7 +4,7 @@
 //! `assertTrue($a instanceof Foo)` becomes `assertInstanceOf(\Foo::class, $a)` (`assertFalse` becomes
 //! `assertNotInstanceOf`), and `assertSame('Foo', get_class($a))` becomes `assertInstanceOf('Foo', $a)`.
 
-use mago_syntax::cst::{BinaryOperator, Call, Expression, Node, NodeKind, Variable};
+use mago_syntax::cst::{BinaryOperator, Call, Expression, Node, NodeKind};
 use pun_problem::Safety;
 
 use super::{

@@ -91,7 +91,7 @@ impl Rule for PreferInlineCreateStub {
             let class = call
                 .args()
                 .first()
-                .and_then(|a| class_string(&scope, arg_value(a)))
+                .and_then(|a| class_string(ctx, &scope, arg_value(a)))
                 .filter(|c| !c.is_empty() && !c.starts_with('\\'));
             match stubs.iter_mut().find(|(n, _)| *n == name) {
                 Some(entry) => entry.1 = class,

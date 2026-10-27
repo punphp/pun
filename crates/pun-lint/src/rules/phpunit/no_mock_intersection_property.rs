@@ -46,7 +46,9 @@ impl Rule for NoMockIntersectionProperty {
             };
             let mut types = Vec::new();
             match hint {
-                Some(hint @ (Hint::Union(_) | Hint::Intersection(_))) => flatten(hint, &mut types),
+                Some(hint @ (Hint::Union(_) | Hint::Intersection(_))) => {
+                    flatten(hint, None, &mut types)
+                }
                 _ => continue,
             }
             if types.len() != 2 {
@@ -68,26 +70,18 @@ impl Rule for NoMockIntersectionProperty {
     }
 }
 
-/// The types of a union or an intersection, as php-parser lists them in its `UnionType` or `IntersectionType`.
-fn flatten<'a>(hint: &'a Hint<'a>, out: &mut Vec<&'a Hint<'a>>) {
+/// The types of a union or an intersection, as php-parser lists them in its `UnionType` or `IntersectionType`: a
+/// nested one of the same kind (`union` says which kind the outer one is) adds its types.
+fn flatten<'a>(hint: &'a Hint<'a>, union: Option<bool>, out: &mut Vec<&'a Hint<'a>>) {
     match hint {
-        Hint::Union(u) => {
-            flatten_kind(u.left, true, out);
-            flatten_kind(u.right, true, out);
+        Hint::Union(u) if union != Some(false) => {
+            flatten(u.left, Some(true), out);
+            flatten(u.right, Some(true), out);
         }
-        Hint::Intersection(i) => {
-            flatten_kind(i.left, false, out);
-            flatten_kind(i.right, false, out);
+        Hint::Intersection(i) if union != Some(true) => {
+            flatten(i.left, Some(false), out);
+            flatten(i.right, Some(false), out);
         }
-        _ => out.push(hint),
-    }
-}
-
-/// A side of a union (`union`) or an intersection: a nested one of the same kind adds its types.
-fn flatten_kind<'a>(hint: &'a Hint<'a>, union: bool, out: &mut Vec<&'a Hint<'a>>) {
-    match hint {
-        Hint::Union(_) if union => flatten(hint, out),
-        Hint::Intersection(_) if !union => flatten(hint, out),
         _ => out.push(hint),
     }
 }

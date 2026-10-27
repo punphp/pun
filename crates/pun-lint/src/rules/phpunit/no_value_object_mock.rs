@@ -59,7 +59,7 @@ impl Rule for NoValueObjectMock {
         let mocks: Vec<(&Expression<'_>, String)> = values
             .into_iter()
             .map(unparenthesize)
-            .filter_map(|value| Some((value, mocked_class(ancestors, value)?)))
+            .filter_map(|value| Some((value, mocked_class(ctx, ancestors, value)?)))
             .collect();
         if mocks.is_empty() {
             return;
@@ -92,7 +92,11 @@ impl Rule for NoValueObjectMock {
 }
 
 /// `matchCreateMockMethodCallArg` and the class its first argument names, when that is `Request` or `RequestStack`.
-fn mocked_class(ancestors: &[Node<'_, '_>], value: &Expression<'_>) -> Option<String> {
+fn mocked_class(
+    ctx: &Context<'_>,
+    ancestors: &[Node<'_, '_>],
+    value: &Expression<'_>,
+) -> Option<String> {
     let Expression::Call(Call::Method(call)) = value else {
         return None;
     };
@@ -100,7 +104,7 @@ fn mocked_class(ancestors: &[Node<'_, '_>], value: &Expression<'_>) -> Option<St
     if !call.is_name(&["createMock"]) {
         return None;
     }
-    let class = class_string(ancestors, arg_value(call.args().into_iter().next()?))?;
+    let class = class_string(ctx, ancestors, arg_value(call.args().into_iter().next()?))?;
     [REQUEST, REQUEST_STACK]
         .contains(&class.as_str())
         .then_some(class)

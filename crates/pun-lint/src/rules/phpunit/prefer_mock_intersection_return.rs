@@ -57,7 +57,7 @@ impl Rule for PreferMockIntersectionReturn {
         if !members.iter().any(is_mock) {
             return;
         }
-        let new_doc = with_tag_type(Some(doc), "@return", None, &members.join("&")).unwrap();
+        let new_doc = with_tag_type(Some(doc), "@return", &members.join("&")).unwrap();
         let Some(edits) = annotated.edits(ctx.source, Some(&new_doc), &[]) else {
             return;
         };

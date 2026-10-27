@@ -95,7 +95,7 @@ impl Rule for PreferStubVar {
             TagType::Name(name) if short_name(name) == "MockObject" => stub,
             _ => return,
         };
-        let new_doc = with_tag_type(Some(doc), "@var", None, &new_type).unwrap();
+        let new_doc = with_tag_type(Some(doc), "@var", &new_type).unwrap();
         let Some(edits) = annotated.edits(ctx.source, Some(&new_doc), &[]) else {
             return;
         };

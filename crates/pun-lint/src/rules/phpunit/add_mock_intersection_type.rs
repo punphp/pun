@@ -13,7 +13,7 @@ use pun_problem::{Edit, Safety};
 
 use super::annotations::Annotated;
 use super::phpdoc_type::{TagType, typed_tag, with_tag_type};
-use super::{AnyCall, arg_value, class_body, is_in_test_class, report, resolve};
+use super::{AnyCall, arg_value, class_body, expr_name, is_in_test_class, report, resolve};
 use crate::Context;
 use crate::rules::rector_stmts::{assign, block_list, expression};
 use crate::syntax::unparenthesize;
@@ -156,7 +156,8 @@ pub(super) fn mocked_class(scope: &[Node<'_, '_>], call: &AnyCall<'_>) -> Option
         Expression::Self_(_) => Some("self".to_string()),
         Expression::Static(_) => Some("static".to_string()),
         Expression::Parent(_) => Some("parent".to_string()),
-        _ => None,
+        // `getName()` of the class expression: a variable's name (`$x::class` gives `x`)
+        other => expr_name(other).map(|n| String::from_utf8_lossy(n).into_owned()),
     }
 }
 
@@ -178,6 +179,6 @@ pub(super) fn set_var_type(
         return None;
     }
     let ty = ty(tag.as_ref().map(|t| &t.ty))?;
-    let new_doc = with_tag_type(annotated.doc.as_ref(), "@var", None, &ty)?;
+    let new_doc = with_tag_type(annotated.doc.as_ref(), "@var", &ty)?;
     annotated.edits(ctx.source, Some(&new_doc), &[])
 }

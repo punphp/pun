@@ -134,7 +134,7 @@ fn collect(ctx: &Context<'_>, ancestors: &[Node<'_, '_>], list: &List<'_>) -> Ve
         else {
             continue;
         };
-        let Some(class) = class_string(ancestors, first_arg) else {
+        let Some(class) = class_string(ctx, ancestors, first_arg) else {
             continue;
         };
         let Some(metadata) = facts.codebase.get_class_like(class.as_bytes()) else {

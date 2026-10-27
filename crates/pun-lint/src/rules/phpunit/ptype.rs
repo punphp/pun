@@ -77,24 +77,12 @@ pub(crate) fn of(t: &TUnion) -> PType {
     match types.as_slice() {
         [] => PType::Never,
         [atomic] => atomic_of(atomic),
+        // distinct bools: `bool`, or `true` and `false`, which PHPStan joins into a `BooleanType`
         many if many
             .iter()
             .all(|a| matches!(a, TAtomic::Scalar(s) if s.is_bool())) =>
         {
-            let has_true = many
-                .iter()
-                .any(|a| matches!(a, TAtomic::Scalar(s) if s.is_true()));
-            let has_false = many
-                .iter()
-                .any(|a| matches!(a, TAtomic::Scalar(s) if s.is_false()));
-            let general = many
-                .iter()
-                .any(|a| matches!(a, TAtomic::Scalar(s) if s.is_general_bool()));
-            if general || (has_true && has_false) {
-                PType::Boolean
-            } else {
-                PType::ConstantBoolean
-            }
+            PType::Boolean
         }
         _ => PType::Union,
     }
