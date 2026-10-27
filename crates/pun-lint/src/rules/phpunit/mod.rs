@@ -29,6 +29,7 @@ mod no_test_constructor;
 mod no_unused_mock;
 mod no_unused_mock_property;
 mod no_value_object_mock;
+mod phpdoc_type;
 mod prefer_assert;
 mod prefer_assert_array_has_key;
 mod prefer_assert_count;
@@ -59,6 +60,7 @@ mod prefer_simple_with_matcher;
 mod prefer_specific_true_false_assertion;
 mod prefer_specific_will_method;
 mod prefer_standalone_asserts_over_callback;
+mod prefer_stub_var;
 mod prefer_test_prefix;
 mod prefer_test_with_attribute;
 mod prefer_this_call;
@@ -123,6 +125,7 @@ pub use prefer_simple_with_matcher::PreferSimpleWithMatcher;
 pub use prefer_specific_true_false_assertion::PreferSpecificTrueFalseAssertion;
 pub use prefer_specific_will_method::PreferSpecificWillMethod;
 pub use prefer_standalone_asserts_over_callback::PreferStandaloneAssertsOverCallback;
+pub use prefer_stub_var::PreferStubVar;
 pub use prefer_test_prefix::PreferTestPrefix;
 pub use prefer_test_with_attribute::PreferTestWithAttribute;
 pub use prefer_this_call::PreferThisCall;
@@ -213,6 +216,7 @@ pub(crate) fn all() -> Vec<Box<dyn Rule>> {
         Box::new(PreferCreateStub),
         Box::new(RequireMockExpects),
         Box::new(PreferInlineCreateStub),
+        Box::new(PreferStubVar),
     ]
 }
 
