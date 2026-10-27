@@ -53,8 +53,10 @@ impl FunctionLikeTable {
         self.declaration_spans.get(&span).copied().unwrap_or(span)
     }
 
-    fn hides(&self, metadata: &FunctionLikeMetadata) -> bool {
-        (metadata.kind.is_closure() || metadata.kind.is_arrow_function())
+    fn hides(&self, key: &SymbolIdentifier, metadata: &FunctionLikeMetadata) -> bool {
+        (metadata.kind.is_closure()
+            || metadata.kind.is_arrow_function()
+            || key.0.as_bytes().starts_with(b"{anonymous-class:"))
             && self.files.iter().any(|overlay| overlay.file == metadata.span.file_id)
     }
 
@@ -62,7 +64,7 @@ impl FunctionLikeTable {
         self.files
             .iter()
             .find_map(|overlay| overlay.entries.get(key))
-            .or_else(|| self.base.get(key).filter(|metadata| !self.hides(metadata)))
+            .or_else(|| self.base.get(key).filter(|metadata| !self.hides(key, metadata)))
     }
 
     pub fn contains_key(&self, key: &SymbolIdentifier) -> bool {
@@ -73,7 +75,7 @@ impl FunctionLikeTable {
         self.files
             .iter()
             .flat_map(|overlay| overlay.entries.iter())
-            .chain(self.base.iter().filter(|(_, metadata)| !self.hides(metadata)))
+            .chain(self.base.iter().filter(|(key, metadata)| !self.hides(key, metadata)))
     }
 
     pub fn keys(&self) -> impl Iterator<Item = &SymbolIdentifier> {
@@ -154,8 +156,10 @@ impl FunctionLikeTable {
             return;
         }
         let files = std::mem::take(&mut self.files);
-        self.base.retain(|_, metadata| {
-            !(metadata.kind.is_closure() || metadata.kind.is_arrow_function())
+        self.base.retain(|key, metadata| {
+            !(metadata.kind.is_closure()
+                || metadata.kind.is_arrow_function()
+                || key.0.as_bytes().starts_with(b"{anonymous-class:"))
                 || !files.iter().any(|overlay| overlay.file == metadata.span.file_id)
         });
         for overlay in files {

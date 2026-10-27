@@ -598,3 +598,37 @@ Fresh private profiles cover **75/75 changed codex production lines**, **55/55 s
 exclusions. The runs use one Cargo job, one Rayon thread, and `CARGO_INCREMENTAL=0`. The raw LCOV
 comes from the actual replay's 55 test executables, including the maintained dependency's protocol
 tests. No earlier worktree's profiles or binaries contribute to this measurement.
+
+## Anonymous classes move with their bodies
+
+An anonymous class's synthetic name includes its source coordinates. On `294c1de3`, moving the
+class changed that name without refreshing its class or method metadata. The public Analyzer
+returned `Ok` but skipped the arrow inside the class and reported a mixed assignment. The same
+arrow in a named class ran once before and after the move.
+
+`with_file_closures()` now owns current anonymous classes and their methods as well as closures.
+Its file-local class map supplies the existing class-like queries, including anonymous constructor,
+property, and inherited-method lookup. Those queries hide obsolete class keys. `FunctionLikeTable`
+hides obsolete anonymous-class method keys during lookup, iteration, serialization, and mutation.
+Named declarations still use the span remap and retain foreign-file duplicate guards.
+
+Fresh anonymous classes use the existing hierarchy and signature populators. A temporary dependency
+slice contains only their project ancestors, traits, interfaces, imported type-alias sources, and
+those dependencies' methods. The slice preserves populated project metadata instead of rescanning
+dependency declarations. Only anonymous scopes remain in the snapshot after population. The
+project's class, symbol, alias, and signature maps stay shared. No per-file copy of the complete
+project class map or additional Analyzer traversal is needed.
+
+`closure_freshness.rs` checks unchanged and moved anonymous classes against the named-class control.
+Each arrow runs once, retains its declared parameter and return type, and produces a typed call
+result. Analysis also reaches a later scalar expression. Additional controls cover inherited
+properties and methods, traits, interfaces, class aliases, imported scalar type aliases, current
+template parents, unknown ancestry, deleted keys, persistence, and snapshot mutation. Full
+observations and diagnostics remain equal with native tracking enabled and disabled. Scalar
+expectations follow the fixture declarations, without a PHPStan or Rector oracle dependency.
+
+The isolated `294c1de3` base passes 71 focused Analyzer and lint controls with one Cargo job and
+one Rayon thread. Fresh source-matched profiles cover **86/86 changed production executable lines**
+and **200/200 added test executable lines**, without new exclusions. The run instruments
+`mago-codex`, `mago-analyzer`, and `mago-prelude` through `cargo llvm-cov --dep-coverage` and keeps
+dependency and test paths visible with `report --no-default-ignore-filename-regex --lcov`.

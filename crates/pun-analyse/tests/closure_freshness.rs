@@ -598,6 +598,245 @@ fn stdlib_plugins_and_raw_callback_gather_see_current_signatures() {
 }
 
 #[test]
+fn unchanged_and_moved_anonymous_scopes_keep_current_arrow_types() {
+    for declaration in [
+        "class Holder { public function run() { $f = fn (int $value): int => $value; $result = $f(7); $result; } }",
+        "$holder = new class { public function run() { $f = fn (int $value): int => $value; $result = $f(7); $result; } };",
+    ] {
+        let before = format!("<?php {declaration} $later = 29; $later;");
+        for after in [before.clone(), before.replace("<?php ", "<?php\n\n")] {
+            let (found, issues) = analyze(&before, &after);
+            assert_eq!(found.parameters, [vec!["int"]], "{after}: {issues:?}");
+            assert_eq!(found.returns, [Some("int".into())]);
+            let body = (after.find("=> $value").unwrap() + 3) as u32;
+            assert!(found.variables.contains(&(body, "int".into())));
+            let result = after.find("$result;").unwrap() as u32;
+            assert!(found.variables.contains(&(result, "int".into())));
+            assert_eq!(
+                issues,
+                [
+                    ("unused-statement".into(), result),
+                    (
+                        "unused-statement".into(),
+                        after.rfind("$later;").unwrap() as u32
+                    ),
+                ]
+            );
+        }
+    }
+}
+
+#[test]
+fn anonymous_scopes_keep_project_inheritance_aliases_and_fresh_keys() {
+    let source = "<?php namespace App; use Library\\AliasParent as Imported;\n$holder = /**\n * @property int $magic\n * @phpstan-import-type Count from \\Library\\ParentScope\n */ new class extends Imported implements \\Library\\Contract { use \\Library\\Shared; public int $own = 7; /** @var Count */ public $imported; public function run() { $f = fn (int $value): int => $value; $result = $f(7); $result; $typed = $this->imported; $typed; } }; $later = 29; $later;";
+    let library = File::new(
+        Cow::Borrowed(b"library.php"),
+        FileType::Host,
+        None,
+        Cow::Borrowed(b"<?php namespace Library; class Ancestor { public function inherited(): int { return 13; } } /** @phpstan-type Count int */ class ParentScope extends Ancestor { public string $inheritedProperty = 'x'; } class_alias(ParentScope::class, AliasParent::class); interface Contract { public function inherited(): int; } trait Shared { public function shared(): string { return 'x'; } }"),
+    );
+    let mut base = fresh_scan(&file(source));
+    base.extend(fresh_scan(&library));
+    populate_codebase(
+        &mut base,
+        &mut SymbolReferences::new(),
+        Default::default(),
+        Default::default(),
+    );
+    let old = base
+        .class_likes
+        .values()
+        .find(|m| m.name_span.is_none())
+        .unwrap();
+    let old_class = old.name;
+    let old_method = (old_class, word("run"));
+    let after = source.replace("$holder =", "\n\n$holder =");
+    let current_file = file(&after);
+    let snapshot = base.with_file_closures(current_file.id, fresh_scan(&current_file));
+    let new_class = snapshot
+        .function_likes
+        .keys()
+        .find(|(scope, name)| !scope.is_empty() && *name == word("run"))
+        .unwrap()
+        .0;
+    assert_ne!(old_class, new_class);
+    assert!(snapshot.get_class_like_by_name(old_class).is_none());
+    assert!(!snapshot.function_likes.contains_key(&old_method));
+    for name in [old_class, new_class] {
+        let current = name == new_class;
+        assert_eq!(snapshot.class_exists(name.as_bytes()), current);
+        assert_eq!(snapshot.class_like_exists(name.as_bytes()), current);
+        assert_eq!(snapshot.class_or_trait_exists(name.as_bytes()), current);
+        assert_eq!(snapshot.class_or_interface_exists(name.as_bytes()), current);
+    }
+    assert_eq!(
+        snapshot
+            .get_declaring_property(new_class.as_bytes(), b"$own")
+            .unwrap()
+            .type_metadata
+            .as_ref()
+            .unwrap()
+            .type_union
+            .get_id()
+            .as_str(),
+        Some("int")
+    );
+    assert_eq!(
+        snapshot
+            .get_property_type(new_class.as_bytes(), b"$own")
+            .unwrap()
+            .get_id()
+            .as_str(),
+        Some("int")
+    );
+    assert_eq!(
+        snapshot
+            .get_declaring_property(new_class.as_bytes(), b"$inheritedProperty")
+            .unwrap()
+            .type_metadata
+            .as_ref()
+            .unwrap()
+            .type_union
+            .get_id()
+            .as_str(),
+        Some("string")
+    );
+    assert_eq!(
+        snapshot
+            .get_declaring_magic_property(new_class.as_bytes(), b"$magic")
+            .unwrap()
+            .type_metadata
+            .as_ref()
+            .unwrap()
+            .type_union
+            .get_id()
+            .as_str(),
+        Some("int")
+    );
+    assert_eq!(
+        snapshot
+            .get_declaring_method(new_class.as_bytes(), b"inherited")
+            .unwrap()
+            .return_type_metadata
+            .as_ref()
+            .unwrap()
+            .type_union
+            .get_id()
+            .as_str(),
+        Some("int")
+    );
+    assert_eq!(
+        snapshot
+            .get_declaring_method(new_class.as_bytes(), b"shared")
+            .unwrap()
+            .return_type_metadata
+            .as_ref()
+            .unwrap()
+            .type_union
+            .get_id()
+            .as_str(),
+        Some("string")
+    );
+    assert!(snapshot.class_extends(new_class.as_bytes(), b"Library\\ParentScope"));
+    assert!(snapshot.class_implements(new_class.as_bytes(), b"Library\\Contract"));
+    assert!(
+        snapshot
+            .get_all_descendants(b"Library\\Ancestor")
+            .contains(&word("library\\parentscope"))
+    );
+    assert!(std::ptr::eq(&*snapshot.class_likes, &*base.class_likes));
+    assert!(std::ptr::eq(&*snapshot.symbols, &*base.symbols));
+    assert!(std::ptr::eq(
+        snapshot.get_class_like(b"Library\\ParentScope").unwrap(),
+        base.get_class_like(b"Library\\ParentScope").unwrap()
+    ));
+    let normal = analyze_with_base(&base, &after, false, false);
+    let tracked = analyze_with_base(&base, &after, true, false);
+    assert_eq!(normal, tracked, "native observations must remain passive");
+    assert_eq!(normal.0.parameters, [vec!["int"]]);
+    assert_eq!(normal.0.returns, [Some("int".into())]);
+    assert!(
+        normal
+            .0
+            .variables
+            .contains(&(after.rfind("$typed;").unwrap() as u32, "int".into()))
+    );
+    assert!(
+        !normal.1.iter().any(|(code, _)| code == "mixed-assignment"),
+        "{:?}",
+        normal.1
+    );
+    let decoded = mago_prelude::Prelude::decode(
+        &mago_prelude::Prelude {
+            metadata: snapshot.clone(),
+            ..Default::default()
+        }
+        .encode()
+        .unwrap(),
+    )
+    .unwrap();
+    assert_eq!(decoded.metadata, snapshot);
+    assert!(decoded.metadata.get_class_like_by_name(old_class).is_none());
+    assert!(decoded.metadata.get_class_like_by_name(new_class).is_some());
+    let empty = file("<?php $later = 29; $later;");
+    let removed = snapshot.with_file_closures(empty.id, fresh_scan(&empty));
+    assert!(removed.get_class_like_by_name(old_class).is_none());
+    assert!(removed.get_class_like_by_name(new_class).is_none());
+    assert!(
+        removed
+            .function_likes
+            .get(&(new_class, word("run")))
+            .is_none()
+    );
+    let mut detached = snapshot.clone();
+    detached
+        .function_likes
+        .get_mut(&(new_class, word("run")))
+        .unwrap()
+        .return_type_metadata = None;
+    assert!(!detached.function_likes.contains_key(&old_method));
+    assert!(base.function_likes.contains_key(&old_method));
+}
+
+#[test]
+fn moved_anonymous_scopes_preserve_template_parents_and_unknown_ancestry() {
+    for parent in ["", " extends Missing"] {
+        let before = format!(
+            "<?php $holder = /** @template T of int */ new class{parent} {{ public function run() {{ $f = /** @param T $value */ fn (int $value): int => $value; }} }}; $later = 29; $later;"
+        );
+        let after = before.replace("$holder =", "\n\n$holder =");
+        let base = scan(&before);
+        let current_file = file(&after);
+        let snapshot = base.with_file_closures(current_file.id, fresh_scan(&current_file));
+        let method = snapshot
+            .function_likes
+            .iter()
+            .find(|((scope, name), _)| !scope.is_empty() && *name == word("run"))
+            .unwrap();
+        let closure = snapshot
+            .function_likes
+            .values()
+            .find(|m| m.kind.is_arrow_function())
+            .unwrap();
+        let template = &closure
+            .type_resolution_context
+            .as_ref()
+            .unwrap()
+            .get_template_definition(word("T"))
+            .unwrap()[0];
+        assert_eq!(
+            template.defining_entity,
+            GenericParent::ClassLike(method.0.0)
+        );
+        assert_eq!(template.constraint.get_id().as_str(), Some("int"));
+        let normal = analyze_with_base(&base, &after, false, false);
+        assert_eq!(normal, analyze_with_base(&base, &after, true, false));
+        assert_eq!(normal.0.returns, [Some("int".into())]);
+        assert_eq!(normal.0.parameters.len(), 1);
+    }
+}
+
+#[test]
 fn moved_named_scopes_are_owned_but_real_duplicates_still_report() {
     for declaration in [
         "class Holder { public function run() { $f = fn (int $value): int => $value; } }",

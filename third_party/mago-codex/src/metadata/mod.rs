@@ -100,6 +100,9 @@ pub struct CodebaseMetadata {
     pub infer_types_from_usage: bool,
     /// Map from class-like FQCN (`Word`) to its detailed metadata (`ClassLikeMetadata`).
     pub class_likes: shared::Shared<WordMap<Box<ClassLikeMetadata>>>,
+    /// Current anonymous scopes for edited bodies; populated project declarations stay shared.
+    #[cfg_attr(feature = "serde", serde(default))]
+    file_anonymous_classes: shared::Shared<HashMap<FileId, shared::Shared<WordMap<Box<ClassLikeMetadata>>>>>,
     #[cfg_attr(feature = "serde", serde(default))]
     pub class_like_aliases: shared::Shared<WordMap<Word>>,
     #[cfg_attr(feature = "serde", serde(default))]
@@ -149,7 +152,7 @@ impl CodebaseMetadata {
         Self::default()
     }
 
-    /// Replace all anonymous functions of `file` with a complete current-file scan.
+    /// Refresh anonymous functions and their anonymous-class scopes from a complete file scan.
     ///
     /// Scan the entire program with `scan_program`, not individual expressions: nested
     /// templates, namespace aliases and class scopes belong to that scanner's context.
@@ -166,24 +169,83 @@ impl CodebaseMetadata {
         // current declaration. A winner belonging to another file never gets remapped.
         let mut declaration_spans = HashMap::default();
         for (name, metadata) in &scanned.class_likes {
-            if let Some(original) = self.class_likes.get(name)
-                && original.span.file_id == file && metadata.span.file_id == file
+            if metadata.name_span.is_some()
+                && let Some(original) = self.class_likes.get(name)
+                && original.span.file_id == file
+                && metadata.span.file_id == file
             {
                 declaration_spans.insert(original.span, metadata.span);
             }
         }
         for (key, metadata) in &scanned.function_likes {
             if (metadata.kind.is_function() || metadata.kind.is_method())
+                && !key.0.as_bytes().starts_with(b"{anonymous-class:")
                 && let Some(original) = self.function_likes.get(key)
-                && original.span.file_id == file && metadata.span.file_id == file
+                && original.span.file_id == file
+                && metadata.span.file_id == file
             {
                 declaration_spans.insert(original.span, metadata.span);
             }
         }
-        scanned.function_likes.retain(|_, metadata| {
-            metadata.span.file_id == file && (metadata.kind.is_closure() || metadata.kind.is_arrow_function())
+        // Anonymous classes are body-local declarations too. Their synthetic names
+        // contain source coordinates, so moving one invalidates its class and method
+        // keys, not just its closures. Populate a file-sized dependency slice rather
+        // than detaching the project's complete class or function maps.
+        scanned.class_likes.retain(|_, metadata| metadata.span.file_id == file && metadata.name_span.is_none());
+        let anonymous_names: WordSet = scanned.class_likes.keys().copied().collect();
+        scanned.function_likes.retain(|key, metadata| {
+            metadata.span.file_id == file
+                && (metadata.kind.is_closure() || metadata.kind.is_arrow_function() || anonymous_names.contains(&key.0))
         });
+        if !anonymous_names.is_empty() {
+            let mut pending: Vec<_> = anonymous_names.iter().copied().collect();
+            let mut dependencies = WordSet::default();
+            while let Some(name) = pending.pop() {
+                let metadata = &scanned.class_likes[&name];
+                let ancestors: Vec<_> = metadata
+                    .direct_parent_class
+                    .iter()
+                    .chain(metadata.direct_parent_interfaces.iter())
+                    .chain(metadata.used_traits.iter())
+                    .chain(metadata.require_extends.iter())
+                    .chain(metadata.require_implements.iter())
+                    .chain(metadata.imported_type_aliases.values().map(|(source, _, _)| source))
+                    .copied()
+                    .collect();
+                for ancestor in ancestors {
+                    let Some(metadata) = self.get_class_like_by_name(ancestor) else {
+                        continue;
+                    };
+                    let name = metadata.name;
+                    if anonymous_names.contains(&name) || !dependencies.insert(name) {
+                        continue;
+                    }
+                    for method in &metadata.methods {
+                        let key = (name, *method);
+                        if let Some(method) = self.function_likes.get(&key) {
+                            scanned.function_likes.insert(key, method.clone());
+                        }
+                    }
+                    scanned.class_likes.insert(name, Box::new(metadata.clone()));
+                    pending.push(name);
+                }
+            }
+            scanned.symbols = self.symbols.clone();
+            scanned.class_like_aliases = self.class_like_aliases.clone();
+            scanned.class_like_aliases_dirty = false;
+            crate::populator::populate_codebase(
+                &mut scanned,
+                &mut SymbolReferences::new(),
+                dependencies,
+                HashSet::default(),
+            );
+            scanned.class_likes.retain(|name, _| anonymous_names.contains(name));
+            scanned.function_likes.retain(|key, metadata| {
+                metadata.kind.is_closure() || metadata.kind.is_arrow_function() || anonymous_names.contains(&key.0)
+            });
+        }
         let mut snapshot = self.clone();
+        snapshot.file_anonymous_classes.insert(file, scanned.class_likes);
         snapshot.function_likes.replace_closures(file, scanned.function_likes.into_inner(), declaration_spans);
         snapshot
     }
@@ -281,8 +343,8 @@ impl CodebaseMetadata {
 
     #[inline]
     pub(crate) fn resolve_class_like_word(&self, name: Word) -> Option<Word> {
-        if self.class_likes.contains_key(&name) {
-            return Some(name);
+        if let Some(metadata) = self.get_class_like_by_word(name) {
+            return Some(metadata.name);
         }
 
         if self.class_like_aliases.is_empty() {
@@ -294,7 +356,15 @@ impl CodebaseMetadata {
 
     #[inline]
     pub(crate) fn get_class_like_by_word(&self, name: Word) -> Option<&ClassLikeMetadata> {
+        for classes in self.file_anonymous_classes.values() {
+            if let Some(metadata) = classes.get(&name) {
+                return Some(metadata);
+            }
+        }
         if let Some(metadata) = self.class_likes.get(&name) {
+            if metadata.name_span.is_none() && self.file_anonymous_classes.contains_key(&metadata.span.file_id) {
+                return None;
+            }
             return Some(metadata.as_ref());
         }
 
@@ -319,6 +389,14 @@ impl CodebaseMetadata {
         self.function_likes.get(&(*actual, method)).map(Box::as_ref)
     }
 
+    fn current_symbol_kind(&self, name: Word) -> Option<SymbolKind> {
+        if name.as_bytes().starts_with(b"{anonymous-class:") {
+            self.get_class_like_by_word(name).map(|metadata| metadata.kind)
+        } else {
+            self.symbols.get_kind(name)
+        }
+    }
+
     /// Checks if a class exists in the codebase (case-insensitive).
     ///
     /// # Examples
@@ -331,7 +409,7 @@ impl CodebaseMetadata {
     #[must_use]
     pub fn class_exists(&self, name: &[u8]) -> bool {
         let lowercase_name = ascii_lowercase_word(name);
-        matches!(self.symbols.get_kind(lowercase_name), Some(SymbolKind::Class))
+        matches!(self.current_symbol_kind(lowercase_name), Some(SymbolKind::Class))
     }
 
     /// Checks if an interface exists in the codebase (case-insensitive).
@@ -363,7 +441,7 @@ impl CodebaseMetadata {
     #[must_use]
     pub fn class_like_exists(&self, name: &[u8]) -> bool {
         let lowercase_name = ascii_lowercase_word(name);
-        self.symbols.contains(lowercase_name)
+        self.current_symbol_kind(lowercase_name).is_some()
     }
 
     /// Checks if a namespace exists (case-insensitive).
@@ -379,7 +457,7 @@ impl CodebaseMetadata {
     #[must_use]
     pub fn class_or_trait_exists(&self, name: &[u8]) -> bool {
         let lowercase_name = ascii_lowercase_word(name);
-        matches!(self.symbols.get_kind(lowercase_name), Some(SymbolKind::Class | SymbolKind::Trait))
+        matches!(self.current_symbol_kind(lowercase_name), Some(SymbolKind::Class | SymbolKind::Trait))
     }
 
     /// Checks if a class or interface exists in the codebase (case-insensitive).
@@ -387,7 +465,7 @@ impl CodebaseMetadata {
     #[must_use]
     pub fn class_or_interface_exists(&self, name: &[u8]) -> bool {
         let lowercase_name = ascii_lowercase_word(name);
-        matches!(self.symbols.get_kind(lowercase_name), Some(SymbolKind::Class | SymbolKind::Interface))
+        matches!(self.current_symbol_kind(lowercase_name), Some(SymbolKind::Class | SymbolKind::Interface))
     }
 
     /// Checks if a method identifier exists in the codebase.
@@ -678,7 +756,7 @@ impl CodebaseMetadata {
         let property_name = word(property);
         let declaring_class =
             self.get_class_like_by_word(lowercase_class)?.declaring_property_ids.get(&property_name)?;
-        self.class_likes.get(declaring_class)?.properties.get(&property_name)
+        self.get_class_like_by_word(*declaring_class)?.properties.get(&property_name)
     }
 
     /// Retrieves magic `@property*` metadata, potentially from an inherited tag.
@@ -689,7 +767,7 @@ impl CodebaseMetadata {
         let lowercase_class = ascii_lowercase_word(class);
         let property_name = word(property);
         let declaring_class = self.get_class_like_by_word(lowercase_class)?.magic_property_ids.get(&property_name)?;
-        self.class_likes.get(declaring_class)?.magic_properties.get(&property_name)
+        self.get_class_like_by_word(*declaring_class)?.magic_properties.get(&property_name)
     }
     // Type Resolution
 
@@ -701,7 +779,7 @@ impl CodebaseMetadata {
         let property_name = word(property);
         let declaring_class =
             self.get_class_like_by_word(lowercase_class)?.declaring_property_ids.get(&property_name)?;
-        let property_meta = self.class_likes.get(declaring_class)?.properties.get(&property_name)?;
+        let property_meta = self.get_class_like_by_word(*declaring_class)?.properties.get(&property_name)?;
         property_meta.type_metadata.as_ref().map(|tm| &tm.type_union)
     }
 
