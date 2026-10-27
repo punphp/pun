@@ -5,7 +5,8 @@
 //! `phpVersion(80400)`) wrote for them; Pun/ holds the cases where Pun keeps the meaning or valid code where Rector
 //! does not, each with its reason in the file. RenameCastRector's `fixture.php.inc` is left out: it casts with
 //! `(real)`, which PHP 8.0 removed and Mago's parser rejects, so no file of it can be linted; Oracle/casts covers the
-//! rest of it. A fixture must pass as `pun lint --fix == expected` and
+//! rest of it. RenameMethodRector's Fixture/Enum/rename_enum_method.php.inc is Fixture/Enum_rename_enum_method.php.inc,
+//! the runner reading one directory. A fixture must pass as `pun lint --fix == expected` and
 //! `format(pun lint --fix) == format(expected)` with format being the laravel preset.
 
 mod lint_c;
@@ -13,7 +14,7 @@ mod lint_c;
 use lint_c::{run_class, run_class_at, run_class_with};
 use pun_lint::{Linter, Rule};
 use pun_lint::rules::{
-    AddOverrideAttribute, ReplaceArrayAccess,
+    AddOverrideAttribute, RenameMethod, ReplaceArrayAccess,
     RemoveFunctionArgument, RemoveFunctionCall, RenameCast, RenameClassConstant, RenameConstant,
     PreferClassNameConstant, RenameFunction, RequireStrictInArray, ReplaceFunctionWithConstant, ReplaceFunctionWithNew, ReplaceFunctionWithStatic,
 };
@@ -253,4 +254,63 @@ fn array_dim_fetch_to_method_call() {
             (json!({"items": [{"object-type": {"class-name": "A"}, "method": "get", "set-method": 1}]}), "`set-method` must be a string"),
         ],
     );
+}
+
+/// config/configured_rule.php.
+#[test]
+fn rename_method() {
+    let source = "Rector\\Tests\\Renaming\\Rector\\MethodCall\\RenameMethodRector\\Source\\";
+    let fixture = "Rector\\Tests\\Renaming\\Rector\\MethodCall\\RenameMethodRector\\Fixture\\";
+    let rename = |class: String, old: &str, new: &str| json!({"class": class, "old-method": old, "new-method": new});
+    let mut keyed = rename("Nette\\Utils\\Html".into(), "addToArray", "addToHtmlArray");
+    keyed["array-key"] = json!("hey");
+    check(
+        RenameMethod::default(),
+        json!({"items": [
+            rename(format!("{source}AbstractType"), "setDefaultOptions", "configureOptions"),
+            rename("Nette\\Utils\\Html".into(), "add", "addHtml"),
+            rename(format!("{source}CustomType"), "notify", "__invoke"),
+            rename(format!("{fixture}CustomType"), "notify", "__invoke"),
+            rename(format!("{source}SomeSubscriber"), "old", "new"),
+            rename(format!("{source}Foo"), "old", "new"),
+            rename(format!("{source}NewInterface"), "some_old", "some_new"),
+            rename(format!("{source}DifferentInterface"), "renameMe", "toNewVersion"),
+            rename("ReflectionFunctionAbstract".into(), "getTentativeReturnType", "getReturnType"),
+            keyed,
+            rename("Symfony\\Component\\Workflow\\DefinitionBuilder".into(), "reset", "clear"),
+            rename(format!("{source}Enum\\SomeEnumWithMethod"), "oldEnumMethod", "newEnumMethod"),
+            rename(format!("{source}SomeTrait"), "_test", "test"),
+            rename(format!("{fixture}RenameTraitMethod"), "run", "execute"),
+            rename(format!("{fixture}RenameTraitMethodCall"), "method1", "method3"),
+        ]}),
+        "RenameMethodRector",
+    );
+    rejects(
+        RenameMethod::default(),
+        &[
+            (json!({"items": [{"class": "A", "old-method": "a"}]}), "each of `items` needs `new-method`"),
+            (json!({"items": [{"class": "A", "old-method": "a", "new-method": "b", "array-key": []}]}), "`array-key` must be a string or an integer"),
+            (json!({"items": [{"class": "A", "old-method": "a-b", "new-method": "b"}]}), "\"a-b\" is not a valid method name"),
+        ],
+    );
+}
+
+/// What Rector 2.6.1 wrote for this code with `MethodCallRename('App\\Child', 'old', 'new')` and
+/// `MethodCallRenameWithArrayKey('App\\K', 'a', 'b', 3)`: an interface keeps a method its rename class's parent
+/// interface declares, and an integer key is read as written.
+#[test]
+fn rename_method_parent_interface_and_integer_key() {
+    let mut rule = RenameMethod::default();
+    rule.configure(&json!({"items": [
+        {"class": "App\\Child", "old-method": "old", "new-method": "new"},
+        {"class": "App\\K", "old-method": "a", "new-method": "b", "array-key": 3},
+    ]}))
+    .unwrap();
+    let interfaces = "<?php\n\nnamespace App;\n\ninterface Base\n{\n    public function old();\n}\n\ninterface Child extends Base\n{\n    public function old();\n}\n\ninterface Sub extends Child\n{\n    public function old();\n}\n\n";
+    let code = format!("{interfaces}class K\n{{\n    public function a() {{}}\n}}\n\nfunction f(K $k)\n{{\n    return $k->a();\n}}\n");
+    let fixed = Linter::new(vec![Box::new(rule)], 80400)
+        .fix(std::path::Path::new("f.php"), &code)
+        .unwrap();
+    let expected = format!("{interfaces}class K\n{{\n    public function b() {{}}\n}}\n\nfunction f(K $k)\n{{\n    return $k->b()[3];\n}}\n");
+    assert_eq!(fixed.source, expected);
 }

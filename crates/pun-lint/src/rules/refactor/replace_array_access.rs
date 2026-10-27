@@ -27,9 +27,6 @@
 //! exists-method = "has", unset-method = "unset" }]`, the `ArrayDimFetchToMethodCall` value objects as
 //! `pun migrate` writes them (an `ObjectType`'s other, empty, properties may come along).
 
-use mago_codex::ttype::atomic::TAtomic;
-use mago_codex::ttype::atomic::object::TObject;
-use mago_codex::ttype::atomic::reference::TReference;
 use mago_syntax::cst::{
     ArrayAccess, Construct, Expression, IssetConstruct, Node, NodeKind, Statement, StringPart,
 };
@@ -40,9 +37,8 @@ use super::super::php_parser::precedence;
 use super::super::rector_batch5::{list_removal, merge};
 use super::super::rector_stmts::{Frame, enclosing, line_indent, replace_statement};
 use super::super::lint_b_helpers::replace_run;
-use super::super::types::facts::facts;
-use super::{is_class, items, object, string};
-use crate::syntax::{node_span, unparenthesize};
+use super::{is_object_type, items, object, string};
+use crate::syntax::node_span;
 use crate::{Context, Report, Rule};
 
 /// One `ArrayDimFetchToMethodCall`.
@@ -89,7 +85,7 @@ fn object_type(value: &Value) -> Result<String, String> {
 impl ReplaceArrayAccess {
     fn method(&self, ctx: &Context<'_>, access: &ArrayAccess<'_>, handler: Handler) -> Option<&str> {
         self.calls.iter().find_map(|call| {
-            if !is_object_type(ctx, access.array, &call.class) {
+            if !is_object_type(ctx, &[], access.array, &call.class) {
                 return None;
             }
             match handler {
@@ -117,25 +113,6 @@ impl ReplaceArrayAccess {
 
 fn text<'s>(ctx: &Context<'s>, span: Span) -> &'s str {
     &ctx.source[span.start..span.end]
-}
-
-/// `NodeTypeResolver::isObjectType($expr, new ObjectType($class))` on the type Mago gives the expression.
-fn is_object_type(ctx: &Context<'_>, expr: &Expression<'_>, class: &str) -> bool {
-    let facts = facts(ctx);
-    let Some(t) = facts.full_type(node_span(unparenthesize(expr))) else {
-        return false;
-    };
-    let kept: Vec<&TAtomic> = (t.types.iter())
-        .filter(|a| !a.is_null() && !matches!(a, TAtomic::Scalar(s) if s.is_false()))
-        .collect();
-    !kept.is_empty()
-        && kept.iter().all(|a| match a {
-            TAtomic::Object(TObject::Named(n)) => {
-                is_class(ctx, &n.name.to_string(), class)
-            }
-            TAtomic::Reference(TReference::Symbol { name, .. }) => name.to_string() == class,
-            _ => false,
-        })
 }
 
 /// The nodes above `ancestors`' last one, nearest first, without the `Expression` wrappers of Mago's walk.

@@ -11,6 +11,7 @@ mod add_override_attribute;
 mod remove_function_argument;
 mod replace_array_access;
 mod remove_function_call;
+mod rename_method;
 mod rename_cast;
 mod rename_class_constant;
 mod rename_constant;
@@ -21,6 +22,7 @@ pub use add_override_attribute::AddOverrideAttribute;
 pub use remove_function_argument::RemoveFunctionArgument;
 pub use replace_array_access::{ArrayAccessCall, ReplaceArrayAccess};
 pub use remove_function_call::RemoveFunctionCall;
+pub use rename_method::{MethodRename, RenameMethod};
 pub use rename_cast::RenameCast;
 pub use rename_class_constant::RenameClassConstant;
 pub use rename_constant::RenameConstant;
@@ -31,13 +33,18 @@ pub use replace_function::{
 
 use std::sync::LazyLock;
 
+use mago_codex::ttype::atomic::TAtomic;
+use mago_codex::ttype::atomic::object::TObject;
+use mago_codex::ttype::atomic::reference::TReference;
 use mago_syntax::cst::{Expression, Identifier, Node, PartialArgument};
 use pun_problem::{Edit, Fix, Safety, Span};
 use regex::bytes::Regex;
 use serde_json::{Map, Value};
 
-use super::rector_batch5::{imported, imported_member, scope_statements};
+use super::rector_batch5::{imported, imported_member, resolve_class_name, scope_statements};
+use super::types::class_scope;
 use super::types::facts::facts;
+use crate::syntax::{node_span, unparenthesize};
 use crate::{Context, Report, Rule};
 
 /// Every rule of the group, in a fixed order, unconfigured.
@@ -51,6 +58,7 @@ pub fn all() -> Vec<Box<dyn Rule>> {
         Box::new(RenameClassConstant::default()),
         Box::new(RenameConstant::default()),
         Box::new(RenameFunction::default()),
+        Box::new(RenameMethod::default()),
         Box::new(ReplaceFunctionWithConstant::default()),
         Box::new(ReplaceFunctionWithNew::default()),
         Box::new(ReplaceFunctionWithStatic::default()),
@@ -259,4 +267,82 @@ pub(crate) fn is_class(ctx: &Context<'_>, resolved: &str, required: &str) -> boo
     resolved == required
         || (codebase.get_class_like(required.as_bytes()).is_some()
             && codebase.is_instance_of(resolved.as_bytes(), required.as_bytes()))
+}
+
+/// `NodeTypeResolver::isObjectType($expr, new ObjectType($required))`: for a class name as `NameTypeResolver` types it
+/// (`self`, `static` the enclosing class, `parent` its parents), for any other expression on the type Mago gives it,
+/// `null` and `false` left out of a union, a class the codebase does not know matching its own name only.
+pub(crate) fn is_object_type(
+    ctx: &Context<'_>,
+    ancestors: &[Node<'_, '_>],
+    class: &Expression<'_>,
+    required: &str,
+) -> bool {
+    match unparenthesize(class) {
+        // `isObjectType()` answers no for a class constant fetch (an enum case among them).
+        Expression::Access(mago_syntax::cst::Access::ClassConstant(_)) => false,
+        Expression::Identifier(id) => {
+            let written = String::from_utf8_lossy(id.value());
+            match written.to_ascii_lowercase().as_str() {
+                "self" | "static" if matches!(id, Identifier::Local(_)) => {
+                    match class_scope(ancestors).and_then(|c| c.name) {
+                        Some(name) => is_class(ctx, &name, required),
+                        None => is_class(ctx, &written, required),
+                    }
+                }
+                "parent" if matches!(id, Identifier::Local(_)) => {
+                    parents(ctx, ancestors).is_some_and(|chain| {
+                        chain.iter().all(|p| is_class(ctx, p, required))
+                    })
+                }
+                _ => is_class(ctx, &resolve_class_name(ancestors, id), required),
+            }
+        }
+        Expression::Static(_) | Expression::Self_(_) => class_scope(ancestors)
+            .and_then(|c| c.name)
+            .is_some_and(|name| is_class(ctx, &name, required)),
+        Expression::Parent(_) => parents(ctx, ancestors)
+            .is_some_and(|chain| chain.iter().all(|p| is_class(ctx, p, required))),
+        other => {
+            let facts = facts(ctx);
+            let Some(t) = facts.full_type(node_span(other)) else {
+                return false;
+            };
+            let kept: Vec<&TAtomic> = (t.types.iter())
+                .filter(|a| !a.is_null() && !matches!(a, TAtomic::Scalar(s) if s.is_false()))
+                .collect();
+            !kept.is_empty()
+                && kept.iter().all(|a| match a {
+                    TAtomic::Object(TObject::Named(n)) => {
+                        is_class(ctx, &n.name.to_string(), required)
+                    }
+                    TAtomic::Object(TObject::Enum(e)) => is_class(ctx, &e.name.to_string(), required),
+                    TAtomic::Reference(TReference::Symbol { name, .. }) => name.to_string() == required,
+                    _ => false,
+                })
+        }
+    }
+}
+
+/// `NameTypeResolver::resolveParent`: the enclosing class's parent classes, nearest first; `None` outside a class,
+/// in an anonymous class, or for a class without a parent.
+fn parents(ctx: &Context<'_>, ancestors: &[Node<'_, '_>]) -> Option<Vec<String>> {
+    let scope = class_scope(ancestors)?;
+    scope.name.as_ref()?;
+    let first = scope.parent_class?;
+    let facts = facts(ctx);
+    let mut chain = vec![first.clone()];
+    let mut next = first;
+    while let Some(parent) = facts
+        .codebase
+        .get_class_like(next.as_bytes())
+        .and_then(|c| c.direct_parent_class)
+    {
+        next = parent.to_string();
+        if chain.iter().any(|c| c.eq_ignore_ascii_case(&next)) {
+            break;
+        }
+        chain.push(next.clone());
+    }
+    Some(chain)
 }
