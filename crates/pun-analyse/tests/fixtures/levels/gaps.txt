@@ -100,7 +100,6 @@
 5 Methods/CallStaticMethodsRuleTest::testBug6249
 5 Methods/CallStaticMethodsRuleTest::testBug7489
 5 Properties/AccessStaticPropertiesRuleTest::testAccessStaticProperties
-9 Functions/CallToFunctionParametersRuleTest::testBug10559
 9 Functions/CallToFunctionParametersRuleTest::testBug11386
 9 Functions/CallToFunctionParametersRuleTest::testBug9580
 9 Functions/CallToFunctionParametersRuleTest::testBug9697
@@ -148,8 +147,6 @@
 9 Functions/CallToFunctionParametersRuleTest::testArrayAnyCallback
 9 Functions/CallToFunctionParametersRuleTest::testArrayDiffUassoc
 9 Functions/CallToFunctionParametersRuleTest::testArrayDiffUkey
-9 Functions/CallToFunctionParametersRuleTest::testArrayFilterCallback#0
-9 Functions/CallToFunctionParametersRuleTest::testArrayFilterCallback#1
 9 Functions/CallToFunctionParametersRuleTest::testArrayFindCallback
 9 Functions/CallToFunctionParametersRuleTest::testArrayFindKeyCallback
 9 Functions/CallToFunctionParametersRuleTest::testArrayIntersectUassoc
@@ -177,10 +174,6 @@
 9 Methods/CallMethodsRuleTest::testCallablesWithoutCheckNullables#2
 9 Methods/CallMethodsRuleTest::testCallablesWithoutCheckNullables#3
 9 Methods/CallMethodsRuleTest::testPureCallable
-9 Methods/CallStaticMethodsRuleTest::testMixed#0
-9 Methods/CallStaticMethodsRuleTest::testMixed#1
-9 Methods/CallStaticMethodsRuleTest::testMixed#2
-9 Methods/CallStaticMethodsRuleTest::testMixed#3
 # an-types2: anonymous-class display names (`Stringable@anonymous`, the exporter's absolute paths)
 5 Classes/InstantiationRuleTest::testInstantiation
 5 Functions/CallToFunctionParametersRuleTest::testBug6560#0
@@ -239,7 +232,6 @@
 5 Methods/CallMethodsRuleTest::testBug11463
 5 Methods/CallMethodsRuleTest::testBug13171
 5 Methods/CallMethodsRuleTest::testBug13993
-5 Methods/CallMethodsRuleTest::testBug14732
 5 Methods/CallMethodsRuleTest::testBug1661
 5 Methods/CallMethodsRuleTest::testBug3555
 5 Methods/CallMethodsRuleTest::testBug5372
@@ -282,7 +274,6 @@
 9 Functions/CallToFunctionParametersRuleTest::testBenevolentSuperglobalKeys
 9 Functions/CallToFunctionParametersRuleTest::testBug10974
 9 Functions/CallToFunctionParametersRuleTest::testBug11533
-9 Functions/CallToFunctionParametersRuleTest::testBug11534
 9 Functions/CallToFunctionParametersRuleTest::testBug12676
 9 Functions/CallToFunctionParametersRuleTest::testBug12847
 9 Functions/CallToFunctionParametersRuleTest::testBug13247
@@ -291,7 +282,6 @@
 9 Functions/CallToFunctionParametersRuleTest::testBug14312b
 9 Functions/CallToFunctionParametersRuleTest::testBug2911
 9 Functions/CallToFunctionParametersRuleTest::testBug4371
-9 Functions/CallToFunctionParametersRuleTest::testBug5872
 9 Functions/CallToFunctionParametersRuleTest::testBug6175
 9 Functions/CallToFunctionParametersRuleTest::testBug6720
 9 Functions/CallToFunctionParametersRuleTest::testBug6987
@@ -318,7 +308,6 @@
 9 Methods/CallMethodsRuleTest::testBug13805
 9 Methods/CallMethodsRuleTest::testBug13993
 9 Methods/CallMethodsRuleTest::testBug14719
-9 Methods/CallMethodsRuleTest::testBug14732
 9 Methods/CallMethodsRuleTest::testBug1661
 9 Methods/CallMethodsRuleTest::testBug3555
 9 Methods/CallMethodsRuleTest::testBug3589
@@ -782,7 +771,6 @@
 # Mago loses `$this` after a dynamic `?->$this?->$name` fetch.
 5 Properties/AccessPropertiesRuleTest::testDynamicStringableNullsafeAccess
 # Mago's explicit mixed and benevolent unions describe differently.
-9 Operators/InvalidIncDecOperationRuleTest::testMixed
 9 Operators/InvalidIncDecOperationRuleTest::testUnion
 # cross-branch after the nullsafe + NullCoalesce + templateType merges (owners notified)
 4 Variables/NullCoalesceRuleTest::testBug7109
