@@ -12467,7 +12467,7 @@
         "rules": [
           "lint/phpunit/add-data-provider-allow-mock-objects"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -12477,7 +12477,7 @@
         "rules": [
           "lint/phpunit/add-allow-mock-objects-attribute"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {

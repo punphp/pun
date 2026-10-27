@@ -6,7 +6,8 @@
 //!
 //! rector-phpunit runs its fixtures with phpunit/phpunit 13.2 installed, so every fixture here sees the PHPUnit
 //! classes of tests/phpunit-stubs (PHPUnit 13.2.6's files with empty method bodies, scripts/export-phpunit-stub.php)
-//! beside its Source/ classes.
+//! beside its Source/ classes, and the Symfony classes of rector-phpunit's own stubs/ (tests/rector-phpunit-stubs,
+//! verbatim at e68085d).
 
 use std::path::{Path, PathBuf};
 
@@ -58,6 +59,7 @@ fn run_class(rules: Vec<Box<dyn Rule>>, class: &str) {
     );
     let mut extra = Vec::new();
     sources(&base.join("phpunit-stubs"), &mut extra);
+    sources(&base.join("rector-phpunit-stubs"), &mut extra);
     sources(&root.join("Source"), &mut extra);
     for sub in ["Fixture", "Oracle", "Pun"] {
         let dir = root.join(sub);
@@ -571,5 +573,21 @@ fn add_intersection_param_to_mock_object_param() {
     check(
         AddMockIntersectionParam,
         "AddIntersectionParamToMockObjectParamRector",
+    );
+}
+
+#[test]
+fn allow_mock_objects_where_parent_class() {
+    check(
+        AddAllowMockObjectsAttribute,
+        "AllowMockObjectsWhereParentClassRector",
+    );
+}
+
+#[test]
+fn allow_mock_objects_for_data_provider() {
+    check(
+        AddDataProviderAllowMockObjects,
+        "AllowMockObjectsForDataProviderRector",
     );
 }

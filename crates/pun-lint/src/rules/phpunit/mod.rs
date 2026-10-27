@@ -6,6 +6,8 @@
 //! parent class by name even when its file is not known; a receiver other than `$this`, `self`, `static` and `parent`
 //! takes the type Mago gives it.
 
+mod add_allow_mock_objects_attribute;
+mod add_data_provider_allow_mock_objects;
 mod add_data_provider_iterator_return_type;
 mod add_depended_test_return_type;
 mod add_mock_intersection_param;
@@ -78,6 +80,8 @@ mod require_mock_expects;
 mod require_strict_types_in_tests;
 mod require_string_assert_argument;
 
+pub use add_allow_mock_objects_attribute::AddAllowMockObjectsAttribute;
+pub use add_data_provider_allow_mock_objects::AddDataProviderAllowMockObjects;
 pub use add_data_provider_iterator_return_type::AddDataProviderIteratorReturnType;
 pub use add_depended_test_return_type::AddDependedTestReturnType;
 pub use add_mock_intersection_param::AddMockIntersectionParam;
@@ -232,6 +236,8 @@ pub(crate) fn all() -> Vec<Box<dyn Rule>> {
         Box::new(AddStubIntersectionType),
         Box::new(AddMockObjectType),
         Box::new(AddMockIntersectionParam),
+        Box::new(AddAllowMockObjectsAttribute),
+        Box::new(AddDataProviderAllowMockObjects),
     ]
 }
 
@@ -283,7 +289,7 @@ pub(crate) fn is_in_test_class(
 }
 
 /// `ClassReflection::is()` for the class-like `ancestors` ends in, against any of `targets`.
-fn class_is(ctx: &Context<'_>, ancestors: &[Node<'_, '_>], targets: &[&str]) -> bool {
+pub(super) fn class_is(ctx: &Context<'_>, ancestors: &[Node<'_, '_>], targets: &[&str]) -> bool {
     let Some(scope) = class_scope(ancestors) else {
         return false;
     };

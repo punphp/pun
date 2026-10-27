@@ -10740,7 +10740,7 @@
         "AllowMockObjectsWhereParentClassRector",
         "Rector\\PHPUnit\\PHPUnit120\\Rector\\Class_\\AllowMockObjectsWhereParentClassRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/phpunit/add-closure-return-type-from-assert",
@@ -10779,7 +10779,7 @@
         "AllowMockObjectsForDataProviderRector",
         "Rector\\PHPUnit\\PHPUnit120\\Rector\\Class_\\AllowMockObjectsForDataProviderRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/phpunit/add-data-provider-iterator-return-type",
