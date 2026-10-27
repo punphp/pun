@@ -178,6 +178,10 @@ where
                 }
             }
 
+            if intersection_types.is_empty() {
+                return get_never();
+            }
+
             TUnion::from_vec(intersection_types)
         }
         Hint::Iterable(_) => get_mixed_iterable(),

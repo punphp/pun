@@ -413,3 +413,19 @@ The source contracts are PHPStan 2.3.1's
 and `TypeCombinator::union()`. Public Analyzer and native-type API controls live in
 `crates/pun-analyse/tests/explicit_mixed_producers.rs`. Its fixtures contain independent full and native
 scope captures from PHPStan 2.3.1 and Rector's PHPStan 2.2.7.
+
+## Impossible native intersections
+
+`scanner/ttype.rs` returns `get_never()` when a native intersection has no intersectable alternatives.
+The scanner no longer passes an empty vector to `TUnion::from_vec()`, which panics in debug builds.
+Nonempty intersections retain their existing construction, including nested object intersections.
+Native declaration spans and metadata flags remain unchanged. PHPDoc construction is outside this patch.
+
+PHPStan 2.3.1's
+[`TypehintHelper`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Type/TypehintHelper.php#L46-L57)
+and [`ParserNodeTypeToPHPStanType`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Type/ParserNodeTypeToPHPStanType.php#L54-L67)
+produce never for native intersections containing a non-object operand. `TypeCombinator` removes never
+from unions with another member. The public scanner regression in
+`crates/pun-analyse/tests/native_intersections.rs` checks seven native signatures before Pun's
+masked-source recovery. Its fixtures capture both native reflection and parser types from PHPStan 2.3.1,
+plus complete diagnostics that include a missing-function control after the impossible signatures.
