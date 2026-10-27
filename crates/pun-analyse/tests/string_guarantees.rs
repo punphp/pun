@@ -31,12 +31,22 @@ fn intersections_and_joins_have_independent_guarantees() {
         for (j, right) in states.into_iter().enumerate() {
             let a = general(left);
             let b = general(right);
+            assert_eq!(left.join(right), joins[i][j]);
             assert_eq!(a.intersect(&b), Some(general(meets[i][j])));
             let result = intersect_union_types(&union(a), &union(b), &codebase).unwrap();
             assert_eq!(result.get_single_string().unwrap().casing, meets[i][j]);
             let result =
                 combine_union_types(&union(a), &union(b), &codebase, CombinerOptions::default());
-            assert_eq!(result.get_single_string().unwrap().casing, joins[i][j]);
+            // Exact unions retain incomparable alternatives, unlike shared casing guarantees.
+            let expected = if matches!((left, right), (L, U) | (U, L)) {
+                TUnion::from_vec(vec![
+                    TAtomic::Scalar(TScalar::String(general(L))),
+                    TAtomic::Scalar(TScalar::String(general(U))),
+                ])
+            } else {
+                union(general(joins[i][j]))
+            };
+            assert_eq!(result, expected, "{left:?} union {right:?}");
             // A value fits a container iff it has every guarantee the container requires.
             assert_eq!(
                 union_comparator::is_contained_by(
@@ -50,6 +60,25 @@ fn intersections_and_joins_have_independent_guarantees() {
                 ),
                 meets[i][j] == left,
                 "{left:?} into {right:?}",
+            );
+        }
+    }
+}
+
+#[test]
+fn scalar_containers_absorb_every_incomparable_string_alternative() {
+    let codebase = CodebaseMetadata::default();
+    let strings = TUnion::from_vec(vec![
+        TAtomic::Scalar(TScalar::String(general(C::Lowercase))),
+        TAtomic::Scalar(TScalar::String(general(C::Uppercase))),
+    ]);
+    for container in [TScalar::Generic, TScalar::ArrayKey] {
+        let container = TUnion::from_atomic(TAtomic::Scalar(container));
+        for (left, right) in [(&strings, &container), (&container, &strings)] {
+            // PHPStan's scalar and array-key contain every string, not just the general string bucket.
+            assert_eq!(
+                combine_union_types(left, right, &codebase, CombinerOptions::default()),
+                container,
             );
         }
     }

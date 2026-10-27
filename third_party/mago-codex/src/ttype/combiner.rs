@@ -5,7 +5,6 @@ use std::sync::LazyLock;
 use foldhash::HashSet;
 
 use mago_word::Word;
-use mago_word::WordSet;
 use mago_word::ascii_lowercase_word;
 use mago_word::word;
 
@@ -42,19 +41,17 @@ use crate::ttype::atomic::scalar::TScalar;
 use crate::ttype::atomic::scalar::float::TFloat;
 use crate::ttype::atomic::scalar::int::TInteger;
 use crate::ttype::atomic::scalar::string::TString;
-use crate::ttype::atomic::scalar::string::TStringCasing;
-use crate::ttype::atomic::scalar::string::TStringLiteral;
 use crate::ttype::combination::CombinationFlags;
 use crate::ttype::combination::TypeCombination;
 use crate::ttype::combine_union_types;
 use crate::ttype::comparator::ComparisonResult;
 use crate::ttype::comparator::array_comparator::is_array_contained_by_array;
+use crate::ttype::comparator::atomic_comparator;
 use crate::ttype::comparator::union_comparator;
 use crate::ttype::get_arraykey;
 use crate::ttype::is_atomic_intersection_contained_by;
 use crate::ttype::template::variance::Variance;
 use crate::ttype::union::TUnion;
-use crate::utils::str_is_numeric;
 
 /// Default maximum number of sealed arrays to track before generalizing.
 ///
@@ -1228,8 +1225,8 @@ fn scrape_type_properties(
         combination.literal_strings.clear();
         combination.integers.clear();
         combination.literal_floats.clear();
-        combination.value_types.retain(|k, _| {
-            k.as_bytes() != b"string"
+        combination.value_types.retain(|k, value| {
+            !matches!(value, TAtomic::Scalar(TScalar::String(_)))
                 && k.as_bytes() != b"bool"
                 && k.as_bytes() != b"false"
                 && k.as_bytes() != b"true"
@@ -1249,7 +1246,9 @@ fn scrape_type_properties(
 
         combination.literal_strings.clear();
         combination.integers.clear();
-        combination.value_types.retain(|k, _| k != &*ATOM_STRING && k != &*ATOM_INT);
+        combination.value_types.retain(|k, value| {
+            !matches!(value, TAtomic::Scalar(TScalar::String(_))) && k != &*ATOM_INT
+        });
         combination.value_types.insert(atomic.get_id(), atomic);
 
         return;
@@ -1269,74 +1268,47 @@ fn scrape_type_properties(
     }
 
     if let TAtomic::Scalar(TScalar::String(mut string_scalar)) = atomic {
-        if let Some(existing_string_type) = combination.value_types.get_mut(&*ATOM_STRING) {
-            if let TAtomic::Scalar(TScalar::String(existing_string_type)) = existing_string_type {
-                if let Some(lit_atom) = string_scalar.get_known_literal_atom() {
-                    let lit_value = lit_atom.as_bytes();
-                    let is_incompatible = (existing_string_type.is_numeric && !str_is_numeric(lit_value))
-                        || (existing_string_type.is_truthy && (lit_value.is_empty() || lit_value == b"0"))
-                        || (existing_string_type.is_non_empty && lit_value.is_empty())
-                        || (existing_string_type.is_lowercase() && lit_value.iter().any(u8::is_ascii_uppercase))
-                        || (existing_string_type.is_uppercase() && lit_value.iter().any(u8::is_ascii_lowercase));
-
-                    if is_incompatible {
-                        // Check threshold before adding literal string
-                        if combination.literal_strings.len() >= options.string_combination_threshold as usize {
-                            // Exceeded threshold - just merge into the base string type
-                            *existing_string_type = combine_string_scalars(existing_string_type, string_scalar);
-                        } else {
-                            combination.literal_strings.insert(lit_atom);
-                        }
-                    } else {
-                        *existing_string_type = combine_string_scalars(existing_string_type, string_scalar);
-                    }
-                } else {
-                    *existing_string_type = combine_string_scalars(existing_string_type, string_scalar);
+        // TypeCombinator::compareTypesInUnion retains incomparable accessories. Only a
+        // proven supertype (or the empty/zero-string simplifications) consumes a member.
+        loop {
+            let mut merged = false;
+            combination.value_types.retain(|_, value| {
+                if let TAtomic::Scalar(TScalar::String(existing)) = value
+                    && let Some(combined) = combine_string_scalars(*existing, string_scalar, codebase)
+                {
+                    string_scalar = combined;
+                    merged = true;
+                    return false;
                 }
+                true
+            });
+            combination.literal_strings.retain(|literal| {
+                if let Some(combined) = combine_string_scalars(TString::known_literal(*literal), string_scalar, codebase) {
+                    string_scalar = combined;
+                    merged = true;
+                    false
+                } else {
+                    true
+                }
+            });
+            if !merged {
+                break;
             }
-        } else if let Some(atom) = string_scalar.get_known_literal_atom() {
+        }
+
+        if let Some(atom) = string_scalar.get_known_literal_atom() {
             // Check threshold before adding literal string
             if combination.literal_strings.len() >= options.string_combination_threshold as usize {
                 // Exceeded threshold - generalize to base string type
                 combination.literal_strings.clear();
+                combination.value_types.retain(|_, value| !matches!(value, TAtomic::Scalar(TScalar::String(_))));
                 combination.value_types.insert(*ATOM_STRING, TAtomic::Scalar(TScalar::string()));
             } else {
                 combination.literal_strings.insert(atom);
             }
         } else {
-            let mut literals_to_keep = WordSet::default();
-            if !combination.literal_strings.is_empty() {
-                string_scalar.is_callable = false;
-            }
-
-            if string_scalar.is_truthy
-                || string_scalar.is_non_empty
-                || string_scalar.is_numeric
-                || !string_scalar.casing.is_unspecified()
-            {
-                for value in &combination.literal_strings {
-                    if value.is_empty() {
-                        string_scalar.is_non_empty = false;
-                        string_scalar.is_truthy = false;
-                        string_scalar.is_numeric = false;
-                        break;
-                    } else if value.as_bytes() == b"0" {
-                        string_scalar.is_truthy = false;
-                    }
-
-                    if string_scalar.is_numeric && !str_is_numeric(value.as_bytes()) {
-                        literals_to_keep.insert(*value);
-                    } else {
-                        string_scalar.is_numeric = string_scalar.is_numeric && str_is_numeric(value.as_bytes());
-                    }
-
-                    string_scalar.casing = string_scalar.casing.join(TStringCasing::from_bytes(value.as_bytes()));
-                }
-            }
-
-            combination.value_types.insert(*ATOM_STRING, TAtomic::Scalar(TScalar::String(string_scalar)));
-
-            std::mem::swap(&mut combination.literal_strings, &mut literals_to_keep);
+            let atomic = TAtomic::Scalar(TScalar::String(string_scalar));
+            combination.value_types.insert(atomic.get_id(), atomic);
         }
 
         return;
@@ -1716,27 +1688,34 @@ fn get_combiner_key(name: Word, type_params: &[TUnion], codebase: &CodebaseMetad
     word(&result)
 }
 
-fn combine_string_scalars(s1: &TString, s2: TString) -> TString {
-    TString {
-        literal: match (&s1.literal, s2.literal) {
-            (Some(TStringLiteral::Value(v1)), Some(TStringLiteral::Value(v2))) => {
-                if v1 == &v2 {
-                    Some(TStringLiteral::Value(v2))
-                } else {
-                    Some(TStringLiteral::Unspecified)
-                }
-            }
-            (Some(TStringLiteral::Unspecified), Some(_)) | (Some(_), Some(TStringLiteral::Unspecified)) => {
-                Some(TStringLiteral::Unspecified)
-            }
-            _ => None,
-        },
-        is_numeric: s1.is_numeric && s2.is_numeric,
-        is_truthy: s1.is_truthy && s2.is_truthy,
-        is_non_empty: s1.is_non_empty && s2.is_non_empty,
-        is_callable: s1.is_callable && s2.is_callable,
-        casing: s1.casing.join(s2.casing),
+fn combine_string_scalars(left: TString, right: TString, codebase: &CodebaseMetadata) -> Option<TString> {
+    let left_atomic = TAtomic::Scalar(TScalar::String(left));
+    let right_atomic = TAtomic::Scalar(TScalar::String(right));
+    if atomic_comparator::is_contained_by(codebase, &left_atomic, &right_atomic, false, &mut ComparisonResult::new()) {
+        return Some(right);
     }
+    if atomic_comparator::is_contained_by(codebase, &right_atomic, &left_atomic, false, &mut ComparisonResult::new()) {
+        return Some(left);
+    }
+
+    for (literal, mut other) in [(left, right), (right, left)] {
+        if let Some(value) = literal.get_known_literal_value() {
+            if value.is_empty()
+                && other.literal.is_none()
+                && other.is_non_empty()
+                && !other.is_numeric
+                && !other.is_callable
+            {
+                return Some(TString::general_with_props(false, false, false, false, other.casing));
+            }
+            if value == b"0" && other.get_known_literal_value().is_none() && other.is_truthy() {
+                other.is_truthy = false;
+                other.is_non_empty = true;
+                return Some(other);
+            }
+        }
+    }
+    None
 }
 
 #[cfg(test)]

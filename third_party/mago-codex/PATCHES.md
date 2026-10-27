@@ -683,3 +683,24 @@ Initializer coalescing follows PHPStan 2.3.1's `TypeCombinator::removeNull()`
 from mixed or a template bound. Ordinary flow's `to_non_nullable()` retains its stronger narrowing.
 The unchanged `initializer_expressions` public regression checks unsupported-call fallback in both
 a direct class constant and a nested array; a fresh PHPStan capture confirms all 19 diagnostic records.
+
+## Incomparable string unions
+
+The string combiner stores each nonliteral string by its complete atomic identity. A proven supertype
+absorbs contained alternatives, but independent guarantees remain separate union members. In particular,
+`lowercase-string|uppercase-string` is not the simultaneous lower-and-upper guarantee and does not become
+plain `string`. Scalar and array-key containers remove every string alternative, regardless of its ID.
+The existing literal-count threshold still generalizes an oversized finite union to `string`.
+
+Pairwise comparison follows PHPStan 2.3.1's `TypeCombinator::compareTypesInUnion()`
+(`src/Type/TypeCombinator.php:777–845`). Adding the empty string removes a pure nonempty or non-falsy
+guarantee while retaining casing. Adding `'0'` downgrades a non-falsy accessory to nonempty without
+discarding other guarantees. Any such widening is compared again with the retained alternatives.
+The shared `TStringCasing::join()` operation still computes shared guarantees for producers such as
+concatenation. It does not construct exact unions.
+
+`pun-analyse/tests/string_casing.rs` exercises both operand orders, assignment, branch merges,
+incomparable numeric, literal-origin, casing and nonempty accessories, and empty/zero-string controls.
+Its complete diagnostics come from the independent PHPStan 2.3.1 capture in
+`fixtures/string-casing/capture-unions.php`. Public type API tests also check absorption by scalar
+containers and keep the casing-join table separate from exact union expectations.
