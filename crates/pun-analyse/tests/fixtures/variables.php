@@ -303,3 +303,88 @@ function variableOffsetName(): void
     $key = 'key';
     echo ${$names[$key]};
 }
+
+function literalStringOffsetNames(): void
+{
+    $names = 'foo';
+    echo ${$names[0]};
+    echo ${$names[-1]};
+    echo ${$names[-3]};
+    echo ${$names[3]};
+    echo ${$names[-4]};
+    echo ${$names[9223372036854775807]};
+    $names = '';
+    echo ${$names[0]};
+    echo ${$names[-1]};
+}
+
+function invalidStringOffsetNames(): void
+{
+    $names = 'foo';
+    echo ${$names['0']};
+    echo ${$names[false]};
+    echo ${$names[0.0]};
+    echo ${$names[null]};
+}
+
+function byteStringOffsetNames(): void
+{
+    $names = 'éa';
+    echo ${$names[2]};
+    echo ${$names[-1]};
+    $names = "\xffa";
+    echo ${$names[1]};
+    $names = "\0a";
+    echo ${$names[1]};
+}
+
+function definedStringOffsetNames(bool $flag): void
+{
+    $names = 'foo';
+    $f = $o = 1;
+    echo ${$names[0]};
+    echo ${$names[-1]};
+    $names = 'bar';
+    if ($flag) {
+        $b = 1;
+    }
+    echo ${$names[0]};
+}
+
+function replacedStringOffsetNames(): void
+{
+    $names = 'foo';
+    echo ${$names[0]};
+    $names = 'bar';
+    echo ${$names[0]};
+    $index = 0;
+    echo ${$names[$index]};
+    $index = 1;
+    echo ${$names[$index]};
+    $names = 'zip';
+    echo ${$names[$index]};
+}
+
+function writtenStringOffsetNames(): void
+{
+    $names = 'foo';
+    echo ${$names[0]};
+    $names[0] = 'b';
+    echo ${$names[0]};
+}
+
+function unionStringOffsetNames(bool $flag): void
+{
+    $names = $flag ? 'foo' : 'bar';
+    echo ${$names[0]};
+}
+
+function missingStringOffsetFallbacks(): void
+{
+    $names = 'foo';
+    echo ${$names[3] ?? 'missingStringOffset'};
+    echo ${$names[-4] ?? 'negativeStringOffset'};
+    echo ${$names[0] ?? 'unusedStringOffset'};
+    $names = '';
+    echo ${$names[0] ?? 'emptyStringOffset'};
+}

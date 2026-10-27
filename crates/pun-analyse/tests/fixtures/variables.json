@@ -244,6 +244,106 @@
       304,
       "variable.undefined",
       "Undefined variable: $untrackedOffset"
+    ],
+    [
+      310,
+      "variable.undefined",
+      "Undefined variable: $f"
+    ],
+    [
+      311,
+      "variable.undefined",
+      "Undefined variable: $o"
+    ],
+    [
+      312,
+      "variable.undefined",
+      "Undefined variable: $f"
+    ],
+    [
+      333,
+      "variable.undefined",
+      "Undefined variable: $a"
+    ],
+    [
+      334,
+      "variable.undefined",
+      "Undefined variable: $a"
+    ],
+    [
+      336,
+      "variable.undefined",
+      "Undefined variable: $a"
+    ],
+    [
+      338,
+      "variable.undefined",
+      "Undefined variable: $a"
+    ],
+    [
+      357,
+      "variable.undefined",
+      "Undefined variable: $f"
+    ],
+    [
+      359,
+      "variable.undefined",
+      "Undefined variable: $b"
+    ],
+    [
+      361,
+      "variable.undefined",
+      "Undefined variable: $b"
+    ],
+    [
+      363,
+      "variable.undefined",
+      "Undefined variable: $a"
+    ],
+    [
+      365,
+      "variable.undefined",
+      "Undefined variable: $i"
+    ],
+    [
+      371,
+      "variable.undefined",
+      "Undefined variable: $f"
+    ],
+    [
+      373,
+      "variable.undefined",
+      "Undefined variable: $b"
+    ],
+    [
+      379,
+      "variable.undefined",
+      "Undefined variable: $b"
+    ],
+    [
+      379,
+      "variable.undefined",
+      "Undefined variable: $f"
+    ],
+    [
+      385,
+      "variable.undefined",
+      "Undefined variable: $missingStringOffset"
+    ],
+    [
+      386,
+      "variable.undefined",
+      "Undefined variable: $negativeStringOffset"
+    ],
+    [
+      387,
+      "variable.undefined",
+      "Undefined variable: $f"
+    ],
+    [
+      389,
+      "variable.undefined",
+      "Undefined variable: $emptyStringOffset"
     ]
   ],
   "edge": [
@@ -596,6 +696,111 @@
       304,
       "variable.undefined",
       "Undefined variable: $untrackedOffset"
+    ],
+    [
+      310,
+      "variable.undefined",
+      "Undefined variable: $f"
+    ],
+    [
+      311,
+      "variable.undefined",
+      "Undefined variable: $o"
+    ],
+    [
+      312,
+      "variable.undefined",
+      "Undefined variable: $f"
+    ],
+    [
+      333,
+      "variable.undefined",
+      "Undefined variable: $a"
+    ],
+    [
+      334,
+      "variable.undefined",
+      "Undefined variable: $a"
+    ],
+    [
+      336,
+      "variable.undefined",
+      "Undefined variable: $a"
+    ],
+    [
+      338,
+      "variable.undefined",
+      "Undefined variable: $a"
+    ],
+    [
+      351,
+      "variable.undefined",
+      "Variable $b might not be defined."
+    ],
+    [
+      357,
+      "variable.undefined",
+      "Undefined variable: $f"
+    ],
+    [
+      359,
+      "variable.undefined",
+      "Undefined variable: $b"
+    ],
+    [
+      361,
+      "variable.undefined",
+      "Undefined variable: $b"
+    ],
+    [
+      363,
+      "variable.undefined",
+      "Undefined variable: $a"
+    ],
+    [
+      365,
+      "variable.undefined",
+      "Undefined variable: $i"
+    ],
+    [
+      371,
+      "variable.undefined",
+      "Undefined variable: $f"
+    ],
+    [
+      373,
+      "variable.undefined",
+      "Undefined variable: $b"
+    ],
+    [
+      379,
+      "variable.undefined",
+      "Undefined variable: $b"
+    ],
+    [
+      379,
+      "variable.undefined",
+      "Undefined variable: $f"
+    ],
+    [
+      385,
+      "variable.undefined",
+      "Undefined variable: $missingStringOffset"
+    ],
+    [
+      386,
+      "variable.undefined",
+      "Undefined variable: $negativeStringOffset"
+    ],
+    [
+      387,
+      "variable.undefined",
+      "Undefined variable: $f"
+    ],
+    [
+      389,
+      "variable.undefined",
+      "Undefined variable: $emptyStringOffset"
     ]
   ],
   "maybe": [
@@ -908,6 +1113,111 @@
       304,
       "variable.undefined",
       "Undefined variable: $untrackedOffset"
+    ],
+    [
+      310,
+      "variable.undefined",
+      "Undefined variable: $f"
+    ],
+    [
+      311,
+      "variable.undefined",
+      "Undefined variable: $o"
+    ],
+    [
+      312,
+      "variable.undefined",
+      "Undefined variable: $f"
+    ],
+    [
+      333,
+      "variable.undefined",
+      "Undefined variable: $a"
+    ],
+    [
+      334,
+      "variable.undefined",
+      "Undefined variable: $a"
+    ],
+    [
+      336,
+      "variable.undefined",
+      "Undefined variable: $a"
+    ],
+    [
+      338,
+      "variable.undefined",
+      "Undefined variable: $a"
+    ],
+    [
+      351,
+      "variable.undefined",
+      "Variable $b might not be defined."
+    ],
+    [
+      357,
+      "variable.undefined",
+      "Undefined variable: $f"
+    ],
+    [
+      359,
+      "variable.undefined",
+      "Undefined variable: $b"
+    ],
+    [
+      361,
+      "variable.undefined",
+      "Undefined variable: $b"
+    ],
+    [
+      363,
+      "variable.undefined",
+      "Undefined variable: $a"
+    ],
+    [
+      365,
+      "variable.undefined",
+      "Undefined variable: $i"
+    ],
+    [
+      371,
+      "variable.undefined",
+      "Undefined variable: $f"
+    ],
+    [
+      373,
+      "variable.undefined",
+      "Undefined variable: $b"
+    ],
+    [
+      379,
+      "variable.undefined",
+      "Undefined variable: $b"
+    ],
+    [
+      379,
+      "variable.undefined",
+      "Undefined variable: $f"
+    ],
+    [
+      385,
+      "variable.undefined",
+      "Undefined variable: $missingStringOffset"
+    ],
+    [
+      386,
+      "variable.undefined",
+      "Undefined variable: $negativeStringOffset"
+    ],
+    [
+      387,
+      "variable.undefined",
+      "Undefined variable: $f"
+    ],
+    [
+      389,
+      "variable.undefined",
+      "Undefined variable: $emptyStringOffset"
     ]
   ],
   "quiet": [
@@ -1185,6 +1495,106 @@
       304,
       "variable.undefined",
       "Undefined variable: $untrackedOffset"
+    ],
+    [
+      310,
+      "variable.undefined",
+      "Undefined variable: $f"
+    ],
+    [
+      311,
+      "variable.undefined",
+      "Undefined variable: $o"
+    ],
+    [
+      312,
+      "variable.undefined",
+      "Undefined variable: $f"
+    ],
+    [
+      333,
+      "variable.undefined",
+      "Undefined variable: $a"
+    ],
+    [
+      334,
+      "variable.undefined",
+      "Undefined variable: $a"
+    ],
+    [
+      336,
+      "variable.undefined",
+      "Undefined variable: $a"
+    ],
+    [
+      338,
+      "variable.undefined",
+      "Undefined variable: $a"
+    ],
+    [
+      357,
+      "variable.undefined",
+      "Undefined variable: $f"
+    ],
+    [
+      359,
+      "variable.undefined",
+      "Undefined variable: $b"
+    ],
+    [
+      361,
+      "variable.undefined",
+      "Undefined variable: $b"
+    ],
+    [
+      363,
+      "variable.undefined",
+      "Undefined variable: $a"
+    ],
+    [
+      365,
+      "variable.undefined",
+      "Undefined variable: $i"
+    ],
+    [
+      371,
+      "variable.undefined",
+      "Undefined variable: $f"
+    ],
+    [
+      373,
+      "variable.undefined",
+      "Undefined variable: $b"
+    ],
+    [
+      379,
+      "variable.undefined",
+      "Undefined variable: $b"
+    ],
+    [
+      379,
+      "variable.undefined",
+      "Undefined variable: $f"
+    ],
+    [
+      385,
+      "variable.undefined",
+      "Undefined variable: $missingStringOffset"
+    ],
+    [
+      386,
+      "variable.undefined",
+      "Undefined variable: $negativeStringOffset"
+    ],
+    [
+      387,
+      "variable.undefined",
+      "Undefined variable: $f"
+    ],
+    [
+      389,
+      "variable.undefined",
+      "Undefined variable: $emptyStringOffset"
     ]
   ]
 }

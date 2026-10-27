@@ -35,6 +35,7 @@ use mago_codex::ttype::get_arraykey;
 use mago_codex::ttype::get_error;
 use mago_codex::ttype::get_explicit_mixed;
 use mago_codex::ttype::get_int;
+use mago_codex::ttype::get_literal_string;
 use mago_codex::ttype::get_mixed;
 use mago_codex::ttype::get_mixed_maybe_from_loop;
 use mago_codex::ttype::get_never;
@@ -1583,15 +1584,19 @@ where
     A: Arena,
 {
     let mut non_empty = false;
+    let literal = string.get_literal_string_value();
 
-    let valid_index_type = if let TAtomic::Scalar(TScalar::String(scalar_string)) = string {
+    let valid_index_type = if let TAtomic::Scalar(TScalar::String(scalar_string)) = &string {
         non_empty = scalar_string.is_non_empty();
 
         if let Some(TStringLiteral::Value(val)) = scalar_string.literal {
             if val.is_empty() {
                 get_never()
             } else {
-                TUnion::from_atomic(TAtomic::Scalar(TScalar::Integer(TInteger::Range(0, val.len() as i64 - 1))))
+                TUnion::from_atomic(TAtomic::Scalar(TScalar::Integer(TInteger::Range(
+                    -(val.len() as i64),
+                    val.len() as i64 - 1,
+                ))))
             }
         } else {
             get_int()
@@ -1632,6 +1637,20 @@ where
     }
     if !can_be_integer {
         // Like keyed-array reads, isset needs an absent-value placeholder for its continuing branches.
+        return if block_context.flags.inside_isset() { get_null() } else { get_error() };
+    }
+
+    // ConstantStringType::getOffsetValueType indexes PHP bytes, including negative offsets.
+    if let Some(value) = literal
+        && let Some(index) = index_type.get_single_literal_int_value()
+    {
+        let index = if index < 0 { value.len() as i64 + index } else { index };
+        if let Ok(index) = usize::try_from(index)
+            && let Some(value) = value.get(index)
+        {
+            return get_literal_string(word([*value]));
+        }
+
         return if block_context.flags.inside_isset() { get_null() } else { get_error() };
     }
 

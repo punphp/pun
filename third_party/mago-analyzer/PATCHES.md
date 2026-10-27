@@ -2108,3 +2108,30 @@ not changed by this patch.
 
 The source contract and public PHPStan 2.3.1 regression are documented in
 `mago-codex/PATCHES.md`, under “Numeric-string nonempty accessories”.
+
+## Literal string-offset reads
+
+`src/utils/expression/array.rs::handle_array_access_on_string()` retains the byte selected by a
+single inferred integer literal from a known literal string. Negative offsets count from the end.
+The reference is PHPStan 2.3.1's `src/Type/Constant/ConstantStringType.php:440–484` at
+`cb3b7e99489b2e3789ee2eec10501cb7a72580ea`. Its valid offsets are `-strlen` through `strlen - 1`,
+where `strlen` counts PHP bytes, not Unicode characters.
+
+An out-of-range read returns ErrorType, including reads from an empty string. Isset analysis uses
+the existing absent-value placeholder so coalesce selects its fallback. Definitely noninteger
+indexes still fail before literal extraction; numeric strings, booleans, floats, and null are not
+coerced into integer indexes. The helper consumes the already inferred index without evaluating it again.
+
+The public `variables` regression appends four-mode PHPStan captures to
+`crates/pun-analyse/tests/fixtures/variables.json` without changing its 236 earlier records.
+Controls cover positive and negative bounds, a large index, empty strings, noninteger indexes,
+multibyte and binary receivers, defined and maybe-defined names, receiver and index reassignment,
+an exact-offset write, union receivers, and coalesce fallbacks. The existing nested-name, multiline,
+and array-offset controls remain intact.
+
+This patch does not implement PHPStan's finite-range character unions for nonliteral integer indexes,
+specialize template-bound indexes, or reconstruct a whole string after character writes. These paths
+retain their existing inference; the exact-offset write control checks the existing stored offset only.
+For example, fresh PHPStan yields `''|'f'|'o'` for `'foo'[$index]` when `$index` has general type `int`;
+that range-based inference is not part of this correction. The patch does not establish complete
+DefinedVariableRule or CompactVariablesRule parity.
