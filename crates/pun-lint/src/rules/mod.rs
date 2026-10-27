@@ -117,6 +117,7 @@ mod no_protected_property_in_final;
 mod no_redundant_condition;
 mod no_redundant_default_argument;
 mod no_redundant_final_const;
+mod no_redundant_foreach_guard;
 mod no_redundant_null_check;
 mod no_redundant_promoted_assign;
 mod no_redundant_property_default;
@@ -346,6 +347,7 @@ pub use no_protected_property_in_final::NoProtectedPropertyInFinal;
 pub use no_redundant_condition::NoRedundantCondition;
 pub use no_redundant_default_argument::NoRedundantDefaultArgument;
 pub use no_redundant_final_const::NoRedundantFinalConst;
+pub use no_redundant_foreach_guard::NoRedundantForeachGuard;
 pub use no_redundant_null_check::NoRedundantNullCheck;
 pub use no_redundant_promoted_assign::NoRedundantPromotedAssign;
 pub use no_redundant_property_default::NoRedundantPropertyDefault;
@@ -503,6 +505,7 @@ pub const PROJECT_RULES: &[&str] = &[
     "lint/dead-code/no-useless-cast",
     "lint/dead-code/no-always-true-instanceof",
     "lint/dead-code/no-typed-property-instanceof",
+    "lint/dead-code/no-redundant-foreach-guard",
 ];
 
 /// Every rule, in a fixed order.
@@ -744,5 +747,6 @@ fn ungrouped() -> Vec<Box<dyn Rule>> {
         Box::new(NoUselessCast),
         Box::new(NoAlwaysTrueInstanceof),
         Box::new(NoTypedPropertyInstanceof),
+        Box::new(NoRedundantForeachGuard),
     ]
 }

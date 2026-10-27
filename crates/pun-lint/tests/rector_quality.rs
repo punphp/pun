@@ -31,9 +31,9 @@ mod lint_c;
 use lint_c::run_class;
 use pun_lint::Rule;
 use pun_lint::rules::{
-    NoAlwaysTrueInstanceof, NoConstantCondition, NoTypedPropertyInstanceof,
-    NoUnusedTestMethodParam, NoUselessCast, NoUselessFilterVar, NoUselessMath,
-    PreferInstanceMethod, RequirePreviousException,
+    NoAlwaysTrueInstanceof, NoConstantCondition, NoRedundantForeachGuard,
+    NoTypedPropertyInstanceof, NoUnusedTestMethodParam, NoUselessCast, NoUselessFilterVar,
+    NoUselessMath, PreferInstanceMethod, RequirePreviousException,
 };
 
 fn check(rule: impl Rule + 'static, class: &str) {
@@ -91,5 +91,13 @@ fn remove_typed_property_dead_instance_of() {
     check(
         NoTypedPropertyInstanceof,
         "RemoveTypedPropertyDeadInstanceOfRector",
+    );
+}
+
+#[test]
+fn remove_unused_non_empty_array_before_foreach() {
+    check(
+        NoRedundantForeachGuard,
+        "RemoveUnusedNonEmptyArrayBeforeForeachRector",
     );
 }

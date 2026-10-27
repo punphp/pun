@@ -8951,7 +8951,7 @@
         "rules": [
           "lint/dead-code/no-redundant-foreach-guard"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {

@@ -389,7 +389,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "dead-code/no-parent-call-without-parent" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove unused parent call with no parent class" }
 "dead-code/no-redundant-condition" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Merge an if into the if before it when both check the same condition." }
 "dead-code/no-redundant-default-argument" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove arguments that equal the parameter default value." }
-"dead-code/no-redundant-foreach-guard" = { fix = "safe", sets = ["dead-code"], ported = false, status = "decided", summary = "Remove unused if check to non-empty array before foreach of the array" }
+"dead-code/no-redundant-foreach-guard" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove unused if check to non-empty array before foreach of the array" }
 "dead-code/no-redundant-promoted-assign" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove useless re-assign from property promotion" }
 "dead-code/no-redundant-property-default" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove redundant default value from property that is always assigned in the constructor" }
 "dead-code/no-return-in-constructor" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove useless return Expr in __construct()" }
