@@ -179,13 +179,14 @@ fn property_fetch_name<'a>(expr: &'a Expression<'a>) -> Option<&'a [u8]> {
 
 /// Whether a method call anywhere in the class's methods is made on a property fetch (`$any->name`) of `name`.
 fn is_called_on(class: Node<'_, '_>, name: &[u8]) -> bool {
-    let mut stack: Vec<Node<'_, '_>> = Vec::new();
-    if let Some((members, _, _)) = class_body(class) {
-        stack.extend(members.iter().filter_map(|m| match m {
+    let (members, _, _) = class_body(class).unwrap();
+    let mut stack: Vec<Node<'_, '_>> = members
+        .iter()
+        .filter_map(|m| match m {
             ClassLikeMember::Method(m) => Some(Node::Method(m)),
             _ => None,
-        }));
-    }
+        })
+        .collect();
     while let Some(node) = stack.pop() {
         if let Node::MethodCall(call) = node
             && property_fetch_name(call.object).is_some_and(|p| p.eq_ignore_ascii_case(name))

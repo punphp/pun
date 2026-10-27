@@ -276,10 +276,13 @@ pub(crate) fn named_tags(
     doc: &Doc<'_>,
     name: &str,
 ) -> Option<Vec<(usize, TagValue)>> {
-    // A token that runs over a line break (a Doctrine annotation string `"..."`) moves the children's bounds.
-    if phpdoc_tokens(doc.text_all())
+    // A token that runs over a line break (a Doctrine annotation string `"..."`) moves the children's bounds, and
+    // the lexer stops at a character no token takes (a form feed), so what follows is lost.
+    let tokens = phpdoc_tokens(doc.text_all());
+    if tokens
         .iter()
         .any(|t| !t.starts_with(['\r', '\n']) && t.contains('\n'))
+        || tokens.iter().map(|t| t.len()).sum::<usize>() < doc.text_all().len()
     {
         return None;
     }

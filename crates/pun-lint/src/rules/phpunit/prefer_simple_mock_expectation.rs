@@ -54,25 +54,20 @@ impl Rule for PreferSimpleMockExpectation {
         let new: Vec<NewArg> = match unparenthesize(value) {
             Expression::Array(array) if has_assert_inside => {
                 let mut new = Vec::new();
+                // `new Arg($arrayItem->value)`: the key and the spread go
                 for element in array.elements.iter() {
-                    let (prefix, item) = match element {
-                        ArrayElement::KeyValue(kv) => ("", kv.value),
-                        ArrayElement::Value(v) => ("", v.value),
-                        ArrayElement::Variadic(v) => ("...", v.value),
+                    let item = match element {
+                        ArrayElement::KeyValue(kv) => kv.value,
+                        ArrayElement::Value(v) => v.value,
+                        ArrayElement::Variadic(v) => v.value,
                         ArrayElement::Missing(_) => return,
                     };
-                    let Some(code) = inner_without_equal_to(ctx, item) else {
-                        return;
-                    };
-                    new.push(NewArg::New(format!("{prefix}{code}")));
+                    new.push(NewArg::New(inner_without_equal_to(ctx, item)));
                 }
                 new
             }
             _ => {
-                let Some(code) = without_equal_to(ctx, value) else {
-                    return;
-                };
-                vec![NewArg::New(code)]
+                vec![NewArg::New(without_equal_to(ctx, value))]
             }
         };
         out.push(report(

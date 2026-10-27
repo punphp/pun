@@ -10,15 +10,14 @@
 
 use mago_codex::symbol::SymbolKind;
 use mago_syntax::cst::{
-    Access, Call, ClassLikeMemberSelector, Expression, ForeachBody, MethodBody, Node, NodeKind,
-    PartialArgument, Variable,
+    Call, Expression, ForeachBody, MethodBody, Node, NodeKind, PartialArgument, Variable,
 };
 use pun_problem::{Edit, Safety};
 
 use super::prefer_this_call::NON_ASSERT;
 use super::{
-    ASSERT, AnyCall, TEST_CASE, arg_value, class_string, is_in_test_class, own_class, receiver_is,
-    report, text,
+    ASSERT, AnyCall, TEST_CASE, arg_value, class_string, expr_name, is_in_test_class,
+    own_class_reflection, receiver_is, report, text,
 };
 use crate::rules::rector_batch5::remove_statements;
 use crate::rules::rector_stmts::{List, assign, block_list, body_list, expression, holder_list};
@@ -51,18 +50,17 @@ impl Rule for NoBareMockAssign {
                 };
                 (block_list(ctx.source, block), Some(method))
             }
-            Node::Foreach(foreach) => match &foreach.body {
-                ForeachBody::Statement(statement) => (body_list(ctx.source, statement), None),
-                ForeachBody::ColonDelimited(body) => {
-                    let Some(list) =
-                        holder_list(ctx.source, Node::ForeachColonDelimitedBody(body), ancestors)
-                    else {
-                        return;
-                    };
-                    (list, None)
+            _ => {
+                let Node::Foreach(each) = node else { return };
+                match &each.body {
+                    ForeachBody::Statement(statement) => (body_list(ctx.source, statement), None),
+                    // a property hook's body aside, a holder has a list
+                    ForeachBody::ColonDelimited(body) => {
+                        let holder = Node::ForeachColonDelimitedBody(body);
+                        (holder_list(ctx.source, holder, ancestors).unwrap(), None)
+                    }
                 }
-            },
-            _ => return,
+            }
         };
         if !is_in_test_class(ctx, ancestors, method) || list.len() < 2 {
             return;
@@ -180,33 +178,6 @@ fn is_variable(expr: &Expression<'_>, name: &str) -> bool {
     variable_name(expr).is_some_and(|n| n.eq_ignore_ascii_case(name.as_bytes()))
 }
 
-/// `NodeNameResolver::getName` of a method call's receiver: a variable's, a property's or a function's name.
-fn receiver_name<'a>(expr: &'a Expression<'a>) -> Option<&'a [u8]> {
-    match unparenthesize(expr) {
-        Expression::Variable(Variable::Direct(v)) => Some(&v.name[1..]),
-        Expression::Access(Access::Property(a)) => match &a.property {
-            ClassLikeMemberSelector::Identifier(id) => Some(id.value),
-            _ => None,
-        },
-        Expression::Access(Access::NullSafeProperty(a)) => match &a.property {
-            ClassLikeMemberSelector::Identifier(id) => Some(id.value),
-            _ => None,
-        },
-        Expression::Access(Access::StaticProperty(a)) => match &a.property {
-            Variable::Direct(v) => Some(&v.name[1..]),
-            _ => None,
-        },
-        Expression::Call(Call::Function(f)) => match f.function {
-            Expression::Identifier(id) => {
-                let name = id.value();
-                Some(name.strip_prefix(b"\\").unwrap_or(name))
-            }
-            _ => None,
-        },
-        _ => None,
-    }
-}
-
 /// `BetterNodeFinder::findInstancesOfScoped`: each node under `roots` (the roots included), not entering a class, a
 /// closure or a function (an arrow function is entered; an anonymous class's arguments are too).
 pub(super) fn scoped<'a>(roots: &[Node<'a, 'a>], found: &mut dyn FnMut(Node<'a, 'a>)) {
@@ -235,7 +206,7 @@ fn is_variable_used_as_part_of_method_call(roots: &[Node<'_, '_>], name: &str) -
     let mut used = false;
     scoped(roots, &mut |node| {
         if let Node::MethodCall(call) = node
-            && receiver_name(call.object).is_some_and(|n| n.eq_ignore_ascii_case(name.as_bytes()))
+            && expr_name(call.object).is_some_and(|n| n.eq_ignore_ascii_case(name.as_bytes()))
         {
             used = true;
         }
@@ -348,15 +319,14 @@ fn detect_test_case_call(
         return false;
     }
     let facts = facts(ctx);
-    let Some(metadata) =
-        own_class(ancestors).and_then(|class| facts.codebase.get_class_like(class.as_bytes()))
-    else {
-        return false;
-    };
-    metadata
-        .declaring_method_ids
-        .iter()
-        .find(|(m, _)| m.as_bytes().eq_ignore_ascii_case(method))
+    own_class_reflection(ctx, ancestors)
+        .and_then(|class| facts.codebase.get_class_like(class.as_bytes()))
+        .and_then(|metadata| {
+            metadata
+                .declaring_method_ids
+                .iter()
+                .find(|(m, _)| m.as_bytes().eq_ignore_ascii_case(method))
+        })
         .is_some_and(|(_, id)| {
             let declaring = id.get_class_name();
             [TEST_CASE, ASSERT]

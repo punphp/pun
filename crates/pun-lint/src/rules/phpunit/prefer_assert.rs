@@ -14,11 +14,11 @@ use mago_syntax::cst::{
 };
 use pun_problem::{Edit, Safety};
 
-use super::{arg_value, class_body, expr_text, is_constant, is_in_test_class, report};
+use super::{
+    arg_value, class_body, expr_text, is_constant, is_in_test_class, own_class_reflection, report,
+};
 use crate::rules::laravel::is_a;
 use crate::rules::rector_batch5::imported_function;
-use crate::rules::types::class_scope;
-use crate::rules::types::facts::facts;
 use crate::syntax::{node_span, unparenthesize};
 use crate::{Context, Report, Rule};
 
@@ -101,17 +101,7 @@ fn is_static(method: &Method<'_>) -> bool {
 
 /// `isBehatContext`: the class's reflection is a `Behat\Behat\Context\Context`.
 fn is_behat_context(ctx: &Context<'_>, scope: &[Node<'_, '_>]) -> bool {
-    let Some(class) = class_scope(scope) else {
-        return false;
-    };
-    let name = match (&class.name, scope.last()) {
-        (Some(name), _) => name.clone(),
-        (None, Some(Node::AnonymousClass(c))) => {
-            facts(ctx).anonymous_class_name(mago_span::HasSpan::span(*c))
-        }
-        _ => return false,
-    };
-    is_a(ctx, &name, &[BEHAT_CONTEXT])
+    own_class_reflection(ctx, scope).is_some_and(|name| is_a(ctx, &name, &[BEHAT_CONTEXT]))
 }
 
 /// `NodeNameResolver::isName` on a function call: the name as written (an imported name resolved), without a leading
