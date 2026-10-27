@@ -105,7 +105,7 @@ impl Rule for PreferDataProvider {
                 removed[i] = true;
             }
             let name = data_provider_name(&String::from_utf8_lossy(method.name.value));
-            let new_doc = doc.print_appending(&removed, Some(&format!("@dataProvider {name}")));
+            let new_doc = doc.print_appending(&removed, &[&format!("@dataProvider {name}")]);
             let Some(doc_edits) = annotated.edits(ctx.source, Some(&new_doc), &[]) else {
                 return;
             };

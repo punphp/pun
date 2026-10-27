@@ -10923,7 +10923,7 @@
         "ExpectsParamToMockObjectRector",
         "Rector\\PHPUnit\\PHPUnit110\\Rector\\ClassMethod\\ExpectsParamToMockObjectRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/phpunit/add-param-type-depends",

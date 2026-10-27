@@ -12869,7 +12869,7 @@
         "rules": [
           "lint/phpunit/add-mock-object-type"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
