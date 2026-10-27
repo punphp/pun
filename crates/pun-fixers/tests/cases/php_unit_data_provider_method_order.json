@@ -16,5 +16,10 @@
         "fixer": "php_unit_data_provider_method_order",
         "input": "<?php\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {}\n",
         "expected": "<?php\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {}\n"
+    },
+    {
+        "fixer": "php_unit_data_provider_method_order",
+        "input": "<?php\nfinal class FooTest extends \\PHPUnit\\Framework\\TestCase\n{\n    public static function provideBar(): iterable\n    {\n        yield [1];\n    }\n\n    public function testBaz(): void\n    {\n    }\n\n    /**\n     * @dataProvider provideBar\n     */\n    public function &testBar(): void\n    {\n    }\n}\n",
+        "expected": "<?php\nfinal class FooTest extends \\PHPUnit\\Framework\\TestCase\n{\n    public static function provideBar(): iterable\n    {\n        yield [1];\n    }\n\n    public function testBaz(): void\n    {\n    }\n\n    /**\n     * @dataProvider provideBar\n     */\n    public function &testBar(): void\n    {\n    }\n}\n"
     }
 ]

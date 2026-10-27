@@ -105,9 +105,8 @@ impl PreviousAssertCalls {
             if !lowered.starts_with(b"assert") {
                 continue;
             }
-            let Some(open_brace_index) = tokens.get_next_meaningful_token(index) else {
-                continue;
-            };
+            // the class's `}` comes after it
+            let open_brace_index = tokens.get_next_meaningful_token(index).unwrap();
             if !tokens[open_brace_index].equals("(", true) {
                 continue;
             }

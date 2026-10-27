@@ -103,15 +103,19 @@ fn move_method_element(
             }
         }
     }
-    let (Some(i_keep), Some(i_to_move)) = (i_keep, i_to_move) else {
-        return elements;
-    };
-    if (i_to_move as isize) == i_keep as isize + if after { 1 } else { -1 } {
+    // Upstream asserts both were found; with assertions off (a test that is its own provider leaves `$iToMove`
+    // `false`), PHP reads `false` as `0` in arithmetic and keys, and compares it with an integer as booleans.
+    let keep_at = i_keep.map_or(0, |k| k as isize);
+    if i_to_move.is_some_and(|m| m as isize == keep_at + if after { 1 } else { -1 }) {
         return elements;
     }
-    let element = elements.remove(i_to_move);
-    let c = i_keep + usize::from(after) - usize::from(i_to_move < i_keep);
-    elements.insert(c, element);
+    let element = elements.remove(i_to_move.unwrap_or(0));
+    let before = i_keep.is_some_and(|k| i_to_move.map_or(k != 0, |m| m < k));
+    let c = keep_at + isize::from(after) - isize::from(before);
+    // `array_slice($elements, 0, $c)` and `array_slice($elements, $c)`: a negative `$c` counts from the end
+    let len = elements.len() as isize;
+    let at = (if c < 0 { len + c } else { c }).clamp(0, len);
+    elements.insert(at as usize, element);
     elements
 }
 

@@ -13,5 +13,10 @@
         },
         "input": "<?php\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    public function testA() {\n        $this->assertSame(TRUE, $a);\n        $this->assertNotEquals(Null , $b, 'msg');\n        $this->assertSame(true === $x, $a);\n        $this->assertSame($y, $a);\n        $foo->assertSame(false, $a);\n        $this->assertSame(false, $a);\n        self::assertNotSame(false,$c);\n    }\n}\n",
         "expected": "<?php\nclass FooTest extends \\PHPUnit\\Framework\\TestCase {\n    public function testA() {\n        $this->assertSame(TRUE, $a);\n        $this->assertNotEquals(Null , $b, 'msg');\n        $this->assertSame(true === $x, $a);\n        $this->assertSame($y, $a);\n        $foo->assertSame(false, $a);\n        $this->assertSame(false, $a);\n        self::assertNotFalse($c);\n    }\n}\n"
+    },
+    {
+        "fixer": "php_unit_construct",
+        "input": "<?php\nfinal class FooTest extends \\PHPUnit\\Framework\\TestCase\n{\n    public function testFoo(): void\n    {\n        $this->assertSame(FOO, $a);\n    }\n}\n",
+        "expected": "<?php\nfinal class FooTest extends \\PHPUnit\\Framework\\TestCase\n{\n    public function testFoo(): void\n    {\n        $this->assertSame(FOO, $a);\n    }\n}\n"
     }
 ]
