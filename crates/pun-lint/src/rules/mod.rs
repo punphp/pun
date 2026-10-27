@@ -134,6 +134,7 @@ mod no_static_constructor_call;
 mod no_swapped_explode_arguments;
 mod no_tainted_data;
 mod no_tautology_ternary;
+mod no_typed_property_instanceof;
 mod no_underscore_class;
 mod no_unreachable_code;
 mod no_unreachable_loop;
@@ -362,6 +363,7 @@ pub use no_static_constructor_call::NoStaticConstructorCall;
 pub use no_swapped_explode_arguments::NoSwappedExplodeArguments;
 pub use no_tainted_data::NoTaintedData;
 pub use no_tautology_ternary::NoTautologyTernary;
+pub use no_typed_property_instanceof::NoTypedPropertyInstanceof;
 pub use no_underscore_class::NoUnderscoreClass;
 pub use no_unreachable_code::NoUnreachableCode;
 pub use no_unreachable_loop::NoUnreachableLoop;
@@ -500,6 +502,7 @@ pub const PROJECT_RULES: &[&str] = &[
     "lint/dead-code/no-useless-math",
     "lint/dead-code/no-useless-cast",
     "lint/dead-code/no-always-true-instanceof",
+    "lint/dead-code/no-typed-property-instanceof",
 ];
 
 /// Every rule, in a fixed order.
@@ -740,5 +743,6 @@ fn ungrouped() -> Vec<Box<dyn Rule>> {
         Box::new(NoUselessMath),
         Box::new(NoUselessCast),
         Box::new(NoAlwaysTrueInstanceof),
+        Box::new(NoTypedPropertyInstanceof),
     ]
 }

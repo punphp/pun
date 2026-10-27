@@ -395,7 +395,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "dead-code/no-return-in-constructor" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove useless return Expr in __construct()" }
 "dead-code/no-self-assignment" = { fix = "safe", intent = "correctness", sets = ["dead-code"], ported = true, origin = "mago", status = "decided", summary = "Detects and removes self-assignments where a variable or property is assigned to itself." }
 "dead-code/no-tautology-ternary" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Use the value a ternary always gives when it compares the two values it chooses between." }
-"dead-code/no-typed-property-instanceof" = { fix = "safe", sets = ["dead-code"], ported = false, status = "decided", summary = "Remove dead instanceof check on type hinted property" }
+"dead-code/no-typed-property-instanceof" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove dead instanceof check on type hinted property" }
 "dead-code/no-unreachable-code" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove unreachable statements" }
 "dead-code/no-unused-assignment" = { fix = "safe", sets = ["dead-code"], ported = false, status = "decided", summary = "Remove assignments whose value is never read, including stores overwritten before use." }
 "dead-code/no-unused-constructor-param" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove unused parameter in constructor" }

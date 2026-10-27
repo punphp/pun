@@ -8893,7 +8893,7 @@
         "rules": [
           "lint/dead-code/no-typed-property-instanceof"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {

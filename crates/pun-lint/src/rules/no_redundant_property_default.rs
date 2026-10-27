@@ -111,6 +111,35 @@ impl Rule for NoRedundantPropertyDefault {
     }
 }
 
+/// `ConstructorAssignDetector::isPropertyAssigned` for the property `name` (without its `$`) of the class or
+/// anonymous class `node`, which `ancestors` lead to: false without a constructor.
+pub(crate) fn is_assigned_in_constructor<'a>(
+    source: &str,
+    node: Node<'a, 'a>,
+    ancestors: &[Node<'a, 'a>],
+    name: &[u8],
+) -> bool {
+    let (members, left_brace, extends) = match node {
+        Node::Class(c) => (&c.members, c.left_brace, c.extends.as_ref()),
+        Node::AnonymousClass(c) => (&c.members, c.left_brace, c.extends.as_ref()),
+        _ => return false,
+    };
+    let Some(constructor) = method(members, b"__construct") else {
+        return false;
+    };
+    let mut path = ancestors.to_vec();
+    path.push(node);
+    Scope {
+        source,
+        members,
+        left_brace,
+        path: &path,
+        extends,
+        constructor,
+    }
+    .is_assigned(name)
+}
+
 /// `hasEarlyReturn`: a `return` in the constructor, or in a class method it calls as a statement on `$this`.
 fn has_early_return(members: &Sequence<'_, ClassLikeMember<'_>>, constructor: &Method<'_>) -> bool {
     if has_return(Node::Method(constructor)) {
