@@ -11926,7 +11926,7 @@
         "ExpressionCreateMockToCreateStubRector",
         "Rector\\PHPUnit\\PHPUnit120\\Rector\\ClassMethod\\ExpressionCreateMockToCreateStubRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/phpunit/prefer-create-stub-in-coalesce",

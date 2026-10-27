@@ -12895,7 +12895,7 @@
         "rules": [
           "lint/phpunit/prefer-create-stub-expression"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
