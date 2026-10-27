@@ -83,9 +83,8 @@ fn check(file_name: &str, partial_native: bool) {
         // These existing inference gaps are not explicit-mixed producer contracts:
         // array_pop(string) has a separate return-provider bug, and a truthy branch
         // assignment does not reconstruct PHPStan's complete falsey scalar/array union.
-        // clone currently copies mixed instead of intersecting its operand with object.
         if (file_name == "xm.php" && capture["line"] == 54)
-            || (file_name == "xm2.php" && [27, 42].iter().any(|line| capture["line"] == *line))
+            || (file_name == "xm2.php" && capture["line"] == 42)
         {
             continue;
         }

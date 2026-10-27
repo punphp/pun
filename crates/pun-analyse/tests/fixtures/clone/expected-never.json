@@ -1,0 +1,145 @@
+{
+    "bottoms": {
+        "implicit": {
+            "intersection": {
+                "type": "*NEVER*",
+                "kind": "implicit",
+                "explicit": false
+            },
+            "clone": {
+                "type": "*NEVER*",
+                "kind": "implicit",
+                "explicit": false
+            }
+        },
+        "explicit": {
+            "intersection": {
+                "type": "*NEVER*",
+                "kind": "explicit",
+                "explicit": true
+            },
+            "clone": {
+                "type": "*NEVER*",
+                "kind": "explicit",
+                "explicit": true
+            }
+        },
+        "nonaccepting": {
+            "intersection": {
+                "type": "never",
+                "kind": "nonaccepting",
+                "explicit": true
+            },
+            "clone": {
+                "type": "never",
+                "kind": "nonaccepting",
+                "explicit": true
+            }
+        }
+    },
+    "expressions": {
+        "423": {
+            "expression": "clone implicitBottom()",
+            "type": "*NEVER*",
+            "kind": "implicit",
+            "explicit": false,
+            "operand": {
+                "offset": 429,
+                "length": 16,
+                "type": "*NEVER*",
+                "kind": "implicit",
+                "explicit": false,
+                "terminates": false
+            }
+        },
+        "507": {
+            "expression": "clone explicitBottom()",
+            "type": "*NEVER*",
+            "kind": "explicit",
+            "explicit": true,
+            "operand": {
+                "offset": 513,
+                "length": 16,
+                "type": "*NEVER*",
+                "kind": "explicit",
+                "explicit": true,
+                "terminates": false
+            }
+        },
+        "595": {
+            "expression": "clone nonacceptingBottom()",
+            "type": "never",
+            "kind": "nonaccepting",
+            "explicit": true,
+            "operand": {
+                "offset": 601,
+                "length": 20,
+                "type": "never",
+                "kind": "nonaccepting",
+                "explicit": true,
+                "terminates": false
+            }
+        },
+        "687": {
+            "expression": "clone 1",
+            "type": "*NEVER*",
+            "kind": "implicit",
+            "explicit": false,
+            "operand": {
+                "offset": 693,
+                "length": 1,
+                "type": "1",
+                "kind": null,
+                "explicit": false,
+                "terminates": false
+            }
+        },
+        "758": {
+            "expression": "clone \\call_user_func(terminate(...))",
+            "type": "never",
+            "kind": "nonaccepting",
+            "explicit": true,
+            "operand": {
+                "offset": 764,
+                "length": 31,
+                "type": "never",
+                "kind": "nonaccepting",
+                "explicit": true,
+                "terminates": false
+            }
+        },
+        "873": {
+            "expression": "clone \\call_user_func(function () { exit(); })",
+            "type": "never",
+            "kind": "nonaccepting",
+            "explicit": true,
+            "operand": {
+                "offset": 879,
+                "length": 40,
+                "type": "never",
+                "kind": "nonaccepting",
+                "explicit": true,
+                "terminates": false
+            }
+        },
+        "1007": {
+            "expression": "clone \\call_user_func(terminate(...))",
+            "type": "never",
+            "kind": "nonaccepting",
+            "explicit": true,
+            "operand": {
+                "offset": 1013,
+                "length": 31,
+                "type": "never",
+                "kind": "nonaccepting",
+                "explicit": true,
+                "terminates": false
+            }
+        }
+    },
+    "continued": {
+        "after-computed": 700,
+        "after-implicit": 451,
+        "after-nested-forwarding": 1051
+    }
+}

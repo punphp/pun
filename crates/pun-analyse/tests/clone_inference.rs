@@ -15,7 +15,8 @@ use mago_codex::ttype::atomic::TAtomic;
 use mago_codex::ttype::atomic::callable::{TCallable, TCallableSignature};
 use mago_codex::ttype::atomic::object::TObject;
 use mago_codex::ttype::cast::cast_atomic_to_callable;
-use mago_codex::ttype::union::TUnion;
+use mago_codex::ttype::union::{NeverKind, TUnion};
+use mago_codex::ttype::{get_explicit_never, get_never, get_non_accepting_never};
 use mago_database::file::File;
 use mago_names::resolver::NameResolver;
 use mago_span::{HasSpan, Position, Span};
@@ -61,6 +62,9 @@ fn describe(ty: &TUnion) -> String {
             TAtomic::Object(TObject::Named(n)) if n.is_static => {
                 assert!(!n.is_this);
                 format!("static({})", n.name)
+            }
+            TAtomic::Scalar(s) if s.get_literal_int_value().is_some() => {
+                s.get_literal_int_value().unwrap().to_string()
             }
             TAtomic::Callable(c) if c.is_closure() => "Closure".to_owned(),
             TAtomic::Object(TObject::HasMethod(h)) => {
@@ -227,4 +231,156 @@ fn neighboring_clone_and_operand_diagnostics_match_phpstan() {
     got.sort_by_key(Value::to_string);
     expected.sort_by_key(Value::to_string);
     assert_eq!(got, expected);
+}
+
+#[test]
+fn clone_preserves_never_identity_and_statement_continuation() {
+    // Match the independent PHPStan dynamic return extension, leaving the real
+    // mixed-returning declarations (and their intrinsic continuation) unchanged.
+    struct NeverOperands;
+    impl ExpressionHook for NeverOperands {
+        fn after_expression(
+            &self,
+            expression: &Expression<'_>,
+            context: &mut HookContext<'_, '_>,
+        ) -> HookResult<()> {
+            let span = expression.span();
+            let source = include_bytes!("fixtures/clone/never.php");
+            let value = match &source[span.start.offset as usize..span.end.offset as usize] {
+                b"implicitBottom()" => get_never(),
+                b"explicitBottom()" => get_explicit_never(),
+                b"nonacceptingBottom()" => get_non_accepting_never(),
+                _ => return Ok(()),
+            };
+            context.set_expression_type(expression, value);
+            Ok(())
+        }
+    }
+
+    let source = include_bytes!("fixtures/clone/never.php");
+    let oracle: Value =
+        serde_json::from_slice(include_bytes!("fixtures/clone/expected-never.json")).unwrap();
+    let file = File::ephemeral(Cow::Borrowed(b"never.php"), Cow::Borrowed(source));
+    let arena = LocalArena::new();
+    let program = parse_file(&arena, &file);
+    assert!(!program.has_errors());
+    let names = NameResolver::new(&arena).resolve(program);
+    let prelude = mago_prelude::Prelude::build();
+    let mut codebase = prelude.metadata;
+    codebase.extend(mago_codex::scanner::scan_program(
+        &arena,
+        &file,
+        program,
+        &names,
+        Default::default(),
+    ));
+    let mut references = prelude.symbol_references;
+    populate_codebase(
+        &mut codebase,
+        &mut references,
+        Default::default(),
+        Default::default(),
+    );
+    let visits = Arc::new(Mutex::new(BTreeMap::new()));
+    let mut plugins = PluginRegistry::new();
+    plugins.register_expression_hook(NeverOperands);
+    plugins.register_expression_hook(Observer(Arc::clone(&visits)));
+    let mut result = AnalysisResult::new(references);
+    let artifacts = Analyzer::new(
+        &arena,
+        &file,
+        &names,
+        &codebase,
+        &plugins,
+        Settings::default(),
+    )
+    .analyze_with_artifacts(program, &mut result)
+    .unwrap();
+
+    let identity = |ty: &TUnion| {
+        serde_json::json!({
+            "type": describe(ty),
+            "kind": match ty.never_kind() {
+                Some(NeverKind::Implicit) => Some("implicit"),
+                Some(NeverKind::Explicit) => Some("explicit"),
+                Some(NeverKind::NonAccepting) => Some("nonaccepting"),
+                None => None,
+            },
+            "explicit": ty.is_explicit_never(),
+        })
+    };
+    let expected_identity = |record: &Value| {
+        serde_json::json!({
+            "type": record["type"].as_str().unwrap().replace("*NEVER*", "never"),
+            "kind": record["kind"],
+            "explicit": record["explicit"],
+        })
+    };
+    for (offset, expected) in oracle["expressions"].as_object().unwrap() {
+        let start = offset.parse::<u32>().unwrap();
+        let expression = expected["expression"].as_str().unwrap();
+        let span = Span::new(
+            file.id,
+            Position::new(start),
+            Position::new(start + expression.len() as u32),
+        );
+        let operand = &expected["operand"];
+        let operand_start = operand["offset"].as_u64().unwrap() as u32;
+        let operand_end = operand_start + operand["length"].as_u64().unwrap() as u32;
+        let operand_span = Span::new(
+            file.id,
+            Position::new(operand_start),
+            Position::new(operand_end),
+        );
+        let input = artifacts.get_expression_type(&operand_span).unwrap();
+        let output = artifacts.get_expression_type(&span).unwrap();
+        assert_eq!(identity(input), expected_identity(operand), "{expression}");
+        assert_eq!(
+            identity(output),
+            expected_identity(expected),
+            "{expression}"
+        );
+        if input.is_never() {
+            assert_eq!(output, input, "{expression}");
+        }
+        if let Some(kind) = operand["kind"].as_str() {
+            assert_eq!(
+                identity(output),
+                expected_identity(&oracle["bottoms"][kind]["clone"]),
+                "{expression}"
+            );
+        }
+        if artifacts
+            .call_terminations
+            .contains_key(&(operand_start, operand_end))
+        {
+            assert_eq!(
+                Value::Bool(artifacts.call_terminations[&(operand_start, operand_end)]),
+                operand["terminates"],
+                "intrinsic operand termination: {expression}"
+            );
+        } else {
+            assert_eq!(expression, "clone 1");
+        }
+        assert_eq!(visits.lock().unwrap().get(&start), Some(&1), "{expression}");
+        assert_eq!(
+            visits.lock().unwrap().get(&operand_start),
+            Some(&1),
+            "{expression}"
+        );
+    }
+
+    let mut continued = BTreeMap::new();
+    let source = std::str::from_utf8(source).unwrap();
+    for (offset, _) in source.match_indices("'after-") {
+        let name = source[offset + 1..].split('\'').next().unwrap();
+        if let Some(count) = visits.lock().unwrap().get(&(offset as u32)) {
+            assert_eq!(*count, 1, "{name}");
+            continued.insert(name, offset);
+        }
+    }
+    assert_eq!(
+        serde_json::to_value(continued).unwrap(),
+        oracle["continued"]
+    );
 }

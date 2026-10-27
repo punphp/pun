@@ -50,7 +50,10 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Clone<'arena> {
         while let Some(atomic_type) = atomic_types.pop() {
             match atomic_type {
                 TAtomic::Object(object) => match object {
-                    TObject::Any | TObject::WithProperties(_) | TObject::HasMethod(_) | TObject::HasProperty(_) => {
+                    TObject::Any
+                    | TObject::WithProperties(_)
+                    | TObject::HasMethod(_)
+                    | TObject::HasProperty(_) => {
                         has_cloneable_object = true;
                     }
                     TObject::Enum(_) => {
@@ -58,7 +61,9 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Clone<'arena> {
                     }
                     TObject::Named(named_object) => {
                         if !context.codebase.trait_exists(named_object.name.as_bytes())
-                            && !context.codebase.class_or_interface_exists(named_object.name.as_bytes())
+                            && !context
+                                .codebase
+                                .class_or_interface_exists(named_object.name.as_bytes())
                         {
                             invalid_clone_atomics.push(atomic_type);
                         } else {
@@ -72,12 +77,13 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Clone<'arena> {
                 TAtomic::Mixed(_) => {
                     has_mixed_type = true;
                 }
-                TAtomic::Scalar(scalar) if scalar.is_false() && object_type.ignore_falsable_issues() => {}
+                TAtomic::Scalar(scalar)
+                    if scalar.is_false() && object_type.ignore_falsable_issues() => {}
                 TAtomic::Null | TAtomic::Void if object_type.ignore_nullable_issues() => {}
                 TAtomic::Callable(callable)
-                    if callable
-                        .get_signature()
-                        .is_none_or(mago_codex::ttype::atomic::callable::TCallableSignature::is_closure) =>
+                    if callable.get_signature().is_none_or(
+                        mago_codex::ttype::atomic::callable::TCallableSignature::is_closure,
+                    ) =>
                 {
                     has_cloneable_object = true;
                 }
@@ -101,8 +107,11 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Clone<'arena> {
         }
 
         if !invalid_clone_atomics.is_empty() {
-            let invalid_types_str =
-                invalid_clone_atomics.iter().map(|t| t.get_id().to_string()).collect::<Vec<_>>().join("|");
+            let invalid_types_str = invalid_clone_atomics
+                .iter()
+                .map(|t| t.get_id().to_string())
+                .collect::<Vec<_>>()
+                .join("|");
 
             if has_cloneable_object || has_mixed_type {
                 context.collector.report_with_code(
@@ -142,7 +151,10 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Clone<'arena> {
             }
         }
 
-        artifacts.set_rc_expression_type(self, Rc::new(resolve_clone_type(&object_type, context.codebase)));
+        artifacts.set_rc_expression_type(
+            self,
+            Rc::new(resolve_clone_type(&object_type, context.codebase)),
+        );
 
         Ok(())
     }
@@ -150,12 +162,19 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Clone<'arena> {
 
 /// PHPStan's CloneHandler::resolveCloneType: intersect with object, then map $this to static.
 fn resolve_clone_type(operand: &TUnion, codebase: &CodebaseMetadata) -> TUnion {
+    // Object intersection and CloneTypeTraverser retain the operand's bottom identity.
+    // Rebuilding its atomic would lose explicit accepting/nonaccepting never flags.
+    if operand.is_never() {
+        return operand.clone();
+    }
+
     let object = get_object();
     let mut types = Vec::new();
     for atomic in operand.types.iter() {
         let mut result = match atomic {
             TAtomic::GenericParameter(parameter) => {
-                let bound = intersect_union_types(&parameter.constraint, &object, codebase).unwrap_or_else(get_never);
+                let bound = intersect_union_types(&parameter.constraint, &object, codebase)
+                    .unwrap_or_else(get_never);
                 if bound.is_never() {
                     get_never()
                 } else {
@@ -173,7 +192,8 @@ fn resolve_clone_type(operand: &TUnion, codebase: &CodebaseMetadata) -> TUnion {
                 callable_object.intersection_types = Some(vec![atomic.clone()]);
                 TUnion::from_atomic(TAtomic::Object(TObject::HasMethod(callable_object)))
             }
-            _ => intersect_union_types(&TUnion::from_atomic(atomic.clone()), &object, codebase).unwrap_or_else(get_never),
+            _ => intersect_union_types(&TUnion::from_atomic(atomic.clone()), &object, codebase)
+                .unwrap_or_else(get_never),
         };
         for atomic in result.types.to_mut() {
             clone_this_to_static(atomic);

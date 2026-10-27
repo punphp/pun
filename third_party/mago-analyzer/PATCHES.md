@@ -1867,3 +1867,21 @@ object/scalar unions, nullable and invalid operands, enum and callable results, 
 The diagnostic comparison covers `clone.nonObject` and the operand's `function.notFound` at level 7,
 not unrelated captured diagnostics. Mago's existing enum clone diagnostic remains intentional.
 The `$this` union comes from a flow join: a PHPDoc `$this|Item` parameter has a separate scanner gap.
+
+An operand that is already never retains its complete union before the per-atomic reconstruction.
+PHPStan's object intersection and clone traversal preserve implicit, explicit accepting, and
+nonaccepting never. Newly impossible clones, such as `clone 1`, still produce implicit never.
+This preservation belongs to clone inference, not shared combinators or call-termination producers.
+
+`capture-never.php` captures all three PHPStan 2.3.1 identities directly and through a dynamic
+return extension on mixed-returning functions. The matching public Analyzer hooks supply the same
+operands. The regression checks operand and clone identity, single evaluation, and statement
+continuation. Real `call_user_func()` named and closure operands also retain nonaccepting never
+without an intrinsic termination fact. Their clone statements stop execution, but a clone nested
+inside another call does not stop continuation. The scalar control retains implicit never and
+continues. Regenerate these expectations with `capture-never.php` and the pinned PHPStan bootstrap.
+
+Arrow-return inference remains a separate limit: `fn () => exit()` supplies explicit accepting
+never here, while PHPStan supplies nonaccepting never. A native `: never` arrow hint does not
+change that inferred result. The source-level forwarding controls therefore use a declared named
+function and a statement-body closure. This patch does not change those return-type producers.
