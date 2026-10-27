@@ -410,24 +410,24 @@ struct UseImport {
 /// `FileNode::getUsesAndGroupUses()`: the imports of the file's namespace when it has exactly one, else of its top
 /// level; of every kind (class, function, constant).
 fn file_uses(ancestors: &[Node<'_, '_>]) -> Vec<UseImport> {
-    let Some(Node::Program(program)) = ancestors.first() else {
-        return Vec::new();
-    };
-    let namespaces: Vec<&Namespace<'_>> = program
-        .statements
-        .iter()
-        .filter_map(|s| match s {
-            Statement::Namespace(ns) => Some(ns),
-            _ => None,
-        })
-        .collect();
-    let statements: Vec<&Statement<'_>> = match namespaces.as_slice() {
-        [ns] => match &ns.body {
-            NamespaceBody::Implicit(body) => body.statements.iter().collect(),
-            NamespaceBody::BraceDelimited(block) => block.statements.iter().collect(),
-        },
-        _ => program.statements.iter().collect(),
-    };
+    let mut statements: Vec<&Statement<'_>> = Vec::new();
+    if let Some(Node::Program(program)) = ancestors.first() {
+        let namespaces: Vec<&Namespace<'_>> = program
+            .statements
+            .iter()
+            .filter_map(|s| match s {
+                Statement::Namespace(ns) => Some(ns),
+                _ => None,
+            })
+            .collect();
+        statements = match namespaces.as_slice() {
+            [ns] => match &ns.body {
+                NamespaceBody::Implicit(body) => body.statements.iter().collect(),
+                NamespaceBody::BraceDelimited(block) => block.statements.iter().collect(),
+            },
+            _ => program.statements.iter().collect(),
+        };
+    }
     let mut imports = Vec::new();
     let text = |id: &mago_syntax::cst::Identifier<'_>| {
         String::from_utf8_lossy(id.value())

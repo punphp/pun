@@ -237,10 +237,12 @@ fn create<'a>(ancestors: &[Node<'_, '_>], exprs: &[&'a Expression<'a>]) -> Optio
             BinaryOperator::Identical(_) | BinaryOperator::Equal(_) => {
                 let (left, right) = (unparenthesize(binary.lhs), unparenthesize(binary.rhs));
                 if let Some(args) = function_call_named(left, "count") {
-                    // create assertCount() for an integer, else no change
+                    // create assertCount() for an integer (php-parser's `Int_`: not one above `PHP_INT_MAX`), else
+                    // no change
                     if !matches!(
                         right,
-                        Expression::Literal(mago_syntax::cst::Literal::Integer(_))
+                        Expression::Literal(mago_syntax::cst::Literal::Integer(i))
+                            if i.value.is_some_and(|v| v <= i64::MAX as u64)
                     ) {
                         return None;
                     }

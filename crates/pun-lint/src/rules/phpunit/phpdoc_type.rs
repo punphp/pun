@@ -172,23 +172,15 @@ pub(crate) fn short_name(name: &str) -> &str {
     name.rsplit('\\').next().unwrap_or(name)
 }
 
-/// The doc comment after `PhpDocTypeChanger` sets the type of the tag `name` (for `@param`, the one of `variable`)
-/// to `ty`: the tag reprinted, or, without one, a new tag `name ty variable` added (a new doc for a node without
-/// one). `None` where [`typed_tag`] does not read the doc.
-pub(crate) fn with_tag_type(
-    doc: Option<&Doc<'_>>,
-    name: &str,
-    variable: Option<&str>,
-    ty: &str,
-) -> Option<String> {
-    let added = match variable {
-        Some(v) => format!("{name} {ty} {v}"),
-        None => format!("{name} {ty}"),
-    };
+/// The doc comment after `PhpDocTypeChanger` sets the type of the tag `name` (`@var`, `@return`) to `ty`: the tag
+/// reprinted, or, without one, a new tag `name ty` added (a new doc for a node without one). `None` where
+/// [`typed_tag`] does not read the doc.
+pub(crate) fn with_tag_type(doc: Option<&Doc<'_>>, name: &str, ty: &str) -> Option<String> {
+    let added = format!("{name} {ty}");
     let Some(doc) = doc else {
         return Some(format!("/**\n * {added}\n */"));
     };
-    match typed_tag(doc, name, variable).ok()? {
+    match typed_tag(doc, name, None).ok()? {
         Some(tag) => {
             let text = doc.text_all();
             let child = doc.text(tag.index).trim_end();
