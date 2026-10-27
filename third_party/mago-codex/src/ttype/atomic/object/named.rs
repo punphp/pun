@@ -29,6 +29,9 @@ pub struct TNamedObject {
     /// `true` if this specifically represents the `$this` variable (same instance).
     /// Implies `is_static`. Only `return $this` satisfies a `$this` return type.
     pub is_this: bool,
+    /// A per-type final reflection override from an exact instantiation, not a class declaration.
+    #[cfg_attr(feature = "serde", serde(default))]
+    pub is_exact: bool,
     /// Represents additional types in an intersection type (`&B&S` part of `A&B&S`).
     /// Contains other *atomic* types (boxed due to potential recursion).
     pub intersection_types: Option<Box<Vec<TAtomic>>>,
@@ -49,6 +52,7 @@ impl TNamedObject {
             variances: None,
             is_static: false,
             is_this: false,
+            is_exact: false,
             remapped_parameters: false,
             intersection_types: None,
             subtracted_type: None,
@@ -74,6 +78,14 @@ impl TNamedObject {
     #[must_use]
     pub fn new_this(name: Word) -> Self {
         Self { is_this: true, ..Self::new_static(name) }
+    }
+
+    /// Sets the per-type exact-class identity without changing receiver flags or class metadata.
+    #[inline]
+    #[must_use]
+    pub fn with_is_exact(mut self, is_exact: bool) -> Self {
+        self.is_exact = is_exact;
+        self
     }
 
     /// Returns the `Word` for the primary class/interface name.

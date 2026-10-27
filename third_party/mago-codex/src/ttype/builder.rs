@@ -1054,6 +1054,7 @@ fn get_reference_from_kind(
             subtracted_type: None,
             is_static,
             is_this,
+            is_exact: false,
             remapped_parameters: false,
         })))
     } else {

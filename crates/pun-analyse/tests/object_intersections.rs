@@ -50,6 +50,41 @@ fn genuine_intersections_keep_inheritance_generics_and_receiver_identity() {
 }
 
 #[test]
+fn exact_instantiations_keep_distinct_classes_and_receiver_producers() {
+    // Exercise the public Analyzer-backed API: Pun's separate PHPStan Type::Object
+    // representation cannot carry the per-value final override into later unions.
+    let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/object-intersections");
+    let mut project = pun_analyse::Project::new(vec![root.join("exact.php")], vec![]);
+    project.php_version = 80400;
+    let got: Vec<_> = pun_analyse::run_mago(&project, None)
+        .unwrap()
+        .dumped
+        .into_iter()
+        .map(|dump| (dump.line, dump.type_id))
+        .collect();
+    let oracle: Value =
+        serde_json::from_str(include_str!("fixtures/object-intersections/exact.json")).unwrap();
+    assert!(oracle["errors"].as_array().unwrap().is_empty());
+    let want: Vec<_> = oracle["files"]
+        .as_object()
+        .unwrap()
+        .values()
+        .flat_map(|file| file["messages"].as_array().unwrap())
+        .map(|message| {
+            let phpstan = message["message"].as_str().unwrap();
+            (
+                message["line"].as_u64().unwrap() as u32,
+                phpstan
+                    .strip_prefix("Dumped type: ")
+                    .unwrap()
+                    .replace("static(Receiver)", "Receiver&static"),
+            )
+        })
+        .collect();
+    assert_eq!(got, want);
+}
+
+#[test]
 fn object_subtractions_survive_narrowing_copies_queries_and_scope_merges() {
     compare(
         "subtraction.php",
@@ -98,7 +133,7 @@ fn union_absorption_checks_the_primary_generic_and_receiver_constraints() {
 }
 
 #[test]
-fn raw_union_preserves_distinct_primary_parameters() {
+fn raw_union_preserves_distinct_primary_parameters_and_receiver_identity() {
     use mago_codex::ttype::{
         atomic::{
             TAtomic,
@@ -135,6 +170,229 @@ fn raw_union_preserves_distinct_primary_parameters() {
         assert_eq!(result.types.len(), 2);
         assert!(result.types.contains(&int_box));
         assert!(result.types.contains(&string_box));
+    }
+
+    // PHPStan 2.3.1's declared self/static/$this parameter unions select the
+    // least restrictive receiver in both orders, independently of new self's producer.
+    // Use the scanned class's source spelling and its lowercase symbol-table key.
+    for name in ["Receiver", "receiver"] {
+        let plain = TAtomic::Object(TObject::Named(TNamedObject::new(mago_word::word(name))));
+        let late = TAtomic::Object(TObject::Named(TNamedObject::new_static(mago_word::word(
+            name,
+        ))));
+        let this = TAtomic::Object(TObject::Named(TNamedObject::new_this(mago_word::word(
+            name,
+        ))));
+        for (left, right, expected) in [
+            (&plain, &late, &plain),
+            (&plain, &this, &plain),
+            (&late, &this, &late),
+        ] {
+            for (left, right) in [(left, right), (right, left)] {
+                let result = combine_union_types(
+                    &TUnion::from_atomic(left.clone()),
+                    &TUnion::from_atomic(right.clone()),
+                    &codebase,
+                    Default::default(),
+                );
+                assert_eq!(result.types.as_ref(), &[expected.clone()]);
+            }
+        }
+    }
+}
+
+#[test]
+fn exact_objects_keep_semantic_identity_without_changing_printed_class_names() {
+    use mago_codex::ttype::{
+        TType,
+        atomic::{
+            TAtomic,
+            object::{TObject, named::TNamedObject},
+        },
+        combine_union_types,
+        union::TUnion,
+    };
+    use std::collections::HashSet;
+
+    let codebase = scanned(include_bytes!("fixtures/object-intersections/exact.php"));
+    let named = |object| TAtomic::Object(TObject::Named(object));
+    let broad = named(TNamedObject::new(mago_word::word("Service")));
+    let exact = named(TNamedObject::new(mago_word::word("Service")).with_is_exact(true));
+    let child = named(TNamedObject::new(mago_word::word("Child")).with_is_exact(true));
+    let late = named(TNamedObject::new_static(mago_word::word("Service")));
+    let this = named(TNamedObject::new_this(mago_word::word("Service")));
+    assert_ne!(broad, exact);
+    assert_eq!(HashSet::from([broad.clone(), exact.clone()]).len(), 2);
+    assert_eq!(exact.get_id().as_str(), Some("Service"));
+    assert_eq!(exact.get_pretty_id_with_indent(0).as_str(), Some("Service"));
+    assert!(
+        !codebase
+            .get_class_like(b"Service")
+            .unwrap()
+            .flags
+            .is_final()
+    );
+
+    // PHPStan's public ObjectType(asFinal)/StaticType/ThisType union matrix.
+    for (left, right, expected) in [
+        (&broad, &exact, vec![broad.clone()]),
+        (&broad, &child, vec![broad.clone()]),
+        (&exact, &child, vec![exact.clone(), child.clone()]),
+        (&exact, &late, vec![late.clone()]),
+        (&exact, &this, vec![exact.clone(), this.clone()]),
+        (&child, &late, vec![late.clone()]),
+        (&child, &this, vec![child.clone(), this.clone()]),
+    ] {
+        for (left, right) in [(left, right), (right, left)] {
+            assert_eq!(
+                combine_union_types(
+                    &TUnion::from_atomic(left.clone()),
+                    &TUnion::from_atomic(right.clone()),
+                    &codebase,
+                    Default::default()
+                ),
+                TUnion::from_vec(expected.clone()),
+            );
+        }
+    }
+
+    // Internal structural identity retains nested exactness even when IDs coincide.
+    // PHPStan's GenericObjectType equality ignores this reflection override and prints
+    // the same Box<Service>; this checks metadata retention, not its alternative count.
+    let boxed = |parameter| {
+        named(TNamedObject::new_with_type_parameters(
+            mago_word::word("Box"),
+            Some(vec![TUnion::from_atomic(parameter)]),
+        ))
+    };
+    let exact_box = boxed(exact.clone());
+    let broad_box = boxed(broad);
+    for (left, right) in [(&exact_box, &broad_box), (&broad_box, &exact_box)] {
+        let result = combine_union_types(
+            &TUnion::from_atomic(left.clone()),
+            &TUnion::from_atomic(right.clone()),
+            &codebase,
+            Default::default(),
+        );
+        assert_eq!(result.types.len(), 2);
+        assert!(result.types.contains(&exact_box));
+        assert!(result.types.contains(&broad_box));
+        assert_eq!(result.get_id().as_str(), Some("Box<Service>"));
+    }
+
+    let covariant = |parameter| {
+        named(TNamedObject::new_with_type_parameters(
+            mago_word::word("CovariantBox"),
+            Some(vec![parameter]),
+        ))
+    };
+    let broad_box = covariant(mago_codex::ttype::get_int());
+    let literal_box = covariant(mago_codex::ttype::get_literal_int(1));
+    // The final exact.php dump is CovariantBox<int>, not two alternatives.
+    for (left, right) in [(&broad_box, &literal_box), (&literal_box, &broad_box)] {
+        let result = combine_union_types(
+            &TUnion::from_atomic(left.clone()),
+            &TUnion::from_atomic(right.clone()),
+            &codebase,
+            Default::default(),
+        );
+        assert_eq!(result.types.as_ref(), &[broad_box.clone()]);
+    }
+
+    // PHPStan retains unrelated generic classes and non-class/unknown nominal types.
+    // Moving named objects out of printed-ID buckets must not lose these alternatives.
+    for other in [
+        exact_box,
+        named(TNamedObject::new(mago_word::word("External"))),
+        named(TNamedObject::new(mago_word::word("Marker"))),
+    ] {
+        for (left, right) in [(&broad_box, &other), (&other, &broad_box)] {
+            let result = combine_union_types(
+                &TUnion::from_atomic(left.clone()),
+                &TUnion::from_atomic(right.clone()),
+                &codebase,
+                Default::default(),
+            );
+            assert_eq!(result.types.len(), 2);
+            assert!(result.types.contains(&broad_box));
+            assert!(result.types.contains(&other));
+        }
+    }
+
+    let mut serialized = serde_json::to_value(&exact).unwrap();
+    assert_eq!(
+        serde_json::from_value::<TAtomic>(serialized.clone()).unwrap(),
+        exact
+    );
+    serialized["Object"]["Named"]
+        .as_object_mut()
+        .unwrap()
+        .remove("is_exact");
+    let legacy: TAtomic = serde_json::from_value(serialized).unwrap();
+    assert!(!matches!(legacy, TAtomic::Object(TObject::Named(object)) if object.is_exact));
+}
+
+#[test]
+fn named_instantiations_retain_exactness_in_full_and_native_artifacts() {
+    use mago_allocator::LocalArena;
+    use mago_analyzer::{
+        Analyzer, analysis_result::AnalysisResult, plugin::PluginRegistry, settings::Settings,
+    };
+    use mago_codex::{
+        populator::populate_codebase, reference::SymbolReferences, scanner::scan_program,
+    };
+    use mago_database::file::File;
+    use mago_names::resolver::NameResolver;
+    use mago_span::{Position, Span};
+    use mago_syntax::parser::parse_file;
+    use std::borrow::Cow;
+
+    let source = b"<?php class Service {} class Child extends Service {}
+function inspect(): void { $value = new Child(); $value; }";
+    for native in [false, true] {
+        let arena = LocalArena::new();
+        let file = File::ephemeral(Cow::Borrowed(b"exact-native.php"), Cow::Borrowed(source));
+        let program = parse_file(&arena, &file);
+        assert!(!program.has_errors());
+        let names = NameResolver::new(&arena).resolve(program);
+        let mut codebase = scan_program(&arena, &file, program, &names, Default::default());
+        let mut references = SymbolReferences::new();
+        populate_codebase(
+            &mut codebase,
+            &mut references,
+            Default::default(),
+            Default::default(),
+        );
+        let mut result = AnalysisResult::new(references);
+        let registry = PluginRegistry::default();
+        let artifacts = Analyzer::new(
+            &arena,
+            &file,
+            &names,
+            &codebase,
+            &registry,
+            Settings {
+                track_native_types: native,
+                ..Default::default()
+            },
+        )
+        .analyze_with_artifacts(program, &mut result)
+        .unwrap();
+        let start = source
+            .windows(7)
+            .rposition(|part| part == b"$value;")
+            .unwrap() as u32;
+        let span = Span::new(file.id, Position::new(start), Position::new(start + 6));
+        let full = artifacts.get_expression_type(&span).unwrap();
+        let object = full.get_single_named_object().unwrap();
+        assert_eq!(object.name, mago_word::word("Child"));
+        assert!(object.is_exact);
+        assert!(!object.is_static && !object.is_this);
+        if native {
+            assert_eq!(artifacts.get_native_expression_type(&span).unwrap(), full);
+        } else {
+            assert!(artifacts.get_native_expression_type(&span).is_none());
+        }
     }
 }
 

@@ -44,6 +44,10 @@ function optionalMembers(string $data, int &$offset, int $minor, bool $unions): 
 }
 function completeAtomic(string $data, int &$offset, int $minor): string {
     $tag = take($data, $offset, 2);
+    if ($tag === "\1\7") {
+        $literal = take($data, $offset, 1);
+        return $tag.$literal.($literal === "\2" ? bytesField($data, $offset) : '').take($data, $offset, 2);
+    }
     if ($tag !== "\4\2") { throw new RuntimeException('Expected a named-object snapshot'); }
     $value = $tag.bytesField($data, $offset).optionalMembers($data, $offset, $minor, true);
     $variances = take($data, $offset, 1);
@@ -57,14 +61,20 @@ function completeAtomic(string $data, int &$offset, int $minor): string {
         $present = take($data, $offset, 1);
         $value .= $present;
         if ($present === "\1") { $value .= completeUnion($data, $offset, $minor); }
+        $value .= take($data, $offset, 1); // Exact-class override, independent of the printed ID.
     }
     return $value;
 }
-function named(string $name, int $minor, ?string $excluded = null, ?array $intersections = null): string {
-    $value = "\4\2".pack('N', strlen($name)).$name."\0\0\0\0";
+function named(string $name, int $minor, ?string $excluded = null, ?array $intersections = null, bool $exact = false, ?array $parameters = null): string {
+    $value = "\4\2".pack('N', strlen($name)).$name;
+    $value .= $parameters === null ? "\0" : "\1".pack('N', count($parameters)).implode('', $parameters);
+    $value .= "\0\0\0";
     $value .= $intersections === null ? "\0" : "\1".pack('N', count($intersections)).implode('', $intersections);
     $value .= "\0";
-    if ($minor >= 2) { $value .= $excluded === null ? "\0" : "\1".$excluded; }
+    if ($minor >= 2) {
+        $value .= $excluded === null ? "\0" : "\1".$excluded;
+        $value .= $exact ? "\1" : "\0";
+    }
     return $value;
 }
 function unionOf(string ...$atomics): string { return "\0\0".pack('N', count($atomics)).implode('', $atomics); }
@@ -95,6 +105,7 @@ while (($header = readBytes(32)) !== null && ord($header[8]) !== 5) {
             $excluded = match ($argv[2]) {
                 'nested' => unionOf(named('C', $minor, unionOf($ac))),
                 'union' => unionOf($ac, $bc),
+                'exact' => unionOf($ac),
                 'deep' => unionOf(named('A', $minor)),
                 default => null,
             };
@@ -103,7 +114,9 @@ while (($header = readBytes(32)) !== null && ord($header[8]) !== 5) {
             }
             if ($argv[2] === 'many') { $excluded = "\0\0".pack('N', 65537); }
             if ($argv[2] === 'empty') { $excluded = "\0\0".pack('N', 0); }
-            $complete = unionOf(named('C', $minor, $excluded));
+            $complete = $argv[2] === 'exact'
+                ? unionOf(named('WireBox', $minor, $excluded, exact: true, parameters: [unionOf("\1\7\0\0\3")]))
+                : unionOf(named('C', $minor, $excluded));
         }
         $response = substr($payload, 0, 8).pack('nn', 0x8002, 0)."\1\24".$complete;
     }

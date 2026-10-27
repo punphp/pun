@@ -139,6 +139,38 @@ $roundtrip = demo_service($seed);
 $roundtrip;";
 
 #[test]
+fn analyzer_worker_roundtrip_retains_exactness_casing_and_exclusions() {
+    let source = b"<?php class ParentObject {} class CamelCaseChild extends ParentObject {}
+function demo_service($value) {}
+$seed = new CamelCaseChild(); $roundtrip = demo_service($seed); $roundtrip;";
+    let (returned, _, warnings) = analyze("echo", source).unwrap();
+    assert!(warnings.is_empty(), "{warnings:?}");
+    let object = returned.get_single_named_object().unwrap();
+    assert_eq!(object.name, word("CamelCaseChild"));
+    assert!(object.is_exact);
+    assert!(!object.is_static && !object.is_this);
+    assert!(object.subtracted_type.is_none());
+
+    let (returned, _, warnings) = analyze("exact", SEEDED).unwrap();
+    assert!(warnings.is_empty(), "{warnings:?}");
+    let object = returned.get_single_named_object().unwrap();
+    assert_eq!(object.name, word("WireBox"));
+    assert!(object.is_exact);
+    assert!(!object.is_static && !object.is_this);
+    assert_eq!(
+        object.subtracted_type.as_ref().unwrap().get_id().as_str(),
+        Some("A&C")
+    );
+    let TAtomic::Scalar(TScalar::String(string)) =
+        object.get_type_parameters().unwrap()[0].get_single()
+    else {
+        panic!("expected the worker's string type parameter");
+    };
+    assert_eq!(string.casing, TStringCasing::Both);
+    assert!(returned.get_id().as_bytes().starts_with(b"WireBox<"));
+}
+
+#[test]
 fn analyzer_worker_roundtrip_retains_a_real_narrowed_object_exclusion() {
     let (returned, codebase, warnings) = analyze("echo", FLOW).unwrap();
     assert!(warnings.is_empty(), "{warnings:?}");

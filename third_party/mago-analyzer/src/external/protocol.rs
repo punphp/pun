@@ -132,7 +132,7 @@ use crate::invocation::MethodTargetContext;
 
 pub const ANALYZER_PROTOCOL_MAGIC: [u8; 4] = *b"MANA";
 // Version 2.1 adds string casing tag 3 (both ASCII casing guarantees).
-// Version 2.2 appends named-object exclusions; older layouts must be rejected before decoding.
+// Version 2.2 appends named-object exclusions and exact-class identity; older layouts must be rejected before decoding.
 pub const ANALYZER_PROTOCOL_MAJOR: u16 = 2;
 pub const ANALYZER_PROTOCOL_MINOR: u16 = 2;
 
@@ -1712,6 +1712,7 @@ fn encode_object_snapshot<'type_info>(
             if let Some(excluded) = &named.subtracted_type {
                 encode_union_snapshot_inner(writer, excluded, types, depth + 1)?;
             }
+            writer.write_bool(named.is_exact);
         }
         TObject::Enum(r#enum) => {
             writer.write_u8(3);
@@ -2800,12 +2801,14 @@ fn decode_complete_object(reader: &mut PayloadReader<'_>, depth: usize) -> Resul
             } else {
                 None
             };
+            let is_exact = reader.read_bool("named object exact flag")?;
             TObject::Named(TNamedObject {
                 name,
                 type_parameters: type_parameters.map(Vec::into_boxed_slice),
                 variances: variances.map(Box::new),
                 is_static,
                 is_this,
+                is_exact,
                 intersection_types: intersection_types.map(Box::new),
                 subtracted_type,
                 remapped_parameters,
@@ -3758,7 +3761,7 @@ pub(super) mod testing {
         writer.write_u8(SNAPSHOT_OBJECT);
         writer.write_u8(2);
         writer.write_bytes(b"WireObject").unwrap();
-        for _ in 0..7 {
+        for _ in 0..8 {
             writer.write_bool(false);
         }
         let hex = |bytes: Vec<u8>| bytes.iter().map(|byte| format!("{byte:02x}")).collect::<String>();
@@ -3812,5 +3815,6 @@ while (($header = readBytes(32)) !== null && ord($header[8]) !== 5) {
         assert_eq!(object.name, word("WireObject"));
         assert!(object.subtracted_type.is_none());
         assert!(!object.is_static && !object.is_this);
+        assert!(!object.is_exact);
     }
 }

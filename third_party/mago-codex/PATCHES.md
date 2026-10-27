@@ -726,3 +726,72 @@ branch merges, and `is_numeric()` refinements from the real PHPStan 2.3.1 at lev
 forms satisfy a non-empty parameter; the empty-string argument remains an error. Existing casing,
 concatenation, repeat, and native controls retain their expectations. Union normalization remains
 the combiner's separate responsibility.
+
+## Plain-object receiver unions
+
+`scrape_type_properties()` uses full containment when named objects have different `is_static` or
+`is_this` flags, just as it does for intersections and exclusions. Class ancestry alone cannot
+distinguish an ordinary instance, a late-static receiver, and the current instance. The lowercase
+symbol-kind lookup remains intact. The class-name shortcut still handles equal receiver identities.
+
+PHPStan 2.3.1's `ObjectType::isSuperTypeOf()`, `StaticType::isSuperTypeOf()`, and
+`ThisType::isSuperTypeOf()` define the receiver ordering. Public `TypeCombinator::union()` probes
+select the ordinary class for ordinary/static and ordinary/`$this`, and static for static/`$this`,
+in both operand orders. These are declared-type contracts, not expectations for `new self()`.
+The existing public codex union test checks all six orders using source-spelled and lowercase names.
+Its invariant generic, intersection, and exclusion controls remain unchanged.
+
+The unchanged Rector 2.6.1 fixture `merged_static_and_trait_anonymous.php.inc` requires
+`Once::instance(): self`, not `static`. Its fresh PHPStan 2.2.7-backed Rector capture confirms that
+expectation. No lint rule, expected output, or gap allowance changes in this repair.
+
+## Exact instantiation identities
+
+`TNamedObject::is_exact` represents PHPStan's per-type `ClassReflection::asFinal()` override.
+Named `new`, `new self()`, `new parent()`, and resolved literal class strings produce exact objects.
+`new static()` keeps its late-static identity. The supported native named-instantiation path records
+the same override. No declaration becomes final, and canonical initializer `new` identities are unchanged.
+
+An exact parent object does not contain a child instance or a broad same-class object. A declared
+parent type still contains an exact child. Static accepts an exact instance in its class hierarchy,
+whereas `$this` still requires the current-instance identity. The contracts are PHPStan 2.3.1's
+[`NewHandler::exactInstantiation()`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Analyser/ExprHandler/NewHandler.php#L505-L533),
+[`ObjectType::isSuperTypeOf()`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Type/ObjectType.php#L640-L705),
+and the existing static and `$this` supertype queries. PHPStan 2.2.7 uses the same exact-instantiation override.
+
+The combiner retains complete named objects instead of reconstructing them from a class-name bucket.
+Structural equality, hashing, ordering, and serde include exactness, including exact objects nested in
+invariant generic arguments. Printed IDs remain ordinary class names. Broad generic combination retains
+its existing variance policy without discarding receiver flags, exclusions, or the object's other metadata.
+The unpublished protocol 2.2 named-object layout appends an exactness flag after its optional exclusion.
+Real PHP worker round trips retain exactness, source casing, string casing, and nested exclusions.
+Protocol 2.0 and 2.1 remain rejected before payload decoding.
+
+`object_intersections.rs` checks exact constructor unions, same-class alternatives, declared parent
+parameters, copies, reassignment, and both branch orders against a fresh PHPStan 2.3.1 capture.
+It also checks exact/static/`$this` combinations, invariant generic identity, serde defaults, and full
+versus native artifacts. Both unchanged Rector fluent-return and named-argument fixtures exercise this
+shared metadata rather than a lint-only observation.
+
+Boundary: Pun's separate `pun_phpstan::types::Type::Object` has no per-type final override. Conversion
+to that API cannot retain exactness for later type operations. The codex and Analyzer artifacts,
+in-process type handles, and complete worker snapshots retain it. Compact named-object provider
+responses still describe broad objects. This patch does not add a second Pun type representation.
+
+The new constructor fixture therefore checks the public `run_mago()` Analyzer-backed API against
+the unmodified PHPStan capture, translating only PHPStan's `static(Receiver)` notation to codex's
+`Receiver&static`. The existing public Pun diagnostic fixtures still run unchanged. Pun's debug-type
+conversion remains an explicit boundary: it can collapse exact parent/child alternatives after
+discarding the reflection override. Native exactness is checked inside a supported function scope;
+top-level class declarations invalidate the deliberately partial native observation state.
+
+Negative public union controls retain unrelated generic classes, unknown nominal types, and traits,
+matching fresh PHPStan `TypeCombinator` probes in both orders. The shallow object comparator no
+longer has a dead enum-container arm: its sole caller handles every enum container before calling
+this helper. Enum inputs still pass through the existing named-container comparison path.
+
+Nested exactness is structural codex metadata. PHPStan's `GenericObjectType::equals()` ignores the
+reflection override, and its union can collapse `Box<exact Service>` and `Box<broad Service>` to
+one object. Codex conservatively retains both internal alternatives rather than overwriting either
+through a printed-ID key; their common printed ID is still `Box<Service>`. The nested-identity
+control checks this metadata-retention contract, not PHPStan's internal alternative count.

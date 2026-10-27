@@ -35,6 +35,7 @@ use crate::ttype::atomic::callable::TCallableSignature;
 use crate::ttype::atomic::mixed::TMixed;
 use crate::ttype::atomic::mixed::truthiness::TMixedTruthiness;
 use crate::ttype::atomic::object::TObject;
+#[cfg(test)]
 use crate::ttype::atomic::object::named::TNamedObject;
 use crate::ttype::atomic::resource::TResource;
 use crate::ttype::atomic::scalar::TScalar;
@@ -280,7 +281,7 @@ pub fn combine(types: Vec<TAtomic>, codebase: &CodebaseMetadata, options: Combin
     // `never` is the bottom type, absorbed by any other member of the union. Drop it up front so
     // that it does not make the combination look non-simple, which would turn `void` into `null`.
     let callable_collision_count: usize = combination.callable_collisions.values().map(Vec::len).sum();
-    if combination.value_types.len() + callable_collision_count > 1 {
+    if combination.value_types.len() + combination.named_objects.len() + callable_collision_count > 1 {
         combination.value_types.remove(&*ATOM_NEVER);
     }
 
@@ -328,7 +329,7 @@ pub fn combine(types: Vec<TAtomic>, codebase: &CodebaseMetadata, options: Combin
         + callable_collision_count
         + resource_count
         + array_count
-        + combination.object_type_params.len()
+        + combination.named_objects.len()
         + combination.literal_strings.len()
         + usize::from(generic_scalar);
 
@@ -401,16 +402,6 @@ pub fn combine(types: Vec<TAtomic>, codebase: &CodebaseMetadata, options: Combin
         })));
     }
 
-    for (_, (generic_type, generic_type_parameters)) in combination.object_type_params {
-        let generic_object = TAtomic::Object(TObject::Named(
-            TNamedObject::new(generic_type)
-                .with_is_static(*combination.object_static.get(&generic_type).unwrap_or(&false))
-                .with_type_parameters(Some(generic_type_parameters)),
-        ));
-
-        new_types.push(generic_object);
-    }
-
     new_types.extend(combination.literal_strings.into_iter().map(|s| TAtomic::Scalar(TScalar::literal_string(s))));
 
     if generic_scalar {
@@ -425,7 +416,8 @@ pub fn combine(types: Vec<TAtomic>, codebase: &CodebaseMetadata, options: Combin
     new_types.extend(combination.literal_floats.into_iter().map(|f| TAtomic::Scalar(TScalar::literal_float(f.into()))));
 
     for (enum_name, enum_case) in combination.enum_names {
-        if combination.value_types.contains_key(&enum_name) {
+        if combination.value_types.contains_key(&enum_name)
+            || combination.named_objects.iter().any(|object| object.get_id() == enum_name) {
             continue;
         }
 
@@ -439,10 +431,12 @@ pub fn combine(types: Vec<TAtomic>, codebase: &CodebaseMetadata, options: Combin
 
     let mut has_never = combination.value_types.contains_key(&*ATOM_NEVER);
 
-    let combination_value_type_count = combination.value_types.len() + callable_collision_count;
+    let combination_value_type_count = combination.value_types.len() + combination.named_objects.len() + callable_collision_count;
     let mixed_from_loop_isset = combination.flags.mixed_from_loop_isset().unwrap_or(false);
 
-    for atomic in combination.value_types.into_values().chain(combination.callable_collisions.into_values().flatten()) {
+    for atomic in combination.value_types.into_values()
+        .chain(combination.named_objects)
+        .chain(combination.callable_collisions.into_values().flatten()) {
         let tc = usize::from(has_never);
         if atomic.is_mixed()
             && mixed_from_loop_isset
@@ -1074,53 +1068,10 @@ fn scrape_type_properties(
     // can eliminate variants
     if atomic == TAtomic::Object(TObject::Any) {
         combination.flags.insert(CombinationFlags::HAS_OBJECT_TOP_TYPE);
-        combination.value_types.retain(|_, t| !matches!(t, TAtomic::Object(TObject::Named(_))));
+        combination.named_objects.clear();
         combination.value_types.insert(atomic.get_id(), atomic);
 
         return;
-    }
-
-    if let TAtomic::Object(TObject::Named(named_object)) = &atomic {
-        if let Some(object_static) = combination.object_static.get(&named_object.get_name()) {
-            if *object_static && !named_object.is_static {
-                combination.object_static.insert(named_object.get_name(), false);
-            }
-        } else {
-            combination.object_static.insert(named_object.get_name(), named_object.is_static);
-        }
-    }
-
-    if let TAtomic::Object(TObject::Named(named_object)) = &atomic {
-        let fq_class_name = named_object.get_name();
-        if let Some(type_parameters) = named_object.get_type_parameters() {
-            if named_object.has_intersection_types() || named_object.subtracted_type.is_some() {
-                combination.value_types.insert(atomic.get_id(), atomic);
-
-                return;
-            }
-
-            let object_type_key = get_combiner_key(fq_class_name, type_parameters, codebase);
-
-            if let Some((_, existing_type_params)) = combination.object_type_params.get(&object_type_key) {
-                let mut new_type_parameters = Vec::with_capacity(type_parameters.len());
-                for (i, type_param) in type_parameters.iter().enumerate() {
-                    if let Some(existing_type_param) = existing_type_params.get(i) {
-                        new_type_parameters.push(combine_union_types(
-                            existing_type_param,
-                            type_param,
-                            codebase,
-                            options,
-                        ));
-                    }
-                }
-
-                combination.object_type_params.insert(object_type_key, (fq_class_name, new_type_parameters));
-            } else {
-                combination.object_type_params.insert(object_type_key, (fq_class_name, type_parameters.to_vec()));
-            }
-
-            return;
-        }
     }
 
     if let TAtomic::Object(TObject::Enum(enum_object)) = atomic {
@@ -1134,35 +1085,66 @@ fn scrape_type_properties(
         let intersection_types = named_object.get_intersection_types();
 
         if combination.flags.contains(CombinationFlags::HAS_OBJECT_TOP_TYPE)
-            || combination.value_types.contains_key(&atomic.get_id())
+            || combination.named_objects.contains(&atomic)
         {
             return;
         }
 
+        // Keep the existing broad generic buckets, but compare invariant arguments structurally.
+        // Exact instances never become a broad reconstructed object or a printed-ID map entry.
+        if !named_object.is_exact && !named_object.has_intersection_types() && named_object.subtracted_type.is_none()
+            && let Some(parameters) = named_object.get_type_parameters()
+        {
+            let variances = codebase.get_class_like(fq_class_name.as_bytes()).map(|metadata| &metadata.template_variance);
+            for existing in &mut combination.named_objects {
+                let TAtomic::Object(TObject::Named(object)) = existing else { continue };
+                if object.name != fq_class_name || object.is_exact || object.is_static != named_object.is_static
+                    || object.is_this != named_object.is_this || object.has_intersection_types()
+                    || object.subtracted_type.is_some() || object.variances != named_object.variances {
+                    continue;
+                }
+                if let Some(existing_parameters) = object.get_type_parameters()
+                    && existing_parameters.len() == parameters.len()
+                    && parameters.iter().zip(existing_parameters).enumerate().all(|(i, (left, right))| {
+                        variances.is_none_or(|variances| variances.get(i) == Some(&Variance::Covariant) || left == right)
+                    })
+                {
+                    object.type_parameters = Some(parameters.iter().zip(existing_parameters)
+                        .map(|(left, right)| combine_union_types(left, right, codebase, options))
+                        .collect::<Box<[_]>>());
+                    return;
+                }
+            }
+        }
+
         let Some(symbol_type) = codebase.symbols.get_kind(ascii_lowercase_word(fq_class_name.as_bytes())) else {
-            combination.value_types.insert(atomic.get_id(), atomic);
+            combination.named_objects.push(atomic);
             return;
         };
 
         if !matches!(symbol_type, SymbolKind::Class | SymbolKind::Enum | SymbolKind::Interface) {
-            combination.value_types.insert(atomic.get_id(), atomic);
+            combination.named_objects.push(atomic);
             return;
         }
 
         let is_class = matches!(symbol_type, SymbolKind::Class);
         let is_interface = matches!(symbol_type, SymbolKind::Interface);
 
-        let mut types_to_remove: Vec<Word> = Vec::new();
+        let mut types_to_remove = Vec::new();
 
-        for (key, existing_type) in &combination.value_types {
+        for (index, existing_type) in combination.named_objects.iter().enumerate() {
             if let TAtomic::Object(TObject::Named(existing_object)) = &existing_type {
                 let existing_name = existing_object.get_name();
 
                 if intersection_types.is_some() || existing_object.has_intersection_types()
                     || named_object.subtracted_type.is_some()
-                    || existing_object.subtracted_type.is_some() {
+                    || existing_object.subtracted_type.is_some()
+                    || named_object.is_static != existing_object.is_static
+                    || named_object.is_this != existing_object.is_this
+                    || named_object.is_exact || existing_object.is_exact
+                    || named_object.has_type_parameters() || existing_object.has_type_parameters() {
                     if is_atomic_intersection_contained_by(existing_type, &atomic, codebase) {
-                        types_to_remove.push(*key);
+                        types_to_remove.push(index);
                         continue;
                     }
 
@@ -1182,7 +1164,7 @@ fn scrape_type_properties(
                 if matches!(existing_symbol_kind, SymbolKind::Class) {
                     // remove subclasses
                     if codebase.is_instance_of(existing_name.as_bytes(), fq_class_name.as_bytes()) {
-                        types_to_remove.push(*key);
+                        types_to_remove.push(index);
                         continue;
                     }
 
@@ -1199,7 +1181,7 @@ fn scrape_type_properties(
                     }
                 } else if matches!(existing_symbol_kind, SymbolKind::Interface) {
                     if codebase.class_implements(existing_name.as_bytes(), fq_class_name.as_bytes()) {
-                        types_to_remove.push(existing_name);
+                        types_to_remove.push(index);
                         continue;
                     }
 
@@ -1212,11 +1194,10 @@ fn scrape_type_properties(
             }
         }
 
-        combination.value_types.insert(atomic.get_id(), atomic);
-
-        for type_key in types_to_remove {
-            combination.value_types.remove(&type_key);
+        for index in types_to_remove.into_iter().rev() {
+            combination.named_objects.remove(index);
         }
+        combination.named_objects.push(atomic);
 
         return;
     }
@@ -1618,74 +1599,6 @@ fn flush_sealed_keyed_arrays_into_combination(
     }
 
     combination.sealed_arrays = put_back;
-}
-
-const COMBINER_KEY_STACK_BUF: usize = 256;
-
-fn get_combiner_key(name: Word, type_params: &[TUnion], codebase: &CodebaseMetadata) -> Word {
-    let covariants = if let Some(class_like_metadata) = codebase.get_class_like(name.as_bytes()) {
-        &class_like_metadata.template_variance
-    } else {
-        return name;
-    };
-
-    let name_str = name.as_bytes();
-    let mut estimated_len = name_str.len() + 2; // name + "<" + ">"
-    for (i, tunion) in type_params.iter().enumerate() {
-        if i > 0 {
-            estimated_len += 2; // ", "
-        }
-
-        if covariants.get(i) == Some(&Variance::Covariant) {
-            estimated_len += 1; // "*"
-        } else {
-            estimated_len += tunion.get_id().len();
-        }
-    }
-
-    if estimated_len <= COMBINER_KEY_STACK_BUF {
-        let mut buffer = [0u8; COMBINER_KEY_STACK_BUF];
-        let mut pos = 0;
-
-        buffer[pos..pos + name_str.len()].copy_from_slice(name_str);
-        pos += name_str.len();
-
-        buffer[pos] = b'<';
-        pos += 1;
-
-        for (i, tunion) in type_params.iter().enumerate() {
-            if i > 0 {
-                buffer[pos..pos + 2].copy_from_slice(b", ");
-                pos += 2;
-            }
-            let id_word = if covariants.get(i) == Some(&Variance::Covariant) { None } else { Some(tunion.get_id()) };
-            let param_bytes = id_word.as_ref().map_or(b"*".as_slice(), Word::as_bytes);
-            let need = param_bytes.len();
-            buffer[pos..pos + need].copy_from_slice(param_bytes);
-            pos += need;
-        }
-
-        buffer[pos] = b'>';
-        pos += 1;
-
-        return word(&buffer[..pos]);
-    }
-
-    let mut result: Vec<u8> = Vec::with_capacity(estimated_len);
-    result.extend_from_slice(name_str);
-    result.push(b'<');
-    for (i, tunion) in type_params.iter().enumerate() {
-        if i > 0 {
-            result.extend_from_slice(b", ");
-        }
-        if covariants.get(i) == Some(&Variance::Covariant) {
-            result.push(b'*');
-        } else {
-            result.extend_from_slice(tunion.get_id().as_bytes());
-        }
-    }
-    result.push(b'>');
-    word(&result)
 }
 
 fn combine_string_scalars(left: TString, right: TString, codebase: &CodebaseMetadata) -> Option<TString> {

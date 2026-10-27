@@ -232,7 +232,7 @@ pub(crate) fn after_expression<A: Arena>(
             let class = context.codebase.get_class_like_by_name(name);
             class.filter(|class| class.kind.is_class() && class.template_types.is_empty()
                 && context.codebase.get_declaring_method(name.as_bytes(), b"__construct").is_none())
-                .map(|_| Rc::new(wrap_atomic(TAtomic::Object(TObject::Named(TNamedObject::new(name))))))
+                .map(|_| Rc::new(wrap_atomic(TAtomic::Object(TObject::Named(TNamedObject::new(name).with_is_exact(true))))))
         }
         _ => artifacts.get_rc_native_expression_type(expression).cloned(),
     };
