@@ -649,7 +649,10 @@ fn get_reference_class_name(
 
 fn get_array_key_from_shape_key(key: &ShapeKey<'_>, scope: &NamespaceScope, classname: Option<Word>) -> ArrayKey {
     match key {
-        ShapeKey::String { value, .. } => ArrayKey::from_string(word(value)),
+        ShapeKey::String { value, raw, .. } => {
+            let value = raw.map_or_else(|| word(value), |raw| word(pun_tokens::php_compat::unescape_phpdoc_string(raw)));
+            ArrayKey::from_string(value)
+        }
         ShapeKey::Integer { value, .. } => ArrayKey::Integer(*value),
         ShapeKey::ClassLikeConstant { class_name, constant_name, .. } => {
             let class_like_name = if class_name.value.eq_ignore_ascii_case(b"self")

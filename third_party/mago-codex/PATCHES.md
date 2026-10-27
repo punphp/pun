@@ -823,3 +823,33 @@ and refinement. A fresh PHPStan 2.3.1 capture matches every existing fixture exp
 The separate Pun `Type::Object` conversion still loses exactness, as documented above. A supplementary
 named-argument probe for assigned exact constructor unions produces two extra subtype warnings at
 that boundary. This order repair preserves codex exactness but does not add a collector-specific fix.
+
+## Decoded quoted PHPDoc array keys
+
+`builder::get_array_key_from_shape_key()` decodes a quoted shape key before interning its bytes
+and applying the existing `ArrayKey::from_string()` numeric conversion. The maintained PHPDoc syntax
+crate retains the complete quoted token in `ShapeKey::String::raw`; bare identifiers and float
+spellings have no quoted token and retain their existing values. The conversion shares
+`pun_tokens::php_compat::unescape_phpdoc_string()` with scalar PHPDoc literals, preserving PHPStan's
+single-quote and double-quote escape grammars without guessing the discarded quote kind.
+
+The source contracts are PHPStan 2.3.1's bundled `TypeParser::parseArrayShapeKey()` and
+`StringUnescaper::unescapeString()`, followed by `TypeNodeResolver::resolveArrayShapeOffsetType()`.
+Public controls in `pun-analyse/tests/duplicate_array_keys.rs` check scanner metadata as hexadecimal
+key/value pairs and compare complete duplicate-key diagnostics with a fresh PHPStan capture.
+The fixtures cover distinct binary bytes, single versus double quotes, decoded-equal overwrites,
+numeric and leading-zero keys, bare keys, scanner `key-of`, inline `@var`, and nested literal spreads.
+Object-shape property construction, class identities, source-comment decoding, and general inference
+are unchanged. Bare float spellings are parser controls, not PHPStan grammar parity claims.
+
+Fresh profiles from the complete 12-test duplicate-key suite cover **7/7 changed production
+executable lines**: three in this helper and all four PHPDoc syntax constructors, without exclusions.
+The syntax changes are compared with the published 1.57.0 source rather than counting the unchanged
+vendored source as new code. Instrument `mago-prelude` too: its shared generic instantiations otherwise
+leave parser methods without execution counts in the report.
+
+```sh
+cargo llvm-cov --dep-coverage mago-codex,mago-analyzer,mago-phpdoc-syntax,mago-prelude \
+	--no-report -p punphp-analyse --test duplicate_array_keys
+cargo llvm-cov report --no-default-ignore-filename-regex --lcov
+```

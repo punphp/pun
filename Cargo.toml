@@ -1,12 +1,13 @@
 [workspace]
 resolver = "3"
 members = ["crates/*"]
-exclude = ["third_party/mago-analyzer", "third_party/mago-codex", "third_party/mago-syntax"]
+exclude = ["third_party/mago-analyzer", "third_party/mago-codex", "third_party/mago-syntax", "third_party/mago-phpdoc-syntax"]
 
 [patch.crates-io]
 mago-analyzer = { path = "third_party/mago-analyzer" }
 mago-codex = { path = "third_party/mago-codex" }
 mago-syntax = { path = "third_party/mago-syntax" }
+mago-phpdoc-syntax = { path = "third_party/mago-phpdoc-syntax" }
 
 [workspace.package]
 version = "0.0.1"

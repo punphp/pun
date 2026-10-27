@@ -137,3 +137,144 @@ fn unpacking_sealed_shapes_with_bleeding_edge() {
 fn unpacking_before_php81_renumbers_string_keys() {
     unpacking("unpacking-php80", 80000, true);
 }
+
+#[test]
+fn quoted_shapes_reach_duplicate_keys_through_scanning_and_inline_annotations() {
+    let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/duplicate-array-keys");
+    let oracle: Value =
+        serde_json::from_slice(&std::fs::read(root.join("expected-quoted-shapes.json")).unwrap())
+            .unwrap();
+    let mut project = Project::new(vec![root.join("quoted-shapes.php")], Vec::new());
+    project.php_version = 80400;
+    project.bleeding_edge = true;
+    check(project, &oracle["errors"]);
+}
+
+#[test]
+fn scanned_quoted_shape_keys_and_overwrites_match_phpstan_hex_values() {
+    use std::borrow::Cow;
+
+    use mago_allocator::LocalArena;
+    use mago_codex::scanner::scan_program;
+    use mago_codex::ttype::atomic::TAtomic;
+    use mago_codex::ttype::atomic::array::TArray;
+    use mago_codex::ttype::atomic::array::key::ArrayKey;
+    use mago_database::file::File;
+    use mago_names::resolver::NameResolver;
+    use mago_syntax::parser::parse_file;
+    use serde_json::json;
+
+    let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/duplicate-array-keys");
+    let oracle: Value =
+        serde_json::from_slice(&std::fs::read(root.join("expected-quoted-shapes.json")).unwrap())
+            .unwrap();
+    let file = File::ephemeral(
+        Cow::Borrowed(b"quoted-shapes.php"),
+        Cow::Owned(std::fs::read(root.join("quoted-shapes.php")).unwrap()),
+    );
+    let arena = LocalArena::new();
+    let program = parse_file(&arena, &file);
+    assert!(!program.has_errors());
+    let names = NameResolver::new(&arena).resolve(program);
+    let codebase = scan_program(&arena, &file, program, &names, Default::default());
+    let hex = |bytes: &[u8]| {
+        bytes
+            .iter()
+            .map(|byte| format!("{byte:02x}"))
+            .collect::<String>()
+    };
+    for (name, expected) in oracle["shapes"].as_object().unwrap() {
+        let function = codebase
+            .get_function(format!("QuotedShapeKeys\\{name}").as_bytes())
+            .unwrap();
+        let ty = &function.parameters[0]
+            .type_metadata
+            .as_ref()
+            .unwrap()
+            .type_union;
+        let [TAtomic::Array(TArray::Keyed(shape))] = ty.types.as_ref() else {
+            panic!("expected one keyed shape for {name}: {ty:?}");
+        };
+        let mut entries: Vec<_> = shape
+            .known_items
+            .as_ref()
+            .unwrap()
+            .iter()
+            .map(|(key, (_, value))| {
+                let key = match key {
+                    ArrayKey::Integer(value) => json!(["int", value]),
+                    ArrayKey::String(value) => json!(["string", hex(value.as_bytes())]),
+                    _ => panic!("unexpected shape key: {key:?}"),
+                };
+                let value = value.get_single_literal_string_value().unwrap();
+                json!([key, hex(value)])
+            })
+            .collect();
+        entries.sort_by_key(Value::to_string);
+        let mut expected = expected.as_array().unwrap().clone();
+        expected.sort_by_key(Value::to_string);
+        assert_eq!(entries, expected, "{name}");
+    }
+}
+
+#[test]
+fn bare_shape_spellings_and_object_properties_keep_their_existing_values() {
+    use std::borrow::Cow;
+
+    use mago_allocator::LocalArena;
+    use mago_codex::scanner::scan_program;
+    use mago_codex::ttype::atomic::TAtomic;
+    use mago_codex::ttype::atomic::array::TArray;
+    use mago_codex::ttype::atomic::object::TObject;
+    use mago_database::file::File;
+    use mago_names::resolver::NameResolver;
+    use mago_syntax::parser::parse_file;
+
+    // The parser's bare-float extension is not a PHPStan shape-key grammar claim.
+    // Object property names retain their prior undecoded interior; only array semantics change.
+    let source = br#"<?php
+/** @param array{1.5: int, +1.5: int, -1.5: int, name: int} $shape */
+function bare(array $shape): void {}
+/** @param object{"\x61": int} $shape */
+function objectShape(object $shape): void {}
+"#;
+    let file = File::ephemeral(Cow::Borrowed(b"bare.php"), Cow::Borrowed(source));
+    let arena = LocalArena::new();
+    let program = parse_file(&arena, &file);
+    assert!(!program.has_errors());
+    let names = NameResolver::new(&arena).resolve(program);
+    let codebase = scan_program(&arena, &file, program, &names, Default::default());
+    let bare = codebase.get_function(b"bare").unwrap();
+    let bare = &bare.parameters[0]
+        .type_metadata
+        .as_ref()
+        .unwrap()
+        .type_union;
+    let [TAtomic::Array(TArray::Keyed(shape))] = bare.types.as_ref() else {
+        panic!("expected keyed shape: {bare:?}");
+    };
+    let keys: Vec<_> = shape
+        .known_items
+        .as_ref()
+        .unwrap()
+        .keys()
+        .map(|key| key.get_string().unwrap())
+        .collect();
+    assert_eq!(keys, [b"+1.5".as_slice(), b"-1.5", b"1.5", b"name"]);
+
+    let object = codebase.get_function(b"objectshape").unwrap();
+    let object = &object.parameters[0]
+        .type_metadata
+        .as_ref()
+        .unwrap()
+        .type_union;
+    let [TAtomic::Object(TObject::WithProperties(object))] = object.types.as_ref() else {
+        panic!("expected object shape: {object:?}");
+    };
+    let keys: Vec<_> = object
+        .known_properties
+        .keys()
+        .map(|key| key.as_bytes())
+        .collect();
+    assert_eq!(keys, [br"\x61".as_slice()]);
+}
