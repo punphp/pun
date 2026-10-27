@@ -24,8 +24,7 @@
 //! `CoversAnnotationWithValueToAttributeRector`, and Pun/decl7 the tags Pun's doc reader does not follow (`@_1`, a
 //! `})` in a text line, a `__remove_array__` value) for the annotation rules that Rector changes there.
 //! Pun/mixed7 (`TestWithToDataProviderRector`) has a tab where the new provider method goes, and Pun/declined7
-//! (`CoversAnnotationWithValueToAttributeRector`) a doc whose lines do not start with `*`, a `@covers` value over two
-//! lines, and an anonymous class with a modifier, which php-parser prints before the new attribute.
+//! (`CoversAnnotationWithValueToAttributeRector`) a doc comment inside `new ... class`, which Pun does not read.
 //! Pun/decl11 (`CoversAnnotationWithValueToAttributeRector`) has the same in a trait's methods (a tag Pun's doc
 //! reader does not follow, a tab) and in an anonymous class's method.
 //!

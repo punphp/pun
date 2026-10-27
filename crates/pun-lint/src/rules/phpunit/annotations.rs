@@ -98,11 +98,11 @@ impl<'s> Annotated<'s> {
                     edits.push(Edit::new(Span::new(doc.start, after), ""));
                 }
             } else {
-                lead = format!("{}{nl}", reformatted(new_doc)?.replace('\n', &nl));
+                lead = format!("{}{nl}", reformatted(new_doc).replace('\n', &nl));
                 at_start = doc.start;
             }
         } else if let Some(new_doc) = new_doc.filter(|d| !d.is_empty() && self.doc.is_none()) {
-            lead = format!("{}{nl}", reformatted(new_doc)?.replace('\n', &nl));
+            lead = format!("{}{nl}", reformatted(new_doc).replace('\n', &nl));
         }
         match self.last_attribute_end {
             Some(end) if !groups.is_empty() => {
@@ -120,13 +120,13 @@ impl<'s> Annotated<'s> {
 }
 
 /// php-parser's `Comment::getReformattedText()` for a doc comment (`\r\n` read as `\n`), as far as Pun follows it:
-/// one line as it is; lines after the first that each start with white space and a `*` get ` *` for it; or, with
-/// `/**` alone on the first line, the white space before the closing `*/` comes off the start of every line. `None`
-/// for its last kind (`/* text` on the first line, lines lined up under it).
-pub(crate) fn reformatted(text: &str) -> Option<String> {
+/// one line as it is; lines after the first that each start with white space and a `*` get ` *` for it; with `/**`
+/// alone on the first line, the white space before the closing `*/` comes off the start of every line; else every
+/// line loses the white space the least indented line after the first has beyond the width of the opening `/** `.
+pub(crate) fn reformatted(text: &str) -> String {
     let text = &text.replace("\r\n", "\n");
     let Some((first, _)) = text.split_once('\n') else {
-        return Some(text.to_string());
+        return text.to_string();
     };
     if starred(text) {
         // `preg_replace('(^\s+\*)m', ' *', $text)`: at each line start, white space (newlines too) and a `*`
@@ -145,7 +145,7 @@ pub(crate) fn reformatted(text: &str) -> Option<String> {
             out.push(b[i]);
             i += 1;
         }
-        return Some(String::from_utf8(out).unwrap());
+        return String::from_utf8(out).unwrap();
     }
     // `preg_match('(^/\*\*?\s*\n)')`: nothing but white space after the opening on the first line
     let opens_alone = first
@@ -154,30 +154,63 @@ pub(crate) fn reformatted(text: &str) -> Option<String> {
         .is_some_and(|r| r.bytes().all(is_pcre_space));
     // `preg_match('(\n(\s*)\*/$)', ..., $matches)`: from the leftmost line break that only white space separates
     // from the closing `*/`
-    let body = text.strip_suffix("*/")?;
+    let body = text.strip_suffix("*/").unwrap_or(text);
     let run = &body[body
         .trim_end_matches(|c: char| c.is_ascii() && is_pcre_space(c as u8))
         .len()..];
-    let prefix = &run[run.find('\n')? + 1..];
-    if !opens_alone {
-        return None;
+    if let (true, Some(at)) = (opens_alone, run.find('\n')) {
+        // `preg_replace('(^' . preg_quote($matches[1]) . ')m', '', $text)`
+        let prefix = run[at + 1..].as_bytes();
+        return strip_line_starts(text, |rest| {
+            if rest.starts_with(prefix) {
+                prefix.len()
+            } else {
+                0
+            }
+        });
     }
-    // `preg_replace('(^' . preg_quote($prefix) . ')m', '', $text)`
+    // `(^/\*\*?\s*(?!\s))`: the opening and the white space after it, against the shortest white space a line after
+    // the first starts with; `preg_replace('(^\s{' . $removeLen . '})m', '', $text)`, a no-op for a length below 1
+    let b = text.as_bytes();
+    let opening = 2 + usize::from(b.get(2) == Some(&b'*'));
+    let opening = opening
+        + b[opening..]
+            .iter()
+            .take_while(|c| is_pcre_space(**c))
+            .count();
+    let shortest = text[first.len() + 1..]
+        .split('\n')
+        .map(|line| line.bytes().take_while(|c| is_pcre_space(*c)).count())
+        .min()
+        .unwrap();
+    let remove = shortest.saturating_sub(opening);
+    strip_line_starts(text, |rest| {
+        if remove > 0 && rest.len() >= remove && rest[..remove].iter().all(|c| is_pcre_space(*c)) {
+            remove
+        } else {
+            0
+        }
+    })
+}
+
+/// `preg_replace('(^...)m', '', $text)`: at each line start, the length `matched` gives the text there comes off
+/// (`0` for no match); a match may take line breaks with it.
+fn strip_line_starts(text: &str, matched: impl Fn(&[u8]) -> usize) -> String {
     let b = text.as_bytes();
     let mut out = Vec::with_capacity(b.len());
     let mut i = 0;
     while i < b.len() {
-        if !prefix.is_empty()
-            && (i == 0 || b[i - 1] == b'\n')
-            && b[i..].starts_with(prefix.as_bytes())
-        {
-            i += prefix.len();
-            continue;
+        if i == 0 || b[i - 1] == b'\n' {
+            let n = matched(&b[i..]);
+            if n > 0 {
+                i += n;
+                continue;
+            }
         }
         out.push(b[i]);
         i += 1;
     }
-    Some(String::from_utf8(out).unwrap())
+    String::from_utf8(out).unwrap()
 }
 
 /// PCRE's `\s`.
