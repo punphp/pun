@@ -12725,7 +12725,7 @@
         "rules": [
           "lint/phpunit/prefer-mock-intersection-return"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {

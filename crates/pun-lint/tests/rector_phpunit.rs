@@ -536,3 +536,11 @@ fn inline_stub_property_to_create_stub_method_call() {
 fn mock_object_var_to_stub() {
     check(PreferStubVar, "MockObjectVarToStubRector");
 }
+
+#[test]
+fn change_mock_object_return_union_to_intersection() {
+    check(
+        PreferMockIntersectionReturn,
+        "ChangeMockObjectReturnUnionToIntersectionRector",
+    );
+}

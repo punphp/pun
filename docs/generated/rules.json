@@ -12128,7 +12128,7 @@
         "ChangeMockObjectReturnUnionToIntersectionRector",
         "Rector\\PHPUnit\\CodeQuality\\Rector\\ClassMethod\\ChangeMockObjectReturnUnionToIntersectionRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/phpunit/prefer-named-data-provider-keys",
