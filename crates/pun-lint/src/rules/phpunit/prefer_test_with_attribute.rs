@@ -199,7 +199,7 @@ pub(super) fn print_float(value: f64) -> String {
 
 /// PHP's `sprintf('%.{precision}G', $value)`: the shorter of `%E` (a whole mantissa with `.0`, the exponent without
 /// padding) and `%F`, without trailing zeros.
-fn php_g(value: f64, precision: usize) -> String {
+pub(super) fn php_g(value: f64, precision: usize) -> String {
     if value == 0.0 {
         return if value.is_sign_negative() { "-0" } else { "0" }.to_string();
     }

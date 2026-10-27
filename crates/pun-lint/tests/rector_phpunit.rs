@@ -6,7 +6,7 @@
 //!
 //! rector-phpunit runs its fixtures with phpunit/phpunit 13.2 installed, so every fixture here sees the PHPUnit
 //! classes of tests/phpunit-stubs (PHPUnit 13.2.6's files with empty method bodies, scripts/export-phpunit-stub.php)
-//! beside its Source/ classes, and the Symfony classes of rector-phpunit's own stubs/ (tests/rector-phpunit-stubs,
+//! beside its Source/ classes, and the Symfony and Behat classes of rector-phpunit's own stubs/ (tests/rector-phpunit-stubs,
 //! verbatim at e68085d).
 
 use std::path::{Path, PathBuf};
@@ -604,5 +604,13 @@ fn narrow_unused_set_up_defined_property() {
     check(
         PreferLocalOverSetupProperty,
         "NarrowUnusedSetUpDefinedPropertyRector",
+    );
+}
+
+#[test]
+fn scalar_argument_to_expected_param_type() {
+    check(
+        RequireExactTestArgumentType,
+        "ScalarArgumentToExpectedParamTypeRector",
     );
 }

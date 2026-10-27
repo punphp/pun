@@ -77,6 +77,7 @@ mod prefer_ticket_attribute;
 mod prefer_with_is_instance_of;
 mod ptype;
 mod require_data_provider_newlines;
+mod require_exact_test_argument_type;
 mod require_final_test_case;
 mod require_mock_expects;
 mod require_strict_types_in_tests;
@@ -150,6 +151,7 @@ pub use prefer_this_call::PreferThisCall;
 pub use prefer_ticket_attribute::PreferTicketAttribute;
 pub use prefer_with_is_instance_of::PreferWithIsInstanceOf;
 pub use require_data_provider_newlines::RequireDataProviderNewlines;
+pub use require_exact_test_argument_type::RequireExactTestArgumentType;
 pub use require_final_test_case::RequireFinalTestCase;
 pub use require_mock_expects::RequireMockExpects;
 pub use require_strict_types_in_tests::RequireStrictTypesInTests;
@@ -244,6 +246,7 @@ pub(crate) fn all() -> Vec<Box<dyn Rule>> {
         Box::new(AddDataProviderAllowMockObjects),
         Box::new(AddParamTypeDepends),
         Box::new(PreferLocalOverSetupProperty),
+        Box::new(RequireExactTestArgumentType),
     ]
 }
 
