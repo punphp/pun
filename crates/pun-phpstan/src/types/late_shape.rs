@@ -169,7 +169,7 @@ impl LateArrayShape {
             .map(|(k, v, o)| {
                 let key = k.as_ref().map(|k| match k {
                     Type::Template(t) => t.name.clone(),
-                    Type::ConstString(s) if is_valid_identifier(s) => s.clone(),
+                    Type::ConstString(s) if is_valid_identifier(&String::from_utf8_lossy(s)) => String::from_utf8_lossy(s).into_owned(),
                     _ => node(k, ast),
                 });
                 format!(

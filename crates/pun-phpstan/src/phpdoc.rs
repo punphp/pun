@@ -272,7 +272,7 @@ pub enum ShapeKey {
 pub enum ConstExpr {
     Int(String),
     Float(String),
-    Str(String),
+    Str(Vec<u8>),
     True,
     False,
     Null,
@@ -1009,7 +1009,7 @@ fn parse_shape_item(t: &mut Tokens) -> R<ShapeItem> {
 fn parse_shape_key(t: &mut Tokens) -> R<ShapeKey> {
     let key = match t.kind() {
         Tok::Int => ShapeKey::Int(t.value().replace('_', "")),
-        Tok::SingleQuoted | Tok::DoubleQuoted => ShapeKey::Str(unescape(t.value())),
+        Tok::SingleQuoted | Tok::DoubleQuoted => ShapeKey::Str(String::from_utf8_lossy(&unescape(t.value())).into_owned()),
         _ => {
             let ident = t.value().to_string();
             t.consume(Tok::Ident)?;
@@ -1036,7 +1036,7 @@ fn parse_object_shape(t: &mut Tokens) -> R<Node> {
         t.skip_nl();
         let key = match t.kind() {
             Tok::SingleQuoted | Tok::DoubleQuoted => {
-                let key = unescape(t.value());
+                let key = String::from_utf8_lossy(&unescape(t.value())).into_owned();
                 t.next();
                 key
             }
@@ -1075,13 +1075,13 @@ fn parse_const_expr(t: &mut Tokens, doctrine: bool) -> R<ConstExpr> {
         Tok::DoctrineString if doctrine => {
             let value = t.value().to_string();
             t.next();
-            return Ok(ConstExpr::Str(value));
+            return Ok(ConstExpr::Str(value.into_bytes()));
         }
         Tok::SingleQuoted if doctrine => return Err(t.error(Tok::DoubleQuoted, None)),
         Tok::DoubleQuoted if doctrine => {
             let value = t.value().to_string();
             t.next();
-            return Ok(ConstExpr::Str(doctrine_string(t, value)));
+            return Ok(ConstExpr::Str(doctrine_string(t, value).into_bytes()));
         }
         Tok::SingleQuoted | Tok::DoubleQuoted => {
             let value = unescape(t.value());
@@ -1844,76 +1844,6 @@ fn parse_doctrine_array_key(t: &mut Tokens) -> R<()> {
 }
 
 /// `StringUnescaper::unescapeString()`.
-fn unescape(quoted: &str) -> String {
-    let inner = &quoted[1..quoted.len() - 1];
-    if quoted.starts_with('\'') {
-        return inner.replace("\\\\", "\\").replace("\\'", "'");
-    }
-    let s = inner.replace("\\\"", "\"");
-    let b = s.as_bytes();
-    let mut out = Vec::with_capacity(b.len());
-    let mut i = 0;
-    while i < b.len() {
-        if b[i] == b'\\' && i + 1 < b.len() {
-            let c = b[i + 1];
-            let simple = match c {
-                b'\\' => Some(b'\\'),
-                b'n' => Some(b'\n'),
-                b'r' => Some(b'\r'),
-                b't' => Some(b'\t'),
-                b'f' => Some(0x0c),
-                b'v' => Some(0x0b),
-                b'e' => Some(0x1b),
-                _ => None,
-            };
-            if let Some(byte) = simple {
-                out.push(byte);
-                i += 2;
-                continue;
-            }
-            let hex = |from: usize, max: usize| {
-                b[from..]
-                    .iter()
-                    .take(max)
-                    .take_while(|d| d.is_ascii_hexdigit())
-                    .count()
-            };
-            let digits =
-                |from: usize, len: usize| std::str::from_utf8(&b[from..from + len]).expect("ascii");
-            if matches!(c, b'x' | b'X') && hex(i + 2, 2) > 0 {
-                let len = hex(i + 2, 2);
-                out.push(u8::from_str_radix(digits(i + 2, len), 16).expect("hex"));
-                i += 2 + len;
-                continue;
-            }
-            if c == b'u' && b.get(i + 2) == Some(&b'{') {
-                let len = hex(i + 3, usize::MAX);
-                if len > 0 && b.get(i + 3 + len) == Some(&b'}') {
-                    let code = u32::from_str_radix(digits(i + 3, len), 16).unwrap_or(u32::MAX);
-                    let mut buf = [0; 4];
-                    out.extend_from_slice(
-                        char::from_u32(code)
-                            .unwrap_or('\u{fffd}')
-                            .encode_utf8(&mut buf)
-                            .as_bytes(),
-                    );
-                    i += 4 + len;
-                    continue;
-                }
-            }
-            let octal = b[i + 1..]
-                .iter()
-                .take(3)
-                .take_while(|d| (b'0'..=b'7').contains(d))
-                .count();
-            if octal > 0 {
-                out.push(u32::from_str_radix(digits(i + 1, octal), 8).expect("octal") as u8);
-                i += 1 + octal;
-                continue;
-            }
-        }
-        out.push(b[i]);
-        i += 1;
-    }
-    String::from_utf8_lossy(&out).into_owned()
+fn unescape(quoted: &str) -> Vec<u8> {
+    pun_tokens::php_compat::unescape_phpdoc_string(quoted.as_bytes())
 }

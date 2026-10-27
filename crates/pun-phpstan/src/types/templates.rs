@@ -258,7 +258,7 @@ fn generic(pattern: &Type, received: &Type) -> TemplateMap {
         Type::Closure(s) if let Type::Closure(theirs) = received => on_signature(s, theirs),
         Type::ClassString(Some(inner)) => {
             let object = match received {
-                Type::ConstString(class) => Type::Object(class.clone(), vec![]),
+                Type::ConstString(class) => Type::Object(String::from_utf8_lossy(class).into_owned(), vec![]),
                 Type::ClassString(Some(t)) => (**t).clone(),
                 r if r.is_class_string().yes() => {
                     let inner = match &**inner {

@@ -157,7 +157,7 @@ fn method(c: &Checker, ty: &Type, name: &[u8], counts: &params::Counts) -> Optio
 
 fn strings(ty: &Type) -> Vec<String> {
     match ty {
-        Type::ConstString(s) => vec![s.clone()],
+        Type::ConstString(s) => vec![String::from_utf8_lossy(s).into_owned()],
         Type::Union(ts) | Type::Benevolent(ts) => {
             let parts: Vec<_> = ts.iter().map(strings).collect();
             if parts.iter().any(Vec::is_empty) {
@@ -231,7 +231,7 @@ fn unpacked_names(ty: &Type, first: bool) -> Option<Vec<Option<String>>> {
         .filter_map(|i| {
             let key = &arrays[0].keys[i];
             let name = match key {
-                Type::ConstString(s) if arrays.iter().all(|a| a.keys[i] == *key) => Some(s.clone()),
+                Type::ConstString(s) if arrays.iter().all(|a| a.keys[i] == *key) => Some(String::from_utf8_lossy(s).into_owned()),
                 _ => None,
             };
             if name.is_none() && arrays.last().unwrap().optional.contains(&i) {

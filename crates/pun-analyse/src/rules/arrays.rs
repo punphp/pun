@@ -354,7 +354,7 @@ fn unpacked_keys(
     for key in keys {
         // ConstArray's key contract already guarantees a singleton constant string or integer.
         if keep_strings && let Type::ConstString(s) = key {
-            keys_out.push(Key::Str(s.as_bytes().to_vec()));
+            keys_out.push(Key::Str(s.clone()));
         } else {
             let index = next?;
             keys_out.push(Key::Int(index));
@@ -441,7 +441,7 @@ pub(super) fn key_type(
         }
         Expression::Literal(Literal::Float(f)) => Type::ConstFloat(f.value.0),
         Expression::Literal(Literal::String(s)) => {
-            Type::ConstString(String::from_utf8_lossy(s.value?).into_owned())
+            Type::ConstString(s.value?.to_vec())
         }
         Expression::Literal(Literal::True(_)) => Type::ConstBool(true),
         Expression::Literal(Literal::False(_)) => Type::ConstBool(false),
@@ -493,12 +493,12 @@ pub(super) fn key_type(
             };
             let (holder, late) = match unparenthesized(a.class) {
                 Expression::Identifier(id) => (
-                    Type::ConstString(String::from_utf8_lossy(names.get(id)).into_owned()),
+                    Type::ConstString(names.get(id).to_vec()),
                     false,
                 ),
-                Expression::Self_(_) => (Type::ConstString(c.display(context?)), false),
+                Expression::Self_(_) => (Type::ConstString(c.display(context?).into_bytes()), false),
                 Expression::Parent(_) => (
-                    Type::ConstString(declared::parent_name(c.codebase, context?)?),
+                    Type::ConstString(declared::parent_name(c.codebase, context?)?.into_bytes()),
                     false,
                 ),
                 Expression::Static(_) => (Type::Object(c.display(context?), vec![]), true),
@@ -535,7 +535,7 @@ fn signed(t: Type, negative: bool) -> Option<Type> {
             .map_or(Type::ConstFloat(-(i as f64)), Type::ConstInt),
         Type::ConstFloat(f) if negative => Type::ConstFloat(-f),
         Type::ConstInt(_) | Type::ConstFloat(_) => t,
-        Type::ConstString(s) => match numeric(&s) {
+        Type::ConstString(s) => match std::str::from_utf8(&s).ok().and_then(numeric) {
             Some(Value::Int(i)) => signed(Type::ConstInt(i), negative)?,
             Some(Value::Float(f)) => signed(Type::ConstFloat(f), negative)?,
             _ => return None,
@@ -555,7 +555,7 @@ fn signed(t: Type, negative: bool) -> Option<Type> {
 /// ClassConstFetchHandler: a constant class-string is exact, an object/generic class-string is late-bound.
 fn receiver_constant(c: &Checker, holder: &Type, name: &[u8], late: bool) -> Option<Type> {
     match holder {
-        Type::ConstString(class) => class_constant(c, class, name, false),
+        Type::ConstString(class) => class_constant(c, std::str::from_utf8(class).ok()?, name, false),
         Type::Object(class, _) | Type::Static(class, _) | Type::This(class) => {
             class_constant(c, class, name, late)
         }
@@ -675,7 +675,7 @@ pub(super) fn initializer_order(
             let key = keys.first().filter(|_| keys.len() == 1)?;
             let key = match key {
                 Key::Int(i) => Type::ConstInt(*i),
-                Key::Str(s) => Type::ConstString(String::from_utf8_lossy(s).into_owned()),
+                Key::Str(s) => Type::ConstString(s.to_vec()),
             };
             let old = actual.keys.iter().position(|k| k == &key)?;
             if let Some(slot) = order.iter().position(|i| *i == old) {
@@ -828,7 +828,7 @@ fn copied_key(c: &Checker, at: Span) -> Option<Type> {
 fn of_type(t: Type) -> Key {
     match t {
         Type::ConstInt(i) => Key::Int(i),
-        Type::ConstString(s) => Key::of_string(s.as_bytes()),
+        Type::ConstString(s) => Key::of_string(&s),
         Type::ConstBool(b) => Key::Int(i64::from(b)),
         _ => Key::Str(Vec::new()),
     }

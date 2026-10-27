@@ -554,3 +554,47 @@ threads in a private target directory:
 cargo llvm-cov --dep-coverage mago-codex,mago-analyzer --no-report -p punphp-analyse \
 	--test string_casing --test string_guarantees --test native_lane -- --test-threads=2
 ```
+
+## Decoded PHPDoc literal bytes
+
+`ttype/builder.rs` decodes a PHPDoc string literal before interning its semantic value.
+The PHPDoc parser retains the quoted source and its escapes. Previously, `"\xff"` became
+the four ASCII bytes `\xff`, not the single byte `ff`. That changed both `str_repeat`'s
+finite products and its aggregate byte budget.
+
+The conversion shares `pun_tokens::php_compat::unescape_phpdoc_string()` with Pun's PHPDoc
+resolver. That function ports PHPStan PhpDocParser's `StringUnescaper` using PCRE2 and
+preserves bytes through quote, hexadecimal, octal, and Unicode escapes. PHP source-string
+decoding is not interchangeable: PHPDoc accepts `\Xff`, retains `\$`, and permits surrogate
+and extended four-byte Unicode values. The codex manifest adds the existing base crate,
+not another literal store. Mago's versions and atomic types do not change.
+
+`crates/pun-analyse/tests/str_repeat.rs` compares complete diagnostics with PHPStan 2.3.1.
+Its byte fixture includes escaped PHPDoc union members with distinct invalid UTF-8 bytes,
+finite repetition below the budget, fallback at the aggregate boundary, and a later dump.
+The oracle script in `tests/fixtures/str-repeat/` regenerates the expectations.
+
+Pun's `ConstantStringType` representation also stores bytes, so the conversion from codex does
+not merge distinct invalid UTF-8 values. Switch comparisons preserve PHPStan's ASCII casing
+queries rather than comparing decoded Unicode text with the original bytes. The level-4 control
+keeps high bytes compatible with both casing accessories and rejects opposite-case ASCII letters.
+
+The isolated `str_repeat` slice matches all 132 captured diagnostics. Its 181 Analyzer controls
+and all 70 owning PHPStan tests pass. Fresh LLVM profiles cover **2/2 changed codex executable
+lines**, **55/55 shared decoder lines**, and **342/342 changed production lines** against
+`73ace689`, without exclusions. The runs use one Cargo job, one Rayon thread, and a private target.
+That original run had an unrelated `/a/SXr` Tokens failure. Main's `025e050f` fixes the conditional
+PCRE2 modifier contract; all nine Tokens compatibility controls pass in the replay below.
+
+The casing and repetition candidates are also verified together on `a147e34b`. Five fresh PHPStan
+captures match byte for byte: casing, repetition, literal bytes, never constructors, and never scopes.
+All 70 PHPStan tests, 212 Analyzer tests, 19 protocol tests, and the scoped invalid-binary-operation
+level gate pass. The Analyzer tests include the current native, callback, never identity, and call
+termination controls. The replay preserves main's never constructors, conversion, and evaluation
+facts rather than restoring older files.
+
+Fresh private profiles cover **75/75 changed codex production lines**, **55/55 shared decoder lines**,
+**441/441 combined production lines**, and **422/422 Rust test lines** against `a147e34b`, without
+exclusions. The runs use one Cargo job, one Rayon thread, and `CARGO_INCREMENTAL=0`. The raw LCOV
+comes from the actual replay's 55 test executables, including the maintained dependency's protocol
+tests. No earlier worktree's profiles or binaries contribute to this measurement.

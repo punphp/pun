@@ -490,7 +490,7 @@ fn global_type_aliases() {
 /// `ConstantStringType::isCallable()` of a project function's name: `ReflectionProvider::hasFunction()` answers it.
 #[test]
 fn project_function_names_are_callable() {
-    let callable = |s: &str| Type::ConstString(s.to_string()).is_callable();
+    let callable = |s: &str| Type::ConstString(s.as_bytes().to_vec()).is_callable();
     let provider = |name: &str| name == "PunProbe\\f";
     symbols::with_functions(&provider, || {
         assert!(callable("PunProbe\\f").yes());

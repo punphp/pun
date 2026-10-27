@@ -120,7 +120,7 @@ pub fn accepts_with(a: &Type, b: &Type, strict: bool, sm: StrictMixed) -> Tri {
         T::ClassString(Some(object)) => match b {
             T::ConstString(name) => {
                 if b.is_class_string().yes() {
-                    rec(object, &T::Object(name.clone(), vec![]))
+                    rec(object, &T::Object(String::from_utf8_lossy(name).into_owned(), vec![]))
                 } else {
                     Tri::No
                 }

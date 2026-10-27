@@ -624,7 +624,7 @@ impl<'a, 'arena> Checker<'a, 'arena> {
             TScalar::Float(_) => Type::Float,
             TScalar::String(s) => {
                 if let Some(TStringLiteral::Value(v)) = &s.literal {
-                    return Type::ConstString(text(v.as_bytes()));
+                    return Type::ConstString(v.as_bytes().to_vec());
                 }
                 let mut accessories = Vec::new();
                 if s.is_numeric {
@@ -666,7 +666,7 @@ impl<'a, 'arena> Checker<'a, 'arena> {
                 }
             }
             TScalar::ClassLikeString(c) => match c {
-                TClassLikeString::Literal { value } => Type::ConstString(self.reflected_name(value.as_bytes())),
+                TClassLikeString::Literal { value } => Type::ConstString(self.reflected_name(value.as_bytes()).into_bytes()),
                 TClassLikeString::OfType { constraint, .. } => {
                     Type::ClassString(Some(Box::new(self.atom(constraint))))
                 }
@@ -741,7 +741,7 @@ impl<'a, 'arena> Checker<'a, 'arena> {
     fn key(&self, k: &ArrayKey) -> Type {
         match k {
             ArrayKey::Integer(i) => Type::ConstInt(*i),
-            ArrayKey::String(s) => Type::ConstString(text(s.as_bytes())),
+            ArrayKey::String(s) => Type::ConstString(s.as_bytes().to_vec()),
             k => super::super::enums::constant_value(self, &k.to_atomic()).unwrap_or(Type::Error),
         }
     }
@@ -1063,12 +1063,12 @@ fn literal_elements<'e, 'arena>(mut e: &'e Expression<'arena>) -> Option<&'e Tok
 fn array_key(t: Type) -> Option<Type> {
     Some(match t {
         Type::ConstInt(_) => t,
-        Type::ConstString(s) => match s.parse::<i64>() {
-            Ok(i) if i.to_string() == s => Type::ConstInt(i),
+        Type::ConstString(s) => match std::str::from_utf8(&s).ok().and_then(|s| s.parse::<i64>().ok()) {
+            Some(i) if i.to_string().as_bytes() == s => Type::ConstInt(i),
             _ => Type::ConstString(s),
         },
         Type::ConstBool(b) => Type::ConstInt(i64::from(b)),
-        Type::Null => Type::ConstString(String::new()),
+        Type::Null => Type::ConstString(Vec::new()),
         Type::ConstFloat(f) if f >= i64::MIN as f64 && f < -(i64::MIN as f64) => Type::ConstInt(f.trunc() as i64),
         _ => return None,
     })

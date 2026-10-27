@@ -450,8 +450,8 @@ fn array_key(t: &Type) -> Type {
         Type::Mixed { .. } | Type::SubtractedMixed { .. } | Type::Error => Type::Benevolent(vec![Type::Int, Type::String]),
         Type::Conditional(conditional) => array_key(&conditional.resolve()),
         Type::OffsetAccess(on, index) => late_offset(on, index).map_or_else(|| array_key(&pun_phpstan::types::mixed()), |resolved| array_key(&resolved)),
-        Type::ConstString(s) if s.parse::<i64>().is_ok_and(|i| i.to_string() == *s) => {
-            Type::ConstInt(s.parse().expect("canonical integer"))
+        Type::ConstString(s) if std::str::from_utf8(s).ok().and_then(|s| s.parse::<i64>().ok()).is_some_and(|i| i.to_string().as_bytes() == s) => {
+            Type::ConstInt(std::str::from_utf8(s).unwrap().parse().expect("canonical integer"))
         }
         Type::ConstBool(b) => Type::ConstInt(i64::from(*b)),
         Type::Bool => union(vec![Type::ConstInt(0), Type::ConstInt(1)]),
@@ -467,7 +467,7 @@ fn array_key(t: &Type) -> Type {
             }
             Type::ConstInt(value as i64)
         }
-        Type::Null => Type::ConstString(String::new()),
+        Type::Null => Type::ConstString(Vec::new()),
         t => t.clone(),
     }
 }

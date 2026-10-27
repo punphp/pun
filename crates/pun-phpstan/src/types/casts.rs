@@ -36,7 +36,7 @@ pub fn cast_is_error(t: &Type, cast: Cast, sm: StrictMixed) -> bool {
         T::String | T::StringAcceptingStringable | T::StringNotAcceptingStringable | T::ClassString(_) => {
             cast == C::Number
         }
-        T::ConstString(v) => cast == C::Number && !is_numeric(v),
+        T::ConstString(v) => cast == C::Number && !std::str::from_utf8(v).is_ok_and(is_numeric),
         T::Resource => matches!(cast, C::Number | C::BitwiseNot),
         T::ObjectWithoutClass | T::ObjectShape(_) | T::Closure(_) | T::Callable(_) | T::Iterable(..) => true,
         T::Object(..) | T::EnumCase(..) => object(t, cast),

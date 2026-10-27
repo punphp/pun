@@ -133,18 +133,18 @@ fn acceptors(c: &Checker, t: &Type, source: Span, inaccessible: &mut Option<Stri
     };
     match t {
         Type::Closure(s) | Type::Callable(Some(s)) => Some(vec![of_signature(c, s, source)]),
-        Type::ConstString(s) => match s.split_once("::") {
+        Type::ConstString(s) => match std::str::from_utf8(s).ok()?.split_once("::") {
             Some((class, name)) => method(class, name, inaccessible),
-            None => c.function(s.as_bytes()).map(|(_, v)| v.all),
+            None => c.function(s).map(|(_, v)| v.all),
         },
         Type::ConstArray(a) if a.values.len() == 2 => {
             let class = match &a.values[0] {
-                Type::ConstString(s) => s.clone(),
+                Type::ConstString(s) => String::from_utf8_lossy(s).into_owned(),
                 Type::Object(n, _) | Type::Static(n, _) | Type::This(n) => n.clone(),
                 _ => return None,
             };
             let Type::ConstString(name) = &a.values[1] else { return None };
-            method(&class, name, inaccessible)
+            method(&class, &String::from_utf8_lossy(name), inaccessible)
         }
         Type::Object(n, _) | Type::Static(n, _) | Type::This(n) => method(n, "__invoke", inaccessible),
         Type::Union(ts) => ts.iter().map(|t| acceptors(c, t, source, inaccessible)).collect::<Option<Vec<Vec<_>>>>().map(|v| v.concat()),

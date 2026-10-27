@@ -20,6 +20,7 @@ use mago_codex::ttype::atomic::array::keyed::TKeyedArray;
 use mago_codex::ttype::atomic::array::list::TList;
 use mago_codex::ttype::atomic::callable::TCallable;
 use mago_codex::ttype::atomic::scalar::TScalar;
+use mago_codex::ttype::atomic::scalar::string::{TString, TStringCasing};
 use mago_codex::ttype::cast::cast_atomic_to_callable;
 use mago_codex::ttype::combiner::CombinerOptions;
 use mago_codex::ttype::comparator::{ComparisonResult, union_comparator};
@@ -61,7 +62,8 @@ pub(super) fn is_benevolent(t: &TUnion) -> bool {
 static META: ProviderMeta = ProviderMeta::new("pun", "pun", "PHPStan's dynamic return types");
 
 /// PHPStan 2.3.1's ArrayRandFunctionReturnTypeExtension, RandomIntFunctionReturnTypeExtension,
-/// ArraySliceFunctionReturnTypeExtension, StrlenFunctionReturnTypeExtension, the integer/IP filter extensions
+/// ArraySliceFunctionReturnTypeExtension, StrlenFunctionReturnTypeExtension, StrRepeatFunctionReturnTypeExtension,
+/// the integer/IP filter extensions
 /// and the array/list sliceArray methods.
 /// Mago 1.57's prelude only has a conditional generic return type: it neither slices shapes nor turns integer-keyed
 /// non-lists back into lists. Keep this in the production registry, so assignments and subsequent calls see it too.
@@ -83,6 +85,7 @@ impl FunctionReturnTypeProvider for BuiltinFunctions {
             b"mt_rand",
             b"random_int",
             b"strlen",
+            b"str_repeat",
             b"filter_input",
             b"filter_var",
         ])
@@ -93,6 +96,23 @@ impl FunctionReturnTypeProvider for BuiltinFunctions {
         context: &ProviderContext<'_, '_, '_>,
         invocation: &InvocationInfo<'_, '_, '_>,
     ) -> Option<TUnion> {
+        if invocation.function_name().eq_ignore_ascii_case("str_repeat") {
+            // Stored callable signatures do not run PHPStan's dynamic extension. Do not retain the
+            // prelude's conditional non-empty refinement on that separate reflection-only path either.
+            if !self.0.lock().unwrap().contains(&invocation.span()) {
+                return Some(mago_codex::ttype::get_string());
+            }
+            let (Some(input), Some(count)) = (
+                invocation.get_argument(0, &[b"string"]),
+                invocation.get_argument(1, &[b"times"]),
+            ) else {
+                return Some(mago_codex::ttype::get_string());
+            };
+            return Some(StrRepeat::return_type(
+                context.get_expression_type(input)?,
+                context.get_expression_type(count)?,
+            ));
+        }
         if invocation
             .function_name()
             .eq_ignore_ascii_case("filter_input")
@@ -667,6 +687,111 @@ impl FilterFunctions {
     }
 }
 
+/// PHPStan 2.3.1's StrRepeatFunctionReturnTypeExtension, in its branch order. The size budget is
+/// the sum of every constant input's byte length times one constant multiplier, strictly below 100.
+struct StrRepeat;
+
+impl StrRepeat {
+    fn return_type(input: &TUnion, count: &TUnion) -> TUnion {
+        if BuiltinFunctions::count_in_range(count, 0, Some(0)) {
+            return mago_codex::ttype::get_literal_string(mago_word::word(b""));
+        }
+        if BuiltinFunctions::count_in_range(count, i64::MIN, Some(0)) {
+            return get_never();
+        }
+        let strings = Self::strings(input, 0);
+        // TemplateConstantIntegerType inherits ConstantIntegerType; TemplateIntegerType does not.
+        let multiplier = count.get_single_literal_int_value().or_else(|| {
+            if let [TAtomic::GenericParameter(template)] = count.types.as_ref() {
+                template.constraint.get_single_literal_int_value()
+            } else {
+                None
+            }
+        });
+        if let (Some(multiplier), Some(strings)) = (multiplier, &strings) {
+            // PHP promotes overflowing integer arithmetic to float. A wider sum gives the same budget
+            // decision without overflow or allocating an oversized repetition (including huge counts).
+            let length: u128 = strings.iter()
+                .map(|string| string.as_bytes().len() as u128 * multiplier as u128).sum();
+            if length < 100 {
+                let mut values: Vec<_> = strings.iter().map(|string| {
+                    TString::known_literal(mago_word::word(&string.as_bytes().repeat(multiplier as usize)))
+                }).collect();
+                values.sort_unstable();
+                values.dedup();
+                return TUnion::from_vec(values.into_iter()
+                    .map(|string| TAtomic::Scalar(TScalar::String(string))).collect());
+            }
+        }
+        let positive = BuiltinFunctions::count_in_range(count, 1, None);
+        let nonempty = positive && Self::property(input, 0, TString::is_non_empty);
+        let truthy = nonempty && Self::property(input, 0, TString::is_truthy);
+        let literal = Self::property(input, 0, TString::is_literal_origin);
+        let numeric = literal && positive && Self::property(input, 0, |string| string.is_numeric)
+            && strings.as_ref().is_none_or(|strings| strings.iter().all(|string| {
+                // Upstream uses preg_match('#^[0-9]+$#'), not is_numeric(): signs, whitespace,
+                // decimal points and exponent markers must not acquire numeric-string. As upstream,
+                // `$` also permits one final newline; do not silently replace it with `\z`.
+                static DIGITS: std::sync::OnceLock<pcre2::bytes::Regex> = std::sync::OnceLock::new();
+                DIGITS.get_or_init(|| pcre2::bytes::Regex::new("^[0-9]+$").unwrap())
+                    .is_match(string.as_bytes()).unwrap()
+            }));
+        let lower = Self::property(input, 0, TString::is_lowercase);
+        let upper = Self::property(input, 0, TString::is_uppercase);
+        let casing = match (lower, upper) {
+            (true, true) => TStringCasing::Both,
+            (true, false) => TStringCasing::Lowercase,
+            (false, true) => TStringCasing::Uppercase,
+            (false, false) => TStringCasing::Unspecified,
+        };
+        TUnion::from_atomic(TAtomic::Scalar(TScalar::String(if literal {
+            TString::unspecified_literal_with_props(numeric, truthy, nonempty, false, casing)
+        } else {
+            TString::general_with_props(numeric, truthy, nonempty, false, casing)
+        })))
+    }
+
+    /// getConstantStrings is all-or-nothing for ordinary unions. Benevolent unions may omit
+    /// non-string members, but a general string still cancels extraction. A template of a constant
+    /// string template becomes TemplateStringType, whose inherited extraction is empty.
+    fn strings(input: &TUnion, depth: usize) -> Option<Vec<mago_word::Word>> {
+        let depth = if input.types.len() > 1 { 0 } else { depth };
+        let mut values = Vec::new();
+        for atomic in input.types.iter() {
+            match atomic {
+                TAtomic::GenericParameter(template) => {
+                    values.extend(Self::strings(&template.constraint, depth + 1)?);
+                }
+                TAtomic::Scalar(TScalar::String(string)) if depth <= 1 => {
+                    values.push(string.get_known_literal_atom()?);
+                }
+                TAtomic::Scalar(TScalar::ClassLikeString(string)) if depth <= 1 => {
+                    values.push(string.literal_value()?);
+                }
+                _ if is_benevolent(input) && !atomic.is_any_string() => {}
+                _ => return None,
+            }
+        }
+        (!values.is_empty()).then_some(values)
+    }
+
+    /// Queries inherited by the concrete template parent, with independent guarantees for each
+    /// union member. Unknown class-string values are truthy, but not literal or case-constrained.
+    fn property(input: &TUnion, depth: usize, query: fn(&TString) -> bool) -> bool {
+        let depth = if input.types.len() > 1 { 0 } else { depth };
+        input.types.iter().all(|atomic| match atomic {
+            TAtomic::GenericParameter(template) => Self::property(&template.constraint, depth + 1, query),
+            TAtomic::Scalar(TScalar::String(string)) => {
+                if depth > 1 && string.is_known_literal() { false } else { query(string) }
+            }
+            TAtomic::Scalar(TScalar::ClassLikeString(string)) if depth == 0 || (depth == 1 && string.is_literal()) => {
+                query(&string.literal_value().map_or_else(TString::truthy, TString::known_literal))
+            }
+            _ => false,
+        })
+    }
+}
+
 /// StrlenFunctionReturnTypeExtension: scalar *values* are cast, not their types' toString() results.
 /// In particular, a negative zero has length two, not the union of both zero signs' lengths.
 struct Strlen;
@@ -829,7 +954,8 @@ impl BuiltinFunctions {
                 }
             }
             _ => {
-                atomic.get_minimum_int_value().is_some_and(|n| n >= min)
+                (atomic.get_minimum_int_value().is_some_and(|n| n >= min)
+                    || (min == i64::MIN && matches!(atomic, TAtomic::Scalar(TScalar::Integer(_)))))
                     && max
                         .is_none_or(|max| atomic.get_maximum_int_value().is_some_and(|n| n <= max))
             }

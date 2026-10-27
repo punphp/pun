@@ -226,8 +226,8 @@ fn array_function(c: &Checker, value: &Expression, filter: bool) -> Option<(&'st
             Type::ConstBool(false),
             Type::ConstInt(0),
             Type::ConstFloat(0.0),
-            Type::ConstString(String::new()),
-            Type::ConstString("0".to_string()),
+            Type::ConstString(Vec::new()),
+            Type::ConstString(b"0".to_vec()),
             Type::ConstArray(Box::new(pun_phpstan::types::ConstArray::empty())),
         ]);
         let sup = is_super_type_of(&falsey, &t.iterable_value_type());

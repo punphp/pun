@@ -462,7 +462,11 @@ pub fn get_union_from_type(
         Type::UnspecifiedLiteralFloat(_) => get_unspecified_literal_float(),
         Type::LiteralFloat(lit) => get_literal_float(*lit.value),
         Type::LiteralInt(lit) => get_literal_int(lit.value as i64),
-        Type::LiteralString(lit) => get_literal_string(word(lit.value)),
+        Type::LiteralString(lit) => {
+            // PHPDoc's CST retains escapes; semantic literals must own the decoded PHP bytes,
+            // using PHPStan's escape grammar rather than PHP's different source-string grammar.
+            get_literal_string(word(pun_tokens::php_compat::unescape_phpdoc_string(lit.raw)))
+        }
         Type::Negated(negated) => match negated.operand {
             Type::LiteralInt(lit) => get_literal_int(-(lit.value as i64)),
             Type::LiteralFloat(lit) => get_literal_float(-(*lit.value)),

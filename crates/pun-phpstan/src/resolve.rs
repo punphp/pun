@@ -296,8 +296,8 @@ pub fn resolve_in(node: &Node, scope: &dyn Scope) -> Type {
                 return crate::types::LateArrayShape {
                     items: items.iter().map(|i| {
                         let key = i.key.as_ref().map(|k| match k {
-                            ShapeKey::Ident(n) => scope.template(n).filter(|t| matches!(t, Type::Template(_))).unwrap_or_else(|| Type::ConstString(n.clone())),
-                            ShapeKey::Str(n) => Type::ConstString(n.clone()),
+                            ShapeKey::Ident(n) => scope.template(n).filter(|t| matches!(t, Type::Template(_))).unwrap_or_else(|| Type::ConstString(n.as_bytes().to_vec())),
+                            ShapeKey::Str(n) => Type::ConstString(n.as_bytes().to_vec()),
                             ShapeKey::Int(n) => Type::ConstInt(int_value(n)),
                             ShapeKey::Fetch(c, n) => constant(&ConstExpr::Fetch(c.clone(), n.clone()), scope),
                         });
@@ -314,7 +314,7 @@ pub fn resolve_in(node: &Node, scope: &dyn Scope) -> Type {
             for item in items {
                 let key = item.key.as_ref().map(|k| match k {
                     ShapeKey::Int(i) => Type::ConstInt(int_value(i)),
-                    ShapeKey::Str(s) | ShapeKey::Ident(s) => Type::ConstString(s.clone()),
+                    ShapeKey::Str(s) | ShapeKey::Ident(s) => Type::ConstString(s.as_bytes().to_vec()),
                     ShapeKey::Fetch(class, name) => {
                         constant(&ConstExpr::Fetch(class.clone(), name.clone()), scope)
                     }
@@ -416,7 +416,7 @@ pub(crate) fn to_array_key(t: &Type) -> Type {
         },
         Type::Float => Type::Int,
         Type::Bool => Type::Union(vec![Type::ConstInt(0), Type::ConstInt(1)]),
-        Type::Null => Type::ConstString(String::new()),
+        Type::Null => Type::ConstString(Vec::new()),
         Type::ConstBool(b) => Type::ConstInt(*b as i64),
         // ObjectTypeTrait, ArrayTypeTrait, ResourceType, CallableType, IterableType, VoidType: an ErrorType (a mixed)
         Type::Void
@@ -432,8 +432,8 @@ pub(crate) fn to_array_key(t: &Type) -> Type {
         | Type::Array(..)
         | Type::ConstArray(_)
         | Type::Iterable(..) => Type::Error,
-        Type::ConstString(s) if s.parse::<i64>().is_ok_and(|i| i.to_string() == *s) => {
-            Type::ConstInt(s.parse().expect("int"))
+        Type::ConstString(s) if std::str::from_utf8(s).ok().and_then(|s| s.parse::<i64>().ok()).is_some_and(|i| i.to_string().as_bytes() == s) => {
+            Type::ConstInt(std::str::from_utf8(s).unwrap().parse().expect("int"))
         }
         _ => t.clone(),
     }
@@ -636,7 +636,7 @@ fn generic(base: &str, args: &[Node], scope: &dyn Scope) -> Type {
     {
         return Type::Template(Box::new(Template {
             name: name.clone(),
-            scope: described.clone(),
+            scope: String::from_utf8_lossy(described).into_owned(),
             bound: resolve_in(bound, scope),
             default: rest.first().map(|d| resolve_in(d, scope)),
             argument: false,
@@ -1001,7 +1001,7 @@ fn constant(c: &ConstExpr, scope: &dyn Scope) -> Type {
                         vec![],
                     ))));
                 }
-                return Type::ConstString(reflection.name.clone());
+                return Type::ConstString(reflection.name.as_bytes().to_vec());
             }
             let matches = |constant: &str| match name.split_once('*') {
                 None => constant == name,

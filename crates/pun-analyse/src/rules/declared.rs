@@ -1703,7 +1703,7 @@ fn serialize(t: &Type) -> String {
             Type::Template(tpl) => {
                 let mut args = vec![
                     Type::Object(tpl.name.clone(), vec![]),
-                    Type::ConstString(tpl.scope.clone()),
+                    Type::ConstString(tpl.scope.as_bytes().to_vec()),
                     encode(&tpl.bound),
                 ];
                 args.extend(tpl.default.as_ref().map(encode));

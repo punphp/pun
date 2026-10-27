@@ -12,6 +12,74 @@ pub fn strtolower(s: &[u8]) -> Vec<u8> {
     s.to_ascii_lowercase()
 }
 
+/// PHPStan PhpDocParser's StringUnescaper, including non-UTF-8 byte and codepoint escapes.
+/// `quoted` is a complete single- or double-quoted PHPDoc literal, not a PHP source literal.
+pub fn unescape_phpdoc_string(quoted: &[u8]) -> Vec<u8> {
+    let inner = &quoted[1..quoted.len() - 1];
+    if quoted[0] == b'\'' {
+        return str_replace(b"\\'", b"'", &str_replace(b"\\\\", b"\\", inner));
+    }
+    let inner = str_replace(b"\\\"", b"\"", inner);
+    static ESCAPES: std::sync::OnceLock<pcre2::bytes::Regex> = std::sync::OnceLock::new();
+    let escapes = ESCAPES.get_or_init(|| {
+        pcre2::bytes::Regex::new(
+            r#"\\([\\nrtfve]|[xX][0-9a-fA-F]{1,2}|[0-7]{1,3}|u\{([0-9a-fA-F]+)\})"#,
+        )
+        .unwrap()
+    });
+    let mut out = Vec::with_capacity(inner.len());
+    let mut from = 0;
+    for found in escapes.captures_iter(&inner) {
+        let found = found.unwrap();
+        let full = found.get(0).unwrap();
+        let escape = found.get(1).unwrap().as_bytes();
+        out.extend_from_slice(&inner[from..full.start()]);
+        match escape {
+            b"\\" => out.push(b'\\'),
+            b"n" => out.push(b'\n'),
+            b"r" => out.push(b'\r'),
+            b"t" => out.push(b'\t'),
+            b"f" => out.push(0x0c),
+            b"v" => out.push(0x0b),
+            b"e" => out.push(0x1b),
+            hex if matches!(hex[0], b'x' | b'X') => {
+                out.push(u8::from_str_radix(std::str::from_utf8(&hex[1..]).unwrap(), 16).unwrap());
+            }
+            unicode if unicode[0] == b'u' => {
+                let code = u32::from_str_radix(
+                    std::str::from_utf8(found.get(2).unwrap().as_bytes()).unwrap(),
+                    16,
+                )
+                .unwrap_or(u32::MAX);
+                // PHPStan permits surrogate and extended four-byte codepoints, unlike Rust char.
+                match code {
+                    0..=0x7f => out.push(code as u8),
+                    0x80..=0x7ff => out
+                        .extend_from_slice(&[(code >> 6) as u8 + 0xc0, (code & 0x3f) as u8 + 0x80]),
+                    0x800..=0xffff => out.extend_from_slice(&[
+                        (code >> 12) as u8 + 0xe0,
+                        ((code >> 6) & 0x3f) as u8 + 0x80,
+                        (code & 0x3f) as u8 + 0x80,
+                    ]),
+                    0x10000..=0x1fffff => out.extend_from_slice(&[
+                        (code >> 18) as u8 + 0xf0,
+                        ((code >> 12) & 0x3f) as u8 + 0x80,
+                        ((code >> 6) & 0x3f) as u8 + 0x80,
+                        (code & 0x3f) as u8 + 0x80,
+                    ]),
+                    _ => out.extend_from_slice("�".as_bytes()),
+                }
+            }
+            octal => {
+                out.push(u32::from_str_radix(std::str::from_utf8(octal).unwrap(), 8).unwrap() as u8)
+            }
+        }
+        from = full.end();
+    }
+    out.extend_from_slice(&inner[from..]);
+    out
+}
+
 /// `mb_strtolower($s)` (UTF-8): full Unicode lowercasing, with each maximal invalid UTF-8 subpart replaced by `?`.
 pub fn mb_strtolower(s: &[u8]) -> Vec<u8> {
     mb_convert_case(s, str::to_lowercase)

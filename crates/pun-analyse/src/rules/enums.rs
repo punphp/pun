@@ -161,7 +161,7 @@ pub fn sanity<'arena>(c: &mut Checker<'_, 'arena>, e: &Enum<'arena>) {
         // getConstantScalarValues(): the int or string the case has
         let key = match &t {
             Type::ConstInt(i) => Some(i.to_string()),
-            Type::ConstString(s) => Some(s.clone()),
+            Type::ConstString(s) => Some(String::from_utf8_lossy(s).into_owned()),
             _ => None,
         };
         if let Some(key) = key.filter(|_| is_super_type_of(&scalar_type, &t).yes()) {
@@ -253,10 +253,10 @@ fn constant(c: &Checker, a: &TAtomic, value_of: bool, depth: usize) -> Option<Ty
             literal: Some(TStringLiteral::Value(v)),
             ..
         })) => Some(Type::ConstString(
-            String::from_utf8_lossy(v.as_bytes()).into_owned(),
+            v.as_bytes().to_vec(),
         )),
         TAtomic::Scalar(TScalar::ClassLikeString(TClassLikeString::Literal { value })) => Some(
-            Type::ConstString(String::from_utf8_lossy(value.as_bytes()).into_owned()),
+            Type::ConstString(value.as_bytes().to_vec()),
         ),
         TAtomic::Scalar(TScalar::Bool(b)) => b.value.map(Type::ConstBool),
         TAtomic::Null => Some(Type::Null),

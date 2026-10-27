@@ -674,7 +674,7 @@ fn unpacked_types(ty: &Type) -> Option<Vec<(Option<String>, Type)>> {
     Some((0..count).filter_map(|i| {
         let key = &arrays[0].keys[i];
         let name = match key {
-            Type::ConstString(s) if arrays.iter().all(|a| a.keys[i] == *key) => Some(s.clone()),
+            Type::ConstString(s) if arrays.iter().all(|a| a.keys[i] == *key) => Some(String::from_utf8_lossy(s).into_owned()),
             _ => None,
         };
         if name.is_none() && arrays.last().unwrap().optional.contains(&i) {

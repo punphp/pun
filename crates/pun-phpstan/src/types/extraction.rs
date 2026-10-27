@@ -4,7 +4,7 @@ use super::*;
 
 impl Type {
     /// `getConstantStrings()`: template subclasses inherit extraction from their concrete parent.
-    pub fn constant_strings(&self) -> Vec<String> {
+    pub fn constant_strings(&self) -> Vec<Vec<u8>> {
         match self.unreasoned() {
             Type::ConstString(s) => vec![s.clone()],
             Type::Template(template) => {

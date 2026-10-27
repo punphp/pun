@@ -94,7 +94,7 @@ fn number(t: &Type) -> f64 {
     match t {
         Type::ConstInt(i) => *i as f64,
         Type::ConstFloat(f) => *f,
-        Type::ConstString(s) => s.trim().parse().unwrap_or(0.0),
+        Type::ConstString(s) => std::str::from_utf8(s).ok().and_then(|s| s.trim().parse().ok()).unwrap_or(0.0),
         Type::ConstBool(b) => f64::from(u8::from(*b)),
         _ => 0.0,
     }

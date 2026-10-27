@@ -1087,7 +1087,7 @@ fn finite(c: &Checker, t: &Type) -> Vec<Type> {
 /// `getConstantStrings()`
 fn constant_strings(t: &Type) -> Vec<String> {
     match t {
-        Type::ConstString(s) => vec![s.clone()],
+        Type::ConstString(s) => vec![String::from_utf8_lossy(s).into_owned()],
         Type::Union(ts) => ts.iter().map(constant_strings).try_fold(Vec::new(), |mut all, s| {
             (!s.is_empty()).then(|| {
                 all.extend(s);
@@ -1214,19 +1214,19 @@ impl Checker<'_, '_> {
 
     fn method_exists(&self, object: Type, method: Type) -> Option<bool> {
         if let Type::ConstString(class) = &object
-            && self.codebase.get_class_like(class.as_bytes()).is_none()
+            && self.codebase.get_class_like(class).is_none()
         {
             return Some(false);
         }
         let Type::ConstString(method) = method else { return None };
         let object = match object {
-            Type::ConstString(class) => Type::Object(class, Vec::new()),
+            Type::ConstString(class) => Type::Object(String::from_utf8_lossy(&class).into_owned(), Vec::new()),
             t => t,
         };
         // ponytail: a generic class-string's object (`class-string<T>&literal-string`) is not decided, Mago's
         // class-string types lose it
         let found: Vec<_> =
-            object.object_class_names().iter().map(|class| self.object_has_method(class, &method)).collect();
+            object.object_class_names().iter().map(|class| self.object_has_method(class, &String::from_utf8_lossy(&method))).collect();
         match extreme(found.iter().map(|f| f.0)) {
             Tri::Yes => found.iter().all(|f| f.1).then_some(true),
             Tri::No => Some(false),
@@ -1238,6 +1238,7 @@ impl Checker<'_, '_> {
     /// isn't native (an object shape's, an `@property` tag's) narrows the call instead.
     fn property_exists(&self, object: Type, property: Type) -> Option<bool> {
         let Type::ConstString(property) = property else { return None };
+        let property = String::from_utf8_lossy(&property);
         if property.is_empty() {
             return None;
         }
@@ -1432,7 +1433,7 @@ fn numeric(s: &str) -> bool {
 /// `isString()->yes() && isNumericString()->no()`.
 fn non_numeric_string(t: &Type) -> bool {
     match t {
-        Type::ConstString(s) => !numeric(s),
+        Type::ConstString(s) => !std::str::from_utf8(s).is_ok_and(numeric),
         Type::Union(ts) => ts.iter().all(non_numeric_string),
         _ => false,
     }
@@ -1443,27 +1444,27 @@ fn loose_scalars(a: &Type, b: &Type) -> bool {
     let truthy = |t: &Type| match t {
         Type::ConstInt(i) => *i != 0,
         Type::ConstFloat(f) => *f != 0.0,
-        Type::ConstString(s) => !s.is_empty() && s != "0",
+        Type::ConstString(s) => !s.is_empty() && s.as_slice() != b"0",
         Type::ConstBool(b) => *b,
         _ => false,
     };
     let number = |t: &Type| match t {
         Type::ConstInt(i) => Some(*i as f64),
         Type::ConstFloat(f) => Some(*f),
-        Type::ConstString(s) if numeric(s) => s.trim_matches([' ', '\t', '\n', '\r', '\x0b', '\x0c']).parse().ok(),
+        Type::ConstString(s) if std::str::from_utf8(s).is_ok_and(numeric) => std::str::from_utf8(s).ok()?.trim_matches([' ', '\t', '\n', '\r', '\x0b', '\x0c']).parse().ok(),
         _ => None,
     };
     let string = |t: &Type| match t {
         Type::ConstString(s) => s.clone(),
-        Type::ConstInt(i) => i.to_string(),
-        t => float_to_string(number(t).unwrap_or_default()),
+        Type::ConstInt(i) => i.to_string().into_bytes(),
+        t => float_to_string(number(t).unwrap_or_default()).into_bytes(),
     };
     match (a, b) {
         (Type::Null, Type::Null) => true,
         (Type::ConstBool(_), _) | (_, Type::ConstBool(_)) => truthy(a) == truthy(b),
         (Type::Null, Type::ConstString(s)) | (Type::ConstString(s), Type::Null) => s.is_empty(),
         (Type::Null, t) | (t, Type::Null) => !truthy(t),
-        (Type::ConstString(x), Type::ConstString(y)) if !(numeric(x) && numeric(y)) => x == y,
+        (Type::ConstString(x), Type::ConstString(y)) if !(std::str::from_utf8(x).is_ok_and(numeric) && std::str::from_utf8(y).is_ok_and(numeric)) => x == y,
         _ => match (number(a), number(b)) {
             (Some(x), Some(y)) => x == y,
             _ => string(a) == string(b),
@@ -1540,8 +1541,8 @@ fn loose(a: &Type, b: &Type) -> Tri {
                     }
                 }
                 Accessory::NumericString | Accessory::DecimalIntString { inverse: false } => *b == Type::Null || non_numeric_string(b),
-                Accessory::LowercaseString => matches!(b, Type::ConstString(s) if s.to_lowercase() != *s && !numeric(s)),
-                Accessory::UppercaseString => matches!(b, Type::ConstString(s) if s.to_uppercase() != *s && !numeric(s)),
+                Accessory::LowercaseString => matches!(b, Type::ConstString(s) if s.to_ascii_lowercase() != *s && !std::str::from_utf8(s).is_ok_and(numeric)),
+                Accessory::UppercaseString => matches!(b, Type::ConstString(s) if s.to_ascii_uppercase() != *s && !std::str::from_utf8(s).is_ok_and(numeric)),
                 Accessory::NonEmptyArray => empty_array(b),
                 _ => false,
             };

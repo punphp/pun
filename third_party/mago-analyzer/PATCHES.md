@@ -1971,3 +1971,11 @@ cargo llvm-cov --manifest-path third_party/mago-analyzer/Cargo.toml --dep-covera
 
 Coverage is the intersection of changed lines against `19a99280` and LLVM's executable-line records.
 The reports use `llvm-cov export` directly because cargo-llvm-cov's dependency report filters out path dependencies.
+
+The combined casing and `str_repeat` replay on `a147e34b` preserves the current NeverKind conversion
+and separate call-termination facts. The current native-lane replay, inspection, convergence, never,
+and callback controls pass in the 212-test Analyzer selection. All 19 protocol-module tests pass,
+including the new casing tags and rejection of protocol 2.0. This replay does not rerun the complete
+standalone engine suite described above. Fresh private profiles cover **16/16 changed analyzer
+production lines**, **441/441 combined production lines**, and **422/422 Rust test lines** against
+`a147e34b`, without exclusions, using one Cargo job, one Rayon thread, and `CARGO_INCREMENTAL=0`.

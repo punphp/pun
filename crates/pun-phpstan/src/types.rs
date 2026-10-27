@@ -242,7 +242,8 @@ pub enum Type {
     Float,
     ConstFloat(f64),
     String,
-    ConstString(String),
+    /// PHP's ConstantStringType owns bytes, not a UTF-8 text value.
+    ConstString(Vec<u8>),
     ClassString(Option<Box<Type>>),
     /// `__stringAndStringable` (`StringAlwaysAcceptingObjectWithToStringType`)
     StringAcceptingStringable,
@@ -526,7 +527,12 @@ impl Type {
             | Type::Accessory(Accessory::NonEmptyString | Accessory::NonFalsyString | Accessory::LiteralString) => {
                 Tri::Maybe
             }
-            Type::ConstString(s) => Tri::from(symbols::lookup(s).is_some()),
+            Type::ConstString(s) => Tri::from(
+                std::str::from_utf8(s)
+                    .ok()
+                    .and_then(symbols::lookup)
+                    .is_some(),
+            ),
             _ => Tri::No,
         })
     }
@@ -717,7 +723,7 @@ impl Type {
     fn is_non_falsy_string(&self) -> Tri {
         self.query_c(&|t| match t {
             Type::Accessory(Accessory::NonFalsyString) => Tri::Yes,
-            Type::ConstString(s) => Tri::from(!s.is_empty() && s != "0"),
+            Type::ConstString(s) => Tri::from(!s.is_empty() && s.as_slice() != b"0"),
             Type::ClassString(_) => Tri::Yes,
             Type::String
             | Type::StringAcceptingStringable
@@ -731,7 +737,12 @@ impl Type {
         self.query(&|t| match t {
             Type::Accessory(Accessory::NumericString)
             | Type::Accessory(Accessory::DecimalIntString { inverse: false }) => Tri::Yes,
-            Type::ConstString(s) => Tri::from(crate::value::numeric(s).is_some()),
+            Type::ConstString(s) => Tri::from(
+                std::str::from_utf8(s)
+                    .ok()
+                    .and_then(crate::value::numeric)
+                    .is_some(),
+            ),
             Type::ClassString(_) => Tri::No,
             Type::String
             | Type::StringAcceptingStringable
@@ -745,7 +756,12 @@ impl Type {
     fn is_decimal_int_string(&self) -> Tri {
         self.query(&|t| match t {
             Type::Accessory(Accessory::DecimalIntString { inverse }) => Tri::from(!inverse),
-            Type::ConstString(s) => Tri::from(s.parse::<i64>().is_ok_and(|i| i.to_string() == *s)),
+            Type::ConstString(s) => Tri::from(
+                std::str::from_utf8(s)
+                    .ok()
+                    .and_then(|s| s.parse::<i64>().ok())
+                    .is_some_and(|i| i.to_string().as_bytes() == s),
+            ),
             Type::String
             | Type::StringAcceptingStringable
             | Type::StringNotAcceptingStringable
@@ -1029,10 +1045,24 @@ impl Type {
             Type::ConstString(s) => level.handle3(
                 || "string".into(),
                 || {
-                    if symbols::lookup(s).is_some_and(|c| c.name == *s) {
+                    if std::str::from_utf8(s)
+                        .ok()
+                        .and_then(symbols::lookup)
+                        .is_some_and(|c| c.name.as_bytes() == s)
+                    {
                         export_string(s)
                     } else {
-                        export_string(&crate::schema::truncate(s, 20, "…"))
+                        match std::str::from_utf8(s) {
+                            Ok(s) => export_string(crate::schema::truncate(s, 20, "…").as_bytes()),
+                            Err(_) if String::from_utf8_lossy(s).chars().count() <= 20 => {
+                                export_string(s)
+                            }
+                            // Nette's UTF-8 regexp runs only when truncation is necessary. PHPStan
+                            // catches that failure and appends an ellipsis after twenty original bytes.
+                            Err(_) => {
+                                export_string(&[&s[..s.len().min(20)], "…".as_bytes()].concat())
+                            }
+                        }
                     }
                 },
                 || export_string(s),
@@ -1380,7 +1410,9 @@ fn is_instance_of(class: &str, target: &str) -> Tri {
 }
 
 /// `ConstantStringType::isCallable()`: a function's name, or `Class::method`.
-fn string_is_callable(s: &str) -> Tri {
+fn string_is_callable(bytes: &[u8]) -> Tri {
+    let s = String::from_utf8_lossy(bytes);
+    let s = s.as_ref();
     if s.is_empty() {
         return Tri::No;
     }
@@ -1444,28 +1476,59 @@ pub fn float_to_string(f: f64) -> String {
 }
 
 /// `ConstantStringType::export()`
-fn export_string(value: &str) -> String {
-    if value.bytes().any(|b| b < 0x20) {
-        let mut out = String::from("\"");
-        for c in value.chars() {
-            match c {
-                '\\' => out.push_str("\\\\"),
-                '"' => out.push_str("\\\""),
-                '\n' => out.push_str("\\n"),
-                '\t' => out.push_str("\\t"),
-                '\r' => out.push_str("\\r"),
-                '\x0b' => out.push_str("\\v"),
-                '\x0c' => out.push_str("\\f"),
-                '\x07' => out.push_str("\\a"),
-                '\x08' => out.push_str("\\b"),
-                c if (c as u32) < 0x20 => out.push_str(&format!("\\{:03o}", c as u32)),
-                c => out.push(c),
+fn export_string(value: &[u8]) -> String {
+    let double = value.iter().any(|b| *b < 0x20);
+    let quote = if double { b'"' } else { b'\'' };
+    let mut out = vec![quote];
+    for &byte in value {
+        match byte {
+            b'\\' => out.extend_from_slice(b"\\\\"),
+            b if b == quote => out.extend_from_slice(&[b'\\', b]),
+            b'\n' if double => out.extend_from_slice(b"\\n"),
+            b'\t' if double => out.extend_from_slice(b"\\t"),
+            b'\r' if double => out.extend_from_slice(b"\\r"),
+            0x0b if double => out.extend_from_slice(b"\\v"),
+            0x0c if double => out.extend_from_slice(b"\\f"),
+            0x07 if double => out.extend_from_slice(b"\\a"),
+            0x08 if double => out.extend_from_slice(b"\\b"),
+            b if b < 0x20 => out.extend_from_slice(format!("\\{b:03o}").as_bytes()),
+            b => out.push(b),
+        }
+    }
+    out.push(quote);
+    // Only diagnostic presentation needs UTF-8; type identity, queries and extraction retain bytes.
+    // json_encode(JSON_INVALID_UTF8_SUBSTITUTE) groups malformed sequences like php_next_utf8_char,
+    // not Rust's UTF-8 decoder: a surrogate or overlong three-byte sequence gets one replacement.
+    let mut display = String::new();
+    let mut bytes = out.as_slice();
+    while !bytes.is_empty() {
+        match std::str::from_utf8(bytes) {
+            Ok(valid) => {
+                display.push_str(valid);
+                break;
+            }
+            Err(error) => {
+                let valid = error.valid_up_to();
+                display.push_str(std::str::from_utf8(&bytes[..valid]).unwrap());
+                bytes = &bytes[valid..];
+                let width = match bytes[0] {
+                    0xc2..=0xdf => 2,
+                    0xe0..=0xef => 3,
+                    0xf0..=0xf4 => 4,
+                    _ => 1,
+                };
+                let consumed = 1 + bytes
+                    .iter()
+                    .skip(1)
+                    .take(width - 1)
+                    .take_while(|&&byte| !(byte < 0x80 || (0xc2..=0xf4).contains(&byte)))
+                    .count();
+                display.push('�');
+                bytes = &bytes[consumed..];
             }
         }
-        out.push('"');
-        return out;
     }
-    format!("'{}'", value.replace('\\', "\\\\").replace('\'', "\\'"))
+    display
 }
 
 /// `UnionTypeHelper::sortTypes()`
@@ -1537,7 +1600,12 @@ fn compare_in_union(a: &Type, b: &Type) -> Ordering {
         }
         (Type::IntRange(..), Type::Int | Type::ConstInt(_)) => return Ordering::Greater,
         (Type::Int | Type::ConstInt(_), Type::IntRange(..)) => return Ordering::Less,
-        (Type::ConstString(x), Type::ConstString(y)) => return compare_strings(x, y),
+        (Type::ConstString(x), Type::ConstString(y)) => {
+            return x
+                .to_ascii_lowercase()
+                .cmp(&y.to_ascii_lowercase())
+                .then_with(|| x.cmp(y));
+        }
         _ => {}
     }
     let callable = |t: &Type| matches!(t, Type::Callable(_) | Type::Closure(_));
@@ -1842,11 +1910,18 @@ pub fn to_phpdoc(t: &Type) -> String {
         {
             to_phpdoc(&intersect(types.iter().filter(|t| !matches!(t, Type::Accessory(Accessory::HasOffsetValue(..)))).cloned().collect()))
         }
-        Type::Mixed { .. } | Type::StrictMixed | Type::SubtractedMixed { .. } | Type::Error => "mixed".to_string(),
+        Type::Mixed { .. } | Type::StrictMixed | Type::SubtractedMixed { .. } | Type::Error => {
+            "mixed".to_string()
+        }
         Type::Never(_) => "never".to_string(),
         Type::ConstInt(i) => i.to_string(),
         Type::ConstFloat(f) => float_to_string(*f),
-        Type::ConstString(s) => format!("'{}'", s.replace('\\', "\\\\").replace('\'', "\\'")),
+        Type::ConstString(s) => format!(
+            "'{}'",
+            String::from_utf8_lossy(s)
+                .replace('\\', "\\\\")
+                .replace('\'', "\\'")
+        ),
         Type::IntRange(min, max) => format!(
             "int<{}, {}>",
             min.map_or("min".to_string(), |v| v.to_string()),
@@ -2056,12 +2131,21 @@ impl ConstArray {
             return None;
         }
         let methods: Vec<&str> = match &self.values[1] {
-            Type::ConstString(m) => vec![m.as_str()],
-            Type::Union(ts) => ts.iter().map(|t| if let Type::ConstString(m) = t { Some(m.as_str()) } else { None }).collect::<Option<_>>()?,
+            Type::ConstString(m) => vec![std::str::from_utf8(m).ok()?],
+            Type::Union(ts) => ts
+                .iter()
+                .map(|t| {
+                    if let Type::ConstString(m) = t {
+                        std::str::from_utf8(m).ok()
+                    } else {
+                        None
+                    }
+                })
+                .collect::<Option<_>>()?,
             _ => return None,
         };
         match &self.values[0] {
-            Type::ConstString(n) => Some((n, true, methods)),
+            Type::ConstString(n) => Some((std::str::from_utf8(n).ok()?, true, methods)),
             Type::Object(n, _) | Type::Static(n, _) | Type::This(n) => Some((n, false, methods)),
             _ => None,
         }
@@ -2205,10 +2289,16 @@ impl ConstArray {
                 values_only = false;
             }
             let key = match key {
-                Type::ConstString(s) if s.contains('"') => format!("'{s}'"),
-                Type::ConstString(s) if s.contains('\'') => format!("\"{s}\""),
-                Type::ConstString(s) if !is_valid_identifier(s) => format!("'{s}'"),
-                Type::ConstString(s) => s.clone(),
+                Type::ConstString(s) if s.contains(&b'"') => {
+                    format!("'{}'", String::from_utf8_lossy(s))
+                }
+                Type::ConstString(s) if s.contains(&b'\'') => {
+                    format!("\"{}\"", String::from_utf8_lossy(s))
+                }
+                Type::ConstString(s) if !is_valid_identifier(&String::from_utf8_lossy(s)) => {
+                    format!("'{}'", String::from_utf8_lossy(s))
+                }
+                Type::ConstString(s) => String::from_utf8_lossy(s).into_owned(),
                 // the only other key type, a `ConstantIntegerType`
                 k => to_phpdoc(k),
             };
@@ -2266,7 +2356,9 @@ impl ConstArray {
                 values_only = false;
             }
             let key = match key {
-                Type::ConstString(s) if is_valid_identifier(s) => s.clone(),
+                Type::ConstString(s) if is_valid_identifier(&String::from_utf8_lossy(s)) => {
+                    String::from_utf8_lossy(s).into_owned()
+                }
                 key => to_phpdoc(key),
             };
             let value = to_phpdoc(&self.values[i]);
@@ -2570,7 +2662,7 @@ pub fn is_super_type_of(a: &Type, b: &Type) -> Tri {
             // the class named by the string against the generic type, its uncertainty dropped
             T::ClassString(Some(g)) if matches!(**g, T::Mixed { .. }) => Tri::Maybe,
             T::ClassString(Some(g)) => {
-                let named = T::Object(x.clone(), vec![]);
+                let named = T::Object(String::from_utf8_lossy(x).into_owned(), vec![]);
                 let r = match &**g {
                     T::Template(tpl) => is_super_type_of(&tpl.bound, &named),
                     T::Static(c, args) => is_super_type_of(&static_of(c, args), &named),
@@ -2578,9 +2670,14 @@ pub fn is_super_type_of(a: &Type, b: &Type) -> Tri {
                 };
                 if r.yes() { Tri::Maybe } else { Tri::No }
             }
-            T::ClassString(None) => Tri::from(symbols::lookup(x).is_some())
-                .and(Tri::Maybe)
-                .or(Tri::No),
+            T::ClassString(None) => Tri::from(
+                std::str::from_utf8(x)
+                    .ok()
+                    .and_then(symbols::lookup)
+                    .is_some(),
+            )
+            .and(Tri::Maybe)
+            .or(Tri::No),
             T::ConstString(y) => Tri::from(x == y),
             T::String | T::StringAcceptingStringable | T::StringNotAcceptingStringable => {
                 Tri::Maybe
@@ -2598,7 +2695,10 @@ pub fn is_super_type_of(a: &Type, b: &Type) -> Tri {
                     T::Template(t) => &t.bound,
                     g => g,
                 };
-                let r = is_super_type_of(g, &T::Object(s.clone(), vec![]));
+                let r = is_super_type_of(
+                    g,
+                    &T::Object(String::from_utf8_lossy(s).into_owned(), vec![]),
+                );
                 if b.is_class_string().yes() {
                     r
                 } else {
@@ -2847,9 +2947,17 @@ fn callable_signatures(b: &Type) -> Vec<Signature> {
     };
     let mut variants = match b {
         Type::Callable(Some(s)) | Type::Closure(s) => vec![(**s).clone()],
-        Type::ConstString(name) if let Some(f) = symbols::function(name) => of(f),
+        Type::ConstString(name)
+            if let Some(f) = std::str::from_utf8(name).ok().and_then(symbols::function) =>
+        {
+            of(f)
+        }
         // `'Class::method'`
-        Type::ConstString(name) => name.split_once("::").map(|(c, m)| method(c, m)).unwrap_or_default(),
+        Type::ConstString(name) => std::str::from_utf8(name)
+            .ok()
+            .and_then(|name| name.split_once("::"))
+            .map(|(c, m)| method(c, m))
+            .unwrap_or_default(),
         // `[class, 'method']` (`ConstantArrayType::getCallableParametersAcceptors()`)
         Type::ConstArray(a) => a
             .callable_parts()
@@ -3509,7 +3617,7 @@ fn compare_in_union_merge(a: &Type, b: &Type) -> Option<Merge> {
         return Some(Merge::A(intersect(case_accessories(a))));
     }
     if let Type::ConstString(s) = b
-        && s == "0"
+        && s.as_slice() == b"0"
         && let Some(t) = downgrade_non_falsy(a)
     {
         return Some(Merge::A(t));

@@ -458,6 +458,7 @@ pub(super) fn variable(c: &mut Checker, variable: &Variable) {
         let main = scope.main;
         let names: Vec<_> = names
             .into_iter()
+            .map(|name| String::from_utf8_lossy(&name).into_owned())
             .filter(|name| seen.insert(name.clone()))
             .map(|name| {
                 let certainty = scope.get(&name);
@@ -539,7 +540,7 @@ pub(super) fn compact(c: &mut Checker, call: &FunctionCall) {
 fn find_constant_strings(ty: &Type, out: &mut Vec<String>) {
     let strings = ty.constant_strings();
     if !strings.is_empty() {
-        out.extend(strings);
+        out.extend(strings.into_iter().map(|s| String::from_utf8_lossy(&s).into_owned()));
         return;
     }
     for array in ty.constant_arrays() {

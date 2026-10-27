@@ -1,0 +1,1058 @@
+[
+    [
+        "accessories.php",
+        19,
+        "phpstan.dumpType",
+        "Dumped type: string",
+        null,
+        false
+    ],
+    [
+        "accessories.php",
+        20,
+        "phpstan.dumpType",
+        "Dumped type: ''",
+        null,
+        false
+    ],
+    [
+        "accessories.php",
+        21,
+        "phpstan.dumpType",
+        "Dumped type: non-empty-string",
+        null,
+        false
+    ],
+    [
+        "accessories.php",
+        22,
+        "phpstan.dumpType",
+        "Dumped type: string",
+        null,
+        false
+    ],
+    [
+        "accessories.php",
+        23,
+        "phpstan.dumpType",
+        "Dumped type: non-falsy-string",
+        null,
+        false
+    ],
+    [
+        "accessories.php",
+        24,
+        "phpstan.dumpType",
+        "Dumped type: string",
+        null,
+        false
+    ],
+    [
+        "accessories.php",
+        25,
+        "phpstan.dumpType",
+        "Dumped type: non-empty-string",
+        null,
+        false
+    ],
+    [
+        "accessories.php",
+        26,
+        "phpstan.dumpType",
+        "Dumped type: string",
+        null,
+        false
+    ],
+    [
+        "accessories.php",
+        27,
+        "phpstan.dumpType",
+        "Dumped type: literal-string",
+        null,
+        false
+    ],
+    [
+        "accessories.php",
+        28,
+        "phpstan.dumpType",
+        "Dumped type: literal-string",
+        null,
+        false
+    ],
+    [
+        "accessories.php",
+        29,
+        "phpstan.dumpType",
+        "Dumped type: lowercase-string",
+        null,
+        false
+    ],
+    [
+        "accessories.php",
+        30,
+        "phpstan.dumpType",
+        "Dumped type: uppercase-string",
+        null,
+        false
+    ],
+    [
+        "accessories.php",
+        31,
+        "phpstan.dumpType",
+        "Dumped type: lowercase-string&uppercase-string",
+        null,
+        false
+    ],
+    [
+        "accessories.php",
+        32,
+        "phpstan.dumpType",
+        "Dumped type: literal-string&non-empty-string&numeric-string",
+        null,
+        false
+    ],
+    [
+        "accessories.php",
+        33,
+        "phpstan.dumpType",
+        "Dumped type: literal-string",
+        null,
+        false
+    ],
+    [
+        "accessories.php",
+        34,
+        "phpstan.dumpType",
+        "Dumped type: literal-string&lowercase-string&non-falsy-string&numeric-string&uppercase-string",
+        null,
+        false
+    ],
+    [
+        "accessories.php",
+        35,
+        "phpstan.dumpType",
+        "Dumped type: literal-string&lowercase-string&uppercase-string",
+        null,
+        false
+    ],
+    [
+        "accessories.php",
+        36,
+        "phpstan.dumpType",
+        "Dumped type: literal-string&lowercase-string&non-empty-string&numeric-string&uppercase-string",
+        null,
+        false
+    ],
+    [
+        "accessories.php",
+        37,
+        "phpstan.dumpType",
+        "Dumped type: literal-string&lowercase-string&uppercase-string",
+        null,
+        false
+    ],
+    [
+        "accessories.php",
+        38,
+        "phpstan.dumpType",
+        "Dumped type: literal-string&lowercase-string&non-falsy-string",
+        null,
+        false
+    ],
+    [
+        "accessories.php",
+        39,
+        "phpstan.dumpType",
+        "Dumped type: literal-string&non-falsy-string&uppercase-string",
+        null,
+        false
+    ],
+    [
+        "accessories.php",
+        40,
+        "phpstan.dumpType",
+        "Dumped type: literal-string&lowercase-string&non-falsy-string&uppercase-string",
+        null,
+        false
+    ],
+    [
+        "accessories.php",
+        41,
+        "phpstan.dumpType",
+        "Dumped type: literal-string&lowercase-string&non-falsy-string&uppercase-string",
+        null,
+        false
+    ],
+    [
+        "accessories.php",
+        42,
+        "phpstan.dumpType",
+        "Dumped type: literal-string&lowercase-string&non-falsy-string&uppercase-string",
+        null,
+        false
+    ],
+    [
+        "accessories.php",
+        43,
+        "phpstan.dumpType",
+        "Dumped type: 987",
+        null,
+        false
+    ],
+    [
+        "boundaries.php",
+        7,
+        "phpstan.dumpType",
+        "Dumped type: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'",
+        null,
+        false
+    ],
+    [
+        "boundaries.php",
+        8,
+        "phpstan.dumpType",
+        "Dumped type: literal-string&lowercase-string&non-falsy-string",
+        null,
+        false
+    ],
+    [
+        "boundaries.php",
+        9,
+        "phpstan.dumpType",
+        "Dumped type: literal-string&lowercase-string&non-falsy-string",
+        null,
+        false
+    ],
+    [
+        "boundaries.php",
+        10,
+        "phpstan.dumpType",
+        "Dumped type: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'|'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb'",
+        null,
+        false
+    ],
+    [
+        "boundaries.php",
+        11,
+        "phpstan.dumpType",
+        "Dumped type: literal-string&lowercase-string&non-falsy-string",
+        null,
+        false
+    ],
+    [
+        "boundaries.php",
+        12,
+        "phpstan.dumpType",
+        "Dumped type: 'ababababababababababababababababababababababababababababababababab'|'ccccccccccccccccccccccccccccccccc'",
+        null,
+        false
+    ],
+    [
+        "boundaries.php",
+        13,
+        "phpstan.dumpType",
+        "Dumped type: literal-string&lowercase-string&non-falsy-string",
+        null,
+        false
+    ],
+    [
+        "boundaries.php",
+        14,
+        "phpstan.dumpType",
+        "Dumped type: '\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9\u00e9'",
+        null,
+        false
+    ],
+    [
+        "boundaries.php",
+        15,
+        "phpstan.dumpType",
+        "Dumped type: literal-string&lowercase-string&non-falsy-string&uppercase-string",
+        null,
+        false
+    ],
+    [
+        "boundaries.php",
+        16,
+        "phpstan.dumpType",
+        "Dumped type: '\u20ac\u20ac\u20ac\u20ac\u20ac\u20ac\u20ac\u20ac\u20ac\u20ac\u20ac\u20ac\u20ac\u20ac\u20ac\u20ac\u20ac\u20ac\u20ac\u20ac\u20ac\u20ac\u20ac\u20ac\u20ac\u20ac\u20ac\u20ac\u20ac\u20ac\u20ac\u20ac\u20ac'",
+        null,
+        false
+    ],
+    [
+        "boundaries.php",
+        17,
+        "phpstan.dumpType",
+        "Dumped type: literal-string&lowercase-string&non-falsy-string&uppercase-string",
+        null,
+        false
+    ],
+    [
+        "boundaries.php",
+        18,
+        "phpstan.dumpType",
+        "Dumped type: ''|'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'",
+        null,
+        false
+    ],
+    [
+        "boundaries.php",
+        19,
+        "phpstan.dumpType",
+        "Dumped type: literal-string&lowercase-string",
+        null,
+        false
+    ],
+    [
+        "boundaries.php",
+        20,
+        "phpstan.dumpType",
+        "Dumped type: literal-string&lowercase-string&non-falsy-string",
+        null,
+        false
+    ],
+    [
+        "boundaries.php",
+        21,
+        "phpstan.dumpType",
+        "Dumped type: literal-string&lowercase-string&non-falsy-string",
+        null,
+        false
+    ],
+    [
+        "boundaries.php",
+        22,
+        "phpstan.dumpType",
+        "Dumped type: literal-string&lowercase-string&non-empty-string&numeric-string&uppercase-string",
+        null,
+        false
+    ],
+    [
+        "boundaries.php",
+        23,
+        "phpstan.dumpType",
+        "Dumped type: literal-string&lowercase-string&non-falsy-string&numeric-string&uppercase-string",
+        null,
+        false
+    ],
+    [
+        "boundaries.php",
+        24,
+        "phpstan.dumpType",
+        "Dumped type: literal-string&lowercase-string&non-falsy-string",
+        null,
+        false
+    ],
+    [
+        "boundaries.php",
+        25,
+        "phpstan.dumpType",
+        "Dumped type: literal-string&non-falsy-string&uppercase-string",
+        null,
+        false
+    ],
+    [
+        "boundaries.php",
+        26,
+        "phpstan.dumpType",
+        "Dumped type: literal-string&lowercase-string&non-falsy-string&uppercase-string",
+        null,
+        false
+    ],
+    [
+        "boundaries.php",
+        27,
+        "phpstan.dumpType",
+        "Dumped type: literal-string&lowercase-string&non-falsy-string&uppercase-string",
+        null,
+        false
+    ],
+    [
+        "boundaries.php",
+        28,
+        "phpstan.dumpType",
+        "Dumped type: literal-string&lowercase-string&non-falsy-string&uppercase-string",
+        null,
+        false
+    ],
+    [
+        "boundaries.php",
+        29,
+        "phpstan.dumpType",
+        "Dumped type: literal-string&lowercase-string&non-falsy-string&numeric-string&uppercase-string",
+        null,
+        false
+    ],
+    [
+        "boundaries.php",
+        30,
+        "phpstan.dumpType",
+        "Dumped type: literal-string&lowercase-string&non-falsy-string&numeric-string&uppercase-string",
+        null,
+        false
+    ],
+    [
+        "boundaries.php",
+        31,
+        "phpstan.dumpType",
+        "Dumped type: ''",
+        null,
+        false
+    ],
+    [
+        "boundaries.php",
+        32,
+        "phpstan.dumpType",
+        "Dumped type: literal-string&lowercase-string&non-falsy-string",
+        null,
+        false
+    ],
+    [
+        "boundaries.php",
+        33,
+        "phpstan.dumpType",
+        "Dumped type: 987",
+        null,
+        false
+    ],
+    [
+        "byte-comparisons.php",
+        9,
+        "void.pure",
+        "Function RepeatByteComparisons\\comparisons() returns void but does not have any side effects.",
+        null,
+        true
+    ],
+    [
+        "byte-comparisons.php",
+        14,
+        "switch.alwaysFalse",
+        "Switch condition comparison between string and 'A' is always false.",
+        null,
+        true
+    ],
+    [
+        "byte-comparisons.php",
+        19,
+        "switch.alwaysFalse",
+        "Switch condition comparison between string and 'a' is always false.",
+        null,
+        true
+    ],
+    [
+        "byte-comparisons.php",
+        21,
+        "phpstan.dumpType",
+        "Dumped type: 987",
+        null,
+        false
+    ],
+    [
+        "bytes.php",
+        7,
+        "phpstan.dumpType",
+        "Dumped type: \"\\000\\n\\t\\r\\v\\f\\\\a\\\\b\\\\\\\"'\\000\\n\\t\\r\\v\\f\\\\a\\\\b\\\\\\\"'\"",
+        null,
+        false
+    ],
+    [
+        "bytes.php",
+        8,
+        "phpstan.dumpType",
+        "Dumped type: \"\\001\\037\\001\\037\"",
+        null,
+        false
+    ],
+    [
+        "bytes.php",
+        9,
+        "phpstan.dumpType",
+        "Dumped type: '\u00e9\u00e9'",
+        null,
+        false
+    ],
+    [
+        "bytes.php",
+        10,
+        "phpstan.dumpType",
+        "Dumped type: true",
+        null,
+        false
+    ],
+    [
+        "bytes.php",
+        11,
+        "phpstan.dumpType",
+        "Dumped type: false",
+        null,
+        false
+    ],
+    [
+        "bytes.php",
+        12,
+        "phpstan.dumpType",
+        "Dumped type: true",
+        null,
+        false
+    ],
+    [
+        "bytes.php",
+        13,
+        "phpstan.dumpType",
+        "Dumped type: false",
+        null,
+        false
+    ],
+    [
+        "bytes.php",
+        14,
+        "phpstan.dumpType",
+        "Dumped type: 99",
+        null,
+        false
+    ],
+    [
+        "bytes.php",
+        15,
+        "phpstan.dumpType",
+        "Dumped type: false",
+        null,
+        false
+    ],
+    [
+        "bytes.php",
+        16,
+        "phpstan.dumpType",
+        "Dumped type: literal-string&lowercase-string&non-falsy-string&uppercase-string",
+        null,
+        false
+    ],
+    [
+        "bytes.php",
+        17,
+        "phpstan.dumpType",
+        "Dumped type: '\u00c0\u00c0\u00c0\u00c0\u00c0\u00c0\u00c0\u00c0\u00c0\u00c0\u00c0\u00c0\u00c0\u00c0\u00c0\u00c0\u00c0\u00c0\u00c0\u00c0\u00c0\u00c0\u00c0\u00c0\u00c0\u00c0\u00c0\u00c0\u00c0\u00c0\u00c0\u00c0\u00c0\u00c0\u00c0\u00c0\u00c0\u00c0\u00c0\u00c0\u00c0\u00c0\u00c0\u00c0\u00c0\u00c0\u00c0\u00c0\u00c0'",
+        null,
+        false
+    ],
+    [
+        "bytes.php",
+        18,
+        "phpstan.dumpType",
+        "Dumped type: literal-string&lowercase-string&non-falsy-string&uppercase-string",
+        null,
+        false
+    ],
+    [
+        "bytes.php",
+        19,
+        "phpstan.dumpType",
+        "Dumped type: literal-string&lowercase-string&non-falsy-string&uppercase-string",
+        null,
+        false
+    ],
+    [
+        "bytes.php",
+        20,
+        "phpstan.dumpType",
+        "Dumped type: \"\\000\\000\\000\\000\\000\\000\\000\\000\\000\\000\\000\\000\\000\\000\\000\\000\\000\\000\\000\\000\\000\\000\\000\\000\\000\\000\\000\\000\\000\\000\\000\\000\\000\\000\\000\\000\\000\\000\\000\\000\\000\\000\\000\\000\\000\\000\\000\\000\\000\\000\\000\\000\\000\\000\\000\\000\\000\\000\\000\\000\\000\\000\\000\\000\\000\\000\\000\\000\\000\\000\\000\\000\\000\\000\\000\\000\\000\\000\\000\\000\\000\\000\\000\\000\\000\\000\\000\\000\\000\\000\\000\\000\\000\\000\\000\\000\\000\\000\\000\"",
+        null,
+        false
+    ],
+    [
+        "bytes.php",
+        21,
+        "phpstan.dumpType",
+        "Dumped type: literal-string&lowercase-string&non-falsy-string&uppercase-string",
+        null,
+        false
+    ],
+    [
+        "bytes.php",
+        22,
+        "phpstan.dumpType",
+        "Dumped type: '\ufffd\ufffd'|'\ufffd\ufffd'",
+        null,
+        false
+    ],
+    [
+        "bytes.php",
+        23,
+        "phpstan.dumpType",
+        "Dumped type: '\ufffd'|'\ufffd'",
+        null,
+        false
+    ],
+    [
+        "bytes.php",
+        24,
+        "phpstan.dumpType",
+        "Dumped type: 987",
+        null,
+        false
+    ],
+    [
+        "bytes.php",
+        30,
+        "phpstan.dumpType",
+        "Dumped type: '\ufffd\ufffd'|'\ufffd\ufffd'",
+        null,
+        false
+    ],
+    [
+        "bytes.php",
+        31,
+        "phpstan.dumpType",
+        "Dumped type: literal-string&lowercase-string&non-falsy-string&uppercase-string",
+        null,
+        false
+    ],
+    [
+        "bytes.php",
+        32,
+        "phpstan.dumpType",
+        "Dumped type: 987",
+        null,
+        false
+    ],
+    [
+        "bytes.php",
+        38,
+        "phpstan.dumpType",
+        "Dumped type: '\\\\$\\\\$'|'\ufffd\ufffd'|'\ufffd\ufffd'",
+        null,
+        false
+    ],
+    [
+        "bytes.php",
+        39,
+        "phpstan.dumpType",
+        "Dumped type: '\\\\$\\\\$\\\\$\\\\$\\\\$\\\\$\\\\$\\\\$\\\\$\\\\$\\\\$\\\\$\\\\$\\\\$\\\\$\\\\$'|'\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd'|'\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd'",
+        null,
+        false
+    ],
+    [
+        "bytes.php",
+        40,
+        "phpstan.dumpType",
+        "Dumped type: literal-string&lowercase-string&non-falsy-string&uppercase-string",
+        null,
+        false
+    ],
+    [
+        "bytes.php",
+        41,
+        "phpstan.dumpType",
+        "Dumped type: 987",
+        null,
+        false
+    ],
+    [
+        "dispatch.php",
+        7,
+        "phpstan.dumpType",
+        "Dumped type: 'aa'",
+        null,
+        false
+    ],
+    [
+        "dispatch.php",
+        8,
+        "phpstan.dumpType",
+        "Dumped type: 'aa'",
+        null,
+        false
+    ],
+    [
+        "dispatch.php",
+        9,
+        "phpstan.dumpType",
+        "Dumped type: 'aa'",
+        null,
+        false
+    ],
+    [
+        "dispatch.php",
+        11,
+        "phpstan.dumpType",
+        "Dumped type: string",
+        null,
+        false
+    ],
+    [
+        "dispatch.php",
+        13,
+        "phpstan.dumpType",
+        "Dumped type: string",
+        null,
+        false
+    ],
+    [
+        "dispatch.php",
+        14,
+        "phpstan.dumpType",
+        "Dumped type: 987",
+        null,
+        false
+    ],
+    [
+        "dispatch.php",
+        19,
+        "phpstan.dumpType",
+        "Dumped type: int",
+        null,
+        false
+    ],
+    [
+        "finite.php",
+        7,
+        "phpstan.dumpType",
+        "Dumped type: 'ababab'",
+        null,
+        false
+    ],
+    [
+        "finite.php",
+        8,
+        "phpstan.dumpType",
+        "Dumped type: 'ababab'|'ccc'",
+        null,
+        false
+    ],
+    [
+        "finite.php",
+        9,
+        "phpstan.dumpType",
+        "Dumped type: literal-string&lowercase-string&uppercase-string",
+        null,
+        false
+    ],
+    [
+        "finite.php",
+        10,
+        "phpstan.dumpType",
+        "Dumped type: ''",
+        null,
+        false
+    ],
+    [
+        "finite.php",
+        12,
+        "phpstan.dumpType",
+        "Dumped type: 'xyxy'",
+        null,
+        false
+    ],
+    [
+        "finite.php",
+        13,
+        "phpstan.dumpType",
+        "Dumped type: 4",
+        null,
+        false
+    ],
+    [
+        "finite.php",
+        14,
+        "phpstan.dumpType",
+        "Dumped type: 'xyxyxyxy'",
+        null,
+        false
+    ],
+    [
+        "finite.php",
+        15,
+        "phpstan.dumpType",
+        "Dumped type: '00'",
+        null,
+        false
+    ],
+    [
+        "finite.php",
+        16,
+        "phpstan.dumpType",
+        "Dumped type: '11'",
+        null,
+        false
+    ],
+    [
+        "finite.php",
+        17,
+        "phpstan.dumpType",
+        "Dumped type: literal-string&lowercase-string&non-falsy-string",
+        null,
+        false
+    ],
+    [
+        "finite.php",
+        18,
+        "phpstan.dumpType",
+        "Dumped type: literal-string&lowercase-string",
+        null,
+        false
+    ],
+    [
+        "finite.php",
+        19,
+        "phpstan.dumpType",
+        "Dumped type: 'xyxy'",
+        null,
+        false
+    ],
+    [
+        "finite.php",
+        20,
+        "phpstan.dumpType",
+        "Dumped type: 'xyxy'",
+        null,
+        false
+    ],
+    [
+        "finite.php",
+        21,
+        "phpstan.dumpType",
+        "Dumped type: 987",
+        null,
+        false
+    ],
+    [
+        "finite.php",
+        26,
+        "phpstan.dumpType",
+        "Dumped type: *NEVER*",
+        null,
+        false
+    ],
+    [
+        "finite.php",
+        32,
+        "phpstan.dumpType",
+        "Dumped type: *NEVER*",
+        null,
+        false
+    ],
+    [
+        "finite.php",
+        38,
+        "phpstan.dumpType",
+        "Dumped type: *NEVER*",
+        null,
+        false
+    ],
+    [
+        "finite.php",
+        43,
+        "arguments.count",
+        "Function str_repeat invoked with 1 parameter, 2 required.",
+        null,
+        true
+    ],
+    [
+        "finite.php",
+        43,
+        "phpstan.dumpType",
+        "Dumped type: string",
+        null,
+        false
+    ],
+    [
+        "finite.php",
+        44,
+        "arguments.count",
+        "Function str_repeat invoked with 0 parameters, 2 required.",
+        null,
+        true
+    ],
+    [
+        "finite.php",
+        44,
+        "phpstan.dumpType",
+        "Dumped type: string",
+        null,
+        false
+    ],
+    [
+        "templates.php",
+        12,
+        "phpstan.dumpType",
+        "Dumped type: 'aa'",
+        null,
+        false
+    ],
+    [
+        "templates.php",
+        13,
+        "phpstan.dumpType",
+        "Dumped type: literal-string&lowercase-string&non-falsy-string",
+        null,
+        false
+    ],
+    [
+        "templates.php",
+        14,
+        "phpstan.dumpType",
+        "Dumped type: 987",
+        null,
+        false
+    ],
+    [
+        "templates.php",
+        24,
+        "phpstan.dumpType",
+        "Dumped type: string",
+        null,
+        false
+    ],
+    [
+        "templates.php",
+        25,
+        "phpstan.dumpType",
+        "Dumped type: non-empty-string",
+        null,
+        false
+    ],
+    [
+        "templates.php",
+        26,
+        "phpstan.dumpType",
+        "Dumped type: literal-string&lowercase-string",
+        null,
+        false
+    ],
+    [
+        "templates.php",
+        27,
+        "phpstan.dumpType",
+        "Dumped type: 987",
+        null,
+        false
+    ],
+    [
+        "templates.php",
+        33,
+        "phpstan.dumpType",
+        "Dumped type: non-falsy-string",
+        null,
+        false
+    ],
+    [
+        "templates.php",
+        34,
+        "phpstan.dumpType",
+        "Dumped type: 'stdClassstdClass'",
+        null,
+        false
+    ],
+    [
+        "templates.php",
+        43,
+        "phpstan.dumpType",
+        "Dumped type: string",
+        null,
+        false
+    ],
+    [
+        "templates.php",
+        44,
+        "phpstan.dumpType",
+        "Dumped type: string",
+        null,
+        false
+    ],
+    [
+        "templates.php",
+        45,
+        "phpstan.dumpType",
+        "Dumped type: 987",
+        null,
+        false
+    ],
+    [
+        "templates.php",
+        51,
+        "phpstan.dumpType",
+        "Dumped type: string",
+        null,
+        false
+    ],
+    [
+        "templates.php",
+        52,
+        "phpstan.dumpType",
+        "Dumped type: string",
+        null,
+        false
+    ],
+    [
+        "templates.php",
+        53,
+        "phpstan.dumpType",
+        "Dumped type: string",
+        null,
+        false
+    ],
+    [
+        "templates.php",
+        54,
+        "phpstan.dumpType",
+        "Dumped type: literal-string&lowercase-string",
+        null,
+        false
+    ],
+    [
+        "templates.php",
+        55,
+        "phpstan.dumpType",
+        "Dumped type: literal-string&lowercase-string",
+        null,
+        false
+    ],
+    [
+        "templates.php",
+        56,
+        "phpstan.dumpType",
+        "Dumped type: string",
+        null,
+        false
+    ],
+    [
+        "templates.php",
+        57,
+        "phpstan.dumpType",
+        "Dumped type: 987",
+        null,
+        false
+    ],
+    [
+        "templates.php",
+        65,
+        "phpstan.dumpType",
+        "Dumped type: 'stdClassstdClass'",
+        null,
+        false
+    ],
+    [
+        "templates.php",
+        66,
+        "phpstan.dumpType",
+        "Dumped type: literal-string&non-falsy-string",
+        null,
+        false
+    ],
+    [
+        "templates.php",
+        75,
+        "phpstan.dumpType",
+        "Dumped type: literal-string&lowercase-string",
+        null,
+        false
+    ],
+    [
+        "templates.php",
+        76,
+        "phpstan.dumpType",
+        "Dumped type: 987",
+        null,
+        false
+    ]
+]

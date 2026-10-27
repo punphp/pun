@@ -233,7 +233,7 @@ fn strings(c: &Checker, expr: &Expression) -> Vec<String> {
 /// IntersectionType collects the strings of every member (accessories contribute none).
 fn constant_strings(t: &Type) -> Vec<String> {
     match t {
-        Type::ConstString(s) => vec![s.clone()],
+        Type::ConstString(s) => vec![String::from_utf8_lossy(s).into_owned()],
         Type::Union(ts) | Type::Benevolent(ts) => {
             let parts: Vec<_> = ts.iter().map(constant_strings).collect();
             if parts.iter().any(Vec::is_empty) {

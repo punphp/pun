@@ -338,10 +338,10 @@ fn is_constant(t: &Type) -> bool {
 /// `toArrayKey()` of a constant offset.
 fn array_key(t: &Type) -> Type {
     match t {
-        Type::ConstString(s) if s.parse::<i64>().is_ok_and(|i| i.to_string() == *s) => Type::ConstInt(s.parse().unwrap_or(0)),
+        Type::ConstString(s) if std::str::from_utf8(s).ok().and_then(|s| s.parse::<i64>().ok()).is_some_and(|i| i.to_string().as_bytes() == s) => Type::ConstInt(std::str::from_utf8(s).unwrap().parse().unwrap_or(0)),
         Type::ConstBool(b) => Type::ConstInt(i64::from(*b)),
         Type::ConstFloat(f) => Type::ConstInt(*f as i64),
-        Type::Null => Type::ConstString(String::new()),
+        Type::Null => Type::ConstString(Vec::new()),
         t => t.clone(),
     }
 }

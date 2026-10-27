@@ -76,7 +76,7 @@ pub fn class_constant<'arena>(c: &mut Checker<'_, 'arena>, access: &ClassConstan
 /// from each member (an accessory contributes none). TemplateConstantStringType retains its bound's value.
 pub(super) fn constant_strings(ty: &Type) -> Vec<String> {
     match ty {
-        Type::ConstString(s) => vec![s.clone()],
+        Type::ConstString(s) => vec![String::from_utf8_lossy(s).into_owned()],
         Type::Template(t) => constant_strings(&t.bound),
         Type::Union(parts) | Type::Benevolent(parts) => {
             let strings: Vec<_> = parts.iter().map(constant_strings).collect();
@@ -415,7 +415,7 @@ fn constant_capable(c: &Checker, ty: &Type) -> Tri {
         | Type::ObjectShape(_)
         | Type::Closure(_) => Tri::Yes,
         Type::ConstString(n) => {
-            if known(c, n).is_some() {
+            if known(c, &String::from_utf8_lossy(n)).is_some() {
                 Tri::Yes
             } else {
                 Tri::No
@@ -447,12 +447,12 @@ fn has_class_constant(c: &Checker, ty: &Type, name: &str) -> Tri {
         Type::Object(n, _)
         | Type::Static(n, _)
         | Type::This(n)
-        | Type::EnumCase(n, _)
-        | Type::ConstString(n) => match known(c, n) {
+        | Type::EnumCase(n, _) => match known(c, n) {
             Some(k) if k.constant(c, name).is_some() => Tri::Yes,
             Some(k) if k.is_final() => Tri::No,
             _ => Tri::Maybe,
         },
+        Type::ConstString(n) => has_class_constant(c, &Type::Object(String::from_utf8_lossy(n).into_owned(), vec![]), name),
         Type::Mixed { .. } | Type::SubtractedMixed { .. } | Type::Error => Tri::Yes,
         _ => Tri::No,
     }
