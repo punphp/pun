@@ -155,6 +155,8 @@ mod no_useless_catch;
 mod no_useless_condition;
 mod no_useless_constructor;
 mod no_useless_continue;
+mod no_useless_filter_var;
+mod no_useless_math;
 mod no_useless_override;
 mod no_useless_readonly;
 mod no_useless_ternary;
@@ -378,6 +380,8 @@ pub use no_useless_catch::NoUselessCatch;
 pub use no_useless_condition::NoUselessCondition;
 pub use no_useless_constructor::NoUselessConstructor;
 pub use no_useless_continue::NoUselessContinue;
+pub use no_useless_filter_var::NoUselessFilterVar;
+pub use no_useless_math::NoUselessMath;
 pub use no_useless_override::NoUselessOverride;
 pub use no_useless_readonly::NoUselessReadonly;
 pub use no_useless_ternary::NoUselessTernary;
@@ -487,6 +491,8 @@ pub const PROJECT_RULES: &[&str] = &[
     "lint/laravel-12/prefer-scope-attribute",
     "lint/complexity/prefer-instance-method",
     "lint/complexity/require-previous-exception",
+    "lint/dead-code/no-useless-filter-var",
+    "lint/dead-code/no-useless-math",
 ];
 
 /// Every rule, in a fixed order.
@@ -723,5 +729,7 @@ fn ungrouped() -> Vec<Box<dyn Rule>> {
         Box::new(PreferInstanceMethod),
         Box::new(NoUnusedTestMethodParam),
         Box::new(RequirePreviousException),
+        Box::new(NoUselessFilterVar),
+        Box::new(NoUselessMath),
     ]
 }

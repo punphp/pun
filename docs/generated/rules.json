@@ -6452,7 +6452,7 @@
         "RemoveFilterVarOnExactType",
         "RemoveFilterVarOnExactTypeRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/dead-code/no-useless-math",
@@ -6474,7 +6474,7 @@
         "RemoveDeadZeroAndOneOperationRector",
         "no-redundant-math"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/dead-code/no-useless-override",

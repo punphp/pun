@@ -416,8 +416,8 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "dead-code/no-useless-condition" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove if conditions whose branches return the same value." }
 "dead-code/no-useless-constructor" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove constructor that only delegates call to parent class with same values" }
 "dead-code/no-useless-continue" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove `continue` as the last statement of a loop." }
-"dead-code/no-useless-filter-var" = { fix = "safe", sets = ["dead-code"], ported = false, status = "decided", summary = "Removes filter_var() calls with exact type" }
-"dead-code/no-useless-math" = { fix = "safe", sets = ["dead-code"], ported = false, status = "decided", summary = "Remove arithmetic that does not change the value (`+ 0`, `* 1`, ...)." }
+"dead-code/no-useless-filter-var" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Removes filter_var() calls with exact type" }
+"dead-code/no-useless-math" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove arithmetic that does not change the value (`+ 0`, `* 1`, ...)." }
 "dead-code/no-useless-override" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove methods and constructors that only call the parent with the same arguments." }
 "dead-code/no-useless-phpdoc-type" = { fix = "safe", sets = ["dead-code"], ported = false, status = "decided", summary = "Remove PHPDoc types that add nothing over the native type (`@var null`, unions wider than the native return type)." }
 "dead-code/no-useless-ternary" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Simplify ternaries whose result does not depend on the condition, or that equal a boolean expression." }

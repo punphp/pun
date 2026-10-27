@@ -8541,7 +8541,7 @@
         "rules": [
           "lint/dead-code/no-useless-math"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -8629,7 +8629,7 @@
         "rules": [
           "lint/dead-code/no-useless-filter-var"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -25827,7 +25827,7 @@
         "rules": [
           "lint/dead-code/no-useless-math"
         ],
-        "note": "Same. Options: same. Planned: not ported yet.",
+        "note": "Same. Options: same.",
         "unsupported": false
       },
       {

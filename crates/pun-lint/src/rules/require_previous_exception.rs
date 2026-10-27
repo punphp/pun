@@ -57,13 +57,19 @@ impl Rule for RequirePreviousException {
             _ => None,
         });
         for variable in caught {
-            let Some(text) = refactor(ctx, ancestors, throw.span().start.offset as usize, new, variable)
-            else {
+            let Some(text) = refactor(
+                ctx,
+                ancestors,
+                throw.span().start.offset as usize,
+                new,
+                variable,
+            ) else {
                 continue;
             };
             out.push(Report {
                 span: node_span(throw.exception),
-                message: "Pass the caught exception on to the exception thrown in its `catch`.".into(),
+                message: "Pass the caught exception on to the exception thrown in its `catch`."
+                    .into(),
                 help: None,
                 fix: Some(Fix {
                     safety: Safety::Safe,
@@ -147,7 +153,8 @@ fn refactor(
             start: node_span(*a).start,
         })
         .collect();
-    let has_argument = |args: &[Arg], name: &str| args.iter().any(|a| a.name.as_deref() == Some(name));
+    let has_argument =
+        |args: &[Arg], name: &str| args.iter().any(|a| a.name.as_deref() == Some(name));
     let named = args.first().is_some_and(|a| a.name.is_some());
     let var = String::from_utf8_lossy(variable).into_owned();
     let has_code_parameter = has_parameter("code");
@@ -262,7 +269,11 @@ fn print_new(source: &str, throw_start: usize, new: &Instantiation<'_>, args: &[
             .collect();
         format!("{}\n{}", lines.join(","), " ".repeat(level))
     } else {
-        items.iter().map(|(_, a)| print(a)).collect::<Vec<_>>().join(", ")
+        items
+            .iter()
+            .map(|(_, a)| print(a))
+            .collect::<Vec<_>>()
+            .join(", ")
     };
     format!("new {class}({list})")
 }
@@ -289,11 +300,15 @@ fn takes_throwable(codebase: &CodebaseMetadata, t: Option<&TUnion>) -> bool {
         }
         return throwable_of(codebase, class) == Some(true);
     }
-    let kept: Vec<&TAtomic> = t.types.iter().filter(|a| !matches!(a, TAtomic::Null)).collect();
+    let kept: Vec<&TAtomic> = t
+        .types
+        .iter()
+        .filter(|a| !matches!(a, TAtomic::Null))
+        .collect();
     !kept.is_empty()
-        && kept.iter().all(|a| {
-            class_name(a).is_some_and(|c| throwable_of(codebase, &c) == Some(true))
-        })
+        && kept
+            .iter()
+            .all(|a| class_name(a).is_some_and(|c| throwable_of(codebase, &c) == Some(true)))
 }
 
 /// The class an object type names (`getObjectClassNames()`), a class Mago does not know too.
