@@ -10944,7 +10944,7 @@
         "AddParamTypeFromDependsRector",
         "Rector\\PHPUnit\\CodeQuality\\Rector\\Class_\\AddParamTypeFromDependsRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/phpunit/add-property-type-container-get",

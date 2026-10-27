@@ -12421,7 +12421,7 @@
         "rules": [
           "lint/phpunit/add-param-type-depends"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
