@@ -10904,7 +10904,7 @@
         "AddIntersectionVarToMockObjectPropertyRector",
         "Rector\\PHPUnit\\CodeQuality\\Rector\\Class_\\AddIntersectionVarToMockObjectPropertyRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/phpunit/add-mock-object-type",
@@ -11065,7 +11065,7 @@
         "AddStubIntersectionVarToStubPropertyRector",
         "Rector\\PHPUnit\\CodeQuality\\Rector\\Class_\\AddStubIntersectionVarToStubPropertyRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/phpunit/add-test-void-return",

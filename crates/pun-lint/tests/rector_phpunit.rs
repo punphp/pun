@@ -544,3 +544,19 @@ fn change_mock_object_return_union_to_intersection() {
         "ChangeMockObjectReturnUnionToIntersectionRector",
     );
 }
+
+#[test]
+fn add_intersection_var_to_mock_object_property() {
+    check(
+        AddMockIntersectionType,
+        "AddIntersectionVarToMockObjectPropertyRector",
+    );
+}
+
+#[test]
+fn add_stub_intersection_var_to_stub_property() {
+    check(
+        AddStubIntersectionType,
+        "AddStubIntersectionVarToStubPropertyRector",
+    );
+}

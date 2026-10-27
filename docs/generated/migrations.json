@@ -12403,7 +12403,7 @@
         "rules": [
           "lint/phpunit/add-mock-intersection-type"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -12457,7 +12457,7 @@
         "rules": [
           "lint/phpunit/add-stub-intersection-type"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
