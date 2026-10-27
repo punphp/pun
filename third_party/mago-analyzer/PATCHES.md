@@ -1844,3 +1844,26 @@ All 63 focused and adjacent public controls pass. Fresh profiles cover **6/6 cha
 executable lines** against `e1c66a25`, without exclusions. The full commands, snapshot ownership,
 and combined changed-line coverage are recorded in
 [`mago-codex/PATCHES.md`](../mago-codex/PATCHES.md#current-file-anonymous-signatures).
+
+## Clone result object guarantees
+
+`expression/clone.rs` follows PHPStan 2.3.1's
+[`CloneHandler::resolveCloneType()`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Analyser/ExprHandler/CloneHandler.php#L40-L43)
+and [`CloneTypeTraverser`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Analyser/Traverser/CloneTypeTraverser.php).
+The result intersects the operand with `object`, then changes outer `$this` members to `static`.
+Union and intersection members are visited. Object type arguments and template bounds are not traversed
+when replacing `$this`. Operand evaluation and the existing clone diagnostic collector remain unchanged.
+
+Unconstrained templates retain their scope and mixed bound with an object intersection.
+Other template bounds retain their identity after intersecting the bound with object.
+Callable signatures use the existing `HasMethod('__invoke')` object with the original callable payload
+as an intersection member. The callable cast reads that payload without losing its signature.
+No shared type normalization, native inference, or converter changes are included.
+
+The public `clone_inference` regression compares 28 observations with fresh, identical PHPStan 2.3.1
+and 2.2.7 captures under `tests/fixtures/clone/`. It checks explicit and implicit mixed operands,
+object/scalar unions, nullable and invalid operands, enum and callable results, template bounds,
+`$this` unions, and assignment effects. Observers check one visit per clone and operand.
+The diagnostic comparison covers `clone.nonObject` and the operand's `function.notFound` at level 7,
+not unrelated captured diagnostics. Mago's existing enum clone diagnostic remains intentional.
+The `$this` union comes from a flow join: a PHPDoc `$this|Item` parameter has a separate scanner gap.

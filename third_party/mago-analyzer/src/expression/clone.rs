@@ -1,16 +1,23 @@
 use mago_allocator::Arena;
 use std::rc::Rc;
+use std::sync::Arc;
 
+use mago_codex::metadata::CodebaseMetadata;
 use mago_codex::ttype::TType;
 use mago_codex::ttype::atomic::TAtomic;
+use mago_codex::ttype::atomic::callable::TCallable;
 use mago_codex::ttype::atomic::object::TObject;
-use mago_codex::ttype::combine_union_types;
-use mago_codex::ttype::get_mixed;
+use mago_codex::ttype::atomic::object::has_method::TObjectHasMethod;
+use mago_codex::ttype::combiner;
 use mago_codex::ttype::get_never;
+use mago_codex::ttype::get_object;
+use mago_codex::ttype::intersect_union_types;
+use mago_codex::ttype::union::TUnion;
 use mago_reporting::Annotation;
 use mago_reporting::Issue;
 use mago_span::HasSpan;
 use mago_syntax::cst::Clone;
+use mago_word::word;
 
 use crate::analyzable::Analyzable;
 use crate::artifacts::AnalysisArtifacts;
@@ -135,21 +142,56 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Clone<'arena> {
             }
         }
 
-        let resulting_type = if invalid_clone_atomics.is_empty() {
-            object_type
-        } else {
-            Rc::new(if has_mixed_type {
-                get_mixed()
-            } else if has_cloneable_object {
-                combine_union_types(&object_type, &get_never(), context.codebase, context.settings.combiner_options())
-            } else {
-                get_never()
-            })
-        };
-
-        artifacts.set_rc_expression_type(self, resulting_type);
+        artifacts.set_rc_expression_type(self, Rc::new(resolve_clone_type(&object_type, context.codebase)));
 
         Ok(())
+    }
+}
+
+/// PHPStan's CloneHandler::resolveCloneType: intersect with object, then map $this to static.
+fn resolve_clone_type(operand: &TUnion, codebase: &CodebaseMetadata) -> TUnion {
+    let object = get_object();
+    let mut types = Vec::new();
+    for atomic in operand.types.iter() {
+        let mut result = match atomic {
+            TAtomic::GenericParameter(parameter) => {
+                let bound = intersect_union_types(&parameter.constraint, &object, codebase).unwrap_or_else(get_never);
+                if bound.is_never() {
+                    get_never()
+                } else {
+                    let mut parameter = parameter.clone();
+                    if parameter.constraint.is_mixed() {
+                        parameter.add_intersection_type(TAtomic::Object(TObject::Any));
+                    } else {
+                        parameter.constraint = Arc::new(bound);
+                    }
+                    TUnion::from_atomic(TAtomic::GenericParameter(parameter))
+                }
+            }
+            TAtomic::Callable(TCallable::Signature(signature)) if !signature.is_closure() => {
+                let mut callable_object = TObjectHasMethod::new(word("__invoke"));
+                callable_object.intersection_types = Some(vec![atomic.clone()]);
+                TUnion::from_atomic(TAtomic::Object(TObject::HasMethod(callable_object)))
+            }
+            _ => intersect_union_types(&TUnion::from_atomic(atomic.clone()), &object, codebase).unwrap_or_else(get_never),
+        };
+        for atomic in result.types.to_mut() {
+            clone_this_to_static(atomic);
+        }
+        types.extend(result.types.into_owned());
+    }
+    TUnion::from_vec(combiner::combine(types, codebase, Default::default()))
+}
+
+/// CloneTypeTraverser visits union/intersection members, not template bounds or object type arguments.
+fn clone_this_to_static(atomic: &mut TAtomic) {
+    if let TAtomic::Object(TObject::Named(object)) = atomic {
+        object.is_this = false;
+    }
+    if let Some(intersections) = atomic.get_intersection_types_mut() {
+        for intersection in intersections {
+            clone_this_to_static(intersection);
+        }
     }
 }
 
@@ -186,7 +228,6 @@ mod tests {
         "},
         issues = [
             IssueCode::PossiblyInvalidClone,
-            IssueCode::InvalidReturnStatement,
         ]
     }
 
@@ -203,7 +244,6 @@ mod tests {
         "},
         issues = [
             IssueCode::InvalidClone,
-            IssueCode::NeverReturn,
         ]
     }
 }
