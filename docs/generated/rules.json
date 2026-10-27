@@ -12968,7 +12968,7 @@
       "id": "lint/refactor/add-override-attribute",
       "command": "lint",
       "group": "refactor",
-      "summary": "Add #[Override] to methods and properties that override a parent member.",
+      "summary": "Add #[Override] to properties that override a parent class's property (PHP 8.5).",
       "enabled": [],
       "fix": "unsafe",
       "ecosystem": "core",
@@ -12980,7 +12980,7 @@
         "AddOverrideAttributeToOverriddenPropertiesRector",
         "Rector\\Php85\\Rector\\Property\\AddOverrideAttributeToOverriddenPropertiesRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/refactor/no-negated-condition",

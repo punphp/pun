@@ -10,9 +10,10 @@
 
 mod lint_c;
 
-use lint_c::{run_class, run_class_with};
-use pun_lint::Rule;
+use lint_c::{run_class, run_class_at, run_class_with};
+use pun_lint::{Linter, Rule};
 use pun_lint::rules::{
+    AddOverrideAttribute,
     RemoveFunctionArgument, RemoveFunctionCall, RenameCast, RenameClassConstant, RenameConstant,
     PreferClassNameConstant, RenameFunction, RequireStrictInArray, ReplaceFunctionWithConstant, ReplaceFunctionWithNew, ReplaceFunctionWithStatic,
 };
@@ -213,4 +214,19 @@ fn string_class_name_to_class_constant() {
 #[test]
 fn strict_in_array() {
     check(RequireStrictInArray, Value::Null, "StrictInArrayRector");
+}
+
+/// From PHP 8.5 (`OVERRIDE_ATTRIBUTE_ON_PROPERTIES`); Oracle/names at `phpVersion(80400)` was left as it is.
+#[test]
+fn add_override_attribute_to_overridden_properties() {
+    run_class_at(
+        vec![Box::new(AddOverrideAttribute)],
+        "AddOverrideAttributeToOverriddenPropertiesRector",
+        80500,
+    );
+    let code = "<?php\n\nclass B\n{\n    public $a;\n}\n\nclass C extends B\n{\n    public $a;\n}\n";
+    let found = Linter::new(vec![Box::new(AddOverrideAttribute)], 80400)
+        .check(std::path::Path::new("f.php"), code)
+        .unwrap();
+    assert!(found.is_empty());
 }

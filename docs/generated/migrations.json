@@ -6141,7 +6141,7 @@
         "rules": [
           "lint/refactor/add-override-attribute"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {

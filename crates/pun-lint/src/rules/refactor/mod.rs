@@ -1,12 +1,13 @@
 //! The `refactor` group's configurable codemods, ported from Rector 2.6.1 (rules/Renaming, rules/Removing,
 //! rules/Transform), each in its own file, and what they share.
 //!
-//! A codemod does nothing until pun.toml gives it options. The options are the Rector rule's configuration as
+//! `add-override-attribute` takes no options. Every other codemod does nothing until pun.toml gives it options. The options are the Rector rule's configuration as
 //! `pun migrate` writes it (crates/pun-config/src/migrate/rector.rs): a data map keeps its keys
 //! (`"lint/refactor/rename-function" = { view = "render" }`), and a list goes under `items`, a value object as a table of
 //! its properties kebab-cased (`items = [{ function = "f", argument-position = 2 }]`). `configure` checks them as the
 //! Rector rule's `configure()` and its value objects do (`Assert`, `RectorAssert`).
 
+mod add_override_attribute;
 mod remove_function_argument;
 mod remove_function_call;
 mod rename_cast;
@@ -15,6 +16,7 @@ mod rename_constant;
 mod rename_function;
 mod replace_function;
 
+pub use add_override_attribute::AddOverrideAttribute;
 pub use remove_function_argument::RemoveFunctionArgument;
 pub use remove_function_call::RemoveFunctionCall;
 pub use rename_cast::RenameCast;
@@ -39,6 +41,7 @@ use crate::{Context, Report, Rule};
 /// Every rule of the group, in a fixed order, unconfigured.
 pub fn all() -> Vec<Box<dyn Rule>> {
     vec![
+        Box::new(AddOverrideAttribute),
         Box::new(RemoveFunctionArgument::default()),
         Box::new(RemoveFunctionCall::default()),
         Box::new(RenameCast::default()),
