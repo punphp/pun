@@ -647,7 +647,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "phpunit/add-property-type-setup-docblock" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add property type in PHPUnit test from docblock, if defined in setUp() method" }
 "phpunit/add-return-type-from-mock-object" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add known property and return MockObject types" }
 "phpunit/add-stub-intersection-type" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Add a Stub intersection @var docblock with the stubbed class to a native Stub property" }
-"phpunit/add-test-void-return" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add void to PHPUnit test methods" }
+"phpunit/add-test-void-return" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add void to PHPUnit test methods" }
 "phpunit/add-will-return-callback-param-type" = { fix = "unsafe", sets = ["code-quality"], ported = false, status = "decided", summary = "Decorate callbacks and arrow functions in willReturnCallback() with known param/return types based on reflection method" }
 "phpunit/no-assert-contains-only" = { fix = "safe", ported = true, status = "decided", summary = "Replaces `Assert::assertContainsOnly()` calls with type-specific `Assert::assertContainsOnly*()` calls" }
 "phpunit/no-assert-internal-type" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "Replace assertInternalType() with the dedicated assertIs*() assertion." }
@@ -730,7 +730,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "phpunit/require-data-provider-newlines" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Change data provider in PHPUnit test case to newline per item" }
 "phpunit/require-data-provider-order" = { fix = "safe", sets = ["coding-style"], ported = true, status = "decided", summary = "Data provider method must be placed after/before the last/first test where used." }
 "phpunit/require-exact-test-argument-type" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Correct expected type in setter of tests, if param type is strictly defined" }
-"phpunit/require-final-test-case" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Make PHPUnit test case final" }
+"phpunit/require-final-test-case" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Make PHPUnit test case final" }
 "phpunit/require-internal" = { fix = "safe", ported = true, status = "decided", summary = "All PHPUnit test classes should be marked as internal." }
 "phpunit/require-iterable-data-provider" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "The return type of PHPUnit data provider must be `iterable`." }
 "phpunit/require-method-casing" = { fix = "safe", sets = ["coding-style"], ported = true, status = "decided", summary = "Enforce camel (or snake) case for PHPUnit test methods, following configuration." }

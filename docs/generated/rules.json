@@ -11085,7 +11085,7 @@
         "AddTestsVoidReturnTypeWhereNoReturnRector",
         "Rector\\TypeDeclaration\\Rector\\Class_\\AddTestsVoidReturnTypeWhereNoReturnRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/phpunit/add-will-return-callback-param-type",
@@ -12772,7 +12772,7 @@
         "FinalizeTestCaseClassRector",
         "Rector\\Privatization\\Rector\\Class_\\FinalizeTestCaseClassRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/phpunit/require-internal",

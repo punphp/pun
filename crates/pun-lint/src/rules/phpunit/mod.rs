@@ -7,6 +7,7 @@
 //! takes the type Mago gives it.
 
 mod add_depended_test_return_type;
+mod add_test_void_return;
 mod annotations;
 mod no_assert_contains_only;
 mod no_assert_is_type;
@@ -58,10 +59,12 @@ mod prefer_ticket_attribute;
 mod prefer_with_is_instance_of;
 mod ptype;
 mod require_data_provider_newlines;
+mod require_final_test_case;
 mod require_strict_types_in_tests;
 mod require_string_assert_argument;
 
 pub use add_depended_test_return_type::AddDependedTestReturnType;
+pub use add_test_void_return::AddTestVoidReturn;
 pub use no_assert_contains_only::NoAssertContainsOnly;
 pub use no_assert_is_type::NoAssertIsType;
 pub use no_assert_same_type_mismatch::NoAssertSameTypeMismatch;
@@ -111,6 +114,7 @@ pub use prefer_this_call::PreferThisCall;
 pub use prefer_ticket_attribute::PreferTicketAttribute;
 pub use prefer_with_is_instance_of::PreferWithIsInstanceOf;
 pub use require_data_provider_newlines::RequireDataProviderNewlines;
+pub use require_final_test_case::RequireFinalTestCase;
 pub use require_strict_types_in_tests::RequireStrictTypesInTests;
 pub use require_string_assert_argument::RequireStringAssertArgument;
 
@@ -183,6 +187,8 @@ pub(crate) fn all() -> Vec<Box<dyn Rule>> {
         Box::new(PreferTestWithAttribute),
         Box::new(PreferAttributeOverAnnotation::default()),
         Box::new(PreferDataProvider),
+        Box::new(RequireFinalTestCase),
+        Box::new(AddTestVoidReturn),
     ]
 }
 

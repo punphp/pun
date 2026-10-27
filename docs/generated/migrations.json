@@ -6405,7 +6405,7 @@
         "rules": [
           "lint/phpunit/add-test-void-return"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -7329,7 +7329,7 @@
         "rules": [
           "lint/phpunit/require-final-test-case"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
