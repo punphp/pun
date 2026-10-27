@@ -27,6 +27,7 @@ use mago_codex::ttype::atomic::object::named::TNamedObject;
 use mago_codex::ttype::atomic::scalar::TScalar;
 use mago_codex::ttype::atomic::scalar::float::TFloat;
 use mago_codex::ttype::atomic::scalar::int::TInteger;
+use mago_codex::ttype::atomic::scalar::string::TString;
 use mago_codex::ttype::atomic::scalar::string::TStringLiteral;
 use mago_codex::ttype::combiner::combine;
 use mago_codex::ttype::get_arraykey;
@@ -49,6 +50,7 @@ use mago_reporting::Annotation;
 use mago_reporting::Issue;
 use mago_span::HasSpan;
 use mago_span::Span;
+use mago_syntax::cst::Access;
 use mago_syntax::cst::BinaryOperator;
 use mago_syntax::cst::Expression;
 use mago_syntax::cst::UnaryPostfix;
@@ -366,10 +368,16 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for UnaryPrefix<'arena> {
             }
             UnaryPrefixOperator::PreIncrement(_) => {
                 let resulting_type = increment_operand(context, block_context, artifacts, self.operand, self.span())?;
+                record_property_write(
+                    context, block_context, artifacts, self.operand, self.operator.span(), &resulting_type, true,
+                );
                 artifacts.set_rc_expression_type(self, resulting_type);
             }
             UnaryPrefixOperator::PreDecrement(_) => {
                 let resulting_type = decrement_operand(context, block_context, artifacts, self.operand, self.span())?;
+                record_property_write(
+                    context, block_context, artifacts, self.operand, self.operator.span(), &resulting_type, false,
+                );
                 artifacts.set_rc_expression_type(self, resulting_type);
             }
             UnaryPrefixOperator::IntCast(_, _) | UnaryPrefixOperator::IntegerCast(_, _) => {
@@ -516,21 +524,82 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for UnaryPostfix<'arena> {
         self.operand.analyze(context, block_context, artifacts)?;
         block_context.flags.set_inside_general_use(was_in_general_use);
 
+        let operand_type = artifacts.get_rc_expression_type(&self.operand).cloned();
         match self.operator {
             UnaryPostfixOperator::PostIncrement(span) => {
-                increment_operand(context, block_context, artifacts, self.operand, span)?;
+                let written = increment_operand(context, block_context, artifacts, self.operand, span)?;
+                record_property_write(context, block_context, artifacts, self.operand, span, &written, true);
             }
             UnaryPostfixOperator::PostDecrement(span) => {
-                decrement_operand(context, block_context, artifacts, self.operand, span)?;
+                let written = decrement_operand(context, block_context, artifacts, self.operand, span)?;
+                record_property_write(context, block_context, artifacts, self.operand, span, &written, false);
             }
         }
 
-        if let Some(operand_type) = artifacts.get_rc_expression_type(&self.operand).cloned() {
+        if let Some(operand_type) = operand_type {
             artifacts.set_rc_expression_type(self, operand_type);
         }
 
         Ok(())
     }
+}
+
+/// PropertyAssignNode's assigned expression is a virtual prefix, including for postfix operators.
+/// Transport its result at the otherwise untyped operator span through the existing expression observations.
+/// A dynamic static selector carries one value per resolved name, just as PropertyReflectionFinder narrows it.
+fn record_property_write<'ctx, 'arena, A: Arena>(
+    context: &mut Context<'ctx, 'arena, A>,
+    block_context: &mut BlockContext<'ctx>,
+    artifacts: &mut AnalysisArtifacts,
+    operand: &Expression<'arena>,
+    operator: Span,
+    written: &Rc<TUnion>,
+    increment: bool,
+) {
+    let operand = crate::utils::misc::unwrap_expression(operand);
+    if let Expression::Access(Access::StaticProperty(p)) = operand
+        && !matches!(p.property, Variable::Direct(_))
+        && let Some(reads) = artifacts.get_expression_type(&p.property)
+        && let [TAtomic::Array(TArray::Keyed(reads))] = reads.types.as_ref()
+    {
+        let mut writes = reads.clone();
+        // The actual operand emitted diagnostics above. Narrowed type queries are not evaluations or writes.
+        context.collector.start_recording();
+        for (_, ty) in writes.known_items.iter_mut().flat_map(|items| Arc::make_mut(items).values_mut()) {
+            *ty = if increment {
+                increment_type(context, block_context, operand, operator, ty)
+            } else {
+                decrement_type(context, block_context, operand, operator, ty)
+            }
+            .as_ref()
+            .clone();
+        }
+        let _ = context.collector.finish_recording();
+        artifacts.set_expression_type(&operator, wrap_atomic(TAtomic::Array(TArray::Keyed(writes))));
+    } else {
+        artifacts.set_rc_expression_type(&operator, Rc::clone(written));
+    }
+}
+
+/// IncDecTypeHelper's nonconstant string branch. The numeric alternatives are benevolent, not a strict union.
+fn inc_dec_string_type(operand: &TUnion) -> Option<Rc<TUnion>> {
+    if !operand.is_string() || operand.types.iter().all(|ty| ty.get_literal_string_value().is_some()) {
+        return None;
+    }
+    if operand.types.iter().all(|ty| matches!(ty, TAtomic::Scalar(TScalar::String(s)) if s.literal.is_some())) {
+        return Some(Rc::new(wrap_atomic(TAtomic::Scalar(TScalar::String(
+            TString::unspecified_literal(false),
+        )))));
+    }
+    let mut result = get_int_or_float();
+    if !operand.types.iter().all(|ty| matches!(ty, TAtomic::Scalar(TScalar::String(s)) if s.is_numeric)) {
+        result = TUnion::from_vec(vec![
+            TAtomic::Scalar(TScalar::int()), TAtomic::Scalar(TScalar::float()), TAtomic::Scalar(TScalar::string()),
+        ]);
+    }
+    result.set_ignore_nullable_issues(true);
+    result.set_ignore_falsable_issues(true);
+    Some(Rc::new(result))
 }
 
 fn adjust_numeric_string(value: Option<&[u8]>, adjustment: i64) -> Vec<TAtomic> {
@@ -647,37 +716,34 @@ fn report_ineffective_increment_or_decrement<A>(
     );
 }
 
-/// Increments the given operand and returns its type after incrementing.
-///
-/// If the operand is a variable-like entity, the function attempts to assign the incremented value back to it.
+/// Computes an incremented value from an already observed read, without evaluating or assigning its operand.
 ///
 /// # Arguments
 ///
 /// * `context` - The analysis context.
 /// * `block_context` - Mutable context for the current code block.
-/// * `artifacts` - Mutable store for analysis results.
 /// * `operand` - The expression CST node representing the operand to be incremented.
 /// * `operation_span` - The span of the entire increment operation (e.g., `++$x` or `$x++`).
+/// * `operand_type` - The completed operand read, optionally narrowed to a finite property name.
 ///
 /// # Returns
 ///
 /// An `TUnion` representing the type of the operand *after* the increment operation.
 ///
 /// Returns `mixed|any` if the operand's type cannot be determined or if a fatal error occurs.
-fn increment_operand<'ctx, 'arena, A>(
+fn increment_type<'ctx, 'arena, A>(
     context: &mut Context<'ctx, 'arena, A>,
     block_context: &mut BlockContext<'ctx>,
-    artifacts: &mut AnalysisArtifacts,
     operand: &Expression<'arena>,
     operation_span: Span,
-) -> Result<Rc<TUnion>, AnalysisError>
+    operand_type: &TUnion,
+) -> Rc<TUnion>
 where
     A: Arena,
 {
-    let Some(operand_type) = artifacts.get_expression_type(operand) else {
-        return Ok(Rc::new(get_mixed()));
-    };
-
+    if let Some(string) = inc_dec_string_type(operand_type) {
+        return string;
+    }
     let mut possibilities = vec![];
     let mut reported_invalid = false;
     for operand_atomic_type in operand_type.types.as_ref() {
@@ -867,12 +933,24 @@ where
         OverloadedOperator::IncrementDecrement,
     );
 
-    let resulting_type_union = Rc::new(if possibilities.is_empty() {
+    Rc::new(if possibilities.is_empty() {
         if operand_type.is_never() { get_never() } else { get_mixed() }
     } else {
         TUnion::from_vec(combine(possibilities, context.codebase, context.settings.combiner_options()))
-    });
+    })
+}
 
+fn increment_operand<'ctx, 'arena, A: Arena>(
+    context: &mut Context<'ctx, 'arena, A>,
+    block_context: &mut BlockContext<'ctx>,
+    artifacts: &mut AnalysisArtifacts,
+    operand: &Expression<'arena>,
+    operation_span: Span,
+) -> Result<Rc<TUnion>, AnalysisError> {
+    let Some(operand_type) = artifacts.get_expression_type(operand) else {
+        return Ok(Rc::new(get_mixed()));
+    };
+    let resulting_type_union = increment_type(context, block_context, operand, operation_span, operand_type);
     let operand_id = get_block_expression_id(operand, context, block_context);
     let successful = assign_to_expression(
         context,
@@ -899,10 +977,7 @@ where
     Ok(resulting_type_union)
 }
 
-/// Decrements the given operand and returns its type after decrementing.
-///
-/// If the operand is a variable-like entity (e.g., a direct variable), the function
-/// attempts to assign the decremented value back to it.
+/// Computes a decremented value from an already observed read, without evaluating or assigning its operand.
 ///
 /// This function reports issues for types that are problematic or behave unexpectedly
 /// when decremented.
@@ -911,28 +986,26 @@ where
 ///
 /// * `context` - The analysis context.
 /// * `block_context` - Mutable context for the current code block.
-/// * `artifacts` - Mutable store for analysis results.
 /// * `operand` - The expression CST node representing the operand to be decremented.
 /// * `operation_span` - The span of the entire decrement operation (e.g., `--$x` or `$x--`).
+/// * `operand_type` - The completed operand read, optionally narrowed to a finite property name.
 ///
 /// # Returns
 ///
 /// An `TUnion` representing the type of the operand *after* the decrement operation.
-fn decrement_operand<'ctx, 'arena, A>(
+fn decrement_type<'ctx, 'arena, A>(
     context: &mut Context<'ctx, 'arena, A>,
     block_context: &mut BlockContext<'ctx>,
-    artifacts: &mut AnalysisArtifacts,
     operand: &Expression<'arena>,
     operation_span: Span,
-) -> Result<Rc<TUnion>, AnalysisError>
+    operand_type: &TUnion,
+) -> Rc<TUnion>
 where
     A: Arena,
 {
-    // Changed return to Result for consistency
-    let Some(operand_type) = artifacts.get_expression_type(operand) else {
-        return Ok(Rc::new(get_mixed()));
-    };
-
+    if let Some(string) = inc_dec_string_type(operand_type) {
+        return string;
+    }
     let mut possibilities = vec![];
 
     for operand_atomic_type in operand_type.types.as_ref() {
@@ -1115,12 +1188,24 @@ where
         OverloadedOperator::IncrementDecrement,
     );
 
-    let resulting_type_union = Rc::new(if possibilities.is_empty() {
+    Rc::new(if possibilities.is_empty() {
         if operand_type.is_never() { get_never() } else { get_mixed() }
     } else {
         TUnion::from_vec(combine(possibilities, context.codebase, context.settings.combiner_options()))
-    });
+    })
+}
 
+fn decrement_operand<'ctx, 'arena, A: Arena>(
+    context: &mut Context<'ctx, 'arena, A>,
+    block_context: &mut BlockContext<'ctx>,
+    artifacts: &mut AnalysisArtifacts,
+    operand: &Expression<'arena>,
+    operation_span: Span,
+) -> Result<Rc<TUnion>, AnalysisError> {
+    let Some(operand_type) = artifacts.get_expression_type(operand) else {
+        return Ok(Rc::new(get_mixed()));
+    };
+    let resulting_type_union = decrement_type(context, block_context, operand, operation_span, operand_type);
     let operand_id = get_block_expression_id(operand, context, block_context);
     let successful = assign_to_expression(
         context,

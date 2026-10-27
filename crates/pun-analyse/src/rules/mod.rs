@@ -2544,7 +2544,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
             self.invalidate_expression(u.operand);
         }
         if u.operator.is_increment_or_decrement() {
-            types::property_increment(self, u.operand);
+            types::property_increment(self, u.operand, u.operator.span(), u.span());
         }
     }
     fn walk_in_unary_postfix(&mut self, u: &'ast UnaryPostfix<'arena>, _: &mut ()) {
@@ -2553,7 +2553,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         assign::increment(self, u.operand);
         self.incremented(u.operand);
         self.invalidate_expression(u.operand);
-        types::property_increment(self, u.operand);
+        types::property_increment(self, u.operand, u.operator.span(), u.span());
     }
     fn walk_out_for(&mut self, _: &'ast For<'arena>, _: &mut ()) {
         self.syntax.parents.pop();

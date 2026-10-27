@@ -7,6 +7,7 @@ use std::collections::HashSet;
 
 use mago_codex::metadata::class_like::ClassLikeMetadata;
 use mago_codex::metadata::property::PropertyMetadata;
+use mago_codex::ttype::atomic::{TAtomic, array::{TArray, key::ArrayKey}};
 use mago_codex::visibility::Visibility;
 use mago_span::{HasSpan, Span};
 use mago_syntax::cst::*;
@@ -96,8 +97,14 @@ pub(super) fn typed(e: &Expression, spans: &mut Vec<Span>) {
                 out.extend(fetch(u.operand).map(|f| (f, false)));
             }
         }
-        Expression::UnaryPrefix(u) if u.operator.is_increment_or_decrement() => targets(u.operand, false, &mut out),
-        Expression::UnaryPostfix(u) => targets(u.operand, false, &mut out),
+        Expression::UnaryPrefix(u) if u.operator.is_increment_or_decrement() => {
+            targets(u.operand, false, &mut out);
+            spans.push(u.operator.span());
+        }
+        Expression::UnaryPostfix(u) => {
+            targets(u.operand, false, &mut out);
+            spans.push(u.operator.span());
+        }
         _ => {}
     }
     spans.extend(out.iter().filter_map(|(f, _)| f.holder.or(f.class)).map(|h| h.span()));
@@ -594,29 +601,52 @@ pub(in super::super) fn assignment(c: &mut Checker, a: &Assignment) {
     }
 }
 
-/// `++`/`--` of a property (a write, but its type is not checked here).
-pub(in super::super) fn increment(c: &mut Checker, operand: &Expression) {
-    writes(c, operand, false);
+/// `++`/`--` writes a virtual prefix expression's value, not a postfix expression's old value.
+pub(in super::super) fn increment(c: &mut Checker, operand: &Expression, operator: Span, expression: Span) {
+    writes(c, operand, false, Some((operator, expression)));
 }
 
 /// `unset($this->p[$k])`, a write of `$this->p` (but not `unset($this->p)`).
 pub(in super::super) fn unset(c: &mut Checker, u: &Unset) {
     for v in u.values.iter() {
-        writes(c, v, true);
+        writes(c, v, true, None);
     }
 }
 
-fn writes(c: &mut Checker, e: &Expression, offsets_only: bool) {
+fn writes(c: &mut Checker, e: &Expression, offsets_only: bool, virtual_write: Option<(Span, Span)>) {
     if c.level < 2 {
         return;
     }
     let mut writes = Vec::new();
     targets(e, false, &mut writes);
+    if virtual_write.is_some()
+        && let Expression::Access(Access::StaticProperty(p)) = unparen(e)
+        && let Some(name) = super::dynamic_names::static_property(&p.property)
+        && let Some(ty) = c.phpstan_type_at(name)
+    {
+        writes.extend(ty.constant_strings().into_iter().map(|name| (Fetch {
+            holder: None,
+            class: Some(p.class),
+            name: [b"$", name.as_slice()].concat(),
+            at: p.property.span(),
+            instance: false,
+        }, false)));
+    }
     for (f, offset) in writes.iter().filter(|(_, offset)| *offset || !offsets_only) {
         let Some(p) = declared::with_classes(c, || find(c, f)) else { continue };
         not_writable(c, f, &p);
         if c.level >= 3 {
             read_only(c, f, &p, *offset);
+            if !offset && let Some((operator, at)) = virtual_write {
+                let value = c.types.get(&operator).and_then(|t| {
+                    if let [TAtomic::Array(TArray::Keyed(named))] = t.types.as_ref() {
+                        named.get_known_items()?.get(&ArrayKey::String(word(&f.name))).map(|(_, ty)| ty)
+                    } else {
+                        Some(t)
+                    }
+                }).map(|t| c.to_phpstan(t));
+                assigned(c, f, &p, value, at);
+            }
         }
     }
 }

@@ -279,21 +279,19 @@ where
                 .with_help(format!("To access this property, you need an instance of the class (e.g., `$instance->{property_name}`), or declare the property as `static`.")),
         );
 
-        result.has_error_path = true;
+        result.has_invalid_path = true;
         return None;
     }
 
-    if !check_static_property_read_visibility(
+    // Visibility reports an access error, but PHPStan still reads the reflected property's value type.
+    check_static_property_read_visibility(
         context,
         block_context,
         declaring_class_id.as_bytes(),
         property_name.as_bytes(),
         class_expr.span(),
         Some(variable.span()),
-    ) {
-        result.has_error_path = true;
-        return None;
-    }
+    );
 
     if check_deprecation && !block_context.is_enclosing_scope_deprecated() {
         report_deprecated_property(context, declaring_class_metadata, property_metadata, variable.span());

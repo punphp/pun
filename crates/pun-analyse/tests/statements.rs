@@ -211,6 +211,16 @@ fn static_property_expression_name_boundaries() {
 fn static_property_operand_reads() {
     check_in("static-property-names", "phpstan-operands");
     check_in("static-property-names", "phpstan-operands-level8");
+    check_in("static-property-names", "phpstan-operands-level10");
+}
+
+/// Inc/dec's virtual assignment stores the new value even when the postfix expression returns the old one.
+/// Real null, literal and ordinary scalars, finite selectors and failed, inaccessible and readonly writes.
+#[test]
+fn static_property_increment_writes() {
+    check_in("static-property-names", "phpstan-writes");
+    check_in("static-property-names", "phpstan-writes-level8");
+    check_in("static-property-names", "phpstan-writes-level10");
 }
 
 /// AllowedSubTypesRule (`@phpstan-sealed`, `@psalm-inheritors`), MethodVisibilityInInterfaceRule and

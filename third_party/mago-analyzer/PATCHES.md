@@ -2176,3 +2176,48 @@ Neither remaining boundary requires a conversion change.
 Fresh LLVM profiles from public `run()` calls cover all five added executable production lines,
 without exclusions. The existing dispatch after removal of the direct-name restriction executes
 101 times. The analyzer dependency is explicitly instrumented with `--dep-coverage mago-analyzer`.
+
+## Increment and decrement virtual property writes
+
+`expression/unary.rs` keeps a postfix expression's completed operand read before mutation.
+The expression returns that old value. Its virtual property assignment uses the new value,
+as a prefix expression does. The operator span carries the virtual assigned value through the
+existing span-keyed expression observations. No source expression has that span.
+
+Finite dynamic static names need a separate value for each reflected property.
+`expression/access/static_property_access.rs` retains the resolved name and type pairs before
+a broader alternative or `ErrorType` absorbs them. The selector is evaluated once.
+The existing increment and decrement type operations compute each narrowed written value,
+without another evaluation or assignment. Speculative collector recordings prevent those
+type queries from repeating the operand's diagnostics. A keyed type at the operator span
+transports the named virtual values. It does not describe a PHP array expression.
+
+The shared type operations also preserve `IncDecTypeHelper`'s nonconstant string cases.
+Literal-string stays literal-string. Numeric-string produces a benevolent integer and float
+union. Other strings produce a benevolent string, integer, and float union. The existing
+benevolent-type flags carry that contract through conversion, avoiding false assignment errors
+for ordinary string properties. Constant numeric strings retain their exact arithmetic values.
+
+Pun's existing `types/properties.rs` write checker reads these observations and calls its
+existing assigned-value acceptance check. Direct names still use the ordinary written type.
+Finite static names use the same property reflection, visibility, readonly, and acceptance
+checks. Unknown names find no reflected property. Offset writes retain their existing checks.
+
+`resolver/static_property.rs` treats static access to an instance property as a failed read,
+using `ErrorType` rather than never. An inaccessible static property still has its reflected
+value type. These contracts preserve real null deprecations and strict mixed operand checks
+without filtering diagnostics or changing conversion.
+
+The source contracts are PHPStan 2.3.1's
+[`PostIncHandler`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Analyser/ExprHandler/PostIncHandler.php#L55-L101),
+[`IncDecTypeHelper`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Analyser/ExprHandler/Helper/IncDecTypeHelper.php#L45-L145),
+[`TypesAssignedToPropertiesRule`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Rules/Properties/TypesAssignedToPropertiesRule.php#L43-L125),
+and `StaticPropertyFetchHandler` linked above. Public `statements` fixtures retain independent
+PHPStan captures at levels 2, 8, and 10. They distinguish the expression result from the stored
+value with null, literal integer, and numeric-string properties assigned from prefix and
+postfix expressions. Other controls cover finite unions, failed and unknown names, visibility,
+receiver errors, readonly properties, and multiline positions.
+
+The retained level-8 operand fixture now reports both missing null-property assignment errors.
+The level-10 fixture also reports the mixed operand error for static access to an instance property.
+The complete `statements` suite passes with these unchanged expectations.
