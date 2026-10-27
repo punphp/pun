@@ -77,9 +77,7 @@ impl Rule for PreferCoversAttribute {
         {
             return;
         }
-        let Some(annotated) = Annotated::of(ctx.source, node, ancestors) else {
-            return;
-        };
+        let annotated = Annotated::of(ctx.source, node, ancestors).unwrap();
         let Some(doc) = annotated.doc.as_ref() else {
             return;
         };
@@ -116,9 +114,7 @@ fn class_attributes(
     node: Node<'_, '_>,
     scope: &[Node<'_, '_>],
 ) -> Result<Option<Report>, ()> {
-    let Some((members, _, _)) = class_body(node) else {
-        return Ok(None);
-    };
+    let (members, _, _) = class_body(node).unwrap();
     let annotated = Annotated::of(ctx.source, node, &scope[..scope.len() - 1]);
     let doc = annotated.as_ref().and_then(|a| a.doc.as_ref());
     let mut default_groups: Vec<String> = Vec::new();
@@ -194,10 +190,12 @@ fn class_attributes(
             let text: String = groups.iter().map(|g| format!("{g} ")).collect();
             vec![Edit::new(Span::new(at, at), text)]
         }
-        (_, Some(annotated)) => annotated
+        // a class
+        (_, annotated) => annotated
+            .as_ref()
+            .unwrap()
             .edits(ctx.source, doc_edit.as_deref(), &groups)
             .ok_or(())?,
-        _ => return Ok(None),
     };
     let span = doc.map_or_else(
         || {
@@ -217,9 +215,7 @@ fn method_attributes(
     method: &Method<'_>,
     default_class: Option<&str>,
 ) -> Result<Vec<(String, String)>, ()> {
-    let Some(annotated) = Annotated::of(ctx.source, Node::Method(method), scope) else {
-        return Ok(Vec::new());
-    };
+    let annotated = Annotated::of(ctx.source, Node::Method(method), scope).unwrap();
     let Some(doc) = annotated.doc.as_ref() else {
         return Ok(Vec::new());
     };

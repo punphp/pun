@@ -13,8 +13,8 @@
 
 use mago_codex::ttype::TType;
 use mago_syntax::cst::{
-    ClassLikeMember, ClassLikeMemberSelector, Expression, Method, MethodBody, Modifier, Node,
-    NodeKind, Statement,
+    Block, ClassLikeMember, ClassLikeMemberSelector, Expression, Method, MethodBody, Modifier,
+    Node, NodeKind, Statement,
 };
 use pun_problem::{Edit, Safety, Span};
 
@@ -51,9 +51,7 @@ impl Rule for NoTestConstructor {
         if !is_in_test_class(ctx, &scope, None) {
             return;
         }
-        let Some(name) = own_class(&scope) else {
-            return;
-        };
+        let name = own_class(&scope).unwrap();
         if !name.ends_with("Test") && !name.ends_with("TestCase") {
             return;
         }
@@ -99,10 +97,14 @@ impl Rule for NoTestConstructor {
         let edits = match set_up {
             None => renamed_to_set_up(ctx, constructor, &list, &kept, &removed),
             Some(set_up) => {
+                // Rector gives an abstract `setUp()` a body, which PHP rejects
+                let MethodBody::Concrete(set_up_block) = &set_up.body else {
+                    return;
+                };
                 let mut only = vec![false; members.len()];
                 only[at] = true;
                 let mut edits = remove_class_members(source, node, &only);
-                if let Some(edit) = appended(source, set_up, &kept) {
+                if let Some(edit) = appended(source, set_up, set_up_block, &kept) {
                     edits.push(edit);
                 }
                 merge(edits)
@@ -251,14 +253,12 @@ fn renamed_to_set_up(
 }
 
 /// The edit for adding the statements of `kept` to the end of `set_up`'s body, as php-parser inserts them: on lines
-/// of their own after the last statement, or, in an empty body, with the method printed anew.
-fn appended(source: &str, set_up: &Method<'_>, kept: &List<'_>) -> Option<Edit> {
+/// of their own after the last statement, or, in an empty body (`block`), with the method printed anew; `None` with
+/// nothing to add.
+fn appended(source: &str, set_up: &Method<'_>, block: &Block<'_>, kept: &List<'_>) -> Option<Edit> {
     if kept.is_empty() {
         return None;
     }
-    let MethodBody::Concrete(block) = &set_up.body else {
-        return None;
-    };
     let list = block_list(source, block);
     let indent = line_indent(source, node_span(set_up).start);
     let inner = format!("{indent}    ");

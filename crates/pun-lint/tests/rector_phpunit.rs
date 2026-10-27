@@ -334,6 +334,8 @@ fn assert_func_call_to_p_h_p_unit_assert() {
     check(PreferAssert, "AssertFuncCallToPHPUnitAssertRector");
 }
 
+/// Pun/no_return_value: `willReturn()` without an argument makes Rector fail on the file (`resolveExternalUses()` gets
+/// `null`); Pun leaves the call alone.
 #[test]
 fn merge_with_callable_and_will_return() {
     check(
@@ -347,6 +349,8 @@ fn add_return_type_to_depended() {
     check(AddDependedTestReturnType, "AddReturnTypeToDependedRector");
 }
 
+/// Pun/abstract: an abstract constructor, or a constructor beside an abstract `setUp()`, makes Rector write an abstract
+/// `setUp()` with a body, which PHP rejects; Pun leaves the class alone.
 #[test]
 fn construct_class_method_to_set_up_test_case() {
     check(
@@ -597,6 +601,8 @@ fn expects_param_to_mock_object() {
     check(AddMockObjectType, "ExpectsParamToMockObjectRector");
 }
 
+/// Pun/declined: a `@param` over several lines (Rector reads it as a tag without the variable and adds one more) and a
+/// tab-indented method (Rector writes the new doc at its own indentation, in spaces); Pun leaves the class alone.
 #[test]
 fn add_intersection_param_to_mock_object_param() {
     check(

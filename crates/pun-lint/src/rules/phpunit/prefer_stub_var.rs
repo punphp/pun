@@ -65,9 +65,7 @@ impl Rule for PreferStubVar {
         if !stub_native {
             return;
         }
-        let Some(annotated) = Annotated::of(ctx.source, node, ancestors) else {
-            return;
-        };
+        let annotated = Annotated::of(ctx.source, node, ancestors).unwrap();
         let Some(doc) = annotated.doc.as_ref() else {
             return;
         };

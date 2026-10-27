@@ -73,9 +73,8 @@ impl Rule for AddReturnTypeFromMockObject {
         if !has_only_return_with_expr(&place, f.body, &returns) {
             return;
         }
-        let Some(value) = sole.value else {
-            return;
-        };
+        // `has_only_return_with_expr()`: the return has a value
+        let value = sole.value.unwrap();
         let Some(t) = facts.native_type(node_span(value)) else {
             return;
         };
@@ -85,13 +84,10 @@ impl Rule for AddReturnTypeFromMockObject {
                 None => is_a(ctx, &named.name.to_string(), &[MOCK_OBJECT]),
                 // isIntersectionWithMockObjectType(): two types, one of them names MockObject
                 Some(others) => {
+                    let is_mock = |name: String| name.eq_ignore_ascii_case(MOCK_OBJECT);
                     others.len() == 1
-                        && std::iter::once(named.name.to_string())
-                            .chain(others.iter().filter_map(|o| match o {
-                                TAtomic::Object(TObject::Named(n)) => Some(n.name.to_string()),
-                                _ => None,
-                            }))
-                            .any(|name| name.eq_ignore_ascii_case(MOCK_OBJECT))
+                        && (is_mock(named.name.to_string())
+                            || matches!(&others[0], TAtomic::Object(TObject::Named(n)) if is_mock(n.name.to_string())))
                 }
             },
             _ => false,

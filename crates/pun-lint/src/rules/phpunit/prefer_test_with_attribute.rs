@@ -38,9 +38,7 @@ impl Rule for PreferTestWithAttribute {
         out: &mut Vec<Report>,
     ) {
         let Node::Method(method) = node else { return };
-        let Some(annotated) = Annotated::of(ctx.source, node, ancestors) else {
-            return;
-        };
+        let annotated = Annotated::of(ctx.source, node, ancestors).unwrap();
         let Some(doc) = annotated.doc.as_ref() else {
             return;
         };

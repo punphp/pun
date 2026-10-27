@@ -262,11 +262,7 @@ fn call_like_args<'a>(roots: &[Node<'a, 'a>]) -> Vec<&'a Expression<'a>> {
             new.argument_list
                 .iter()
                 .flat_map(|l| l.arguments.iter())
-                .filter_map(|a| match a {
-                    PartialArgument::Positional(a) => Some(a.value),
-                    PartialArgument::Named(a) => Some(a.value),
-                    _ => None,
-                }),
+                .filter_map(PartialArgument::value),
         ),
         _ => {}
     });

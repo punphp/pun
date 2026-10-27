@@ -299,11 +299,7 @@ fn in_call_likes_and_arrays(roots: &[Node<'_, '_>], name: &[u8]) -> usize {
                 .argument_list
                 .iter()
                 .flat_map(|l| l.arguments.iter())
-                .filter_map(|a| match a {
-                    PartialArgument::Positional(a) => Some(a.value),
-                    PartialArgument::Named(a) => Some(a.value),
-                    _ => None,
-                })
+                .filter_map(PartialArgument::value)
                 .collect(),
             Node::Array(array) => array.elements.iter().filter_map(element_value).collect(),
             Node::LegacyArray(array) => array.elements.iter().filter_map(element_value).collect(),

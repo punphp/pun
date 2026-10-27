@@ -15,7 +15,7 @@ use std::collections::HashMap;
 
 use mago_syntax::cst::{
     ArrayElement, ClassLikeMember, Expression, Literal, Method, MethodBody, Node, NodeKind,
-    PartialArgument, Statement, Variable,
+    Statement, Variable,
 };
 use pun_problem::{Edit, Safety, Span};
 
@@ -180,12 +180,7 @@ fn provider_names(ancestors: &[Node<'_, '_>], method: &Method<'_>) -> Vec<String
                 .iter()
                 .flat_map(|a| a.arguments.iter())
             {
-                let value = match arg {
-                    PartialArgument::Positional(a) => a.value,
-                    PartialArgument::Named(a) => a.value,
-                    _ => continue,
-                };
-                if let Expression::Literal(Literal::String(s)) = value {
+                if let Some(Expression::Literal(Literal::String(s))) = arg.value() {
                     names.push(String::from_utf8_lossy(s.value.unwrap_or_default()).into_owned());
                 }
             }

@@ -52,14 +52,11 @@ impl Rule for AddMockIntersectionType {
         let mut edits = Vec::new();
         let mut changed: Vec<usize> = Vec::new();
         for (name, call) in calls {
-            let Some(at) = members
-                .iter()
-                .position(|m| matches!(m, ClassLikeMember::Property(p) if declares(p, name)))
-            else {
+            let Some((at, property)) = members.iter().enumerate().find_map(|(at, m)| match m {
+                ClassLikeMember::Property(p) if declares(p, name) => Some((at, p)),
+                _ => None,
+            }) else {
                 continue;
-            };
-            let ClassLikeMember::Property(property) = &members[at] else {
-                unreachable!()
             };
             // only properties typed as a bare native MockObject
             if !is_typed(&scope, property, MOCK_OBJECT) {

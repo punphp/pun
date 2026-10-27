@@ -261,21 +261,23 @@ pub(crate) fn is_in_test_class(
     ancestors: &[Node<'_, '_>],
     method: Option<&Method<'_>>,
 ) -> bool {
-    let Some(at) = ancestors.iter().rposition(|a| {
-        matches!(
-            a,
-            Node::Class(_)
-                | Node::AnonymousClass(_)
-                | Node::Interface(_)
-                | Node::Trait(_)
-                | Node::Enum(_)
-        )
-    }) else {
+    let Some(scope) = class_scope(ancestors) else {
         return false;
     };
-    let Some(scope) = class_scope(&ancestors[..=at]) else {
-        return false;
-    };
+    // the class-like `class_scope()` read
+    let at = ancestors
+        .iter()
+        .rposition(|a| {
+            matches!(
+                a,
+                Node::Class(_)
+                    | Node::AnonymousClass(_)
+                    | Node::Interface(_)
+                    | Node::Trait(_)
+                    | Node::Enum(_)
+            )
+        })
+        .unwrap();
     if matches!(ancestors[at], Node::Trait(_)) {
         let name = scope.name.unwrap_or_default();
         let in_tests_namespace = name
@@ -299,19 +301,14 @@ pub(crate) fn is_in_test_class(
 
 /// `ClassReflection::is()` for the class-like `ancestors` ends in, against any of `targets`.
 pub(super) fn class_is(ctx: &Context<'_>, ancestors: &[Node<'_, '_>], targets: &[&str]) -> bool {
-    let Some(scope) = class_scope(ancestors) else {
-        return false;
-    };
-    match &scope.name {
-        Some(name) => is_a(ctx, name, targets),
-        None => {
-            let Some(Node::AnonymousClass(c)) = ancestors.last() else {
-                return false;
-            };
-            let name = facts(ctx).anonymous_class_name(mago_span::HasSpan::span(*c));
-            is_a(ctx, &name, targets) || scope.parents.iter().any(|p| is_a(ctx, p, targets))
-        }
+    let scope = class_scope(ancestors).unwrap();
+    if let Some(name) = &scope.name {
+        return is_a(ctx, name, targets);
     }
+    // an anonymous class, the last of `ancestors`
+    let span = mago_span::HasSpan::span(ancestors.last().unwrap());
+    let name = facts(ctx).anonymous_class_name(span);
+    is_a(ctx, &name, targets) || scope.parents.iter().any(|p| is_a(ctx, p, targets))
 }
 
 /// Whether a method is public (no visibility modifier counts as public).

@@ -153,6 +153,12 @@ fn atomic_of(atomic: &TAtomic) -> PType {
             PType::ConstantArray { keys, values }
         }
         TAtomic::Array(_) => PType::Array,
+        // `getNativeType()`: an anonymous class's object is an `ObjectWithoutClassType`
+        TAtomic::Object(TObject::Named(n))
+            if n.name.as_bytes().starts_with(b"{anonymous-class:") =>
+        {
+            PType::Other
+        }
         TAtomic::Object(TObject::Named(n)) if n.intersection_types.is_none() => {
             PType::Object(n.name.to_string())
         }

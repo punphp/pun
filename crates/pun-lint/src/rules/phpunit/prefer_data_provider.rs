@@ -52,9 +52,7 @@ impl Rule for PreferDataProvider {
             let ClassLikeMember::Method(method) = member else {
                 continue;
             };
-            let Some(annotated) = Annotated::of(ctx.source, Node::Method(method), &scope) else {
-                continue;
-            };
+            let annotated = Annotated::of(ctx.source, Node::Method(method), &scope).unwrap();
             let Some(doc) = annotated.doc.as_ref() else {
                 continue;
             };
@@ -144,9 +142,8 @@ impl Rule for PreferDataProvider {
                 _ => {}
             }
         }
-        let Some((at, indent)) = at else {
-            return;
-        };
+        // a provider comes from a method
+        let (at, indent) = at.unwrap();
         if indent.contains('\t') {
             return;
         }

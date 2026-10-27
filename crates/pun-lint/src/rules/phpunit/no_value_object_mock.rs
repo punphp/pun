@@ -52,11 +52,7 @@ impl Rule for NoValueObjectMock {
                 .argument_list
                 .iter()
                 .flat_map(|a| a.arguments.iter())
-                .filter_map(|a| match a {
-                    PartialArgument::Positional(a) => Some(a.value),
-                    PartialArgument::Named(a) => Some(a.value),
-                    _ => None,
-                })
+                .filter_map(PartialArgument::value)
                 .collect(),
             _ => Vec::new(),
         };

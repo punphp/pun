@@ -5,9 +5,7 @@
 //! `#[Depends('name')]` attribute with a string, else its first `@depends name` tag; `()` trimmed) gets that
 //! method's return type, as written.
 
-use mago_syntax::cst::{
-    ClassLikeMember, Expression, Literal, Method, Node, NodeKind, PartialArgument,
-};
+use mago_syntax::cst::{ClassLikeMember, Expression, Literal, Method, Node, NodeKind};
 use pun_problem::Safety;
 
 use super::add_mock_object_type::type_edit;
@@ -103,11 +101,7 @@ fn depends_method(
     if let Some(attribute) = attribute {
         // Rector reads `args[0]`, which fails without one
         let first = attribute.argument_list.as_ref()?.arguments.first()?;
-        let value = match first {
-            PartialArgument::Positional(a) => a.value,
-            PartialArgument::Named(a) => a.value,
-            _ => return None,
-        };
+        let value = first.value()?;
         if let Expression::Literal(Literal::String(_)) = value {
             return Some(string_value(value)?.trim_matches(['(', ')']).to_string());
         }
