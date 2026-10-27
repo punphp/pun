@@ -9,7 +9,8 @@
 //! fixtures with its stubs/ on the class map. Every fixture here sees those classes: tests/rector-laravel-stubs holds
 //! rector-laravel's stubs/Illuminate, verbatim at 2bd499d.
 //!
-//! Pun/tabbed (`FillablePropertyToFillableAttributeRector`, `ScopeNamedClassMethodToScopeAttributedClassMethodRector`):
+//! Pun/tabbed (`FillablePropertyToFillableAttributeRector`, `CollectedByPropertyToCollectedByAttributeRector`,
+//! `TablePropertyToTableAttributeRector`, `ScopeNamedClassMethodToScopeAttributedClassMethodRector`):
 //! a tab in the class's or method's indentation. Rector writes the new attribute's line break and the node after it
 //! in spaces at its own indentation; Pun leaves the class alone.
 //!
