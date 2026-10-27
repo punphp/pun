@@ -502,16 +502,15 @@ fn infer_with_constant_sources<'arena>(
                 infer_with_constant_sources(context, scope, lhs, enclosing_class, constants, class_constants)?;
             let right_type =
                 infer_with_constant_sources(context, scope, rhs, enclosing_class, constants, class_constants)?;
+            // TypeCombinator::removeNull removes explicit null members, not null from mixed.
+            let left_type = left_type.clone_with_types(
+                left_type.types.iter().filter(|atomic| !matches!(atomic, TAtomic::Null)).cloned().collect(),
+            );
 
             Some(if let Some(codebase) = context.codebase {
-                crate::ttype::initializer::union(&left_type.to_non_nullable(), &right_type, codebase)
+                crate::ttype::initializer::union(&left_type, &right_type, codebase)
             } else {
-                combine_union_types(
-                    &left_type.to_non_nullable(),
-                    &right_type,
-                    &CodebaseMetadata::default(),
-                    Default::default(),
-                )
+                combine_union_types(&left_type, &right_type, &CodebaseMetadata::default(), Default::default())
             })
         }
         Expression::Binary(Binary { operator: BinaryOperator::StringConcat(_), lhs, rhs }) => {

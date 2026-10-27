@@ -675,3 +675,11 @@ and [`TypeCombinator.php:910–1033`](https://github.com/phpstan/phpstan-src/blo
 The mixed union transfer also recognizes Mago's existing truthy and finite falsey representations.
 `StringType::tryRemove('')` preserves non-empty strings when a falsey alternative rejoins an exclusion.
 Public Analyser and type-query captures are in `tests/fixtures/object-intersections/` in `pun-analyse`.
+
+## Initializer null removal
+
+Initializer coalescing follows PHPStan 2.3.1's `TypeCombinator::removeNull()`
+(`src/Type/TypeCombinator.php:209–230`): remove explicit null union members, without subtracting null
+from mixed or a template bound. Ordinary flow's `to_non_nullable()` retains its stronger narrowing.
+The unchanged `initializer_expressions` public regression checks unsupported-call fallback in both
+a direct class constant and a nested array; a fresh PHPStan capture confirms all 19 diagnostic records.
