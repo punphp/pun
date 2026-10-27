@@ -2135,3 +2135,44 @@ retain their existing inference; the exact-offset write control checks the exist
 For example, fresh PHPStan yields `''|'f'|'o'` for `'foo'[$index]` when `$index` has general type `int`;
 that range-based inference is not part of this correction. The patch does not establish complete
 DefinedVariableRule or CompactVariablesRule parity.
+
+## Failed static property reads
+
+`expression/access/static_property_access.rs` emits `ErrorType` for an unresolved static property,
+not null. A failed alternative in a finite name union contributes the same error type.
+The existing union combiner preserves that identity alongside successful property alternatives.
+Real null properties retain their declared value and decrement deprecation diagnostics.
+
+This follows PHPStan 2.3.1's
+[`StaticPropertyFetchHandler::composeResult()`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Analyser/ExprHandler/StaticPropertyFetchHandler.php#L170-L223).
+`InvalidIncDecOperationRule` checks the completed operand read before the virtual property write.
+Pun already captures that read through its expression hook. No diagnostic filter, inc/dec rule,
+conversion, or shared combiner change is needed.
+
+Pun's property checker also applies the virtual `PropertyAssignNode` check to direct static names.
+Expression names already receive that check. Both paths reuse the same receiver and visibility checker,
+matching `AccessStaticPropertiesInAssignRule` rather than omitting the direct name's second finding.
+
+The public `statements` controls compare direct reads, finite dynamic reads, mixed successful and
+failed alternatives, all four inc/dec forms, actual null and nullable properties, valid names,
+unknown names, visibility, and instance-property access with fresh PHPStan captures at levels 2 and 8.
+The original `static-property-names/boundaries.php:61` control retains its four primary property
+findings without the spurious `preDec.type` on null. Existing receiver and visibility resolution,
+null receiver handling, and the separate error-path fallback remain unchanged.
+
+The level-2 operand capture matches all 52 diagnostics, including tips and ignorability.
+The strict level-8 capture retains two separate missing `assign.propertyType` findings for `++`
+of a property declared null. `types/properties.rs::increment()` checks write access and readonly
+rules, but explicitly omits the assigned-value type check. That rule needs the written value,
+which differs from a postfix expression's result. This patch does not duplicate that rule in
+`inc_dec.rs` or change its expectation. The complete statements run therefore has 21 passing
+tests and one failing new operand test. All original statements tests pass.
+
+A supplemental level-10 oracle capture also exposes the unchanged error-path fallback for static
+access to an instance property: PHPStan reports `preDec.type` on mixed, while the analyzer retains
+never. The missing-property producer fix does not change this distinct resolver failure.
+Neither remaining boundary requires a conversion change.
+
+Fresh LLVM profiles from public `run()` calls cover all five added executable production lines,
+without exclusions. The existing dispatch after removal of the direct-name restriction executes
+101 times. The analyzer dependency is explicitly instrumented with `--dep-coverage mago-analyzer`.

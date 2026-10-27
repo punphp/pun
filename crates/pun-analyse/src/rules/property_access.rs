@@ -391,9 +391,8 @@ impl Checker<'_, '_> {
     // ponytail: the rest of the function, not just the paths after it; and `$this[] = ...` on a class without
     // ArrayAccess, after which PHPStan describes `$this` as `ArrayAccess&C`
     pub(super) fn incremented(&mut self, operand: &Expression) {
-        // Inc/dec also produces a PropertyAssignNode. Keep the existing direct-name lane unchanged.
+        // Inc/dec also produces a PropertyAssignNode, for direct and expression names alike.
         if let Expression::Access(Access::StaticProperty(p)) = unparenthesized(operand)
-            && !matches!(p.property, Variable::Direct(_))
         {
             static_check(self, p);
         }

@@ -205,6 +205,14 @@ fn static_property_expression_name_boundaries() {
     check_in("static-property-names", "phpstan-boundaries");
 }
 
+/// Failed static reads are ErrorType, not null. Genuine null and nullable properties retain their decrement
+/// diagnostics; finite successful/failed alternatives and all four inc/dec forms use the captured read type.
+#[test]
+fn static_property_operand_reads() {
+    check_in("static-property-names", "phpstan-operands");
+    check_in("static-property-names", "phpstan-operands-level8");
+}
+
 /// AllowedSubTypesRule (`@phpstan-sealed`, `@psalm-inheritors`), MethodVisibilityInInterfaceRule and
 /// DuplicateTraitDeclarationRule (reported in each using class's context). The anonymous class's hashed name is the
 /// oracle's from this crate's directory, the working directory of `cargo test`.

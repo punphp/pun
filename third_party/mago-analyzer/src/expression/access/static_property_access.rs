@@ -2,6 +2,7 @@ use mago_allocator::Arena;
 use std::rc::Rc;
 
 use mago_codex::ttype::add_optional_union_type;
+use mago_codex::ttype::get_error;
 use mago_codex::ttype::get_mixed;
 use mago_codex::ttype::get_never;
 use mago_codex::ttype::get_null;
@@ -80,7 +81,14 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for StaticPropertyAccess<'arena> {
                     Some(add_optional_union_type(get_mixed(), resulting_expression_type.as_ref(), context.codebase));
             }
 
-            if resolution_result.has_invalid_path || resolution_result.encountered_null {
+            // StaticPropertyFetchHandler resolves an absent property to ErrorType, including failed arms of
+            // a finite name union. Null is a value of a real property, not a failed lookup's placeholder.
+            if resolution_result.has_invalid_path {
+                resulting_expression_type =
+                    Some(add_optional_union_type(get_error(), resulting_expression_type.as_ref(), context.codebase));
+            }
+
+            if resolution_result.encountered_null {
                 resulting_expression_type =
                     Some(add_optional_union_type(get_null(), resulting_expression_type.as_ref(), context.codebase));
             }
