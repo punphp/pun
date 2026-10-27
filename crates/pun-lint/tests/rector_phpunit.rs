@@ -384,6 +384,8 @@ fn ticket_annotation_to_attribute() {
     // in the doc; Pun leaves such a doc alone. Pun/unclosed_bracket: a generic tag whose brackets do not close takes
     // in the generic tags after it (`DoctrineAnnotationDecorator::mergeNestedDoctrineAnnotations()`), and Rector then
     // prints their text twice; Pun leaves such a doc alone.
+    // Pun/other_comment: php-parser reprints every comment before a node whose doc changed, one per line; Pun
+    // leaves a doc with another comment before it alone.
     check(PreferTicketAttribute, "TicketAnnotationToAttributeRector");
 }
 

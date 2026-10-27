@@ -97,11 +97,14 @@ impl Rule for PreferCoversAttribute {
             return;
         }
         let new_doc = doc.print(&removed);
+        let Some(edits) = annotated.edits(ctx.source, Some(&new_doc), &[]) else {
+            return;
+        };
         out.push(report(
             doc.span,
             "Use the `#[Covers*]` attributes on the class instead of the `@covers` annotation.",
             Safety::Safe,
-            annotated.edits(ctx.source, Some(&new_doc), &[]),
+            edits,
         ));
     }
 }
@@ -191,7 +194,9 @@ fn class_attributes(
             let text: String = groups.iter().map(|g| format!("{g} ")).collect();
             vec![Edit::new(Span::new(at, at), text)]
         }
-        (_, Some(annotated)) => annotated.edits(ctx.source, doc_edit.as_deref(), &groups),
+        (_, Some(annotated)) => annotated
+            .edits(ctx.source, doc_edit.as_deref(), &groups)
+            .ok_or(())?,
         _ => return Ok(None),
     };
     let span = doc.map_or_else(

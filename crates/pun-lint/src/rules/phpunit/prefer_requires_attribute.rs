@@ -74,11 +74,14 @@ impl Rule for PreferRequiresAttribute {
         }
         let groups: Vec<String> = keyed.into_iter().map(|(_, group)| group).collect();
         let new_doc = doc.print(&removed);
+        let Some(edits) = annotated.edits(ctx.source, Some(&new_doc), &groups) else {
+            return;
+        };
         out.push(report(
             doc.span,
             "Use the `#[Requires*]` attributes instead of the `@requires` annotation.",
             Safety::Safe,
-            annotated.edits(ctx.source, Some(&new_doc), &groups),
+            edits,
         ));
     }
 }
