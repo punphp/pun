@@ -1,5 +1,6 @@
 //! Plugin registry for managing and dispatching to providers and hooks.
 
+use std::cell::Cell;
 use std::sync::Arc;
 use std::sync::OnceLock;
 
@@ -83,6 +84,27 @@ use crate::plugin::provider::property::PropertyInitializationProvider;
 use crate::plugin::provider::throw::ExpressionThrowTypeProvider;
 use crate::plugin::provider::throw::FunctionThrowTypeProvider;
 use crate::plugin::provider::throw::MethodThrowTypeProvider;
+
+thread_local! {
+    // Pricing can enter closure/constructor bodies with fresh artifacts. Keep
+    // observer dispatch lexical to this synchronous walk, not to an artifact bag.
+    static ISOLATED_TYPE_PRICING: Cell<bool> = const { Cell::new(false) };
+}
+
+pub(crate) fn is_isolated_type_pricing() -> bool {
+    ISOLATED_TYPE_PRICING.get()
+}
+
+pub(crate) fn with_isolated_type_pricing<T>(price: impl FnOnce() -> T) -> T {
+    struct Restore(bool);
+    impl Drop for Restore {
+        fn drop(&mut self) {
+            ISOLATED_TYPE_PRICING.set(self.0);
+        }
+    }
+    let _restore = Restore(ISOLATED_TYPE_PRICING.replace(true));
+    price()
+}
 
 pub struct ProviderResult {
     pub return_type: Option<TUnion>,
@@ -889,6 +911,9 @@ impl PluginRegistry {
         context: &mut HookContext<'_, '_>,
     ) -> PluginResult<HookAction> {
         for hook in &self.statement_hooks {
+            if context.isolated_type_pricing && hook.is_observer() {
+                continue;
+            }
             if hook.before_statement(stmt, context)? == HookAction::Skip {
                 return Ok(HookAction::Skip);
             }
@@ -903,6 +928,9 @@ impl PluginRegistry {
     /// Returns [`PluginError`] if any registered hook propagates one.
     pub fn after_statement(&self, stmt: &Statement<'_>, context: &mut HookContext<'_, '_>) -> PluginResult<()> {
         for hook in &self.statement_hooks {
+            if context.isolated_type_pricing && hook.is_observer() {
+                continue;
+            }
             hook.after_statement(stmt, context)?;
         }
         Ok(())
@@ -919,7 +947,7 @@ impl PluginRegistry {
         context: &mut HookContext<'_, '_>,
     ) -> PluginResult<ExpressionHookResult> {
         for hook in &self.expression_hooks {
-            if context.raw_callback_gather && hook.is_observer() {
+            if (context.raw_callback_gather || context.isolated_type_pricing) && hook.is_observer() {
                 continue;
             }
             let result = hook.before_expression(expr, context)?;
@@ -937,7 +965,7 @@ impl PluginRegistry {
         context: &mut HookContext<'_, '_>,
     ) -> PluginResult<()> {
         for hook in &self.expression_hooks {
-            if context.raw_callback_gather && hook.is_observer() {
+            if (context.raw_callback_gather || context.isolated_type_pricing) && hook.is_observer() {
                 continue;
             }
             hook.before_arguments(invocation, context)?;
@@ -952,7 +980,7 @@ impl PluginRegistry {
     /// Returns [`PluginError`] if any registered hook propagates one.
     pub fn after_expression(&self, expr: &Expression<'_>, context: &mut HookContext<'_, '_>) -> PluginResult<()> {
         for hook in &self.expression_hooks {
-            if context.raw_callback_gather && hook.is_observer() {
+            if (context.raw_callback_gather || context.isolated_type_pricing) && hook.is_observer() {
                 continue;
             }
             hook.after_expression(expr, context)?;
@@ -971,6 +999,9 @@ impl PluginRegistry {
         context: &mut HookContext<'_, '_>,
     ) -> PluginResult<ExpressionHookResult> {
         for hook in &self.function_call_hooks {
+            if context.isolated_type_pricing && hook.is_observer() {
+                continue;
+            }
             let result = hook.before_function_call(call, context)?;
             if result.should_skip() {
                 return Ok(result);
@@ -986,6 +1017,9 @@ impl PluginRegistry {
     /// Returns [`PluginError`] if any registered hook propagates one.
     pub fn after_function_call(&self, call: &FunctionCall<'_>, context: &mut HookContext<'_, '_>) -> PluginResult<()> {
         for hook in &self.function_call_hooks {
+            if context.isolated_type_pricing && hook.is_observer() {
+                continue;
+            }
             hook.after_function_call(call, context)?;
         }
         Ok(())
@@ -1002,6 +1036,9 @@ impl PluginRegistry {
         context: &mut HookContext<'_, '_>,
     ) -> PluginResult<ExpressionHookResult> {
         for hook in &self.method_call_hooks {
+            if context.isolated_type_pricing && hook.is_observer() {
+                continue;
+            }
             let result = hook.before_method_call(call, context)?;
             if result.should_skip() {
                 return Ok(result);
@@ -1017,6 +1054,9 @@ impl PluginRegistry {
     /// Returns [`PluginError`] if any registered hook propagates one.
     pub fn after_method_call(&self, call: &MethodCall<'_>, context: &mut HookContext<'_, '_>) -> PluginResult<()> {
         for hook in &self.method_call_hooks {
+            if context.isolated_type_pricing && hook.is_observer() {
+                continue;
+            }
             hook.after_method_call(call, context)?;
         }
         Ok(())
@@ -1033,6 +1073,9 @@ impl PluginRegistry {
         context: &mut HookContext<'_, '_>,
     ) -> PluginResult<ExpressionHookResult> {
         for hook in &self.static_method_call_hooks {
+            if context.isolated_type_pricing && hook.is_observer() {
+                continue;
+            }
             let result = hook.before_static_method_call(call, context)?;
             if result.should_skip() {
                 return Ok(result);
@@ -1052,6 +1095,9 @@ impl PluginRegistry {
         context: &mut HookContext<'_, '_>,
     ) -> PluginResult<()> {
         for hook in &self.static_method_call_hooks {
+            if context.isolated_type_pricing && hook.is_observer() {
+                continue;
+            }
             hook.after_static_method_call(call, context)?;
         }
         Ok(())
@@ -1068,6 +1114,9 @@ impl PluginRegistry {
         context: &mut HookContext<'_, '_>,
     ) -> PluginResult<ExpressionHookResult> {
         for hook in &self.nullsafe_method_call_hooks {
+            if context.isolated_type_pricing && hook.is_observer() {
+                continue;
+            }
             let result = hook.before_nullsafe_method_call(call, context)?;
             if result.should_skip() {
                 return Ok(result);
@@ -1087,6 +1136,9 @@ impl PluginRegistry {
         context: &mut HookContext<'_, '_>,
     ) -> PluginResult<()> {
         for hook in &self.nullsafe_method_call_hooks {
+            if context.isolated_type_pricing && hook.is_observer() {
+                continue;
+            }
             hook.after_nullsafe_method_call(call, context)?;
         }
         Ok(())
@@ -1104,6 +1156,9 @@ impl PluginRegistry {
         context: &mut HookContext<'_, '_>,
     ) -> PluginResult<()> {
         for hook in &self.class_hooks {
+            if context.isolated_type_pricing && hook.is_observer() {
+                continue;
+            }
             hook.on_enter_class(class, metadata, context)?;
         }
         Ok(())
@@ -1121,6 +1176,9 @@ impl PluginRegistry {
         context: &mut HookContext<'_, '_>,
     ) -> PluginResult<()> {
         for hook in &self.class_hooks {
+            if context.isolated_type_pricing && hook.is_observer() {
+                continue;
+            }
             hook.on_leave_class(class, metadata, context)?;
         }
         Ok(())
@@ -1138,6 +1196,9 @@ impl PluginRegistry {
         context: &mut HookContext<'_, '_>,
     ) -> PluginResult<()> {
         for hook in &self.interface_hooks {
+            if context.isolated_type_pricing && hook.is_observer() {
+                continue;
+            }
             hook.on_enter_interface(interface, metadata, context)?;
         }
         Ok(())
@@ -1155,6 +1216,9 @@ impl PluginRegistry {
         context: &mut HookContext<'_, '_>,
     ) -> PluginResult<()> {
         for hook in &self.interface_hooks {
+            if context.isolated_type_pricing && hook.is_observer() {
+                continue;
+            }
             hook.on_leave_interface(interface, metadata, context)?;
         }
         Ok(())
@@ -1172,6 +1236,9 @@ impl PluginRegistry {
         context: &mut HookContext<'_, '_>,
     ) -> PluginResult<()> {
         for hook in &self.trait_hooks {
+            if context.isolated_type_pricing && hook.is_observer() {
+                continue;
+            }
             hook.on_enter_trait(trait_, metadata, context)?;
         }
         Ok(())
@@ -1189,6 +1256,9 @@ impl PluginRegistry {
         context: &mut HookContext<'_, '_>,
     ) -> PluginResult<()> {
         for hook in &self.trait_hooks {
+            if context.isolated_type_pricing && hook.is_observer() {
+                continue;
+            }
             hook.on_leave_trait(trait_, metadata, context)?;
         }
         Ok(())
@@ -1206,6 +1276,9 @@ impl PluginRegistry {
         context: &mut HookContext<'_, '_>,
     ) -> PluginResult<()> {
         for hook in &self.enum_hooks {
+            if context.isolated_type_pricing && hook.is_observer() {
+                continue;
+            }
             hook.on_enter_enum(enum_, metadata, context)?;
         }
         Ok(())
@@ -1223,6 +1296,9 @@ impl PluginRegistry {
         context: &mut HookContext<'_, '_>,
     ) -> PluginResult<()> {
         for hook in &self.enum_hooks {
+            if context.isolated_type_pricing && hook.is_observer() {
+                continue;
+            }
             hook.on_leave_enum(enum_, metadata, context)?;
         }
         Ok(())
@@ -1240,6 +1316,9 @@ impl PluginRegistry {
         context: &mut HookContext<'_, '_>,
     ) -> PluginResult<()> {
         for hook in &self.function_decl_hooks {
+            if context.isolated_type_pricing && hook.is_observer() {
+                continue;
+            }
             hook.on_enter_function(function, metadata, context)?;
         }
         Ok(())
@@ -1257,6 +1336,9 @@ impl PluginRegistry {
         context: &mut HookContext<'_, '_>,
     ) -> PluginResult<()> {
         for hook in &self.function_decl_hooks {
+            if context.isolated_type_pricing && hook.is_observer() {
+                continue;
+            }
             hook.on_leave_function(function, metadata, context)?;
         }
         Ok(())

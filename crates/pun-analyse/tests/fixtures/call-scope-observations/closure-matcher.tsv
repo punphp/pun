@@ -1,0 +1,9 @@
+no-asking-parameter	1
+equal-full-type	1
+no-position-callee	0
+no-position-parameter	0
+own-method-template	1
+own-function-template	1
+foreign-function-template	0
+foreign-method-template	0
+class-template	0

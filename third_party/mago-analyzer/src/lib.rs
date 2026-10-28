@@ -39,6 +39,7 @@ pub mod artifacts;
 pub mod code;
 pub mod error;
 pub mod external;
+pub mod observations;
 pub mod plugin;
 pub mod settings;
 #[cfg(not(target_arch = "wasm32"))]
@@ -219,6 +220,9 @@ where
             self.external_analysis_session,
             self.additional_symbol_references,
         );
+        if self.settings.call_scope_observations.iter().any(|request| request.call.file_id == self.source_file.id) {
+            context.observation_program = Some(self.arena.alloc(program.clone()));
+        }
 
         let mut block_context = BlockContext::new(
             ScopeContext::new(ReferenceOrigin::File(word(context.source_file.name.as_ref()))),
@@ -266,6 +270,7 @@ where
         #[cfg(not(target_arch = "wasm32"))]
         let statements_start = trace_enabled.then(std::time::Instant::now);
         analyze_statements(statements, &mut context, &mut block_context, &mut artifacts)?;
+        artifacts.call_scope_observations.extend(std::mem::take(&mut context.observations.completed));
         #[cfg(not(target_arch = "wasm32"))]
         if let Some(start) = statements_start {
             telemetry::record_statements(start.elapsed());

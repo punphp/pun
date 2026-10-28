@@ -216,6 +216,7 @@ pub struct HookContext<'ctx, 'block> {
     pub(crate) reported_issues: RefCell<Vec<ReportedIssue>>,
     expression_type_checkpoints: Option<DetachedExpressionTypeCheckpoints>,
     pub(crate) raw_callback_gather: bool,
+    pub(crate) isolated_type_pricing: bool,
 }
 
 impl<'ctx, 'block> HookContext<'ctx, 'block> {
@@ -225,6 +226,7 @@ impl<'ctx, 'block> HookContext<'ctx, 'block> {
         block_context: &'block mut BlockContext<'ctx>,
         artifacts: &'block mut AnalysisArtifacts,
     ) -> Self {
+        let isolated_type_pricing = crate::plugin::registry::is_isolated_type_pricing();
         Self {
             codebase,
             source_file,
@@ -233,6 +235,7 @@ impl<'ctx, 'block> HookContext<'ctx, 'block> {
             reported_issues: RefCell::new(Vec::new()),
             expression_type_checkpoints: None,
             raw_callback_gather: false,
+            isolated_type_pricing,
         }
     }
 

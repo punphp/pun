@@ -131,6 +131,8 @@ pub struct AnalysisArtifacts {
     pub method_calls_parent_initializer: HashMap<(Word, Word), Word>,
     pub closure_bind_scope: Option<ClosureBindScope>,
     pub resolved_method_calls: Vec<ResolvedMethodCall>,
+    /// Requested, owned rule-facing answers; distinct from the actual walk's expression types.
+    pub call_scope_observations: HashMap<Span, Vec<crate::observations::NamedCallScope>>,
     pub(crate) editor: Option<EditorArtifacts>,
     pub(crate) variable_definedness: HashMap<(u32, u32), WordMap<VariableDefinedness>>,
     pub(crate) variable_throw_scopes: HashMap<(Span, VariableThrowKind), WordMap<VariableScope>>,
@@ -174,6 +176,7 @@ impl AnalysisArtifacts {
             method_calls_parent_initializer: HashMap::default(),
             closure_bind_scope: None,
             resolved_method_calls: Vec::new(),
+            call_scope_observations: HashMap::default(),
             editor: None,
             variable_definedness: HashMap::default(),
             variable_throw_scopes: HashMap::default(),

@@ -95,6 +95,7 @@ pub fn analyze_and_store_argument_type<'ctx, 'arena, A>(
     analyzed_argument_types: &mut [Option<(Rc<TUnion>, Span)>],
     referenced_parameter: bool,
     closure_parameter_type: Option<&TUnion>,
+    call_context: Option<crate::observations::CallContext>,
 ) -> Result<(), AnalysisError>
 where
     A: Arena,
@@ -144,7 +145,19 @@ where
     block_context.flags.set_inside_call(true);
     block_context.flags.set_inside_variable_reference(referenced_parameter);
 
-    argument_expression.analyze(context, block_context, artifacts)?;
+    // Unpacked/fallback arguments have a callee but no selected parameter.
+    let call_context = call_context.or_else(|| {
+        crate::observations::argument_context(context, Some(invocation_target), None, argument_expression.span())
+    });
+    let pushed = call_context.is_some();
+    if let Some(call_context) = call_context {
+        context.observations.calls.push(call_context);
+    }
+    let result = argument_expression.analyze(context, block_context, artifacts);
+    if pushed {
+        context.observations.calls.pop();
+    }
+    result?;
 
     block_context.flags.set_inside_general_use(was_inside_general_use);
     block_context.flags.set_inside_call(was_inside_call);

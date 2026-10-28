@@ -72,6 +72,11 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Expression<'arena> {
     where
         A: Arena,
     {
+        if let Some(value) = crate::observations::consume(self, context, block_context) {
+            artifacts.set_expression_type(self, value);
+            return Ok(());
+        }
+        crate::observations::before(self, context, block_context);
         crate::native::before_expression(self, block_context);
         let span = self.span();
         artifacts.remove_native_expression_type(&(span.start.offset, span.end.offset));
@@ -294,6 +299,7 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Expression<'arena> {
             }
         }
 
+        crate::observations::after(self, context, block_context, artifacts);
         artifacts.record_static_local_types(block_context, context.codebase, context.settings.combiner_options());
 
         Ok(())

@@ -67,6 +67,7 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for MethodCall<'arena> {
     where
         A: Arena,
     {
+        let observation = crate::observations::begin_call(self, context, block_context);
         if context.plugin_registry.has_method_call_hooks() {
             let mut hook_context = HookContext::new(context.codebase, context.source_file, block_context, artifacts);
             let result = context.plugin_registry.before_method_call(self, &mut hook_context)?;
@@ -105,6 +106,7 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for MethodCall<'arena> {
             }
         }
 
+        crate::observations::finish_call(observation, context, artifacts)?;
         Ok(())
     }
 }

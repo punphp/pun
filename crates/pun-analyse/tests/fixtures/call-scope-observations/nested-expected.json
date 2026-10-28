@@ -1,0 +1,131 @@
+{
+    "calls": {
+        "301": {
+            "line": 10,
+            "expression": "$o->$m($inner->$n($v)/* observe */, [$v])",
+            "names": [
+                {
+                    "name": "bar",
+                    "filtered": true,
+                    "types": [
+                        {
+                            "start": 301,
+                            "end": 303,
+                            "expression": "$o",
+                            "type": "NestedSink"
+                        },
+                        {
+                            "start": 308,
+                            "end": 322,
+                            "expression": "$inner->$n($v)",
+                            "type": "int"
+                        },
+                        {
+                            "start": 308,
+                            "end": 314,
+                            "expression": "$inner",
+                            "type": "NestedSink"
+                        },
+                        {
+                            "start": 316,
+                            "end": 318,
+                            "expression": "$n",
+                            "type": "'foo'"
+                        },
+                        {
+                            "start": 319,
+                            "end": 321,
+                            "expression": "$v",
+                            "type": "'s'"
+                        },
+                        {
+                            "start": 337,
+                            "end": 341,
+                            "expression": "[$v]",
+                            "type": "array{'s'}"
+                        },
+                        {
+                            "start": 338,
+                            "end": 340,
+                            "expression": "$v",
+                            "type": "'s'"
+                        }
+                    ]
+                },
+                {
+                    "name": "foo",
+                    "filtered": true,
+                    "types": [
+                        {
+                            "start": 301,
+                            "end": 303,
+                            "expression": "$o",
+                            "type": "NestedSink"
+                        },
+                        {
+                            "start": 308,
+                            "end": 322,
+                            "expression": "$inner->$n($v)",
+                            "type": "int"
+                        },
+                        {
+                            "start": 308,
+                            "end": 314,
+                            "expression": "$inner",
+                            "type": "NestedSink"
+                        },
+                        {
+                            "start": 316,
+                            "end": 318,
+                            "expression": "$n",
+                            "type": "'foo'"
+                        },
+                        {
+                            "start": 319,
+                            "end": 321,
+                            "expression": "$v",
+                            "type": "1"
+                        },
+                        {
+                            "start": 337,
+                            "end": 341,
+                            "expression": "[$v]",
+                            "type": "array{1}"
+                        },
+                        {
+                            "start": 338,
+                            "end": 340,
+                            "expression": "$v",
+                            "type": "1"
+                        }
+                    ]
+                }
+            ]
+        },
+        "308": {
+            "line": 10,
+            "expression": "$inner->$n($v)",
+            "names": [
+                {
+                    "name": "foo",
+                    "filtered": true,
+                    "types": [
+                        {
+                            "start": 308,
+                            "end": 314,
+                            "expression": "$inner",
+                            "type": "NestedSink"
+                        },
+                        {
+                            "start": 319,
+                            "end": 321,
+                            "expression": "$v",
+                            "type": "1|'s'"
+                        }
+                    ]
+                }
+            ]
+        }
+    },
+    "errors": []
+}

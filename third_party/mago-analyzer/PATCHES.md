@@ -2702,3 +2702,37 @@ The unchanged `Methods/data/bug-12110.php` supplies the large sequential-join co
 
 The fixture's `capture.php` and `capture-offset-order.php` regenerate the diagnostics and scope
 captures with the pinned PHPStan PHAR. Existing expectations remain unchanged.
+
+### Owned call-scope type observations
+
+`Settings::call_scope_observations` requests expression spans inside particular non-nullsafe
+instance method calls. The one live expression walk retains each requested expression's own
+entry scope. `AnalysisArtifacts::call_scope_observations` returns owned types for each literal
+dynamic method name after its equality predicate, or unfiltered answers for identifier calls.
+Unreached expressions have no answer. Ordinary analysis retains no scopes.
+
+`observations.rs` follows PHPStan 2.3.1's `NodeCallbackScope`, `ExpressionResult` and
+`ClosureCallContextMatcher` at `cb3b7e99489b2e3789ee2eec10501cb7a72580ea`.
+Derived arrays, unpack expressions and dependencies are priced on isolated copies when
+their stored children cannot answer the asking position. Compatible children consume
+their stored results without replaying effects. Variable certainty is checked independently
+of cached types. An explicit absence holder cannot supply a cached literal.
+Resolved argument parameter contexts, including inference from the stored argument, determine
+closure compatibility rather than unconditional closure reuse or changes to captured variables.
+Final reflection facts do not replace the retained pre-evaluation scopes.
+
+The pricing fork owns its collector, scope and artifacts. A lexical observer-dispatch
+boundary also covers fresh artifacts created inside closures and anonymous constructors.
+Observer-marked hooks do not publish another evaluation. Semantic hooks and return,
+signature, assertion and throw providers stay active. Raw callback gathering is not used
+as an isolation flag. Public controls compare complete real hook counts, live expression
+artifacts and diagnostics with observations disabled and enabled.
+
+The public `call_scope_observations` fixtures retain full PHPStan analyser diagnostics
+and independently captured precise scope observations. They distinguish per-name receiver,
+array and unpack correlations, offset versus dynamic selectors, expression-position
+writes and receiver replacements, purity, nested requests, semantic providers, closures
+and resolved argument contexts. `closure-matcher.php` captures the extension/raw-context
+compatibility guards separately through PHPStan's public matcher.
+This facility does not change Pun's rule consumers or activate any named-argument mapping.
+Conditional holders, shape correlation and live receiver invalidation are independent prerequisites.

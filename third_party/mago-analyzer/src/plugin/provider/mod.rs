@@ -30,4 +30,11 @@ pub trait Provider: Send + Sync {
     fn meta() -> &'static ProviderMeta
     where
         Self: Sized;
+
+    /// Whether this provider's hooks only publish observations of the real walk.
+    /// Isolated type pricing skips those hooks, but still calls all semantic
+    /// providers (return types, signatures, assertions and throws).
+    fn is_observer(&self) -> bool {
+        false
+    }
 }

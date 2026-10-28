@@ -35,6 +35,9 @@ pub struct Settings {
     /// This does not disable PHPDoc, change full types, or enable native-dependent rules.
     pub track_native_types: bool,
 
+    /// Opt-in rule-facing observations; only these calls and expression subtrees retain scopes.
+    pub call_scope_observations: Vec<crate::observations::CallScopeRequest>,
+
     /// PHPStan's for/while entry-scope pollution, independently of undefined-variable reporting.
     pub pollute_scope_with_loop_initial_assignments: bool,
 
@@ -426,6 +429,7 @@ impl Settings {
         Self {
             version,
             track_native_types: false,
+            call_scope_observations: Vec::new(),
             pollute_scope_with_loop_initial_assignments: true,
             pollute_scope_with_always_iterable_foreach: true,
             pollute_scope_with_block: true,

@@ -1,0 +1,131 @@
+{
+    "calls": {
+        "909": {
+            "line": 38,
+            "expression": "$sink->$name($worker->read(fn ($value) => $value))",
+            "names": [
+                {
+                    "name": "bar",
+                    "filtered": true,
+                    "types": [
+                        {
+                            "start": 909,
+                            "end": 914,
+                            "expression": "$sink",
+                            "type": "ContextSink"
+                        },
+                        {
+                            "start": 922,
+                            "end": 958,
+                            "expression": "$worker->read(fn ($value) => $value)",
+                            "type": "string"
+                        }
+                    ]
+                },
+                {
+                    "name": "foo",
+                    "filtered": true,
+                    "types": [
+                        {
+                            "start": 909,
+                            "end": 914,
+                            "expression": "$sink",
+                            "type": "ContextSink"
+                        },
+                        {
+                            "start": 922,
+                            "end": 958,
+                            "expression": "$worker->read(fn ($value) => $value)",
+                            "type": "int"
+                        }
+                    ]
+                }
+            ]
+        },
+        "976": {
+            "line": 39,
+            "expression": "$sink->$name($worker->read(function ($value) { return $value; }))",
+            "names": [
+                {
+                    "name": "bar",
+                    "filtered": true,
+                    "types": [
+                        {
+                            "start": 976,
+                            "end": 981,
+                            "expression": "$sink",
+                            "type": "ContextSink"
+                        },
+                        {
+                            "start": 989,
+                            "end": 1040,
+                            "expression": "$worker->read(function ($value) { return $value; })",
+                            "type": "string"
+                        }
+                    ]
+                },
+                {
+                    "name": "foo",
+                    "filtered": true,
+                    "types": [
+                        {
+                            "start": 976,
+                            "end": 981,
+                            "expression": "$sink",
+                            "type": "ContextSink"
+                        },
+                        {
+                            "start": 989,
+                            "end": 1040,
+                            "expression": "$worker->read(function ($value) { return $value; })",
+                            "type": "int"
+                        }
+                    ]
+                }
+            ]
+        },
+        "1307": {
+            "line": 49,
+            "expression": "$sink->$name($worker->read(fn ($value) => $value))",
+            "names": [
+                {
+                    "name": "bar",
+                    "filtered": true,
+                    "types": [
+                        {
+                            "start": 1307,
+                            "end": 1312,
+                            "expression": "$sink",
+                            "type": "ContextSink"
+                        },
+                        {
+                            "start": 1320,
+                            "end": 1356,
+                            "expression": "$worker->read(fn ($value) => $value)",
+                            "type": "int"
+                        }
+                    ]
+                },
+                {
+                    "name": "foo",
+                    "filtered": true,
+                    "types": [
+                        {
+                            "start": 1307,
+                            "end": 1312,
+                            "expression": "$sink",
+                            "type": "ContextSink"
+                        },
+                        {
+                            "start": 1320,
+                            "end": 1356,
+                            "expression": "$worker->read(fn ($value) => $value)",
+                            "type": "int"
+                        }
+                    ]
+                }
+            ]
+        }
+    },
+    "errors": []
+}

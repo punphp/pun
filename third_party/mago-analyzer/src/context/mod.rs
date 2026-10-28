@@ -72,6 +72,8 @@ where
     pub(super) constant_types: HashMap<Span, TUnion>,
     /// PHPStan's speculative closure-return walk must not publish observer events.
     pub(super) raw_callback_gather_depth: u8,
+    pub(super) observations: crate::observations::ObservationState<'ctx, 'arena>,
+    pub(super) observation_program: Option<&'arena mago_syntax::cst::Program<'arena>>,
 }
 
 impl<'ctx, 'arena, A> Context<'ctx, 'arena, A>
@@ -110,6 +112,8 @@ where
             class_initializers: WordMap::default(),
             constant_types: HashMap::default(),
             raw_callback_gather_depth: 0,
+            observations: crate::observations::ObservationState::default(),
+            observation_program: None,
         }
     }
 
@@ -280,6 +284,34 @@ where
         self.property_types = properties;
         self.class_initializers = initializers;
         result
+    }
+
+    /// A type-pricing world owns its collector and never publishes statement or call events.
+    pub(super) fn fork_for_observation(&self) -> Self {
+        let program = self.observation_program.expect("requested observations retain the program");
+        let mut fork = Self::new(
+            self.arena,
+            self.codebase,
+            self.source_file,
+            self.resolved_names,
+            self.settings,
+            self.statement_span,
+            self.comments,
+            Collector::new(self.arena, self.source_file, program, &[]),
+            self.plugin_registry,
+            self.external_analysis_session,
+            self.additional_symbol_references,
+        );
+        fork.scope = self.scope.clone();
+        fork.type_resolution_context = self.type_resolution_context.clone();
+        fork.control_body_blocks = self.control_body_blocks.clone();
+        fork.property_types = self.property_types.clone();
+        fork.class_initializers = self.class_initializers.clone();
+        fork.constant_types = self.constant_types.clone();
+        fork.observation_program = self.observation_program;
+        fork.observations.calls = self.observations.calls.clone();
+        fork.observations.pricing = true;
+        fork
     }
 
     pub fn finish(self, artifacts: AnalysisArtifacts, analysis_result: &mut AnalysisResult) {

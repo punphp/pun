@@ -186,6 +186,8 @@ fn gather_raw_callback<'ctx, 'arena, A: Arena>(
     block.finally_scope = None;
     let mut scratch = AnalysisArtifacts::new().with_native_types(context.settings.track_native_types);
     context.gather_callback(|context| {
+        let call_context =
+            crate::observations::argument_context(context, None, Some(parameter_type), expression.span());
         analyze_and_store_argument_type(
             context,
             &mut block,
@@ -196,6 +198,7 @@ fn gather_raw_callback<'ctx, 'arena, A: Arena>(
             &mut [],
             false,
             Some(parameter_type),
+            call_context,
         )?;
         Ok(scratch.get_expression_type(expression).cloned())
     })
@@ -326,6 +329,24 @@ where
 
         let parameter = *parameter;
 
+        let observation_type = context.observation_program.and_then(|_| {
+            parameter.map(|(_, parameter)| {
+                get_parameter_type(
+                    context,
+                    Some(parameter),
+                    base_class_metadata,
+                    calling_class_like_metadata,
+                    calling_instance_type,
+                    method_class_type,
+                )
+            })
+        });
+        let call_context = crate::observations::argument_context(
+            context,
+            Some(&invocation.target),
+            observation_type.as_ref(),
+            argument_expression.span(),
+        );
         analyze_and_store_argument_type(
             context,
             block_context,
@@ -336,6 +357,7 @@ where
             &mut analyzed_argument_types,
             parameter.is_some_and(|p| p.1.is_by_reference()),
             None,
+            call_context,
         )?;
 
         if let Some((argument_type, _)) = &mut analyzed_argument_types[*argument_offset]
@@ -518,6 +540,32 @@ where
             None
         };
 
+        // GenericParametersAcceptorResolver selects a reflection from the argument's
+        // stored type before processing it. Do the same for the pricing context only.
+        let mut observation_type = context.observation_program.and_then(|_| parameter_type.clone());
+        if context.observations.pricing
+            && let Some(base_type) = &base_parameter_type_for_inference
+            && let Some(argument_type) = crate::observations::stored_type(context, argument_expression.span())
+        {
+            let mut observation_templates = template_result.clone();
+            infer_parameter_templates_from_argument(
+                context,
+                base_type,
+                &argument_type,
+                &mut observation_templates,
+                *argument_offset,
+                argument_expression.span(),
+                false,
+            );
+            observation_type = observation_type
+                .map(|ty| resolve_invocation_type(context, invocation, &observation_templates, parameter_types, ty));
+        }
+        let call_context = crate::observations::argument_context(
+            context,
+            Some(&invocation.target),
+            observation_type.as_ref(),
+            argument_expression.span(),
+        );
         analyze_and_store_argument_type(
             context,
             block_context,
@@ -528,6 +576,7 @@ where
             &mut analyzed_argument_types,
             parameter.is_some_and(|p| p.1.is_by_reference()),
             parameter_type.as_ref(),
+            call_context,
         )?;
 
         // Use the original unreplaced type for inference to allow closure return types
@@ -601,6 +650,7 @@ where
                         usize::MAX,
                         &mut analyzed_argument_types,
                         false,
+                        None,
                         None,
                     )?;
                 }
@@ -952,6 +1002,7 @@ where
                         &mut analyzed_argument_types,
                         last_parameter_ref.is_by_reference(),
                         None,
+                        None,
                     )?;
                 }
 
@@ -1072,6 +1123,7 @@ where
                             &mut analyzed_argument_types,
                             last_parameter_ref.is_by_reference(),
                             None,
+                            None,
                         )?;
                     }
 
@@ -1138,6 +1190,7 @@ where
                                 usize::MAX,
                                 &mut analyzed_argument_types,
                                 false,
+                                None,
                                 None,
                             )?;
                         }
@@ -1350,6 +1403,32 @@ where
         context.collector.report_with_code(IssueCode::TooManyArguments, issue);
     }
 
+    if context.observation_program.is_some() {
+        for (offset, argument) in invocation.arguments_source.iter_arguments().enumerate() {
+            let Some(expression) = argument.value() else { continue };
+            let parameter =
+                get_parameter_of_argument(&invocation.target, &argument, offset).filter(|_| !argument.is_unpacked());
+            let parameter_type = parameter.map(|(_, parameter)| {
+                let ty = get_parameter_type(
+                    context,
+                    Some(parameter),
+                    base_class_metadata,
+                    calling_class_like_metadata,
+                    calling_instance_type,
+                    method_class_type,
+                );
+                resolve_invocation_type(context, invocation, template_result, parameter_types, ty)
+            });
+            if let Some(resolved) = crate::observations::argument_context(
+                context,
+                Some(&invocation.target),
+                parameter_type.as_ref(),
+                expression.span(),
+            ) {
+                crate::observations::settle_argument(context, &resolved);
+            }
+        }
+    }
     Ok(())
 }
 
