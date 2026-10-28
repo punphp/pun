@@ -8,6 +8,8 @@ use PHPUnit\Framework\TestCase;
 
 abstract class Middle extends TestCase
 {
+    protected $shared;
+
     #[DataProvider('fromAttribute')]
     public function testA($a)
     {
