@@ -8339,7 +8339,7 @@
         "rules": [
           "lint/dead-code/no-always-false-condition"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -8375,7 +8375,7 @@
         "rules": [
           "lint/dead-code/no-always-true-if"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -8493,7 +8493,7 @@
         "rules": [
           "lint/dead-code/no-always-true-instanceof-assert"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -10537,7 +10537,7 @@
         "rules": [
           "lint/complexity/no-constant-via-variable"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {

@@ -28,6 +28,9 @@
 //! RemoveDeadInstanceOfRector/Pun/bare_body_holder: where the braceless body of an `if` is an `if` that gives way to
 //! several statements, Rector prints the outer `if` anew with braces; Pun leaves both.
 //!
+//! RemoveAlwaysTrueIfConditionRector/Pun/self_comparison: PHPStan types `$n === $n` as `true`; Mago's analysis gives
+//! `bool`, so Pun keeps the `if`.
+//!
 //! RemoveDeadInstanceOfRector/Source/vendor/{Node,If_}.php are not upstream: they declare the nikic/php-parser 5
 //! types a fixture names, which Rector's run loads from its vendor directory.
 //!
@@ -40,9 +43,10 @@ use std::path::Path;
 use lint_c::run_class;
 use mago_syntax::cst::Node;
 use pun_lint::rules::{
-    NoAlwaysTrueInstanceof, NoConstantCondition, NoRedundantForeachGuard,
-    NoTypedPropertyInstanceof, NoUnusedTestMethodParam, NoUselessCast, NoUselessFilterVar,
-    NoUselessMath, PreferInstanceMethod, RequirePreviousException,
+    NoAlwaysFalseCondition, NoAlwaysTrueIf, NoAlwaysTrueInstanceof, NoAlwaysTrueInstanceofAssert,
+    NoConstantCondition, NoConstantViaVariable, NoRedundantForeachGuard, NoTypedPropertyInstanceof,
+    NoUnusedTestMethodParam, NoUselessCast, NoUselessFilterVar, NoUselessMath,
+    PreferInstanceMethod, RequirePreviousException,
 };
 use pun_lint::{Linter, Rule};
 
@@ -112,6 +116,32 @@ fn remove_unused_non_empty_array_before_foreach() {
     );
 }
 
+#[test]
+fn reduce_always_false_if_or() {
+    check(NoAlwaysFalseCondition, "ReduceAlwaysFalseIfOrRector");
+}
+
+#[test]
+fn remove_always_true_if_condition() {
+    check(NoAlwaysTrueIf, "RemoveAlwaysTrueIfConditionRector");
+}
+
+#[test]
+fn remove_dead_instance_of_assert() {
+    check(
+        NoAlwaysTrueInstanceofAssert,
+        "RemoveDeadInstanceOfAssertRector",
+    );
+}
+
+#[test]
+fn variable_const_fetch_to_class_const_fetch() {
+    check(
+        NoConstantViaVariable,
+        "VariableConstFetchToClassConstFetchRector",
+    );
+}
+
 /// A rule called on every node, not only the kinds of its `targets()`.
 struct Everywhere(Box<dyn Rule>);
 
@@ -168,6 +198,22 @@ fn rules_ignore_nodes_outside_their_targets() {
         (
             || Box::new(NoRedundantForeachGuard),
             "RemoveUnusedNonEmptyArrayBeforeForeachRector",
+        ),
+        (
+            || Box::new(NoAlwaysFalseCondition),
+            "ReduceAlwaysFalseIfOrRector",
+        ),
+        (
+            || Box::new(NoAlwaysTrueIf),
+            "RemoveAlwaysTrueIfConditionRector",
+        ),
+        (
+            || Box::new(NoConstantViaVariable),
+            "VariableConstFetchToClassConstFetchRector",
+        ),
+        (
+            || Box::new(NoAlwaysTrueInstanceofAssert),
+            "RemoveDeadInstanceOfAssertRector",
         ),
     ];
     for (rule, class) in cases {

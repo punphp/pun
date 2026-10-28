@@ -45,7 +45,10 @@ mod lint_b_security;
 mod lint_b_serialize;
 mod mago_const_value;
 mod mago_usage;
+mod no_always_false_condition;
+mod no_always_true_if;
 mod no_always_true_instanceof;
+mod no_always_true_instanceof_assert;
 mod no_and_assignment;
 mod no_and_true;
 mod no_array_accumulation_in_loop;
@@ -60,6 +63,7 @@ mod no_compact;
 mod no_concat_assign_new_item;
 mod no_condition_exact_return;
 mod no_constant_condition;
+mod no_constant_via_variable;
 mod no_dead_php_version_check;
 mod no_debug_calls;
 mod no_double_negation;
@@ -272,7 +276,10 @@ pub use add_param_type_sprintf::AddParamTypeSprintf;
 pub use laravel::*;
 pub use pest::*;
 pub use phpunit::*;
+pub use no_always_false_condition::NoAlwaysFalseCondition;
+pub use no_always_true_if::NoAlwaysTrueIf;
 pub use no_always_true_instanceof::NoAlwaysTrueInstanceof;
+pub use no_always_true_instanceof_assert::NoAlwaysTrueInstanceofAssert;
 pub use no_and_assignment::NoAndAssignment;
 pub use no_and_true::NoAndTrue;
 pub use no_array_accumulation_in_loop::NoArrayAccumulationInLoop;
@@ -287,6 +294,7 @@ pub use no_compact::NoCompact;
 pub use no_concat_assign_new_item::NoConcatAssignNewItem;
 pub use no_condition_exact_return::NoConditionExactReturn;
 pub use no_constant_condition::NoConstantCondition;
+pub use no_constant_via_variable::NoConstantViaVariable;
 pub use no_dead_php_version_check::NoDeadPhpVersionCheck;
 pub use no_debug_calls::NoDebugCalls;
 pub use no_double_negation::NoDoubleNegation;
@@ -506,6 +514,10 @@ pub const PROJECT_RULES: &[&str] = &[
     "lint/dead-code/no-always-true-instanceof",
     "lint/dead-code/no-typed-property-instanceof",
     "lint/dead-code/no-redundant-foreach-guard",
+    "lint/dead-code/no-always-false-condition",
+    "lint/dead-code/no-always-true-if",
+    "lint/dead-code/no-always-true-instanceof-assert",
+    "lint/complexity/no-constant-via-variable",
 ];
 
 /// Every rule, in a fixed order.
@@ -748,5 +760,9 @@ fn ungrouped() -> Vec<Box<dyn Rule>> {
         Box::new(NoAlwaysTrueInstanceof),
         Box::new(NoTypedPropertyInstanceof),
         Box::new(NoRedundantForeachGuard),
+        Box::new(NoAlwaysFalseCondition),
+        Box::new(NoAlwaysTrueIf),
+        Box::new(NoAlwaysTrueInstanceofAssert),
+        Box::new(NoConstantViaVariable),
     ]
 }

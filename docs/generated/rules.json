@@ -3894,7 +3894,7 @@
         "VariableConstFetchToClassConstFetch",
         "VariableConstFetchToClassConstFetchRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/complexity/no-double-negation",
@@ -5310,7 +5310,7 @@
         "ReduceAlwaysFalseIfOr",
         "ReduceAlwaysFalseIfOrRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/dead-code/no-always-true-if",
@@ -5330,7 +5330,7 @@
         "RemoveAlwaysTrueIfCondition",
         "RemoveAlwaysTrueIfConditionRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/dead-code/no-always-true-instanceof",
@@ -5370,7 +5370,7 @@
         "RemoveDeadInstanceOfAssert",
         "RemoveDeadInstanceOfAssertRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/dead-code/no-and-true",

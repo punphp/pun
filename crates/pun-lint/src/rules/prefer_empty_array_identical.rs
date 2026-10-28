@@ -100,7 +100,7 @@ fn is_allowed(ctx: &Context<'_>, ancestors: &[Node<'_, '_>], value: &Expression<
 
 /// `ExprAnalyzer::isNonTypedFromParam`: the variable's native type is `mixed`, may be undefined, is a union other
 /// than its type, or does not cover its type (for an array type, is not an array).
-fn is_non_typed_from_param(facts: &Facts, variable: &Expression<'_>) -> bool {
+pub(crate) fn is_non_typed_from_param(facts: &Facts, variable: &Expression<'_>) -> bool {
     let span = node_span(variable);
     let full = facts.full_type(span);
     facts.native_type(span).is_none_or(|native| {

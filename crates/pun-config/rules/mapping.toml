@@ -285,7 +285,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "complexity/no-compact" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Change `compact()` call to own array" }
 "complexity/no-concat-assign-new-item" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Change concat assign on a new array item to plain assign, as the new item is always null" }
 "complexity/no-constant-condition" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Detects `if` statements where the condition is a constant that always" }
-"complexity/no-constant-via-variable" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Change variable class constant fetch to direct class constant fetch when class or constant target is final" }
+"complexity/no-constant-via-variable" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Change variable class constant fetch to direct class constant fetch when class or constant target is final" }
 "complexity/no-double-negation" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Replace the Double not operator (!!) by type-casting to boolean" }
 "complexity/no-duplicate-match-arm" = { fix = "none", sets = ["code-quality"], ported = true, origin = "mago", status = "decided", summary = "Detects `match` arms that produce the same result as an earlier arm." }
 "complexity/no-else-clause" = { fix = "none", ported = true, origin = "mago", status = "decided", summary = "Flags `if` statements that include an `else` or `elseif` branch." }
@@ -359,10 +359,10 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "control-flow/prefer-combined-unset" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Calling `unset` on multiple items should be done in one call." }
 "control-flow/prefer-returned-condition" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Shortens if return false/true to direct return" }
 "control-flow/prefer-yield-from" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "If the function explicitly returns an array, and has the return type `iterable`, then `yield from` must be used instead of `return`." }
-"dead-code/no-always-false-condition" = { fix = "safe", sets = ["dead-code"], ported = false, status = "decided", summary = "Reduce always false in a `if (a || b)` condition" }
-"dead-code/no-always-true-if" = { fix = "safe", sets = ["dead-code"], ported = false, status = "decided", summary = "Remove if condition that is always true" }
+"dead-code/no-always-false-condition" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Reduce always false in a `if (a || b)` condition" }
+"dead-code/no-always-true-if" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove if condition that is always true" }
 "dead-code/no-always-true-instanceof" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove instanceof checks and assert(instanceof) calls that are always true for the known type." }
-"dead-code/no-always-true-instanceof-assert" = { fix = "safe", sets = ["dead-code"], ported = false, status = "decided", summary = "Remove assert() with instanceof check on a value whose type is already known" }
+"dead-code/no-always-true-instanceof-assert" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove assert() with instanceof check on a value whose type is already known" }
 "dead-code/no-and-true" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove `and true` that has no added value" }
 "dead-code/no-bool-ternary" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Remove unnecessary ternary expressions" }
 "dead-code/no-cast-in-concat" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove (string) casting when it comes to concat, that does this by default" }
