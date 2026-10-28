@@ -4304,7 +4304,7 @@
         "SimplifyIfNullableReturn",
         "SimplifyIfNullableReturnRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/complexity/no-redundant-nullsafe",
@@ -5712,7 +5712,7 @@
         "RemoveReturnTagIncompatibleWithNativeType",
         "RemoveReturnTagIncompatibleWithNativeTypeRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/dead-code/no-invalid-var-tag",
@@ -6516,7 +6516,7 @@
         "RemoveUselessUnionReturnDocblock",
         "RemoveUselessUnionReturnDocblockRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/dead-code/no-useless-ternary",
@@ -10622,7 +10622,7 @@
         "RemoveUselessParamTag",
         "RemoveUselessParamTagRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/phpdoc/no-useless-readonly",
@@ -10662,7 +10662,7 @@
         "RemoveUselessReturnTag",
         "RemoveUselessReturnTagRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/phpdoc/no-useless-var",
@@ -10682,7 +10682,7 @@
         "RemoveUselessVarTag",
         "RemoveUselessVarTagRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/phpdoc/no-void-on-magic-method",

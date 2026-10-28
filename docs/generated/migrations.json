@@ -8847,7 +8847,7 @@
         "rules": [
           "lint/dead-code/no-invalid-return-tag"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -9067,7 +9067,7 @@
         "rules": [
           "lint/phpdoc/no-useless-param"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -9097,7 +9097,7 @@
         "rules": [
           "lint/phpdoc/no-useless-return"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -9117,7 +9117,7 @@
         "rules": [
           "lint/dead-code/no-useless-phpdoc-type"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -9127,7 +9127,7 @@
         "rules": [
           "lint/phpdoc/no-useless-var"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -9845,7 +9845,7 @@
         "rules": [
           "lint/complexity/no-redundant-nullable-check"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
