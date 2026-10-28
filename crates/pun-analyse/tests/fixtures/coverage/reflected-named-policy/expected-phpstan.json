@@ -1,0 +1,82 @@
+{
+ "general": [],
+ "errors": [
+  {
+   "file": "calls.php",
+   "line": 30,
+   "identifier": "argument.parameterRenamedInSubtype",
+   "message": "Call to ReflectedNamedPolicy\\AEnabledBase::run() uses named argument for parameter $value, but ReflectedNamedPolicy\\AEnabledChild renames it to $renamed.",
+   "tip": null
+  },
+  {
+   "file": "calls.php",
+   "line": 36,
+   "identifier": "argument.named",
+   "message": "Method ReflectedNamedPolicy\\ZAliasedBase::alias() invoked with named argument $value, but it's not allowed because of @no-named-arguments.",
+   "tip": null
+  },
+  {
+   "file": "calls.php",
+   "line": 69,
+   "identifier": "argument.parameterRenamedInSubtype",
+   "message": "Call to ReflectedNamedPolicy\\AEnabledBase::run() uses named argument for parameter $value, but ReflectedNamedPolicy\\AEnabledChild renames it to $renamed.",
+   "tip": null
+  },
+  {
+   "file": "calls.php",
+   "line": 71,
+   "identifier": "argument.named",
+   "message": "Method ReflectedNamedPolicy\\OwnTagged::run() invoked with named argument $value, but it's not allowed because of @no-named-arguments.",
+   "tip": null
+  },
+  {
+   "file": "calls.php",
+   "line": 72,
+   "identifier": "argument.named",
+   "message": "Method ReflectedNamedPolicy\\OwnTaggedChild::run() invoked with named argument $renamed, but it's not allowed because of @no-named-arguments.",
+   "tip": null
+  },
+  {
+   "file": "calls.php",
+   "line": 90,
+   "identifier": "argument.named",
+   "message": "Method ReflectedNamedPolicy\\TaggedParent::run() invoked with named argument $value, but it's not allowed because of @no-named-arguments.",
+   "tip": null
+  },
+  {
+   "file": "calls.php",
+   "line": 122,
+   "identifier": "argument.named",
+   "message": "Method ReflectedNamedPolicy\\MethodTaggedContract::run() invoked with named argument $value, but it's not allowed because of @no-named-arguments.",
+   "tip": null
+  },
+  {
+   "file": "calls.php",
+   "line": 123,
+   "identifier": "argument.named",
+   "message": "Method ReflectedNamedPolicy\\MethodTaggedImplementation::run() invoked with named argument $value, but it's not allowed because of @no-named-arguments.",
+   "tip": null
+  },
+  {
+   "file": "calls.php",
+   "line": 124,
+   "identifier": "argument.named",
+   "message": "Method ReflectedNamedPolicy\\ClassTaggedContract::run() invoked with named argument $value, but it's not allowed because of @no-named-arguments.",
+   "tip": null
+  },
+  {
+   "file": "calls.php",
+   "line": 147,
+   "identifier": "argument.named",
+   "message": "Method ReflectedNamedPolicy\\TaggedConsumer::run() invoked with named argument $value, but it's not allowed because of @no-named-arguments.",
+   "tip": null
+  },
+  {
+   "file": "calls.php",
+   "line": 148,
+   "identifier": "argument.named",
+   "message": "Method ReflectedNamedPolicy\\TaggedConsumer::alias() invoked with named argument $value, but it's not allowed because of @no-named-arguments.",
+   "tip": null
+  }
+ ]
+}

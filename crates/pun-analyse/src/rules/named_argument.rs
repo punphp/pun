@@ -137,9 +137,10 @@ fn method(c: &Checker, ty: &Type, name: &[u8], counts: &params::Counts) -> Optio
         Type::Object(n, _, _) | Type::Static(n, _) | Type::This(n) | Type::EnumCase(n, _) => {
             let m = c.method_of(n, name).ok().flatten()?;
             let (accepts, final_class) = match &m {
-                members::Method::User { declaring, f, .. } => {
-                    (accepts(c, declaring, f), declaring.flags.is_final())
-                }
+                members::Method::User { declaring, name, .. } => (
+                    declared::reflected_accepts_named(c, declaring, &name.to_string()),
+                    declaring.flags.is_final(),
+                ),
                 members::Method::Builtin { declaring, .. } => (true, declaring.is_final),
             };
             // ObjectType resolves the declaring ancestor: an exact Child does not finalize Parent's method.
