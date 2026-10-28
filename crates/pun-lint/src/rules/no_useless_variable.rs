@@ -336,7 +336,7 @@ fn is_new_instance(
 
 /// Where the variable `name` last got its value under `node` before `before`, not inside a class or a function-like
 /// other than `node`: the last place that names it, or the right side of a later plain assignment to it.
-fn find_last(
+pub(crate) fn find_last(
     node: Node<'_, '_>,
     name: &[u8],
     before: usize,

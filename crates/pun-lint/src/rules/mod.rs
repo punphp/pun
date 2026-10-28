@@ -210,6 +210,7 @@ mod no_useless_return_tag;
 mod no_invalid_return_tag;
 mod no_useless_phpdoc_type;
 mod no_redundant_nullable_check;
+mod no_unused_assignment;
 mod prefer_instance_method;
 mod prefer_instanceof_stringable;
 mod prefer_min_max;
@@ -454,6 +455,7 @@ pub use no_useless_return_tag::NoUselessReturnTag;
 pub use no_invalid_return_tag::NoInvalidReturnTag;
 pub use no_useless_phpdoc_type::NoUselessPhpdocType;
 pub use no_redundant_nullable_check::NoRedundantNullableCheck;
+pub use no_unused_assignment::NoUnusedAssignment;
 pub use prefer_instance_method::PreferInstanceMethod;
 pub use prefer_instanceof_stringable::PreferInstanceofStringable;
 pub use prefer_min_max::PreferMinMax;
@@ -555,6 +557,7 @@ pub const PROJECT_RULES: &[&str] = &[
     "lint/dead-code/no-invalid-return-tag",
     "lint/dead-code/no-useless-phpdoc-type",
     "lint/complexity/no-redundant-nullable-check",
+    "lint/dead-code/no-unused-assignment",
 ];
 
 /// Every rule, in a fixed order.
@@ -813,5 +816,6 @@ fn ungrouped() -> Vec<Box<dyn Rule>> {
         Box::new(NoInvalidReturnTag),
         Box::new(NoUselessPhpdocType),
         Box::new(NoRedundantNullableCheck),
+        Box::new(NoUnusedAssignment),
     ]
 }

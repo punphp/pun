@@ -1,4 +1,5 @@
-//! Rector's own fixtures for the rules built on Rector's type comparison (`TypeComparator`, `StaticTypeMapper`),
+//! Rector's own fixtures for the rules built on Rector's type comparison (`TypeComparator`, `StaticTypeMapper`) and
+//! for `RemoveUnusedVariableAssignRector`,
 //! copied verbatim from rector-src 2.6.1 (`.oracle/rector`, rules-tests/...) into tests/rector/<Rector class>/Fixture,
 //! with the classes they use in Source/. Oracle/ holds extra inputs with what Rector 2.6.1 (`.oracle/rector-ecosystem`,
 //! the rule alone, `phpVersion(80400)` unless the test says otherwise) wrote for them. Each one must pass as
@@ -10,8 +11,8 @@ mod lint_c;
 use lint_c::{run_class, run_class_with};
 use pun_lint::Rule;
 use pun_lint::rules::{
-    NoInvalidReturnTag, NoRedundantNullableCheck, NoUselessParamTag, NoUselessPhpdocType,
-    NoUselessReturnTag, NoUselessVarTag,
+    NoInvalidReturnTag, NoRedundantNullableCheck, NoUnusedAssignment, NoUselessParamTag,
+    NoUselessPhpdocType, NoUselessReturnTag, NoUselessVarTag,
 };
 
 fn check(rule: impl Rule + 'static, class: &str) {
@@ -110,4 +111,9 @@ fn remove_useless_union_return_docblock() {
 #[test]
 fn simplify_if_nullable_return() {
     check(NoRedundantNullableCheck, "SimplifyIfNullableReturnRector");
+}
+
+#[test]
+fn remove_unused_variable_assign() {
+    check(NoUnusedAssignment, "RemoveUnusedVariableAssignRector");
 }
