@@ -1,0 +1,1649 @@
+{
+    "arrays-0": [
+        [
+            "arrays.php",
+            16,
+            "phpstan.dumpType",
+            "Dumped type: array{left: 1}",
+            null,
+            false
+        ],
+        [
+            "arrays.php",
+            18,
+            "phpstan.dumpType",
+            "Dumped type: array{right: 1}",
+            null,
+            false
+        ],
+        [
+            "arrays.php",
+            34,
+            "phpstan.dumpType",
+            "Dumped type: array{right: 1}",
+            null,
+            false
+        ],
+        [
+            "arrays.php",
+            36,
+            "phpstan.dumpType",
+            "Dumped type: array{left: 1}",
+            null,
+            false
+        ],
+        [
+            "arrays.php",
+            53,
+            "phpstan.dumpType",
+            "Dumped type: array{left: 1}",
+            null,
+            false
+        ],
+        [
+            "arrays.php",
+            55,
+            "phpstan.dumpType",
+            "Dumped type: array{right: 1}",
+            null,
+            false
+        ],
+        [
+            "arrays.php",
+            72,
+            "phpstan.dumpType",
+            "Dumped type: array{replacement: 2}",
+            null,
+            false
+        ],
+        [
+            "arrays.php",
+            74,
+            "phpstan.dumpType",
+            "Dumped type: array{replacement: 2}",
+            null,
+            false
+        ],
+        [
+            "arrays.php",
+            92,
+            "phpstan.dumpType",
+            "Dumped type: array{nested: array{left: 1}, copy: 'leftleft'}",
+            null,
+            false
+        ],
+        [
+            "arrays.php",
+            94,
+            "phpstan.dumpType",
+            "Dumped type: array{nested: array{right: 2}, copy: 'rightright'}",
+            null,
+            false
+        ]
+    ],
+    "arrays-4": [
+        [
+            "arrays.php",
+            16,
+            "phpstan.dumpType",
+            "Dumped type: array{left: 1}",
+            null,
+            false
+        ],
+        [
+            "arrays.php",
+            18,
+            "phpstan.dumpType",
+            "Dumped type: array{right: 1}",
+            null,
+            false
+        ],
+        [
+            "arrays.php",
+            34,
+            "phpstan.dumpType",
+            "Dumped type: array{right: 1}",
+            null,
+            false
+        ],
+        [
+            "arrays.php",
+            36,
+            "phpstan.dumpType",
+            "Dumped type: array{left: 1}",
+            null,
+            false
+        ],
+        [
+            "arrays.php",
+            53,
+            "phpstan.dumpType",
+            "Dumped type: array{left: 1}",
+            null,
+            false
+        ],
+        [
+            "arrays.php",
+            55,
+            "phpstan.dumpType",
+            "Dumped type: array{right: 1}",
+            null,
+            false
+        ],
+        [
+            "arrays.php",
+            72,
+            "phpstan.dumpType",
+            "Dumped type: array{replacement: 2}",
+            null,
+            false
+        ],
+        [
+            "arrays.php",
+            74,
+            "phpstan.dumpType",
+            "Dumped type: array{replacement: 2}",
+            null,
+            false
+        ],
+        [
+            "arrays.php",
+            92,
+            "phpstan.dumpType",
+            "Dumped type: array{nested: array{left: 1}, copy: 'leftleft'}",
+            null,
+            false
+        ],
+        [
+            "arrays.php",
+            94,
+            "phpstan.dumpType",
+            "Dumped type: array{nested: array{right: 2}, copy: 'rightright'}",
+            null,
+            false
+        ]
+    ],
+    "arrays-5": [
+        [
+            "arrays.php",
+            16,
+            "phpstan.dumpType",
+            "Dumped type: array{left: 1}",
+            null,
+            false
+        ],
+        [
+            "arrays.php",
+            18,
+            "phpstan.dumpType",
+            "Dumped type: array{right: 1}",
+            null,
+            false
+        ],
+        [
+            "arrays.php",
+            34,
+            "phpstan.dumpType",
+            "Dumped type: array{right: 1}",
+            null,
+            false
+        ],
+        [
+            "arrays.php",
+            36,
+            "phpstan.dumpType",
+            "Dumped type: array{left: 1}",
+            null,
+            false
+        ],
+        [
+            "arrays.php",
+            53,
+            "phpstan.dumpType",
+            "Dumped type: array{left: 1}",
+            null,
+            false
+        ],
+        [
+            "arrays.php",
+            55,
+            "phpstan.dumpType",
+            "Dumped type: array{right: 1}",
+            null,
+            false
+        ],
+        [
+            "arrays.php",
+            72,
+            "phpstan.dumpType",
+            "Dumped type: array{replacement: 2}",
+            null,
+            false
+        ],
+        [
+            "arrays.php",
+            74,
+            "phpstan.dumpType",
+            "Dumped type: array{replacement: 2}",
+            null,
+            false
+        ],
+        [
+            "arrays.php",
+            92,
+            "phpstan.dumpType",
+            "Dumped type: array{nested: array{left: 1}, copy: 'leftleft'}",
+            null,
+            false
+        ],
+        [
+            "arrays.php",
+            94,
+            "phpstan.dumpType",
+            "Dumped type: array{nested: array{right: 2}, copy: 'rightright'}",
+            null,
+            false
+        ]
+    ],
+    "guards-0": [
+        [
+            "guards.php",
+            16,
+            "phpstan.dumpType",
+            "Dumped type: 'prefix-left'|'prefix-right'",
+            null,
+            false
+        ],
+        [
+            "guards.php",
+            18,
+            "phpstan.dumpType",
+            "Dumped type: 'prefix-left'|'prefix-right'",
+            null,
+            false
+        ],
+        [
+            "guards.php",
+            34,
+            "phpstan.dumpType",
+            "Dumped type: 'replacement-left'",
+            null,
+            false
+        ],
+        [
+            "guards.php",
+            36,
+            "phpstan.dumpType",
+            "Dumped type: 'replacement-right'",
+            null,
+            false
+        ],
+        [
+            "guards.php",
+            51,
+            "phpstan.dumpType",
+            "Dumped type: 'left'",
+            null,
+            false
+        ],
+        [
+            "guards.php",
+            53,
+            "phpstan.dumpType",
+            "Dumped type: 'left'",
+            null,
+            false
+        ],
+        [
+            "guards.php",
+            70,
+            "phpstan.dumpType",
+            "Dumped type: 4",
+            null,
+            false
+        ],
+        [
+            "guards.php",
+            71,
+            "phpstan.dumpType",
+            "Dumped type: 1",
+            null,
+            false
+        ],
+        [
+            "guards.php",
+            73,
+            "phpstan.dumpType",
+            "Dumped type: 5",
+            null,
+            false
+        ],
+        [
+            "guards.php",
+            74,
+            "phpstan.dumpType",
+            "Dumped type: 1",
+            null,
+            false
+        ]
+    ],
+    "guards-4": [
+        [
+            "guards.php",
+            16,
+            "phpstan.dumpType",
+            "Dumped type: 'prefix-left'|'prefix-right'",
+            null,
+            false
+        ],
+        [
+            "guards.php",
+            18,
+            "phpstan.dumpType",
+            "Dumped type: 'prefix-left'|'prefix-right'",
+            null,
+            false
+        ],
+        [
+            "guards.php",
+            34,
+            "phpstan.dumpType",
+            "Dumped type: 'replacement-left'",
+            null,
+            false
+        ],
+        [
+            "guards.php",
+            36,
+            "phpstan.dumpType",
+            "Dumped type: 'replacement-right'",
+            null,
+            false
+        ],
+        [
+            "guards.php",
+            49,
+            "variable.undefined",
+            "Variable $key might not be defined.",
+            null,
+            true
+        ],
+        [
+            "guards.php",
+            51,
+            "phpstan.dumpType",
+            "Dumped type: 'left'",
+            null,
+            false
+        ],
+        [
+            "guards.php",
+            53,
+            "phpstan.dumpType",
+            "Dumped type: 'left'",
+            null,
+            false
+        ],
+        [
+            "guards.php",
+            70,
+            "phpstan.dumpType",
+            "Dumped type: 4",
+            null,
+            false
+        ],
+        [
+            "guards.php",
+            71,
+            "phpstan.dumpType",
+            "Dumped type: 1",
+            null,
+            false
+        ],
+        [
+            "guards.php",
+            73,
+            "phpstan.dumpType",
+            "Dumped type: 5",
+            null,
+            false
+        ],
+        [
+            "guards.php",
+            74,
+            "phpstan.dumpType",
+            "Dumped type: 1",
+            null,
+            false
+        ]
+    ],
+    "guards-5": [
+        [
+            "guards.php",
+            16,
+            "phpstan.dumpType",
+            "Dumped type: 'prefix-left'|'prefix-right'",
+            null,
+            false
+        ],
+        [
+            "guards.php",
+            18,
+            "phpstan.dumpType",
+            "Dumped type: 'prefix-left'|'prefix-right'",
+            null,
+            false
+        ],
+        [
+            "guards.php",
+            34,
+            "phpstan.dumpType",
+            "Dumped type: 'replacement-left'",
+            null,
+            false
+        ],
+        [
+            "guards.php",
+            36,
+            "phpstan.dumpType",
+            "Dumped type: 'replacement-right'",
+            null,
+            false
+        ],
+        [
+            "guards.php",
+            49,
+            "variable.undefined",
+            "Variable $key might not be defined.",
+            null,
+            true
+        ],
+        [
+            "guards.php",
+            51,
+            "phpstan.dumpType",
+            "Dumped type: 'left'",
+            null,
+            false
+        ],
+        [
+            "guards.php",
+            53,
+            "phpstan.dumpType",
+            "Dumped type: 'left'",
+            null,
+            false
+        ],
+        [
+            "guards.php",
+            70,
+            "phpstan.dumpType",
+            "Dumped type: 4",
+            null,
+            false
+        ],
+        [
+            "guards.php",
+            71,
+            "phpstan.dumpType",
+            "Dumped type: 1",
+            null,
+            false
+        ],
+        [
+            "guards.php",
+            73,
+            "phpstan.dumpType",
+            "Dumped type: 5",
+            null,
+            false
+        ],
+        [
+            "guards.php",
+            74,
+            "phpstan.dumpType",
+            "Dumped type: 1",
+            null,
+            false
+        ]
+    ],
+    "calls-0": [
+        [
+            "calls.php",
+            33,
+            "phpstan.dumpType",
+            "Dumped type: 'left'",
+            null,
+            false
+        ],
+        [
+            "calls.php",
+            34,
+            "phpstan.dumpType",
+            "Dumped type: 'left'|'right'",
+            null,
+            false
+        ],
+        [
+            "calls.php",
+            36,
+            "phpstan.dumpType",
+            "Dumped type: 'right'",
+            null,
+            false
+        ],
+        [
+            "calls.php",
+            37,
+            "phpstan.dumpType",
+            "Dumped type: 'left'|'right'",
+            null,
+            false
+        ],
+        [
+            "calls.php",
+            54,
+            "phpstan.dumpType",
+            "Dumped type: 'left'",
+            null,
+            false
+        ],
+        [
+            "calls.php",
+            55,
+            "phpstan.dumpType",
+            "Dumped type: 1",
+            null,
+            false
+        ],
+        [
+            "calls.php",
+            57,
+            "phpstan.dumpType",
+            "Dumped type: 'right'",
+            null,
+            false
+        ],
+        [
+            "calls.php",
+            58,
+            "phpstan.dumpType",
+            "Dumped type: 1",
+            null,
+            false
+        ]
+    ],
+    "calls-4": [
+        [
+            "calls.php",
+            33,
+            "phpstan.dumpType",
+            "Dumped type: 'left'",
+            null,
+            false
+        ],
+        [
+            "calls.php",
+            34,
+            "phpstan.dumpType",
+            "Dumped type: 'left'|'right'",
+            null,
+            false
+        ],
+        [
+            "calls.php",
+            36,
+            "phpstan.dumpType",
+            "Dumped type: 'right'",
+            null,
+            false
+        ],
+        [
+            "calls.php",
+            37,
+            "phpstan.dumpType",
+            "Dumped type: 'left'|'right'",
+            null,
+            false
+        ],
+        [
+            "calls.php",
+            54,
+            "phpstan.dumpType",
+            "Dumped type: 'left'",
+            null,
+            false
+        ],
+        [
+            "calls.php",
+            55,
+            "phpstan.dumpType",
+            "Dumped type: 1",
+            null,
+            false
+        ],
+        [
+            "calls.php",
+            57,
+            "phpstan.dumpType",
+            "Dumped type: 'right'",
+            null,
+            false
+        ],
+        [
+            "calls.php",
+            58,
+            "phpstan.dumpType",
+            "Dumped type: 1",
+            null,
+            false
+        ]
+    ],
+    "calls-5": [
+        [
+            "calls.php",
+            33,
+            "phpstan.dumpType",
+            "Dumped type: 'left'",
+            null,
+            false
+        ],
+        [
+            "calls.php",
+            34,
+            "phpstan.dumpType",
+            "Dumped type: 'left'|'right'",
+            null,
+            false
+        ],
+        [
+            "calls.php",
+            36,
+            "phpstan.dumpType",
+            "Dumped type: 'right'",
+            null,
+            false
+        ],
+        [
+            "calls.php",
+            37,
+            "phpstan.dumpType",
+            "Dumped type: 'left'|'right'",
+            null,
+            false
+        ],
+        [
+            "calls.php",
+            54,
+            "phpstan.dumpType",
+            "Dumped type: 'left'",
+            null,
+            false
+        ],
+        [
+            "calls.php",
+            55,
+            "phpstan.dumpType",
+            "Dumped type: 1",
+            null,
+            false
+        ],
+        [
+            "calls.php",
+            57,
+            "phpstan.dumpType",
+            "Dumped type: 'right'",
+            null,
+            false
+        ],
+        [
+            "calls.php",
+            58,
+            "phpstan.dumpType",
+            "Dumped type: 1",
+            null,
+            false
+        ]
+    ],
+    "limit-0": [
+        [
+            "limit.php",
+            17,
+            "phpstan.dumpType",
+            "Dumped type: 'left'",
+            null,
+            false
+        ],
+        [
+            "limit.php",
+            18,
+            "phpstan.dumpType",
+            "Dumped type: 'left'",
+            null,
+            false
+        ],
+        [
+            "limit.php",
+            19,
+            "phpstan.dumpType",
+            "Dumped type: 'left'|'right'",
+            null,
+            false
+        ],
+        [
+            "limit.php",
+            20,
+            "phpstan.dumpType",
+            "Dumped type: 'left'|'right'",
+            null,
+            false
+        ]
+    ],
+    "limit-4": [
+        [
+            "limit.php",
+            17,
+            "phpstan.dumpType",
+            "Dumped type: 'left'",
+            null,
+            false
+        ],
+        [
+            "limit.php",
+            18,
+            "phpstan.dumpType",
+            "Dumped type: 'left'",
+            null,
+            false
+        ],
+        [
+            "limit.php",
+            19,
+            "phpstan.dumpType",
+            "Dumped type: 'left'|'right'",
+            null,
+            false
+        ],
+        [
+            "limit.php",
+            20,
+            "phpstan.dumpType",
+            "Dumped type: 'left'|'right'",
+            null,
+            false
+        ]
+    ],
+    "limit-5": [
+        [
+            "limit.php",
+            17,
+            "phpstan.dumpType",
+            "Dumped type: 'left'",
+            null,
+            false
+        ],
+        [
+            "limit.php",
+            18,
+            "phpstan.dumpType",
+            "Dumped type: 'left'",
+            null,
+            false
+        ],
+        [
+            "limit.php",
+            19,
+            "phpstan.dumpType",
+            "Dumped type: 'left'|'right'",
+            null,
+            false
+        ],
+        [
+            "limit.php",
+            20,
+            "phpstan.dumpType",
+            "Dumped type: 'left'|'right'",
+            null,
+            false
+        ]
+    ],
+    "named-0": [],
+    "named-4": [
+        [
+            "named.php",
+            44,
+            "argument.missing",
+            "Missing parameter $left (int) in call to method AssignmentDerivedConditions\\Target::first().",
+            null,
+            true
+        ],
+        [
+            "named.php",
+            44,
+            "argument.unknown",
+            "Unknown parameter $right in call to method AssignmentDerivedConditions\\Target::first().",
+            null,
+            true
+        ],
+        [
+            "named.php",
+            46,
+            "argument.missing",
+            "Missing parameter $right (int) in call to method AssignmentDerivedConditions\\Target::second().",
+            null,
+            true
+        ],
+        [
+            "named.php",
+            46,
+            "argument.unknown",
+            "Unknown parameter $left in call to method AssignmentDerivedConditions\\Target::second().",
+            null,
+            true
+        ]
+    ],
+    "named-5": [
+        [
+            "named.php",
+            27,
+            "argument.parameterRenamedInSubtype",
+            "Call to AssignmentDerivedConditions\\Target::first() uses named argument for parameter $left, but AssignmentDerivedConditions\\Child renames it to $renamedLeft.",
+            null,
+            true
+        ],
+        [
+            "named.php",
+            29,
+            "argument.parameterRenamedInSubtype",
+            "Call to AssignmentDerivedConditions\\Target::second() uses named argument for parameter $right, but AssignmentDerivedConditions\\Child renames it to $renamedRight.",
+            null,
+            true
+        ],
+        [
+            "named.php",
+            44,
+            "argument.missing",
+            "Missing parameter $left (int) in call to method AssignmentDerivedConditions\\Target::first().",
+            null,
+            true
+        ],
+        [
+            "named.php",
+            44,
+            "argument.unknown",
+            "Unknown parameter $right in call to method AssignmentDerivedConditions\\Target::first().",
+            null,
+            true
+        ],
+        [
+            "named.php",
+            46,
+            "argument.missing",
+            "Missing parameter $right (int) in call to method AssignmentDerivedConditions\\Target::second().",
+            null,
+            true
+        ],
+        [
+            "named.php",
+            46,
+            "argument.unknown",
+            "Unknown parameter $left in call to method AssignmentDerivedConditions\\Target::second().",
+            null,
+            true
+        ]
+    ],
+    "effects-0": [
+        [
+            "effects.php",
+            31,
+            "phpstan.dumpType",
+            "Dumped type: 'left'|'right'",
+            null,
+            false
+        ],
+        [
+            "effects.php",
+            32,
+            "phpstan.dumpType",
+            "Dumped type: 'left'|'right'",
+            null,
+            false
+        ],
+        [
+            "effects.php",
+            33,
+            "phpstan.dumpType",
+            "Dumped type: 'left'|'right'",
+            null,
+            false
+        ],
+        [
+            "effects.php",
+            34,
+            "phpstan.dumpType",
+            "Dumped type: 'left'",
+            null,
+            false
+        ],
+        [
+            "effects.php",
+            35,
+            "phpstan.dumpType",
+            "Dumped type: 'left'",
+            null,
+            false
+        ],
+        [
+            "effects.php",
+            36,
+            "phpstan.dumpType",
+            "Dumped type: 'left'",
+            null,
+            false
+        ],
+        [
+            "effects.php",
+            37,
+            "phpstan.dumpType",
+            "Dumped type: 'left'",
+            null,
+            false
+        ],
+        [
+            "effects.php",
+            38,
+            "phpstan.dumpType",
+            "Dumped type: 'left'",
+            null,
+            false
+        ],
+        [
+            "effects.php",
+            40,
+            "phpstan.dumpType",
+            "Dumped type: 'left'|'right'",
+            null,
+            false
+        ],
+        [
+            "effects.php",
+            41,
+            "phpstan.dumpType",
+            "Dumped type: 'left'|'right'",
+            null,
+            false
+        ],
+        [
+            "effects.php",
+            42,
+            "phpstan.dumpType",
+            "Dumped type: 'left'|'right'",
+            null,
+            false
+        ],
+        [
+            "effects.php",
+            43,
+            "phpstan.dumpType",
+            "Dumped type: 'right'",
+            null,
+            false
+        ],
+        [
+            "effects.php",
+            44,
+            "phpstan.dumpType",
+            "Dumped type: 'right'",
+            null,
+            false
+        ],
+        [
+            "effects.php",
+            45,
+            "phpstan.dumpType",
+            "Dumped type: 'right'",
+            null,
+            false
+        ],
+        [
+            "effects.php",
+            46,
+            "phpstan.dumpType",
+            "Dumped type: 'right'",
+            null,
+            false
+        ],
+        [
+            "effects.php",
+            47,
+            "phpstan.dumpType",
+            "Dumped type: 'right'",
+            null,
+            false
+        ]
+    ],
+    "effects-4": [
+        [
+            "effects.php",
+            26,
+            "isset.variable",
+            "Variable $local in isset() always exists and is not nullable.",
+            null,
+            true
+        ],
+        [
+            "effects.php",
+            31,
+            "phpstan.dumpType",
+            "Dumped type: 'left'|'right'",
+            null,
+            false
+        ],
+        [
+            "effects.php",
+            32,
+            "phpstan.dumpType",
+            "Dumped type: 'left'|'right'",
+            null,
+            false
+        ],
+        [
+            "effects.php",
+            33,
+            "phpstan.dumpType",
+            "Dumped type: 'left'|'right'",
+            null,
+            false
+        ],
+        [
+            "effects.php",
+            34,
+            "phpstan.dumpType",
+            "Dumped type: 'left'",
+            null,
+            false
+        ],
+        [
+            "effects.php",
+            35,
+            "phpstan.dumpType",
+            "Dumped type: 'left'",
+            null,
+            false
+        ],
+        [
+            "effects.php",
+            36,
+            "phpstan.dumpType",
+            "Dumped type: 'left'",
+            null,
+            false
+        ],
+        [
+            "effects.php",
+            37,
+            "phpstan.dumpType",
+            "Dumped type: 'left'",
+            null,
+            false
+        ],
+        [
+            "effects.php",
+            38,
+            "phpstan.dumpType",
+            "Dumped type: 'left'",
+            null,
+            false
+        ],
+        [
+            "effects.php",
+            40,
+            "phpstan.dumpType",
+            "Dumped type: 'left'|'right'",
+            null,
+            false
+        ],
+        [
+            "effects.php",
+            41,
+            "phpstan.dumpType",
+            "Dumped type: 'left'|'right'",
+            null,
+            false
+        ],
+        [
+            "effects.php",
+            42,
+            "phpstan.dumpType",
+            "Dumped type: 'left'|'right'",
+            null,
+            false
+        ],
+        [
+            "effects.php",
+            43,
+            "phpstan.dumpType",
+            "Dumped type: 'right'",
+            null,
+            false
+        ],
+        [
+            "effects.php",
+            44,
+            "phpstan.dumpType",
+            "Dumped type: 'right'",
+            null,
+            false
+        ],
+        [
+            "effects.php",
+            45,
+            "phpstan.dumpType",
+            "Dumped type: 'right'",
+            null,
+            false
+        ],
+        [
+            "effects.php",
+            46,
+            "phpstan.dumpType",
+            "Dumped type: 'right'",
+            null,
+            false
+        ],
+        [
+            "effects.php",
+            47,
+            "phpstan.dumpType",
+            "Dumped type: 'right'",
+            null,
+            false
+        ]
+    ],
+    "effects-5": [
+        [
+            "effects.php",
+            26,
+            "isset.variable",
+            "Variable $local in isset() always exists and is not nullable.",
+            null,
+            true
+        ],
+        [
+            "effects.php",
+            31,
+            "phpstan.dumpType",
+            "Dumped type: 'left'|'right'",
+            null,
+            false
+        ],
+        [
+            "effects.php",
+            32,
+            "phpstan.dumpType",
+            "Dumped type: 'left'|'right'",
+            null,
+            false
+        ],
+        [
+            "effects.php",
+            33,
+            "phpstan.dumpType",
+            "Dumped type: 'left'|'right'",
+            null,
+            false
+        ],
+        [
+            "effects.php",
+            34,
+            "phpstan.dumpType",
+            "Dumped type: 'left'",
+            null,
+            false
+        ],
+        [
+            "effects.php",
+            35,
+            "phpstan.dumpType",
+            "Dumped type: 'left'",
+            null,
+            false
+        ],
+        [
+            "effects.php",
+            36,
+            "phpstan.dumpType",
+            "Dumped type: 'left'",
+            null,
+            false
+        ],
+        [
+            "effects.php",
+            37,
+            "phpstan.dumpType",
+            "Dumped type: 'left'",
+            null,
+            false
+        ],
+        [
+            "effects.php",
+            38,
+            "phpstan.dumpType",
+            "Dumped type: 'left'",
+            null,
+            false
+        ],
+        [
+            "effects.php",
+            40,
+            "phpstan.dumpType",
+            "Dumped type: 'left'|'right'",
+            null,
+            false
+        ],
+        [
+            "effects.php",
+            41,
+            "phpstan.dumpType",
+            "Dumped type: 'left'|'right'",
+            null,
+            false
+        ],
+        [
+            "effects.php",
+            42,
+            "phpstan.dumpType",
+            "Dumped type: 'left'|'right'",
+            null,
+            false
+        ],
+        [
+            "effects.php",
+            43,
+            "phpstan.dumpType",
+            "Dumped type: 'right'",
+            null,
+            false
+        ],
+        [
+            "effects.php",
+            44,
+            "phpstan.dumpType",
+            "Dumped type: 'right'",
+            null,
+            false
+        ],
+        [
+            "effects.php",
+            45,
+            "phpstan.dumpType",
+            "Dumped type: 'right'",
+            null,
+            false
+        ],
+        [
+            "effects.php",
+            46,
+            "phpstan.dumpType",
+            "Dumped type: 'right'",
+            null,
+            false
+        ],
+        [
+            "effects.php",
+            47,
+            "phpstan.dumpType",
+            "Dumped type: 'right'",
+            null,
+            false
+        ]
+    ],
+    "retained-0": [
+        [
+            "retained.php",
+            24,
+            "phpstan.dumpType",
+            "Dumped type: array{left: 1}",
+            null,
+            false
+        ],
+        [
+            "retained.php",
+            26,
+            "phpstan.dumpType",
+            "Dumped type: array{right: 1}",
+            null,
+            false
+        ]
+    ],
+    "retained-4": [
+        [
+            "retained.php",
+            24,
+            "phpstan.dumpType",
+            "Dumped type: array{left: 1}",
+            null,
+            false
+        ],
+        [
+            "retained.php",
+            26,
+            "phpstan.dumpType",
+            "Dumped type: array{right: 1}",
+            null,
+            false
+        ]
+    ],
+    "retained-5": [
+        [
+            "retained.php",
+            24,
+            "phpstan.dumpType",
+            "Dumped type: array{left: 1}",
+            null,
+            false
+        ],
+        [
+            "retained.php",
+            26,
+            "phpstan.dumpType",
+            "Dumped type: array{right: 1}",
+            null,
+            false
+        ]
+    ],
+    "strings-0": [
+        [
+            "strings.php",
+            27,
+            "phpstan.dumpType",
+            "Dumped type: 'left'|'right'",
+            null,
+            false
+        ],
+        [
+            "strings.php",
+            28,
+            "phpstan.dumpType",
+            "Dumped type: 'left'|'right'",
+            null,
+            false
+        ],
+        [
+            "strings.php",
+            29,
+            "phpstan.dumpType",
+            "Dumped type: 'left'|'right'",
+            null,
+            false
+        ],
+        [
+            "strings.php",
+            30,
+            "phpstan.dumpType",
+            "Dumped type: 'prefix-left'",
+            null,
+            false
+        ],
+        [
+            "strings.php",
+            31,
+            "phpstan.dumpType",
+            "Dumped type: 'left'",
+            null,
+            false
+        ],
+        [
+            "strings.php",
+            32,
+            "phpstan.dumpType",
+            "Dumped type: 'prefix-left'",
+            null,
+            false
+        ],
+        [
+            "strings.php",
+            34,
+            "phpstan.dumpType",
+            "Dumped type: 'left'|'right'",
+            null,
+            false
+        ],
+        [
+            "strings.php",
+            35,
+            "phpstan.dumpType",
+            "Dumped type: 'left'|'right'",
+            null,
+            false
+        ],
+        [
+            "strings.php",
+            36,
+            "phpstan.dumpType",
+            "Dumped type: 'left'|'right'",
+            null,
+            false
+        ],
+        [
+            "strings.php",
+            37,
+            "phpstan.dumpType",
+            "Dumped type: 'prefix-right'",
+            null,
+            false
+        ],
+        [
+            "strings.php",
+            38,
+            "phpstan.dumpType",
+            "Dumped type: 'right'",
+            null,
+            false
+        ],
+        [
+            "strings.php",
+            39,
+            "phpstan.dumpType",
+            "Dumped type: 'prefix-right'",
+            null,
+            false
+        ]
+    ],
+    "strings-4": [
+        [
+            "strings.php",
+            27,
+            "phpstan.dumpType",
+            "Dumped type: 'left'|'right'",
+            null,
+            false
+        ],
+        [
+            "strings.php",
+            28,
+            "phpstan.dumpType",
+            "Dumped type: 'left'|'right'",
+            null,
+            false
+        ],
+        [
+            "strings.php",
+            29,
+            "phpstan.dumpType",
+            "Dumped type: 'left'|'right'",
+            null,
+            false
+        ],
+        [
+            "strings.php",
+            30,
+            "phpstan.dumpType",
+            "Dumped type: 'prefix-left'",
+            null,
+            false
+        ],
+        [
+            "strings.php",
+            31,
+            "phpstan.dumpType",
+            "Dumped type: 'left'",
+            null,
+            false
+        ],
+        [
+            "strings.php",
+            32,
+            "phpstan.dumpType",
+            "Dumped type: 'prefix-left'",
+            null,
+            false
+        ],
+        [
+            "strings.php",
+            34,
+            "phpstan.dumpType",
+            "Dumped type: 'left'|'right'",
+            null,
+            false
+        ],
+        [
+            "strings.php",
+            35,
+            "phpstan.dumpType",
+            "Dumped type: 'left'|'right'",
+            null,
+            false
+        ],
+        [
+            "strings.php",
+            36,
+            "phpstan.dumpType",
+            "Dumped type: 'left'|'right'",
+            null,
+            false
+        ],
+        [
+            "strings.php",
+            37,
+            "phpstan.dumpType",
+            "Dumped type: 'prefix-right'",
+            null,
+            false
+        ],
+        [
+            "strings.php",
+            38,
+            "phpstan.dumpType",
+            "Dumped type: 'right'",
+            null,
+            false
+        ],
+        [
+            "strings.php",
+            39,
+            "phpstan.dumpType",
+            "Dumped type: 'prefix-right'",
+            null,
+            false
+        ]
+    ],
+    "strings-5": [
+        [
+            "strings.php",
+            27,
+            "phpstan.dumpType",
+            "Dumped type: 'left'|'right'",
+            null,
+            false
+        ],
+        [
+            "strings.php",
+            28,
+            "phpstan.dumpType",
+            "Dumped type: 'left'|'right'",
+            null,
+            false
+        ],
+        [
+            "strings.php",
+            29,
+            "phpstan.dumpType",
+            "Dumped type: 'left'|'right'",
+            null,
+            false
+        ],
+        [
+            "strings.php",
+            30,
+            "phpstan.dumpType",
+            "Dumped type: 'prefix-left'",
+            null,
+            false
+        ],
+        [
+            "strings.php",
+            31,
+            "phpstan.dumpType",
+            "Dumped type: 'left'",
+            null,
+            false
+        ],
+        [
+            "strings.php",
+            32,
+            "phpstan.dumpType",
+            "Dumped type: 'prefix-left'",
+            null,
+            false
+        ],
+        [
+            "strings.php",
+            34,
+            "phpstan.dumpType",
+            "Dumped type: 'left'|'right'",
+            null,
+            false
+        ],
+        [
+            "strings.php",
+            35,
+            "phpstan.dumpType",
+            "Dumped type: 'left'|'right'",
+            null,
+            false
+        ],
+        [
+            "strings.php",
+            36,
+            "phpstan.dumpType",
+            "Dumped type: 'left'|'right'",
+            null,
+            false
+        ],
+        [
+            "strings.php",
+            37,
+            "phpstan.dumpType",
+            "Dumped type: 'prefix-right'",
+            null,
+            false
+        ],
+        [
+            "strings.php",
+            38,
+            "phpstan.dumpType",
+            "Dumped type: 'right'",
+            null,
+            false
+        ],
+        [
+            "strings.php",
+            39,
+            "phpstan.dumpType",
+            "Dumped type: 'prefix-right'",
+            null,
+            false
+        ]
+    ]
+}

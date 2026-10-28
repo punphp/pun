@@ -30,12 +30,17 @@ use mago_syntax::cst::Assignment;
 use mago_syntax::cst::AssignmentOperator;
 use mago_syntax::cst::Binary;
 use mago_syntax::cst::BinaryOperator;
+use mago_syntax::cst::Call;
+use mago_syntax::cst::Construct;
 use mago_syntax::cst::Expression;
+use mago_syntax::cst::StringPart;
 use mago_syntax::cst::UnaryPrefix;
 use mago_syntax::cst::UnaryPrefixOperator;
 use mago_syntax::cst::Variable;
+use mago_syntax::walker::MutWalker;
 use mago_word::Word;
 use mago_word::WordSet;
+use mago_word::word;
 
 use crate::analyzable::Analyzable;
 use crate::artifacts::AnalysisArtifacts;
@@ -44,6 +49,7 @@ use crate::code::IssueCode;
 use crate::context::Context;
 use crate::context::block::BlockContext;
 use crate::context::block::ReferenceConstraintSource;
+use crate::context::block::VariableState;
 use crate::context::scope::var_has_root;
 use crate::context::scope::var_references_dynamic;
 use crate::error::AnalysisError;
@@ -57,6 +63,7 @@ use crate::utils::expression::get_block_expression_id;
 use crate::utils::expression::get_non_nullsafe_expression_id;
 use crate::utils::expression::get_nullsafe_base_expressions;
 use crate::utils::expression::get_root_expression_id;
+use crate::utils::expression::variable::get_variables_referenced_in_expression;
 use crate::utils::misc::unwrap_expression;
 
 pub(crate) mod array_assignment;
@@ -114,6 +121,18 @@ where
     analyze_assignment_target(target_expression, context, block_context, artifacts)?;
 
     let target_variable_id = get_block_expression_id(target_expression, context, block_context);
+    let mut reads: Vec<_> = if assignment_operator.is_none()
+        && matches!(target_expression, Expression::Variable(Variable::Direct(_)))
+        && context.raw_callback_gather_depth == 0
+        && let Some(source) = source_expression
+    {
+        get_variables_referenced_in_expression(source, false).into_iter().collect()
+    } else {
+        Vec::new()
+    };
+    // NodeFinder visits occurrences in source order, not VariableScanner's hash order.
+    reads.sort_by_key(|(_, span)| span.start.offset);
+    let before_assignment = if reads.is_empty() { None } else { block_context.assignment_condition_scope() };
     let mut existing_target_type = None;
     if let Some(target_variable_id) = &target_variable_id {
         block_context.conditionally_referenced_variable_ids.remove(target_variable_id);
@@ -234,6 +253,34 @@ where
         );
     }
 
+    let pending_conditions = if let (Some(before), Some(target), Some(source)) =
+        (before_assignment, target_variable_id, source_expression)
+        && derived_assignment_rhs_is_pure(source, context, artifacts)
+    {
+        before.derive_assignment_conditions(target, reads.into_iter().map(|(name, _)| word(name)), &source_type, |scope| {
+            scope.if_body_context = None;
+            scope.finally_scope = None;
+            let mut sandbox = artifacts.clone();
+            sandbox.loop_scope = None;
+            sandbox.case_scopes.clear();
+            crate::plugin::registry::with_isolated_type_pricing(|| {
+                let mut price = |context: &mut Context<'ctx, 'arena, A>| context.gather_callback(|context| {
+                    source.analyze(context, scope, &mut sandbox)?;
+                    Ok::<_, AnalysisError>(sandbox.get_expression_type(source).cloned().unwrap_or_else(get_mixed))
+                });
+                if context.observation_program.is_some() {
+                    // Argument settling may update retained results. An observation-enabled
+                    // walk therefore needs its own observation state, not just copied artifacts.
+                    price(&mut context.fork_for_observation())
+                } else {
+                    price(context)
+                }
+            })
+        })?
+    } else {
+        VariableState::default()
+    };
+
     if let (Some(target_variable_id), Some(existing_target_type)) = (&target_variable_id, &existing_target_type) {
         block_context.remove_descendants(context, *target_variable_id, existing_target_type, Some(&source_type));
     } else {
@@ -304,6 +351,7 @@ where
         && matches!(target_expression, Expression::Variable(_))
     {
         add_nullsafe_assignment_clauses(target_variable_id, source_expression, context, block_context);
+        block_context.install_assignment_conditions(pending_conditions);
     }
 
     if let Some(assignment_span) = assignment_span {
@@ -311,6 +359,60 @@ where
     }
 
     Ok(())
+}
+
+/// The live analyzer has no general ImpurePoint result yet. Unknown calls/accessors
+/// are not assumed pure, and implicit string calls require scalar inputs. Local
+/// writes are not PHPStan impure points (unlike superglobals).
+fn derived_assignment_rhs_is_pure<'arena, A: Arena>(
+    source: &Expression<'arena>,
+    context: &Context<'_, 'arena, A>,
+    artifacts: &AnalysisArtifacts,
+) -> bool {
+    struct PureRhs {
+        pure: bool,
+    }
+    impl<'ast, 'ctx, 'arena, A: Arena> MutWalker<'ast, 'arena, (&Context<'ctx, 'arena, A>, &AnalysisArtifacts)> for PureRhs {
+        fn walk_in_expression(&mut self, expression: &'ast Expression<'arena>, state: &mut (&Context<'ctx, 'arena, A>, &AnalysisArtifacts)) {
+            let (context, artifacts) = *state;
+            // ImplicitToStringCallHelper may add an impure __toString invocation.
+            // Missing or non-scalar types cannot establish its absence.
+            let scalar = |expression: &Expression<'arena>| artifacts.get_expression_type(expression)
+                .is_some_and(|ty| ty.types.iter().all(|ty| matches!(ty, TAtomic::Scalar(_) | TAtomic::Null)));
+            self.pure &= match expression {
+                Expression::Binary(binary) if matches!(binary.operator, BinaryOperator::StringConcat(_)) =>
+                    scalar(binary.lhs) && scalar(binary.rhs),
+                Expression::UnaryPrefix(prefix) if matches!(prefix.operator,
+                    UnaryPrefixOperator::StringCast(_, _) | UnaryPrefixOperator::BinaryCast(_, _)) => scalar(prefix.operand),
+                Expression::CompositeString(string) => string.parts().as_slice().iter().all(|part| match part {
+                    StringPart::Literal(_) => true,
+                    StringPart::Expression(expression) => scalar(expression),
+                    StringPart::BracedExpression(part) => scalar(part.expression),
+                }),
+                Expression::Call(Call::Function(call)) => match call.function {
+                    Expression::Identifier(name) => context.codebase
+                        .get_function(context.resolve_function_name(name))
+                        .is_some_and(|metadata| metadata.flags.is_pure() && !metadata.flags.suspends_fiber()),
+                    _ => false,
+                },
+                Expression::Variable(Variable::Direct(variable)) =>
+                    crate::common::global::get_global_variable_type(word(variable.name)).is_none(),
+                Expression::Assignment(assignment) =>
+                    matches!(assignment.lhs, Expression::Variable(Variable::Direct(_))),
+                Expression::Construct(construct) => matches!(construct, Construct::Isset(_) | Construct::Empty(_)),
+                Expression::Call(_) | Expression::Access(Access::Property(_) | Access::NullSafeProperty(_) | Access::StaticProperty(_))
+                | Expression::Instantiation(_) | Expression::AnonymousClass(_) | Expression::Yield(_) | Expression::Pipe(_) => false,
+                _ => true,
+            };
+        }
+
+        // Creating a callable does not execute its body or any effects inside it.
+        fn walk_closure(&mut self, _: &'ast mago_syntax::cst::Closure<'arena>, _: &mut (&Context<'ctx, 'arena, A>, &AnalysisArtifacts)) {}
+        fn walk_arrow_function(&mut self, _: &'ast mago_syntax::cst::ArrowFunction<'arena>, _: &mut (&Context<'ctx, 'arena, A>, &AnalysisArtifacts)) {}
+    }
+    let mut purity = PureRhs { pure: true };
+    purity.walk_expression(source, &mut (&*context, artifacts));
+    purity.pure
 }
 
 fn add_nullsafe_assignment_clauses<'ctx, 'arena, A>(

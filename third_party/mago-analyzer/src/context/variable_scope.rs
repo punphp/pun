@@ -221,6 +221,67 @@ impl BlockContext<'_> {
             });
     }
 
+    /// Keep the pre-RHS holders only when there is a condition to propagate.
+    pub(crate) fn assignment_condition_scope(&self) -> Option<Self> {
+        (!self.variable_state.conditional.is_empty()).then(|| self.clone())
+    }
+
+    /// AssignHandler::processDerivedConditionalExpressionsAfterAssign. The caller supplies
+    /// pure RHS pricing; the pending holders must be installed after the ordinary target write.
+    pub(crate) fn derive_assignment_conditions<E>(
+        &self,
+        target: Word,
+        reads: impl IntoIterator<Item = Word>,
+        assigned: &TUnion,
+        mut price: impl FnMut(&mut Self) -> Result<TUnion, E>,
+    ) -> Result<VariableState, E> {
+        let mut pending = VariableState::default();
+        let mut seen = WordSet::default();
+        let mut evaluations = 0;
+        for read in reads {
+            if read == target || !seen.insert(read) {
+                continue;
+            }
+            for holder in self.variable_state.conditional.iter().filter(|holder| {
+                holder.target == read && holder.certainty == VariableCertainty::Defined && holder.guard != target
+            }) {
+                evaluations += 1;
+                if evaluations > 16 {
+                    return Ok(pending);
+                }
+                let mut scope = self.clone();
+                // assignExpression invalidates the previous guard/consequent, then specifies
+                // the conditional holder's definite types on both PHPDoc and native scopes.
+                for (name, ty) in [(holder.guard, &holder.guard_type), (read, holder.target_type.as_ref().unwrap())] {
+                    scope.invalidate_variable_certainty(name);
+                    scope.set_variable_certainty(name, VariableCertainty::Defined, Some(Rc::clone(ty)));
+                    if let Some(native) = &mut scope.native_locals {
+                        native.insert(name, Rc::clone(ty));
+                    }
+                }
+                let derived = price(&mut scope)?;
+                if equal_types(&derived, assigned) {
+                    continue;
+                }
+                let derived = ConditionalVariable {
+                    guard: holder.guard,
+                    guard_type: Rc::clone(&holder.guard_type),
+                    target,
+                    certainty: VariableCertainty::Defined,
+                    target_type: Some(Rc::new(derived)),
+                };
+                if !pending.conditional.contains(&derived) {
+                    pending.conditional.push(derived);
+                }
+            }
+        }
+        Ok(pending)
+    }
+
+    pub(crate) fn install_assignment_conditions(&mut self, pending: VariableState) {
+        self.variable_state.conditional.extend(pending.conditional);
+    }
+
     /// ScopeOps applies requireMoreCharacters to targets, but not conditional guards.
     pub(crate) fn invalidate_expression_holders(&mut self, invalidates: impl Fn(Word, bool) -> bool) {
         self.variable_state.absent.retain(|target| !invalidates(*target, false));

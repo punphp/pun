@@ -2965,3 +2965,45 @@ substituting `nullsafe-scope-edges.php` or `nullsafe-scope-results.php` for the 
 This is the live scope prerequisite. Nullsafe call observation registration, historical selector
 indexing and stored-consumption pricing remain separate work. These tests do not claim that the
 unfinished nullsafe observation matrix passes or replace any of its frozen expectations.
+
+## Derived assignment conditions
+
+`expression/assignment/mod.rs` preserves existing conditional holders before a direct
+variable assignment evaluates its RHS. `context/variable_scope.rs` derives the assigned
+variable's type under each definite RHS-variable consequence and its guard, then installs
+the new holders after ordinary target invalidation. This ports PHPStan 2.3.1's
+[`AssignHandler::processDerivedConditionalExpressionsAfterAssign`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Analyser/ExprHandler/AssignHandler.php#L2323-L2390),
+including distinct reads in source order, the 16-evaluation limit, self-read exclusion,
+and rejection of conditions on the overwritten target.
+
+Pricing uses copied artifacts and detached control-flow sinks. It suppresses observer
+events and diagnostics while retaining semantic return providers. Observation-enabled
+analysis also forks the observation state, so argument settling cannot replace live
+retained results. The ordinary assignment and its expression type remain unchanged.
+
+Mago does not return PHPStan's general `ImpurePoint` list. This patch consequently prices
+only RHS operations whose purity it can establish. Unknown calls, methods, property
+accesses, superglobal reads, and effectful constructs do not produce derived holders.
+Explicitly pure functions, local references, and local writes remain eligible. Conditional holders
+retain Mago's existing single-guard representation. General impurity tracking and compound
+condition holders are separate boundaries, not inferred by this patch.
+
+String concatenation, casts, and interpolation also need PHPStan's
+`ImplicitToStringCallHelper` guard: an object's `__toString()` can add an impure point
+without an explicit method call in the RHS. These operations are eligible only when
+their live operand types establish scalar or null inputs. Missing types, object inputs,
+and unresolved template inputs do not imply purity.
+
+The complete PHPStan records and capture script in
+`crates/pun-analyse/tests/fixtures/assignment-derived-conditions/` cover array key/value
+correlations, reversed associations, overwritten guards and targets, self-dependency,
+undefined reads, pure and impure calls, local writes, the evaluation limit, and named
+unpacks at levels 0, 4, and 5. The public regression uses `pun_analyse::run` without
+identifier filtering. Literal arrays with multiple possible keys retain their existing
+live producer behavior; singleton-key pricing supplies the derived consequences.
+
+The strict matrix retains independent prerequisite failures instead of substituting
+expectations. Combining partial closed-array consequences needs PHPStan's definite
+constant-array intersection, which Mago's shared intersector does not yet implement.
+The nested `isset()` control also retains the missing `isset.variable` diagnostic at
+levels 4 and 5. Neither boundary is repaired by this assignment patch.
