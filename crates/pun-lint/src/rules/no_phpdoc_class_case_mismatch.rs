@@ -68,9 +68,10 @@ impl Rule for NoPhpdocClassCaseMismatch {
         let facts = facts(ctx);
         let mut edits = Vec::new();
         for (at, _) in text.match_indices("@var") {
-            let before = text[..at].chars().next_back();
+            // a tag starts its line (a `@var` further on is description)
+            let line = &text[text[..at].rfind('\n').map_or(0, |i| i + 1)..at];
             let rest = &text[at + 4..];
-            if before.is_some_and(|c| c.is_alphanumeric() || c == '-' || c == '@')
+            if !line.trim_start_matches([' ', '\t', '*', '/']).is_empty()
                 || !rest.starts_with([' ', '\t'])
             {
                 continue;
@@ -144,13 +145,12 @@ fn existing_class_name(facts: &Facts, ancestors: &[Node<'_, '_>], written: &str)
     let (namespace, mut imports) = class_imports(ancestors);
     // `FileNode::getUsesAndGroupUses()`: the file's own statements unless it has exactly one namespace, so a file of
     // several namespaces has no imports for this lookup
-    let namespaces = match ancestors.first() {
-        Some(Node::Program(p)) => (p.statements.iter())
+    if let Some(Node::Program(p)) = ancestors.first()
+        && (p.statements.iter())
             .filter(|s| matches!(s, Statement::Namespace(_)))
-            .count(),
-        _ => 0,
-    };
-    if namespaces > 1 {
+            .count()
+            > 1
+    {
         imports.clear();
     }
     for (full, alias) in &imports {

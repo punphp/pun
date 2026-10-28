@@ -45,22 +45,25 @@ impl Rule for NoConstantViaVariable {
         let Some(t) = facts.native_type(node_span(fetch.class)) else {
             return;
         };
-        let class = match &t.types[..] {
-            [TAtomic::Object(TObject::Named(n))] if !n.is_this && !n.is_static => n.name,
-            [TAtomic::Object(TObject::Enum(e))] => e.get_name(),
-            _ => return,
-        };
         let codebase = &facts.codebase;
-        let Some(metadata) = codebase.get_class_like(class.as_bytes()) else {
-            return;
+        // Mago gives a value of a class it does not know no named type, so a named one is known
+        let metadata = match &t.types[..] {
+            [TAtomic::Object(TObject::Named(n))] if !n.is_this && !n.is_static => {
+                codebase.get_class_like(n.name.as_bytes())
+            }
+            [TAtomic::Object(TObject::Enum(e))] => codebase.get_class_like(e.get_name().as_bytes()),
+            _ => None,
         };
+        let Some(metadata) = metadata else { return };
         // `hasConstant()`: the class, a parent or an interface declares it, or an enum has the case
         let name = constant.value;
         let declared = std::iter::once(&metadata.name)
             .chain(metadata.all_parent_classes.iter())
             .chain(metadata.all_parent_interfaces.iter())
             .find_map(|c| codebase.get_class_constant(c.as_bytes(), name));
-        let is_case = codebase.get_enum_case(class.as_bytes(), name).is_some();
+        let is_case = codebase
+            .get_enum_case(metadata.name.as_bytes(), name)
+            .is_some();
         if declared.is_none() && !is_case {
             return;
         }

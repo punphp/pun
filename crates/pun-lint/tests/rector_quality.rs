@@ -21,9 +21,10 @@
 //! parentheses the new place needs (`filter_var($i + 1, FILTER_VALIDATE_INT) * 2` becomes `$i + 1 * 2`); Pun keeps
 //! the meaning (lint.md: meaning over bytes).
 //!
-//! RemoveDeadInstanceOfRector/Pun/unreachable_code and RemoveTestsOverriddenPrivateMethodParameterRector/Pun/
-//! unreachable_caller: Rector types the statements after a `return` with the scope before it; Mago's analysis does not
-//! reach them, so Pun leaves the `if` there, and the caller's argument (the parameter still goes).
+//! RemoveDeadInstanceOfRector/Pun/unreachable_code, RemoveDeadInstanceOfAssertRector/Pun/unreachable_code and
+//! RemoveTestsOverriddenPrivateMethodParameterRector/Pun/unreachable_caller: Rector types the statements after a
+//! `return` with the scope before it; Mago's analysis does not reach them, so Pun leaves the `if` and the `assert()`
+//! there, and the caller's argument (the parameter still goes).
 //!
 //! RemoveDeadInstanceOfRector/Pun/bare_body_holder: where the braceless body of an `if` is an `if` that gives way to
 //! several statements, Rector prints the outer `if` anew with braces; Pun leaves both.
@@ -32,8 +33,9 @@
 //! `bool`, so Pun keeps the `if`.
 //!
 //! ExplicitReturnNullRector/Pun/generic_return_doc: Rector's type mapper prints a `@return` union it rewrites anew
-//! (`array<int, string>|void` becomes `string[]|null`); Pun prints keywords and class names as Rector does and leaves
-//! a function with any other kind of type in that union alone.
+//! (`array<int, string>|void` becomes `string[]|null`, `parent|void` becomes `static|null`, another type, and `self`
+//! in an anonymous class becomes a name of Rector's own, `AnonymousClass6c52...`, no class); Pun prints keywords and
+//! class names as Rector does and leaves a function with any other kind of type in that union alone.
 //!
 //! SimplifyIfReturnBoolRector/Pun/operand_parentheses: where an operand php-parser prints with its own code needs
 //! parentheses in the returned value (a ternary under the new `(bool)` or in an `&&` printed anew), Rector writes

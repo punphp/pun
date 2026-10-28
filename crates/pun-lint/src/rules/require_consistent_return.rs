@@ -8,9 +8,10 @@
 //! has `null` there. Nothing changes with a `goto`, a `yield`, or a returned value whose native type is `mixed`.
 //!
 //! Rector prints the `@return` type anew (`PhpDocTypeChanger`): keywords in lower case, `boolean` as `bool`,
-//! `true|false` as `bool`, a repeat once, a class as its fully qualified name without the leading `\` (an imported
-//! name as written, `self` as the class). Pun leaves a function alone whose `@return` union with `void` holds
-//! another kind of type (generics, shapes, `static`, a partly qualified name), which Rector's type mapper rewrites.
+//! `true|false` as `bool` (none of them beside a `bool`), a repeat once, a class as its fully qualified name without
+//! the leading `\` (an imported or partly qualified name as written, `self` as the class-like), and no blanks around a
+//! `|`. Only the first `@return` tag counts. Pun leaves a function alone whose `@return` union with `void` holds
+//! another kind of type (generics, shapes, `static`, `parent`), which Rector's type mapper rewrites.
 
 use mago_syntax::cst::{Block, MethodBody, Node, NodeKind};
 use pun_problem::{Edit, Fix, Safety, Span};
@@ -144,36 +145,41 @@ fn doc_edit(source: &str, node: Node<'_, '_>, ancestors: &[Node<'_, '_>]) -> Opt
         })
         .map(|(i, _)| i + 7)
         .collect();
-    let at = match tags[..] {
-        [] => return Some(None),
-        [at] => at,
-        _ => return None,
+    // `getReturnType()` reads the first tag
+    let Some(&at) = tags.first() else {
+        return Some(None);
     };
     let start = at + text[at..].len() - text[at..].trim_start_matches([' ', '\t']).len();
-    // the type ends at a blank outside brackets (`array<int, string>` is one)
-    let rest = &text[start..];
-    let mut depth = 0i32;
-    let end = rest
-        .char_indices()
-        .find(|&(_, c)| {
-            match c {
-                '<' | '(' | '{' | '[' => depth += 1,
-                '>' | ')' | '}' | ']' => depth -= 1,
-                _ => {}
-            }
-            depth <= 0 && c.is_whitespace()
-        })
-        .map_or(rest.len(), |(i, _)| i);
-    let word = &rest[..end];
-    let written = word.strip_suffix("*/").unwrap_or(word);
-    let len = written.len();
-    if written.is_empty()
-        || text[start + len..]
-            .trim_start_matches([' ', '\t'])
-            .starts_with('|')
+    // a type ends at a blank outside brackets (`array<int, string>` is one)
+    let word_end = |from: usize| {
+        let mut depth = 0i32;
+        let rest = &text[from..];
+        from + rest
+            .char_indices()
+            .find(|&(_, c)| {
+                match c {
+                    '<' | '(' | '{' | '[' => depth += 1,
+                    '>' | ')' | '}' | ']' => depth -= 1,
+                    _ => {}
+                }
+                depth <= 0 && c.is_whitespace()
+            })
+            .map_or(rest.len(), |(i, _)| i)
+    };
+    // a union may have blanks around its `|` (`int | void`)
+    let mut end = word_end(start);
+    while let Some(next) = text[end..]
+        .trim_start_matches([' ', '\t'])
+        .strip_prefix('|')
     {
-        return None;
+        end = word_end(text.len() - next.trim_start_matches([' ', '\t']).len());
     }
+    let end = text[..end].strip_suffix("*/").map_or(end, str::len);
+    let written: String = text[start..end]
+        .chars()
+        .filter(|c| !matches!(c, ' ' | '\t'))
+        .collect();
+    let len = end - start;
     let members: Vec<&str> = written.split('|').collect();
     if members.len() < 2 || !members.iter().any(|m| m.eq_ignore_ascii_case("void")) {
         return Some(None);
@@ -189,22 +195,28 @@ fn doc_edit(source: &str, node: Node<'_, '_>, ancestors: &[Node<'_, '_>]) -> Opt
             "string" | "true" | "false" | "array" => lower,
             // a union with `mixed` is `mixed`, no union
             "mixed" => return Some(None),
+            // the class-like around (an anonymous class's name is Rector's own hash); outside one the tag stays
             "self" => {
-                let class = ancestors
-                    .iter()
-                    .enumerate()
-                    .rev()
-                    .find_map(|(i, a)| match a {
-                        Node::Class(c) => Some(qualified(&ancestors[..i], c.name.value)),
-                        _ => None,
-                    })?;
-                class
+                let class = ancestors.iter().enumerate().rev().find_map(|(i, a)| {
+                    let name = match a {
+                        Node::Class(c) => c.name.value,
+                        Node::Trait(t) => t.name.value,
+                        Node::Enum(e) => e.name.value,
+                        Node::AnonymousClass(_) => return Some(None),
+                        _ => return None,
+                    };
+                    Some(Some(qualified(&ancestors[..i], name)))
+                });
+                match class {
+                    Some(class) => class?,
+                    None => return Some(None),
+                }
             }
             _ if is_class_name(member) && !is_keyword(&lower) => {
                 if member.starts_with('\\') {
                     member[1..].to_string()
                 } else if member.contains('\\') {
-                    return None;
+                    member.to_string()
                 } else {
                     match resolve_written(ancestors, member) {
                         (_, true) => member.to_string(),
@@ -222,10 +234,11 @@ fn doc_edit(source: &str, node: Node<'_, '_>, ancestors: &[Node<'_, '_>]) -> Opt
         printed.iter().position(|p| p == "false"),
     ) {
         if printed.iter().any(|p| p == "bool") {
-            return None;
+            printed.retain(|p| p != "true" && p != "false");
+        } else {
+            printed[t.min(f)] = "bool".to_string();
+            printed.remove(t.max(f));
         }
-        printed[t.min(f)] = "bool".to_string();
-        printed.remove(t.max(f));
     }
     let mut unique: Vec<String> = Vec::new();
     for p in printed {

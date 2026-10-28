@@ -5,16 +5,14 @@
 //! [`super::no_always_false_condition`]). An `if` without `elseif` or `else` whose condition's native type is `true`
 //! makes way for its statements, the `if`'s comments before the first; with no statement it goes. The condition must
 //! hold no property, array item, method or static call, assignment, call of a function that asks the runtime
-//! (`class_exists()`, `function_exists()`, `defined()`, ...), or variable that `isNonTypedFromParam` doubts or whose
-//! native type is a refined array; nothing changes in a trait.
+//! (`class_exists()`, `function_exists()`, `defined()`, ...), or variable that `isNonTypedFromParam` doubts; nothing
+//! changes in a trait.
 //!
 //! php-parser's printer decides the bytes: see [`super::stmt_splice`].
 
 use mago_codex::ttype::atomic::TAtomic;
-use mago_codex::ttype::atomic::array::TArray;
 use mago_syntax::cst::{
-    Access, AssignmentOperator, BinaryOperator, Call, Expression, Node, NodeKind, Statement,
-    Variable,
+    Access, BinaryOperator, Call, Expression, Node, NodeKind, Statement, Variable,
 };
 use pun_problem::{Edit, Fix, Safety};
 
@@ -110,7 +108,6 @@ fn change(source: &str, tokens: &[Token], facts: &Facts, chain: &[Node<'_, '_>])
         || should_skip_expr(chain, cond)
         || should_skip_from_variable(facts, cond)
         || writes_variable_variable(chain, node_span(r#if).start)
-        || has_assign(cond)
         || chain.iter().any(|a| matches!(a, Node::Trait(_)))
     {
         return None;
@@ -166,24 +163,15 @@ fn should_skip_expr(ancestors: &[Node<'_, '_>], expr: &Expression<'_>) -> bool {
     })
 }
 
-/// `shouldSkipFromVariable`: a variable `isNonTypedFromParam` doubts, or whose native type is an intersection with an
-/// array (a refined array: a non-empty one, or one with a known key, of no constant value).
+/// `shouldSkipFromVariable`: a variable `isNonTypedFromParam` doubts. This also covers Rector's `hasAssign` check:
+/// Mago's analysis leaves an assignment's target variable untyped, and a target that is no variable is a property or
+/// an array item, which [`should_skip_expr`] skips. Rector skips a variable whose native type is an intersection with
+/// an array too, but its `NodeTypeCorrector` first makes a non-empty array a plain one and drops a list's accessory, so
+/// none of the refined arrays PHPStan's native scope gives (`non-empty-array`, `non-empty-array&hasOffset('k')`,
+/// `list`) is one by then.
 fn should_skip_from_variable(facts: &Facts, expr: &Expression<'_>) -> bool {
     any_expression(expr, &|e| {
-        matches!(e, Expression::Variable(_))
-            && (is_non_typed_from_param(facts, e)
-                || facts.native_type(node_span(e)).is_some_and(|t| {
-                    t.types.iter().any(|a| match a {
-                        TAtomic::Array(TArray::Keyed(k)) => {
-                            k.parameters.is_some() && (k.non_empty || k.known_items.is_some())
-                        }
-                        TAtomic::Array(TArray::List(l)) => {
-                            !l.element_type.is_never()
-                                && (l.non_empty || l.known_elements.is_some())
-                        }
-                        _ => false,
-                    })
-                }))
+        matches!(e, Expression::Variable(_)) && is_non_typed_from_param(facts, e)
     })
 }
 
@@ -222,12 +210,4 @@ fn writes_variable_variable(ancestors: &[Node<'_, '_>], at: usize) -> bool {
         !found
     });
     found
-}
-
-/// `findFirstInstanceOf($cond, Assign::class)`: a plain `=` (not by reference).
-fn has_assign(expr: &Expression<'_>) -> bool {
-    any_expression(expr, &|e| {
-        matches!(e, Expression::Assignment(a) if matches!(a.operator, AssignmentOperator::Assign(_))
-            && !matches!(a.rhs, Expression::UnaryPrefix(u) if u.operator.is_reference()))
-    })
 }

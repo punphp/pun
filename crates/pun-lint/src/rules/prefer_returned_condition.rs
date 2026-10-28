@@ -59,9 +59,6 @@ impl Rule for PreferReturnedCondition {
         out: &mut Vec<Report>,
     ) {
         let Node::If(_) = node else { return };
-        if !matches!(ancestors.last(), Some(Node::Statement(Statement::If(_)))) {
-            return;
-        }
         let source = ctx.source;
         let tokens = tokens(source);
         let (list, index) = enclosing(source, &tokens, ancestors);
@@ -89,10 +86,7 @@ impl Rule for PreferReturnedCondition {
             })
             .collect();
         let edits = run_edits(source, &tokens, ancestors, &|chain| {
-            let Some(Node::Statement(s)) = chain.last() else {
-                return None;
-            };
-            let span = node_span(*s);
+            let span = node_span(&chain[chain.len() - 1]);
             if span == r#if {
                 Some(Change::Remove)
             } else if span == r#return {
