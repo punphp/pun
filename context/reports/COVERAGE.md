@@ -9,7 +9,7 @@
 | punphp-fixers | 36563 | 36563 | 100.00% | ok |
 | punphp-format | 1022 | 1022 | 100.00% | ok |
 | punphp-harness | 235 | 235 | 100.00% | ok |
-| punphp-lint | 39918 | 39918 | 100.00% | ok |
+| punphp-lint | 46315 | 46177 | 99.70% | ok |
 | punphp-phpstan | 10259 | 10259 | 100.00% | ok |
 | punphp-problem | 105 | 105 | 100.00% | ok |
 | punphp-tokens | 3897 | 3897 | 100.00% | ok |
@@ -17,7 +17,26 @@
 
 Uncovered lines:
 
-- none
+- `crates/pun-lint/src/rules/class_method.rs` 99.73% (2 lines): 385-386
+- `crates/pun-lint/src/rules/no_always_false_condition.rs` 95.59% (3 lines): 82, 87, 90
+- `crates/pun-lint/src/rules/no_always_true_if.rs` 94.52% (8 lines): 177-178, 180-182, 200, 230-231
+- `crates/pun-lint/src/rules/no_always_true_instanceof_assert.rs` 91.01% (8 lines): 94, 101, 104, 107, 111, 114, 118, 124
+- `crates/pun-lint/src/rules/no_constant_via_variable.rs` 94.55% (3 lines): 42, 46, 55
+- `crates/pun-lint/src/rules/no_phpdoc_class_case_mismatch.rs` 95.04% (7 lines): 76, 126, 151, 163-165, 175
+- `crates/pun-lint/src/rules/prefer_property_exists.rs` 99.40% (1 lines): 228
+- `crates/pun-lint/src/rules/prefer_returned_condition.rs` 95.51% (11 lines): 63, 93, 142, 261-262, 265-267, 271, 336, 338
+- `crates/pun-lint/src/rules/require_consistent_return.rs` 97.22% (6 lines): 109, 150, 175, 207, 225, 259
+- `crates/pun-lint/src/rules/types/add_return_type_from_native_call.rs` 91.23% (5 lines): 54, 59, 66, 73, 80
+- `crates/pun-lint/src/rules/types/add_return_type_from_parent.rs` 88.44% (17 lines): 46, 62, 72, 75, 86, 147, 175-177, 179, 204-210
+- `crates/pun-lint/src/rules/types/add_return_type_from_symfony_serializer.rs` 74.29% (18 lines): 42, 45, 48, 51, 54, 59, 65, 70, 78, 90-94, 98, 101, 104, 108
+- `crates/pun-lint/src/rules/types/add_return_type_from_ternary.rs` 98.04% (1 lines): 66
+- `crates/pun-lint/src/rules/types/add_return_type_from_typed_call.rs` 92.00% (22 lines): 74, 138, 284, 286, 288, 309-310, 357-358, 367, 370-381
+- `crates/pun-lint/src/rules/types/add_return_type_from_yield.rs` 97.67% (2 lines): 58, 68
+- `crates/pun-lint/src/rules/types/declare.rs` 98.70% (3 lines): 66, 100, 201
+- `crates/pun-lint/src/rules/types/facts.rs` 99.86% (1 lines): 724
+- `crates/pun-lint/src/rules/types/mod.rs` 99.59% (1 lines): 385
+- `crates/pun-lint/src/rules/types/native.rs` 95.65% (4 lines): 34, 38, 41, 89
+- `crates/pun-lint/src/rules/types/type_factory.rs` 95.28% (15 lines): 53, 118, 142, 167-168, 209, 215, 217, 285-286, 288, 291, 293, 337, 453
 <!-- coverage:end -->
 
 ## Exclusions
@@ -95,8 +114,8 @@ Uncovered lines:
 - `crates/pun-lint/src/rules/types/declare.rs:164` `void` as a declaration: callers drop `void` (no value) before asking for a declaration.
 - `crates/pun-lint/src/rules/types/declare.rs:198` an intersection with a non-object member: Mago builds intersections only of object types.
 - `crates/pun-lint/src/rules/types/declare.rs:315` `void`, `mixed` or `null` (below 7.1) in a union: `add_union_return` refuses `mixed`/`void` before, and the union rule needs PHP 8.0.
-- `crates/pun-lint/src/rules/types/facts.rs:707` Mago's analyser failing or panicking (then no `get_class()` call, cast or arithmetic on `mixed` is typed): no deterministic input; one coverage run with the pest rules reached it and the next did not.
-- `crates/pun-lint/src/rules/types/mod.rs:369` `unreachable!()` after the class-like kinds `rposition` matched.
+- `crates/pun-lint/src/rules/types/facts.rs:724` Mago's analyser failing or panicking (then no `get_class()` call, cast or arithmetic on `mixed` is typed): no deterministic input; one coverage run with the pest rules reached it and the next did not.
+- `crates/pun-lint/src/rules/types/mod.rs:385` `unreachable!()` after the class-like kinds `rposition` matched.
 - `crates/pun-lint/src/rules/types/never.rs:190` a method with no class scope (see add_method_void_return).
 - `crates/pun-lint/src/rules/types/never.rs:197` a named class the codebase lacks: the codebase is built from this file, which declares it.
 - `crates/pun-lint/src/rules/laravel/prefer_request_server.rs:34` the non-target node guard: `Linter` dispatches only ArrayAccess for this rule.
