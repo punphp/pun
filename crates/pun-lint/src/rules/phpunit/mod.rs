@@ -33,6 +33,7 @@ mod no_float_delta_parameter;
 mod no_mock_intersection_property;
 mod no_negated_assertion;
 mod no_setup_override_attribute;
+mod no_stub_with_expectations;
 mod no_test_constructor;
 mod no_unused_mock;
 mod no_unused_mock_property;
@@ -112,6 +113,7 @@ pub use no_float_delta_parameter::NoFloatDeltaParameter;
 pub use no_mock_intersection_property::NoMockIntersectionProperty;
 pub use no_negated_assertion::NoNegatedAssertion;
 pub use no_setup_override_attribute::NoSetupOverrideAttribute;
+pub use no_stub_with_expectations::NoStubWithExpectations;
 pub use no_test_constructor::NoTestConstructor;
 pub use no_unused_mock::NoUnusedMock;
 pub use no_unused_mock_property::NoUnusedMockProperty;
@@ -256,6 +258,7 @@ pub(crate) fn all() -> Vec<Box<dyn Rule>> {
         Box::new(PreferTestAttribute),
         Box::new(NoEntityMock),
         Box::new(PreferYieldDataProvider),
+        Box::new(NoStubWithExpectations),
     ]
 }
 

@@ -700,3 +700,13 @@ fn entity_document_create_mock_to_direct_new() {
 fn yield_data_provider() {
     check(PreferYieldDataProvider, "YieldDataProviderRector");
 }
+
+/// Pun/rounds: a variable assigned `createStub()` twice; Rector changes the last call only (its collection keeps the
+/// last), and Pun's next fix round then finds the first alone and changes it too (lint.md's known difference: rounds).
+#[test]
+fn mock_object_arg_create_stub_to_create_mock() {
+    check(
+        NoStubWithExpectations,
+        "MockObjectArgCreateStubToCreateMockRector",
+    );
+}

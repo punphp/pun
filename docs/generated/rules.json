@@ -11474,7 +11474,7 @@
         "MockObjectArgCreateStubToCreateMockRector",
         "Rector\\PHPUnit\\PHPUnit110\\Rector\\ClassMethod\\MockObjectArgCreateStubToCreateMockRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/phpunit/no-test-constructor",

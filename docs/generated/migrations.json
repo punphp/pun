@@ -12963,7 +12963,7 @@
         "rules": [
           "lint/phpunit/no-stub-with-expectations"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {

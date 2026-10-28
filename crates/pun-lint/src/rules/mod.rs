@@ -613,6 +613,8 @@ pub const PROJECT_RULES: &[&str] = &[
     "lint/phpunit/no-entity-mock",
     // reads the data providers named in parent classes and whether the class calls the provider
     "lint/phpunit/prefer-yield-data-provider",
+    // looks up the called method's parameters on classes in other files
+    "lint/phpunit/no-stub-with-expectations",
 ];
 
 /// Every rule, in a fixed order.
