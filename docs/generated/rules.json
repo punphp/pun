@@ -6907,7 +6907,7 @@
         "AddExtendsAnnotationToModelFactoriesRector",
         "RectorLaravel\\Rector\\Class_\\AddExtendsAnnotationToModelFactoriesRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/laravel/add-has-factory-trait",
@@ -6926,7 +6926,7 @@
         "AddHasFactoryToModelsRector",
         "RectorLaravel\\Rector\\Class_\\AddHasFactoryToModelsRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/laravel/add-query-closure-type",
@@ -6947,7 +6947,7 @@
         "EloquentWhereTypeHintClosureParameterRector",
         "RectorLaravel\\Rector\\MethodCall\\EloquentWhereTypeHintClosureParameterRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/laravel/add-relation-generics",
@@ -6968,7 +6968,7 @@
         "AddGenericReturnTypeToRelationsRector",
         "RectorLaravel\\Rector\\ClassMethod\\AddGenericReturnTypeToRelationsRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/laravel/add-relation-query-closure-type",
@@ -6989,7 +6989,7 @@
         "EloquentWhereRelationTypeHintingParameterRector",
         "RectorLaravel\\Rector\\MethodCall\\EloquentWhereRelationTypeHintingParameterRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/laravel/add-tap-closure-type",
@@ -7031,7 +7031,7 @@
         "CallOnAppArrayAccessToStandaloneAssignRector",
         "RectorLaravel\\Rector\\Assign\\CallOnAppArrayAccessToStandaloneAssignRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/laravel/no-collection-aliases",
@@ -7052,7 +7052,7 @@
         "UnaliasCollectionMethods",
         "UnaliasCollectionMethodsRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/laravel/no-controller-middleware",
@@ -7068,7 +7068,7 @@
       "upstream": [
         "middleware-in-routes"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/laravel/no-implicit-model-query",
@@ -7129,7 +7129,7 @@
         "AvoidNegatedCollectionContainsOrDoesntContainRector",
         "RectorLaravel\\Rector\\BooleanNot\\AvoidNegatedCollectionContainsOrDoesntContainRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/laravel/no-negated-filter",
@@ -7150,7 +7150,7 @@
         "AvoidNegatedCollectionFilterOrRejectRector",
         "RectorLaravel\\Rector\\MethodCall\\AvoidNegatedCollectionFilterOrRejectRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/laravel/no-negated-when",
@@ -7171,7 +7171,7 @@
         "ReverseConditionableMethodCall",
         "ReverseConditionableMethodCallRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/laravel/no-request-all",
@@ -7210,7 +7210,7 @@
         "RemoveRedundantValueCalls",
         "RemoveRedundantValueCallsRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/laravel/no-useless-with-call",
@@ -7231,7 +7231,7 @@
         "RemoveRedundantWithCalls",
         "RemoveRedundantWithCallsRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/laravel/prefer-abort-if",
@@ -7407,7 +7407,7 @@
         "ReplaceServiceContainerCallArg",
         "ReplaceServiceContainerCallArgRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/laravel/prefer-closure-only-bind",
@@ -7426,7 +7426,7 @@
         "ContainerBindConcreteWithClosureOnlyRector",
         "RectorLaravel\\Rector\\MethodCall\\ContainerBindConcreteWithClosureOnlyRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/laravel/prefer-collected-by-attribute",
@@ -7466,7 +7466,7 @@
         "ConvertEnumerableToArrayToAllRector",
         "RectorLaravel\\Rector\\MethodCall\\ConvertEnumerableToArrayToAllRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/laravel/prefer-collects-attribute",
@@ -7700,7 +7700,7 @@
         "DispatchToHelperFunctionsRector",
         "RectorLaravel\\Rector\\StaticCall\\DispatchToHelperFunctionsRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/laravel/prefer-env-helper",
@@ -7742,7 +7742,7 @@
         "AppEnvironmentComparisonToParameterRector",
         "RectorLaravel\\Rector\\Expr\\AppEnvironmentComparisonToParameterRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/laravel/prefer-error-bag-attribute",
@@ -7976,7 +7976,7 @@
         "EloquentOrderByToLatestOrOldestRector",
         "RectorLaravel\\Rector\\MethodCall\\EloquentOrderByToLatestOrOldestRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/laravel/prefer-max-exceptions-attribute",
@@ -8056,7 +8056,7 @@
         "MakeModelAttributesAndScopesProtectedRector",
         "RectorLaravel\\Rector\\ClassMethod\\MakeModelAttributesAndScopesProtectedRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/laravel/prefer-query-builder-call",
@@ -8077,7 +8077,7 @@
         "EloquentMagicMethodToQueryBuilderRector",
         "RectorLaravel\\Rector\\StaticCall\\EloquentMagicMethodToQueryBuilderRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/laravel/prefer-queue-attribute",
@@ -8176,7 +8176,7 @@
         "RequestStaticValidateToInject",
         "RequestStaticValidateToInjectRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/laravel/prefer-resolve-helper",
@@ -8279,7 +8279,7 @@
         "AssertStatusToAssertMethodRector",
         "RectorLaravel\\Rector\\MethodCall\\AssertStatusToAssertMethodRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/laravel/prefer-stop-on-first-failure-attribute",
@@ -8498,7 +8498,7 @@
         "AssertWithClassStringToTypeHintedClosureRector",
         "RectorLaravel\\Rector\\StaticCall\\AssertWithClassStringToTypeHintedClosureRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/laravel/prefer-unique-for-attribute",
@@ -8538,7 +8538,7 @@
         "ValidationRuleArrayStringValueToArray",
         "ValidationRuleArrayStringValueToArrayRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/laravel/prefer-view-array",
@@ -8554,7 +8554,7 @@
       "upstream": [
         "prefer-view-array"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/laravel/prefer-visible-attribute",

@@ -5,6 +5,11 @@
 //! pretty-printed (`name(arg, arg)`), a class it names is fully qualified (`\Illuminate\Support\Env`), and the nodes it
 //! keeps from the old code keep their own text. The rules here write the same text.
 
+mod add_factory_extends_phpdoc;
+mod add_relation_generics;
+mod add_has_factory_trait;
+mod add_query_closure_type;
+mod add_relation_query_closure_type;
 mod conditional_helpers;
 mod names;
 mod no_negated_blank_filled;
@@ -14,6 +19,9 @@ mod prefer_anonymous_migration;
 mod prefer_back_helper;
 mod prefer_casts_method;
 mod prefer_collected_by_attribute;
+mod prefer_class_container_key;
+mod prefer_closure_only_bind;
+mod prefer_collection_all;
 mod prefer_date_facade;
 mod prefer_default_argument;
 mod prefer_env_helper;
@@ -21,7 +29,11 @@ mod prefer_exception_class_string;
 mod prefer_explicit_json_call;
 mod prefer_facade_over_app;
 mod prefer_nullsafe;
+mod prefer_latest_oldest;
+mod prefer_protected_model_methods;
+mod prefer_query_builder_call;
 mod prefer_report_if;
+mod prefer_request_validate;
 mod prefer_request_facade;
 mod prefer_request_server;
 mod prefer_resolve_helper;
@@ -36,7 +48,37 @@ mod prefer_today;
 mod prefer_travel_to;
 mod property_attribute;
 mod property_rules;
+mod no_app_array_access;
+mod no_collection_aliases;
+mod no_negated_contains;
+mod no_negated_filter;
+mod no_controller_middleware;
+mod no_negated_when;
+mod no_useless_value_call;
+mod no_useless_with_call;
+mod object_type;
+mod prefer_dispatch_helper;
+mod prefer_environment_check;
+mod prefer_status_assertion_method;
+mod prefer_typed_assert_closure;
+mod prefer_validation_rule_array;
+mod prefer_view_array;
+mod query_builder;
+mod print;
 
+pub use add_factory_extends_phpdoc::AddFactoryExtendsPhpdoc;
+pub use add_relation_generics::AddRelationGenerics;
+pub use add_has_factory_trait::AddHasFactoryTrait;
+pub use no_app_array_access::NoAppArrayAccess;
+pub use add_query_closure_type::AddQueryClosureType;
+pub use prefer_class_container_key::{ContainerService, PreferClassContainerKey};
+pub use prefer_closure_only_bind::PreferClosureOnlyBind;
+pub use prefer_collection_all::PreferCollectionAll;
+pub use prefer_latest_oldest::PreferLatestOldest;
+pub use prefer_protected_model_methods::PreferProtectedModelMethods;
+pub use prefer_query_builder_call::PreferQueryBuilderCall;
+pub use prefer_request_validate::PreferRequestValidate;
+pub use add_relation_query_closure_type::AddRelationQueryClosureType;
 pub use no_negated_blank_filled::NoNegatedBlankFilled;
 pub use no_request_all::NoRequestAll;
 pub use prefer_abort_if::PreferAbortIf;
@@ -75,6 +117,19 @@ pub use property_rules::{
     PreferTimeoutAttribute, PreferTouchesAttribute, PreferTriesAttribute, PreferUniqueForAttribute,
     PreferVisibleAttribute, PreferWithoutIncrementingAttribute, PreferWithoutTimestampsAttribute,
 };
+pub use no_collection_aliases::NoCollectionAliases;
+pub use no_negated_contains::NoNegatedContains;
+pub use no_negated_filter::NoNegatedFilter;
+pub use no_controller_middleware::NoControllerMiddleware;
+pub use no_negated_when::NoNegatedWhen;
+pub use no_useless_value_call::NoUselessValueCall;
+pub use no_useless_with_call::NoUselessWithCall;
+pub use prefer_dispatch_helper::PreferDispatchHelper;
+pub use prefer_environment_check::PreferEnvironmentCheck;
+pub use prefer_status_assertion_method::PreferStatusAssertionMethod;
+pub use prefer_typed_assert_closure::PreferTypedAssertClosure;
+pub use prefer_validation_rule_array::PreferValidationRuleArray;
+pub use prefer_view_array::PreferViewArray;
 
 use mago_syntax::cst::{
     Argument, ArgumentList, Assignment, AssignmentOperator, Call, ClassLikeMemberSelector,
@@ -147,6 +202,32 @@ pub(crate) fn all() -> Vec<Box<dyn Rule>> {
         Box::new(PreferWithoutIncrementingAttribute),
         Box::new(PreferWithoutTimestampsAttribute),
         Box::new(PreferScopeAttribute),
+        Box::new(NoCollectionAliases),
+        Box::new(NoNegatedContains),
+        Box::new(NoNegatedFilter),
+        Box::new(NoNegatedWhen),
+        Box::new(PreferStatusAssertionMethod),
+        Box::new(PreferEnvironmentCheck),
+        Box::new(PreferTypedAssertClosure),
+        Box::new(NoUselessValueCall),
+        Box::new(NoUselessWithCall),
+        Box::new(PreferDispatchHelper),
+        Box::new(PreferValidationRuleArray),
+        Box::new(NoControllerMiddleware),
+        Box::new(PreferViewArray),
+        Box::new(AddQueryClosureType),
+        Box::new(AddRelationQueryClosureType),
+        Box::new(PreferProtectedModelMethods),
+        Box::new(PreferLatestOldest::default()),
+        Box::new(PreferRequestValidate),
+        Box::new(PreferCollectionAll),
+        Box::new(PreferClosureOnlyBind),
+        Box::new(AddHasFactoryTrait::default()),
+        Box::new(PreferQueryBuilderCall::default()),
+        Box::new(PreferClassContainerKey::default()),
+        Box::new(AddFactoryExtendsPhpdoc),
+        Box::new(AddRelationGenerics),
+        Box::new(NoAppArrayAccess),
     ]
 }
 

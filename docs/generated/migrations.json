@@ -10633,7 +10633,7 @@
         "rules": [
           "lint/laravel/add-factory-extends-phpdoc"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -10643,7 +10643,7 @@
         "rules": [
           "lint/laravel/add-relation-generics"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -10661,7 +10661,7 @@
         "rules": [
           "lint/laravel/add-has-factory-trait"
         ],
-        "note": "Same. Options: configurable: options carry 1:1 (same keys, kebab-cased). Planned: not ported yet.",
+        "note": "Same. Options: configurable: options carry 1:1 (same keys, kebab-cased).",
         "unsupported": false
       },
       {
@@ -10715,7 +10715,7 @@
         "rules": [
           "lint/laravel/prefer-environment-check"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -10781,7 +10781,7 @@
         "rules": [
           "lint/laravel/prefer-status-assertion-method"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -10791,7 +10791,7 @@
         "rules": [
           "lint/laravel/prefer-typed-assert-closure"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -10801,7 +10801,7 @@
         "rules": [
           "lint/laravel/no-negated-contains"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -10811,7 +10811,7 @@
         "rules": [
           "lint/laravel/no-negated-filter"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -10831,7 +10831,7 @@
         "rules": [
           "lint/laravel/no-app-array-access"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -10925,7 +10925,7 @@
         "rules": [
           "lint/laravel/prefer-closure-only-bind"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -10935,7 +10935,7 @@
         "rules": [
           "lint/laravel/prefer-collection-all"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -11017,7 +11017,7 @@
         "rules": [
           "lint/laravel/prefer-dispatch-helper"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -11027,7 +11027,7 @@
         "rules": [
           "lint/laravel/prefer-query-builder-call"
         ],
-        "note": "Same. Options: configurable: options carry 1:1 (same keys, kebab-cased). Planned: not ported yet.",
+        "note": "Same. Options: configurable: options carry 1:1 (same keys, kebab-cased).",
         "unsupported": false
       },
       {
@@ -11037,7 +11037,7 @@
         "rules": [
           "lint/laravel/prefer-latest-oldest"
         ],
-        "note": "Same. Options: configurable: options carry 1:1 (same keys, kebab-cased). Planned: not ported yet.",
+        "note": "Same. Options: configurable: options carry 1:1 (same keys, kebab-cased).",
         "unsupported": false
       },
       {
@@ -11047,7 +11047,7 @@
         "rules": [
           "lint/laravel/add-relation-query-closure-type"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -11057,7 +11057,7 @@
         "rules": [
           "lint/laravel/add-query-closure-type"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -11231,7 +11231,7 @@
         "rules": [
           "lint/laravel/prefer-protected-model-methods"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -11385,7 +11385,7 @@
         "rules": [
           "lint/laravel/no-useless-value-call"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -11395,7 +11395,7 @@
         "rules": [
           "lint/laravel/no-useless-with-call"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -11445,7 +11445,7 @@
         "rules": [
           "lint/laravel/prefer-class-container-key"
         ],
-        "note": "Same. Options: configurable: options carry 1:1 (same keys, kebab-cased). Planned: not ported yet.",
+        "note": "Same. Options: configurable: options carry 1:1 (same keys, kebab-cased).",
         "unsupported": false
       },
       {
@@ -11473,7 +11473,7 @@
         "rules": [
           "lint/laravel/prefer-request-validate"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -11501,7 +11501,7 @@
         "rules": [
           "lint/laravel/no-negated-when"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -11659,7 +11659,7 @@
         "rules": [
           "lint/laravel/no-collection-aliases"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -11703,7 +11703,7 @@
         "rules": [
           "lint/laravel/prefer-validation-rule-array"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -25261,7 +25261,7 @@
         "rules": [
           "lint/laravel/no-controller-middleware"
         ],
-        "note": "Same. Options: same. Planned: not ported yet.",
+        "note": "Same. Options: same.",
         "unsupported": false
       },
       {
@@ -26307,7 +26307,7 @@
         "rules": [
           "lint/laravel/prefer-view-array"
         ],
-        "note": "Same. Options: same. Planned: not ported yet.",
+        "note": "Same. Options: same.",
         "unsupported": false
       },
       {

@@ -16,7 +16,7 @@ Across commands: format: 1, lint: 89, analyse: 18.
 
 Adds the @extends annotation to Factories.
 
-Not in any preset or set. Enable it by name or group. Fix: unsafe (can change behaviour). Runs when laravel is installed. Gated by laravel-version. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Not in any preset or set. Enable it by name or group. Fix: unsafe (can change behaviour). Runs when laravel is installed. Gated by laravel-version.
 
 </Card>
 <Card title="lint/laravel/add-has-factory-trait">
@@ -25,7 +25,7 @@ Not in any preset or set. Enable it by name or group. Fix: unsafe (can change be
 
 Adds the HasFactory trait to Models.
 
-Not in any preset or set. Enable it by name or group. Fix: unsafe (can change behaviour). Runs when laravel is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Not in any preset or set. Enable it by name or group. Fix: unsafe (can change behaviour). Runs when laravel is installed.
 
 </Card>
 <Card title="lint/laravel/add-query-closure-type">
@@ -34,7 +34,7 @@ Not in any preset or set. Enable it by name or group. Fix: unsafe (can change be
 
 Type-hint the closure parameter of Eloquent where()/whereHas() and similar query methods.
 
-Enabled by the [`types`](/docs/rules/sets/types) set. Fix: unsafe (can change behaviour). Runs when laravel is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`types`](/docs/rules/sets/types) set. Fix: unsafe (can change behaviour). Runs when laravel is installed.
 
 </Card>
 <Card title="lint/laravel/add-relation-generics">
@@ -43,7 +43,7 @@ Enabled by the [`types`](/docs/rules/sets/types) set. Fix: unsafe (can change be
 
 Add generic return type to relations in child of Illuminate\Database\Eloquent\Model
 
-Enabled by the [`types`](/docs/rules/sets/types) set. Fix: unsafe (can change behaviour). Runs when laravel is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`types`](/docs/rules/sets/types) set. Fix: unsafe (can change behaviour). Runs when laravel is installed.
 
 </Card>
 <Card title="lint/laravel/add-relation-query-closure-type">
@@ -52,7 +52,7 @@ Enabled by the [`types`](/docs/rules/sets/types) set. Fix: unsafe (can change be
 
 Add type hinting to where relation has methods e.g. `whereHas`, `orWhereHas`, `whereDoesntHave`, `orWhereDoesntHave`, `whereHasMorph`, `orWhereHasMorph`, `whereDoesntHaveMorph`, `orWhereDoesntHaveMorph`
 
-Enabled by the [`types`](/docs/rules/sets/types) set. Fix: unsafe (can change behaviour). Runs when laravel is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`types`](/docs/rules/sets/types) set. Fix: unsafe (can change behaviour). Runs when laravel is installed.
 
 </Card>
 <Card title="lint/laravel/add-tap-closure-type">
@@ -70,7 +70,7 @@ Enabled by the [`types`](/docs/rules/sets/types) set. Fix: unsafe (can change be
 
 Replace magical call on $this->app["something"] to standalone type assign variable
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: unsafe (can change behaviour). Runs when laravel is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: unsafe (can change behaviour). Runs when laravel is installed.
 
 </Card>
 <Card title="lint/laravel/no-collection-aliases">
@@ -79,7 +79,7 @@ Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: unsafe 
 
 Use the base collection methods instead of their aliases.
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: unsafe (can change behaviour). Runs when laravel is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: unsafe (can change behaviour). Runs when laravel is installed.
 
 </Card>
 <Card title="lint/laravel/no-controller-middleware">
@@ -88,7 +88,7 @@ Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: unsafe 
 
 This rule warns against applying middlewares in controllers.
 
-Not in any preset or set. Enable it by name or group. Fix: none (report only). Runs when laravel is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Not in any preset or set. Enable it by name or group. Fix: none (report only). Runs when laravel is installed.
 
 </Card>
 <Card title="lint/laravel/no-implicit-model-query">
@@ -115,7 +115,7 @@ Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: unsafe 
 
 Convert negated calls to `contains` to `doesntContain`, or vice versa.
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: unsafe (can change behaviour). Runs when laravel is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: unsafe (can change behaviour). Runs when laravel is installed.
 
 </Card>
 <Card title="lint/laravel/no-negated-filter">
@@ -124,7 +124,7 @@ Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: unsafe 
 
 Avoid negated conditionals in `filter()` by using `reject()`, or vice versa.
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: unsafe (can change behaviour). Runs when laravel is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: unsafe (can change behaviour). Runs when laravel is installed.
 
 </Card>
 <Card title="lint/laravel/no-negated-when">
@@ -133,7 +133,7 @@ Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: unsafe 
 
 Reverse conditionable method calls
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: unsafe (can change behaviour). Runs when laravel is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: unsafe (can change behaviour). Runs when laravel is installed.
 
 </Card>
 <Card title="lint/laravel/no-request-all">
@@ -151,7 +151,7 @@ Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: none (r
 
 Removes redundant value helper calls
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: unsafe (can change behaviour). Runs when laravel is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: unsafe (can change behaviour). Runs when laravel is installed.
 
 </Card>
 <Card title="lint/laravel/no-useless-with-call">
@@ -160,7 +160,7 @@ Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: unsafe 
 
 Removes redundant with helper calls
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: unsafe (can change behaviour). Runs when laravel is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: unsafe (can change behaviour). Runs when laravel is installed.
 
 </Card>
 <Card title="lint/laravel/prefer-abort-if">
@@ -241,7 +241,7 @@ Enabled by the [`coding-style`](/docs/rules/sets/coding-style) set. Fix: safe (k
 
 Changes the string or class const used for a service container make call
 
-Not in any preset or set. Enable it by name or group. Fix: unsafe (can change behaviour). Runs when laravel is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Not in any preset or set. Enable it by name or group. Fix: unsafe (can change behaviour). Runs when laravel is installed.
 
 </Card>
 <Card title="lint/laravel/prefer-closure-only-bind">
@@ -250,7 +250,7 @@ Not in any preset or set. Enable it by name or group. Fix: unsafe (can change be
 
 Drop the specified abstract class from the bind method and replace it with a closure that returns the abstract class.
 
-Not in any preset or set. Enable it by name or group. Fix: safe (keeps behaviour). Runs when laravel is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Not in any preset or set. Enable it by name or group. Fix: safe (keeps behaviour). Runs when laravel is installed.
 
 </Card>
 <Card title="lint/laravel/prefer-collected-by-attribute">
@@ -268,7 +268,7 @@ Not in any preset or set. Enable it by name or group. Fix: unsafe (can change be
 
 Convert `toArray()` to `all()` when the collection does not contain any Arrayable objects.
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: unsafe (can change behaviour). Runs when laravel is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: unsafe (can change behaviour). Runs when laravel is installed.
 
 </Card>
 <Card title="lint/laravel/prefer-collects-attribute">
@@ -376,7 +376,7 @@ Not in any preset or set. Enable it by name or group. Fix: unsafe (can change be
 
 Use the event or dispatch helpers instead of the static dispatch method.
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: unsafe (can change behaviour). Runs when laravel is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: unsafe (can change behaviour). Runs when laravel is installed.
 
 </Card>
 <Card title="lint/laravel/prefer-env-helper">
@@ -394,7 +394,7 @@ Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: unsafe 
 
 Replace app environment comparison with parameter or method call
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: unsafe (can change behaviour). Runs when laravel is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: unsafe (can change behaviour). Runs when laravel is installed.
 
 </Card>
 <Card title="lint/laravel/prefer-error-bag-attribute">
@@ -502,7 +502,7 @@ Not in any preset or set. Enable it by name or group. Fix: unsafe (can change be
 
 Changes orderBy() to latest() or oldest()
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: unsafe (can change behaviour). Runs when laravel is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: unsafe (can change behaviour). Runs when laravel is installed.
 
 </Card>
 <Card title="lint/laravel/prefer-max-exceptions-attribute">
@@ -538,7 +538,7 @@ Not in any preset or set. Enable it by name or group. Fix: unsafe (can change be
 
 Makes Model attributes and scopes protected
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: unsafe (can change behaviour). Runs when laravel is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: unsafe (can change behaviour). Runs when laravel is installed.
 
 </Card>
 <Card title="lint/laravel/prefer-query-builder-call">
@@ -547,7 +547,7 @@ Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: unsafe 
 
 The EloquentMagicMethodToQueryBuilderRule is designed to automatically transform certain magic method calls on Eloquent Models into corresponding Query Builder method calls.
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: unsafe (can change behaviour). Runs when laravel is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: unsafe (can change behaviour). Runs when laravel is installed.
 
 </Card>
 <Card title="lint/laravel/prefer-queue-attribute">
@@ -592,7 +592,7 @@ Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: unsafe 
 
 Change static validate() method to $request->validate()
 
-Not in any preset or set. Enable it by name or group. Fix: unsafe (can change behaviour). Runs when laravel is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Not in any preset or set. Enable it by name or group. Fix: unsafe (can change behaviour). Runs when laravel is installed.
 
 </Card>
 <Card title="lint/laravel/prefer-resolve-helper">
@@ -637,7 +637,7 @@ Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: unsafe 
 
 Replace `(new \Illuminate\Testing\TestResponse)->assertStatus(200)` with `(new \Illuminate\Testing\TestResponse)->assertOk()`
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour). Runs when laravel is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour). Runs when laravel is installed.
 
 </Card>
 <Card title="lint/laravel/prefer-stop-on-first-failure-attribute">
@@ -736,7 +736,7 @@ Not in any preset or set. Enable it by name or group. Fix: unsafe (can change be
 
 Changes assert calls to use a type hinted closure.
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: unsafe (can change behaviour). Runs when laravel is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: unsafe (can change behaviour). Runs when laravel is installed.
 
 </Card>
 <Card title="lint/laravel/prefer-unique-for-attribute">
@@ -754,7 +754,7 @@ Not in any preset or set. Enable it by name or group. Fix: unsafe (can change be
 
 Convert string validation rules into arrays for Laravel's Validator.
 
-Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour). Runs when laravel is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (keeps behaviour). Runs when laravel is installed.
 
 </Card>
 <Card title="lint/laravel/prefer-view-array">
@@ -763,7 +763,7 @@ Enabled by the [`code-quality`](/docs/rules/sets/code-quality) set. Fix: safe (k
 
 Prefer passing data to views using the array parameter in the `view()` function,
 
-Not in any preset or set. Enable it by name or group. Fix: none (report only). Runs when laravel is installed. **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Not in any preset or set. Enable it by name or group. Fix: none (report only). Runs when laravel is installed.
 
 </Card>
 <Card title="lint/laravel/prefer-visible-attribute">

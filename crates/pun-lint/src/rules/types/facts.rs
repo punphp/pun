@@ -88,8 +88,9 @@ pub fn project_codebase(files: &[(String, String)], php_version: u32) -> Arc<Pro
 
 /// [`project_codebase`] with the classes Composer autoloads, as PHPStan's PSR locators find them on demand: each
 /// class a scanned file names that the codebase lacks is looked up with `autoload` (an ASCII-lowercased class name
-/// to its file's path and code), and that file is scanned too. Files whose path has a `/vendor/` directory count as
-/// vendor code for [`is_vendor_file`].
+/// to its file's path and code), and that file is scanned too. Files whose path has a `/vendor/` directory (Composer's
+/// `files` entries among `files`, and autoloaded classes) count as vendor code for [`is_vendor_file`], and a function
+/// PHP itself declares keeps its own signature there: PHPStan reads a polyfilled function natively.
 pub fn project_codebase_autoloaded(
     files: &[(String, String)],
     php_version: u32,
@@ -100,15 +101,19 @@ pub fn project_codebase_autoloaded(
     let (mut codebase, mut documented) = (prelude.clone(), prelude.clone());
     let mut named = Vec::new();
     for (path, code) in files {
-        let file = mago_file(path, &without_docblocks(code), FileType::Host);
+        let kind = if is_vendor_path(path) {
+            FileType::Vendored
+        } else {
+            FileType::Host
+        };
+        let file = mago_file(path, &without_docblocks(code), kind);
         remember_source(file.id, code);
         remember_phar(&file, path);
+        if kind == FileType::Vendored {
+            (VENDOR.write().unwrap_or_else(|e| e.into_inner())).insert(file.id);
+        }
         named.extend(scan_into(&mut codebase, &file, version));
-        scan_into(
-            &mut documented,
-            &mago_file(path, code, FileType::Host),
-            version,
-        );
+        scan_into(&mut documented, &mago_file(path, code, kind), version);
     }
     let mut asked: HashSet<Vec<u8>> = HashSet::new();
     while let Some(name) = named.pop() {
@@ -119,7 +124,7 @@ pub fn project_codebase_autoloaded(
             let file = mago_file(&path, &without_docblocks(&code), FileType::Vendored);
             remember_source(file.id, &code);
             remember_phar(&file, &path);
-            if path.contains("/vendor/") {
+            if is_vendor_path(&path) {
                 (VENDOR.write().unwrap_or_else(|e| e.into_inner())).insert(file.id);
             }
             named.extend(scan_into(&mut codebase, &file, version));
@@ -146,6 +151,11 @@ pub fn project_codebase_autoloaded(
 /// The files [`project_codebase_autoloaded`] read from a `vendor/` directory. A file's id is a hash of its path, so
 /// the set only grows, and codebases built at the same time share it.
 static VENDOR: LazyLock<RwLock<HashSet<FileId>>> = LazyLock::new(Default::default);
+
+/// Whether `path` has a `vendor/` directory (Rector: its path contains `/vendor/`).
+fn is_vendor_path(path: &str) -> bool {
+    path.contains("/vendor/")
+}
 
 /// Whether `file` is vendor code of the project's codebase (Rector: its path contains `/vendor/`).
 pub(crate) fn is_vendor_file(file: FileId) -> bool {
@@ -945,9 +955,14 @@ fn scan_into(codebase: &mut CodebaseMetadata, file: &File, version: PHPVersion) 
     let arena = LocalArena::new();
     let program = parse_file(&arena, file);
     let names = NameResolver::new(&arena).resolve(program);
-    if let Ok(scanned) = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
+    if let Ok(mut scanned) = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         scan_program(&arena, file, program, &names, version)
     })) {
+        if file.file_type == FileType::Vendored {
+            (scanned.function_likes).retain(|(class, name), _| {
+                !class.as_bytes().is_empty() || PRELUDE.0.get_function(name.as_bytes()).is_none()
+            });
+        }
         codebase.extend(scanned);
     }
     names

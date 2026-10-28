@@ -70,6 +70,10 @@ impl<'s> Doc<'s> {
 
     fn at(source: &'s str, span: Span) -> Self {
         let text = &source[span.start..span.end];
+        // PHP's lexer makes a doc comment of `/**` and white space only; `/***/` is a plain comment.
+        if !text.as_bytes().get(3).is_some_and(|b| matches!(b, b' ' | b'\t' | b'\r' | b'\n')) {
+            return None;
+        }
         let tokens = lex(text);
         let children = children(text, &tokens);
         Doc {
@@ -193,8 +197,11 @@ impl<'s> Doc<'s> {
             output.push_str("\n * ");
             output.push_str(appended);
         }
-        let last = self.children.last().map_or(current, |c| c.1);
-        output.push_str(&tokens(last, self.tokens.len(), true));
+        // `printEnd()`: a doc without children has no last token position, so it ends on a new line.
+        match self.children.last() {
+            Some(c) => output.push_str(&tokens(c.1, self.tokens.len(), true)),
+            None => output.push_str("\n */"),
+        }
         if !output.starts_with("/**") {
             output.insert_str(0, "/**");
         }

@@ -95,6 +95,13 @@ pub fn run_class_stubs(rules: Vec<Box<dyn Rule>>, class: &str, php_version: u32,
     run_class_full(rules, class, php_version, stubs, &[], true);
 }
 
+/// As [`run_class_at`], with the classes under `stubs` (a package's stub directories) known beside <class>/Source.
+#[allow(dead_code)]
+pub fn run_class_paths(rules: Vec<Box<dyn Rule>>, class: &str, php_version: u32, stubs: &[&Path]) {
+    check_dirs(class, true);
+    run_dirs(rules, class, &["Fixture", "Oracle", "Pun"], php_version, stubs);
+}
+
 /// As [`run_class_at`] for a Rector class without upstream fixtures: tests/rector/<class>/{Oracle,Pun} only.
 #[allow(dead_code)]
 pub fn run_oracle_class(rules: Vec<Box<dyn Rule>>, class: &str, php_version: u32) {
@@ -109,8 +116,15 @@ fn run_class_full(
     preset_too: &[&str],
     fixture: bool,
 ) {
-    let linter = Linter::new(rules, php_version);
-    let pipeline = laravel();
+    check_dirs(class, fixture);
+    let tests = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests");
+    let stubs: Vec<PathBuf> = stubs.iter().map(|d| tests.join(d)).collect();
+    let stubs: Vec<&Path> = stubs.iter().map(PathBuf::as_path).collect();
+    run_dirs_full(rules, class, &["Fixture", "Oracle", "Pun"], php_version, &stubs, preset_too);
+}
+
+/// tests/rector/<class> has a Fixture directory exactly when upstream has fixtures, and an Oracle one otherwise.
+fn check_dirs(class: &str, fixture: bool) {
     let root = Path::new(env!("CARGO_MANIFEST_DIR"))
         .join("tests/rector")
         .join(class);
@@ -123,7 +137,35 @@ fn run_class_full(
         root.join("Oracle").is_dir() || fixture,
         "{class}: no Oracle directory"
     );
-    for sub in ["Fixture", "Oracle", "Pun"] {
+}
+
+/// The cases of the directories `subs` of tests/rector/<class> that exist (a configurable rule runs each
+/// configuration on its own directories), with the classes under `stubs` known beside <class>/Source.
+#[allow(dead_code)]
+pub fn run_dirs(
+    rules: Vec<Box<dyn Rule>>,
+    class: &str,
+    subs: &[&str],
+    php_version: u32,
+    stubs: &[&Path],
+) {
+    run_dirs_full(rules, class, subs, php_version, stubs, &[]);
+}
+
+fn run_dirs_full(
+    rules: Vec<Box<dyn Rule>>,
+    class: &str,
+    subs: &[&str],
+    php_version: u32,
+    stubs: &[&Path],
+    preset_too: &[&str],
+) {
+    let linter = Linter::new(rules, php_version);
+    let pipeline = laravel();
+    let root = Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("tests/rector")
+        .join(class);
+    for &sub in subs {
         let dir = root.join(sub);
         if !dir.is_dir() {
             continue;
@@ -132,12 +174,7 @@ fn run_class_full(
             let name = format!("{sub}/{}", path.file_name().unwrap().to_string_lossy());
             let mut extra = Vec::new();
             for dir in stubs {
-                sources(
-                    &Path::new(env!("CARGO_MANIFEST_DIR"))
-                        .join("tests")
-                        .join(dir),
-                    &mut extra,
-                );
+                sources(dir, &mut extra);
             }
             sources(&root.join("Source"), &mut extra);
             // Classes Rector's own test run autoloads from its dev dependencies (vendor/), as minimal stubs.
