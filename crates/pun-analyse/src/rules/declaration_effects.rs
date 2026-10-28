@@ -8,8 +8,9 @@ use std::collections::HashSet;
 
 use mago_span::HasSpan;
 use mago_syntax::cst::*;
+use pun_phpstan::types::Tri;
 
-use super::{Checker, declarations, declared, doc};
+use super::{Checker, declarations, declared, doc, types::flow};
 
 /// CallToFunctionStatementWithoutSideEffectsRule::PHPSTAN_TESTING_FUNCTIONS.
 pub(super) const TESTING_FUNCTIONS: &[&str] = &[
@@ -144,6 +145,7 @@ impl Producer<'_, '_, '_> {
                 effects.terminates = true;
                 Some(effects)
             }
+            Statement::If(i) => self.if_statement(i),
             Statement::Switch(s) => {
                 // SwitchHandler merges subject/case effects and each branch result. Without narrowing, this
                 // overapproximates reachable branches; only a known-empty result is consumed here.
@@ -197,8 +199,86 @@ impl Producer<'_, '_, '_> {
                     ..Effects::default()
                 })
             }
-            // Branch/loop scope joins, hooks, globals, static variables, etc. need their own producers.
+            // Loop scope joins, hooks, globals, static variables, etc. need their own producers.
             _ => None,
+        }
+    }
+
+    /// IfHandler merges every condition's points, but only reachable bodies' points and termination.
+    fn if_statement(&mut self, i: &If) -> Option<Effects> {
+        let mut effects = Effects {
+            terminates: true,
+            ..Effects::default()
+        };
+        let mut continuing = None;
+        let mut decided = false;
+        for (condition, statements) in
+            std::iter::once((i.condition, i.body.statements())).chain(i.body.else_if_clauses())
+        {
+            let result = self.expression(condition)?;
+            effects.impure |= result.impure;
+            effects.throws |= result.throws;
+            let truth = self.condition(condition);
+            if !decided && !truth.no() {
+                self.branch(statements, &mut effects, &mut continuing)?;
+            }
+            decided |= truth.yes();
+        }
+        if !decided {
+            // Without an else, the false path continues with the last condition's scope.
+            self.branch(
+                i.body.else_statements().unwrap_or_default(),
+                &mut effects,
+                &mut continuing,
+            )?;
+        }
+        self.arrays = continuing.unwrap_or_default();
+        Some(effects)
+    }
+
+    fn branch(
+        &self,
+        statements: &[Statement],
+        effects: &mut Effects,
+        continuing: &mut Option<HashSet<Vec<u8>>>,
+    ) -> Option<()> {
+        let mut branch = Self {
+            c: self.c,
+            arrays: self.arrays.clone(),
+        };
+        let result = branch.statements(statements)?;
+        effects.impure |= result.impure;
+        effects.throws |= result.throws;
+        effects.terminates &= result.terminates;
+        if !result.terminates {
+            // Only facts shared by every continuing branch survive; a terminating branch adds none.
+            if let Some(arrays) = continuing {
+                arrays.retain(|name| branch.arrays.contains(name));
+            } else {
+                *continuing = Some(branch.arrays);
+            }
+        }
+        Some(())
+    }
+
+    fn condition(&self, e: &Expression) -> Tri {
+        // These results do not depend on level-specific type requests. Unsupported spreads already
+        // return None from expression(), before literal-array truthiness is consulted.
+        match e {
+            Expression::Parenthesized(p) => self.condition(p.expression),
+            Expression::Assignment(a) if a.operator.is_assign() => self.condition(a.rhs),
+            Expression::UnaryPrefix(u) if matches!(u.operator, UnaryPrefixOperator::Not(_)) => {
+                self.condition(u.operand).negate()
+            }
+            Expression::Array(a) => Tri::from(!a.elements.is_empty()),
+            Expression::LegacyArray(a) => Tri::from(!a.elements.is_empty()),
+            e => flow::Results {
+                types: &self.c.types,
+                call_terminations: Some(&self.c.call_terminations),
+                contents: &self.c.file.contents,
+                codebase: Some(self.c.codebase),
+            }
+            .condition(e),
         }
     }
 
@@ -261,6 +341,15 @@ impl Producer<'_, '_, '_> {
                 }
                 Some(effects)
             }
+            // BinaryOpHandler adds no call/throw points for comparisons; it merges both operands.
+            Expression::Binary(b) if b.operator.is_comparison() => {
+                let mut effects = self.expression(b.lhs)?;
+                effects.merge(self.expression(b.rhs)?);
+                Some(effects)
+            }
+            Expression::UnaryPrefix(u) if matches!(u.operator, UnaryPrefixOperator::Not(_)) => {
+                self.expression(u.operand)
+            }
             Expression::UnaryPrefix(u) if u.operator.is_reference() => {
                 let effects = self.expression(u.operand)?;
                 self.arrays.clear(); // An alias can subsequently replace the entire container.
@@ -286,9 +375,14 @@ impl Producer<'_, '_, '_> {
                 self.target(u.operand, false)
             }
             Expression::UnaryPostfix(u) => self.target(u.operand, false),
-            Expression::ArrayAccess(a) if self.array(a.array) => {
-                let mut effects = self.expression(a.array)?;
-                effects.merge(self.expression(a.index)?);
+            Expression::ArrayAccess(a) => {
+                // ArrayDimFetchHandler evaluates the dimension first. Plain arrays never invoke
+                // offsetGet; unlike writes, a read can also use an already-observed array type.
+                let mut effects = self.expression(a.index)?;
+                if !self.array(a.array) && !self.c.type_of(a.array).is_some_and(|t| t.is_array()) {
+                    return None;
+                }
+                effects.merge(self.expression(a.array)?);
                 Some(effects)
             }
             Expression::Throw(t) => {

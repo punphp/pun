@@ -1,0 +1,1116 @@
+{
+    "0": [
+        [
+            "dependencies.php",
+            8,
+            "phpstan.dumpType",
+            "Dumped type: bool",
+            null,
+            false
+        ]
+    ],
+    "1": [
+        [
+            "dependencies.php",
+            8,
+            "phpstan.dumpType",
+            "Dumped type: bool",
+            null,
+            false
+        ]
+    ],
+    "2": [
+        [
+            "branches.php",
+            5,
+            "void.pure",
+            "Function BranchDeclarationEffects\\symmetric() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "branches.php",
+            6,
+            "void.pure",
+            "Function BranchDeclarationEffects\\partial() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "branches.php",
+            7,
+            "void.pure",
+            "Function BranchDeclarationEffects\\comparison() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "branches.php",
+            8,
+            "void.pure",
+            "Function BranchDeclarationEffects\\relational() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "branches.php",
+            9,
+            "void.pure",
+            "Function BranchDeclarationEffects\\negated() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "branches.php",
+            10,
+            "void.pure",
+            "Function BranchDeclarationEffects\\nested() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "branches.php",
+            11,
+            "void.pure",
+            "Function BranchDeclarationEffects\\elseifBranches() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "branches.php",
+            12,
+            "void.pure",
+            "Function BranchDeclarationEffects\\colonBranches() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "branches.php",
+            18,
+            "void.pure",
+            "Function BranchDeclarationEffects\\conditionWrite() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "branches.php",
+            20,
+            "void.pure",
+            "Function BranchDeclarationEffects\\bothReturn() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "branches.php",
+            36,
+            "void.pure",
+            "Function BranchDeclarationEffects\\elseifReturns() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "branches.php",
+            40,
+            "void.pure",
+            "Function BranchDeclarationEffects\\alwaysTrue() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "branches.php",
+            41,
+            "void.pure",
+            "Function BranchDeclarationEffects\\alwaysFalse() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "branches.php",
+            42,
+            "void.pure",
+            "Function BranchDeclarationEffects\\falseWithoutElse() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "branches.php",
+            43,
+            "void.pure",
+            "Function BranchDeclarationEffects\\trueReturn() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "branches.php",
+            45,
+            "void.pure",
+            "Function BranchDeclarationEffects\\unreachableUnknown() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "branches.php",
+            47,
+            "void.pure",
+            "Function BranchDeclarationEffects\\trueElseif() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "branches.php",
+            48,
+            "void.pure",
+            "Function BranchDeclarationEffects\\falseElseif() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "branches.php",
+            49,
+            "void.pure",
+            "Function BranchDeclarationEffects\\allArrays() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "branches.php",
+            53,
+            "void.pure",
+            "Function BranchDeclarationEffects\\survivingRight() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "branches.php",
+            55,
+            "void.pure",
+            "Function BranchDeclarationEffects\\survivingLeft() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "branches.php",
+            56,
+            "void.pure",
+            "Function BranchDeclarationEffects\\arrayBeforeBranch() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "branches.php",
+            57,
+            "void.pure",
+            "Function BranchDeclarationEffects\\arrayCondition() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "branches.php",
+            58,
+            "void.pure",
+            "Function BranchDeclarationEffects\\ordinary() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "branches.php",
+            66,
+            "void.pure",
+            "Function BranchDeclarationEffects\\pureCondition() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "branches.php",
+            74,
+            "void.pure",
+            "Method BranchDeclarationEffects\\PrivateBranch::local() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "dependencies.php",
+            6,
+            "void.pure",
+            "Function BranchDeclarationDependencies\\parameterArray() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "dependencies.php",
+            8,
+            "phpstan.dumpType",
+            "Dumped type: bool",
+            null,
+            false
+        ],
+        [
+            "dependencies.php",
+            11,
+            "void.pure",
+            "Function BranchDeclarationDependencies\\nonemptyCondition() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "dependencies.php",
+            12,
+            "void.pure",
+            "Function BranchDeclarationDependencies\\legacyCondition() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "dependencies.php",
+            13,
+            "void.pure",
+            "Function BranchDeclarationDependencies\\negatedLiteral() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "dependencies.php",
+            16,
+            "void.pure",
+            "Function BranchDeclarationDependencies\\caughtBranch() returns void but does not have any side effects.",
+            null,
+            true
+        ]
+    ],
+    "4": [
+        [
+            "branches.php",
+            5,
+            "void.pure",
+            "Function BranchDeclarationEffects\\symmetric() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "branches.php",
+            6,
+            "void.pure",
+            "Function BranchDeclarationEffects\\partial() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "branches.php",
+            7,
+            "void.pure",
+            "Function BranchDeclarationEffects\\comparison() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "branches.php",
+            8,
+            "void.pure",
+            "Function BranchDeclarationEffects\\relational() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "branches.php",
+            9,
+            "void.pure",
+            "Function BranchDeclarationEffects\\negated() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "branches.php",
+            10,
+            "void.pure",
+            "Function BranchDeclarationEffects\\nested() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "branches.php",
+            11,
+            "void.pure",
+            "Function BranchDeclarationEffects\\elseifBranches() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "branches.php",
+            12,
+            "void.pure",
+            "Function BranchDeclarationEffects\\colonBranches() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "branches.php",
+            16,
+            "if.alwaysTrue",
+            "If condition is always true.",
+            null,
+            true
+        ],
+        [
+            "branches.php",
+            18,
+            "void.pure",
+            "Function BranchDeclarationEffects\\conditionWrite() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "branches.php",
+            20,
+            "void.pure",
+            "Function BranchDeclarationEffects\\bothReturn() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "branches.php",
+            22,
+            "deadCode.unreachable",
+            "Unreachable statement - code above always terminates.",
+            null,
+            true
+        ],
+        [
+            "branches.php",
+            36,
+            "void.pure",
+            "Function BranchDeclarationEffects\\elseifReturns() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "branches.php",
+            38,
+            "deadCode.unreachable",
+            "Unreachable statement - code above always terminates.",
+            null,
+            true
+        ],
+        [
+            "branches.php",
+            40,
+            "if.alwaysTrue",
+            "If condition is always true.",
+            null,
+            true
+        ],
+        [
+            "branches.php",
+            40,
+            "void.pure",
+            "Function BranchDeclarationEffects\\alwaysTrue() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "branches.php",
+            41,
+            "if.alwaysFalse",
+            "If condition is always false.",
+            null,
+            true
+        ],
+        [
+            "branches.php",
+            41,
+            "void.pure",
+            "Function BranchDeclarationEffects\\alwaysFalse() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "branches.php",
+            42,
+            "if.alwaysFalse",
+            "If condition is always false.",
+            null,
+            true
+        ],
+        [
+            "branches.php",
+            42,
+            "void.pure",
+            "Function BranchDeclarationEffects\\falseWithoutElse() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "branches.php",
+            43,
+            "deadCode.unreachable",
+            "Unreachable statement - code above always terminates.",
+            null,
+            true
+        ],
+        [
+            "branches.php",
+            43,
+            "if.alwaysTrue",
+            "If condition is always true.",
+            null,
+            true
+        ],
+        [
+            "branches.php",
+            43,
+            "void.pure",
+            "Function BranchDeclarationEffects\\trueReturn() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "branches.php",
+            44,
+            "if.alwaysFalse",
+            "If condition is always false.",
+            null,
+            true
+        ],
+        [
+            "branches.php",
+            45,
+            "if.alwaysFalse",
+            "If condition is always false.",
+            null,
+            true
+        ],
+        [
+            "branches.php",
+            45,
+            "void.pure",
+            "Function BranchDeclarationEffects\\unreachableUnknown() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "branches.php",
+            46,
+            "if.alwaysTrue",
+            "If condition is always true.",
+            null,
+            true
+        ],
+        [
+            "branches.php",
+            47,
+            "elseif.alwaysTrue",
+            "Elseif condition is always true.",
+            "Remove remaining cases below this one and this error will disappear too.",
+            true
+        ],
+        [
+            "branches.php",
+            47,
+            "void.pure",
+            "Function BranchDeclarationEffects\\trueElseif() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "branches.php",
+            48,
+            "elseif.alwaysFalse",
+            "Elseif condition is always false.",
+            null,
+            true
+        ],
+        [
+            "branches.php",
+            48,
+            "void.pure",
+            "Function BranchDeclarationEffects\\falseElseif() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "branches.php",
+            49,
+            "void.pure",
+            "Function BranchDeclarationEffects\\allArrays() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "branches.php",
+            53,
+            "void.pure",
+            "Function BranchDeclarationEffects\\survivingRight() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "branches.php",
+            55,
+            "void.pure",
+            "Function BranchDeclarationEffects\\survivingLeft() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "branches.php",
+            56,
+            "void.pure",
+            "Function BranchDeclarationEffects\\arrayBeforeBranch() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "branches.php",
+            57,
+            "if.alwaysFalse",
+            "If condition is always false.",
+            null,
+            true
+        ],
+        [
+            "branches.php",
+            57,
+            "void.pure",
+            "Function BranchDeclarationEffects\\arrayCondition() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "branches.php",
+            58,
+            "void.pure",
+            "Function BranchDeclarationEffects\\ordinary() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "branches.php",
+            66,
+            "void.pure",
+            "Function BranchDeclarationEffects\\pureCondition() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "branches.php",
+            71,
+            "function.resultUnused",
+            "Call to function strlen() on a separate line has no effect.",
+            null,
+            true
+        ],
+        [
+            "branches.php",
+            74,
+            "void.pure",
+            "Method BranchDeclarationEffects\\PrivateBranch::local() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "dependencies.php",
+            6,
+            "void.pure",
+            "Function BranchDeclarationDependencies\\parameterArray() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "dependencies.php",
+            8,
+            "phpstan.dumpType",
+            "Dumped type: bool",
+            null,
+            false
+        ],
+        [
+            "dependencies.php",
+            11,
+            "if.alwaysTrue",
+            "If condition is always true.",
+            null,
+            true
+        ],
+        [
+            "dependencies.php",
+            11,
+            "void.pure",
+            "Function BranchDeclarationDependencies\\nonemptyCondition() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "dependencies.php",
+            12,
+            "if.alwaysFalse",
+            "If condition is always false.",
+            null,
+            true
+        ],
+        [
+            "dependencies.php",
+            12,
+            "void.pure",
+            "Function BranchDeclarationDependencies\\legacyCondition() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "dependencies.php",
+            13,
+            "booleanNot.alwaysTrue",
+            "Negated boolean expression is always true.",
+            null,
+            true
+        ],
+        [
+            "dependencies.php",
+            13,
+            "void.pure",
+            "Function BranchDeclarationDependencies\\negatedLiteral() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "dependencies.php",
+            14,
+            "identical.alwaysFalse",
+            "Strict comparison using === between 1 and 0 will always evaluate to false.",
+            null,
+            true
+        ],
+        [
+            "dependencies.php",
+            16,
+            "void.pure",
+            "Function BranchDeclarationDependencies\\caughtBranch() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "dependencies.php",
+            23,
+            "function.resultUnused",
+            "Call to function strlen() on a separate line has no effect.",
+            null,
+            true
+        ]
+    ],
+    "9": [
+        [
+            "branches.php",
+            5,
+            "void.pure",
+            "Function BranchDeclarationEffects\\symmetric() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "branches.php",
+            6,
+            "void.pure",
+            "Function BranchDeclarationEffects\\partial() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "branches.php",
+            7,
+            "void.pure",
+            "Function BranchDeclarationEffects\\comparison() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "branches.php",
+            8,
+            "void.pure",
+            "Function BranchDeclarationEffects\\relational() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "branches.php",
+            9,
+            "void.pure",
+            "Function BranchDeclarationEffects\\negated() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "branches.php",
+            10,
+            "void.pure",
+            "Function BranchDeclarationEffects\\nested() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "branches.php",
+            11,
+            "void.pure",
+            "Function BranchDeclarationEffects\\elseifBranches() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "branches.php",
+            12,
+            "void.pure",
+            "Function BranchDeclarationEffects\\colonBranches() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "branches.php",
+            16,
+            "if.alwaysTrue",
+            "If condition is always true.",
+            null,
+            true
+        ],
+        [
+            "branches.php",
+            18,
+            "void.pure",
+            "Function BranchDeclarationEffects\\conditionWrite() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "branches.php",
+            20,
+            "void.pure",
+            "Function BranchDeclarationEffects\\bothReturn() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "branches.php",
+            22,
+            "deadCode.unreachable",
+            "Unreachable statement - code above always terminates.",
+            null,
+            true
+        ],
+        [
+            "branches.php",
+            36,
+            "void.pure",
+            "Function BranchDeclarationEffects\\elseifReturns() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "branches.php",
+            38,
+            "deadCode.unreachable",
+            "Unreachable statement - code above always terminates.",
+            null,
+            true
+        ],
+        [
+            "branches.php",
+            40,
+            "if.alwaysTrue",
+            "If condition is always true.",
+            null,
+            true
+        ],
+        [
+            "branches.php",
+            40,
+            "void.pure",
+            "Function BranchDeclarationEffects\\alwaysTrue() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "branches.php",
+            41,
+            "if.alwaysFalse",
+            "If condition is always false.",
+            null,
+            true
+        ],
+        [
+            "branches.php",
+            41,
+            "void.pure",
+            "Function BranchDeclarationEffects\\alwaysFalse() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "branches.php",
+            42,
+            "if.alwaysFalse",
+            "If condition is always false.",
+            null,
+            true
+        ],
+        [
+            "branches.php",
+            42,
+            "void.pure",
+            "Function BranchDeclarationEffects\\falseWithoutElse() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "branches.php",
+            43,
+            "deadCode.unreachable",
+            "Unreachable statement - code above always terminates.",
+            null,
+            true
+        ],
+        [
+            "branches.php",
+            43,
+            "if.alwaysTrue",
+            "If condition is always true.",
+            null,
+            true
+        ],
+        [
+            "branches.php",
+            43,
+            "void.pure",
+            "Function BranchDeclarationEffects\\trueReturn() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "branches.php",
+            44,
+            "if.alwaysFalse",
+            "If condition is always false.",
+            null,
+            true
+        ],
+        [
+            "branches.php",
+            45,
+            "if.alwaysFalse",
+            "If condition is always false.",
+            null,
+            true
+        ],
+        [
+            "branches.php",
+            45,
+            "void.pure",
+            "Function BranchDeclarationEffects\\unreachableUnknown() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "branches.php",
+            46,
+            "if.alwaysTrue",
+            "If condition is always true.",
+            null,
+            true
+        ],
+        [
+            "branches.php",
+            47,
+            "elseif.alwaysTrue",
+            "Elseif condition is always true.",
+            "Remove remaining cases below this one and this error will disappear too.",
+            true
+        ],
+        [
+            "branches.php",
+            47,
+            "void.pure",
+            "Function BranchDeclarationEffects\\trueElseif() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "branches.php",
+            48,
+            "elseif.alwaysFalse",
+            "Elseif condition is always false.",
+            null,
+            true
+        ],
+        [
+            "branches.php",
+            48,
+            "void.pure",
+            "Function BranchDeclarationEffects\\falseElseif() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "branches.php",
+            49,
+            "void.pure",
+            "Function BranchDeclarationEffects\\allArrays() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "branches.php",
+            53,
+            "void.pure",
+            "Function BranchDeclarationEffects\\survivingRight() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "branches.php",
+            55,
+            "void.pure",
+            "Function BranchDeclarationEffects\\survivingLeft() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "branches.php",
+            56,
+            "void.pure",
+            "Function BranchDeclarationEffects\\arrayBeforeBranch() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "branches.php",
+            57,
+            "if.alwaysFalse",
+            "If condition is always false.",
+            null,
+            true
+        ],
+        [
+            "branches.php",
+            57,
+            "void.pure",
+            "Function BranchDeclarationEffects\\arrayCondition() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "branches.php",
+            58,
+            "void.pure",
+            "Function BranchDeclarationEffects\\ordinary() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "branches.php",
+            66,
+            "void.pure",
+            "Function BranchDeclarationEffects\\pureCondition() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "branches.php",
+            71,
+            "function.resultUnused",
+            "Call to function strlen() on a separate line has no effect.",
+            null,
+            true
+        ],
+        [
+            "branches.php",
+            74,
+            "void.pure",
+            "Method BranchDeclarationEffects\\PrivateBranch::local() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "dependencies.php",
+            6,
+            "void.pure",
+            "Function BranchDeclarationDependencies\\parameterArray() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "dependencies.php",
+            8,
+            "phpstan.dumpType",
+            "Dumped type: bool",
+            null,
+            false
+        ],
+        [
+            "dependencies.php",
+            11,
+            "if.alwaysTrue",
+            "If condition is always true.",
+            null,
+            true
+        ],
+        [
+            "dependencies.php",
+            11,
+            "void.pure",
+            "Function BranchDeclarationDependencies\\nonemptyCondition() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "dependencies.php",
+            12,
+            "if.alwaysFalse",
+            "If condition is always false.",
+            null,
+            true
+        ],
+        [
+            "dependencies.php",
+            12,
+            "void.pure",
+            "Function BranchDeclarationDependencies\\legacyCondition() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "dependencies.php",
+            13,
+            "booleanNot.alwaysTrue",
+            "Negated boolean expression is always true.",
+            null,
+            true
+        ],
+        [
+            "dependencies.php",
+            13,
+            "void.pure",
+            "Function BranchDeclarationDependencies\\negatedLiteral() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "dependencies.php",
+            14,
+            "identical.alwaysFalse",
+            "Strict comparison using === between 1 and 0 will always evaluate to false.",
+            null,
+            true
+        ],
+        [
+            "dependencies.php",
+            16,
+            "void.pure",
+            "Function BranchDeclarationDependencies\\caughtBranch() returns void but does not have any side effects.",
+            null,
+            true
+        ],
+        [
+            "dependencies.php",
+            23,
+            "function.resultUnused",
+            "Call to function strlen() on a separate line has no effect.",
+            null,
+            true
+        ]
+    ]
+}
