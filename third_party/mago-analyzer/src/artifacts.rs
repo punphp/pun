@@ -8,6 +8,7 @@ use mago_word::WordMap;
 use mago_word::WordSet;
 
 use mago_algebra::assertion_set::AssertionSet;
+use mago_algebra::clause::Clause;
 use mago_codex::metadata::CodebaseMetadata;
 use mago_codex::reference::SymbolReferences;
 use mago_codex::ttype::combine_owned_union_types_rc;
@@ -110,6 +111,9 @@ pub struct AnalysisArtifacts {
     pub call_terminations: HashMap<(u32, u32), bool>,
     call_termination_checkpoints: ExpressionTypeCheckpoints<bool>,
     pub(crate) boolean_expression_scopes: HashMap<(u32, u32), BooleanExpressionScopes>,
+    /// Walked-call specifications, consumed only by the current expression statement.
+    /// Like BooleanExpressionScopes, these are derived results, not convergence inputs.
+    pub(crate) null_context_clauses: HashMap<(u32, u32), Vec<Clause>>,
     pub if_true_assertions: HashMap<(u32, u32), WordMap<AssertionSet>>,
     pub if_false_assertions: HashMap<(u32, u32), WordMap<AssertionSet>>,
     pub true_branch_only_assertions: HashMap<(u32, u32), WordMap<AssertionSet>>,
@@ -152,6 +156,7 @@ impl AnalysisArtifacts {
             call_terminations: HashMap::default(),
             call_termination_checkpoints: ExpressionTypeCheckpoints::default(),
             boolean_expression_scopes: HashMap::default(),
+            null_context_clauses: HashMap::default(),
             inferred_return_types: Vec::new(),
             inferred_yield_key_types: Vec::new(),
             inferred_yield_value_types: Vec::new(),

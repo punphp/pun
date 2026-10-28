@@ -39,6 +39,90 @@ pub(crate) fn boolean_scopes<'a>(
         .get(&(span.start.offset, span.end.offset))
 }
 
+/// ExpressionHandler applies the walked result's null-context specification after its scope join.
+pub(crate) fn apply_null_context_specifications<'ctx, A: Arena>(
+    context: &mut Context<'ctx, '_, A>,
+    block_context: &mut BlockContext<'ctx>,
+    artifacts: &AnalysisArtifacts,
+    expression: &Expression,
+) {
+    let clauses = null_context_specifications(context, block_context, artifacts, expression);
+    if clauses.is_empty() {
+        return;
+    }
+    block_context.clauses.extend(clauses.into_iter().map(Rc::new));
+    let clauses =
+        mago_algebra::saturate_shared_clauses(block_context.clauses.clone(), &context.settings.algebra_thresholds());
+    let (assertions, active) = mago_algebra::find_satisfying_assignments_iter(
+        clauses.iter().map(Rc::as_ref),
+        None,
+        &mut WordSet::default(),
+    );
+    let referenced = assertions.keys().copied().collect();
+    block_context
+        .stable_method_calls
+        .extend(assertions.keys().filter(|name| name.as_bytes().ends_with(b"()")).copied());
+    reconcile_keyed_types(
+        context,
+        &assertions,
+        active,
+        block_context,
+        &mut WordSet::default(),
+        &referenced,
+        &expression.span(),
+        true,
+        false,
+    );
+}
+
+fn null_context_specifications<A: Arena>(
+    context: &Context<'_, '_, A>,
+    block_context: &BlockContext<'_>,
+    artifacts: &AnalysisArtifacts,
+    expression: &Expression,
+) -> Vec<mago_algebra::clause::Clause> {
+    let expression = crate::utils::misc::unwrap_expression(expression);
+    match expression {
+        Expression::Binary(binary)
+            if matches!(
+                binary.operator,
+                BinaryOperator::And(_) | BinaryOperator::LowAnd(_) | BinaryOperator::Or(_) | BinaryOperator::LowOr(_)
+            ) =>
+        {
+            let mut left = null_context_specifications(context, block_context, artifacts, binary.lhs);
+            let right = null_context_specifications(context, block_context, artifacts, binary.rhs);
+            if matches!(binary.operator, BinaryOperator::And(_) | BinaryOperator::LowAnd(_)) {
+                // SpecifiedTypes::intersectWith: unconstrained on either side is unconstrained.
+                if left.is_empty() || right.is_empty() {
+                    return vec![];
+                }
+                mago_algebra::disjoin_clauses(left, right, binary.span(), &context.settings.algebra_thresholds())
+            } else {
+                // SpecifiedTypes::unionWith: both operands' specifications hold, even in null context.
+                left.extend(right);
+                left
+            }
+        }
+        Expression::Assignment(assignment) if assignment.operator.is_assign() => {
+            let mut clauses = null_context_specifications(context, block_context, artifacts, assignment.rhs);
+            if let Some(target) =
+                crate::utils::expression::get_block_expression_id(assignment.lhs, context, block_context)
+            {
+                clauses.retain(|clause| !clause.possibilities.contains_key(&target));
+            }
+            clauses
+        }
+        _ => {
+            let span = expression.span();
+            artifacts
+                .null_context_clauses
+                .get(&(span.start.offset, span.end.offset))
+                .cloned()
+                .unwrap_or_default()
+        }
+    }
+}
+
 /// Transfer the actual operand scope after specifications, which must not re-select
 /// a pre-evaluation value when a short-circuiting expression has changed its type.
 pub(crate) fn apply_boolean_branch(
@@ -86,21 +170,7 @@ pub(crate) fn record_boolean_scopes<'ctx, A: Arena>(
         scopes.post.restore_certainty(&mut right);
     }
     let operand_scopes = [post.variable_scope(), right.variable_scope()];
-    for (key, value) in &right.locals {
-        let value = match post.locals.get(key) {
-            Some(left) => mago_codex::ttype::combine_union_types_rc(
-                left,
-                value,
-                context.codebase,
-                context.settings.combiner_options(),
-            ),
-            None => Rc::clone(value),
-        };
-        post.locals.insert(*key, value);
-    }
-    // Join certainty from the incoming edges, before the RHS-only type cache can
-    // make an output-reference variable appear definitely assigned on the LHS.
-    post.merge_variable_scopes(&operand_scopes, context.codebase);
+    post.merge_variable_scope_types(&operand_scopes, context.codebase);
     let expression = Expression::Binary(binary.clone());
     let is_and = matches!(
         binary.operator,

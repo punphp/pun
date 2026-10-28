@@ -232,7 +232,22 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Statement<'arena> {
                 }
                 Ok(())
             }
-            Statement::Expression(expression) => expression.expression.analyze(context, block_context, artifacts),
+            Statement::Expression(expression) => {
+                let span = expression.expression.span();
+                // Discard this expression's previous walk, not a surrounding expression's
+                // specifications when a nested closure body is analysed.
+                artifacts
+                    .null_context_clauses
+                    .retain(|&(start, end), _| start < span.start.offset || end > span.end.offset);
+                expression.expression.analyze(context, block_context, artifacts)?;
+                crate::utils::conditional::apply_null_context_specifications(
+                    context,
+                    block_context,
+                    artifacts,
+                    expression.expression,
+                );
+                Ok(())
+            }
             Statement::Try(r#try) => r#try.analyze(context, block_context, artifacts),
             Statement::Foreach(foreach) => foreach.analyze(context, block_context, artifacts),
             Statement::For(r#for) => r#for.analyze(context, block_context, artifacts),

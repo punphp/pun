@@ -6,6 +6,7 @@ use mago_codex::assertion::Assertion;
 use mago_codex::ttype::TType;
 use mago_codex::ttype::atomic::TAtomic;
 use mago_codex::ttype::atomic::array::TArray;
+use mago_codex::ttype::atomic::array::list::TList;
 use mago_codex::ttype::combine_union_types;
 use mago_codex::ttype::combiner::CombinerOptions;
 use mago_codex::ttype::get_arraykey;
@@ -251,14 +252,18 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Foreach<'arena> {
                 && let Some(ty) = empty_entry.locals.get(&id).cloned()
             {
                 let mut empty = reconcile(context, &Assertion::IsIdentical(get_empty_keyed_array().get_single().clone()), Some(&ty), None, false, None, false, false);
-                // TemplateMixedType intersects with [] without erasing its identity.
+                // Template types intersect with [] without erasing their identity.
                 // A standalone [] is not an instantiation of every template argument.
                 if let [TAtomic::GenericParameter(parameter)] = ty.types.as_ref()
-                    && parameter.constraint.is_mixed()
                     && !empty.is_never()
                 {
                     let mut parameter = parameter.clone();
-                    parameter.add_intersection_type(empty.get_single().clone());
+                    let intersection = if parameter.constraint.is_list() {
+                        TAtomic::Array(TArray::List(TList::from_known_elements(Default::default())))
+                    } else {
+                        empty.get_single().clone()
+                    };
+                    parameter.add_intersection_type(intersection);
                     empty = TUnion::from_atomic(TAtomic::GenericParameter(parameter));
                 }
                 let object = reconcile(context, &Assertion::IsType(get_object().get_single().clone()), Some(&ty), None, false, None, false, false);
@@ -296,8 +301,7 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Foreach<'arena> {
 }
 
 /// MutatingScope::processAlwaysIterableForeachScopeWithoutPollute: final types, entry AND final
-/// certainty, entry-only holders retained. Align existing holder types before using the ordinary
-/// scope join, so it intersects conditional holders without inventing disjoint-type implications.
+/// certainty, entry-only holders retained. This is a projection, not a real-edge value union.
 fn project_without_pollution<'ctx, A: Arena>(
     context: &Context<'ctx, '_, A>,
     output: &mut BlockContext<'ctx>,
@@ -320,8 +324,15 @@ fn project_without_pollution<'ctx, A: Arena>(
         ty.set_possibly_undefined_from_try(false);
         typed_entry.locals.insert(*name, Rc::new(ty));
     }
+    let branches = [typed_entry.variable_scope(), final_context.variable_scope()];
+    output.locals = final_context.locals;
+    output.variables_possibly_in_scope = typed_entry.variables_possibly_in_scope;
+    output.variables_possibly_in_scope.extend(final_context.variables_possibly_in_scope);
     output.variable_state = entry.variable_state.clone();
-    output.merge_variable_scope_types(&[typed_entry.variable_scope(), final_context.variable_scope()], context.codebase);
+    output.merge_variable_scopes(&branches, context.codebase);
+    // processAlwaysIterableForeachScopeWithoutPollute retains entry holders only.
+    // A final-only offset value is not a certain expression in the projected scope.
+    output.locals.retain(|name, _| !name.as_bytes().ends_with(b"]") || entry.locals.contains_key(name));
     output.variable_state.after_extract_call = entry.variable_state.after_extract_call;
 }
 

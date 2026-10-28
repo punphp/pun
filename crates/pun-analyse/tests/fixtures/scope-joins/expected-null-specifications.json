@@ -1,0 +1,698 @@
+{
+    "default": [
+        [
+            "null-specifications.php",
+            15,
+            "phpstan.dumpType",
+            "Dumped type: string",
+            null,
+            false
+        ],
+        [
+            "null-specifications.php",
+            22,
+            "phpstan.dumpType",
+            "Dumped type: int|string|null",
+            null,
+            false
+        ],
+        [
+            "null-specifications.php",
+            29,
+            "phpstan.dumpType",
+            "Dumped type: int|string",
+            null,
+            false
+        ],
+        [
+            "null-specifications.php",
+            30,
+            "phpstan.dumpType",
+            "Dumped type: string|null",
+            null,
+            false
+        ],
+        [
+            "null-specifications.php",
+            37,
+            "phpstan.dumpType",
+            "Dumped type: int|string|null",
+            null,
+            false
+        ],
+        [
+            "null-specifications.php",
+            38,
+            "phpstan.dumpType",
+            "Dumped type: int|string|null",
+            null,
+            false
+        ],
+        [
+            "null-specifications.php",
+            45,
+            "phpstan.dumpType",
+            "Dumped type: int|string|null",
+            null,
+            false
+        ],
+        [
+            "null-specifications.php",
+            52,
+            "phpstan.dumpType",
+            "Dumped type: int|string",
+            null,
+            false
+        ],
+        [
+            "null-specifications.php",
+            59,
+            "phpstan.dumpType",
+            "Dumped type: int|string|null",
+            null,
+            false
+        ],
+        [
+            "null-specifications.php",
+            66,
+            "phpstan.dumpType",
+            "Dumped type: int|string",
+            null,
+            false
+        ],
+        [
+            "null-specifications.php",
+            67,
+            "phpstan.dumpType",
+            "Dumped type: bool",
+            null,
+            false
+        ],
+        [
+            "null-specifications.php",
+            73,
+            "phpstan.dumpType",
+            "Dumped type: bool",
+            null,
+            false
+        ],
+        [
+            "null-specifications.php",
+            80,
+            "phpstan.dumpType",
+            "Dumped type: int|string|null",
+            null,
+            false
+        ],
+        [
+            "null-specifications.php",
+            87,
+            "phpstan.dumpType",
+            "Dumped type: int|string|null",
+            null,
+            false
+        ],
+        [
+            "null-specifications.php",
+            94,
+            "phpstan.dumpType",
+            "Dumped type: string",
+            null,
+            false
+        ],
+        [
+            "null-specifications.php",
+            96,
+            "phpstan.dumpType",
+            "Dumped type: string",
+            null,
+            false
+        ],
+        [
+            "null-specifications.php",
+            104,
+            "phpstan.dumpType",
+            "Dumped type: string",
+            null,
+            false
+        ],
+        [
+            "null-specifications.php",
+            104,
+            "variable.undefined",
+            "Variable $observed might not be defined.",
+            null,
+            true
+        ],
+        [
+            "null-specifications.php",
+            105,
+            "variable.undefined",
+            "Variable $observed might not be defined.",
+            null,
+            true
+        ],
+        [
+            "null-specifications.php",
+            114,
+            "phpstan.dumpType",
+            "Dumped type: string",
+            null,
+            false
+        ],
+        [
+            "null-specifications.php",
+            120,
+            "phpstan.dumpType",
+            "Dumped type: string",
+            null,
+            false
+        ],
+        [
+            "null-specifications.php",
+            126,
+            "phpstan.dumpType",
+            "Dumped type: int|string",
+            null,
+            false
+        ]
+    ],
+    "quiet": [
+        [
+            "null-specifications.php",
+            15,
+            "phpstan.dumpType",
+            "Dumped type: string",
+            null,
+            false
+        ],
+        [
+            "null-specifications.php",
+            22,
+            "phpstan.dumpType",
+            "Dumped type: int|string|null",
+            null,
+            false
+        ],
+        [
+            "null-specifications.php",
+            29,
+            "phpstan.dumpType",
+            "Dumped type: int|string",
+            null,
+            false
+        ],
+        [
+            "null-specifications.php",
+            30,
+            "phpstan.dumpType",
+            "Dumped type: string|null",
+            null,
+            false
+        ],
+        [
+            "null-specifications.php",
+            37,
+            "phpstan.dumpType",
+            "Dumped type: int|string|null",
+            null,
+            false
+        ],
+        [
+            "null-specifications.php",
+            38,
+            "phpstan.dumpType",
+            "Dumped type: int|string|null",
+            null,
+            false
+        ],
+        [
+            "null-specifications.php",
+            45,
+            "phpstan.dumpType",
+            "Dumped type: int|string|null",
+            null,
+            false
+        ],
+        [
+            "null-specifications.php",
+            52,
+            "phpstan.dumpType",
+            "Dumped type: int|string",
+            null,
+            false
+        ],
+        [
+            "null-specifications.php",
+            59,
+            "phpstan.dumpType",
+            "Dumped type: int|string|null",
+            null,
+            false
+        ],
+        [
+            "null-specifications.php",
+            66,
+            "phpstan.dumpType",
+            "Dumped type: int|string",
+            null,
+            false
+        ],
+        [
+            "null-specifications.php",
+            67,
+            "phpstan.dumpType",
+            "Dumped type: bool",
+            null,
+            false
+        ],
+        [
+            "null-specifications.php",
+            73,
+            "phpstan.dumpType",
+            "Dumped type: bool",
+            null,
+            false
+        ],
+        [
+            "null-specifications.php",
+            80,
+            "phpstan.dumpType",
+            "Dumped type: int|string|null",
+            null,
+            false
+        ],
+        [
+            "null-specifications.php",
+            87,
+            "phpstan.dumpType",
+            "Dumped type: int|string|null",
+            null,
+            false
+        ],
+        [
+            "null-specifications.php",
+            94,
+            "phpstan.dumpType",
+            "Dumped type: string",
+            null,
+            false
+        ],
+        [
+            "null-specifications.php",
+            96,
+            "phpstan.dumpType",
+            "Dumped type: string",
+            null,
+            false
+        ],
+        [
+            "null-specifications.php",
+            104,
+            "phpstan.dumpType",
+            "Dumped type: string",
+            null,
+            false
+        ],
+        [
+            "null-specifications.php",
+            114,
+            "phpstan.dumpType",
+            "Dumped type: string",
+            null,
+            false
+        ],
+        [
+            "null-specifications.php",
+            120,
+            "phpstan.dumpType",
+            "Dumped type: string",
+            null,
+            false
+        ],
+        [
+            "null-specifications.php",
+            126,
+            "phpstan.dumpType",
+            "Dumped type: int|string",
+            null,
+            false
+        ]
+    ],
+    "foreach-off": [
+        [
+            "null-specifications.php",
+            15,
+            "phpstan.dumpType",
+            "Dumped type: string",
+            null,
+            false
+        ],
+        [
+            "null-specifications.php",
+            22,
+            "phpstan.dumpType",
+            "Dumped type: int|string|null",
+            null,
+            false
+        ],
+        [
+            "null-specifications.php",
+            29,
+            "phpstan.dumpType",
+            "Dumped type: int|string",
+            null,
+            false
+        ],
+        [
+            "null-specifications.php",
+            30,
+            "phpstan.dumpType",
+            "Dumped type: string|null",
+            null,
+            false
+        ],
+        [
+            "null-specifications.php",
+            37,
+            "phpstan.dumpType",
+            "Dumped type: int|string|null",
+            null,
+            false
+        ],
+        [
+            "null-specifications.php",
+            38,
+            "phpstan.dumpType",
+            "Dumped type: int|string|null",
+            null,
+            false
+        ],
+        [
+            "null-specifications.php",
+            45,
+            "phpstan.dumpType",
+            "Dumped type: int|string|null",
+            null,
+            false
+        ],
+        [
+            "null-specifications.php",
+            52,
+            "phpstan.dumpType",
+            "Dumped type: int|string",
+            null,
+            false
+        ],
+        [
+            "null-specifications.php",
+            59,
+            "phpstan.dumpType",
+            "Dumped type: int|string|null",
+            null,
+            false
+        ],
+        [
+            "null-specifications.php",
+            66,
+            "phpstan.dumpType",
+            "Dumped type: int|string",
+            null,
+            false
+        ],
+        [
+            "null-specifications.php",
+            67,
+            "phpstan.dumpType",
+            "Dumped type: bool",
+            null,
+            false
+        ],
+        [
+            "null-specifications.php",
+            73,
+            "phpstan.dumpType",
+            "Dumped type: bool",
+            null,
+            false
+        ],
+        [
+            "null-specifications.php",
+            80,
+            "phpstan.dumpType",
+            "Dumped type: int|string|null",
+            null,
+            false
+        ],
+        [
+            "null-specifications.php",
+            87,
+            "phpstan.dumpType",
+            "Dumped type: int|string|null",
+            null,
+            false
+        ],
+        [
+            "null-specifications.php",
+            94,
+            "phpstan.dumpType",
+            "Dumped type: string",
+            null,
+            false
+        ],
+        [
+            "null-specifications.php",
+            96,
+            "phpstan.dumpType",
+            "Dumped type: string",
+            null,
+            false
+        ],
+        [
+            "null-specifications.php",
+            104,
+            "phpstan.dumpType",
+            "Dumped type: string",
+            null,
+            false
+        ],
+        [
+            "null-specifications.php",
+            104,
+            "variable.undefined",
+            "Variable $observed might not be defined.",
+            null,
+            true
+        ],
+        [
+            "null-specifications.php",
+            105,
+            "variable.undefined",
+            "Variable $observed might not be defined.",
+            null,
+            true
+        ],
+        [
+            "null-specifications.php",
+            114,
+            "phpstan.dumpType",
+            "Dumped type: string",
+            null,
+            false
+        ],
+        [
+            "null-specifications.php",
+            120,
+            "phpstan.dumpType",
+            "Dumped type: string",
+            null,
+            false
+        ],
+        [
+            "null-specifications.php",
+            126,
+            "phpstan.dumpType",
+            "Dumped type: int|string",
+            null,
+            false
+        ]
+    ],
+    "loop-off": [
+        [
+            "null-specifications.php",
+            15,
+            "phpstan.dumpType",
+            "Dumped type: string",
+            null,
+            false
+        ],
+        [
+            "null-specifications.php",
+            22,
+            "phpstan.dumpType",
+            "Dumped type: int|string|null",
+            null,
+            false
+        ],
+        [
+            "null-specifications.php",
+            29,
+            "phpstan.dumpType",
+            "Dumped type: int|string",
+            null,
+            false
+        ],
+        [
+            "null-specifications.php",
+            30,
+            "phpstan.dumpType",
+            "Dumped type: string|null",
+            null,
+            false
+        ],
+        [
+            "null-specifications.php",
+            37,
+            "phpstan.dumpType",
+            "Dumped type: int|string|null",
+            null,
+            false
+        ],
+        [
+            "null-specifications.php",
+            38,
+            "phpstan.dumpType",
+            "Dumped type: int|string|null",
+            null,
+            false
+        ],
+        [
+            "null-specifications.php",
+            45,
+            "phpstan.dumpType",
+            "Dumped type: int|string|null",
+            null,
+            false
+        ],
+        [
+            "null-specifications.php",
+            52,
+            "phpstan.dumpType",
+            "Dumped type: int|string",
+            null,
+            false
+        ],
+        [
+            "null-specifications.php",
+            59,
+            "phpstan.dumpType",
+            "Dumped type: int|string|null",
+            null,
+            false
+        ],
+        [
+            "null-specifications.php",
+            66,
+            "phpstan.dumpType",
+            "Dumped type: int|string",
+            null,
+            false
+        ],
+        [
+            "null-specifications.php",
+            67,
+            "phpstan.dumpType",
+            "Dumped type: bool",
+            null,
+            false
+        ],
+        [
+            "null-specifications.php",
+            73,
+            "phpstan.dumpType",
+            "Dumped type: bool",
+            null,
+            false
+        ],
+        [
+            "null-specifications.php",
+            80,
+            "phpstan.dumpType",
+            "Dumped type: int|string|null",
+            null,
+            false
+        ],
+        [
+            "null-specifications.php",
+            87,
+            "phpstan.dumpType",
+            "Dumped type: int|string|null",
+            null,
+            false
+        ],
+        [
+            "null-specifications.php",
+            94,
+            "phpstan.dumpType",
+            "Dumped type: string",
+            null,
+            false
+        ],
+        [
+            "null-specifications.php",
+            96,
+            "phpstan.dumpType",
+            "Dumped type: string",
+            null,
+            false
+        ],
+        [
+            "null-specifications.php",
+            104,
+            "phpstan.dumpType",
+            "Dumped type: string",
+            null,
+            false
+        ],
+        [
+            "null-specifications.php",
+            104,
+            "variable.undefined",
+            "Variable $observed might not be defined.",
+            null,
+            true
+        ],
+        [
+            "null-specifications.php",
+            105,
+            "variable.undefined",
+            "Variable $observed might not be defined.",
+            null,
+            true
+        ],
+        [
+            "null-specifications.php",
+            114,
+            "phpstan.dumpType",
+            "Dumped type: string",
+            null,
+            false
+        ],
+        [
+            "null-specifications.php",
+            120,
+            "phpstan.dumpType",
+            "Dumped type: string",
+            null,
+            false
+        ],
+        [
+            "null-specifications.php",
+            126,
+            "phpstan.dumpType",
+            "Dumped type: int|string",
+            null,
+            false
+        ]
+    ]
+}

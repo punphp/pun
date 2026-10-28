@@ -241,7 +241,7 @@ where
     if !artifacts.get_expression_type(&binary.rhs).is_some_and(TUnion::is_never) {
         continuing_scopes.push(rhs_scope);
     }
-    block_context.merge_coalesce_scope_types(&continuing_scopes, context.codebase);
+    block_context.merge_variable_scope_types(&continuing_scopes, context.codebase);
 
     // Check if clauses guarantee non-null result from OR assertion
     // If we have assert($x !== null || $y !== null), then $x ?? $y cannot be null

@@ -521,11 +521,7 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for If<'arena> {
             block_context.definitely_uninitialized_property_ids = property_ids;
         }
 
-        if conditional::boolean_scopes(self.condition, artifacts).is_some() {
-            block_context.merge_variable_scope_types(&if_scope.variable_branches, context.codebase);
-        } else {
-            block_context.merge_variable_scopes(&if_scope.variable_branches, context.codebase);
-        }
+        block_context.merge_variable_scope_types(&if_scope.variable_branches, context.codebase);
         block_context.apply_variable_conditions(context.codebase);
         block_context.native_locals = crate::native::join(&if_scope.native_branches, context.codebase);
         Ok(())

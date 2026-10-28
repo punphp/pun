@@ -40,6 +40,8 @@ use mago_word::WordSet;
 use mago_word::concat_word;
 
 use crate::artifacts::AnalysisArtifacts;
+use crate::artifacts::BooleanExpressionScope;
+use crate::artifacts::BooleanExpressionScopes;
 use crate::artifacts::VariableThrowKind;
 use crate::code::IssueCode;
 use crate::context::Context;
@@ -58,7 +60,6 @@ use crate::invocation::arguments::is_argument_referenceable;
 use crate::invocation::arguments::is_array_multisort;
 use crate::invocation::resolver::resolve_invocation_type;
 use crate::plugin::provider::assertion::InvocationAssertions;
-use crate::reconciler;
 use crate::reconciler::assertion_reconciler::intersect_union_with_union;
 use crate::utils::expression::get_block_expression_id;
 use crate::utils::expression::get_non_nullsafe_expression_id;
@@ -250,7 +251,7 @@ where
         artifacts.if_false_assertions.entry(range).or_default().entry(variable).or_default().extend(assertions);
     }
 
-    apply_assertion_to_call_context(
+    record_null_context_assertions(
         context,
         block_context,
         artifacts,
@@ -296,10 +297,10 @@ where
     }
 }
 
-fn apply_assertion_to_call_context<'ctx, 'arena, A>(
+fn record_null_context_assertions<'ctx, 'arena, A>(
     context: &mut Context<'ctx, 'arena, A>,
     block_context: &mut BlockContext<'ctx>,
-    artifacts: &AnalysisArtifacts,
+    artifacts: &mut AnalysisArtifacts,
     invocation: &Invocation<'ctx, '_, 'arena>,
     this_variable: Option<&[u8]>,
     assertions: &BTreeMap<Word, Conjunction<Assertion>>,
@@ -308,9 +309,16 @@ fn apply_assertion_to_call_context<'ctx, 'arena, A>(
 ) where
     A: Arena,
 {
+    if assertions.is_empty() {
+        return;
+    }
+    // ExpressionResult carries specifications separately from the walked scope.
+    // In particular, a call on the left of && does not narrow its skip edge.
+    let mut specification_context = block_context.clone();
+    specification_context.clauses.clear();
     let type_assertions = resolve_invocation_assertion(
         context,
-        block_context,
+        &mut specification_context,
         artifacts,
         invocation,
         this_variable,
@@ -320,32 +328,48 @@ fn apply_assertion_to_call_context<'ctx, 'arena, A>(
         true,
     );
 
-    if type_assertions.is_empty() {
-        return;
+    let range = (invocation.span.start.offset, invocation.span.end.offset);
+    // AssertFunctionTypeSpecifyingExtension asks its argument for truthy specifications
+    // in every context. Declared unconditional @assert tags, unlike this extension,
+    // contribute only in null context.
+    if invocation.target.get_function_like_metadata().is_some_and(|metadata| {
+        metadata.flags.is_built_in() && metadata.name.as_bytes().eq_ignore_ascii_case(b"assert")
+    }) {
+        crate::reconciler::reconcile_keyed_types(
+            context,
+            &type_assertions,
+            AssertionMap::default(),
+            &mut specification_context,
+            &mut WordSet::default(),
+            &type_assertions.keys().copied().collect(),
+            &invocation.span,
+            false,
+            false,
+        );
+        let scope = |block: &BlockContext<'_>| BooleanExpressionScope {
+            locals: block.locals.clone(),
+            variable_state: block.variable_state.clone(),
+            variables_possibly_in_scope: block.variables_possibly_in_scope.clone(),
+        };
+        let narrowed = scope(&specification_context);
+        artifacts.boolean_expression_scopes.insert(range, BooleanExpressionScopes {
+            post: scope(block_context),
+            truthy: narrowed.clone(),
+            falsey: narrowed,
+        });
     }
-
-    block_context
-        .stable_method_calls
-        .extend(type_assertions.keys().filter(|variable| variable.as_bytes().ends_with(b"()")).copied());
-
-    let referenced_variable_ids: WordSet = type_assertions.keys().copied().collect();
-    let mut changed_variable_ids: WordSet = WordSet::default();
-    let mut active_type_assertions = AssertionMap::default();
-    for (variable, type_assertion) in &type_assertions {
-        active_type_assertions.insert(*variable, (1..type_assertion.len()).collect());
+    let clauses = artifacts.null_context_clauses.entry(range).or_default();
+    clauses.extend(specification_context.clauses.iter().map(|clause| (**clause).clone()));
+    for (variable, assertions) in type_assertions {
+        for alternatives in assertions {
+            let mut possibilities = AssertionMap::default();
+            possibilities.insert(
+                variable,
+                alternatives.into_iter().map(|assertion| (assertion.to_hash(), assertion)).collect(),
+            );
+            clauses.push(Clause::new(possibilities, invocation.span, invocation.span, None, None, None));
+        }
     }
-
-    reconciler::reconcile_keyed_types(
-        context,
-        &type_assertions,
-        active_type_assertions,
-        block_context,
-        &mut changed_variable_ids,
-        &referenced_variable_ids,
-        &invocation.span,
-        true,
-        false,
-    );
 }
 
 fn update_by_reference_argument_types<'ctx, 'arena, A>(
@@ -1572,7 +1596,7 @@ where
         artifacts.if_false_assertions.entry(range).or_default().entry(variable).or_default().extend(assertion_set);
     }
 
-    apply_assertion_to_call_context(
+    record_null_context_assertions(
         context,
         block_context,
         artifacts,

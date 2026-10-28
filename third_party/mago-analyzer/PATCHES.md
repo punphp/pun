@@ -2551,3 +2551,38 @@ iterators, and object-bound templates. Existing incoming-isset and strict-mixed 
 unchanged. This prerequisite does not enable the shared array-shape join rollout, change loop
 widening, or claim complete parity for concrete template-array intersections or null-context
 assertion specifications.
+
+### Shared continuing scopes and expression-statement specifications
+
+Real continuing edges use the bounded shape-preserving union and offset-holder intersection that
+previously applied only to coalescing. Foreach's pollution-off result remains a final-value and
+entry-certainty projection. Loop widening, provisional inheritance, and coalesce result types
+remain separate from the shared join.
+
+Invocation assertions record walked null-context specifications instead of changing a skipped
+operand's scope. Expression statements compose those specifications with the existing algebra
+and reconciler. This follows PHPStan 2.3.1's `ExpressionHandler`, `BooleanNarrowingHelper`, and
+`ExpressionResult` contracts. The builtin `assert` extension retains its truthy-argument
+specifications in both boolean branches. Host assertion providers use the same deferred boundary.
+
+The public `scope_joins` target retains 40 foreach-entry records and all original 123 asymmetric
+join records. Fresh PHPStan captures extend the join matrix to 131 records and add 86 null-context
+records. The latter cover independent and common offsets, conjunction and disjunction, assignment,
+overwrite, negation, XOR, builtin assertions, and plugin-provider controls. A public Analyzer test
+supplies the provider controls through a real host assertion provider, without duplicate PHPDoc
+assertions, and compares the three observed values with the same PHPStan capture.
+
+The shared PHPStan `reduce_arrays` prerequisite preserves non-plain empty intersections and
+templates separately, matching `TypeCombinator::reduceArrays` at lines 1552–1560. Plain empty
+shapes still participate in merging. Its existing template-array oracle capture retains all
+104 earlier records and adds 24 input-order and strategy controls. These cover list and empty
+templates, plain array bounds, impossible non-empty bounds, and optional and empty partners.
+Before the correction, 14 controls fail and four public join records lose the list-template arm.
+After the correction, both the standalone public-type discriminator and all strict records pass.
+No foreach or converter workaround replaces the shared combiner correction.
+
+All 121 tests in the 16 selected neighboring targets pass, including block, loop, foreach,
+incoming-isset, strict-mixed, variable, failed-offset, coalesce, native, and try controls. All four
+scope tests and all 257 captured records pass, as do all 79 PHPStan-crate tests. Fresh exact-source
+instrumentation covers 169/169 changed analyser lines and 7/7 shared PHPStan lines without
+exclusions. Cargo, Rayon, and the test harness each use one job, with incremental compilation disabled.
