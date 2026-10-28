@@ -484,9 +484,9 @@ fn unfiltered<A: Arena>(
     context: &Context<'_, '_, A>,
     artifacts: &AnalysisArtifacts,
 ) -> Result<Option<TUnion>, AnalysisError> {
-    let Some(result) = context.observations.stored.get(&span) else {
-        return Ok(None);
-    };
+    // Only evaluated expressions or a selector following its completed receiver
+    // reach this function. Both positions retain their result before evaluation.
+    let result = context.observations.stored.get(&span).expect("an evaluated observation retains its position");
     if state_matches(
         context,
         result,

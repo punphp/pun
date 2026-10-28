@@ -9,6 +9,7 @@ use mago_codex::ttype::{
     atomic::{
         TAtomic,
         array::{TArray, key::ArrayKey},
+        callable::TCallable,
         object::TObject,
         scalar::{TScalar, int::TInteger, string::TStringLiteral},
     },
@@ -93,6 +94,11 @@ fn describe(t: &TUnion) -> String {
                 format!("'{}'", s)
             }
             TAtomic::Object(TObject::Named(o)) => o.get_name().to_string(),
+            TAtomic::Callable(TCallable::Signature(c))
+                if c.is_closure && c.parameters.is_empty() =>
+            {
+                format!("Closure(): {}", describe(c.return_type.as_ref().unwrap()))
+            }
             TAtomic::Array(TArray::List(a)) => format!(
                 "array{{{}}}",
                 a.known_elements
@@ -131,13 +137,22 @@ fn analyze(
     observe: bool,
     registry: &PluginRegistry,
 ) -> (File, AnalysisArtifacts, AnalysisResult) {
+    analyze_with_settings(code, oracle, observe, registry, Settings::default())
+}
+
+fn analyze_with_settings(
+    code: &'static [u8],
+    oracle: &str,
+    observe: bool,
+    registry: &PluginRegistry,
+    mut settings: Settings,
+) -> (File, AnalysisArtifacts, AnalysisResult) {
     let expected: Value = serde_json::from_str(oracle).unwrap();
     let arena = LocalArena::new();
     let file = File::ephemeral(Cow::Borrowed(b"observations.php"), Cow::Borrowed(code));
     let program = parse_file(&arena, &file);
     assert!(!program.has_errors());
     let names = NameResolver::new(&arena).resolve(program);
-    let mut settings = Settings::default();
     for (call, data) in expected["calls"]
         .as_object()
         .unwrap()
@@ -740,4 +755,185 @@ fn resolved_closure_repricing_keeps_raw_gathers_and_declarations_isolated() {
     assert_eq!(baseline.expression_types, observed.expression_types);
     assert_eq!(baseline_result.issues, observed_result.issues);
     check(&file, &observed, ORACLE);
+}
+
+#[test]
+fn variadic_unpack_and_unknown_or_unset_dependencies_keep_their_positions() {
+    const CODE: &[u8] = include_bytes!("fixtures/call-scope-observations/boundaries.php");
+    const ORACLE: &str = include_str!("fixtures/call-scope-observations/boundaries-expected.json");
+    let (file, artifacts, _) = analyze(
+        CODE,
+        ORACLE,
+        true,
+        &PluginRegistry::with_library_providers(),
+    );
+    check(&file, &artifacts, ORACLE);
+}
+
+#[test]
+fn exhausted_formula_budget_keeps_independent_observations_and_isolation() {
+    const CODE: &[u8] = include_bytes!("fixtures/call-scope-observations/budget.php");
+    const ORACLE: &str = include_str!("fixtures/call-scope-observations/budget-expected.json");
+    let run = |observe, events: &Events| {
+        analyze_with_settings(
+            CODE,
+            ORACLE,
+            observe,
+            &providers(events),
+            Settings {
+                formula_size_threshold: 0,
+                ..Settings::default()
+            },
+        )
+    };
+    let baseline_events = Events::default();
+    let (_, baseline, baseline_result) = run(false, &baseline_events);
+    let observed_events = Events::default();
+    let (file, observed, observed_result) = run(true, &observed_events);
+    assert_eq!(
+        *baseline_events.0.lock().unwrap(),
+        *observed_events.0.lock().unwrap()
+    );
+    assert_eq!(baseline.expression_types, observed.expression_types);
+    assert_eq!(baseline_result.issues, observed_result.issues);
+    check(&file, &observed, ORACLE);
+}
+
+struct SuppliedReceiver;
+impl ExpressionHook for SuppliedReceiver {
+    fn before_expression(
+        &self,
+        expression: &Expression<'_>,
+        _: &mut HookContext<'_, '_>,
+    ) -> HookResult<ExpressionHookResult> {
+        if matches!(expression, Expression::Call(Call::Function(call))
+            if matches!(call.function, Expression::Identifier(id) if id.value() == b"boundaryReceiver"))
+        {
+            return Ok(ExpressionHookResult::SkipWithType(
+                mago_codex::ttype::get_named_object(mago_word::word("BoundarySink"), None),
+            ));
+        }
+        Ok(ExpressionHookResult::Continue)
+    }
+}
+
+#[test]
+fn semantic_receiver_short_circuit_retains_selector_scope_without_new_events() {
+    const CODE: &[u8] = include_bytes!("fixtures/call-scope-observations/boundaries.php");
+    const ORACLE: &str = include_str!("fixtures/call-scope-observations/boundaries-expected.json");
+    let run = |observe, events: &Events| {
+        let mut registry = providers(events);
+        registry.register_expression_hook(SuppliedReceiver);
+        analyze(CODE, ORACLE, observe, &registry)
+    };
+    let baseline_events = Events::default();
+    let (_, baseline, baseline_result) = run(false, &baseline_events);
+    let observed_events = Events::default();
+    let (file, observed, observed_result) = run(true, &observed_events);
+    assert_eq!(
+        *baseline_events.0.lock().unwrap(),
+        *observed_events.0.lock().unwrap()
+    );
+    assert_eq!(baseline.expression_types, observed.expression_types);
+    assert_eq!(baseline_result.issues, observed_result.issues);
+    check(&file, &observed, ORACLE);
+}
+
+#[test]
+fn recovered_missing_selector_has_no_named_answers_or_extra_events() {
+    const CODE: &[u8] = include_bytes!("fixtures/call-scope-observations/recovered-call.php");
+    let oracle: Value = serde_json::from_str(include_str!(
+        "fixtures/call-scope-observations/recovered-call-expected.json"
+    ))
+    .unwrap();
+    let mut runs = Vec::new();
+    for observe in [false, true] {
+        let arena = LocalArena::new();
+        let file = File::ephemeral(Cow::Borrowed(b"recovery.php"), Cow::Borrowed(CODE));
+        let program = parse_file(&arena, &file);
+        assert_eq!(
+            program.has_errors(),
+            !oracle["errors"].as_array().unwrap().is_empty()
+        );
+        let names = NameResolver::new(&arena).resolve(program);
+        let mut settings = Settings::default();
+        if observe {
+            let text = b"$sink->()";
+            let start = CODE.windows(text.len()).position(|s| s == text).unwrap() as u32;
+            settings.call_scope_observations.push(CallScopeRequest {
+                call: Span::new(
+                    file.id,
+                    Position::new(start),
+                    Position::new(start + text.len() as u32),
+                ),
+                expressions: vec![Span::new(
+                    file.id,
+                    Position::new(start),
+                    Position::new(start + 5),
+                )],
+            });
+        }
+        let mut codebase = scan_program(&arena, &file, program, &names, settings.version);
+        let mut references = SymbolReferences::new();
+        populate_codebase(
+            &mut codebase,
+            &mut references,
+            Default::default(),
+            Default::default(),
+        );
+        let mut result = AnalysisResult::new(references);
+        let events = Events::default();
+        let registry = providers(&events);
+        let artifacts = Analyzer::new(&arena, &file, &names, &codebase, &registry, settings)
+            .analyze_with_artifacts(program, &mut result)
+            .unwrap();
+        assert_eq!(
+            artifacts.call_scope_observations.len(),
+            oracle["calls"].as_array().unwrap().len()
+        );
+        runs.push((
+            events.0.lock().unwrap().clone(),
+            artifacts.expression_types,
+            result.issues,
+        ));
+    }
+    assert_eq!(runs[0], runs[1]);
+}
+
+struct UntypedUnpack;
+impl ExpressionHook for UntypedUnpack {
+    fn before_expression(
+        &self,
+        expression: &Expression<'_>,
+        _: &mut HookContext<'_, '_>,
+    ) -> HookResult<ExpressionHookResult> {
+        Ok(
+            if matches!(expression, Expression::Call(Call::Function(call))
+            if matches!(call.function, Expression::Identifier(id) if id.value() == b"boundarySkipped"))
+            {
+                ExpressionHookResult::Skip
+            } else {
+                ExpressionHookResult::Continue
+            },
+        )
+    }
+}
+
+#[test]
+fn nonvariadic_unpack_is_evaluated_once_even_when_a_semantic_hook_has_no_type() {
+    const CODE: &[u8] = include_bytes!("fixtures/call-scope-observations/boundaries.php");
+    const ORACLE: &str = include_str!("fixtures/call-scope-observations/boundaries-expected.json");
+    let oracle: Value = serde_json::from_str(ORACLE).unwrap();
+    let events = Events::default();
+    let mut registry = providers(&events);
+    registry.register_expression_hook(UntypedUnpack);
+    let (_, _, _) = analyze(CODE, ORACLE, false, &registry);
+    let text = b"boundarySkipped()";
+    let start = CODE.windows(text.len()).rposition(|s| s == text).unwrap() as u32;
+    assert_eq!(
+        events.0.lock().unwrap()[&("expression-before", start, start + text.len() as u32)],
+        oracle["function_events"][start.to_string()]
+            .as_u64()
+            .unwrap() as usize,
+    );
 }

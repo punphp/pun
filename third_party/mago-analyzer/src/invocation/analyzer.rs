@@ -1180,21 +1180,8 @@ where
                             continue;
                         };
 
-                        if artifacts.get_expression_type(argument_expression).is_none() {
-                            analyze_and_store_argument_type(
-                                context,
-                                block_context,
-                                artifacts,
-                                &invocation.target,
-                                argument_expression,
-                                usize::MAX,
-                                &mut analyzed_argument_types,
-                                false,
-                                None,
-                                None,
-                            )?;
-                        }
-
+                        // Nonvariadic unpacks were evaluated before template inference.
+                        // A semantic hook's missing type is not permission to replay it.
                         let argument_value_type =
                             artifacts.get_expression_type(argument_expression).cloned().unwrap_or_else(get_mixed);
 

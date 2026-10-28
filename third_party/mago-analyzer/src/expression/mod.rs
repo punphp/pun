@@ -77,6 +77,34 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Expression<'arena> {
             return Ok(());
         }
         crate::observations::before(self, context, block_context);
+        let result = self.analyze_inner(context, block_context, artifacts);
+        if result.is_ok() {
+            // Semantic hooks can finish an expression without the normal after hooks.
+            // Its retained result and the following selector position still exist.
+            crate::observations::after(self, context, block_context, artifacts);
+        }
+        result
+    }
+}
+
+// The CST is owned by mago-syntax. Keep the successful-completion wrapper above
+// separate from the native walk, including semantic hooks' early returns.
+trait ExpressionAnalysis<'ast, 'arena> {
+    fn analyze_inner<'ctx, A: Arena>(
+        &'ast self,
+        context: &mut Context<'ctx, 'arena, A>,
+        block_context: &mut BlockContext<'ctx>,
+        artifacts: &mut AnalysisArtifacts,
+    ) -> Result<(), AnalysisError>;
+}
+
+impl<'ast, 'arena> ExpressionAnalysis<'ast, 'arena> for Expression<'arena> {
+    fn analyze_inner<'ctx, A: Arena>(
+        &'ast self,
+        context: &mut Context<'ctx, 'arena, A>,
+        block_context: &mut BlockContext<'ctx>,
+        artifacts: &mut AnalysisArtifacts,
+    ) -> Result<(), AnalysisError> {
         crate::native::before_expression(self, block_context);
         let span = self.span();
         artifacts.remove_native_expression_type(&(span.start.offset, span.end.offset));
@@ -299,7 +327,6 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Expression<'arena> {
             }
         }
 
-        crate::observations::after(self, context, block_context, artifacts);
         artifacts.record_static_local_types(block_context, context.codebase, context.settings.combiner_options());
 
         Ok(())

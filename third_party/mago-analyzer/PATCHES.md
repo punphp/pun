@@ -2736,3 +2736,12 @@ and resolved argument contexts. `closure-matcher.php` captures the extension/raw
 compatibility guards separately through PHPStan's public matcher.
 This facility does not change Pun's rule consumers or activate any named-argument mapping.
 Conditional holders, shape correlation and live receiver invalidation are independent prerequisites.
+
+Retained expression completion also runs after successful semantic-hook short circuits.
+Public after-expression hooks keep their existing dispatch. A variable selector therefore
+retains its position after a provider supplies the receiver type, without another event.
+Unfiltered reads require a retained evaluated position instead of silently losing an answer.
+Nonvariadic unpack expressions are evaluated before template inference. A provider that
+leaves no type uses the existing mixed fallback, not a second evaluation during validation.
+Public controls cover these boundaries, generic variadic unpacks, absent and unknown
+dependencies, formula-budget exhaustion, and recovered calls with a missing selector.

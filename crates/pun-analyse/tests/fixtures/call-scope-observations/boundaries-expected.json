@@ -1,0 +1,249 @@
+{
+    "calls": {
+        "483": {
+            "line": 19,
+            "expression": "$sink->$name(boundaryVariadic(...$values))",
+            "names": [
+                {
+                    "name": "bar",
+                    "filtered": true,
+                    "types": [
+                        {
+                            "start": 483,
+                            "end": 488,
+                            "expression": "$sink",
+                            "type": "BoundarySink"
+                        },
+                        {
+                            "start": 496,
+                            "end": 524,
+                            "expression": "boundaryVariadic(...$values)",
+                            "type": "int"
+                        },
+                        {
+                            "start": 516,
+                            "end": 523,
+                            "expression": "$values",
+                            "type": "array{'value'}"
+                        }
+                    ]
+                },
+                {
+                    "name": "foo",
+                    "filtered": true,
+                    "types": [
+                        {
+                            "start": 483,
+                            "end": 488,
+                            "expression": "$sink",
+                            "type": "BoundarySink"
+                        },
+                        {
+                            "start": 496,
+                            "end": 524,
+                            "expression": "boundaryVariadic(...$values)",
+                            "type": "int"
+                        },
+                        {
+                            "start": 516,
+                            "end": 523,
+                            "expression": "$values",
+                            "type": "array{1}"
+                        }
+                    ]
+                }
+            ]
+        },
+        "558": {
+            "line": 21,
+            "expression": "$sink->foo((function (): int {\n        unset($value);\n        [$value];\n        return 7;\n    })())",
+            "names": [
+                {
+                    "name": "foo",
+                    "filtered": false,
+                    "types": [
+                        {
+                            "start": 558,
+                            "end": 563,
+                            "expression": "$sink",
+                            "type": "BoundarySink"
+                        },
+                        {
+                            "start": 569,
+                            "end": 656,
+                            "expression": "(function (): int {\n        unset($value);\n        [$value];\n        return 7;\n    })()",
+                            "type": "7"
+                        },
+                        {
+                            "start": 570,
+                            "end": 653,
+                            "expression": "function (): int {\n        unset($value);\n        [$value];\n        return 7;\n    }",
+                            "type": "Closure(): 7"
+                        },
+                        {
+                            "start": 603,
+                            "end": 609,
+                            "expression": "$value",
+                            "type": "7"
+                        },
+                        {
+                            "start": 620,
+                            "end": 628,
+                            "expression": "[$value]",
+                            "type": "array{7}"
+                        },
+                        {
+                            "start": 621,
+                            "end": 627,
+                            "expression": "$value",
+                            "type": "7"
+                        },
+                        {
+                            "start": 645,
+                            "end": 646,
+                            "expression": "7",
+                            "type": "7"
+                        }
+                    ]
+                }
+            ]
+        },
+        "674": {
+            "line": 26,
+            "expression": "boundaryReceiver()->$name([7])",
+            "names": [
+                {
+                    "name": "bar",
+                    "filtered": true,
+                    "types": [
+                        {
+                            "start": 674,
+                            "end": 692,
+                            "expression": "boundaryReceiver()",
+                            "type": "BoundarySink"
+                        },
+                        {
+                            "start": 700,
+                            "end": 703,
+                            "expression": "[7]",
+                            "type": "array{7}"
+                        },
+                        {
+                            "start": 701,
+                            "end": 702,
+                            "expression": "7",
+                            "type": "7"
+                        }
+                    ]
+                },
+                {
+                    "name": "foo",
+                    "filtered": true,
+                    "types": [
+                        {
+                            "start": 674,
+                            "end": 692,
+                            "expression": "boundaryReceiver()",
+                            "type": "BoundarySink"
+                        },
+                        {
+                            "start": 700,
+                            "end": 703,
+                            "expression": "[7]",
+                            "type": "array{7}"
+                        },
+                        {
+                            "start": 701,
+                            "end": 702,
+                            "expression": "7",
+                            "type": "7"
+                        }
+                    ]
+                }
+            ]
+        },
+        "762": {
+            "line": 30,
+            "expression": "$sink->foo([$ambient])",
+            "names": [
+                {
+                    "name": "foo",
+                    "filtered": false,
+                    "types": [
+                        {
+                            "start": 762,
+                            "end": 767,
+                            "expression": "$sink",
+                            "type": "BoundarySink"
+                        },
+                        {
+                            "start": 773,
+                            "end": 783,
+                            "expression": "[$ambient]",
+                            "type": "array{mixed}"
+                        },
+                        {
+                            "start": 774,
+                            "end": 782,
+                            "expression": "$ambient",
+                            "type": "mixed"
+                        }
+                    ]
+                }
+            ]
+        },
+        "797": {
+            "line": 31,
+            "expression": "$sink->$name([$ambient])",
+            "names": [
+                {
+                    "name": "foo",
+                    "filtered": true,
+                    "types": [
+                        {
+                            "start": 797,
+                            "end": 802,
+                            "expression": "$sink",
+                            "type": "BoundarySink"
+                        },
+                        {
+                            "start": 810,
+                            "end": 820,
+                            "expression": "[$ambient]",
+                            "type": "array{mixed}"
+                        },
+                        {
+                            "start": 811,
+                            "end": 819,
+                            "expression": "$ambient",
+                            "type": "mixed"
+                        }
+                    ]
+                }
+            ]
+        }
+    },
+    "errors": [
+        [
+            22,
+            "unset.variable",
+            "Call to function unset() contains undefined variable $value.",
+            null,
+            true
+        ],
+        [
+            23,
+            "variable.undefined",
+            "Undefined variable: $value",
+            null,
+            true
+        ]
+    ],
+    "function_events": {
+        "496": 1,
+        "569": 1,
+        "674": 1,
+        "925": 1,
+        "943": 1
+    }
+}

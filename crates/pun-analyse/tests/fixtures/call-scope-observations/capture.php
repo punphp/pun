@@ -7,6 +7,7 @@ mkdir($root);
 $file = __DIR__ . '/' . ($argv[2] ?? 'matrix.php');
 $dependencies = in_array('--dependencies', $argv, true);
 $reflections = in_array('--reflections', $argv, true);
+$functionEvents = in_array('--function-events', $argv, true) ? [] : null;
 try {
     $config = "parameters:\n    phpVersion: 80500\n    checkThisOnly: false\n    checkFunctionArgumentTypes: true\n";
     if (($argv[2] ?? '') === 'providers.php') {
@@ -24,7 +25,11 @@ try {
     $out = [];
     $result = $container->getByType(PHPStan\Analyser\FileAnalyser::class)->analyseFile(
         $file, [$file => true], new PHPStan\Rules\DirectRegistry([]), new PHPStan\Collectors\Registry([]),
-        static function ($node, $scope) use (&$out, $text, $source, $dependencies, $reflections): void {
+        static function ($node, $scope) use (&$out, &$functionEvents, $text, $source, $dependencies, $reflections): void {
+            if ($functionEvents !== null && $node instanceof PhpParser\Node\Expr\FuncCall) {
+                $position = $node->getStartFilePos();
+                $functionEvents[$position] = ($functionEvents[$position] ?? 0) + 1;
+            }
             if (!$node instanceof PhpParser\Node\Expr\MethodCall) return;
             $last = $node->getEndFilePos() + 1;
             $marker = substr($source, $last, 14);
@@ -66,7 +71,7 @@ try {
             $out[$node->getStartFilePos()] = ['line' => $node->getStartLine(), 'expression' => $text($node), 'names' => $names];
         },
     );
-    if ($result->getErrors() !== []) throw new RuntimeException('Observation capture failed');
+    if ($result->getErrors() !== [] && !in_array('--allow-parse-errors', $argv, true)) throw new RuntimeException('Observation capture failed');
     ksort($out, SORT_NUMERIC);
     $result = $container->getByType(PHPStan\Analyser\Analyser::class)->analyse([$file], debug: true);
     if ($result->getInternalErrors() !== []) throw new RuntimeException('PHPStan reported an internal error');
@@ -74,7 +79,12 @@ try {
         $error->getLine(), $error->getIdentifier(), $error->getMessage(), $error->getTip(), $error->canBeIgnored(),
     ], $result->getUnorderedErrors());
     sort($errors);
-    echo json_encode(['calls' => $out, 'errors' => $errors], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR), "\n";
+    $capture = ['calls' => $out, 'errors' => $errors];
+    if ($functionEvents !== null) {
+        ksort($functionEvents, SORT_NUMERIC);
+        $capture['function_events'] = $functionEvents;
+    }
+    echo json_encode($capture, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR), "\n";
 } finally {
     $items = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($root, FilesystemIterator::SKIP_DOTS), RecursiveIteratorIterator::CHILD_FIRST);
     foreach ($items as $item) {
