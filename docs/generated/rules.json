@@ -15737,7 +15737,7 @@
         "DocblockGetterReturnArrayFromPropertyDocblockVarRector",
         "Rector\\TypeDeclarationDocblocks\\Rector\\ClassMethod\\DocblockGetterReturnArrayFromPropertyDocblockVarRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/types/add-magic-method-return-type",
@@ -15877,7 +15877,7 @@
         "AddParamArrayDocblockBasedOnCallableNativeFuncCallRector",
         "Rector\\TypeDeclaration\\Rector\\ClassMethod\\AddParamArrayDocblockBasedOnCallableNativeFuncCallRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/types/add-param-phpdoc-from-dim-fetch",
@@ -15897,7 +15897,7 @@
         "AddParamArrayDocblockFromDimFetchAccessRector",
         "Rector\\TypeDeclarationDocblocks\\Rector\\ClassMethod\\AddParamArrayDocblockFromDimFetchAccessRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/types/add-param-phpdoc-from-local-calls",
@@ -15917,7 +15917,7 @@
         "ClassMethodArrayDocblockParamFromLocalCallsRector",
         "Rector\\TypeDeclarationDocblocks\\Rector\\Class_\\ClassMethodArrayDocblockParamFromLocalCallsRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/types/add-param-phpdoc-from-reference-assign",
@@ -15937,7 +15937,7 @@
         "AddParamArrayDocblockFromAssignsParamToParamReferenceRector",
         "Rector\\TypeDeclarationDocblocks\\Rector\\ClassMethod\\AddParamArrayDocblockFromAssignsParamToParamReferenceRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/types/add-param-type-array-any-all",
@@ -16417,7 +16417,7 @@
         "AddReturnDocblockForCommonObjectDenominatorRector",
         "Rector\\TypeDeclarationDocblocks\\Rector\\ClassMethod\\AddReturnDocblockForCommonObjectDenominatorRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/types/add-return-phpdoc-dim-assigned-object",
@@ -16437,7 +16437,7 @@
         "AddReturnDocblockForArrayDimAssignedObjectRector",
         "Rector\\TypeDeclarationDocblocks\\Rector\\ClassMethod\\AddReturnDocblockForArrayDimAssignedObjectRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/types/add-return-phpdoc-direct-array",
@@ -16457,7 +16457,7 @@
         "DocblockReturnArrayFromDirectArrayInstanceRector",
         "Rector\\TypeDeclarationDocblocks\\Rector\\ClassMethod\\DocblockReturnArrayFromDirectArrayInstanceRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/types/add-return-phpdoc-json-array",
@@ -16477,7 +16477,7 @@
         "AddReturnDocblockForJsonArrayRector",
         "Rector\\TypeDeclarationDocblocks\\Rector\\ClassMethod\\AddReturnDocblockForJsonArrayRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/types/add-return-phpdoc-scalar-array",
@@ -16497,7 +16497,7 @@
         "AddReturnDocblockForScalarArrayFromAssignsRector",
         "Rector\\TypeDeclaration\\Rector\\ClassMethod\\AddReturnDocblockForScalarArrayFromAssignsRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/types/add-return-type-from-cast",
@@ -16857,7 +16857,7 @@
         "DocblockVarFromParamDocblockInConstructorRector",
         "Rector\\TypeDeclarationDocblocks\\Rector\\Class_\\DocblockVarFromParamDocblockInConstructorRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/types/add-var-phpdoc-from-default",
@@ -16877,7 +16877,7 @@
         "DocblockVarArrayFromPropertyDefaultsRector",
         "Rector\\TypeDeclarationDocblocks\\Rector\\Class_\\DocblockVarArrayFromPropertyDefaultsRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/types/add-var-phpdoc-from-dim-fetch",
@@ -16897,7 +16897,7 @@
         "AddVarArrayDocblockFromDimFetchAssignRector",
         "Rector\\TypeDeclarationDocblocks\\Rector\\Class_\\AddVarArrayDocblockFromDimFetchAssignRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/types/add-var-phpdoc-from-getter",
@@ -16917,7 +16917,7 @@
         "DocblockVarArrayFromGetterReturnRector",
         "Rector\\TypeDeclarationDocblocks\\Rector\\Class_\\DocblockVarArrayFromGetterReturnRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/types/add-void-return-type",
@@ -16997,7 +16997,7 @@
         "NarrowArrayCollectionUnionReturnDocblockRector",
         "Rector\\TypeDeclarationDocblocks\\Rector\\ClassMethod\\NarrowArrayCollectionUnionReturnDocblockRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/types/prefer-identical-same-type",

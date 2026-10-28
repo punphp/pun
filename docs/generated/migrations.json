@@ -6159,7 +6159,7 @@
         "rules": [
           "lint/types/add-param-phpdoc-from-callable-call"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -6169,7 +6169,7 @@
         "rules": [
           "lint/types/add-param-phpdoc-from-reference-assign"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -6187,7 +6187,7 @@
         "rules": [
           "lint/types/add-param-phpdoc-from-dim-fetch"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -6303,7 +6303,7 @@
         "rules": [
           "lint/types/add-return-phpdoc-dim-assigned-object"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -6313,7 +6313,7 @@
         "rules": [
           "lint/types/add-return-phpdoc-common-object"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -6331,7 +6331,7 @@
         "rules": [
           "lint/types/add-return-phpdoc-json-array"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -6341,7 +6341,7 @@
         "rules": [
           "lint/types/add-return-phpdoc-scalar-array"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -6423,7 +6423,7 @@
         "rules": [
           "lint/types/add-var-phpdoc-from-dim-fetch"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -6813,7 +6813,7 @@
         "rules": [
           "lint/types/add-param-phpdoc-from-local-calls"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -7131,7 +7131,7 @@
         "rules": [
           "lint/types/add-getter-return-phpdoc"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -7149,7 +7149,7 @@
         "rules": [
           "lint/types/add-return-phpdoc-direct-array"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -7159,7 +7159,7 @@
         "rules": [
           "lint/types/add-var-phpdoc-from-getter"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -7169,7 +7169,7 @@
         "rules": [
           "lint/types/add-var-phpdoc-from-default"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -7179,7 +7179,7 @@
         "rules": [
           "lint/types/add-var-phpdoc-from-constructor-param"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -7887,7 +7887,7 @@
         "rules": [
           "lint/types/prefer-generic-collection-phpdoc"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
