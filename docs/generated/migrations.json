@@ -6367,7 +6367,7 @@
         "rules": [
           "lint/types/add-return-type-from-parent"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -6377,7 +6377,7 @@
         "rules": [
           "lint/types/add-return-type-from-yield"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -9447,7 +9447,7 @@
         "rules": [
           "lint/types/add-nullable-return-type"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -9527,7 +9527,7 @@
         "rules": [
           "lint/types/add-return-type-from-native-call"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -9557,7 +9557,7 @@
         "rules": [
           "lint/types/add-return-type-from-ternary"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -9567,7 +9567,7 @@
         "rules": [
           "lint/types/add-return-type-from-typed-call"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -9587,7 +9587,7 @@
         "rules": [
           "lint/types/add-return-type-from-symfony-serializer"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -9597,7 +9597,7 @@
         "rules": [
           "lint/types/add-union-return-type"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {

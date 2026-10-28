@@ -21,16 +21,22 @@ mod add_native_scalar_return;
 mod add_never_return;
 mod add_return_type_from_cast;
 mod add_return_type_from_constant;
+mod add_return_type_from_native_call;
 mod add_return_type_from_new;
 mod add_return_type_from_param;
+mod add_return_type_from_parent;
 mod add_return_type_from_property;
+mod add_return_type_from_symfony_serializer;
 mod add_return_type_from_ternary;
+mod add_return_type_from_typed_call;
+mod add_return_type_from_yield;
 mod add_scalar_return;
 mod add_union_return;
 pub(crate) mod declare;
 mod native;
 mod never;
 pub(crate) mod silent_void;
+mod type_factory;
 
 pub use add_array_return::AddArrayReturn;
 pub use add_bool_return::AddBoolReturn;
@@ -46,10 +52,15 @@ pub use add_native_scalar_return::{AddNumericReturn, AddStringReturn};
 pub use add_never_return::AddNeverReturn;
 pub use add_return_type_from_cast::AddReturnTypeFromCast;
 pub use add_return_type_from_constant::AddReturnTypeFromConstant;
+pub use add_return_type_from_native_call::AddReturnTypeFromNativeCall;
 pub use add_return_type_from_new::AddReturnTypeFromNew;
 pub use add_return_type_from_param::AddReturnTypeFromParam;
+pub use add_return_type_from_parent::AddReturnTypeFromParent;
 pub use add_return_type_from_property::AddReturnTypeFromProperty;
+pub use add_return_type_from_symfony_serializer::AddReturnTypeFromSymfonySerializer;
 pub use add_return_type_from_ternary::AddReturnTypeFromTernary;
+pub use add_return_type_from_typed_call::AddReturnTypeFromTypedCall;
+pub use add_return_type_from_yield::AddReturnTypeFromYield;
 pub use add_scalar_return::{AddNumericReturnFromScalar, AddStringReturnFromScalar};
 pub use add_union_return::{AddNullableReturn, AddUnionReturn};
 pub(crate) use never::has_parent_class_method;
@@ -64,14 +75,12 @@ use crate::{Report, Rule};
 use facts::Facts;
 use names::resolve_class_name;
 
-/// The group's ported rules, in a fixed order. `AddReturnTypeFromTernary`, `AddNullableReturn` and `AddUnionReturn` pass Rector's fixtures but
-/// not the corpus yet: Rector's `TypeFactory::uniquateTypes` unwraps constant arrays into one `array<key, item>` per
-/// item and hashes arrays by key and item type, so `[]` against `[$a, $b]`, or two classes, make a union it skips (or
-/// writes) where Pun's grouping by kind does not; they stay out of `all()` until that is ported.
+/// The group's ported rules, in a fixed order.
 pub(crate) fn all() -> Vec<Box<dyn Rule>> {
     // Rector's order (src/Config/Level/TypeDeclarationLevel.php): on one function the first rule that adds a return
-    // type wins.
+    // type wins. `AddReturnTypeDeclarationBasedOnParentClassMethodRector` visits the class, before its methods.
     vec![
+        Box::new(AddReturnTypeFromParent),
         Box::new(AddClosureVoidReturn),
         Box::new(AddFunctionVoidReturn),
         Box::new(AddArrowFunctionReturn),
@@ -82,12 +91,19 @@ pub(crate) fn all() -> Vec<Box<dyn Rule>> {
         Box::new(AddBoolReturn),
         Box::new(AddStringReturn),
         Box::new(AddNumericReturn),
+        Box::new(AddReturnTypeFromTernary),
         Box::new(AddArrayReturn),
         Box::new(AddReturnTypeFromNew),
         Box::new(AddReturnTypeFromCast),
+        Box::new(AddReturnTypeFromSymfonySerializer),
         Box::new(AddMethodVoidReturn),
         Box::new(AddReturnTypeFromProperty),
+        Box::new(AddNullableReturn),
+        Box::new(AddReturnTypeFromYield),
+        Box::new(AddReturnTypeFromNativeCall),
+        Box::new(AddReturnTypeFromTypedCall),
         Box::new(AddMagicMethodTypes),
+        Box::new(AddUnionReturn),
         Box::new(AddClosureNeverReturn),
         Box::new(AddClosureReturn),
         Box::new(AddReturnTypeFromParam),

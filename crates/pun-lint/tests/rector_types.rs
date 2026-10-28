@@ -7,16 +7,17 @@
 
 mod lint_c;
 
-use lint_c::{run_class, run_class_at};
+use lint_c::{run_class, run_class_at, run_class_with};
 use pun_lint::Rule;
 use pun_lint::rules::{
     AddArrayReturn, AddArrowFunctionReturn, AddBoolReturn, AddBoolReturnFromConst,
     AddClosureNeverReturn, AddClosureReturn, AddClosureVoidReturn, AddFluentReturn,
     AddFunctionVoidReturn, AddMagicMethodTypes, AddMethodVoidReturn, AddNeverReturn,
     AddNullableReturn, AddNumericReturn, AddNumericReturnFromScalar, AddReturnTypeFromCast,
-    AddReturnTypeFromConstant, AddReturnTypeFromNew, AddReturnTypeFromParam,
-    AddReturnTypeFromProperty, AddReturnTypeFromTernary, AddStringReturn,
-    AddStringReturnFromScalar, AddUnionReturn,
+    AddReturnTypeFromConstant, AddReturnTypeFromNativeCall, AddReturnTypeFromNew,
+    AddReturnTypeFromParam, AddReturnTypeFromParent, AddReturnTypeFromProperty,
+    AddReturnTypeFromSymfonySerializer, AddReturnTypeFromTernary, AddReturnTypeFromTypedCall,
+    AddReturnTypeFromYield, AddStringReturn, AddStringReturnFromScalar, AddUnionReturn,
 };
 
 fn check(rule: impl Rule + 'static, class: &str) {
@@ -216,6 +217,57 @@ fn return_union_type() {
     ] {
         run_class_at(vec![Box::new(AddUnionReturn)], dir, version);
     }
+}
+
+#[test]
+fn return_type_from_strict_native_call() {
+    run_class_at(
+        vec![Box::new(AddReturnTypeFromNativeCall)],
+        "ReturnTypeFromStrictNativeCallRector",
+        80200,
+    );
+}
+
+#[test]
+fn return_type_from_strict_typed_call() {
+    for (dir, version) in [
+        ("ReturnTypeFromStrictTypedCallRector", 70400),
+        ("ReturnTypeFromStrictTypedCallRectorPhp80", 80000),
+    ] {
+        // rector-src runs these with PHPUnit installed (Fixture/return_in_test_method.php.inc)
+        run_class_with(
+            vec![Box::new(AddReturnTypeFromTypedCall)],
+            dir,
+            version,
+            &["phpunit-stubs"],
+        );
+    }
+}
+
+#[test]
+fn add_return_type_declaration_from_yields() {
+    check(
+        AddReturnTypeFromYield,
+        "AddReturnTypeDeclarationFromYieldsRector",
+    );
+}
+
+#[test]
+fn add_return_type_declaration_based_on_parent_class_method() {
+    run_class_at(
+        vec![Box::new(AddReturnTypeFromParent)],
+        "AddReturnTypeDeclarationBasedOnParentClassMethodRector",
+        80000,
+    );
+}
+
+#[test]
+fn return_type_from_symfony_serializer() {
+    run_class_at(
+        vec![Box::new(AddReturnTypeFromSymfonySerializer)],
+        "ReturnTypeFromSymfonySerializerRector",
+        70000,
+    );
 }
 
 #[test]

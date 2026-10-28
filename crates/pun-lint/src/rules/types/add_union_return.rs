@@ -4,16 +4,12 @@
 //! nullable rule (PHP 7.1) and as anything else from the union rule (PHP 8.0).
 
 use mago_codex::ttype::atomic::TAtomic;
-use mago_codex::ttype::atomic::object::TObject;
-use mago_codex::ttype::atomic::object::named::TNamedObject;
-use mago_syntax::cst::{Expression, Node, NodeKind};
+use mago_syntax::cst::{Node, NodeKind};
 
-use super::add_bool_return::unparenthesized;
-use super::add_return_type_from_new::anonymous_parents;
-use super::declare::{union_declaration, union_order, uniquate};
+use super::declare::union_declaration;
 use super::facts::facts;
-use super::native::native_type;
-use super::silent_void::{Place, has_silent_void};
+use super::silent_void::Place;
+use super::type_factory::{Created, infer_returns};
 use super::{Untyped, add_return_type, class_scope, returns_scoped, untyped};
 use crate::{Context, Report, Rule};
 
@@ -83,7 +79,7 @@ impl Rule for AddUnionReturn {
 }
 
 /// The untyped function or method and the declaration of its inferred return type, when that type is a union
-/// (`ReturnTypeInferer::inferFunctionLike`, constants kept) that `UnionTypeMapper` can write.
+/// (`ReturnTypeInferer::inferFunctionLike`) that `UnionTypeMapper` can write.
 fn union_return<'ast, 'arena>(
     node: Node<'ast, 'arena>,
     ancestors: &[Node<'ast, 'arena>],
@@ -100,51 +96,10 @@ fn union_return<'ast, 'arena>(
         ancestors,
         scope: scope.as_ref(),
     };
-    let returns = returns_scoped(f.body);
-    if returns.is_empty() {
+    let Created::Union(types) = infer_returns(&place, f.body, &returns_scoped(f.body)) else {
         return None;
-    }
-    // `NewTypeResolver`: `new class extends A {}` with one parent is that parent (`ObjectWithoutClassTypeMapper`)
-    let mut parents: Vec<Option<TAtomic>> = Vec::new();
-    for r in &returns {
-        parents.push(match r.value.map(unparenthesized) {
-            Some(Expression::AnonymousClass(class)) => {
-                match anonymous_parents(ancestors, class).as_slice() {
-                    [parent] => {
-                        let class = facts.codebase.get_class_like(parent.as_bytes())?;
-                        Some(TAtomic::Object(TObject::Named(TNamedObject::new(
-                            class.name,
-                        ))))
-                    }
-                    _ => None,
-                }
-            }
-            _ => None,
-        });
-    }
-    let mut types: Vec<&TAtomic> = Vec::new();
-    let mut has_void = false;
-    for (r, parent) in returns.iter().zip(&parents) {
-        match (r.value, parent) {
-            (None, _) => has_void = true,
-            (Some(_), Some(parent)) => types.push(parent),
-            (Some(value), None) => {
-                types.extend(union_order(native_type(&facts, value)?.types.as_ref()))
-            }
-        }
-    }
-    if has_void || has_silent_void(&place, f.body.statements.iter()) {
-        // `void` has no place in a union
-        return None;
-    }
-    let types = uniquate(types);
-    if types.len() < 2
-        || types
-            .iter()
-            .any(|t| matches!(t, TAtomic::Mixed(_) | TAtomic::Never))
-    {
-        return None;
-    }
+    };
+    let types: Vec<&TAtomic> = types.iter().collect();
     let r#type = union_declaration(&types, &facts.codebase, ctx.php_version)?;
     Some((f, r#type))
 }

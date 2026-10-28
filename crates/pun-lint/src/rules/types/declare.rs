@@ -4,7 +4,6 @@
 //! written `?T`.
 
 use mago_codex::metadata::CodebaseMetadata;
-use mago_codex::ttype::TType;
 use mago_codex::ttype::atomic::TAtomic;
 use mago_codex::ttype::atomic::object::TObject;
 use mago_codex::ttype::atomic::reference::TReference;
@@ -62,6 +61,10 @@ pub(crate) fn return_declaration<'a>(
     }
     let union = names.len() > 1 || nullable;
     for name in &mut names {
+        // `UnionTypeMapper` maps each member as `TypeKind::UNION`, where `StaticTypeMapper` writes `self`
+        if union && name == "static" {
+            *name = "self".to_string();
+        }
         let standalone = php_version >= NULL_FALSE_TRUE_STANDALONE_TYPE;
         if (name == "true" && !standalone) || (name == "false" && !standalone && !union) {
             *name = "bool".to_string();
@@ -247,56 +250,9 @@ pub(crate) fn union_order(types: &[TAtomic]) -> Vec<&TAtomic> {
     ordered
 }
 
-/// `TypeFactory::uniquateTypes` with constants kept: the members without repeats, a constant dropped when its
-/// general type is there, `true` with `false` made `bool`.
-pub(crate) fn uniquate<'a>(types: impl IntoIterator<Item = &'a TAtomic>) -> Vec<&'a TAtomic> {
-    let types: Vec<&TAtomic> = types.into_iter().collect();
-    let has_true = types
-        .iter()
-        .any(|t| matches!(t, TAtomic::Scalar(TScalar::Bool(b)) if b.is_true()));
-    let has_false = types
-        .iter()
-        .any(|t| matches!(t, TAtomic::Scalar(TScalar::Bool(b)) if b.is_false()));
-    let general = |t: &TAtomic| -> Option<&'static str> {
-        Some(match t {
-            TAtomic::Scalar(TScalar::Integer(i)) if i.is_literal() => "int",
-            TAtomic::Scalar(TScalar::Float(f)) if f.is_literal() => "float",
-            TAtomic::Scalar(TScalar::String(s)) if s.is_known_literal() => "string",
-            TAtomic::Scalar(TScalar::Bool(b)) if !b.is_general() => "bool",
-            _ => return None,
-        })
-    };
-    let key = |t: &TAtomic| -> String {
-        match t {
-            TAtomic::Scalar(TScalar::Bool(b)) if has_true && has_false && !b.is_general() => {
-                "bool".to_string()
-            }
-            TAtomic::Scalar(TScalar::Integer(i)) if i.is_unspecified() => "int".to_string(),
-            TAtomic::Scalar(TScalar::String(s)) if !s.is_known_literal() => "string".to_string(),
-            _ => t.get_id().to_string(),
-        }
-    };
-    let keys: Vec<String> = types.iter().map(|t| key(t)).collect();
-    let mut out: Vec<&TAtomic> = Vec::new();
-    let mut seen: Vec<&str> = Vec::new();
-    for (t, k) in types.iter().zip(&keys) {
-        if seen.contains(&k.as_str()) {
-            continue;
-        }
-        if k != "bool" && general(t).is_some_and(|g| keys.iter().any(|k| k == g)) {
-            continue;
-        }
-        seen.push(k);
-        // `TypeFactory`: `true` and `false` together are `bool`
-        out.push(if k == "bool" { &BOOL } else { t });
-    }
-    out
-}
-
-static BOOL: TAtomic = TAtomic::Scalar(TScalar::bool());
-
 /// `UnionTypeMapper::mapToPhpParserNode` for a return type: each member mapped in order (`null` and `false` allowed),
-/// repeats dropped; one left is that type, `null` with one other is `?T` (PHP 7.1), more are a union (PHP 8.0).
+/// repeats dropped; one left is that type, `null` with one other is `?T` (PHP 7.1), more are a union (PHP 8.0). A
+/// non-empty array or a list is an intersection in PHPStan, which `IntersectionTypeMapper` does not write.
 pub(crate) fn union_declaration(
     types: &[&TAtomic],
     codebase: &CodebaseMetadata,
@@ -313,7 +269,14 @@ pub(crate) fn union_declaration(
                 "true".to_string()
             }
             TAtomic::Void | TAtomic::Mixed(_) | TAtomic::Null => return None,
+            _ if super::type_factory::is_accessory_array(t) => return None,
             _ => atomic_declaration(t, codebase, php_version)?,
+        };
+        // `StaticTypeMapper` writes `self` for a member of a union (`TypeKind::UNION`)
+        let name = if name == "static" {
+            "self".to_string()
+        } else {
+            name
         };
         // `IntersectionTypeMapper`: an intersection inside a union needs DNF types
         if name.contains('&') && php_version < DNF_TYPES {
@@ -324,8 +287,9 @@ pub(crate) fn union_declaration(
         }
     }
     match names.as_slice() {
-        // one name is no union: Rector's inferer generalizes `1|2` to `int` and `E::A|E::B` to `E` and skips them
-        [] | [_] => None,
+        [] => None,
+        // the members wrote the same (`array` for two arrays): `matchPhpParserUnionType` gives that one
+        [one] => Some(one.clone()),
         [a, b] if !a.contains('&') && !b.contains('&') && (a == "null" || b == "null") => {
             let other = if a == "null" { b } else { a };
             if other == "false" && php_version < NULL_FALSE_TRUE_STANDALONE_TYPE {

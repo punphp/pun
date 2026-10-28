@@ -990,3 +990,15 @@ pub(crate) fn is_builtin_class(class: &[u8]) -> bool {
 pub(crate) fn is_builtin_function(function: &[u8]) -> bool {
     PRELUDE.0.get_function(function).is_some()
 }
+
+/// Whether `class::method` (a built-in class, the method's name in any case) declares only a tentative return type,
+/// which PHPStan's native reflection reads as an implicit `mixed`.
+pub(crate) fn is_tentative(class: &[u8], method: &[u8]) -> bool {
+    let key = [
+        class.to_ascii_lowercase(),
+        b"::".to_vec(),
+        method.to_ascii_lowercase(),
+    ]
+    .concat();
+    TENTATIVE.contains(key.as_slice())
+}

@@ -15817,7 +15817,7 @@
         "ReturnNullableType",
         "ReturnNullableTypeRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/types/add-numeric-return-type",
@@ -16577,7 +16577,7 @@
         "ReturnTypeFromStrictNativeCall",
         "ReturnTypeFromStrictNativeCallRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/types/add-return-type-from-new",
@@ -16657,7 +16657,7 @@
         "AddReturnTypeDeclarationBasedOnParentClassMethodRector",
         "Rector\\TypeDeclaration\\Rector\\ClassMethod\\AddReturnTypeDeclarationBasedOnParentClassMethodRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/types/add-return-type-from-property",
@@ -16697,7 +16697,7 @@
         "ReturnTypeFromSymfonySerializer",
         "ReturnTypeFromSymfonySerializerRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/types/add-return-type-from-ternary",
@@ -16717,7 +16717,7 @@
         "ReturnTypeFromStrictTernary",
         "ReturnTypeFromStrictTernaryRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/types/add-return-type-from-try-catch",
@@ -16757,7 +16757,7 @@
         "ReturnTypeFromStrictTypedCall",
         "ReturnTypeFromStrictTypedCallRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/types/add-return-type-from-yield",
@@ -16777,7 +16777,7 @@
         "AddReturnTypeDeclarationFromYieldsRector",
         "Rector\\TypeDeclaration\\Rector\\FunctionLike\\AddReturnTypeDeclarationFromYieldsRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/types/add-string-return-type",
@@ -16837,7 +16837,7 @@
         "ReturnUnionType",
         "ReturnUnionTypeRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/types/add-var-phpdoc-from-constructor-param",
