@@ -5,7 +5,7 @@
 //! php-parser's format-preserving printer inserts a new `returnType` node.
 
 pub mod facts;
-mod names;
+pub(crate) mod names;
 
 mod add_array_return;
 mod add_bool_return;

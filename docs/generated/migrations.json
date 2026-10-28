@@ -7287,7 +7287,7 @@
         "rules": [
           "lint/complexity/require-consistent-return"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -7339,7 +7339,7 @@
         "rules": [
           "lint/complexity/no-phpdoc-class-case-mismatch"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {

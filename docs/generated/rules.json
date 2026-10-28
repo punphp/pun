@@ -4226,7 +4226,7 @@
         "FixClassCaseSensitivityVarDocblockRector",
         "Rector\\CodeQuality\\Rector\\Property\\FixClassCaseSensitivityVarDocblockRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/complexity/no-redundant-isset",
@@ -4897,7 +4897,7 @@
         "ExplicitReturnNullRector",
         "Rector\\CodeQuality\\Rector\\ClassMethod\\ExplicitReturnNullRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/complexity/require-is-a-allow-string",

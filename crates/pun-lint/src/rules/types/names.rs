@@ -24,15 +24,45 @@ fn scope<'a>(ancestors: &[Node<'a, 'a>]) -> (Option<&'a [u8]>, Vec<&'a Statement
 /// The fully qualified class name (without the leading `\`) that `name`, written at the node `ancestors` lead to,
 /// stands for.
 pub(crate) fn resolve_class_name(ancestors: &[Node<'_, '_>], name: &Identifier<'_>) -> String {
-    let written = String::from_utf8_lossy(name.value()).into_owned();
+    resolve_written(ancestors, &String::from_utf8_lossy(name.value())).0
+}
+
+/// [`resolve_class_name`] for a name `written` as text (a docblock's), and whether a `use` import resolved it.
+pub(crate) fn resolve_written(ancestors: &[Node<'_, '_>], written: &str) -> (String, bool) {
     if let Some(fq) = written.strip_prefix('\\') {
-        return fq.to_string();
+        return (fq.to_string(), false);
     }
-    let (namespace, statements) = scope(ancestors);
+    let (namespace, imports) = class_imports(ancestors);
     let (first, rest) = match written.split_once('\\') {
         Some((first, rest)) => (first, Some(rest)),
-        None => (written.as_str(), None),
+        None => (written, None),
     };
+    for (full, alias) in &imports {
+        let alias = alias
+            .as_deref()
+            .unwrap_or_else(|| full.rsplit('\\').next().unwrap_or(full));
+        if alias.eq_ignore_ascii_case(first) {
+            let resolved = match rest {
+                Some(rest) => format!("{full}\\{rest}"),
+                None => full.clone(),
+            };
+            return (resolved, true);
+        }
+    }
+    let resolved = match namespace {
+        Some(ns) => format!("{ns}\\{written}"),
+        None => written.to_string(),
+    };
+    (resolved, false)
+}
+
+/// The namespace of the place `ancestors` lead to and the class imports of its scope, in order: each imported name,
+/// fully qualified without the leading `\`, with its alias.
+pub(crate) fn class_imports(
+    ancestors: &[Node<'_, '_>],
+) -> (Option<String>, Vec<(String, Option<String>)>) {
+    let (namespace, statements) = scope(ancestors);
+    let mut imports = Vec::new();
     for statement in statements {
         let Statement::Use(r#use) = statement else {
             continue;
@@ -53,21 +83,13 @@ pub(crate) fn resolve_class_name(ancestors: &[Node<'_, '_>], name: &Identifier<'
                 Some(prefix) => format!("{}\\{name}", String::from_utf8_lossy(prefix)),
                 None => name.into_owned(),
             };
-            let full = full.trim_start_matches('\\');
-            let alias = match &item.alias {
-                Some(alias) => String::from_utf8_lossy(alias.identifier.value).into_owned(),
-                None => full.rsplit('\\').next().unwrap_or(full).to_string(),
-            };
-            if alias.eq_ignore_ascii_case(first) {
-                return match rest {
-                    Some(rest) => format!("{full}\\{rest}"),
-                    None => full.to_string(),
-                };
-            }
+            let alias = (item.alias.as_ref())
+                .map(|a| String::from_utf8_lossy(a.identifier.value).into_owned());
+            imports.push((full.trim_start_matches('\\').to_string(), alias));
         }
     }
-    match namespace {
-        Some(ns) => format!("{}\\{written}", String::from_utf8_lossy(ns)),
-        None => written,
-    }
+    (
+        namespace.map(|n| String::from_utf8_lossy(n).into_owned()),
+        imports,
+    )
 }

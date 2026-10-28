@@ -121,6 +121,7 @@ mod no_protected_property_in_final;
 mod no_redundant_condition;
 mod no_redundant_default_argument;
 mod no_redundant_final_const;
+mod no_phpdoc_class_case_mismatch;
 mod no_redundant_foreach_guard;
 mod no_redundant_null_check;
 mod no_redundant_promoted_assign;
@@ -227,6 +228,7 @@ mod require_attribute_argument_order;
 mod require_is_a_allow_string;
 mod require_named_argument_order;
 mod require_preg_quote_delimiter;
+mod require_consistent_return;
 mod require_previous_exception;
 mod require_statement_padding;
 mod require_strict_function_call;
@@ -355,6 +357,7 @@ pub use no_protected_property_in_final::NoProtectedPropertyInFinal;
 pub use no_redundant_condition::NoRedundantCondition;
 pub use no_redundant_default_argument::NoRedundantDefaultArgument;
 pub use no_redundant_final_const::NoRedundantFinalConst;
+pub use no_phpdoc_class_case_mismatch::NoPhpdocClassCaseMismatch;
 pub use no_redundant_foreach_guard::NoRedundantForeachGuard;
 pub use no_redundant_null_check::NoRedundantNullCheck;
 pub use no_redundant_promoted_assign::NoRedundantPromotedAssign;
@@ -454,6 +457,7 @@ pub use require_attribute_argument_order::RequireAttributeArgumentOrder;
 pub use require_is_a_allow_string::RequireIsAAllowString;
 pub use require_named_argument_order::RequireNamedArgumentOrder;
 pub use require_preg_quote_delimiter::RequirePregQuoteDelimiter;
+pub use require_consistent_return::RequireConsistentReturn;
 pub use require_previous_exception::RequirePreviousException;
 pub use require_statement_padding::RequireStatementPadding;
 pub use require_strict_function_call::RequireStrictFunctionCall;
@@ -518,6 +522,8 @@ pub const PROJECT_RULES: &[&str] = &[
     "lint/dead-code/no-always-true-if",
     "lint/dead-code/no-always-true-instanceof-assert",
     "lint/complexity/no-constant-via-variable",
+    "lint/complexity/require-consistent-return",
+    "lint/complexity/no-phpdoc-class-case-mismatch",
 ];
 
 /// Every rule, in a fixed order.
@@ -764,5 +770,7 @@ fn ungrouped() -> Vec<Box<dyn Rule>> {
         Box::new(NoAlwaysTrueIf),
         Box::new(NoAlwaysTrueInstanceofAssert),
         Box::new(NoConstantViaVariable),
+        Box::new(RequireConsistentReturn),
+        Box::new(NoPhpdocClassCaseMismatch),
     ]
 }

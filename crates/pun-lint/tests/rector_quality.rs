@@ -31,6 +31,10 @@
 //! RemoveAlwaysTrueIfConditionRector/Pun/self_comparison: PHPStan types `$n === $n` as `true`; Mago's analysis gives
 //! `bool`, so Pun keeps the `if`.
 //!
+//! ExplicitReturnNullRector/Pun/generic_return_doc: Rector's type mapper prints a `@return` union it rewrites anew
+//! (`array<int, string>|void` becomes `string[]|null`); Pun prints keywords and class names as Rector does and leaves
+//! a function with any other kind of type in that union alone.
+//!
 //! RemoveDeadInstanceOfRector/Source/vendor/{Node,If_}.php are not upstream: they declare the nikic/php-parser 5
 //! types a fixture names, which Rector's run loads from its vendor directory.
 //!
@@ -44,9 +48,9 @@ use lint_c::run_class;
 use mago_syntax::cst::Node;
 use pun_lint::rules::{
     NoAlwaysFalseCondition, NoAlwaysTrueIf, NoAlwaysTrueInstanceof, NoAlwaysTrueInstanceofAssert,
-    NoConstantCondition, NoConstantViaVariable, NoRedundantForeachGuard, NoTypedPropertyInstanceof,
-    NoUnusedTestMethodParam, NoUselessCast, NoUselessFilterVar, NoUselessMath,
-    PreferInstanceMethod, RequirePreviousException,
+    NoConstantCondition, NoConstantViaVariable, NoPhpdocClassCaseMismatch, NoRedundantForeachGuard,
+    NoTypedPropertyInstanceof, NoUnusedTestMethodParam, NoUselessCast, NoUselessFilterVar,
+    NoUselessMath, PreferInstanceMethod, RequireConsistentReturn, RequirePreviousException,
 };
 use pun_lint::{Linter, Rule};
 
@@ -142,6 +146,19 @@ fn variable_const_fetch_to_class_const_fetch() {
     );
 }
 
+#[test]
+fn explicit_return_null() {
+    check(RequireConsistentReturn, "ExplicitReturnNullRector");
+}
+
+#[test]
+fn fix_class_case_sensitivity_var_docblock() {
+    check(
+        NoPhpdocClassCaseMismatch,
+        "FixClassCaseSensitivityVarDocblockRector",
+    );
+}
+
 /// A rule called on every node, not only the kinds of its `targets()`.
 struct Everywhere(Box<dyn Rule>);
 
@@ -210,6 +227,14 @@ fn rules_ignore_nodes_outside_their_targets() {
         (
             || Box::new(NoConstantViaVariable),
             "VariableConstFetchToClassConstFetchRector",
+        ),
+        (
+            || Box::new(RequireConsistentReturn),
+            "ExplicitReturnNullRector",
+        ),
+        (
+            || Box::new(NoPhpdocClassCaseMismatch),
+            "FixClassCaseSensitivityVarDocblockRector",
         ),
         (
             || Box::new(NoAlwaysTrueInstanceofAssert),
