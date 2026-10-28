@@ -259,8 +259,8 @@ pub(super) fn call(
     args: &ArgumentList,
     nullsafe: bool,
 ) {
-    // FunctionCallParametersCheck returns before emitting when both argument checks are disabled (levels 0–4).
-    if c.level < 5 {
+    // FunctionCallParametersCheck returns before emitting only when both independent argument checks are off.
+    if (!c.check_argument_types && !c.check_arguments_passed_by_reference) || !c.checks_expression(object) {
         return;
     }
     let names = match selector {

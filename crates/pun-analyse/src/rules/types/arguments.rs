@@ -1,4 +1,4 @@
-//! FunctionCallParametersCheck's checks of level 5 (`checkFunctionArgumentTypes`, `checkArgumentsPassedByReference`):
+//! FunctionCallParametersCheck's independent `checkFunctionArgumentTypes` / `checkArgumentsPassedByReference`:
 //! each argument's type against its parameter's (`argument.type`), by-reference parameters given no variable
 //! (`argument.byRef`) and unpacked non-iterables (`argument.unpackNonIterable`).
 
@@ -328,7 +328,7 @@ pub(in super::super) fn arguments(
     ));
     let allowed_type = super::super::params::allowed_constants_type(c, acceptor);
     for (i, (e, p)) in args.iter().zip(parameters).enumerate() {
-        if e.unpack {
+        if c.check_argument_types && e.unpack && (!c.check_this_only || e.is_this) {
             let ty = c.type_at(e.value);
             let found = c.find_type_to_check_of(ty, &|t| t.is_iterable().yes());
             if let Some(t) = found
@@ -346,7 +346,7 @@ pub(in super::super) fn arguments(
         let by_ref = acceptor.by_ref[p];
         let value = e.ty.clone().or_else(|| c.type_at(e.value)).map(|t| if e.unpack { t.iterable_value_type() } else { t });
         // a built-in's by-reference parameter that creates the variable takes anything
-        if (by_ref != ByRef::CreatesNewVariable || !acceptor.builtin)
+        if c.check_argument_types && (by_ref != ByRef::CreatesNewVariable || !acceptor.builtin)
             && let (Some(param), Some(value)) = (parameter_type(&resolved, p), value)
         {
             let strict = strict && (!acceptor.builtin || !param.is_callable().yes());
@@ -367,7 +367,7 @@ pub(in super::super) fn arguments(
             }
         }
         let parameter = || describe(acceptor, p, e.name.is_none().then_some(Ok(i)));
-        if let Some(reasons) = resolved[p].as_ref().and_then(unresolvable)
+        if c.check_argument_types && let Some(reasons) = resolved[p].as_ref().and_then(unresolvable)
             && inference.declared[p].as_ref().is_some_and(|t| unresolvable(t).is_none())
         {
             // RuleErrorBuilder::addTip()/build(), as rendered by PHPStan's plain JSON formatter.
@@ -381,16 +381,18 @@ pub(in super::super) fn arguments(
                 "{} of {of} contains unresolvable type.", parameter()
             ), tip.as_deref());
         }
-        if acceptor.closure_this[p] && matches!(e.kind, ArgKind::StaticClosure) {
+        if c.check_argument_types && acceptor.closure_this[p] && matches!(e.kind, ArgKind::StaticClosure) {
             c.report(e.span, "argument.staticClosure", format!(
                 "{} of {of} expects bindable closure, static closure given.", parameter()
             ), None);
         }
-        super::super::params::check_constants(
-            c, acceptor, e, p, allowed_type.as_ref(), resolved[p].as_ref(),
-            &describe(acceptor, p, Some(e.name.map_or(Ok(i), Err))), call,
-        );
-        if by_ref == ByRef::No {
+        if c.check_argument_types {
+            super::super::params::check_constants(
+                c, acceptor, e, p, allowed_type.as_ref(), resolved[p].as_ref(),
+                &describe(acceptor, p, Some(e.name.map_or(Ok(i), Err))), call,
+            );
+        }
+        if !c.check_arguments_passed_by_reference || by_ref == ByRef::No {
             continue;
         }
         let fine = match e.kind {

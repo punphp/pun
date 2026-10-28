@@ -1,4 +1,4 @@
-//! CallMethodsRule's MethodCallCheck once `checkThisOnly` is off (level 2): a call on any expression, through
+//! CallMethodsRule's MethodCallCheck once `checkThisOnly` is off: a call on any expression, through
 //! RuleLevelHelper's `findTypeToCheck()` (unions from level 7, nullables from level 8, explicit `mixed` from 9).
 //! Calls on `$this` stay with calls.rs.
 
@@ -275,7 +275,7 @@ pub(in super::super) fn check_method<'arena>(
     arguments: Option<(Span, &ArgumentList<'arena>)>,
     nullsafe: bool,
 ) {
-    if c.level < 2 || arguments.is_some() && is_this(object) {
+    if !c.checks_expression(object) || arguments.is_some() && is_this(object) {
         return;
     }
     let ClassLikeMemberSelector::Identifier(name) = selector else {
@@ -382,7 +382,7 @@ pub(in super::super) fn check_static<'arena>(
     selector: &ClassLikeMemberSelector<'arena>,
     call: Option<&StaticMethodCall<'arena>>,
 ) {
-    if c.level < 2 && !(call.is_none() && is_this(class))
+    if !c.checks_expression(class)
         || matches!(
             class,
             Expression::Identifier(_) | Expression::Self_(_) | Expression::Static(_) | Expression::Parent(_)

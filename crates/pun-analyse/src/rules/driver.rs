@@ -43,6 +43,9 @@ pub(crate) struct Checks {
     check_function_name_case: bool,
     /// [`Project::level`] and [`Project::check_generic_iterable_classes`].
     pub(super) level: u8,
+    check_argument_types: bool,
+    check_arguments_passed_by_reference: bool,
+    check_this_only: bool,
     generic_iterable_classes: bool,
     /// [`Project::new_static_in_abstract_class_static_method`].
     new_static_in_abstract_class_static_method: bool,
@@ -115,6 +118,9 @@ impl Checks {
             check_imported_class_name_case: project.check_imported_class_name_case,
             check_function_name_case: project.check_function_name_case,
             level: project.level,
+            check_argument_types: project.check_function_argument_types.unwrap_or(project.level >= 5),
+            check_arguments_passed_by_reference: project.check_arguments_passed_by_reference.unwrap_or(project.level >= 5),
+            check_this_only: project.check_this_only.unwrap_or(project.level < 2),
             generic_iterable_classes: project.check_generic_iterable_classes,
             new_static_in_abstract_class_static_method: project.new_static_in_abstract_class_static_method,
             php_version: project.php_version,
@@ -190,7 +196,8 @@ fn checker<'a, 'arena>(
     typed.extend(super::scope::typed_method_receivers(program));
     typed.extend(super::function_callable::typed_expressions(program, project.level));
     typed.extend(super::method_callable::typed_expressions(program, project.level));
-    typed.extend(super::types::typed_expressions(program, &file.contents, project.level));
+    typed.extend(super::types::typed_expressions(program, &file.contents, project.level,
+        project.check_argument_types || project.check_arguments_passed_by_reference, project.check_this_only));
     typed.extend(super::strict::typed_expressions(project, codebase, program));
     typed.extend(super::operators::typed_expressions(project.strict, program));
     let (include_typed, include_state) = super::include_file::prepare(arena, file, program, names, codebase, php_version, project.pollute_scope_with_loop_initial_assignments, project.pollute_scope_with_always_iterable_foreach, project.pollute_scope_with_block, &project.include_file);
@@ -256,6 +263,9 @@ fn checker<'a, 'arena>(
         check_imported_class_name_case: project.check_imported_class_name_case,
         check_function_name_case: project.check_function_name_case,
         level: project.level,
+        check_argument_types: project.check_argument_types,
+        check_arguments_passed_by_reference: project.check_arguments_passed_by_reference,
+        check_this_only: project.check_this_only,
         generic_iterable_classes: project.generic_iterable_classes,
         new_static_in_abstract_class_static_method: project.new_static_in_abstract_class_static_method,
         larastan: project.larastan.as_ref(),

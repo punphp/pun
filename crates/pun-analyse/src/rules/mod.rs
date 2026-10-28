@@ -868,6 +868,10 @@ pub struct Checker<'a, 'arena> {
     check_function_name_case: bool,
     /// [`driver::Checks`]'s level and `checkGenericIterableClasses`.
     level: u8,
+    /// FunctionCallParametersCheck's independent switches and RuleLevelHelper's receiver eligibility.
+    check_argument_types: bool,
+    check_arguments_passed_by_reference: bool,
+    check_this_only: bool,
     generic_iterable_classes: bool,
     /// [`driver::Checks`]'s `featureToggles.newStaticInAbstractClassStaticMethod`.
     new_static_in_abstract_class_static_method: bool,

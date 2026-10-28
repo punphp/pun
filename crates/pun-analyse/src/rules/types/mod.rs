@@ -81,10 +81,12 @@ pub const IDENTIFIERS: &[&[&str]] = &[callables::IDENTIFIERS, regex::IDENTIFIERS
 /// The expressions whose type the statement results read, in the function-likes whose missing return could be
 /// reported: those with a non-void return type whose body, by syntax alone, does not always terminate (types only
 /// ever make a body terminate: a `never` call, a condition always true, a non-empty array iterated).
-pub(super) fn typed_expressions(program: &Program, contents: &[u8], level: u8) -> Vec<Span> {
+pub(super) fn typed_expressions(program: &Program, contents: &[u8], level: u8, check_arguments: bool, check_this_only: bool) -> Vec<Span> {
     let mut w = Wanted {
         contents,
         level,
+        check_arguments,
+        check_this_only,
         spans: Vec::new(),
     };
     w.walk_program(program, &mut ());
@@ -94,6 +96,8 @@ pub(super) fn typed_expressions(program: &Program, contents: &[u8], level: u8) -
 struct Wanted<'c> {
     contents: &'c [u8],
     level: u8,
+    check_arguments: bool,
+    check_this_only: bool,
     spans: Vec<Span>,
 }
 
@@ -169,12 +173,12 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Wanted<'_> {
         }
     }
     fn walk_in_method_call(&mut self, call: &'ast MethodCall<'arena>, _: &mut ()) {
-        if self.level >= 2 || super::bind_scope::has_inline_closure(&call.argument_list) {
+        if !self.check_this_only || super::bind_scope::has_inline_closure(&call.argument_list) {
             receivers::typed(call.object, &mut self.spans);
         }
     }
     fn walk_in_null_safe_method_call(&mut self, call: &'ast NullSafeMethodCall<'arena>, _: &mut ()) {
-        if self.level >= 2 || super::bind_scope::has_inline_closure(&call.argument_list) {
+        if !self.check_this_only || super::bind_scope::has_inline_closure(&call.argument_list) {
             receivers::typed(call.object, &mut self.spans);
         }
     }
@@ -194,12 +198,12 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Wanted<'_> {
         }
     }
     fn walk_in_static_method_call(&mut self, call: &'ast StaticMethodCall<'arena>, _: &mut ()) {
-        if self.level >= 2 || super::bind_scope::has_inline_closure(&call.argument_list) {
+        if !self.check_this_only || super::bind_scope::has_inline_closure(&call.argument_list) {
             receivers::typed_class(call.class, &mut self.spans);
         }
     }
     fn walk_in_argument_list(&mut self, l: &'ast ArgumentList<'arena>, _: &mut ()) {
-        if self.level >= 5 {
+        if self.check_arguments {
             for a in l.arguments.iter() {
                 self.spans.push(a.value().span());
                 match a.value() {
@@ -211,7 +215,7 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Wanted<'_> {
         }
     }
     fn walk_in_partial_argument_list(&mut self, l: &'ast PartialArgumentList<'arena>, _: &mut ()) {
-        if self.level >= 5 {
+        if self.check_arguments {
             for a in l.arguments.iter() {
                 match a {
                     PartialArgument::Positional(p) => self.spans.push(p.value.span()),

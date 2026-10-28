@@ -59,6 +59,12 @@ pub struct Project {
     pub pollute_scope_with_block: bool,
     /// The rule level: `level` (`max` is 10), 0 when unset.
     pub level: u8,
+    /// `checkFunctionArgumentTypes`: `None` follows the level (on from 5), including after callers change it.
+    pub check_function_argument_types: Option<bool>,
+    /// `checkArgumentsPassedByReference`: independently overridable, otherwise on from level 5.
+    pub check_arguments_passed_by_reference: Option<bool>,
+    /// `checkThisOnly`: RuleLevelHelper's expression eligibility, otherwise on below level 2.
+    pub check_this_only: Option<bool>,
     /// `featureToggles.checkGenericIterableClasses` (on with bleedingEdge).
     pub check_generic_iterable_classes: bool,
     /// `featureToggles.internalTag` (on with bleedingEdge): the `@internal` usage rules.
@@ -211,6 +217,10 @@ impl Project {
             })
             .unwrap_or(RUNTIME_PHP_VERSION);
         let flag = |k: &str| params.get_str(k) == Some(&Value::Bool(true));
+        let optional_flag = |k: &str| match params.get_str(k) {
+            Some(Value::Bool(value)) => Some(*value),
+            _ => None,
+        };
         let toggle = |k: &str| {
             params
                 .get_str("featureToggles")
@@ -252,6 +262,9 @@ impl Project {
             pollute_scope_with_always_iterable_foreach: !matches!(params.get_str("polluteScopeWithAlwaysIterableForeach"), Some(Value::Bool(false))),
             pollute_scope_with_block: !matches!(params.get_str("polluteScopeWithBlock"), Some(Value::Bool(false))),
             level,
+            check_function_argument_types: optional_flag("checkFunctionArgumentTypes"),
+            check_arguments_passed_by_reference: optional_flag("checkArgumentsPassedByReference"),
+            check_this_only: optional_flag("checkThisOnly"),
             check_generic_iterable_classes: toggle("checkGenericIterableClasses"),
             internal_tag: toggle("internalTag"),
             new_static_in_abstract_class_static_method: toggle("newStaticInAbstractClassStaticMethod"),
@@ -312,6 +325,9 @@ impl Project {
             pollute_scope_with_always_iterable_foreach: true,
             pollute_scope_with_block: true,
             level: 0,
+            check_function_argument_types: None,
+            check_arguments_passed_by_reference: None,
+            check_this_only: None,
             check_generic_iterable_classes: false,
             internal_tag: false,
             new_static_in_abstract_class_static_method: false,

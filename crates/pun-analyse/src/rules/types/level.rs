@@ -105,13 +105,22 @@ impl<'a, 'arena> Checker<'a, 'arena> {
         Levels::of(self.level)
     }
 
+    /// RuleLevelHelper::isThis(): php-parser discards parentheses before testing expression eligibility.
+    pub(in super::super) fn is_this_expression(e: &Expression) -> bool {
+        matches!(super::flow::unparen(e), Expression::Variable(Variable::Direct(v)) if v.name == b"$this")
+    }
+
+    pub(in super::super) fn checks_expression(&self, e: &Expression) -> bool {
+        !self.check_this_only || Self::is_this_expression(e)
+    }
+
     /// `findTypeToCheck($scope, $var, ...)`: the expression's type as the level checks it, `criteria` saying which
     /// members of a union are fine without `checkUnionTypes`.
     pub(in super::super) fn find_type_to_check(&self, e: &Expression, criteria: &dyn Fn(&Type) -> bool) -> Found {
         let l = self.levels();
-        // (checkThisOnly, levels 0 and 1, is never asked: the rules that call this start at level 2)
         let mut unknown = Vec::new();
-        let ty = self.phpstan_type(e).and_then(|t| self.find_in(l, t, criteria, Some(&mut unknown)));
+        let ty = self.checks_expression(e).then(|| self.phpstan_type(e)).flatten()
+            .and_then(|t| self.find_in(l, t, criteria, Some(&mut unknown)));
         Found { ty, unknown }
     }
 

@@ -373,6 +373,8 @@ pub struct Arg {
     /// The value expression, and what passing it by reference takes.
     pub value: Span,
     pub kind: ArgKind,
+    /// RuleLevelHelper::isThis() before argument normalization loses the expression.
+    pub is_this: bool,
     /// A constant array unpacked: its elements' value expressions.
     pub elements: Vec<Span>,
 }
@@ -584,6 +586,7 @@ impl Counts {
             span,
             value: value.span(),
             kind: kind(value),
+            is_this: Checker::is_this_expression(value),
             elements: Vec::new(),
         });
     }
@@ -609,6 +612,7 @@ impl Counts {
             span,
             value: value.span(),
             kind: kind(value),
+            is_this: Checker::is_this_expression(value),
             elements,
         });
     }
@@ -741,6 +745,7 @@ pub fn check(
             value,
             ty: None,
             kind: &arg.kind,
+            is_this: arg.is_this,
         };
         match &arg.unpack {
             None => arguments.push(entry(arg.name.as_deref(), false, arg.value)),
@@ -818,7 +823,7 @@ pub fn check(
         c.report(at, identifier, void, None);
     }
     let parameters = process_arguments(c, acceptor, &arguments, has_named, at, &call);
-    if c.level >= 5 {
+    if c.check_argument_types || c.check_arguments_passed_by_reference {
         super::types::arguments(c, acceptor, &arguments, &parameters, at.span(), &call);
     }
 }
@@ -980,6 +985,8 @@ pub struct Entry<'a> {
     /// An inferred constant array's element type (there is no separate expression for it).
     pub ty: Option<Type>,
     pub kind: &'a ArgKind,
+    /// Only used for an unexpanded unpack, whose expression is still the original argument value.
+    pub is_this: bool,
 }
 
 /// `processArguments()`: each argument's parameter, by position or by name (`None`: no parameter is checked).

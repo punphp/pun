@@ -57,6 +57,15 @@ impl Analyse {
         let mut p = Array::new();
         let level = self.level();
         p.set(Key::from("level"), Value::Int(i64::from(level)));
+        // Independent upstream parameters: these are preset defaults, not an instruction to raise the level.
+        // Explicit Pun options still need a product mapping; migration rejects those overrides rather than losing them.
+        for (name, value) in [
+            ("checkFunctionArgumentTypes", level >= 5),
+            ("checkArgumentsPassedByReference", level >= 5),
+            ("checkThisOnly", level < 2),
+        ] {
+            p.set(Key::from(name), Value::Bool(value));
+        }
         // Pun is a CLI binary, with Project::new's argc/argv registration; never read php.ini by running PHP.
         p.set(
             Key::from("cliArgumentsVariablesRegistered"),

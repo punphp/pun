@@ -233,6 +233,10 @@ pub fn from_phpstan(root: &Path, config: &Path) -> Result<Phpstan> {
             let entry = table.get(&name);
             let level = entry.is_some_and(|e| e.get("level").is_some());
             let why = match name.as_str() {
+                "checkFunctionArgumentTypes" | "checkArgumentsPassedByReference" => {
+                    "independent argument-check overrides have no pun.toml option yet"
+                }
+                "checkThisOnly" => "independent receiver eligibility has no pun.toml option yet",
                 _ if gates.contains(&name) => continue,
                 _ if entry.is_some() && !level => {
                     out.changed.push((name, value));
