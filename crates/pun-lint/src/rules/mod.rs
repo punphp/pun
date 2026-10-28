@@ -121,6 +121,7 @@ mod no_protected_property_in_final;
 mod no_redundant_condition;
 mod no_redundant_default_argument;
 mod no_redundant_final_const;
+mod no_invalid_var_tag;
 mod no_phpdoc_class_case_mismatch;
 mod no_redundant_foreach_guard;
 mod no_redundant_null_check;
@@ -175,6 +176,7 @@ mod no_void_on_magic_method;
 mod no_void_reference_return;
 mod php_parser;
 mod phpstan_describe;
+mod phpdoc_tag;
 mod prefer_absolute_include;
 mod prefer_array_all;
 mod prefer_array_any;
@@ -201,6 +203,7 @@ mod prefer_func_num_args;
 mod prefer_in_array;
 mod prefer_in_array_over_foreach;
 mod prefer_in_array_over_search;
+mod prefer_inline_array_return;
 mod prefer_instance_method;
 mod prefer_instanceof_stringable;
 mod prefer_min_max;
@@ -359,6 +362,7 @@ pub use no_protected_property_in_final::NoProtectedPropertyInFinal;
 pub use no_redundant_condition::NoRedundantCondition;
 pub use no_redundant_default_argument::NoRedundantDefaultArgument;
 pub use no_redundant_final_const::NoRedundantFinalConst;
+pub use no_invalid_var_tag::NoInvalidVarTag;
 pub use no_phpdoc_class_case_mismatch::NoPhpdocClassCaseMismatch;
 pub use no_redundant_foreach_guard::NoRedundantForeachGuard;
 pub use no_redundant_null_check::NoRedundantNullCheck;
@@ -437,6 +441,7 @@ pub use prefer_func_num_args::PreferFuncNumArgs;
 pub use prefer_in_array::PreferInArray;
 pub use prefer_in_array_over_foreach::PreferInArrayOverForeach;
 pub use prefer_in_array_over_search::PreferInArrayOverSearch;
+pub use prefer_inline_array_return::PreferInlineArrayReturn;
 pub use prefer_instance_method::PreferInstanceMethod;
 pub use prefer_instanceof_stringable::PreferInstanceofStringable;
 pub use prefer_min_max::PreferMinMax;
@@ -530,6 +535,8 @@ pub const PROJECT_RULES: &[&str] = &[
     "lint/complexity/no-phpdoc-class-case-mismatch",
     "lint/complexity/prefer-property-exists",
     "lint/control-flow/prefer-returned-condition",
+    "lint/dead-code/no-invalid-var-tag",
+    "lint/complexity/prefer-inline-array-return",
 ];
 
 /// Every rule, in a fixed order.
@@ -780,5 +787,7 @@ fn ungrouped() -> Vec<Box<dyn Rule>> {
         Box::new(NoPhpdocClassCaseMismatch),
         Box::new(PreferPropertyExists),
         Box::new(PreferReturnedCondition),
+        Box::new(NoInvalidVarTag),
+        Box::new(PreferInlineArrayReturn),
     ]
 }

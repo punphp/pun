@@ -4701,7 +4701,7 @@
         "InlineArrayReturnAssignRector",
         "Rector\\CodeQuality\\Rector\\ClassMethod\\InlineArrayReturnAssignRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/complexity/prefer-instance-method",
@@ -5732,7 +5732,7 @@
         "RemoveNonExistingVarAnnotation",
         "RemoveNonExistingVarAnnotationRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/dead-code/no-mirror-assignment",

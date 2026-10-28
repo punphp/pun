@@ -328,7 +328,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "complexity/prefer-in-array" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Use in_array() instead of repeated `||`/`&&` comparisons, array_search() checks and foreach loops." }
 "complexity/prefer-in-array-over-foreach" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Replace a foreach that returns a boolean on a match with `in_array()`." }
 "complexity/prefer-in-array-over-search" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Simplify `array_search()` compared with `false` to `in_array()`" }
-"complexity/prefer-inline-array-return" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Inline just in time array dim fetch assigns to direct return" }
+"complexity/prefer-inline-array-return" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Inline just in time array dim fetch assigns to direct return" }
 "complexity/prefer-instance-method" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Change static method and local-only calls to non-static" }
 "complexity/prefer-min-max" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Change ternary number compare to `max()` call" }
 "complexity/prefer-named-literal-argument" = { fix = "none", ported = true, origin = "mago", status = "decided", summary = "Name literal arguments (true, false, null, numbers) in calls." }
@@ -380,7 +380,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "dead-code/no-identical-branches" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove if/else if they have same content" }
 "dead-code/no-implode-ternary" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Drop an empty-array ternary around `implode()`" }
 "dead-code/no-invalid-return-tag" = { fix = "safe", sets = ["dead-code"], ported = false, status = "decided", summary = "Remove @return docblock that contradicts the declared native return type" }
-"dead-code/no-invalid-var-tag" = { fix = "safe", sets = ["dead-code"], ported = false, status = "decided", summary = "Removes non-existing @var annotations above the code" }
+"dead-code/no-invalid-var-tag" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Removes non-existing @var annotations above the code" }
 "dead-code/no-mirror-assignment" = { fix = "safe", intent = "correctness", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove `$value = $value` assignments." }
 "dead-code/no-null-default-argument" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove default null argument, where null is already a default param value" }
 "dead-code/no-null-default-named-argument" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove named null argument, where null is already a default param value" }

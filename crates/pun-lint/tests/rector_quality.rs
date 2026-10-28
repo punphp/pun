@@ -42,7 +42,14 @@
 //! RemoveDeadInstanceOfRector/Source/vendor/{Node,If_}.php are not upstream: they declare the nikic/php-parser 5
 //! types a fixture names, which Rector's run loads from its vendor directory.
 //!
-//! RecastingRemovalRector/FixturePhp74 runs at PHP 7.4, below Pun's floor, and is not copied.
+//! InlineArrayReturnAssignRector/Pun/keys_rector_misreads: Rector writes a key whose value its `ValueResolver` misreads
+//! as that misreading: a global or magic constant as its name (`'TOP' => 1`), an enum case or an unknown class
+//! constant as `'Suit::Hearts'`, a heredoc key with the wrong value, and it crashes on a nested key under a scalar
+//! value; Pun leaves those functions alone.
+//!
+//! RecastingRemovalRector/FixturePhp74 runs at PHP 7.4, below Pun's floor, and is not copied. Neither is
+//! InlineArrayReturnAssignRector/Fixture/with_first_class_callable: `new SomeAssignedObject(...)` is not PHP, and
+//! Mago's parser rejects the file.
 
 mod lint_c;
 
@@ -52,10 +59,11 @@ use lint_c::run_class;
 use mago_syntax::cst::Node;
 use pun_lint::rules::{
     NoAlwaysFalseCondition, NoAlwaysTrueIf, NoAlwaysTrueInstanceof, NoAlwaysTrueInstanceofAssert,
-    NoConstantCondition, NoConstantViaVariable, NoPhpdocClassCaseMismatch, NoRedundantForeachGuard,
-    NoTypedPropertyInstanceof, NoUnusedTestMethodParam, NoUselessCast, NoUselessFilterVar,
-    NoUselessMath, PreferInstanceMethod, PreferPropertyExists, PreferReturnedCondition,
-    RequireConsistentReturn, RequirePreviousException,
+    NoConstantCondition, NoConstantViaVariable, NoInvalidVarTag, NoPhpdocClassCaseMismatch,
+    NoRedundantForeachGuard, NoTypedPropertyInstanceof, NoUnusedTestMethodParam, NoUselessCast,
+    NoUselessFilterVar, NoUselessMath, PreferInlineArrayReturn, PreferInstanceMethod,
+    PreferPropertyExists, PreferReturnedCondition, RequireConsistentReturn,
+    RequirePreviousException,
 };
 use pun_lint::{Linter, Rule};
 
@@ -170,6 +178,16 @@ fn simplify_if_return_bool() {
 }
 
 #[test]
+fn remove_non_existing_var_annotation() {
+    check(NoInvalidVarTag, "RemoveNonExistingVarAnnotationRector");
+}
+
+#[test]
+fn inline_array_return_assign() {
+    check(PreferInlineArrayReturn, "InlineArrayReturnAssignRector");
+}
+
+#[test]
 fn fix_class_case_sensitivity_var_docblock() {
     check(
         NoPhpdocClassCaseMismatch,
@@ -261,6 +279,14 @@ fn rules_ignore_nodes_outside_their_targets() {
         (
             || Box::new(PreferReturnedCondition),
             "SimplifyIfReturnBoolRector",
+        ),
+        (
+            || Box::new(NoInvalidVarTag),
+            "RemoveNonExistingVarAnnotationRector",
+        ),
+        (
+            || Box::new(PreferInlineArrayReturn),
+            "InlineArrayReturnAssignRector",
         ),
         (
             || Box::new(NoAlwaysTrueInstanceofAssert),

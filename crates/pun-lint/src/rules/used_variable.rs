@@ -53,7 +53,7 @@ pub(crate) fn used_in(node: Node<'_, '_>, parent: Option<Node<'_, '_>>, name: &[
 
 /// `NodeNameResolver::isStringName($variableName, $usedName)`: an empty name matches nothing, `Object` matches only
 /// itself, anything else matches ignoring ASCII case.
-fn same_name(variable: &[u8], used: &[u8]) -> bool {
+pub(crate) fn same_name(variable: &[u8], used: &[u8]) -> bool {
     match used {
         b"" => false,
         b"Object" => variable == used,

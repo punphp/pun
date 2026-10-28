@@ -7559,7 +7559,7 @@
         "rules": [
           "lint/complexity/prefer-inline-array-return"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -8723,7 +8723,7 @@
         "rules": [
           "lint/dead-code/no-invalid-var-tag"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
