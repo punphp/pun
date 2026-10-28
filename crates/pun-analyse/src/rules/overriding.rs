@@ -205,6 +205,9 @@ enum Found<'a> {
         declaring: &'a ClassLikeMetadata,
         implementing: Class<'a>,
         f: &'a FunctionLikeMetadata,
+        /// The reflected lookup name and adapted visibility are independent of trait storage identity.
+        name: mago_word::Word,
+        visibility: Visibility,
     },
     Builtin {
         declaring: &'static NativeClass,
@@ -287,6 +290,9 @@ impl<'a> Checker<'a, '_> {
                             declaring,
                             implementing,
                             f,
+                            name: mago_word::word(lower),
+                            visibility: self.codebase.get_method_visibility(k.name.as_bytes(), lower.as_bytes())
+                                .unwrap_or(Visibility::Public),
                         })
                     }
                     builtin => self.native_method(builtin, lower),
@@ -378,7 +384,7 @@ impl<'a> Checker<'a, '_> {
 
     fn found_visibility(&self, found: Found<'a>) -> Visibility {
         match found {
-            Found::User { f, .. } => f.method_metadata.as_ref().map_or(Visibility::Public, |m| m.visibility),
+            Found::User { visibility, .. } => visibility,
             Found::Builtin { m, .. } => m.visibility,
         }
     }
@@ -460,7 +466,7 @@ impl<'a> Checker<'a, '_> {
                 ret: self.with_ancestor_args(&m.ret, k),
                 will_change: m.will_change,
             },
-            Found::User { declaring, implementing, f } => {
+            Found::User { declaring, implementing, f, name, visibility } => {
                 let ty = |t: &Type| self.localize(t, declaring, k);
                 let meta = f.method_metadata.as_ref();
                 let final_by_keyword = meta.is_some_and(|m| m.is_final)
@@ -477,11 +483,12 @@ impl<'a> Checker<'a, '_> {
                 let owner = if declaring.kind.is_trait() {
                     match implementing { Class::User(k) => k, Class::Builtin(_) => declaring }
                 } else { declaring };
+                let reflected_name = if name == f.name { f.original_name } else { name };
                 Facts {
                     declaring: declared::original_name(owner),
-                    accepts_named_arguments: super::named_argument::accepts(self, owner, f),
-                    name: String::from_utf8_lossy(f.original_name.as_bytes()).into_owned(),
-                    visibility: meta.map_or(Visibility::Public, |m| m.visibility),
+                    accepts_named_arguments: declared::reflected_accepts_named(self, owner, &name.to_string()),
+                    name: String::from_utf8_lossy(reflected_name.as_bytes()).into_owned(),
+                    visibility,
                     is_static: meta.is_some_and(|m| m.is_static),
                     is_abstract: self.method_abstract(declaring, f),
                     final_by_keyword,
@@ -1087,7 +1094,13 @@ fn purity_override<'a>(c: &Checker<'a, '_>, m: &Method, name: &str, k: &'a Class
         if let Some(f) = c.codebase.get_method(t.name.as_bytes(), lower.as_bytes())
             && f.method_metadata.as_ref().is_some_and(|mm| mm.is_abstract)
         {
-            parents.push(Found::User { declaring: t, implementing: Class::User(t), f });
+            parents.push(Found::User {
+                declaring: t,
+                implementing: Class::User(t),
+                f,
+                name: f.name,
+                visibility: f.method_metadata.as_ref().map_or(Visibility::Public, |m| m.visibility),
+            });
         }
     }
     let class = c.display(k);
