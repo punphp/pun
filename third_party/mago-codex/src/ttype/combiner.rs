@@ -179,6 +179,15 @@ pub fn combine(types: Vec<TAtomic>, codebase: &CodebaseMetadata, options: Combin
         if let TAtomic::Mixed(mixed) = atomic { Some(mixed.is_explicit()) } else { None }
     }).all(|explicit| explicit);
 
+    // A union of truthy operands cannot introduce a falsy value. Keep the legacy
+    // truthy/non-null identity rather than reinterpreting its excluded set through
+    // can-be-callable (which is deliberately permissive for unknown strings).
+    if types.iter().any(|atomic| matches!(atomic, TAtomic::Mixed(mixed) if mixed.is_truthy()))
+        && types.iter().all(TAtomic::is_truthy)
+    {
+        return vec![TAtomic::Mixed(TMixed::truthy().with_is_explicit(is_explicit_mixed))];
+    }
+
     // PHPStan keeps the first unconstrained mixed operand, including ErrorType.
     // Do not make an error marker infectious when ordinary mixed comes first.
     if types.iter().any(|atomic| matches!(atomic, TAtomic::Mixed(mixed) if mixed.is_error() || mixed.get_subtracted_type().is_some()))
