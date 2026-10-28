@@ -2,6 +2,13 @@
 //! (rules/TypeDeclaration/Rector/FunctionLike): the closure passed first to `array_map()` gets, for each untyped
 //! parameter, the item type of the array passed at its position, when that array is an `ArrayType` (not a constant
 //! array, nor a non-empty one, whose item type Rector's type corrector makes `mixed`).
+//!
+//! Not ported: `AccessoryNonEmptyArrayTypeCorrector` makes a non-empty list of accessory strings (`explode()` of a
+//! lowercase string) `array<mixed, string>`, not `mixed`. Known differences on laravel-framework: Rector adds
+//! `string` to the map over Composer's `ClassLoader::getClassMap()` (Renderer/Exception.php) and over an `explode()`
+//! that `str_contains()` guards (Str.php, PHPStan's unsealed constant array); Pun writes `int|string` where PHPStan has
+//! `string` (Application.php) and an intersection with the template bound where PHPStan has the class
+//! (DatabaseEloquentBuilderTest).
 
 use mago_syntax::cst::{Argument, Expression, Node, NodeKind};
 

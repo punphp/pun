@@ -2,6 +2,12 @@
 //! (rules/TypeDeclaration/Rector/ClassMethod): an untyped parameter of a method, function or closure that its body
 //! reads with a key (`$param['key']`) gets the `array` type, unless the body first uses it in a way an array would
 //! not allow, or its type may be a string, a union or an `ArrayAccess` object.
+//!
+//! Known differences on laravel-framework, where a closure's parameter type comes from the call it is passed to and
+//! Mago's inference is not PHPStan's: Rector adds `array` to `tap($array['posts']->toArray($request), fn)`
+//! (ResourceTest), where Mago has no type for the method call on a `mixed` offset; Pun adds it where PHPStan's type is
+//! a union of shapes: `debug_backtrace()`'s frames (HasRelationships), `preg_replace_callback()`'s match groups
+//! (EloquentModelLoadMissingTest) and `CursorPaginator::through()`'s items (CursorPaginatorTest).
 
 use mago_codex::ttype::TType;
 use mago_codex::ttype::atomic::TAtomic;
@@ -375,17 +381,22 @@ fn is_union(t: &TUnion) -> bool {
 /// `TypeFactory::unwrapConstantArrayTypes`: a constant array (an array shape) is one `array<key, item>` per type of
 /// its items, so items of more than one type (literal values counting as their general type) make a union.
 fn constant_array_is_union(array: &TArray) -> bool {
-    let values: Vec<&TUnion> = match array {
+    let items: Vec<&(bool, TUnion)> = match array {
         TArray::Keyed(k) if k.parameters.is_none() => match &k.known_items {
-            Some(items) => items.values().map(|(_, v)| v).collect(),
+            Some(items) => items.values().collect(),
             None => return false,
         },
         TArray::List(l) if l.element_type.is_never() => match &l.known_elements {
-            Some(items) => items.values().map(|(_, v)| v).collect(),
+            Some(items) => items.values().collect(),
             None => return false,
         },
         _ => return false,
     };
+    // `TypeUtils::flattenTypes` splits it into `getAllArrays()`: with every key optional, one of them is empty
+    if !items.is_empty() && items.iter().all(|(optional, _)| *optional) {
+        return true;
+    }
+    let values: Vec<&TUnion> = items.iter().map(|(_, v)| v).collect();
     let mut kinds: Vec<String> = Vec::new();
     for v in values {
         for a in v.types.iter() {

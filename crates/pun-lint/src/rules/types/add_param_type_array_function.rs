@@ -2,6 +2,11 @@
 //! (rules/TypeDeclaration/Rector/FuncCall) with `NativeFuncCallPositions`: in a call of `array_walk()`,
 //! `array_map()`, `usort()` or `array_filter()` with two arguments, a closure or arrow function with one untyped
 //! parameter gets the array's item type.
+//!
+//! Known differences on laravel-framework, where Mago infers an item type PHPStan does not: Pun adds one over a list
+//! that `empty()` has narrowed to non-empty (ScheduleTestCommand), over an array literal of destructured values
+//! (ParsesSqlServerConfigurationUrls) and over `array_slice()` of `explode()` (ExceptionReportingTest), and writes
+//! `int|string|null` where PHPStan keeps the literal keys' order `string|int|null` (Cloud/Queue.php).
 
 use mago_syntax::cst::{Node, NodeKind};
 

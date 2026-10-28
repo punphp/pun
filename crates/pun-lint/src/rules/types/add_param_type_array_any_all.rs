@@ -3,6 +3,10 @@
 //! Rector/FuncCall): the first parameter of the closure or arrow function passed to `array_any()`/`array_all()` gets
 //! the array's item type when it has none; with `array_find()`/`array_find_key()` too, a nullable one (`?T`) is
 //! narrowed to an item type that cannot be `null`.
+//!
+//! Known differences on laravel-framework: Pun adds `?UploadedFile` over `$files` that `is_array()` and a wrap made
+//! an array, where PHPStan's item type is `mixed` (InteractsWithInput), and writes a property docblock's union in
+//! Mago's sorted order, `string|\Closure`, where PHPStan keeps the written `\Closure|string` (Events/Dispatcher.php).
 
 use mago_codex::ttype::atomic::TAtomic;
 use mago_syntax::cst::{Expression, FunctionLikeParameterList, Hint, Node, NodeKind};

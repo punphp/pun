@@ -2,6 +2,11 @@
 //! (rules/TypeDeclaration/Rector/ClassMethod) with `PropertyFetchAnalyzer::isVariableAssignToThisPropertyFetch` and
 //! `ParamTypeAddGuard`: an untyped parameter of a method that the method assigns to properties of its own class
 //! (`$this->name = $name`) gets the union of those properties' native types, unless the method overrides a parent's.
+//!
+//! Known difference on laravel-framework: Rector writes `array|null|bool|int|float|string $value = true` on
+//! `Connection::recordsHaveBeenModified()`, which assigns `$value` to an untyped property inside
+//! `if (! $this->recordsModified)`: PHPStan's type of the property there is its falsy values (`0|0.0|''|'0'|array{}|
+//! false|null`), generalized, where Pun reads the property's missing native type and skips it.
 
 use mago_codex::ttype::atomic::TAtomic;
 use mago_codex::ttype::union::TUnion;

@@ -6,9 +6,13 @@
 use mago_codex::ttype::atomic::TAtomic;
 use mago_codex::ttype::atomic::array::TArray;
 use mago_codex::ttype::atomic::object::TObject;
+use mago_codex::ttype::atomic::object::named::TNamedObject;
 use mago_codex::ttype::atomic::scalar::TScalar;
 use mago_codex::ttype::union::TUnion;
-use mago_syntax::cst::{ArrayElement, ClassLikeMember, Expression, Method, MethodBody, Modifier, Node, NodeKind};
+use mago_syntax::cst::{
+    ArrayElement, ClassLikeMember, Expression, Method, MethodBody, Modifier, Node, NodeKind,
+    UnaryPrefixOperator,
+};
 
 use super::class_scope;
 use super::facts::{Facts, facts};
@@ -153,6 +157,15 @@ fn provider_type(facts: &Facts, provider: &Method<'_>, position: usize) -> Optio
                 Some(ArrayElement::Variadic(e)) => e.value,
                 _ => continue,
             };
+            // PHPStan's `toObject()` of an array is `stdClass` (Mago's cast gives an object shape)
+            if let Expression::UnaryPrefix(cast) = unparenthesize(item)
+                && matches!(cast.operator, UnaryPrefixOperator::ObjectCast(..))
+                && matches!(unparenthesize(cast.operand), Expression::Array(_) | Expression::LegacyArray(_))
+            {
+                let class = facts.codebase.get_class_like(b"stdClass")?;
+                types.push(TUnion::from_vec(vec![TAtomic::Object(TObject::Named(TNamedObject::new(class.name)))]));
+                continue;
+            }
             types.push(type_of(facts, item)?.clone());
         }
     } else {

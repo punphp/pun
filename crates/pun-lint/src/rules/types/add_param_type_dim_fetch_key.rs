@@ -2,6 +2,9 @@
 //! (rules/TypeDeclaration/Rector/ClassMethod) with `ArrayDimFetchFinder::findByDimName` and `ParamTypeAddGuard`: an
 //! untyped parameter of a class's method that the method uses as an array key (`$items[$key]`) gets the key type of
 //! the array, when every such array is a general or constant array.
+//!
+//! Known difference on laravel-framework: Rector writes `mixed $name` on `Optional::__isset()`, from the explicit
+//! `mixed` key that `is_array()` gives the array, where Pun's facts have no explicit `mixed`.
 
 use mago_codex::ttype::atomic::TAtomic;
 use mago_codex::ttype::atomic::array::TArray;
