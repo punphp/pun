@@ -42,6 +42,7 @@ mod add_param_type_array_reduce;
 mod add_param_type_arrow_dim_fetch;
 mod add_param_type_data_provider;
 mod add_param_type_dim_fetch_key;
+mod add_param_type_iterable_method_call;
 mod add_param_type_method_call;
 mod add_param_type_parent_call;
 mod add_param_type_property;
@@ -129,6 +130,7 @@ pub use add_param_type_array_reduce::AddParamTypeArrayReduce;
 pub use add_param_type_arrow_dim_fetch::AddParamTypeArrowDimFetch;
 pub use add_param_type_data_provider::AddParamTypeDataProvider;
 pub use add_param_type_dim_fetch_key::AddParamTypeDimFetchKey;
+pub use add_param_type_iterable_method_call::AddParamTypeIterableMethodCall;
 pub use add_param_type_method_call::AddParamTypeMethodCall;
 pub use add_param_type_parent_call::AddParamTypeParentCall;
 pub use add_param_type_property::AddParamTypeProperty;
@@ -250,6 +252,7 @@ pub(crate) fn all() -> Vec<Box<dyn Rule>> {
         Box::new(AddParamTypeArrayDimFetch),
         Box::new(AddParamTypeDimFetchKey),
         Box::new(AddParamTypeArrayFunction),
+        Box::new(AddParamTypeIterableMethodCall),
         Box::new(PreferNarrowParamType),
         Box::new(AddParamTypeArrayAnyAll),
     ]

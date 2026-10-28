@@ -11,7 +11,8 @@ use pun_lint::Rule;
 use pun_lint::rules::{
     AddParamTypeArrayAnyAll, AddParamTypeArrayDimFetch, AddParamTypeArrayFunction, AddParamTypeArrayMap,
     AddParamTypeArrayReduce,
-    AddParamTypeArrowDimFetch, AddParamTypeDataProvider, AddParamTypeDimFetchKey, AddParamTypeMethodCall, AddParamTypeSplFixedArray,
+    AddParamTypeArrowDimFetch, AddParamTypeDataProvider, AddParamTypeDimFetchKey, AddParamTypeIterableMethodCall,
+    AddParamTypeMethodCall, AddParamTypeSplFixedArray,
     AddParamTypeParentCall, AddParamTypeProperty,
     AddParamTypeVariableCall, PreferNarrowParamType,
 };
@@ -128,4 +129,14 @@ fn add_method_call_based_strict_param_type() {
             &[&source, "phpunit-stubs"],
         );
     }
+}
+
+/// Rector's config sets PHP 8.0 (`MIXED_TYPE`).
+#[test]
+fn add_closure_param_type_from_iterable_method_call() {
+    run_class_at(
+        vec![Box::new(AddParamTypeIterableMethodCall)],
+        "AddClosureParamTypeFromIterableMethodCallRector",
+        80000,
+    );
 }
