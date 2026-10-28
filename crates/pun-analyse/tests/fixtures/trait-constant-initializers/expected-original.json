@@ -1,0 +1,92 @@
+{
+    "totals": {
+        "errors": 0,
+        "file_errors": 9
+    },
+    "files": {
+        "rules/data/Classes/data/bug-14250.php (in context of class Bug14250\\Bar)": {
+            "messages": [
+                {
+                    "message": "Constant Bug14250\\Bar::CONST1 with value 1 overriding constant Bug14250\\TraitWithDuplicateConstants::CONST1 with different value 2 should have the same value.",
+                    "line": 23,
+                    "ignorable": false,
+                    "identifier": "classConstant.value",
+                    "tip": null
+                },
+                {
+                    "message": "Cannot redeclare constant Bug14250\\TraitWithDuplicateConstants::CONST1.",
+                    "line": 24,
+                    "ignorable": false,
+                    "identifier": "trait.duplicateConstant",
+                    "tip": null
+                },
+                {
+                    "message": "Cannot redeclare constant Bug14250\\TraitWithDuplicateConstants::CONST2.",
+                    "line": 26,
+                    "ignorable": false,
+                    "identifier": "trait.duplicateConstant",
+                    "tip": null
+                },
+                {
+                    "message": "Constant Bug14250\\Bar::CONST2 with value 2 overriding constant Bug14250\\TraitWithDuplicateConstants::CONST2 with different value 1 should have the same value.",
+                    "line": 26,
+                    "ignorable": false,
+                    "identifier": "classConstant.value",
+                    "tip": null
+                }
+            ],
+            "errors": 4
+        },
+        "rules/data/Classes/data/bug-14250.php (in context of class Bug14250\\Baz)": {
+            "messages": [
+                {
+                    "message": "Cannot redeclare property Bug14250\\TraitWithDuplicateProperties::$prop1.",
+                    "line": 41,
+                    "ignorable": false,
+                    "identifier": "trait.duplicateProperty",
+                    "tip": null
+                },
+                {
+                    "message": "Cannot redeclare property Bug14250\\TraitWithDuplicateProperties::$prop2.",
+                    "line": 44,
+                    "ignorable": false,
+                    "identifier": "trait.duplicateProperty",
+                    "tip": null
+                }
+            ],
+            "errors": 2
+        },
+        "rules/data/Classes/data/bug-14250.php (in context of class Bug14250\\Foo)": {
+            "messages": [
+                {
+                    "message": "Cannot redeclare method Bug14250\\MyTrait::doSomething().",
+                    "line": 11,
+                    "ignorable": false,
+                    "identifier": "trait.duplicateMethod",
+                    "tip": null
+                }
+            ],
+            "errors": 1
+        },
+        "rules/data/Classes/data/bug-14250.php (in context of class Bug14250\\Qux)": {
+            "messages": [
+                {
+                    "message": "Cannot redeclare method Bug14250\\TraitWithDuplicateMethods::func1().",
+                    "line": 59,
+                    "ignorable": false,
+                    "identifier": "trait.duplicateMethod",
+                    "tip": null
+                },
+                {
+                    "message": "Cannot redeclare method Bug14250\\TraitWithDuplicateMethods::Func1().",
+                    "line": 69,
+                    "ignorable": false,
+                    "identifier": "trait.duplicateMethod",
+                    "tip": null
+                }
+            ],
+            "errors": 2
+        }
+    },
+    "errors": []
+}

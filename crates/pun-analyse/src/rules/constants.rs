@@ -353,12 +353,14 @@ fn overriding_constant<'arena>(
     k: &ClassLikeConstant<'arena>,
 ) {
     let display = c.display(class);
-    let ours = visibility(k.modifiers.as_slice());
     for item in k.items.iter() {
         let Some((prototype, ancestor)) = find_prototype(c, class, item.name.value) else {
             continue;
         };
-        let name = text(item.name.value);
+        let key = mago_word::word(item.name.value);
+        let (current, context) =
+            reflected_constant(c, class, key).expect("a class constant walked in its class");
+        let name = text(current.name.as_bytes());
         // an interface's constants are final before PHP 8.1 (BetterReflection's isFinal())
         let interface_final = ancestor.kind.is_interface() && c.php_version < 80100;
         let declaring = c.display(ancestor);
@@ -370,6 +372,8 @@ fn overriding_constant<'arena>(
                 None,
             );
         }
+        let display = c.display(context);
+        let ours = current.visibility;
         if prototype.visibility == Visibility::Public {
             if ours != Visibility::Public {
                 let label = if ours == Visibility::Private {
@@ -401,10 +405,6 @@ fn overriding_constant<'arena>(
         }
         let errors = declared::with_classes(c, || {
             let theirs = constant_native(c, prototype, ancestor);
-            let key = mago_word::word(item.name.value);
-            let (current, context) =
-                reflected_constant(c, class, key).expect("a class constant walked in its class");
-            let display = c.display(context);
             let ours = constant_native(c, current, context);
             let mut errors = Vec::new();
             if let Some(theirs) = &theirs {

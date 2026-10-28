@@ -88,3 +88,69 @@ fn cross_file_magic_constants_distinguish_reflection_from_declaration_scope() {
     check("magic");
     check("magic-paths");
 }
+
+fn check_declaration_selection(name: &str, source: &str) {
+    use pun_analyse::{Project, run};
+
+    let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures");
+    let dir = root.to_string_lossy().into_owned();
+    let oracle: Value = serde_json::from_slice(
+        &std::fs::read(root.join(format!("trait-constant-initializers/expected-{name}.json")))
+            .unwrap(),
+    )
+    .unwrap();
+    assert_eq!(oracle["errors"], serde_json::json!([]));
+    let mut project = Project::new(vec![root.join(source)], Vec::new());
+    project.php_version = 80400;
+    let mut got: Vec<_> = run(&project)
+        .unwrap()
+        .into_iter()
+        .map(|e| {
+            (
+                e.file.strip_prefix(&format!("{dir}/")).unwrap().to_owned(),
+                e.line,
+                e.identifier,
+                e.message.replace(&dir, "<fixtures>"),
+                e.tip,
+                e.can_be_ignored,
+            )
+        })
+        .collect();
+    let mut want = Vec::new();
+    for (file, body) in oracle["files"].as_object().unwrap() {
+        for e in body["messages"].as_array().unwrap() {
+            want.push((
+                file.clone(),
+                e["line"].as_i64().unwrap(),
+                e["identifier"].as_str().unwrap().to_owned(),
+                e["message"].as_str().unwrap().to_owned(),
+                e["tip"].as_str().map(str::to_owned),
+                e["ignorable"].as_bool().unwrap(),
+            ));
+        }
+    }
+    got.sort();
+    want.sort();
+    assert_eq!(got, want, "{name}");
+}
+
+#[test]
+fn declaration_selection_preserves_the_original_duplicate_trait_fixture() {
+    check_declaration_selection("original", "rules/data/Classes/data/bug-14250.php");
+}
+
+#[test]
+fn declaration_selection_uses_the_last_complete_constant_metadata() {
+    check_declaration_selection(
+        "declarations",
+        "trait-constant-initializers/declarations.php",
+    );
+}
+
+#[test]
+fn declaration_selection_uses_reflected_override_visibility_and_owners() {
+    check_declaration_selection(
+        "overriding-selection",
+        "trait-constant-initializers/overriding-selection.php",
+    );
+}

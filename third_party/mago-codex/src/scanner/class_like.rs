@@ -1142,10 +1142,7 @@ where
             context,
             scope,
         ) {
-            if class_like_metadata.constants.contains_key(&constant_metadata.name) {
-                continue;
-            }
-
+            // BetterReflection selects the last declaration, including its source span and declared types.
             class_like_metadata.constants.insert(constant_metadata.name, constant_metadata);
         }
     }

@@ -1,0 +1,401 @@
+{
+    "totals": {
+        "errors": 0,
+        "file_errors": 51
+    },
+    "files": {
+        "trait-constant-initializers/declarations.php": {
+            "messages": [
+                {
+                    "message": "Cannot redeclare constant DuplicateConstantSelection\\Ordinary::CHOICE.",
+                    "line": 7,
+                    "ignorable": false,
+                    "identifier": "class.duplicateConstant",
+                    "tip": null
+                },
+                {
+                    "message": "Cannot redeclare constant DuplicateConstantSelection\\Ordinary::GROUP.",
+                    "line": 8,
+                    "ignorable": false,
+                    "identifier": "class.duplicateConstant",
+                    "tip": null
+                },
+                {
+                    "message": "Dumped type: int<1, max>",
+                    "line": 9,
+                    "ignorable": false,
+                    "identifier": "phpstan.dumpType",
+                    "tip": null
+                },
+                {
+                    "message": "Cannot redeclare constant DuplicateConstantSelection\\PrivateLast::HIDDEN.",
+                    "line": 13,
+                    "ignorable": false,
+                    "identifier": "class.duplicateConstant",
+                    "tip": null
+                },
+                {
+                    "message": "Dumped type: 31",
+                    "line": 14,
+                    "ignorable": false,
+                    "identifier": "phpstan.dumpType",
+                    "tip": null
+                },
+                {
+                    "message": "Cannot redeclare constant DuplicateConstantSelection\\DocumentedLast::VALUE.",
+                    "line": 18,
+                    "ignorable": false,
+                    "identifier": "class.duplicateConstant",
+                    "tip": null
+                },
+                {
+                    "message": "Dumped type: int<1, max>",
+                    "line": 19,
+                    "ignorable": false,
+                    "identifier": "phpstan.dumpType",
+                    "tip": null
+                },
+                {
+                    "message": "Cannot redeclare constant DuplicateConstantSelection\\Contract::VALUE.",
+                    "line": 23,
+                    "ignorable": false,
+                    "identifier": "interface.duplicateConstant",
+                    "tip": null
+                },
+                {
+                    "message": "Constant DuplicateConstantSelection\\OwnFirst::VALUE with value 11 overriding constant DuplicateConstantSelection\\Twice::VALUE with different value 29 should have the same value.",
+                    "line": 48,
+                    "ignorable": false,
+                    "identifier": "classConstant.value",
+                    "tip": null
+                },
+                {
+                    "message": "Dumped type: 29",
+                    "line": 62,
+                    "ignorable": false,
+                    "identifier": "phpstan.dumpType",
+                    "tip": null
+                },
+                {
+                    "message": "Dumped type: 83",
+                    "line": 63,
+                    "ignorable": false,
+                    "identifier": "phpstan.dumpType",
+                    "tip": null
+                },
+                {
+                    "message": "Access to private constant HIDDEN of class DuplicateConstantSelection\\PrivateLast.",
+                    "line": 64,
+                    "ignorable": true,
+                    "identifier": "classConstant.private",
+                    "tip": null
+                },
+                {
+                    "message": "Dumped type: 31",
+                    "line": 64,
+                    "ignorable": false,
+                    "identifier": "phpstan.dumpType",
+                    "tip": null
+                },
+                {
+                    "message": "Dumped type: 37",
+                    "line": 65,
+                    "ignorable": false,
+                    "identifier": "phpstan.dumpType",
+                    "tip": null
+                },
+                {
+                    "message": "Dumped type: 43",
+                    "line": 66,
+                    "ignorable": false,
+                    "identifier": "phpstan.dumpType",
+                    "tip": null
+                },
+                {
+                    "message": "Dumped type: 29",
+                    "line": 67,
+                    "ignorable": false,
+                    "identifier": "phpstan.dumpType",
+                    "tip": null
+                },
+                {
+                    "message": "Dumped type: 83",
+                    "line": 68,
+                    "ignorable": false,
+                    "identifier": "phpstan.dumpType",
+                    "tip": null
+                },
+                {
+                    "message": "Dumped type: 29",
+                    "line": 69,
+                    "ignorable": false,
+                    "identifier": "phpstan.dumpType",
+                    "tip": null
+                },
+                {
+                    "message": "Dumped type: 29",
+                    "line": 70,
+                    "ignorable": false,
+                    "identifier": "phpstan.dumpType",
+                    "tip": null
+                },
+                {
+                    "message": "Dumped type: 11",
+                    "line": 71,
+                    "ignorable": false,
+                    "identifier": "phpstan.dumpType",
+                    "tip": null
+                },
+                {
+                    "message": "Dumped type: 29",
+                    "line": 72,
+                    "ignorable": false,
+                    "identifier": "phpstan.dumpType",
+                    "tip": null
+                },
+                {
+                    "message": "Dumped type: 53",
+                    "line": 73,
+                    "ignorable": false,
+                    "identifier": "phpstan.dumpType",
+                    "tip": null
+                },
+                {
+                    "message": "Dumped type: 17",
+                    "line": 74,
+                    "ignorable": false,
+                    "identifier": "phpstan.dumpType",
+                    "tip": null
+                }
+            ],
+            "errors": 23
+        },
+        "trait-constant-initializers/declarations.php (in context of class DuplicateConstantSelection\\First)": {
+            "messages": [
+                {
+                    "message": "Constant DuplicateConstantSelection\\First::VALUE with value 11 overriding constant DuplicateConstantSelection\\Twice::VALUE with different value 29 should have the same value.",
+                    "line": 28,
+                    "ignorable": false,
+                    "identifier": "classConstant.value",
+                    "tip": null
+                },
+                {
+                    "message": "Private constant DuplicateConstantSelection\\First::VALUE overriding public constant DuplicateConstantSelection\\Twice::VALUE should also be public.",
+                    "line": 28,
+                    "ignorable": false,
+                    "identifier": "classConstant.visibility",
+                    "tip": null
+                },
+                {
+                    "message": "Cannot redeclare constant DuplicateConstantSelection\\Twice::VALUE.",
+                    "line": 29,
+                    "ignorable": false,
+                    "identifier": "trait.duplicateConstant",
+                    "tip": null
+                },
+                {
+                    "message": "Cannot redeclare constant DuplicateConstantSelection\\Twice::GROUP.",
+                    "line": 30,
+                    "ignorable": false,
+                    "identifier": "trait.duplicateConstant",
+                    "tip": null
+                },
+                {
+                    "message": "Constant DuplicateConstantSelection\\First::GROUP with value 13 overriding constant DuplicateConstantSelection\\Twice::GROUP with different value 17 should have the same value.",
+                    "line": 30,
+                    "ignorable": false,
+                    "identifier": "classConstant.value",
+                    "tip": null
+                }
+            ],
+            "errors": 5
+        },
+        "trait-constant-initializers/declarations.php (in context of class DuplicateConstantSelection\\OwnFirst)": {
+            "messages": [
+                {
+                    "message": "Constant DuplicateConstantSelection\\OwnFirst::VALUE with value 11 overriding constant DuplicateConstantSelection\\Twice::VALUE with different value 29 should have the same value.",
+                    "line": 28,
+                    "ignorable": false,
+                    "identifier": "classConstant.value",
+                    "tip": null
+                },
+                {
+                    "message": "Private constant DuplicateConstantSelection\\OwnFirst::VALUE overriding public constant DuplicateConstantSelection\\Twice::VALUE should also be public.",
+                    "line": 28,
+                    "ignorable": false,
+                    "identifier": "classConstant.visibility",
+                    "tip": null
+                },
+                {
+                    "message": "Cannot redeclare constant DuplicateConstantSelection\\Twice::VALUE.",
+                    "line": 29,
+                    "ignorable": false,
+                    "identifier": "trait.duplicateConstant",
+                    "tip": null
+                },
+                {
+                    "message": "Cannot redeclare constant DuplicateConstantSelection\\Twice::GROUP.",
+                    "line": 30,
+                    "ignorable": false,
+                    "identifier": "trait.duplicateConstant",
+                    "tip": null
+                },
+                {
+                    "message": "Constant DuplicateConstantSelection\\OwnFirst::GROUP with value 13 overriding constant DuplicateConstantSelection\\Twice::GROUP with different value 17 should have the same value.",
+                    "line": 30,
+                    "ignorable": false,
+                    "identifier": "classConstant.value",
+                    "tip": null
+                }
+            ],
+            "errors": 5
+        },
+        "trait-constant-initializers/declarations.php (in context of class DuplicateConstantSelection\\OwnLast)": {
+            "messages": [
+                {
+                    "message": "Constant DuplicateConstantSelection\\OwnLast::VALUE with value 11 overriding constant DuplicateConstantSelection\\Twice::VALUE with different value 29 should have the same value.",
+                    "line": 28,
+                    "ignorable": false,
+                    "identifier": "classConstant.value",
+                    "tip": null
+                },
+                {
+                    "message": "Private constant DuplicateConstantSelection\\OwnLast::VALUE overriding public constant DuplicateConstantSelection\\Twice::VALUE should also be public.",
+                    "line": 28,
+                    "ignorable": false,
+                    "identifier": "classConstant.visibility",
+                    "tip": null
+                },
+                {
+                    "message": "Cannot redeclare constant DuplicateConstantSelection\\Twice::VALUE.",
+                    "line": 29,
+                    "ignorable": false,
+                    "identifier": "trait.duplicateConstant",
+                    "tip": null
+                },
+                {
+                    "message": "Cannot redeclare constant DuplicateConstantSelection\\Twice::GROUP.",
+                    "line": 30,
+                    "ignorable": false,
+                    "identifier": "trait.duplicateConstant",
+                    "tip": null
+                },
+                {
+                    "message": "Constant DuplicateConstantSelection\\OwnLast::GROUP with value 13 overriding constant DuplicateConstantSelection\\Twice::GROUP with different value 17 should have the same value.",
+                    "line": 30,
+                    "ignorable": false,
+                    "identifier": "classConstant.value",
+                    "tip": null
+                }
+            ],
+            "errors": 5
+        },
+        "trait-constant-initializers/declarations.php (in context of class DuplicateConstantSelection\\Reused)": {
+            "messages": [
+                {
+                    "message": "Constant DuplicateConstantSelection\\Reused::VALUE with value 11 overriding constant DuplicateConstantSelection\\Twice::VALUE with different value 101 should have the same value.",
+                    "line": 28,
+                    "ignorable": false,
+                    "identifier": "classConstant.value",
+                    "tip": null
+                },
+                {
+                    "message": "Private constant DuplicateConstantSelection\\Reused::VALUE overriding public constant DuplicateConstantSelection\\Twice::VALUE should also be public.",
+                    "line": 28,
+                    "ignorable": false,
+                    "identifier": "classConstant.visibility",
+                    "tip": null
+                },
+                {
+                    "message": "Cannot redeclare constant DuplicateConstantSelection\\Twice::VALUE.",
+                    "line": 29,
+                    "ignorable": false,
+                    "identifier": "trait.duplicateConstant",
+                    "tip": null
+                },
+                {
+                    "message": "Cannot redeclare constant DuplicateConstantSelection\\Twice::GROUP.",
+                    "line": 30,
+                    "ignorable": false,
+                    "identifier": "trait.duplicateConstant",
+                    "tip": null
+                },
+                {
+                    "message": "Constant DuplicateConstantSelection\\Reused::GROUP with value 13 overriding constant DuplicateConstantSelection\\Twice::GROUP with different value 17 should have the same value.",
+                    "line": 30,
+                    "ignorable": false,
+                    "identifier": "classConstant.value",
+                    "tip": null
+                }
+            ],
+            "errors": 5
+        },
+        "trait-constant-initializers/declarations.php (in context of class DuplicateConstantSelection\\Second)": {
+            "messages": [
+                {
+                    "message": "Constant DuplicateConstantSelection\\Second::VALUE with value 71 overriding constant DuplicateConstantSelection\\Twice::VALUE with different value 83 should have the same value.",
+                    "line": 28,
+                    "ignorable": false,
+                    "identifier": "classConstant.value",
+                    "tip": null
+                },
+                {
+                    "message": "Private constant DuplicateConstantSelection\\Second::VALUE overriding public constant DuplicateConstantSelection\\Twice::VALUE should also be public.",
+                    "line": 28,
+                    "ignorable": false,
+                    "identifier": "classConstant.visibility",
+                    "tip": null
+                },
+                {
+                    "message": "Cannot redeclare constant DuplicateConstantSelection\\Twice::VALUE.",
+                    "line": 29,
+                    "ignorable": false,
+                    "identifier": "trait.duplicateConstant",
+                    "tip": null
+                },
+                {
+                    "message": "Cannot redeclare constant DuplicateConstantSelection\\Twice::GROUP.",
+                    "line": 30,
+                    "ignorable": false,
+                    "identifier": "trait.duplicateConstant",
+                    "tip": null
+                },
+                {
+                    "message": "Constant DuplicateConstantSelection\\Second::GROUP with value 13 overriding constant DuplicateConstantSelection\\Twice::GROUP with different value 17 should have the same value.",
+                    "line": 30,
+                    "ignorable": false,
+                    "identifier": "classConstant.value",
+                    "tip": null
+                }
+            ],
+            "errors": 5
+        },
+        "trait-constant-initializers/declarations.php (in context of class DuplicateConstantSelection\\TypedConsumer)": {
+            "messages": [
+                {
+                    "message": "Constant DuplicateConstantSelection\\TypedConsumer::VALUE (string) overriding constant DuplicateConstantSelection\\TypedTwice::VALUE (int) should have the same native type int.",
+                    "line": 57,
+                    "ignorable": false,
+                    "identifier": "classConstant.nativeType",
+                    "tip": null
+                },
+                {
+                    "message": "Constant DuplicateConstantSelection\\TypedConsumer::VALUE with value 'first' overriding constant DuplicateConstantSelection\\TypedTwice::VALUE with different value 53 should have the same value.",
+                    "line": 57,
+                    "ignorable": false,
+                    "identifier": "classConstant.value",
+                    "tip": null
+                },
+                {
+                    "message": "Cannot redeclare constant DuplicateConstantSelection\\TypedTwice::VALUE.",
+                    "line": 58,
+                    "ignorable": false,
+                    "identifier": "trait.duplicateConstant",
+                    "tip": null
+                }
+            ],
+            "errors": 3
+        }
+    },
+    "errors": []
+}

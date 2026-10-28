@@ -853,3 +853,31 @@ cargo llvm-cov --dep-coverage mago-codex,mago-analyzer,mago-phpdoc-syntax,mago-p
 	--no-report -p punphp-analyse --test duplicate_array_keys
 cargo llvm-cov report --no-default-ignore-filename-regex --lcov
 ```
+
+## Immediate duplicate class-like constants
+
+`scanner::class_like::scan_class_like()` keeps the last immediate constant declaration's complete
+metadata. This includes its source span, native and PHPDoc types, visibility, and initializer, not
+only its inferred value. The CST still contains every declaration for independent duplicate and
+initializer checks. Global constants and parent, trait, and interface merge precedence are unchanged.
+
+PHPStan 2.3.1 pins BetterReflection `b79afc9c50ddf06e06b838132e4cdef09e3cff03`, whose
+[`ReflectionClass::createImmediateConstants()`](https://github.com/ondrejmirtes/BetterReflection/blob/b79afc9c50ddf06e06b838132e4cdef09e3cff03/src/Reflection/ReflectionClass.php#L897-L910)
+overwrites the name-keyed entry in source order for every class-like, including ordinary classes.
+PHPStan's
+[`DuplicateDeclarationHelper`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Rules/Classes/DuplicateDeclarationHelper.php#L26-L61)
+separately checks all AST declarations. Its
+[`ConflictingTraitConstantsRule`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Rules/Traits/ConflictingTraitConstantsRule.php#L67-L100)
+compares each written initializer with the selected trait expression in the consuming class context.
+
+`pun-analyse/tests/trait_constant_initializers.rs` runs the original `bug-14250.php` unchanged and
+asymmetric declaration controls through the public Analyzer API. Complete PHPStan 2.3.1 captures and
+their producer are under `tests/fixtures/trait-constant-initializers/`. They retain contextual file
+names and every diagnostic, including native-type, visibility, and duplicate errors. The existing
+trait reuse, inheritance, source-order, and initializer captures remain unchanged.
+
+`OverridingConstantRule` in `pun-analyse/src/rules/constants.rs` resolves the selected reflection
+before checking visibility, as PHPStan's `processSingleConstant()` does. Both visibility and level-3
+type checks use that reflection and its declaring context. Diagnostic locations still use the CST
+declaration. Prototype selection and the final-override class display are unchanged. The complementary
+public, private, protected, and trait-reuse controls compare all diagnostics against a separate capture.
