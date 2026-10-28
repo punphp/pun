@@ -8,12 +8,18 @@ use mago_codex::ttype::atomic::callable::TCallable;
 use mago_codex::ttype::atomic::object::TObject;
 use mago_codex::ttype::atomic::scalar::TScalar;
 use mago_codex::ttype::union::TUnion;
-use mago_syntax::cst::{Expression, FunctionLikeParameter, Identifier, Node, NodeKind};
+use mago_syntax::cst::{
+    AssignmentOperator, Closure, Expression, FunctionLikeParameter, Identifier, Node, NodeKind,
+};
 use pun_problem::Edit;
 
+use super::add_param_type_array_dim_fetch::is_variable;
 use super::facts::{Facts, facts};
 use super::namespace_of;
-use super::param::{add_hint, array_shape_of, doc_order, is_mixed, item_type, param_declaration_unsorted, report};
+use super::param::{
+    Flow, add_hint, array_shape_of, doc_order, is_mixed, item_type, param_declaration_unsorted, report,
+    traverse,
+};
 use crate::rules::class_method::type_of;
 use crate::rules::lint_b_helpers::value;
 use crate::rules::rector_code_quality::{args, named};
@@ -62,7 +68,9 @@ impl Rule for AddParamTypeArrayReduce {
             return;
         };
         let mut carry: Option<Vec<TAtomic>> = Some(returned.types.to_vec());
-        if let Some(initial) = args.get(2) {
+        if returns_untyped_param(closure) {
+            carry = None;
+        } else if let Some(initial) = args.get(2) {
             carry = type_of(&facts, value(initial)).and_then(|initial| combine(initial, returned));
         }
         let value_type = array_shape_of(&facts, value(args[0])).as_ref().and_then(item_type);
@@ -93,6 +101,34 @@ impl Rule for AddParamTypeArrayReduce {
             edits,
         ));
     }
+}
+
+/// Whether the closure returns one of its untyped parameters, never reassigned: PHPStan's return type is then `mixed`
+/// (the parameter is `mixed`, and writing an offset keeps it so), where Mago types the parameter from
+/// `array_reduce()`'s template.
+fn returns_untyped_param(closure: &Closure<'_>) -> bool {
+    let untyped: Vec<&[u8]> = closure
+        .parameter_list
+        .parameters
+        .iter()
+        .filter(|p| p.hint.is_none())
+        .map(|p| p.variable.name)
+        .collect();
+    let mut returned: Vec<&[u8]> = Vec::new();
+    let mut reassigned: Vec<&[u8]> = Vec::new();
+    traverse(Node::Block(&closure.body), &mut |node| {
+        match node {
+            Node::Return(r) => returned.extend(r.value.and_then(|v| {
+                untyped.iter().copied().find(|name| is_variable(v, name))
+            })),
+            Node::Assignment(a) if matches!(a.operator, AssignmentOperator::Assign(_)) => {
+                reassigned.extend(untyped.iter().copied().find(|name| is_variable(a.lhs, name)));
+            }
+            _ => {}
+        }
+        Flow::Continue
+    });
+    returned.iter().any(|name| !reassigned.contains(name))
 }
 
 /// `resolveFunctionLikeReflectionFromCall() instanceof NativeFunctionReflection`: `array_reduce` is PHP's own, not a

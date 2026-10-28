@@ -176,13 +176,22 @@ fn after_isset(body: Node<'_, '_>, fetch: &ArrayAccess<'_>) -> bool {
 fn is_assigned(body: Node<'_, '_>, fetch: &ArrayAccess<'_>) -> bool {
     let mut found = false;
     traverse(body, &mut |node| {
-        if let Node::Assignment(a) = node
-            && node_span(unparenthesize(a.lhs)) == node_span(fetch)
-        {
-            found = true;
-            return Flow::Stop;
+        let Node::Assignment(a) = node else {
+            return Flow::Continue;
+        };
+        // the target itself, or the array of a nested target (`$this->items[$key][] = $value`)
+        let mut target = unparenthesize(a.lhs);
+        loop {
+            if node_span(target) == node_span(fetch) {
+                found = true;
+                return Flow::Stop;
+            }
+            target = match target {
+                Expression::ArrayAccess(access) => unparenthesize(access.array),
+                Expression::ArrayAppend(append) => unparenthesize(append.array),
+                _ => return Flow::Continue,
+            };
         }
-        Flow::Continue
     });
     found
 }
@@ -190,18 +199,27 @@ fn is_assigned(body: Node<'_, '_>, fetch: &ArrayAccess<'_>) -> bool {
 /// The declared type (its docblock's, else the native one) of `$this->name`: the type PHPStan gives the property as
 /// the target of an assignment.
 fn declared_property_type<'f>(facts: &'f Facts, class: &str, expr: &Expression<'_>) -> Option<&'f TUnion> {
-    let Expression::Access(Access::Property(fetch)) = unparenthesize(expr) else {
-        return None;
+    let name = match unparenthesize(expr) {
+        Expression::Access(Access::Property(fetch))
+            if matches!(unparenthesize(fetch.object), Expression::Variable(Variable::Direct(v)) if v.name == b"$this") =>
+        {
+            let ClassLikeMemberSelector::Identifier(name) = &fetch.property else {
+                return None;
+            };
+            [b"$", name.value].concat()
+        }
+        // `static::$items`, `self::$items`
+        Expression::Access(Access::StaticProperty(fetch))
+            if matches!(unparenthesize(fetch.class), Expression::Static(_) | Expression::Self_(_)) =>
+        {
+            let Variable::Direct(v) = &fetch.property else {
+                return None;
+            };
+            v.name.to_vec()
+        }
+        _ => return None,
     };
-    if !matches!(unparenthesize(fetch.object), Expression::Variable(Variable::Direct(v)) if v.name == b"$this") {
-        return None;
-    }
-    let ClassLikeMemberSelector::Identifier(name) = &fetch.property else {
-        return None;
-    };
-    let property = facts
-        .documented()
-        .get_declaring_property(class.as_bytes(), &[b"$", name.value].concat())?;
+    let property = facts.documented().get_declaring_property(class.as_bytes(), &name)?;
     property.type_metadata.as_ref().map(|t| &t.type_union)
 }
 

@@ -138,15 +138,19 @@ fn is_accessed_array_dim_fetch(
     // a parameter read with an offset).
     let mut initial: Option<&TUnion> = None;
     let mut seen = false;
+    // The assignment targets, whose type is the one after the assignment.
+    let mut targets: Vec<Span> = Vec::new();
     traverse(body, &mut |node| {
         if let Node::Assignment(a) = node
             && is_variable(a.lhs, name)
         {
             assigned.push(node_span(a).end);
+            targets.push(node_span(unparenthesize(a.lhs)));
         }
         if let Node::Expression(e) = node
             && !seen
             && is_variable(e, name)
+            && !targets.contains(&node_span(e))
         {
             seen = true;
             initial = type_of(facts, e);
@@ -181,8 +185,22 @@ fn is_accessed_array_dim_fetch(
         let mut variable = type_of(facts, access.array);
         let at = node_span(access).start;
         let unassigned = !assigned.iter().any(|&end| end <= at);
+        let narrowed;
         if known && unassigned {
+            let here = variable;
             variable = initial;
+            // A check that removes `null` (`if ($param)`) narrows it in both analysers.
+            let has_null = |t: &TUnion| t.types.iter().any(|a| matches!(a, TAtomic::Null));
+            if let (Some(i), Some(h)) = (initial, here)
+                && i.types.len() > 1
+                && has_null(i)
+                && !has_null(h)
+            {
+                narrowed = TUnion::from_vec(
+                    i.types.iter().filter(|a| !matches!(a, TAtomic::Null)).cloned().collect(),
+                );
+                variable = Some(&narrowed);
+            }
         }
         if !known
             && unassigned
@@ -341,6 +359,10 @@ fn maybe_string(t: &TUnion) -> bool {
 /// `TypeFactory::createMixedPassedOrUnionType([$type]) instanceof UnionType`: more than one type, `true` with `false`
 /// counting as one `bool` and the arrays as one array (PHPStan unites `array<...>|list<...>`).
 fn is_union(t: &TUnion) -> bool {
+    // PHPStan's union with `mixed` is `mixed`.
+    if t.types.iter().any(|a| matches!(a, TAtomic::Mixed(_))) {
+        return false;
+    }
     let count = |f: fn(&TAtomic) -> bool| t.types.iter().filter(|a| f(a)).count();
     let bools = count(|a| matches!(a, TAtomic::Scalar(TScalar::Bool(_))));
     let arrays = count(|a| matches!(a, TAtomic::Array(_)));
