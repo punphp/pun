@@ -49,16 +49,10 @@ impl Rule for AddParamTypeProperty {
         ctx: &Context<'_>,
         out: &mut Vec<Report>,
     ) {
-        let Node::Method(method) = node else {
-            return;
-        };
-        let MethodBody::Concrete(body) = &method.body else {
-            return;
-        };
+        let Node::Method(method) = node else { return };
+        let MethodBody::Concrete(body) = &method.body else { return };
         let facts = facts(ctx);
-        let Some(class) = own_class(&facts, ancestors) else {
-            return;
-        };
+        let Some(class) = own_class(&facts, ancestors) else { return };
         let mut edits = Vec::new();
         for param in method.parameter_list.parameters.iter() {
             if param.hint.is_some() || param.ellipsis.is_some() {
@@ -96,7 +90,7 @@ impl Rule for AddParamTypeProperty {
     }
 }
 
-/// The name the codebase knows the class-like of `ancestors` by.
+/// The name the codebase knows the class of `ancestors` by.
 fn own_class(facts: &Facts, ancestors: &[Node<'_, '_>]) -> Option<String> {
     let at = ancestors.iter().rposition(|a| {
         matches!(
@@ -107,8 +101,7 @@ fn own_class(facts: &Facts, ancestors: &[Node<'_, '_>]) -> Option<String> {
     match ancestors[at] {
         Node::AnonymousClass(c) => Some(facts.anonymous_class_name(mago_span::HasSpan::span(c))),
         Node::Class(c) => Some(qualified(&ancestors[..at], c.name.value)),
-        Node::Trait(t) => Some(qualified(&ancestors[..at], t.name.value)),
-        Node::Enum(e) => Some(qualified(&ancestors[..at], e.name.value)),
+        // a trait's or an enum's method: Rector adds no type (checked with Rector 2.6.1)
         _ => None,
     }
 }

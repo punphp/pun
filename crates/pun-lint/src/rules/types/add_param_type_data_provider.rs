@@ -6,6 +6,7 @@
 use mago_codex::ttype::atomic::TAtomic;
 use mago_codex::ttype::atomic::array::TArray;
 use mago_codex::ttype::atomic::object::TObject;
+use mago_codex::ttype::atomic::object::r#enum::TEnum;
 use mago_codex::ttype::atomic::object::named::TNamedObject;
 use mago_codex::ttype::atomic::scalar::TScalar;
 use mago_codex::ttype::union::TUnion;
@@ -48,9 +49,7 @@ impl Rule for AddParamTypeDataProvider {
         if !class_scope(&scoped).is_some_and(|scope| is_test_class(&facts, &scope)) {
             return;
         }
-        let Some(class) = class_info(node, ancestors, &facts) else {
-            return;
-        };
+        let Some(class) = class_info(node, ancestors, &facts) else { return };
         // A `@dataProvider` tag whose name an import makes a class (`use ...\Attributes\DataProvider;`) is a Doctrine
         // annotation to Rector's docblock parser, which `DataProviderNodes` does not read.
         let doc_tags = facts
@@ -115,9 +114,7 @@ impl Rule for AddParamTypeDataProvider {
 /// `resolveParameterTypeFromDataProvider()` with `createMixedPassedOrUnionType()`: the types (literal values made
 /// general) the provider gives at `position`, in the order met; `None` for `mixed`.
 fn provider_type(facts: &Facts, provider: &Method<'_>, position: usize) -> Option<Vec<TAtomic>> {
-    let MethodBody::Concrete(body) = &provider.body else {
-        return None;
-    };
+    let MethodBody::Concrete(body) = &provider.body else { return None };
     let body = Node::Block(body);
     let mut first_return: Option<Option<&Expression<'_>>> = None;
     let mut yields: Vec<Option<&Expression<'_>>> = Vec::new();
@@ -141,23 +138,16 @@ fn provider_type(facts: &Facts, provider: &Method<'_>, position: usize) -> Optio
             _ => return None,
         };
         for set in elements.iter() {
-            let value = match set {
-                ArrayElement::KeyValue(e) => e.value,
-                ArrayElement::Value(e) => e.value,
-                ArrayElement::Variadic(e) => e.value,
-                ArrayElement::Missing(_) => return None,
-            };
-            let items = match unparenthesize(value) {
-                Expression::Array(a) => &a.elements,
-                Expression::LegacyArray(a) => &a.elements,
+            let items = match set.get_value().map(unparenthesize) {
+                Some(Expression::Array(a)) => &a.elements,
+                Some(Expression::LegacyArray(a)) => &a.elements,
                 _ => return None,
             };
-            let item = match items.iter().nth(position) {
-                Some(ArrayElement::KeyValue(e)) => e.value,
-                Some(ArrayElement::Value(e)) => e.value,
-                Some(ArrayElement::Variadic(e)) => e.value,
-                _ => continue,
-            };
+            let Some(item) = items.iter().nth(position).and_then(ArrayElement::get_value) else { continue };
+            // `new static()` is PHPStan's `StaticType`, which no parameter type declares
+            if matches!(unparenthesize(item), Expression::Instantiation(i) if matches!(i.class, Expression::Static(_))) {
+                return None;
+            }
             // PHPStan's `toObject()` of an array is `stdClass` (Mago's cast gives an object shape)
             if let Expression::UnaryPrefix(cast) = unparenthesize(item)
                 && matches!(cast.operator, UnaryPrefixOperator::ObjectCast(..))
@@ -167,7 +157,13 @@ fn provider_type(facts: &Facts, provider: &Method<'_>, position: usize) -> Optio
                 types.push(TUnion::from_vec(vec![TAtomic::Object(TObject::Named(TNamedObject::new(class.name)))]));
                 continue;
             }
-            types.push(type_of(facts, item)?.clone());
+            // Rector's `getType()` of an enum case read in the array literal is the enum's `ObjectType`, not the case
+            // (a yielded array's values keep the case), so `TypeCombinator::union` leaves it in place
+            let t = type_of(facts, item)?;
+            types.push(TUnion::from_vec(t.types.iter().map(|a| match a {
+                TAtomic::Object(TObject::Enum(e)) => TAtomic::Object(TObject::Enum(TEnum { case: None, ..e.clone() })),
+                other => other.clone(),
+            }).collect()));
         }
     } else {
         // "yield from" data sets are not resolved here
@@ -232,20 +228,13 @@ fn constant_array_values(atomic: &TAtomic) -> Option<Vec<TUnion>> {
 }
 
 /// `TypeFactory::uniquateTypes` without constants: a literal value is its general type (`true` and `false` are
-/// `bool`), `static` its class.
+/// `bool`).
 fn general(atomic: &TAtomic) -> TAtomic {
     match atomic {
         TAtomic::Scalar(s) if s.is_int() => TAtomic::Scalar(TScalar::int()),
         TAtomic::Scalar(s) if s.is_float() => TAtomic::Scalar(TScalar::float()),
         TAtomic::Scalar(s) if s.is_any_string() => TAtomic::Scalar(TScalar::string()),
         TAtomic::Scalar(s) if s.is_bool() => TAtomic::Scalar(TScalar::bool()),
-        // `static` and `$this` are the class the value is of
-        TAtomic::Object(TObject::Named(n)) if n.is_static || n.is_this => {
-            let mut n = n.clone();
-            n.is_static = false;
-            n.is_this = false;
-            TAtomic::Object(TObject::Named(n))
-        }
         other => other.clone(),
     }
 }

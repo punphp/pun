@@ -36,14 +36,14 @@ impl Rule for AddParamTypeVariableCall {
     ) {
         let body = match node {
             Node::Method(m) => {
-                let MethodBody::Concrete(body) = &m.body else {
-                    return;
-                };
+                let MethodBody::Concrete(body) = &m.body else { return };
                 Node::Block(body)
             }
             Node::Function(f) => Node::Block(&f.body),
-            Node::Closure(c) => Node::Block(&c.body),
-            _ => return,
+            _ => {
+                let Node::Closure(c) = node else { return };
+                Node::Block(&c.body)
+            }
         };
         // collectAssignedClosures: the last closure each variable is assigned, in the order the variables come.
         let mut closures: Vec<(&[u8], &Closure<'_>)> = Vec::new();
@@ -74,13 +74,8 @@ impl Rule for AddParamTypeVariableCall {
                 if param.hint.is_some() || param.ellipsis.is_some() {
                     continue;
                 }
-                let Some(declaration) = param_declaration(
-                    &TUnion::from_vec(vec![object.clone()]),
-                    &facts.codebase,
-                    ctx.php_version,
-                ) else {
-                    continue;
-                };
+                let object = TUnion::from_vec(vec![object.clone()]);
+                let Some(declaration) = param_declaration(&object, &facts.codebase, ctx.php_version) else { continue };
                 edits.push(add_hint(param, &declaration));
             }
         }

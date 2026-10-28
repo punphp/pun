@@ -62,9 +62,7 @@ impl Rule for AddParamTypeMethodCall {
         ctx: &Context<'_>,
         out: &mut Vec<Report>,
     ) {
-        let Node::Class(class) = node else {
-            return;
-        };
+        let Node::Class(class) = node else { return };
         let has = |f: fn(&Modifier<'_>) -> bool| class.modifiers.iter().any(f);
         let is_final = has(|m| matches!(m, Modifier::Final(_)))
             || (self.treat_classes_as_final && !has(|m| matches!(m, Modifier::Abstract(_))));
@@ -224,9 +222,7 @@ fn strict_types(facts: &Facts, types: &[TAtomic]) -> Option<Vec<TAtomic>> {
         let t = match t {
             TAtomic::Mixed(_) => return None,
             TAtomic::Object(TObject::Named(n)) => {
-                if facts.codebase.get_class_like(n.name.as_bytes()).is_none() {
-                    return None;
-                }
+                facts.codebase.get_class_like(n.name.as_bytes())?;
                 let mut n = n.clone();
                 n.is_this = false;
                 n.is_static = false;
@@ -271,10 +267,11 @@ fn is_class(types: &[TAtomic], class: &str) -> bool {
 fn static_class(scoped: &[Node<'_, '_>], class: &Expression<'_>) -> Option<String> {
     let at = scoped.len() - 1;
     match unparenthesize(class) {
-        Expression::Self_(_) | Expression::Static(_) => match scoped[at] {
-            Node::Class(c) => Some(qualified(&scoped[..at], c.name.value)),
-            _ => None,
-        },
+        // the rule visits classes only, so `scoped[at]` is the class
+        Expression::Self_(_) | Expression::Static(_) => {
+            let Node::Class(c) = scoped[at] else { return None };
+            Some(qualified(&scoped[..at], c.name.value))
+        }
         Expression::Identifier(id) => Some(resolve_class_name(&scoped[..at], id)),
         _ => None,
     }
@@ -282,9 +279,8 @@ fn static_class(scoped: &[Node<'_, '_>], class: &Expression<'_>) -> Option<Strin
 
 /// `ClassMethodParamTypeCompleter::isAcceptedByDefault`: the new type accepts the parameter's default value.
 fn accepts(facts: &Facts, types: &[TAtomic], default: &Expression<'_>) -> bool {
-    let Some(default) = type_of(facts, default) else {
-        return false;
-    };
+    // a default without a type (an unknown constant) is `mixed` to `mapPhpParserNodePHPStanType`, which `accepts()`
+    let Some(default) = type_of(facts, default) else { return true };
     default.types.iter().all(|d| {
         types.iter().any(|t| match (t, d) {
             (TAtomic::Null, TAtomic::Null) => true,
@@ -308,26 +304,29 @@ fn walk<'ast, 'arena>(node: Node<'ast, 'arena>, f: &mut dyn FnMut(Node<'ast, 'ar
     });
 }
 
+/// The array key a literal index names (`'1'` is the integer key `1`).
+fn literal_key(index: &Expression<'_>) -> Option<ArrayKey> {
+    match unparenthesize(index) {
+        Expression::Literal(Literal::String(s)) => {
+            // PHP's key cast: a decimal integer string is that integer
+            let v = String::from_utf8_lossy(s.value?);
+            Some(match v.parse::<i64>() {
+                Ok(n) if n.to_string() == v => ArrayKey::Integer(n),
+                _ => ArrayKey::from(v),
+            })
+        }
+        Expression::Literal(Literal::Integer(i)) => Some(ArrayKey::Integer(i64::try_from(i.value?).ok()?)),
+        _ => None,
+    }
+}
+
 /// Whether `expr` reads a key an array shape may lack (`$shape['dirname']` of `pathinfo()`): PHPStan's native type of
 /// it is none Rector maps (checked with Rector 2.6.1), where Mago adds `null`, unless the shape has the key.
 fn is_optional_offset(facts: &Facts, expr: &Expression<'_>) -> bool {
     let Expression::ArrayAccess(access) = unparenthesize(expr) else {
         return false;
     };
-    let key = match unparenthesize(access.index) {
-        Expression::Literal(Literal::String(s)) => match s.value {
-            Some(v) => match ArrayKey::from(String::from_utf8_lossy(v)) {
-                ArrayKey::String(word) => ArrayKey::from_string(word),
-                other => other,
-            },
-            None => return false,
-        },
-        Expression::Literal(Literal::Integer(i)) => match i.value.and_then(|v| i64::try_from(v).ok()) {
-            Some(v) => ArrayKey::Integer(v),
-            None => return false,
-        },
-        _ => return false,
-    };
+    let Some(key) = literal_key(access.index) else { return false };
     let nullable = facts
         .native_type(node_span(unparenthesize(expr)))
         .is_some_and(|t| t.types.iter().any(|a| matches!(a, TAtomic::Null)));

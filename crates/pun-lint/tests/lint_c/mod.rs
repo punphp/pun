@@ -152,9 +152,10 @@ fn check_dirs(class: &str, fixture: bool) {
     let root = Path::new(env!("CARGO_MANIFEST_DIR"))
         .join("tests/rector")
         .join(class);
-    assert_eq!(
-        root.join("Fixture").is_dir(),
-        fixture,
+    // A class with upstream fixtures may also be run on fresh Rector cases alone (its Fixture directory left out
+    // where Pun reads the fixtures' stubs differently); one without never has a Fixture directory.
+    assert!(
+        root.join("Fixture").is_dir() == fixture || (fixture && root.join("Oracle").is_dir()),
         "{class}: a Fixture directory where upstream has fixtures, and only there"
     );
     assert!(

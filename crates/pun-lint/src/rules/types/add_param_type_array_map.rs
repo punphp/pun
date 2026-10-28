@@ -10,6 +10,8 @@
 //! `string` (Application.php) and an intersection with the template bound where PHPStan has the class
 //! (DatabaseEloquentBuilderTest), and adds `array` over groups built with `$groups[$carry][] = $value` in a loop,
 //! which PHPStan does not type as an `ArrayType` (CronExpressionTimezoneConverter::shiftAndGroupValues()).
+//! A docblock union of scalar types (`list<int|bool>`) is written in Mago's order (`bool|int`), where PHPStan keeps
+//! the written one.
 
 use mago_syntax::cst::{Argument, Expression, Node, NodeKind};
 
@@ -40,9 +42,7 @@ impl Rule for AddParamTypeArrayMap {
         ctx: &Context<'_>,
         out: &mut Vec<Report>,
     ) {
-        let Node::FunctionCall(call) = node else {
-            return;
-        };
+        let Node::FunctionCall(call) = node else { return };
         if !named(call, "array_map") {
             return;
         }

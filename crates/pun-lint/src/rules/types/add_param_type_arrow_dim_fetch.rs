@@ -40,9 +40,7 @@ impl Rule for AddParamTypeArrowDimFetch {
         ctx: &Context<'_>,
         out: &mut Vec<Report>,
     ) {
-        let Node::FunctionCall(call) = node else {
-            return;
-        };
+        let Node::FunctionCall(call) = node else { return };
         let args: Vec<&Argument<'_>> = call.argument_list.arguments.iter().collect();
         if args.len() != 2 {
             return;

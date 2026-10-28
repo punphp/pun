@@ -52,9 +52,7 @@ impl Rule for AddParamTypeArrayFunction {
         ctx: &Context<'_>,
         out: &mut Vec<Report>,
     ) {
-        let Node::FunctionCall(call) = node else {
-            return;
-        };
+        let Node::FunctionCall(call) = node else { return };
         if call.argument_list.arguments.len() != 2 {
             return;
         }

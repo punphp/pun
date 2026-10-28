@@ -41,9 +41,7 @@ impl Rule for AddParamTypeIterableMethodCall {
         ctx: &Context<'_>,
         out: &mut Vec<Report>,
     ) {
-        let Node::MethodCall(call) = node else {
-            return;
-        };
+        let Node::MethodCall(call) = node else { return };
         let ClassLikeMemberSelector::Identifier(name) = &call.method else {
             return;
         };
@@ -157,11 +155,9 @@ fn iterable_part(class: &str, t: &TUnion) -> Option<Part> {
     let [atomic] = t.types.as_ref() else {
         return None;
     };
-    let name = match atomic {
-        TAtomic::Reference(TReference::Symbol { name, .. }) => name.as_bytes(),
-        TAtomic::Object(TObject::Named(n)) => n.name.as_bytes(),
-        _ => return None,
-    };
+    // a name no class has (`TValue`) is a reference to a symbol
+    let TAtomic::Reference(TReference::Symbol { name, .. }) = atomic else { return None };
+    let name = name.as_bytes();
     let name = String::from_utf8_lossy(name);
     let namespace = |n: &str| n.rsplit_once('\\').map_or(String::new(), |(ns, _)| ns.to_string());
     if namespace(&name) != namespace(class) {

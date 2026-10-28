@@ -113,6 +113,13 @@ fn add_closure_param_type_for_array_reduce() {
 /// `intersection_config.php` PHP 8.1 and `configured_rule_with_treat_classes_as_final.php` PHP 8.0 with `treatClassesAsFinal()`, each fixture
 /// directory under its own class directory, the classes of the first's Source/ (php-parser's in Source/vendor) known.
 #[test]
+fn add_method_call_based_strict_param_type_options() {
+    let mut rule = AddParamTypeMethodCall::default();
+    assert!(rule.configure(&serde_json::json!({ "treatClassesAsFinal": true })).is_err());
+    assert!(rule.configure(&serde_json::json!({ "treat-classes-as-final": "yes" })).is_err());
+}
+
+#[test]
 fn add_method_call_based_strict_param_type() {
     let base = "AddMethodCallBasedStrictParamTypeRector";
     run_class_with(vec![Box::new(AddParamTypeMethodCall::default())], base, 70400, &["phpunit-stubs"]);
@@ -121,9 +128,15 @@ fn add_method_call_based_strict_param_type() {
         ("Union", 80000, false),
         ("Intersection", 80100, false),
         ("TreatClassesAsFinal", 80000, true),
+        // Oracle inputs only, at PHP 7.0 (before `NULLABLE_TYPE`)
+        ("Php70", 70000, false),
     ] {
+        // the option as pun.toml gives it
+        let mut rule = AddParamTypeMethodCall::default();
+        rule.configure(&serde_json::json!({ "treat-classes-as-final": treat_classes_as_final }))
+            .unwrap();
         run_class_with(
-            vec![Box::new(AddParamTypeMethodCall { treat_classes_as_final })],
+            vec![Box::new(rule)],
             &format!("{base}{suffix}"),
             version,
             &[&source, "phpunit-stubs"],
@@ -131,12 +144,13 @@ fn add_method_call_based_strict_param_type() {
     }
 }
 
-/// Rector's config sets PHP 8.0 (`MIXED_TYPE`).
+/// Rector's config sets PHP 8.0 (`MIXED_TYPE`); the `Php74` directory holds Oracle inputs at PHP 7.4, without `mixed`.
 #[test]
 fn add_closure_param_type_from_iterable_method_call() {
-    run_class_at(
-        vec![Box::new(AddParamTypeIterableMethodCall)],
-        "AddClosureParamTypeFromIterableMethodCallRector",
-        80000,
-    );
+    for (class, version) in [
+        ("AddClosureParamTypeFromIterableMethodCallRector", 80000),
+        ("AddClosureParamTypeFromIterableMethodCallRectorPhp74", 70400),
+    ] {
+        run_class_at(vec![Box::new(AddParamTypeIterableMethodCall)], class, version);
+    }
 }

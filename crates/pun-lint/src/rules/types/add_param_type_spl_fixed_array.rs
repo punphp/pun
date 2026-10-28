@@ -40,12 +40,12 @@ impl Rule for AddParamTypeSplFixedArray {
     ) {
         let params: &FunctionLikeParameterList<'_> = match node {
             Node::Function(f) => &f.parameter_list,
-            Node::Method(m) => &m.parameter_list,
-            _ => return,
+            _ => {
+                let Node::Method(m) = node else { return };
+                &m.parameter_list
+            }
         };
-        let Some(annotated) = Annotated::of(ctx.source, node, ancestors) else {
-            return;
-        };
+        let Some(annotated) = Annotated::of(ctx.source, node, ancestors) else { return };
         let mut appended: Vec<String> = Vec::new();
         let mut replaced: Vec<(usize, String)> = Vec::new();
         for param in params.parameters.iter() {
@@ -99,9 +99,7 @@ impl Rule for AddParamTypeSplFixedArray {
                 }
             }
         };
-        let Some(edits) = annotated.edits(ctx.source, Some(&new_doc), &[]) else {
-            return;
-        };
+        let Some(edits) = annotated.edits(ctx.source, Some(&new_doc), &[]) else { return };
         out.push(report(
             node_span(&node),
             "Add the generic `Tokens<Token>` type to the parameter's @param tag.",

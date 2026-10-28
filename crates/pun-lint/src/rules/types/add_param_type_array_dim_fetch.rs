@@ -59,8 +59,10 @@ impl Rule for AddParamTypeArrayDimFetch {
                 (&m.parameter_list, Node::Block(body))
             }
             Node::Function(f) => (&f.parameter_list, Node::Block(&f.body)),
-            Node::Closure(c) => (&c.parameter_list, Node::Block(&c.body)),
-            _ => return,
+            _ => {
+                let Node::Closure(c) = node else { return };
+                (&c.parameter_list, Node::Block(&c.body))
+            }
         };
         let facts = facts(ctx);
         if let Node::Method(m) = node
@@ -384,14 +386,8 @@ fn is_union(t: &TUnion) -> bool {
 /// its items, so items of more than one type (literal values counting as their general type) make a union.
 fn constant_array_is_union(array: &TArray) -> bool {
     let items: Vec<&(bool, TUnion)> = match array {
-        TArray::Keyed(k) if k.parameters.is_none() => match &k.known_items {
-            Some(items) => items.values().collect(),
-            None => return false,
-        },
-        TArray::List(l) if l.element_type.is_never() => match &l.known_elements {
-            Some(items) => items.values().collect(),
-            None => return false,
-        },
+        TArray::Keyed(k) if k.parameters.is_none() => k.known_items.iter().flat_map(|i| i.values()).collect(),
+        TArray::List(l) if l.element_type.is_never() => l.known_elements.iter().flat_map(|i| i.values()).collect(),
         _ => return false,
     };
     // `TypeUtils::flattenTypes` splits it into `getAllArrays()`: with every key optional, one of them is empty

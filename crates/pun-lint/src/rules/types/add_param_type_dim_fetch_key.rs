@@ -5,10 +5,15 @@
 //!
 //! Known difference on laravel-framework: Rector writes `mixed $name` on `Optional::__isset()`, from the explicit
 //! `mixed` key that `is_array()` gives the array, where Pun's facts have no explicit `mixed`.
+//!
+//! Not ported (Rector adds the key type, Pun skips): an offset written on a local array (`$map[$key] = 2`, PHPStan
+//! reads the type before the write), a class constant's array (`self::MAP[$key]`), and a shape whose `int` and
+//! `string` key order only a docblock gives (`$map = $this->pairs()`).
 
 use mago_codex::ttype::atomic::TAtomic;
 use mago_codex::ttype::atomic::array::TArray;
 use mago_codex::ttype::atomic::array::key::ArrayKey;
+use mago_codex::ttype::atomic::object::TObject;
 use mago_codex::ttype::atomic::scalar::TScalar;
 use mago_codex::ttype::union::TUnion;
 use mago_syntax::cst::{Access, ArrayAccess, ClassLikeMemberSelector, ArrayElement, Expression, Literal, MethodBody, Modifier, Node, NodeKind, Variable};
@@ -16,6 +21,7 @@ use mago_syntax::cst::{Access, ArrayAccess, ClassLikeMemberSelector, ArrayElemen
 use super::class_scope;
 use super::facts::{Facts, facts};
 use super::has_parent_class_method;
+use super::names::resolve_class_name;
 use super::param::{Flow, add_hint, param_declaration, report, traverse};
 use crate::rules::add_param_type_sprintf::is_legal;
 use crate::rules::class_method::type_of;
@@ -43,9 +49,7 @@ impl Rule for AddParamTypeDimFetchKey {
         ctx: &Context<'_>,
         out: &mut Vec<Report>,
     ) {
-        let Node::Method(method) = node else {
-            return;
-        };
+        let Node::Method(method) = node else { return };
         // a method of a class (`Class_`, anonymous ones included)
         let in_class = ancestors.iter().rev().find(|a| {
             matches!(
@@ -60,9 +64,7 @@ impl Rule for AddParamTypeDimFetchKey {
         if !matches!(in_class, Some(Node::Class(_) | Node::AnonymousClass(_))) {
             return;
         }
-        let MethodBody::Concrete(body) = &method.body else {
-            return;
-        };
+        let MethodBody::Concrete(body) = &method.body else { return };
         let facts = facts(ctx);
         if !method.modifiers.iter().any(|m| matches!(m, Modifier::Private(_)))
             && class_scope(ancestors)
@@ -90,7 +92,7 @@ impl Rule for AddParamTypeDimFetchKey {
                 continue;
             }
             let class = class_scope(ancestors).and_then(|scope| scope.name);
-            let Some((key, order)) = last_key_type(&facts, class.as_deref(), body, &fetches) else {
+            let Some((key, order)) = last_key_type(&facts, class.as_deref(), ancestors, body, &fetches) else {
                 continue;
             };
             // a constant array's `int` and `string` keys keep their order (PHPStan's union of them is not sorted)
@@ -119,6 +121,7 @@ impl Rule for AddParamTypeDimFetchKey {
 fn last_key_type(
     facts: &Facts,
     class: Option<&str>,
+    ancestors: &[Node<'_, '_>],
     body: Node<'_, '_>,
     fetches: &[&ArrayAccess<'_>],
 ) -> Option<(TUnion, Option<Vec<&'static str>>)> {
@@ -127,7 +130,7 @@ fn last_key_type(
         // the target of an assignment: Mago's type is the one after it, PHPStan's the property's declared one
         let t = if is_assigned(body, fetch) {
             class
-                .and_then(|class| declared_property_type(facts, class, fetch.array))
+                .and_then(|class| declared_property_type(facts, class, ancestors, fetch.array))
                 .or_else(|| type_of(facts, fetch.array))?
         } else {
             type_of(facts, fetch.array)?
@@ -199,26 +202,34 @@ fn is_assigned(body: Node<'_, '_>, fetch: &ArrayAccess<'_>) -> bool {
     found
 }
 
-/// The declared type (its docblock's, else the native one) of `$this->name`: the type PHPStan gives the property as
-/// the target of an assignment.
-fn declared_property_type<'f>(facts: &'f Facts, class: &str, expr: &Expression<'_>) -> Option<&'f TUnion> {
-    let name = match unparenthesize(expr) {
-        Expression::Access(Access::Property(fetch))
-            if matches!(unparenthesize(fetch.object), Expression::Variable(Variable::Direct(v)) if v.name == b"$this") =>
-        {
-            let ClassLikeMemberSelector::Identifier(name) = &fetch.property else {
-                return None;
-            };
-            [b"$", name.value].concat()
+/// The declared type (its docblock's, else the native one) of `$object->name` (an object of a class), `self::$name`,
+/// `static::$name`, `Name::$name` or `$object::$name`: the type PHPStan gives the property as the target of an assignment.
+fn declared_property_type<'f>(
+    facts: &'f Facts,
+    class: &str,
+    ancestors: &[Node<'_, '_>],
+    expr: &Expression<'_>,
+) -> Option<&'f TUnion> {
+    // the class of an object
+    let class_of = |object: &Expression<'_>| {
+        let [TAtomic::Object(TObject::Named(owner))] = type_of(facts, object)?.types.as_ref() else { return None };
+        Some(String::from_utf8_lossy(owner.name.as_bytes()).into_owned())
+    };
+    let (class, name) = match unparenthesize(expr) {
+        // `$this->items`, or the property of another object of a class
+        Expression::Access(Access::Property(fetch)) => {
+            let ClassLikeMemberSelector::Identifier(name) = &fetch.property else { return None };
+            (class_of(fetch.object)?, [b"$", name.value].concat())
         }
-        // `static::$items`, `self::$items`
-        Expression::Access(Access::StaticProperty(fetch))
-            if matches!(unparenthesize(fetch.class), Expression::Static(_) | Expression::Self_(_)) =>
-        {
-            let Variable::Direct(v) = &fetch.property else {
-                return None;
+        // `static::$items`, `self::$items`, `Other::$items`, `$object::$items`
+        Expression::Access(Access::StaticProperty(fetch)) => {
+            let Variable::Direct(v) = &fetch.property else { return None };
+            let owner = match unparenthesize(fetch.class) {
+                Expression::Static(_) | Expression::Self_(_) => class.to_string(),
+                Expression::Identifier(id) => resolve_class_name(ancestors, id),
+                object => class_of(object)?,
             };
-            v.name.to_vec()
+            (owner, v.name.to_vec())
         }
         _ => return None,
     };

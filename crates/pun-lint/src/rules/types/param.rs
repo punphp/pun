@@ -196,7 +196,7 @@ pub(crate) fn doc_order(source: &str, ancestors: &[Node<'_, '_>]) -> Vec<String>
 }
 
 /// The members of a union as PHPStan has them: a template type is its bound, `array-key` is `int|string` and
-/// `scalar` is `string|int|float|bool`. `None` for a template bound that is `mixed`.
+/// `scalar` is `int|float|string|bool`. `None` for a template bound that is `mixed`.
 fn expand(types: &[TAtomic]) -> Option<Vec<TAtomic>> {
     let mut out = Vec::new();
     for t in types {
@@ -212,9 +212,9 @@ fn expand(types: &[TAtomic]) -> Option<Vec<TAtomic>> {
                 out.push(TAtomic::Scalar(TScalar::string()));
             }
             TAtomic::Scalar(TScalar::Generic) => {
-                out.push(TAtomic::Scalar(TScalar::string()));
                 out.push(TAtomic::Scalar(TScalar::int()));
                 out.push(TAtomic::Scalar(TScalar::float()));
+                out.push(TAtomic::Scalar(TScalar::string()));
                 out.push(TAtomic::Scalar(TScalar::bool()));
             }
             _ => out.push(t.clone()),
@@ -268,19 +268,14 @@ fn single(t: &TAtomic, codebase: &CodebaseMetadata, php_version: u32) -> Option<
     }
 }
 
-/// A type that is not `null` or a constant `bool`, as a declaration: `$this` is `self` outside a return type; a
-/// `static` that Mago keeps from a static call is the class it names (PHPStan resolves it there).
+/// A type that is not `null` or a constant `bool`, as a declaration: `$this` and `static` (Mago keeps it only inside
+/// its class; a static call of another class is that class) are `self` outside a return type.
 fn member(t: &TAtomic, codebase: &CodebaseMetadata, php_version: u32) -> Option<String> {
     match t {
         TAtomic::Object(TObject::Named(named))
-            if named.is_this && named.intersection_types.is_none() =>
+            if (named.is_this || named.is_static) && named.intersection_types.is_none() =>
         {
             Some("self".to_string())
-        }
-        TAtomic::Object(TObject::Named(named)) if named.is_static => {
-            let mut plain = named.clone();
-            plain.is_static = false;
-            atomic_declaration(&TAtomic::Object(TObject::Named(plain)), codebase, php_version)
         }
         _ => atomic_declaration(t, codebase, php_version),
     }
@@ -349,30 +344,30 @@ fn non_empty_call(expr: &Expression<'_>) -> bool {
 
 /// The array shape of `t`; with `non_empty`, a non-empty array is `array<mixed, mixed>`. Several arrays are PHPStan's
 /// `TypeCombinator::union` of them, as far as Pun follows it: with a general array among them, one `ArrayType` whose
-/// item type is the union of theirs (Mago keeps them apart); constant arrays only stay a union.
+/// item type is the union of theirs (Mago keeps them apart), non-empty only when each of them is; constant arrays only
+/// stay a union.
 fn array_shape(t: &TUnion, non_empty: bool) -> Option<ArrayShape> {
-    let shapes: Vec<ArrayShape> = t
+    let arrays: Vec<&TArray> = t
         .types
         .iter()
         .map(|a| match a {
-            TAtomic::Array(array) => one_array_shape(array, non_empty),
+            TAtomic::Array(array) => Some(array),
             _ => None,
         })
         .collect::<Option<_>>()?;
-    if shapes.len() == 1 {
-        return shapes.into_iter().next();
+    if let [one] = arrays.as_slice() {
+        return one_array_shape(one, non_empty);
     }
+    if non_empty && arrays.iter().all(|a| matches!(one_array_shape(a, true), Some(ArrayShape::General(None)))) {
+        return Some(ArrayShape::General(None));
+    }
+    let shapes: Vec<ArrayShape> = arrays.iter().map(|a| one_array_shape(a, false)).collect::<Option<_>>()?;
     if shapes.iter().all(|s| matches!(s, ArrayShape::Constant(_))) {
         return None;
     }
     let mut items: Vec<TAtomic> = Vec::new();
     for shape in &shapes {
-        let Some(item) = item_type(shape) else {
-            if matches!(shape, ArrayShape::General(None)) {
-                return Some(ArrayShape::General(None));
-            }
-            continue;
-        };
+        let Some(item) = item_type(shape) else { continue };
         for a in item.types.iter() {
             if !items.contains(a) {
                 items.push(a.clone());
@@ -395,10 +390,9 @@ fn one_array_shape(array: &TArray, non_empty: bool) -> Option<ArrayShape> {
             None => ArrayShape::General(Some((*list.element_type).clone())),
         },
         TArray::Keyed(keyed) => match (&keyed.known_items, &keyed.parameters) {
-            (Some(known), None) => {
-                ArrayShape::Constant(known.values().map(|(_, v)| v.clone()).collect())
+            (known, None) => {
+                ArrayShape::Constant(known.iter().flat_map(|k| k.values()).map(|(_, v)| v.clone()).collect())
             }
-            (None, None) => ArrayShape::Constant(Vec::new()),
             (Some(_), Some(_)) => return None,
             (None, Some(_)) if keyed.non_empty && non_empty => ArrayShape::General(None),
             (None, Some((_, value))) => ArrayShape::General(Some((**value).clone())),

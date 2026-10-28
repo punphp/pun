@@ -82,9 +82,7 @@ impl Rule for PreferNarrowParamType {
 
 /// The shared `refactor()`: `narrow` for the nullable parameter of `NarrowArrayAnyAllNullableParamTypeRector`.
 fn visit(node: Node<'_, '_>, ctx: &Context<'_>, out: &mut Vec<Report>, names: &[&str], narrow: bool) {
-    let Node::FunctionCall(call) = node else {
-        return;
-    };
+    let Node::FunctionCall(call) = node else { return };
     if !names.iter().any(|n| named(call, n)) {
         return;
     }

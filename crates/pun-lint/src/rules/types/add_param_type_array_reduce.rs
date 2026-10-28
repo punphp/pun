@@ -44,9 +44,7 @@ impl Rule for AddParamTypeArrayReduce {
         ctx: &Context<'_>,
         out: &mut Vec<Report>,
     ) {
-        let Node::FunctionCall(call) = node else {
-            return;
-        };
+        let Node::FunctionCall(call) = node else { return };
         if !named(call, "array_reduce") {
             return;
         }
@@ -58,15 +56,7 @@ impl Rule for AddParamTypeArrayReduce {
         let Some(Expression::Closure(closure)) = args.get(1).map(|a| unparenthesize(value(a))) else {
             return;
         };
-        let Some(closure_type) = type_of(&facts, value(args[1])) else {
-            return;
-        };
-        let [TAtomic::Callable(TCallable::Signature(signature))] = closure_type.types.as_ref() else {
-            return;
-        };
-        let Some(returned) = signature.return_type.as_deref() else {
-            return;
-        };
+        let Some(returned) = closure_return(&facts, value(args[1])) else { return };
         let mut carry: Option<Vec<TAtomic>> = Some(returned.types.to_vec());
         if returns_untyped_param(closure) {
             carry = None;
@@ -101,6 +91,12 @@ impl Rule for AddParamTypeArrayReduce {
             edits,
         ));
     }
+}
+
+/// `getType($closure)->getReturnType()`: the return type of the closure's signature.
+fn closure_return<'f>(facts: &'f Facts, closure: &Expression<'_>) -> Option<&'f TUnion> {
+    let t = type_of(facts, closure)?;
+    t.types.iter().find_map(|a| if let TAtomic::Callable(TCallable::Signature(s)) = a { s.return_type.as_deref() } else { None })
 }
 
 /// Whether the closure returns one of its untyped parameters, never reassigned: PHPStan's return type is then `mixed`
@@ -174,12 +170,12 @@ fn combine(initial: &TUnion, returned: &TUnion) -> Option<Vec<TAtomic>> {
     Some(types)
 }
 
-/// `UnionTypeHelper::sortTypes`: `null` last, constant booleans then other constant scalars (by value) first, the
-/// rest by name.
+/// `UnionTypeHelper::sortTypes`: constant scalars other than booleans first (by value), then the rest by name, then
+/// constant booleans, `null` last.
 fn sort_key(a: &TAtomic) -> (u8, i128, String) {
     match a {
         TAtomic::Null => (4, 0, String::new()),
-        TAtomic::Scalar(TScalar::Bool(b)) if !b.is_general() => (0, 0, String::new()),
+        TAtomic::Scalar(TScalar::Bool(b)) if !b.is_general() => (3, 0, String::new()),
         TAtomic::Scalar(s) if s.is_literal_value() => (1, s.get_literal_int_value().map_or(0, i128::from), String::new()),
         other => (2, 0, mago_codex::ttype::TType::get_id(other).to_string()),
     }

@@ -33,26 +33,21 @@ impl Rule for AddParamTypeParentCall {
         ctx: &Context<'_>,
         out: &mut Vec<Report>,
     ) {
-        let (members, has_parent, name) = match node {
-            Node::Class(c) => (
-                &c.members,
-                c.extends.is_some(),
-                Some(qualified(ancestors, c.name.value)),
-            ),
-            Node::AnonymousClass(c) => (&c.members, c.extends.is_some(), None),
-            _ => return,
+        let (members, has_parent) = match node {
+            Node::Class(c) => (&c.members, c.extends.is_some()),
+            _ => {
+                let Node::AnonymousClass(c) = node else { return };
+                (&c.members, c.extends.is_some())
+            }
         };
         // no parent calls available
         if !has_parent {
             return;
         }
         let facts = facts(ctx);
-        let class = match (name, node) {
-            (Some(name), _) => name,
-            (None, Node::AnonymousClass(c)) => {
-                facts.anonymous_class_name(mago_span::HasSpan::span(c))
-            }
-            _ => return,
+        let class = match node {
+            Node::Class(c) => qualified(ancestors, c.name.value),
+            _ => facts.anonymous_class_name(mago_span::HasSpan::span(&node)),
         };
         let mut edits = Vec::new();
         for member in members.iter() {
@@ -158,15 +153,13 @@ fn parent_param_hint(facts: &Facts, class: &str, method: &[u8], position: usize)
         else {
             continue;
         };
-        let Some(declaring) = codebase.get_class_like(declaring.as_bytes()) else {
-            continue;
-        };
+        let Some(declaring) = codebase.get_class_like(declaring.as_bytes()) else { continue };
         let Some(source) = facts.source_of(declaring.span.file_id) else {
             continue;
         };
-        if let Some(found) = param_hint_in(&source, &String::from_utf8_lossy(declaring.original_name.as_bytes()), method, position) {
-            return found;
-        }
+        // the declaring class's source has the method (a class-like the codebase says declares it)
+        return param_hint_in(&source, &String::from_utf8_lossy(declaring.original_name.as_bytes()), method, position)
+            .flatten();
     }
     None
 }
@@ -185,11 +178,10 @@ fn param_hint_in(source: &str, class: &str, method: &[u8], position: usize) -> O
         if result.is_some() {
             return false;
         }
+        // the declaring class-like is a class or a trait
         let (name, members) = match node {
             Node::Class(c) => (c.name.value, &c.members),
             Node::Trait(t) => (t.name.value, &t.members),
-            Node::Interface(i) => (i.name.value, &i.members),
-            Node::Enum(e) => (e.name.value, &e.members),
             _ => return true,
         };
         if !qualified(path, name).eq_ignore_ascii_case(class) {
