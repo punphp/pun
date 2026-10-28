@@ -5971,7 +5971,7 @@
         "rules": [
           "lint/types/add-param-type-array-any-all"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -5981,7 +5981,7 @@
         "rules": [
           "lint/types/add-param-type-array-function"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -5991,7 +5991,7 @@
         "rules": [
           "lint/types/add-param-type-arrow-dim-fetch"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -6029,7 +6029,7 @@
         "rules": [
           "lint/types/add-param-type-array-map"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -6039,7 +6039,7 @@
         "rules": [
           "lint/types/add-param-type-array-reduce"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -6049,7 +6049,7 @@
         "rules": [
           "lint/types/add-param-type-iterable-method-call"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -6059,7 +6059,7 @@
         "rules": [
           "lint/types/add-param-type-variable-call"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -6107,7 +6107,7 @@
         "rules": [
           "lint/types/add-param-type-method-call"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same. Options: renamed for TOML: [options.\"lint/types/add-param-type-method-call\"] (Rector's treatClassesAsFinal() feature flag).",
         "unsupported": false
       },
       {
@@ -6205,7 +6205,7 @@
         "rules": [
           "lint/types/add-param-type-dim-fetch-key"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -6225,7 +6225,7 @@
         "rules": [
           "lint/types/add-param-type-data-provider"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -6243,7 +6243,7 @@
         "rules": [
           "lint/types/add-param-type-property"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -6253,7 +6253,7 @@
         "rules": [
           "lint/types/add-param-type-spl-fixed-array"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -7877,7 +7877,7 @@
         "rules": [
           "lint/types/prefer-narrow-param-type"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -8161,7 +8161,7 @@
         "rules": [
           "lint/types/add-param-type-parent-call"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -10109,7 +10109,7 @@
         "rules": [
           "lint/types/add-param-type-array-dim-fetch"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {

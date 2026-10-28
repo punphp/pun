@@ -7,7 +7,7 @@ pagination: false
 
 <RuleId id="lint/types/add-param-type-method-call" />
 
-Enabled by the [`types`](/docs/rules/sets/types) set. Fix: unsafe (can change behaviour). **Planned: not in Pun yet.** Enabling it in pun.toml is a config error.
+Enabled by the [`types`](/docs/rules/sets/types) set. Fix: unsafe (can change behaviour).
 
 ## Replaces
 
@@ -30,6 +30,9 @@ Change private method param type to strict type, based on passed strict types
 
 ## Options
 
-No configurable options.
+| Name | Type | Allowed values | Default | Upstream name |
+| --- | --- | --- | --- | --- |
+| `treat-classes-as-final` | `bool` | Any value of this type | not recorded | `treatClassesAsFinal` |
+
 
 [Group reference](/docs/rules/lint/types) · [Source mapping](https://github.com/punphp/pun/blob/main/crates/pun-config/rules/mapping.toml) · [Edit this page](https://github.com/punphp/pun/edit/main/crates/pun-config/rules/mapping.toml)

@@ -927,6 +927,38 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "types/add-return-phpdoc-direct-array" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add simple @return array docblock based on direct single level direct return of []" }
 "types/add-return-phpdoc-json-array" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add @return docblock for array based on return of json_decode() return array" }
 "types/add-return-phpdoc-scalar-array" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add @return docblock for scalar array from strict array assignments" }
+"types/add-param-phpdoc-from-callable-call" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add param array docblock based on callable native function call" }
+"types/add-param-phpdoc-from-dim-fetch" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add @param docblock array type, based on array dim fetch access" }
+"types/add-param-phpdoc-from-local-calls" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add @param array docblock to a class method based on local call types" }
+"types/add-param-phpdoc-from-reference-assign" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add @param docblock array type, based on type to assigned parameter reference" }
+"types/add-param-type-array-any-all" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add a type to an untyped array_any()/array_all() closure param, based on the array item type" }
+"types/add-param-type-array-dim-fetch" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add array type based on array dim fetch use" }
+"types/add-param-type-array-function" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add array_filter()/array_map() function closure param type, based on passed iterable" }
+"types/add-param-type-array-map" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Applies type hints to array_map closures" }
+"types/add-param-type-array-reduce" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Applies type hints to array_map closures" }
+"types/add-param-type-arrow-dim-fetch" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add closure and arrow function param array type, if dim fetch is used inside" }
+"types/add-param-type-data-provider" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Adds param type declaration based on PHPUnit provider return type declaration" }
+"types/add-param-type-dim-fetch-key" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add method param type based on use in array dim fetch of known keys" }
+"types/add-param-type-iterable-method-call" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Applies type hints to closures on Iterable method calls where key/value types are documented" }
+"types/add-param-type-method-call" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Change private method param type to strict type, based on passed strict types" }
+"types/add-param-type-parent-call" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Change param type based on parent param type" }
+"types/add-param-type-property" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add param type declaration based on property type" }
+"types/add-param-type-spl-fixed-array" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add exact fixed array type in known cases" }
+"types/add-param-type-sprintf" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add string type to parameters used in sprintf calls" }
+"types/add-param-type-variable-call" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add closure param object type based on the argument the assigned closure variable is called with" }
+"types/add-private-method-array-return-type" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add strict return array type to private methods based on created empty array and returned" }
+"types/add-property-type-assigns" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add typed property from assigned types" }
+"types/add-property-type-behat-context" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add known property types to Behat context static properties" }
+"types/add-property-type-constructor" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add typed properties based only on strict constructor types" }
+"types/add-property-type-get-repository" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add strict typed property to a private test case property based on its @var object type, when assigned via entity manager getRepository() fetch in setUp()" }
+"types/add-property-type-jms-object" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add object typed property from JMS Serializer Type attribute" }
+"types/add-property-type-jms-scalar" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add scalar typed property from JMS Serializer Type attribute" }
+"types/add-property-type-setter-getter" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add property type based on strict setter and getter method" }
+"types/add-return-phpdoc-common-object" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add @return docblock array of objects, that have common denominator interface/parent class" }
+"types/add-return-phpdoc-dim-assigned-object" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add @return docblock array of objects, that are dim assigned to returned variable" }
+"types/add-return-phpdoc-direct-array" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add simple @return array docblock based on direct single level direct return of []" }
+"types/add-return-phpdoc-json-array" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add @return docblock for array based on return of json_decode() return array" }
+"types/add-return-phpdoc-scalar-array" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add @return docblock for scalar array from strict array assignments" }
 "types/add-return-type-from-cast" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add return type to function like with return cast" }
 "types/add-return-type-from-constant" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add strict type declaration based on returned constants" }
 "types/add-return-type-from-get-repository" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add repository return type declaration based on @return docblock, when a method returns entity manager getRepository() fetch" }
@@ -956,6 +988,12 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "types/prefer-instanceof" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "Use instanceof instead of is_a(), null checks or truthiness checks on nullable objects." }
 "types/prefer-narrow-param-type" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Narrow an already nullable array_any()/array_all()/array_find()/array_find_key() closure param to the non-nullable array item type" }
 "types/prefer-specific-return-type" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Narrows return type from generic `object` or parent class to specific class in final classes/methods" }
+"types/no-nullsafe-on-non-null" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Cleanup unneeded nullsafe operator" }
+"types/prefer-generic-collection-phpdoc" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Change @return \"Type[]|ArrayCollection\" union docblock to a generic \"ArrayCollection<int, Type>\"" }
+"types/prefer-identical-same-type" = { fix = "mixed", intent = "suspicious", sets = ["code-quality"], ported = false, status = "decided", summary = "Use ===/!== over ==/!=, if values have the same type" }
+"types/prefer-instanceof" = { fix = "unsafe", sets = ["code-quality"], ported = false, status = "decided", summary = "Use instanceof instead of is_a(), null checks or truthiness checks on nullable objects." }
+"types/prefer-narrow-param-type" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Narrow an already nullable array_any()/array_all()/array_find()/array_find_key() closure param to the non-nullable array item type" }
+"types/prefer-specific-return-type" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Narrows return type from generic `object` or parent class to specific class in final classes/methods" }
 "types/require-strict-param" = { fix = "mixed", intent = "suspicious", sets = ["coding-style"], ported = true, status = "decided", summary = "Functions should be used with `$strict` param set to `true`.", note = "fix is safe where the haystack type is known (Rector StrictInArray/StrictArraySearch), unsafe otherwise (CS-Fixer strict_param)" }
 
 [rules.analyse]
@@ -1846,6 +1884,9 @@ b-mode = { upstream = "b_mode", type = "bool" }
 [options."lint/style/require-ordered-traits"]
 case-sensitive = { upstream = "case_sensitive", type = "bool" }
 
+[options."lint/types/add-param-type-method-call"]
+treat-classes-as-final = { upstream = "treatClassesAsFinal", type = "bool" }
+
 [options."lint/types/add-void-return-type"]
 fix-lambda = { upstream = "fix_lambda", type = "bool" }
 
@@ -2190,7 +2231,7 @@ AddClosureVoidReturnTypeWhereNoReturn = { class = "Rector\\TypeDeclaration\\Rect
 AddEscapeArgument = { class = "Rector\\Php84\\Rector\\FuncCall\\AddEscapeArgumentRector", pun = "lint/php-8.4/add-csv-escape-argument", sets = ["php84"], options = "none", status = "decided" }
 AddFunctionVoidReturnTypeWhereNoReturn = { class = "Rector\\TypeDeclaration\\Rector\\Function_\\AddFunctionVoidReturnTypeWhereNoReturnRector", pun = "lint/types/add-function-void-return", sets = ["type-declaration"], options = "none", status = "decided" }
 AddInterfaceByTrait = { class = "Rector\\Transform\\Rector\\Class_\\AddInterfaceByTraitRector", unsupported = "deprecated upstream (2.7.0, main)", status = "decided" }
-AddMethodCallBasedStrictParamType = { class = "Rector\\TypeDeclaration\\Rector\\ClassMethod\\AddMethodCallBasedStrictParamTypeRector", pun = "lint/types/add-param-type-method-call", sets = ["type-declaration"], options = "none", status = "decided" }
+AddMethodCallBasedStrictParamType = { class = "Rector\\TypeDeclaration\\Rector\\ClassMethod\\AddMethodCallBasedStrictParamTypeRector", pun = "lint/types/add-param-type-method-call", sets = ["type-declaration"], options = "renamed for TOML: [options.\"lint/types/add-param-type-method-call\"] (Rector's treatClassesAsFinal() feature flag)", status = "decided" }
 AddNameToBooleanArgument = { class = "Rector\\CodeQuality\\Rector\\CallLike\\AddNameToBooleanArgumentRector", unsupported = "only in sets outside the eight prepared sets: named-args", sets = ["named-args"], status = "decided" }
 AddNameToNullArgument = { class = "Rector\\CodeQuality\\Rector\\CallLike\\AddNameToNullArgumentRector", unsupported = "only in sets outside the eight prepared sets: named-args", sets = ["named-args"], status = "decided" }
 AddOverrideAttributeToOverriddenMethods = { class = "Rector\\Php83\\Rector\\ClassMethod\\AddOverrideAttributeToOverriddenMethodsRector", unsupported = "only in php52..php83 upgrade sets (below the PHP 8.4 floor)", sets = ["php-polyfills", "php83"], status = "decided" }
