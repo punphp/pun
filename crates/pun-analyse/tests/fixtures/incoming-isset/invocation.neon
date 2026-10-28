@@ -1,0 +1,5 @@
+parameters:
+    phpVersion: 80400
+    paths:
+        - invocation.php
+        - ../rules/data/Variables/data/isset-in-trait.php

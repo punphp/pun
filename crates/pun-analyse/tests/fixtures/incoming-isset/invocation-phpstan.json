@@ -1,0 +1,417 @@
+{
+  "0": {
+    "totals": {
+      "errors": 0,
+      "file_errors": 0
+    },
+    "files": {},
+    "errors": []
+  },
+  "1": {
+    "totals": {
+      "errors": 0,
+      "file_errors": 11
+    },
+    "files": {
+      "incoming-isset/invocation.php": {
+        "errors": 8,
+        "messages": [
+          {
+            "message": "Variable $defined in isset() always exists and is not nullable.",
+            "line": 8,
+            "ignorable": true,
+            "identifier": "isset.variable"
+          },
+          {
+            "message": "Variable $null in isset() always exists and is always null.",
+            "line": 10,
+            "ignorable": true,
+            "identifier": "isset.variable"
+          },
+          {
+            "message": "Variable $missing in isset() is never defined.",
+            "line": 11,
+            "ignorable": true,
+            "identifier": "isset.variable"
+          },
+          {
+            "message": "Variable $defined in isset() always exists and is not nullable.",
+            "line": 17,
+            "ignorable": true,
+            "identifier": "isset.variable"
+          },
+          {
+            "message": "Variable $missingLater in isset() is never defined.",
+            "line": 17,
+            "ignorable": true,
+            "identifier": "isset.variable"
+          },
+          {
+            "message": "Variable $missingArray in isset() is never defined.",
+            "line": 37,
+            "ignorable": true,
+            "identifier": "isset.variable"
+          },
+          {
+            "message": "Property IssetInvocation\\Properties::$present in isset() is not nullable nor uninitialized.",
+            "line": 49,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+          },
+          {
+            "message": "Variable $missingObject in isset() is never defined.",
+            "line": 58,
+            "ignorable": true,
+            "identifier": "isset.variable"
+          }
+        ]
+      },
+      "rules/data/Variables/data/isset-in-trait.php": {
+        "errors": 3,
+        "messages": [
+          {
+            "message": "Variable $s on left side of ?? always exists and is not nullable.",
+            "line": 119,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+          },
+          {
+            "message": "Variable $s in isset() always exists and is not nullable.",
+            "line": 120,
+            "ignorable": true,
+            "identifier": "isset.variable"
+          },
+          {
+            "message": "Variable $s in empty() always exists and is not falsy.",
+            "line": 121,
+            "ignorable": true,
+            "identifier": "empty.variable"
+          }
+        ]
+      }
+    },
+    "errors": []
+  },
+  "4": {
+    "totals": {
+      "errors": 0,
+      "file_errors": 22
+    },
+    "files": {
+      "incoming-isset/invocation.php": {
+        "errors": 13,
+        "messages": [
+          {
+            "message": "Variable $defined in isset() always exists and is not nullable.",
+            "line": 8,
+            "ignorable": true,
+            "identifier": "isset.variable"
+          },
+          {
+            "message": "Variable $null in isset() always exists and is always null.",
+            "line": 10,
+            "ignorable": true,
+            "identifier": "isset.variable"
+          },
+          {
+            "message": "Variable $missing in isset() is never defined.",
+            "line": 11,
+            "ignorable": true,
+            "identifier": "isset.variable"
+          },
+          {
+            "message": "Variable $defined in isset() always exists and is not nullable.",
+            "line": 17,
+            "ignorable": true,
+            "identifier": "isset.variable"
+          },
+          {
+            "message": "Variable $missingLater in isset() is never defined.",
+            "line": 17,
+            "ignorable": true,
+            "identifier": "isset.variable"
+          },
+          {
+            "message": "Offset 'present' on array{present: int, nullable: int|null, nested: array{leaf: int}} in isset() always exists and is not nullable.",
+            "line": 32,
+            "ignorable": true,
+            "identifier": "isset.offset"
+          },
+          {
+            "message": "Offset 'missing' on array{present: int, nullable: int|null, nested: array{leaf: int}} in isset() does not exist.",
+            "line": 33,
+            "ignorable": true,
+            "identifier": "isset.offset"
+          },
+          {
+            "message": "Offset 'leaf' on array{leaf: int} in isset() always exists and is not nullable.",
+            "line": 35,
+            "ignorable": true,
+            "identifier": "isset.offset"
+          },
+          {
+            "message": "Variable $missingArray in isset() is never defined.",
+            "line": 37,
+            "ignorable": true,
+            "identifier": "isset.variable"
+          },
+          {
+            "message": "Property IssetInvocation\\Properties::$present in isset() is not nullable nor uninitialized.",
+            "line": 49,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+          },
+          {
+            "message": "Property IssetInvocation\\Properties::$present (int) in isset() is not nullable.",
+            "line": 55,
+            "ignorable": true,
+            "identifier": "isset.property"
+          },
+          {
+            "message": "Static property IssetInvocation\\Properties::$staticPresent (int) in isset() is not nullable.",
+            "line": 57,
+            "ignorable": true,
+            "identifier": "isset.property"
+          },
+          {
+            "message": "Variable $missingObject in isset() is never defined.",
+            "line": 58,
+            "ignorable": true,
+            "identifier": "isset.variable"
+          }
+        ]
+      },
+      "rules/data/Variables/data/isset-in-trait.php": {
+        "errors": 3,
+        "messages": [
+          {
+            "message": "Variable $s on left side of ?? always exists and is not nullable.",
+            "line": 119,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+          },
+          {
+            "message": "Variable $s in isset() always exists and is not nullable.",
+            "line": 120,
+            "ignorable": true,
+            "identifier": "isset.variable"
+          },
+          {
+            "message": "Variable $s in empty() always exists and is not falsy.",
+            "line": 121,
+            "ignorable": true,
+            "identifier": "empty.variable"
+          }
+        ]
+      },
+      "rules/data/Variables/data/isset-in-trait.php (in context of class IssetInTrait\\FirstNonNullableProperty)": {
+        "errors": 3,
+        "messages": [
+          {
+            "message": "Property IssetInTrait\\FirstNonNullableProperty::$k (int<1, max>) on left side of ?? is not nullable.",
+            "line": 82,
+            "ignorable": true,
+            "identifier": "nullCoalesce.property"
+          },
+          {
+            "message": "Property IssetInTrait\\FirstNonNullableProperty::$k (int<1, max>) in isset() is not nullable.",
+            "line": 83,
+            "ignorable": true,
+            "identifier": "isset.property"
+          },
+          {
+            "message": "Property IssetInTrait\\FirstNonNullableProperty::$k (int<1, max>) in empty() is not falsy.",
+            "line": 84,
+            "ignorable": true,
+            "identifier": "empty.property"
+          }
+        ]
+      },
+      "rules/data/Variables/data/isset-in-trait.php (in context of class IssetInTrait\\SecondNonNullableProperty)": {
+        "errors": 3,
+        "messages": [
+          {
+            "message": "Property IssetInTrait\\SecondNonNullableProperty::$k (int<1, max>) on left side of ?? is not nullable.",
+            "line": 82,
+            "ignorable": true,
+            "identifier": "nullCoalesce.property"
+          },
+          {
+            "message": "Property IssetInTrait\\SecondNonNullableProperty::$k (int<1, max>) in isset() is not nullable.",
+            "line": 83,
+            "ignorable": true,
+            "identifier": "isset.property"
+          },
+          {
+            "message": "Property IssetInTrait\\SecondNonNullableProperty::$k (int<1, max>) in empty() is not falsy.",
+            "line": 84,
+            "ignorable": true,
+            "identifier": "empty.property"
+          }
+        ]
+      }
+    },
+    "errors": []
+  },
+  "9": {
+    "totals": {
+      "errors": 0,
+      "file_errors": 22
+    },
+    "files": {
+      "incoming-isset/invocation.php": {
+        "errors": 13,
+        "messages": [
+          {
+            "message": "Variable $defined in isset() always exists and is not nullable.",
+            "line": 8,
+            "ignorable": true,
+            "identifier": "isset.variable"
+          },
+          {
+            "message": "Variable $null in isset() always exists and is always null.",
+            "line": 10,
+            "ignorable": true,
+            "identifier": "isset.variable"
+          },
+          {
+            "message": "Variable $missing in isset() is never defined.",
+            "line": 11,
+            "ignorable": true,
+            "identifier": "isset.variable"
+          },
+          {
+            "message": "Variable $defined in isset() always exists and is not nullable.",
+            "line": 17,
+            "ignorable": true,
+            "identifier": "isset.variable"
+          },
+          {
+            "message": "Variable $missingLater in isset() is never defined.",
+            "line": 17,
+            "ignorable": true,
+            "identifier": "isset.variable"
+          },
+          {
+            "message": "Offset 'present' on array{present: int, nullable: int|null, nested: array{leaf: int}} in isset() always exists and is not nullable.",
+            "line": 32,
+            "ignorable": true,
+            "identifier": "isset.offset"
+          },
+          {
+            "message": "Offset 'missing' on array{present: int, nullable: int|null, nested: array{leaf: int}} in isset() does not exist.",
+            "line": 33,
+            "ignorable": true,
+            "identifier": "isset.offset"
+          },
+          {
+            "message": "Offset 'leaf' on array{leaf: int} in isset() always exists and is not nullable.",
+            "line": 35,
+            "ignorable": true,
+            "identifier": "isset.offset"
+          },
+          {
+            "message": "Variable $missingArray in isset() is never defined.",
+            "line": 37,
+            "ignorable": true,
+            "identifier": "isset.variable"
+          },
+          {
+            "message": "Property IssetInvocation\\Properties::$present in isset() is not nullable nor uninitialized.",
+            "line": 49,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+          },
+          {
+            "message": "Property IssetInvocation\\Properties::$present (int) in isset() is not nullable.",
+            "line": 55,
+            "ignorable": true,
+            "identifier": "isset.property"
+          },
+          {
+            "message": "Static property IssetInvocation\\Properties::$staticPresent (int) in isset() is not nullable.",
+            "line": 57,
+            "ignorable": true,
+            "identifier": "isset.property"
+          },
+          {
+            "message": "Variable $missingObject in isset() is never defined.",
+            "line": 58,
+            "ignorable": true,
+            "identifier": "isset.variable"
+          }
+        ]
+      },
+      "rules/data/Variables/data/isset-in-trait.php": {
+        "errors": 3,
+        "messages": [
+          {
+            "message": "Variable $s on left side of ?? always exists and is not nullable.",
+            "line": 119,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+          },
+          {
+            "message": "Variable $s in isset() always exists and is not nullable.",
+            "line": 120,
+            "ignorable": true,
+            "identifier": "isset.variable"
+          },
+          {
+            "message": "Variable $s in empty() always exists and is not falsy.",
+            "line": 121,
+            "ignorable": true,
+            "identifier": "empty.variable"
+          }
+        ]
+      },
+      "rules/data/Variables/data/isset-in-trait.php (in context of class IssetInTrait\\FirstNonNullableProperty)": {
+        "errors": 3,
+        "messages": [
+          {
+            "message": "Property IssetInTrait\\FirstNonNullableProperty::$k (int<1, max>) on left side of ?? is not nullable.",
+            "line": 82,
+            "ignorable": true,
+            "identifier": "nullCoalesce.property"
+          },
+          {
+            "message": "Property IssetInTrait\\FirstNonNullableProperty::$k (int<1, max>) in isset() is not nullable.",
+            "line": 83,
+            "ignorable": true,
+            "identifier": "isset.property"
+          },
+          {
+            "message": "Property IssetInTrait\\FirstNonNullableProperty::$k (int<1, max>) in empty() is not falsy.",
+            "line": 84,
+            "ignorable": true,
+            "identifier": "empty.property"
+          }
+        ]
+      },
+      "rules/data/Variables/data/isset-in-trait.php (in context of class IssetInTrait\\SecondNonNullableProperty)": {
+        "errors": 3,
+        "messages": [
+          {
+            "message": "Property IssetInTrait\\SecondNonNullableProperty::$k (int<1, max>) on left side of ?? is not nullable.",
+            "line": 82,
+            "ignorable": true,
+            "identifier": "nullCoalesce.property"
+          },
+          {
+            "message": "Property IssetInTrait\\SecondNonNullableProperty::$k (int<1, max>) in isset() is not nullable.",
+            "line": 83,
+            "ignorable": true,
+            "identifier": "isset.property"
+          },
+          {
+            "message": "Property IssetInTrait\\SecondNonNullableProperty::$k (int<1, max>) in empty() is not falsy.",
+            "line": 84,
+            "ignorable": true,
+            "identifier": "empty.property"
+          }
+        ]
+      }
+    },
+    "errors": []
+  }
+}

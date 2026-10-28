@@ -1,5 +1,5 @@
-//! NullCoalesceRule through IssetCheck::check() (`checkAdvancedIsset` from level 4) on the left side of `??` and
-//! `??=`. The variables' certainty and `hasExpressionType()` come from Mago's block context (see
+//! IssetRule and NullCoalesceRule through IssetCheck::check() (`checkAdvancedIsset` from level 4) on isset
+//! operands and the left side of `??` and `??=`. Certainty and `hasExpressionType()` come from Mago's block context (see
 //! [`super::super::infer`]).
 
 use std::collections::{HashMap, HashSet};
@@ -17,8 +17,8 @@ use super::no_discard::unparen;
 const SUPERGLOBALS: [&[u8]; 9] =
     [b"$GLOBALS", b"$_SERVER", b"$_GET", b"$_POST", b"$_FILES", b"$_COOKIE", b"$_SESSION", b"$_REQUEST", b"$_ENV"];
 
-/// The left sides' chains (level 1): the expressions whose type the check reads, and the variables and fetches
-/// whose certainty it reads.
+/// Isset operands and coalescing left-side chains (level 1): the expressions whose type the check reads,
+/// and the variables and fetches whose certainty it reads.
 pub(in super::super) fn coalesce_types(program: &Program, level: u8) -> (Vec<Span>, Vec<Span>) {
     let mut chains = Chains::default();
     if level >= 1 {
@@ -56,6 +56,12 @@ impl Chains {
 }
 
 impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Chains {
+    fn walk_in_isset_construct(&mut self, i: &'ast IssetConstruct<'arena>, _: &mut ()) {
+        for value in &i.values {
+            self.chain(value);
+        }
+    }
+
     fn walk_in_binary(&mut self, b: &'ast Binary<'arena>, _: &mut ()) {
         if b.operator.is_null_coalesce() {
             self.chain(b.lhs);
@@ -65,6 +71,29 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Chains {
     fn walk_in_assignment(&mut self, a: &'ast Assignment<'arena>, _: &mut ()) {
         if matches!(a.operator, AssignmentOperator::Coalesce(_)) {
             self.chain(a.lhs);
+        }
+    }
+}
+
+/// IssetRule invokes the shared check for every operand, including later multi-isset subjects.
+pub(in super::super) fn isset(c: &mut Checker, construct: &IssetConstruct) {
+    if c.level < 1 {
+        return;
+    }
+    for value in &construct.values {
+        let check = IssetCheck {
+            c,
+            operator: "in isset()".to_string(),
+            identifier: "isset",
+            advanced: c.level >= 4,
+        };
+        match check.check(value, None) {
+            Some((identifier, message)) => {
+                // Errors without an explicit line inherit the IssetExpressionNode's line upstream.
+                let line = c.line_of(construct.span());
+                c.condition_error(value.span(), line, &identifier, true, message, None);
+            }
+            None => c.no_condition(value.span(), "isset.expr"),
         }
     }
 }
