@@ -265,6 +265,11 @@ impl FunctionLikeMetadata {
         self.kind
     }
 
+    /// The explicit `@pure` or `@impure` value, independently of an absent annotation.
+    pub fn declared_purity(&self) -> Option<bool> {
+        self.explicit_docblock_flags.contains(MetadataFlags::PURE).then(|| self.flags.is_pure())
+    }
+
     /// Returns a mutable slice of the parameter metadata.
     #[inline]
     pub fn get_parameters_mut(&mut self) -> &mut [FunctionLikeParameterMetadata] {
@@ -364,6 +369,7 @@ impl FunctionLikeMetadata {
             patch.explicit_docblock_flags,
             PATCHABLE_FUNCTION_DOCBLOCK_FLAGS,
         );
+        self.explicit_docblock_flags.insert(patch.explicit_docblock_flags & PATCHABLE_FUNCTION_DOCBLOCK_FLAGS);
     }
 
     /// Reports a parameter count mismatch between the patch and the original.

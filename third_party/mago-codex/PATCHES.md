@@ -908,3 +908,12 @@ The source contract is `ConstantArrayType::legacyIsKeysSupersetOf()` and
 `cb3b7e99489b2e3789ee2eec10501cb7a72580ea`. The public
 `pun-analyse/tests/shape_discrimination.rs` regression compares 58 complete upstream
 records across operand orders, sibling reads, legitimate reductions, and ordinary unions.
+
+## Explicit purity after stub patches
+
+`FunctionLikeMetadata::declared_purity()` distinguishes an absent annotation from an explicit
+pure or impure annotation. Stub patches retain their explicit flag mask alongside effective
+flags, so an impure override remains distinguishable from an unspecified declaration.
+The analyzer uses that distinction for PHPStan's receiver-local side-effect decision.
+The public `receiver_invalidation` target checks both purity override directions against
+fresh PHPStan 2.3.1 output for a scanned class and an analyzed caller.

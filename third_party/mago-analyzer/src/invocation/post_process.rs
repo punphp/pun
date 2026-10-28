@@ -550,12 +550,55 @@ fn clear_object_property_narrowings<'ctx, 'arena, A>(
 {
     let metadata = invocation.target.get_function_like_metadata();
     let suspends_fiber = metadata.is_some_and(|metadata| metadata.flags.suspends_fiber());
+    let method_context = invocation.target.get_method_context();
+    let invalidating_class = method_context.and_then(|method| {
+        let declaring = method.declaring_method_id?;
+        Some(method.class_like_metadata.appearing_method_ids.get(&method.requested_name)
+            .unwrap_or(&declaring).get_class_name())
+    });
+    // FileTypeMapper remaps the trait's PHPDoc scope to its alias, leaving the
+    // original method's native declaration but not its PHPDoc in the consuming class.
+    let aliased_source = method_context.is_some_and(|method| {
+        let Some(declaring) = method.declaring_method_id else { return false };
+        let Some(storage) = context.codebase.get_class_like(declaring.get_class_name().as_bytes()) else { return false };
+        let Some(class) = invalidating_class.and_then(|name| context.codebase.get_class_like(name.as_bytes())) else {
+            return false;
+        };
+        storage.kind.is_trait() && storage.name != class.name
+            && class.trait_alias_map.iter().any(|(alias, source)| {
+                *source == method.requested_name
+                    && class.declaring_method_ids.get(alias) == Some(&declaring)
+            })
+    });
+    // MethodCallHandler invalidates the receiver only for a constructor, known side effects,
+    // or an unresolved method. A merely possibly impure method keeps its property observations.
+    let invalidated_receiver = receiver_variable.filter(|_| metadata.is_none_or(|metadata| {
+        let Some(method) = &metadata.method_metadata else { return false };
+        if method.is_static {
+            return false;
+        }
+        let returns = if aliased_source {
+            &metadata.return_type_declaration_metadata
+        } else {
+            &metadata.return_type_metadata
+        }.as_ref().map(|ty| &ty.type_union);
+        let constructor = method_context.map_or(method.is_constructor, |method| method.requested_name.as_bytes() == b"__construct");
+        constructor
+            || returns.is_some_and(TUnion::is_void)
+            || metadata.declared_purity().filter(|_| !aliased_source).map_or_else(
+                || returns.is_some_and(|ty| {
+                    matches!(ty.types.as_ref(), [atomic] if atomic.is_this())
+                }),
+                |pure| !pure,
+            )
+    })).map(Word::new);
     let preserves_stable_method_results = metadata
-        .is_some_and(|metadata| (metadata.flags.is_pure() || metadata.flags.is_mutation_free()) && !suspends_fiber);
+        .is_some_and(|metadata| (metadata.flags.is_pure() || metadata.flags.is_mutation_free()) && !suspends_fiber)
+        && invalidated_receiver.is_none();
     let preserves_property_narrowings = metadata.is_some_and(|metadata| {
         (metadata.flags.is_pure() || metadata.flags.is_mutation_free() || metadata.flags.is_external_mutation_free())
             && !suspends_fiber
-    });
+    }) && invalidated_receiver.is_none();
 
     if !preserves_stable_method_results {
         block_context.stable_method_call_assertions.clear();
@@ -563,6 +606,7 @@ fn clear_object_property_narrowings<'ctx, 'arena, A>(
         if preserves_property_narrowings {
             let references_method_call =
                 |clause: &Rc<Clause>| clause.possibilities.keys().copied().any(references_method_call_key);
+            block_context.invalidate_expression_holders(|key, _| references_method_call_key(key));
             block_context.locals.retain(|key, _| !references_method_call_key(*key));
             block_context.clauses.retain(|clause| !references_method_call(clause));
             block_context.reconciled_expression_clauses.retain(|clause| !references_method_call(clause));
@@ -574,36 +618,32 @@ fn clear_object_property_narrowings<'ctx, 'arena, A>(
         return;
     }
 
-    let class_metadata = block_context.scope.get_class_like();
-    let preserves_this_property = |var_id: Word| -> bool {
-        let Some(property_name) = var_id.as_bytes().strip_prefix(b"$this->") else {
-            return false;
-        };
-        if memchr::memmem::find(property_name, b"->").is_some() || property_name.contains(&b'[') {
-            return false;
-        }
-
-        class_metadata.is_some_and(|metadata| {
-            metadata.flags.is_readonly()
-                || metadata
-                    .properties
-                    .get(&Word::new(property_name))
-                    .is_some_and(|property| property.flags.is_readonly())
+    let preserved: WordSet = block_context
+        .locals
+        .keys()
+        .copied()
+        .filter(|var_id| {
+            is_property_or_index_key(*var_id)
+                && (property_root_is_immutable(context, block_context, *var_id)
+                    || (invalidated_receiver.is_some_and(|receiver| is_descendant_of_any(*var_id, &[receiver]))
+                        && invalidating_class.is_some_and(|class| {
+                            private_property_of_other_class(context, block_context, *var_id, class)
+                        })))
         })
-    };
-    let is_self_method_call = matches!(receiver_variable, Some(v) if v == b"$this")
-        && match invocation.target.get_function_like_identifier() {
-            Some(FunctionLikeIdentifier::Method(class_name, _)) => block_context
-                .scope
-                .get_class_like_name()
-                .is_some_and(|current_class| current_class.as_bytes().eq_ignore_ascii_case(class_name.as_bytes())),
-            _ => false,
-        };
+        .collect();
+    let is_self_method_call = invalidated_receiver.is_some_and(|receiver| receiver.as_bytes() == b"$this");
     let clears_this = is_self_method_call || (suspends_fiber && block_context.scope.get_class_like_name().is_some());
     if is_self_method_call {
         block_context.definitely_uninitialized_property_ids.clear();
     }
 
+    block_context.invalidate_expression_holders(|key, guard| {
+        references_method_call_key(key)
+            || (clears_this && ((guard && key.as_bytes() == b"$this")
+                || (key.as_bytes().starts_with(b"$this->") && (guard || !preserved.contains(&key)))))
+            || is_superglobal_index_key(key)
+            || is_superglobal_name(key.as_bytes())
+    });
     let mut resource_ids = WordSet::default();
     block_context.locals.retain(|var_id, current_type| {
         if references_method_call_key(*var_id) {
@@ -628,7 +668,7 @@ fn clear_object_property_narrowings<'ctx, 'arena, A>(
             *current_type = Rc::new(widened);
         }
 
-        if clears_this && var_id.as_bytes().starts_with(b"$this->") && !preserves_this_property(*var_id) {
+        if clears_this && var_id.as_bytes().starts_with(b"$this->") && !preserved.contains(var_id) {
             return false;
         }
         if is_superglobal_index_key(*var_id) {
@@ -651,7 +691,7 @@ fn clear_object_property_narrowings<'ctx, 'arena, A>(
                     && (resource_ids.contains(&var_id)
                         || (clears_this
                             && var_id.as_bytes().starts_with(b"$this->")
-                            && !preserves_this_property(var_id))
+                            && !preserved.contains(&var_id))
                         || is_superglobal_index_key(var_id)
                         || is_superglobal_name(var_id.as_bytes())))
         })
@@ -686,9 +726,9 @@ fn clear_object_property_narrowings<'ctx, 'arena, A>(
     }
 
     let mut this_escapes = matches!(receiver_variable, Some(v) if v == b"$this");
-    let mut escaped_roots: Vec<Word> = Vec::new();
+    let mut escaped_roots: Vec<Word> = invalidated_receiver.into_iter().collect();
     let mut container_escapes = false;
-    let mut has_object_argument = false;
+    let mut has_object_argument = invalidated_receiver.is_some();
     for argument in invocation.arguments_source.iter_arguments() {
         let Some(expression) = argument.value() else {
             continue;
@@ -729,21 +769,15 @@ fn clear_object_property_narrowings<'ctx, 'arena, A>(
         escaped_roots.push(Word::new(b"$this"));
     }
 
-    let preserved: WordSet = block_context
-        .locals
-        .keys()
-        .copied()
-        .filter(|var_id| {
-            is_property_or_index_key(*var_id) && property_root_is_immutable(context, block_context, *var_id)
-        })
-        .collect();
-
-    let should_wipe = |var_id: Word| -> bool {
+    let should_wipe = |var_id: Word, guard: bool| -> bool {
+        if guard && escaped_roots.contains(&var_id) {
+            return true;
+        }
         if !is_property_or_index_key(var_id) {
             return false;
         }
 
-        if preserved.contains(&var_id) {
+        if !guard && preserved.contains(&var_id) {
             return false;
         }
 
@@ -758,12 +792,13 @@ fn clear_object_property_narrowings<'ctx, 'arena, A>(
         is_descendant_of_any(var_id, &escaped_roots)
     };
 
-    block_context.locals.retain(|var_id, _| !should_wipe(*var_id));
+    block_context.invalidate_expression_holders(should_wipe);
+    block_context.locals.retain(|var_id, _| !should_wipe(*var_id, false));
 
-    block_context.clauses.retain(|clause| clause.wedge || !clause.possibilities.keys().copied().any(should_wipe));
+    block_context.clauses.retain(|clause| clause.wedge || !clause.possibilities.keys().copied().any(|key| should_wipe(key, false)));
     block_context
         .reconciled_expression_clauses
-        .retain(|clause| clause.wedge || !clause.possibilities.keys().copied().any(should_wipe));
+        .retain(|clause| clause.wedge || !clause.possibilities.keys().copied().any(|key| should_wipe(key, false)));
     block_context.retain_valid_class_type_relations();
 }
 
@@ -850,10 +885,37 @@ where
         return true;
     }
 
-    class_metadata
-        .properties
-        .get(&Word::new(property))
+    context.codebase
+        .get_declaring_property(class_name.as_bytes(), concat_word!("$", property).as_bytes())
         .is_some_and(|property_metadata| property_metadata.flags.is_readonly())
+}
+
+/// MutatingScope::isPrivatePropertyOfDifferentClass uses the callee's reflected declaring class.
+fn private_property_of_other_class<A>(
+    context: &Context<'_, '_, A>,
+    block_context: &BlockContext<'_>,
+    key: Word,
+    invalidating_class: Word,
+) -> bool
+where
+    A: Arena,
+{
+    let bytes = key.as_bytes();
+    let Some(arrow) = memchr::memmem::rfind(bytes, b"->") else { return false };
+    let property = &bytes[arrow + 2..];
+    if property.contains(&b'[') { return false; }
+    let Some(root_type) = block_context.locals.get(&Word::new(&bytes[..arrow])) else { return false };
+    !root_type.types.is_empty() && root_type.types.iter().all(|atom| {
+        let TAtomic::Object(object) = atom else { return false };
+        let Some(class) = object.get_name().and_then(|name| context.codebase.get_class_like(name.as_bytes())) else {
+            return false;
+        };
+        let property = concat_word!("$", property);
+        let Some(declaring) = class.declaring_property_ids.get(&property) else { return false };
+        !declaring.as_bytes().eq_ignore_ascii_case(invalidating_class.as_bytes())
+            && context.codebase.get_property(declaring.as_bytes(), property.as_bytes())
+                .is_some_and(|property| property.read_visibility.is_private())
+    })
 }
 
 /// A variable ID like `$_SESSION['user_id']` - an index access rooted at a PHP

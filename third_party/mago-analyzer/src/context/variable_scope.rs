@@ -196,6 +196,12 @@ impl BlockContext<'_> {
             });
     }
 
+    /// ScopeOps applies requireMoreCharacters to targets, but not conditional guards.
+    pub(crate) fn invalidate_expression_holders(&mut self, invalidates: impl Fn(Word, bool) -> bool) {
+        self.variable_state.absent.retain(|target| !invalidates(*target, false));
+        self.variable_state.conditional.retain(|holder| !invalidates(holder.target, false) && !invalidates(holder.guard, true));
+    }
+
     /// ScopeOps joins actual continuing edges. Projection and loop widening remain separate.
     pub fn merge_variable_scope_types(&mut self, branches: &[VariableScope], codebase: &CodebaseMetadata) {
         if branches.is_empty() {

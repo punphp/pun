@@ -2653,3 +2653,21 @@ constructors and implicit string casts. A fresh PHPStan 2.3.1 reflection probe a
 the original `@phpstan-impure` trait method reflects maybe side effects, while its alias reflects
 yes. This API only exposes the missing identity; purity consumption and isolated expression
 observations remain separate changes.
+
+### Receiver-local mutation invalidation
+
+`invocation::post_process::clear_object_property_narrowings()` follows PHPStan's
+`MethodCallHandler` receiver invalidation boundary: constructors, certainly side-effectful
+instance methods, and unresolved methods invalidate mutable receiver descendants. Merely
+possibly impure methods and static callees preserve receiver facts unless an argument escapes.
+Readonly targets and private properties declared outside the callee's reflected class retain
+their facts. Conditional guards invalidate without those target-only exemptions, matching
+`ScopeOps::invalidateExpression()`.
+
+The reflected requested name, rather than trait storage identity, selects the consuming class,
+PHPDoc availability, native return fallback, and constructor classification. The public
+`receiver_invalidation` target compares all 39 complete PHPStan 2.3.1 records and a two-record
+scanned-stub purity control. It includes inherited aliases, fluent and void returns, readonly
+guards, independent receivers, constructors, and private-parent properties. All 32 selected
+public tests across twelve targets pass, as do seven instrumented tests. Whole-crate coverage
+and the combined original-fixture gate remain separate checks.
