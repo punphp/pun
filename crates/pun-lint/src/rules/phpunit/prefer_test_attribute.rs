@@ -62,7 +62,9 @@ impl Rule for PreferTestAttribute {
             .collect();
         out.push(Report {
             span: span(method.name.span()),
-            message: format!("Use `#[Test]` attribute instead of `test` prefix on method `{name}`."),
+            message: format!(
+                "Use `#[Test]` attribute instead of `test` prefix on method `{name}`."
+            ),
             help: Some(format!(
                 "Rename to `{new_name}` and add `#[Test]` attribute."
             )),

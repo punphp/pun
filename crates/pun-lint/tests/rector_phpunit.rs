@@ -691,3 +691,12 @@ fn scalar_argument_to_expected_param_type() {
 fn entity_document_create_mock_to_direct_new() {
     check(NoEntityMock, "EntityDocumentCreateMockToDirectNewRector");
 }
+
+/// Pun/declined_types: `@return` types Pun does not read as PHPStan does (shapes, literals, integer ranges, callables,
+/// intersections, a blank before `<`, unions PHPStan merges); Pun leaves those providers alone.
+/// Pun/low_precedence: an item whose operator binds looser than `yield` (`and`, `or`) gets parentheses, where Rector
+/// writes `yield $a and $b`, which yields `$a` only.
+#[test]
+fn yield_data_provider() {
+    check(PreferYieldDataProvider, "YieldDataProviderRector");
+}

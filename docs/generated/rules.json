@@ -12636,7 +12636,7 @@
         "YieldDataProvider",
         "YieldDataProviderRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/phpunit/require-assertion-style",

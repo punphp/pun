@@ -77,6 +77,7 @@ mod prefer_test_with_attribute;
 mod prefer_this_call;
 mod prefer_ticket_attribute;
 mod prefer_with_is_instance_of;
+mod prefer_yield_data_provider;
 mod ptype;
 mod require_data_provider_newlines;
 mod require_exact_test_argument_type;
@@ -154,6 +155,7 @@ pub use prefer_test_with_attribute::PreferTestWithAttribute;
 pub use prefer_this_call::PreferThisCall;
 pub use prefer_ticket_attribute::PreferTicketAttribute;
 pub use prefer_with_is_instance_of::PreferWithIsInstanceOf;
+pub use prefer_yield_data_provider::PreferYieldDataProvider;
 pub use require_data_provider_newlines::RequireDataProviderNewlines;
 pub use require_exact_test_argument_type::RequireExactTestArgumentType;
 pub use require_final_test_case::RequireFinalTestCase;
@@ -253,6 +255,7 @@ pub(crate) fn all() -> Vec<Box<dyn Rule>> {
         Box::new(RequireExactTestArgumentType),
         Box::new(PreferTestAttribute),
         Box::new(NoEntityMock),
+        Box::new(PreferYieldDataProvider),
     ]
 }
 

@@ -17,11 +17,11 @@
 //! assigned to another spelling of `$x` that is no entity mock), Pun leaves the method alone. A class name written
 //! with a leading `\` in a string, which Rector prints as `new \\X()`, is written `new \X()`.
 
+use mago_codex::symbol::SymbolKind;
 use mago_syntax::cst::{
     Call, ClassLikeMemberSelector, Expression, Literal, MethodBody, Node, NodeKind,
     PartialApplication, StringPart, Variable,
 };
-use mago_codex::symbol::SymbolKind;
 use mago_syntax::token::TokenKind;
 use pun_problem::{Edit, Safety, Span};
 
@@ -36,7 +36,8 @@ use crate::{Context, Report, Rule};
 
 pub struct NoEntityMock;
 
-const ENTITY_DOCBLOCK_MARKERS: [&str; 4] = ["@Document", "@ORM\\Document", "@Entity", "@ORM\\Entity"];
+const ENTITY_DOCBLOCK_MARKERS: [&str; 4] =
+    ["@Document", "@ORM\\Document", "@Entity", "@ORM\\Entity"];
 
 /// A top-level statement as the passes leave it.
 #[derive(Clone)]
@@ -155,7 +156,10 @@ fn resolve_method_name(facts: &Facts, name: &str, class: &str) -> String {
     }
     if let Some(rest) = name.strip_prefix("is") {
         for setter in [format!("set{}", ucfirst(name)), format!("set{rest}")] {
-            if facts.documented().method_exists(lookup(class).as_bytes(), setter.as_bytes()) {
+            if facts
+                .documented()
+                .method_exists(lookup(class).as_bytes(), setter.as_bytes())
+            {
                 return setter;
             }
         }
@@ -232,7 +236,8 @@ impl Rule for NoEntityMock {
                     removed = true;
                 }
                 let setter = resolve_method_name(&facts, &method_name, class);
-                let Some(will_return) = first_arg_value(find_in(&state, expr, &named("willReturn")))
+                let Some(will_return) =
+                    first_arg_value(find_in(&state, expr, &named("willReturn")))
                 else {
                     return;
                 };
@@ -292,7 +297,10 @@ impl Rule for NoEntityMock {
         let renamed = |span: Span| -> String {
             let mut text = String::new();
             let mut at = span.start;
-            for (s, new) in renames.iter().filter(|(s, _)| s.start >= span.start && s.end <= span.end) {
+            for (s, new) in renames
+                .iter()
+                .filter(|(s, _)| s.start >= span.start && s.end <= span.end)
+            {
                 text.push_str(&ctx.source[at..s.start]);
                 text.push_str(new);
                 at = s.end;
@@ -315,7 +323,10 @@ impl Rule for NoEntityMock {
             }
         }
         for (span, new) in &renames {
-            if !covered.iter().any(|c| c.start <= span.start && span.end <= c.end) {
+            if !covered
+                .iter()
+                .any(|c| c.start <= span.start && span.end <= c.end)
+            {
                 edits.push(Edit::new(*span, new.clone()));
             }
         }
@@ -444,4 +455,3 @@ fn is_entity_class(facts: &Facts, class: &str) -> bool {
             ENTITY_DOCBLOCK_MARKERS.iter().any(|m| doc.contains(m))
         })
 }
-

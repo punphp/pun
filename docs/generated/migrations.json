@@ -13417,7 +13417,7 @@
         "rules": [
           "lint/phpunit/prefer-yield-data-provider"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
