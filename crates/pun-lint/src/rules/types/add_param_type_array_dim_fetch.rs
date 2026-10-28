@@ -7,7 +7,9 @@
 //! Mago's inference is not PHPStan's: Rector adds `array` to `tap($array['posts']->toArray($request), fn)`
 //! (ResourceTest), where Mago has no type for the method call on a `mixed` offset; Pun adds it where PHPStan's type is
 //! a union of shapes: `debug_backtrace()`'s frames (HasRelationships), `preg_replace_callback()`'s match groups
-//! (EloquentModelLoadMissingTest) and `CursorPaginator::through()`'s items (CursorPaginatorTest).
+//! (EloquentModelLoadMissingTest) and `CursorPaginator::through()`'s items (CursorPaginatorTest). Pun also adds it to
+//! a closure that reads `$users[$key]` with the key of a `foreach` over a literal list (DatabaseEloquentFactoryTest),
+//! where PHPStan's key is the integer `0|1|...` and Rector skips an integer offset on a `mixed` value.
 
 use mago_codex::ttype::TType;
 use mago_codex::ttype::atomic::TAtomic;

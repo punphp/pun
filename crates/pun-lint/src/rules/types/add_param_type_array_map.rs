@@ -8,7 +8,8 @@
 //! `string` to the map over Composer's `ClassLoader::getClassMap()` (Renderer/Exception.php) and over an `explode()`
 //! that `str_contains()` guards (Str.php, PHPStan's unsealed constant array); Pun writes `int|string` where PHPStan has
 //! `string` (Application.php) and an intersection with the template bound where PHPStan has the class
-//! (DatabaseEloquentBuilderTest).
+//! (DatabaseEloquentBuilderTest), and adds `array` over groups built with `$groups[$carry][] = $value` in a loop,
+//! which PHPStan does not type as an `ArrayType` (CronExpressionTimezoneConverter::shiftAndGroupValues()).
 
 use mago_syntax::cst::{Argument, Expression, Node, NodeKind};
 

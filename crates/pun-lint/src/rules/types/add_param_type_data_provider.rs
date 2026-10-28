@@ -11,9 +11,10 @@ use mago_codex::ttype::atomic::scalar::TScalar;
 use mago_codex::ttype::union::TUnion;
 use mago_syntax::cst::{
     ArrayElement, ClassLikeMember, Expression, Method, MethodBody, Modifier, Node, NodeKind,
-    UnaryPrefixOperator,
+    UnaryPrefixOperator, Variable,
 };
 
+use super::add_param_type_array_dim_fetch::is_variable;
 use super::class_scope;
 use super::facts::{Facts, facts};
 use super::names::resolve_written;
@@ -175,6 +176,13 @@ fn provider_type(facts: &Facts, provider: &Method<'_>, position: usize) -> Optio
         }
         // resolveYieldStaticArrayTypeByParameterPosition
         for value in yields {
+            // PHPStan types the yielded array in the scope before it, where a variable one item assigns
+            // (`[$c = collect(), $c]`) is not defined yet in a later one: that item is `mixed`
+            if let Some(Expression::Array(array)) = value.map(unparenthesize)
+                && reads_assigned_item(array.elements.iter().collect(), position)
+            {
+                return None;
+            }
             let t = type_of(facts, value?)?;
             for atomic in t.types.iter() {
                 let values = constant_array_values(atomic)?;
@@ -194,6 +202,20 @@ fn provider_type(facts: &Facts, provider: &Method<'_>, position: usize) -> Optio
         }
     }
     (!out.is_empty()).then_some(out)
+}
+
+/// Whether the item at `position` is a variable that an earlier item assigns.
+fn reads_assigned_item(elements: Vec<&ArrayElement<'_>>, position: usize) -> bool {
+    let Some(ArrayElement::Value(item)) = elements.get(position) else {
+        return false;
+    };
+    let Expression::Variable(Variable::Direct(read)) = unparenthesize(item.value) else {
+        return false;
+    };
+    elements[..position].iter().any(|e| {
+        matches!(e, ArrayElement::Value(v) if matches!(unparenthesize(v.value),
+            Expression::Assignment(a) if is_variable(a.lhs, read.name)))
+    })
 }
 
 /// `ConstantArrayType::getValueTypes()` of a constant array (an array shape), in order; `None` for other types.
