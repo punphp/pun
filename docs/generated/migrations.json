@@ -13381,7 +13381,7 @@
         "rules": [
           "lint/phpunit/prefer-will-return-callback"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {

@@ -78,6 +78,7 @@ mod prefer_test_prefix;
 mod prefer_test_with_attribute;
 mod prefer_this_call;
 mod prefer_ticket_attribute;
+mod prefer_will_return_callback;
 mod prefer_with_is_instance_of;
 mod prefer_yield_data_provider;
 mod ptype;
@@ -158,6 +159,7 @@ pub use prefer_test_prefix::PreferTestPrefix;
 pub use prefer_test_with_attribute::PreferTestWithAttribute;
 pub use prefer_this_call::PreferThisCall;
 pub use prefer_ticket_attribute::PreferTicketAttribute;
+pub use prefer_will_return_callback::PreferWillReturnCallback;
 pub use prefer_with_is_instance_of::PreferWithIsInstanceOf;
 pub use prefer_yield_data_provider::PreferYieldDataProvider;
 pub use require_data_provider_newlines::RequireDataProviderNewlines;
@@ -262,6 +264,7 @@ pub(crate) fn all() -> Vec<Box<dyn Rule>> {
         Box::new(PreferYieldDataProvider),
         Box::new(NoStubWithExpectations),
         Box::new(PreferCreateStubArgument),
+        Box::new(PreferWillReturnCallback),
     ]
 }
 

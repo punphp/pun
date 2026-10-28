@@ -720,3 +720,16 @@ fn create_stub_over_create_mock_arg() {
         "CreateStubOverCreateMockArgRector",
     );
 }
+
+/// Oracle/ ran with tests/phpunit-stubs autoloaded before Rector's stubs-rector/. Pun/declined: what Pun does not
+/// print as php-parser does, which Rector changes: a comment before the argument (Rector drops it), a `?>` in the
+/// closure, a value in parentheses that stays (Rector writes `return ();`), a closure that moves right, a closure
+/// printed anew with a comment or a line break in its parameters, and a tab indent across lines or before the `}` of
+/// a closure printed anew (Rector writes spaces).
+#[test]
+fn void_method_with_callback_to_will_return_callback() {
+    check(
+        PreferWillReturnCallback,
+        "VoidMethodWithCallbackToWillReturnCallbackRector",
+    );
+}

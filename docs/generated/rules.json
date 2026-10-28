@@ -12594,7 +12594,7 @@
         "VoidMethodWithCallbackToWillReturnCallback",
         "VoidMethodWithCallbackToWillReturnCallbackRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/phpunit/prefer-with-is-instance-of",
