@@ -297,7 +297,7 @@ where
         resulting_type,
     );
 
-    artifacts.set_expression_type(&call_span, resulting_type);
+    artifacts.set_resolved_expression_type(&call_span, resulting_type);
     artifacts.set_call_termination(&call_span, always_terminates);
     if always_terminates {
         block_context.flags.set_has_returned(true);

@@ -39,6 +39,10 @@ impl<T: Clone> ExpressionTypeCheckpoints<T> {
         self.checkpoints.is_empty()
     }
 
+    pub(crate) fn depth(&self) -> usize {
+        self.checkpoints.len()
+    }
+
     pub(crate) fn begin_checkpoint(&mut self) {
         self.checkpoints.push(Checkpoint::Changes(HashMap::default()));
     }
@@ -65,6 +69,33 @@ impl<T: Clone> ExpressionTypeCheckpoints<T> {
     }
 
     pub(crate) fn finish_checkpoint(&mut self, types: &mut TypeMap<T>, action: CheckpointAction) {
+        self.finish_checkpoint_where(types, action, |_| true);
+    }
+
+    /// A replaced effective value cannot recover metadata from an older evaluation on merge.
+    pub(crate) fn can_restore_related(
+        &self,
+        range: &ExpressionRange,
+        types: &TypeMap<T>,
+        same: impl Fn(&T, &T) -> bool,
+    ) -> bool {
+        if !types.contains_key(range) {
+            return true;
+        }
+        match self.checkpoints.last().expect("expression type checkpoint must exist") {
+            Checkpoint::Changes(changes) => !changes.contains_key(range),
+            Checkpoint::Snapshot(snapshot) => {
+                snapshot.get(range).zip(types.get(range)).is_some_and(|(before, after)| same(before, after))
+            }
+        }
+    }
+
+    pub(crate) fn finish_checkpoint_where(
+        &mut self,
+        types: &mut TypeMap<T>,
+        action: CheckpointAction,
+        restore: impl Fn(&ExpressionRange) -> bool,
+    ) {
         let Some(checkpoint) = self.checkpoints.pop() else {
             unreachable!("expression type checkpoint must exist");
         };
@@ -76,6 +107,7 @@ impl<T: Clone> ExpressionTypeCheckpoints<T> {
                     CheckpointAction::Keep => {}
                     CheckpointAction::Rollback => *types = snapshot,
                     CheckpointAction::Merge => {
+                        snapshot.retain(|range, _| types.contains_key(range) || restore(range));
                         snapshot.extend(std::mem::take(types));
                         *types = snapshot;
                     }
@@ -92,6 +124,7 @@ impl<T: Clone> ExpressionTypeCheckpoints<T> {
 
         for (range, previous_type) in changes {
             if matches!(action, CheckpointAction::Merge)
+                && restore(&range)
                 && let Some(previous_type) = &previous_type
             {
                 types.entry(range).or_insert_with(|| previous_type.clone());

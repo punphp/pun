@@ -195,7 +195,7 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for StaticMethodCall<'arena> {
             } else {
                 get_error()
             };
-            artifacts.set_expression_type(&self.span(), return_type);
+            artifacts.set_resolved_expression_type(&self.span(), return_type);
         }
 
         if context.plugin_registry.has_static_method_call_hooks() {

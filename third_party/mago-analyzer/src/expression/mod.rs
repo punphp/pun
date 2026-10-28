@@ -105,6 +105,13 @@ impl<'ast, 'arena> ExpressionAnalysis<'ast, 'arena> for Expression<'arena> {
         block_context: &mut BlockContext<'ctx>,
         artifacts: &mut AnalysisArtifacts,
     ) -> Result<(), AnalysisError> {
+        // Capture a whole-call holder at its own before-position. Evaluation and effects
+        // still run; the own raw return must not overwrite this effective value.
+        let id = get_block_expression_id(self, context, block_context)
+            .filter(|id| block_context.variable_certainty(*id).is_defined());
+        let holder = id.and_then(|id| block_context.locals.get(&id).cloned());
+        let native_holder = id.and_then(|id| block_context.native_locals.as_ref()?.get(&id).cloned());
+        artifacts.begin_expression_result(self, holder, native_holder);
         crate::native::before_expression(self, block_context);
         let span = self.span();
         artifacts.remove_native_expression_type(&(span.start.offset, span.end.offset));
@@ -344,8 +351,8 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Parenthesized<'arena> {
         A: Arena,
     {
         self.expression.analyze(context, block_context, artifacts)?;
-        if let Some(u) = artifacts.get_expression_type(&self.expression) {
-            artifacts.set_expression_type(&self, u.clone());
+        if let Some(result) = artifacts.get_expression_result(self.expression) {
+            artifacts.set_expression_result(self, result);
         }
 
         Ok(())

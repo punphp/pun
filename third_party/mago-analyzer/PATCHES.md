@@ -2870,3 +2870,67 @@ after a later write. Its current receiver differs from its earlier receiver unde
 The identifier question instead sees the later value in both the variable and the derived array.
 From `crates/pun-analyse/tests/fixtures/call-scope-observations`, regenerate the complete capture with
 `php capture-historical.php /absolute/path/to/phpstan-2.3.1.phar historical.php --dependencies --function-events`.
+
+### Call results separate raw returns from value reads
+
+`artifacts/expression_result.rs` ports PHPStan 2.3.1's
+[`ExpressionResult` read contract](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Analyser/ExpressionResult.php#L351-L556).
+The ordinary artifact map contains effective full values. A companion record retains the own
+raw return, normal-resolution versus eager provenance, pre-evaluation holders, expression
+overrides, and independent native returns. Normal call resolution publishes raw returns through
+`set_resolved_expression_type`, including dynamic return providers. Syntax determines projection:
+named function, method, nullsafe method, and static calls project direct `void` union alternatives to `null`.
+Callable-value function syntax and first-class callable creation do not project.
+`TUnion::clone_with_types` preserves metadata and does not visit nested array or callable types.
+
+The effective read order is the cached answer, an expression override, an eager answer, a
+definite pre-evaluation holder, and finally the projected own return. A holder does not skip
+evaluation. Native answers never use the full type as a fallback and never project `void`.
+The keep-void read uses the own raw return when PHPStan's `isVoid()` is yes or maybe, including
+unconstrained mixed and template bounds. Otherwise, keep-void returns the effective value.
+This is `ExpressionResult::getKeepVoidType`, not Scope's separate contains-null-gated wrapper.
+
+`AnalysisArtifacts::get_expression_result` returns an owned `ExpressionResult` snapshot.
+`set_expression_result` restores that snapshot without pricing the expression again or treating
+the effective value as a new eager return. The snapshot includes raw and effective full types,
+raw and effective native availability, projection eligibility, holders, and resolution and
+override provenance. `ProviderContext` and `HookContext` expose the snapshot, raw, and keep-void
+reads. Reinstalling a snapshot retains supplied native information even when the destination
+had no native lane, including through detached nested checkpoints. It never creates a native
+answer from a full type. Existing expression-type getters remain full value reads.
+
+Foreign-position reads follow
+[`getTypeOnScope`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Analyser/ExpressionResult.php#L651-L674)
+and
+[`atAskPosition`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Analyser/ExpressionResult.php#L807-L840).
+Callers supply the asking scope's authoritative holder and freshly resolved expression override.
+`get_type_on_scope` projects the holder or own fallback, even for an eager fallback, after the
+override has declined. Its native counterpart does not project. `at_ask_position` makes a
+scope-owned full/native pair eager. It drops the original position's holder and cached override,
+then applies the supplied asking-position overrides. A missing native answer stays missing.
+
+The companion record uses the existing nested expression checkpoints for rollback, merge, and
+mutable-hook snapshots. Function artifact transfer retains the record alongside the full map.
+Native-only changes do not affect full-lane convergence. A new call evaluation clears the prior
+span's raw return, holders, overrides, native result, and call-termination observation.
+
+The public Analyzer, hook, and provider tests compare against fresh, complete captures under
+`tests/expression-result`. `capture.php` emits the value/raw/keep-void/native matrix, writes
+factory controls to `controls.tsv`, and emits all level-0 diagnostics to stderr. The repeated
+`$sink->read()?->foo([$sink->read()])` control installs the nullsafe ensure through a semantic
+hook at the argument boundary. Both method evaluations still occur. This tests holder precedence,
+not the separately owned nullsafe ensure implementation.
+
+Observation storage must carry `Option<ExpressionResult>` and restore it with
+`set_expression_result`, not clone the value map and call `set_expression_type`. Consumers must
+retain their distinction between an evaluated expression without a type and an unevaluated one.
+Checker void-use diagnostics must read keep-void results. Neither consumer integration is part
+of this storage and producer patch.
+
+Match construction is another keep-void consumer. PHPStan's
+[`MatchHandler` arm union](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Analyser/ExprHandler/MatchHandler.php#L557-L569)
+uses each arm's `getKeepVoidType()`. The match expression itself cannot project `void`.
+`match.php` and its complete captures distinguish the all-void match's ordinary `void` type
+from each named call arm's ordinary `null`, raw `void`, and keep-void `void` types.
+The match handler and Checker integration remain separate work. The broader comment near the
+upstream arm union does not replace `ExpressionResult::projectsVoidToNull()`'s syntax predicate.

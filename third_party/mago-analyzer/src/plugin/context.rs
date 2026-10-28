@@ -85,6 +85,19 @@ impl<'codebase, 'artifacts, 'block> ProviderContext<'codebase, 'artifacts, 'bloc
         self.artifacts.get_rc_expression_type(expr)
     }
 
+    /// Own unprojected full return, before holders and expression overrides.
+    pub fn get_raw_expression_type<T: HasSpan>(&self, expr: &T) -> Option<&TUnion> {
+        self.artifacts.get_raw_expression_type(expr)
+    }
+
+    pub fn get_keep_void_expression_type<T: HasSpan>(&self, expr: &T) -> Option<&TUnion> {
+        self.artifacts.get_keep_void_expression_type(expr)
+    }
+
+    pub fn get_expression_result<T: HasSpan>(&self, expr: &T) -> Option<crate::artifacts::ExpressionResult> {
+        self.artifacts.get_expression_result(expr)
+    }
+
     #[inline]
     pub fn get_variable_type(&self, name: &[u8]) -> Option<&Rc<TUnion>> {
         self.block_context.locals.get(&word(name))
@@ -270,6 +283,19 @@ impl<'ctx, 'block> HookContext<'ctx, 'block> {
         T: HasSpan,
     {
         self.artifacts.get_rc_expression_type(expr)
+    }
+
+    /// Own unprojected full return, before holders and expression overrides.
+    pub fn get_raw_expression_type<T: HasSpan>(&self, expr: &T) -> Option<&TUnion> {
+        self.artifacts.get_raw_expression_type(expr)
+    }
+
+    pub fn get_keep_void_expression_type<T: HasSpan>(&self, expr: &T) -> Option<&TUnion> {
+        self.artifacts.get_keep_void_expression_type(expr)
+    }
+
+    pub fn get_expression_result<T: HasSpan>(&self, expr: &T) -> Option<crate::artifacts::ExpressionResult> {
+        self.artifacts.get_expression_result(expr)
     }
 
     /// Get the type of a variable.

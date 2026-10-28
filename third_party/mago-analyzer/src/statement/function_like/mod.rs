@@ -388,6 +388,7 @@ where
     let expression_types = std::mem::take(&mut artifacts.expression_types);
     if parent_artifacts.should_retain_completed_expression_types() {
         parent_artifacts.extend_expression_types(expression_types);
+        parent_artifacts.transfer_expression_results(&mut artifacts);
         parent_artifacts.transfer_native_expression_types(&mut artifacts);
         parent_artifacts.transfer_call_terminations(&mut artifacts);
     }

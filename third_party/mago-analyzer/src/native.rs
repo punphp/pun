@@ -92,7 +92,7 @@ pub(crate) fn function_return_type(function: &FunctionLikeMetadata) -> Option<TU
         .return_type_declaration_metadata
         .as_ref()
         .map_or_else(get_mixed, |ty| ty.type_union.clone());
-    scalar_type(&ty).then_some(ty)
+    (scalar_type(&ty) || ty.is_void()).then_some(ty)
 }
 
 pub(crate) fn before_statement(statement: &Statement<'_>, block: &mut BlockContext<'_>) {
@@ -237,7 +237,11 @@ pub(crate) fn after_expression<A: Arena>(
         _ => artifacts.get_rc_native_expression_type(expression).cloned(),
     };
     if let Some(ty) = ty {
-        artifacts.set_rc_native_expression_type(expression, ty);
+        if matches!(expression, Expression::Call(Call::Method(_))) {
+            artifacts.set_resolved_native_expression_type(expression, ty);
+        } else {
+            artifacts.set_rc_native_expression_type(expression, ty);
+        }
     } else {
         block.native_locals = None;
     }
@@ -291,7 +295,7 @@ fn method_type<A: Arena>(
     {
         ty = full.type_union.clone();
     }
-    scalar_type(&ty).then_some(ty)
+    (scalar_type(&ty) || ty.is_void()).then_some(ty)
 }
 
 pub(crate) type Locals = WordMap<Rc<TUnion>>;

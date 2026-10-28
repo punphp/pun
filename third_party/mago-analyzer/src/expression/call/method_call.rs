@@ -308,7 +308,7 @@ where
     {
         let mut return_type = get_null();
         return_type.set_nullsafe_null(true);
-        artifacts.set_expression_type(&span, return_type);
+        artifacts.set_resolved_expression_type(&span, return_type);
 
         return Ok(());
     }
@@ -431,7 +431,7 @@ where
     // Dynamic selectors remain mixed; resolved, magic and provider results have already been stored.
     if artifacts.get_expression_type(&span).is_none() {
         let return_type = if method_resolution.has_dynamic_selector { get_mixed() } else { get_error() };
-        artifacts.set_expression_type(&span, return_type);
+        artifacts.set_resolved_expression_type(&span, return_type);
     }
 
     Ok(())
@@ -619,11 +619,11 @@ where
     }
 
     let mut resulting_type = resulting_type.unwrap_or_else(get_mixed);
-    if let Some(existing_type) = artifacts.get_expression_type(&span) {
+    if let Some(existing_type) = artifacts.get_raw_expression_type(&span) {
         resulting_type = add_optional_union_type(resulting_type, Some(existing_type), context.codebase);
     }
 
-    artifacts.set_expression_type(&span, resulting_type);
+    artifacts.set_resolved_expression_type(&span, resulting_type);
 
     Ok(())
 }

@@ -100,13 +100,13 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for FunctionCall<'arena> {
         // FuncCallHandler::resolveReturnType(): an unknown named function has ErrorType,
         // including function_exists guards. Dynamic callable expressions have a separate contract.
         if matches!(self.function, Expression::Identifier(_)) && artifacts.get_expression_type(&self.span()).is_none() {
-            artifacts.set_expression_type(&self.span(), get_error());
+            artifacts.set_resolved_expression_type(&self.span(), get_error());
         }
 
         if block_context.native_locals.is_some()
             && let Some(native_return) = native_return
         {
-            artifacts.set_rc_native_expression_type(self, std::rc::Rc::new(native_return));
+            artifacts.set_resolved_native_expression_type(self, std::rc::Rc::new(native_return));
         }
 
         if extracts_variables {

@@ -1,0 +1,44 @@
+[
+    [
+        4,
+        "return.missing",
+        "Function resultEager() should return mixed but return statement is missing.",
+        null,
+        false
+    ],
+    [
+        10,
+        "return.missing",
+        "Method ResultSink::fromProvider() should return mixed but return statement is missing.",
+        null,
+        false
+    ],
+    [
+        27,
+        "function.void",
+        "Result of function resultVoid (void) is used.",
+        null,
+        true
+    ],
+    [
+        31,
+        "function.void",
+        "Result of function resultVoid (void) is used.",
+        null,
+        true
+    ],
+    [
+        38,
+        "function.void",
+        "Result of function resultVoid (void) is used.",
+        null,
+        true
+    ],
+    [
+        48,
+        "function.notFound",
+        "Function resultMissing not found.",
+        "Learn more at https://phpstan.org/user-guide/discovering-symbols",
+        true
+    ]
+]
