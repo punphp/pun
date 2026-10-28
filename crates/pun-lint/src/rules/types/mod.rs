@@ -4,6 +4,7 @@
 //! A rule that adds a return type writes `: type` right after the `)` of the parameters (or of a closure's `use`), where
 //! php-parser's format-preserving printer inserts a new `returnType` node.
 
+pub(crate) mod compare;
 pub mod facts;
 pub(crate) mod names;
 

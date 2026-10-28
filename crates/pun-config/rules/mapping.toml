@@ -308,7 +308,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "complexity/no-redundant-isset" = { fix = "safe", sets = ["code-quality"], ported = true, origin = "mago", status = "decided", summary = "Detects redundant arguments in `isset()` calls where a nested access already implies the parent checks." }
 "complexity/no-redundant-literal-return" = { fix = "safe", sets = ["code-quality"], ported = true, origin = "mago", status = "decided", summary = "Detects redundant literal guard patterns where an if statement checks if a variable equals a literal and returns that same literal, followed by returning the variable." }
 "complexity/no-redundant-null-check" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Return the value directly instead of checking it for null first." }
-"complexity/no-redundant-nullable-check" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Direct return on if nullable check before return" }
+"complexity/no-redundant-nullable-check" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Direct return on if nullable check before return" }
 "complexity/no-redundant-nullsafe" = { fix = "safe", sets = ["code-quality"], ported = true, origin = "mago", status = "decided", note = "merges Mago no-redundant-nullsafe (null already checked) and Rector CleanupUnneededNullsafeOperator (type is non-null)", summary = "Flags the use of the nullsafe operator (`?->`) in contexts where its null-checking behavior is redundant." }
 "complexity/no-redundant-write-visibility" = { fix = "none", sets = ["code-quality"], ported = true, origin = "mago", status = "decided", summary = "Detects redundant write visibility modifiers on properties." }
 "complexity/no-single-case-switch" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Change `switch` with only 1 check to `if`" }
@@ -379,7 +379,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "dead-code/no-future-php-version-check" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Unwrap `if` checks on a PHP version that the configured PHP version always meets." }
 "dead-code/no-identical-branches" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove if/else if they have same content" }
 "dead-code/no-implode-ternary" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Drop an empty-array ternary around `implode()`" }
-"dead-code/no-invalid-return-tag" = { fix = "safe", sets = ["dead-code"], ported = false, status = "decided", summary = "Remove @return docblock that contradicts the declared native return type" }
+"dead-code/no-invalid-return-tag" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove @return docblock that contradicts the declared native return type" }
 "dead-code/no-invalid-var-tag" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Removes non-existing @var annotations above the code" }
 "dead-code/no-mirror-assignment" = { fix = "safe", intent = "correctness", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove `$value = $value` assignments." }
 "dead-code/no-null-default-argument" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove default null argument, where null is already a default param value" }
@@ -419,7 +419,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "dead-code/no-useless-filter-var" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Removes filter_var() calls with exact type" }
 "dead-code/no-useless-math" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove arithmetic that does not change the value (`+ 0`, `* 1`, ...)." }
 "dead-code/no-useless-override" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove methods and constructors that only call the parent with the same arguments." }
-"dead-code/no-useless-phpdoc-type" = { fix = "safe", sets = ["dead-code"], ported = false, status = "decided", summary = "Remove PHPDoc types that add nothing over the native type (`@var null`, unions wider than the native return type)." }
+"dead-code/no-useless-phpdoc-type" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove PHPDoc types that add nothing over the native type (`@var null`, unions wider than the native return type)." }
 "dead-code/no-useless-ternary" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Simplify ternaries whose result does not depend on the condition, or that equal a boolean expression." }
 "dead-code/no-useless-variable" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove useless variable assigns" }
 "functions/no-assign-in-argument" = { fix = "none", intent = "correctness", sets = ["code-quality"], ported = true, origin = "mago", status = "decided", summary = "Detects assignments in function call arguments which can lead to unexpected behavior and make" }
@@ -624,10 +624,10 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "phpdoc/no-package" = { fix = "safe", sets = ["coding-style"], ported = true, status = "decided", summary = "`@package` and `@subpackage` annotations must be removed from PHPDoc." }
 "phpdoc/no-superfluous-tags" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Removes `@param`, `@return` and `@var` tags that don't provide any useful information." }
 "phpdoc/no-useless-inheritdoc" = { fix = "safe", sets = ["coding-style"], ported = true, status = "decided", summary = "Classy that does not inherit must not have `@inheritdoc` tags." }
-"phpdoc/no-useless-param" = { fix = "safe", sets = ["dead-code"], ported = false, status = "decided", summary = "Remove @param docblock with same type as parameter type" }
+"phpdoc/no-useless-param" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove @param docblock with same type as parameter type" }
 "phpdoc/no-useless-readonly" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove useless `@readonly` annotation on native readonly type" }
-"phpdoc/no-useless-return" = { fix = "safe", sets = ["dead-code"], ported = false, status = "decided", summary = "Remove @return docblock with same type as defined in PHP" }
-"phpdoc/no-useless-var" = { fix = "safe", sets = ["dead-code"], ported = false, status = "decided", summary = "Remove unused `@var` annotation for properties and class constants" }
+"phpdoc/no-useless-return" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove @return docblock with same type as defined in PHP" }
+"phpdoc/no-useless-var" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove unused `@var` annotation for properties and class constants" }
 "phpdoc/no-void-on-magic-method" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove useless @return void docblock from magic methods __construct, __destruct, and __clone" }
 "phpdoc/require-no-named-arguments" = { fix = "safe", sets = ["coding-style"], ported = true, status = "decided", summary = "There must be `@no-named-arguments` tag in PHPDoc of a class/enum/interface/trait." }
 "phpunit/add-allow-mock-objects-attribute" = { fix = "safe", ported = true, status = "decided", summary = "Add #[AllowMockObjectsWithoutExpectations] to PHPUnit test classes whose mocks have no expectations." }

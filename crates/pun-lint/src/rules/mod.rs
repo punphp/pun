@@ -204,6 +204,12 @@ mod prefer_in_array;
 mod prefer_in_array_over_foreach;
 mod prefer_in_array_over_search;
 mod prefer_inline_array_return;
+mod no_useless_var_tag;
+mod no_useless_param_tag;
+mod no_useless_return_tag;
+mod no_invalid_return_tag;
+mod no_useless_phpdoc_type;
+mod no_redundant_nullable_check;
 mod prefer_instance_method;
 mod prefer_instanceof_stringable;
 mod prefer_min_max;
@@ -442,6 +448,12 @@ pub use prefer_in_array::PreferInArray;
 pub use prefer_in_array_over_foreach::PreferInArrayOverForeach;
 pub use prefer_in_array_over_search::PreferInArrayOverSearch;
 pub use prefer_inline_array_return::PreferInlineArrayReturn;
+pub use no_useless_var_tag::NoUselessVarTag;
+pub use no_useless_param_tag::NoUselessParamTag;
+pub use no_useless_return_tag::NoUselessReturnTag;
+pub use no_invalid_return_tag::NoInvalidReturnTag;
+pub use no_useless_phpdoc_type::NoUselessPhpdocType;
+pub use no_redundant_nullable_check::NoRedundantNullableCheck;
 pub use prefer_instance_method::PreferInstanceMethod;
 pub use prefer_instanceof_stringable::PreferInstanceofStringable;
 pub use prefer_min_max::PreferMinMax;
@@ -537,6 +549,12 @@ pub const PROJECT_RULES: &[&str] = &[
     "lint/control-flow/prefer-returned-condition",
     "lint/dead-code/no-invalid-var-tag",
     "lint/complexity/prefer-inline-array-return",
+    "lint/phpdoc/no-useless-var",
+    "lint/phpdoc/no-useless-param",
+    "lint/phpdoc/no-useless-return",
+    "lint/dead-code/no-invalid-return-tag",
+    "lint/dead-code/no-useless-phpdoc-type",
+    "lint/complexity/no-redundant-nullable-check",
 ];
 
 /// Every rule, in a fixed order.
@@ -789,5 +807,11 @@ fn ungrouped() -> Vec<Box<dyn Rule>> {
         Box::new(PreferReturnedCondition),
         Box::new(NoInvalidVarTag),
         Box::new(PreferInlineArrayReturn),
+        Box::new(NoUselessVarTag),
+        Box::new(NoUselessParamTag),
+        Box::new(NoUselessReturnTag),
+        Box::new(NoInvalidReturnTag),
+        Box::new(NoUselessPhpdocType),
+        Box::new(NoRedundantNullableCheck),
     ]
 }
