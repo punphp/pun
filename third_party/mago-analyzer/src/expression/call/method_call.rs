@@ -718,7 +718,7 @@ mod tests {
     fn failed_method_fallback_preserves_active_signature_and_return_providers() {
         use std::borrow::Cow;
         use std::num::NonZeroUsize;
-        use std::sync::Arc;
+        use std::sync::{Arc, Mutex};
 
         use mago_allocator::LocalArena;
         use mago_codex::populator::populate_codebase;
@@ -734,11 +734,43 @@ mod tests {
 
         use crate::Analyzer;
         use crate::analysis_result::AnalysisResult;
+        use crate::external::protocol::{ANALYZER_PROTOCOL_MAJOR, ANALYZER_PROTOCOL_MINOR};
         use crate::external::{ExternalAnalyzer, ExternalAnalyzerHandle};
+        use crate::invocation::{InvocationTarget, MethodInvocationKind};
         use crate::plugin::PluginRegistry;
-        use crate::plugin::context::{InvocationInfo, ProviderContext};
+        use crate::plugin::context::{HookContext, InvocationInfo, ProviderContext};
+        use crate::plugin::hook::{ExpressionHook, HookResult};
         use crate::plugin::provider::{MethodReturnTypeProvider, MethodTarget, Provider, ProviderMeta};
         use crate::settings::Settings;
+
+        #[derive(Clone, Default)]
+        struct LookupNames(Arc<Mutex<Vec<(String, String, String)>>>);
+        impl ExpressionHook for LookupNames {
+            fn is_observer(&self) -> bool {
+                true
+            }
+
+            fn before_arguments(
+                &self,
+                call: &InvocationInfo<'_, '_, '_>,
+                _: &mut HookContext<'_, '_>,
+            ) -> HookResult<()> {
+                if call.function_name() == "SignatureTarget::provided" {
+                    let target = &call.inner().target;
+                    assert!(matches!(target, InvocationTarget::ExternalMethod { effective_signature: Some(_), .. }));
+                    assert!(target.get_function_like_metadata().is_none());
+                    let method = target.get_method_context().unwrap();
+                    assert_eq!(method.invocation_kind, MethodInvocationKind::Instance);
+                    assert!(method.declaring_method_id.is_none());
+                    self.0.lock().unwrap().push((
+                        call.function_name(),
+                        method.requested_name.to_string(),
+                        method.class_like_metadata.original_name.to_string(),
+                    ));
+                }
+                Ok(())
+            }
+        }
 
         struct Return;
         impl Provider for Return {
@@ -765,14 +797,21 @@ mod tests {
         }
 
         let worker = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/failed-method-provider.php");
+        // Keep the existing worker's payloads, but use the current public protocol version in its header.
+        let worker = std::fs::read_to_string(worker).unwrap().replace(
+            "pack('nnnn', 2, 1, $kind, 0)",
+            &format!("pack('nnnn', {ANALYZER_PROTOCOL_MAJOR}, {ANALYZER_PROTOCOL_MINOR}, $kind, 0)"),
+        );
         let pool = WorkerPool::spawn(
-            WorkerCommand::new("php").with_argument(worker),
+            WorkerCommand::new("php").with_argument("-r").with_argument(worker.strip_prefix("<?php").unwrap()),
             NonZeroUsize::new(1).unwrap(),
             WorkerPoolOptions::default(),
         ).unwrap();
         let external = ExternalAnalyzer::initialize([Arc::new(pool)], PHPVersion::PHP84, &[], false).unwrap();
         let mut plugins = PluginRegistry::new();
         plugins.set_external_analyzer(Arc::new(ExternalAnalyzerHandle::ready(external)));
+        let lookup_names = LookupNames::default();
+        plugins.register_expression_hook(lookup_names.clone());
         plugins.register_method_provider(Return);
         plugins.prepare_external_analyzer().unwrap();
         let code = indoc! {r#"
@@ -783,7 +822,7 @@ mod tests {
                 public function __call(string $name, array $arguments): string { return 'magic'; }
             }
             $signature = new SignatureTarget();
-            $signature->provided();
+            $signature->PrOvIdEd();
             $object = new ProviderTarget();
             $object->provided();
             ProviderTarget::provided();
@@ -808,7 +847,7 @@ mod tests {
         let mut result = AnalysisResult::new(references);
         let artifacts = analyzer.analyze_with_artifacts(program, &mut result).unwrap();
         for (call, expected) in [
-            ("$signature->provided()", "int(73)"),
+            ("$signature->PrOvIdEd()", "int(73)"),
             ("$object->provided()", "int(73)"),
             ("ProviderTarget::provided()", "int(73)"),
             ("$object->magic()", "int(73)"),
@@ -822,6 +861,10 @@ mod tests {
             assert_eq!(ty.get_id().as_str(), Some(expected), "{call}");
             assert!(!ty.is_error(), "the fallback must not replace {call}");
         }
+        assert_eq!(
+            *lookup_names.0.lock().unwrap(),
+            [("SignatureTarget::provided".to_string(), "provided".to_string(), "SignatureTarget".to_string())],
+        );
     }
 
     test_analysis! {
