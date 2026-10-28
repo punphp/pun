@@ -38,13 +38,11 @@ impl Rule for NoUselessWithCall {
         ctx: &Context<'_>,
         out: &mut Vec<Report>,
     ) {
-        let Node::FunctionCall(call) = node else {
-            return;
-        };
-        if !named(call, "with") {
+        let Node::FunctionCall(c) = node else { return };
+        if !named(c, "with") {
             return;
         }
-        let value = match call.argument_list.arguments.as_slice() {
+        let value = match c.argument_list.arguments.as_slice() {
             [value] => value,
             [value, callback] => {
                 let facts = facts(ctx);
@@ -56,14 +54,14 @@ impl Rule for NoUselessWithCall {
             }
             _ => return,
         };
-        // Rector puts the unpacked array in place of its first item; Pun leaves the call.
+        // Rector puts the unpacked array in place of its first item; Pun leaves the c.
         if value.is_unpacked() {
             return;
         }
-        let span = node_span(call);
+        let span = node_span(c);
         out.push(replace(
             span,
-            "Remove the `with()` call: it only returns its argument.".to_string(),
+            "Remove the `with()` c: it only returns its argument.".to_string(),
             moved_value(ctx, span, ancestors, unparenthesize(value.value())),
         ));
     }

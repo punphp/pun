@@ -202,10 +202,7 @@ pub(crate) fn special_class(ancestors: &[Node<'_, '_>], expr: &Expression<'_>) -
 /// one class string: a literal class string (`Foo::class`), `class-string<Foo>`, or a literal string that names a
 /// class-like the codebase knows (`ConstantStringType::isClassString()`).
 pub(crate) fn class_string_class(ctx: &Context<'_>, t: &TUnion) -> Option<String> {
-    let [atomic] = &t.types[..] else {
-        return None;
-    };
-    let TAtomic::Scalar(scalar) = atomic else {
+    let [TAtomic::Scalar(scalar)] = &t.types[..] else {
         return None;
     };
     match scalar {

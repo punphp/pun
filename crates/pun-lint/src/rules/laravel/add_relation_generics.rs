@@ -186,10 +186,7 @@ impl Rule for AddRelationGenerics {
                 types.push(default_type(&facts, default));
             }
             let equal = |t: &DocType, class: &str| matches!(t, DocType::Class(c) | DocType::This(c) if c == class);
-            let subtype = |t: &DocType, class: &str| match t {
-                DocType::Class(c) | DocType::This(c) => is_a(ctx, c, &[class]),
-                DocType::Other => false,
-            };
+            let subtype = |t: &DocType, class: &str| matches!(t, DocType::Class(c) | DocType::This(c) if is_a(ctx, c, &[class]));
             let done = if equal(&types[0], &related)
                 && types.len() > 1
                 && matches!(types[1], DocType::This(_))

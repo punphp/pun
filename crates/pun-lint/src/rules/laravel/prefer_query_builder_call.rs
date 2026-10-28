@@ -13,13 +13,13 @@
 use mago_codex::ttype::atomic::TAtomic;
 use mago_codex::ttype::atomic::object::TObject;
 use mago_codex::ttype::atomic::scalar::TScalar;
-use mago_syntax::cst::{Expression, Node, NodeKind};
+use mago_syntax::cst::{ClassLikeMemberSelector, Expression, Node, NodeKind, StaticMethodCall};
 use pun_problem::{Edit, Fix, Safety};
 use serde_json::Value;
 
+use super::is_a;
 use super::object_type::{name_class, object_class, special_class};
 use super::print::kept_arguments;
-use super::{is_a, member_name};
 use crate::rules::types::facts::facts;
 use crate::syntax::{node_span, unparenthesize};
 use crate::{Context, Report, Rule};
@@ -75,12 +75,16 @@ impl Rule for PreferQueryBuilderCall {
         ctx: &Context<'_>,
         out: &mut Vec<Report>,
     ) {
-        let Node::StaticMethodCall(call) = node else {
+        let Node::StaticMethodCall(
+            call @ StaticMethodCall {
+                method: ClassLikeMemberSelector::Identifier(method),
+                ..
+            },
+        ) = node
+        else {
             return;
         };
-        let Some(name) = member_name(&call.method) else {
-            return;
-        };
+        let name = method.value;
         let method = String::from_utf8_lossy(name);
         if method == "query" || self.exclude_methods.iter().any(|m| *m == method) {
             return;
@@ -127,15 +131,16 @@ fn classes(ctx: &Context<'_>, ancestors: &[Node<'_, '_>], class: &Expression<'_>
         _ => {}
     }
     let facts = facts(ctx);
-    let Some(t) = facts.full_type(node_span(class)) else {
-        return Vec::new();
-    };
-    let class_strings = t.types.iter().all(|a| {
+    // a class Mago has no type for names no class
+    let types = facts
+        .full_type(node_span(class))
+        .map_or(&[][..], |t| &t.types[..]);
+    let class_strings = types.iter().all(|a| {
         matches!(a, TAtomic::Scalar(TScalar::ClassLikeString(_)))
             || matches!(a, TAtomic::Scalar(s) if s.get_known_literal_string_value().is_some_and(|v| facts.codebase.get_class_like(v).is_some()))
     });
     let mut names = Vec::new();
-    for atomic in t.types.iter() {
+    for atomic in types {
         if class_strings {
             if let TAtomic::Scalar(TScalar::ClassLikeString(c)) = atomic {
                 match c.literal_value() {

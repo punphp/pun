@@ -71,10 +71,8 @@ fn is_proxy_call(ctx: &Context<'_>, ancestors: &[Node<'_, '_>], call: &CallParts
         }
         e => facts
             .full_type(node_span(e))
-            .and_then(|t| match &t.types[..] {
-                [atomic] => object_class(atomic),
-                _ => None,
-            }),
+            .filter(|t| t.types.len() == 1)
+            .and_then(|t| object_class(&t.types[0])),
     };
     class.is_some_and(|class| {
         is_a(ctx, &class, &[MODEL])

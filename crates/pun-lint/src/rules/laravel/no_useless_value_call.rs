@@ -37,16 +37,14 @@ impl Rule for NoUselessValueCall {
         ctx: &Context<'_>,
         out: &mut Vec<Report>,
     ) {
-        let Node::FunctionCall(call) = node else {
-            return;
-        };
-        if !named(call, "value") {
+        let Node::FunctionCall(c) = node else { return };
+        if !named(c, "value") {
             return;
         }
-        let [argument] = call.argument_list.arguments.as_slice() else {
+        let [argument] = c.argument_list.arguments.as_slice() else {
             return;
         };
-        // Rector puts the unpacked array in place of its first item; Pun leaves the call.
+        // Rector puts the unpacked array in place of its first item; Pun leaves the c.
         if argument.is_unpacked() {
             return;
         }
@@ -58,10 +56,10 @@ impl Rule for NoUselessValueCall {
         {
             return;
         }
-        let span = node_span(call);
+        let span = node_span(c);
         out.push(replace(
             span,
-            "Remove the `value()` call: its argument is no closure.".to_string(),
+            "Remove the `value()` c: its argument is no closure.".to_string(),
             moved_value(ctx, span, ancestors, value),
         ));
     }
