@@ -10,6 +10,7 @@ mod add_allow_mock_objects_attribute;
 mod add_data_provider_allow_mock_objects;
 mod add_data_provider_iterator_return_type;
 mod add_depended_test_return_type;
+mod add_instanceof_assert;
 mod add_mock_intersection_param;
 mod add_mock_intersection_type;
 mod add_mock_object_type;
@@ -93,6 +94,7 @@ pub use add_allow_mock_objects_attribute::AddAllowMockObjectsAttribute;
 pub use add_data_provider_allow_mock_objects::AddDataProviderAllowMockObjects;
 pub use add_data_provider_iterator_return_type::AddDataProviderIteratorReturnType;
 pub use add_depended_test_return_type::AddDependedTestReturnType;
+pub use add_instanceof_assert::{AddInstanceofAssert, AddInstanceofAssertForArgument};
 pub use add_mock_intersection_param::AddMockIntersectionParam;
 pub use add_mock_intersection_type::AddMockIntersectionType;
 pub use add_mock_object_type::AddMockObjectType;
@@ -265,6 +267,8 @@ pub(crate) fn all() -> Vec<Box<dyn Rule>> {
         Box::new(NoStubWithExpectations),
         Box::new(PreferCreateStubArgument),
         Box::new(PreferWillReturnCallback),
+        Box::new(AddInstanceofAssert),
+        Box::new(AddInstanceofAssertForArgument),
     ]
 }
 

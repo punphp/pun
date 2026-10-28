@@ -10841,7 +10841,7 @@
         "AddInstanceofAssertForNullableInstanceRector",
         "Rector\\PHPUnit\\CodeQuality\\Rector\\ClassMethod\\AddInstanceofAssertForNullableInstanceRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/phpunit/add-instanceof-assert-for-argument",
@@ -10862,7 +10862,7 @@
         "AddInstanceofAssertForNullableArgumentRector",
         "Rector\\PHPUnit\\CodeQuality\\Rector\\ClassMethod\\AddInstanceofAssertForNullableArgumentRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/phpunit/add-mock-intersection-param",

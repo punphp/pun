@@ -733,3 +733,19 @@ fn void_method_with_callback_to_will_return_callback() {
         "VoidMethodWithCallbackToWillReturnCallbackRector",
     );
 }
+
+#[test]
+fn add_instanceof_assert_for_nullable_instance() {
+    check(
+        AddInstanceofAssert,
+        "AddInstanceofAssertForNullableInstanceRector",
+    );
+}
+
+#[test]
+fn add_instanceof_assert_for_nullable_argument() {
+    check(
+        AddInstanceofAssertForArgument,
+        "AddInstanceofAssertForNullableArgumentRector",
+    );
+}

@@ -12373,7 +12373,7 @@
         "rules": [
           "lint/phpunit/add-instanceof-assert-for-argument"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -12383,7 +12383,7 @@
         "rules": [
           "lint/phpunit/add-instanceof-assert"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
