@@ -6074,7 +6074,7 @@
         "no-dead-store",
         "no-redundant-variable"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/dead-code/no-unused-constructor-param",

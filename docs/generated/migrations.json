@@ -9021,7 +9021,7 @@
         "rules": [
           "lint/dead-code/no-unused-assignment"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -25359,7 +25359,7 @@
         "rules": [
           "lint/dead-code/no-unused-assignment"
         ],
-        "note": "Merged with no-redundant-variable. Options: same. Planned: not ported yet.",
+        "note": "Merged with no-redundant-variable. Options: same.",
         "unsupported": false
       },
       {
@@ -25897,7 +25897,7 @@
         "rules": [
           "lint/dead-code/no-unused-assignment"
         ],
-        "note": "Merged with no-dead-store. Options: same. Planned: not ported yet.",
+        "note": "Merged with no-dead-store. Options: same.",
         "unsupported": false
       },
       {
