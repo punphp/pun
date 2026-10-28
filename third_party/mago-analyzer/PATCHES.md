@@ -2836,3 +2836,15 @@ Observation-enabled and disabled walks retain identical live types and diagnosti
 Regenerate with `php capture.php /absolute/path/to/phpstan-2.3.1.phar nested-shared-joins.php`
 from `crates/pun-analyse/tests/fixtures/call-scope-observations`.
 This is a shared scope-join correction, not a nullsafe or assignment-specific rewrite.
+
+### Constant method names follow union and template contracts
+
+`observations.rs` extracts names from raw types using PHPStan 2.3.1's
+[`UnionType::getConstantStrings()` and `pickFromTypes()`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Type/UnionType.php#L1728-L1747).
+An alternative without constant strings vetoes the whole union. Template parameters use their
+bound, and intersections concatenate the constant strings supplied by their members, matching
+[`IntersectionType::getConstantStrings()`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Type/IntersectionType.php#L254-L264).
+The public selector fixture covers literal unions, integer alternatives, unknown strings,
+callable strings, class strings, literal-bound templates and template intersections.
+From `crates/pun-analyse/tests/fixtures/call-scope-observations`, regenerate its capture with
+`php capture.php /absolute/path/to/phpstan-2.3.1.phar selector-names.php --dependencies`.

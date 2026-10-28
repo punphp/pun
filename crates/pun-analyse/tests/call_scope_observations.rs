@@ -1096,3 +1096,22 @@ fn nested_shared_scope_values_merge_without_erasing_unrelated_fields() {
     assert_eq!(baseline_result.issues, observed_result.issues);
     check(&file, &observed, ORACLE);
 }
+
+#[test]
+fn constant_method_names_follow_union_vetoes_and_template_bounds() {
+    const CODE: &[u8] = include_bytes!("fixtures/call-scope-observations/selector-names.php");
+    const ORACLE: &str =
+        include_str!("fixtures/call-scope-observations/selector-names-expected.json");
+    let baseline_events = Events::default();
+    let (_, baseline, baseline_result) = analyze(CODE, ORACLE, false, &providers(&baseline_events));
+    let observed_events = Events::default();
+    let (file, observed, observed_result) =
+        analyze(CODE, ORACLE, true, &providers(&observed_events));
+    assert_eq!(
+        *baseline_events.0.lock().unwrap(),
+        *observed_events.0.lock().unwrap()
+    );
+    assert_eq!(baseline.expression_types, observed.expression_types);
+    assert_eq!(baseline_result.issues, observed_result.issues);
+    check(&file, &observed, ORACLE);
+}

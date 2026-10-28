@@ -581,6 +581,26 @@ pub(crate) fn begin_call<'ctx, 'arena, A: Arena>(
     Some(call.span())
 }
 
+// UnionType::pickFromTypes vetoes an alternative with no constant strings;
+// IntersectionType concatenates its members, and template types use their bound.
+fn constant_strings(ty: &TUnion) -> Vec<Word> {
+    let mut names = Vec::new();
+    for atomic in ty.types.iter() {
+        let mut strings = match atomic {
+            TAtomic::GenericParameter(parameter) => constant_strings(&parameter.constraint),
+            _ => atomic.get_literal_string_value().map(word).into_iter().collect(),
+        };
+        for member in atomic.get_intersection_types().unwrap_or_default() {
+            strings.extend(constant_strings(&TUnion::from_atomic(member.clone())));
+        }
+        if strings.is_empty() {
+            return Vec::new();
+        }
+        names.extend(strings);
+    }
+    names
+}
+
 pub(crate) fn finish_call<A: Arena>(
     call: Option<Span>,
     context: &mut Context<'_, '_, A>,
@@ -595,8 +615,7 @@ pub(crate) fn finish_call<A: Arena>(
         let selector = call.selector.expect("a dynamic call retains its selector");
         unfiltered(selector.span(), &call, context, artifacts)?
             .into_iter()
-            .flat_map(|t| t.types.to_vec())
-            .filter_map(|t| t.get_literal_string_value().map(word))
+            .flat_map(|t| constant_strings(&t))
             .collect()
     };
     let mut observations = Vec::new();
