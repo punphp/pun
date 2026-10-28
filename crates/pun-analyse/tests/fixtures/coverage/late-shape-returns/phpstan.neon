@@ -1,0 +1,7 @@
+parameters:
+    level: 0
+    phpVersion: 80500
+    paths: [returns.php]
+    tmpDir: ../../../../../../target-late-shape-oracle
+    parallel:
+        maximumNumberOfProcesses: 1

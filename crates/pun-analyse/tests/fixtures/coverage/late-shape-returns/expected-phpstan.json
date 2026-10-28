@@ -1,0 +1,89 @@
+{
+ "general": [],
+ "errors": [
+  {
+   "file": "returns.php",
+   "line": 10,
+   "identifier": "return.missing",
+   "message": "Function LateShapeReturns\\requiredString() should return array<string, int> but return statement is missing.",
+   "tip": null
+  },
+  {
+   "file": "returns.php",
+   "line": 17,
+   "identifier": "return.missing",
+   "message": "Function LateShapeReturns\\optionalString() should return array<string, int> but return statement is missing.",
+   "tip": null
+  },
+  {
+   "file": "returns.php",
+   "line": 24,
+   "identifier": "return.missing",
+   "message": "Function LateShapeReturns\\requiredUnion() should return array<int|string, int> but return statement is missing.",
+   "tip": null
+  },
+  {
+   "file": "returns.php",
+   "line": 31,
+   "identifier": "return.missing",
+   "message": "Function LateShapeReturns\\optionalUnion() should return array<int|string, int> but return statement is missing.",
+   "tip": null
+  },
+  {
+   "file": "returns.php",
+   "line": 66,
+   "identifier": "return.missing",
+   "message": "Function LateShapeReturns\\nestedRequired() should return array<string, array<string, int>> but return statement is missing.",
+   "tip": null
+  },
+  {
+   "file": "returns.php",
+   "line": 73,
+   "identifier": "return.missing",
+   "message": "Function LateShapeReturns\\nestedOptional() should return array<string, array<string, int>> but return statement is missing.",
+   "tip": null
+  },
+  {
+   "file": "returns.php",
+   "line": 80,
+   "identifier": "return.missing",
+   "message": "Function LateShapeReturns\\nestedInvalid() should return array<string, mixed> but return statement is missing.",
+   "tip": null
+  },
+  {
+   "file": "returns.php",
+   "line": 89,
+   "identifier": "return.missing",
+   "message": "Function LateShapeReturns\\valueTemplate() should return array<string, TValue of stdClass|string> but return statement is missing.",
+   "tip": null
+  },
+  {
+   "file": "returns.php",
+   "line": 155,
+   "identifier": "return.missing",
+   "message": "Function LateShapeReturns\\conditionalReturn() should return array<string, int> but return statement is missing.",
+   "tip": null
+  },
+  {
+   "file": "returns.php",
+   "line": 167,
+   "identifier": "return.missing",
+   "message": "Method LateShapeReturns\\Methods::missing() should return array<string, int> but return statement is missing.",
+   "tip": null
+  },
+  {
+   "file": "returns.php",
+   "line": 202,
+   "identifier": "return.missing",
+   "message": "Method LateShapeReturns\\Methods::staticValue() should return array<string, static(LateShapeReturns\\Methods)> but return statement is missing.",
+   "tip": null
+  },
+  {
+   "file": "returns.php",
+   "line": 209,
+   "identifier": "return.missing",
+   "message": "Method LateShapeReturns\\Methods::conditionalValue() should return array<string, int|string> but return statement is missing.",
+   "tip": null
+  }
+ ]
+}

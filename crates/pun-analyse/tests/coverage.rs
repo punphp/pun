@@ -120,6 +120,43 @@ fn coverage_fixtures() {
     assert!(failures.is_empty(), "{}", failures.join("\n\n"));
 }
 
+/// The original level-0 rule case must match without consulting or changing its gap allowance.
+#[test]
+fn array_shape_template_key_original_rule_fixture() {
+    let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/rules");
+    let oracle: Value = serde_json::from_slice(
+        &std::fs::read(root.join("Methods/CallMethodsRuleTest.json")).unwrap(),
+    )
+    .unwrap();
+    let case = oracle["cases"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .find(|case| case["method"] == "testArrayShapeTemplateKey")
+        .unwrap();
+    let data = root.join("data");
+    let paths = case["files"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .map(|file| data.join(file.as_str().unwrap()))
+        .collect();
+    let actual: Vec<_> = pun_analyse::run(&pun_analyse::Project::new(paths, Vec::new()))
+        .unwrap()
+        .into_iter()
+        .map(|error| {
+            serde_json::json!({
+                "file": Path::new(&error.file).strip_prefix(&data).unwrap(),
+                "line": error.line,
+                "identifier": error.identifier,
+                "message": error.message,
+                "tip": error.tip,
+            })
+        })
+        .collect();
+    assert_eq!(serde_json::json!(actual), case["errors"]);
+}
+
 /// A circular class hierarchy stops PHPStan with "Reflection error: Circular reference to class" (no file errors to
 /// compare); the PHPDoc inheritance walks must still end.
 #[test]

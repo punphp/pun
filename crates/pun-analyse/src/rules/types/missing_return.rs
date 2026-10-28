@@ -133,6 +133,7 @@ pub(super) fn late(c: &Checker, t: &Type, class: Option<&ClassLikeMetadata>, php
         !scope.starts_with("class ") || class.is_some_and(|k| scope == format!("class {}", declared::original_name(k)))
     };
     match t {
+        Type::LateArrayShape(shape) => go(&shape.resolve()),
         Type::Conditional(cd) => union(vec![go(&cd.then), go(&cd.otherwise)]),
         Type::Template(tt) if !own(&tt.scope) => go(&tt.bound),
         Type::Intersection(ts) => intersect(ts.iter().map(go).collect()),
