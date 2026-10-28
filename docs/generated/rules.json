@@ -11905,7 +11905,7 @@
         "CreateStubOverCreateMockArgRector",
         "Rector\\PHPUnit\\PHPUnit120\\Rector\\CallLike\\CreateStubOverCreateMockArgRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/phpunit/prefer-create-stub-expression",

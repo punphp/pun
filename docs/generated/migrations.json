@@ -12773,7 +12773,7 @@
         "rules": [
           "lint/phpunit/prefer-create-stub-argument"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {

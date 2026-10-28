@@ -710,3 +710,13 @@ fn mock_object_arg_create_stub_to_create_mock() {
         "MockObjectArgCreateStubToCreateMockRector",
     );
 }
+
+/// Oracle/ ran with tests/phpunit-stubs autoloaded before Rector's own stubs-rector/ `TestCase` (which has only
+/// `createMock()`), as a project with PHPUnit installed has it, so inherited `TestCase` methods resolve.
+#[test]
+fn create_stub_over_create_mock_arg() {
+    check(
+        PreferCreateStubArgument,
+        "CreateStubOverCreateMockArgRector",
+    );
+}

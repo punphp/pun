@@ -138,24 +138,7 @@ fn is_mock_object_param(
     let Some(method) = call.name() else {
         return false;
     };
-    let classes: Vec<String> = if call.is_static {
-        match call.receiver {
-            Expression::Self_(_) | Expression::Static(_) => own_class(scope).into_iter().collect(),
-            Expression::Identifier(id) => vec![resolve(scope, id)],
-            Expression::Parent(_) => own_class(scope)
-                .and_then(|c| class_parents(ctx, &c).into_iter().next())
-                .into_iter()
-                .collect(),
-            other => object_class(ctx, other).into_iter().collect(),
-        }
-    } else {
-        match unparenthesize(call.receiver) {
-            Expression::Variable(Variable::Direct(v)) if v.name == b"$this" => {
-                own_class(scope).into_iter().collect()
-            }
-            other => object_class(ctx, other).into_iter().collect(),
-        }
-    };
+    let classes = called_classes(ctx, scope, call);
     let facts = facts(ctx);
     let codebase = facts.documented();
     let Some(metadata) = classes
@@ -180,4 +163,31 @@ fn is_mock_object_param(
             .any(|p| p.name.0.as_bytes()[1..] == *named.name.value && mock_object(p));
     }
     metadata.parameters.get(index).is_some_and(mock_object)
+}
+
+/// The classes `ReflectionResolver` looks a call's method up on, in order: the one class of the receiver's type
+/// (`$this` is the class itself), or each class of a static call's class.
+pub(super) fn called_classes(
+    ctx: &Context<'_>,
+    scope: &[Node<'_, '_>],
+    call: &AnyCall<'_>,
+) -> Vec<String> {
+    if call.is_static {
+        match call.receiver {
+            Expression::Self_(_) | Expression::Static(_) => own_class(scope).into_iter().collect(),
+            Expression::Identifier(id) => vec![resolve(scope, id)],
+            Expression::Parent(_) => own_class(scope)
+                .and_then(|c| class_parents(ctx, &c).into_iter().next())
+                .into_iter()
+                .collect(),
+            other => object_class(ctx, other).into_iter().collect(),
+        }
+    } else {
+        match unparenthesize(call.receiver) {
+            Expression::Variable(Variable::Direct(v)) if v.name == b"$this" => {
+                own_class(scope).into_iter().collect()
+            }
+            other => object_class(ctx, other).into_iter().collect(),
+        }
+    }
 }

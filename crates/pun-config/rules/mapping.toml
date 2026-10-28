@@ -687,7 +687,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "phpunit/prefer-covers-attribute" = { fix = "safe", ported = true, status = "decided", summary = "Change covers annotations with value to attribute" }
 "phpunit/prefer-create-mock" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "Replace getMock*() with createMock()." }
 "phpunit/prefer-create-stub" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Use createStub() instead of createMock() when no expectations are set." }
-"phpunit/prefer-create-stub-argument" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Use createStub() over createMock() when used as argument or array value and does not add any mock requirements" }
+"phpunit/prefer-create-stub-argument" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Use createStub() over createMock() when used as argument or array value and does not add any mock requirements" }
 "phpunit/prefer-create-stub-expression" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Replace createMock() assigned to variable that is only used as arg with no expectations, to createStub()" }
 "phpunit/prefer-create-stub-in-coalesce" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Use createStub() over createMock() when used as argument/array item coalesce ?? fallback" }
 "phpunit/prefer-data-provider" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Replace testWith annotation to data provider." }
