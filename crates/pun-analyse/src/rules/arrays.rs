@@ -1,10 +1,12 @@
 //! DuplicateKeysInLiteralArraysRule: inferred scalar keys, finite unions and sealed array unpacking.
 
-use std::collections::{HashMap, HashSet};
+use std::collections::{HashMap, HashSet, hash_map::RandomState};
+use std::hash::BuildHasher;
 use std::sync::Mutex;
 
 use mago_allocator::LocalArena;
 use mago_codex::metadata::class_like::ClassLikeMetadata;
+use mago_codex::ttype::union::TUnion;
 use mago_names::ResolvedNames;
 use mago_span::{HasSpan, Span};
 use mago_syntax::cst::*;
@@ -433,6 +435,53 @@ pub(super) fn key_type(
     names: &ResolvedNames,
     context: Option<&ClassLikeMetadata>,
 ) -> Option<Type> {
+    key_type_with(c, key, names, context, &ExpressionTypes::<RandomState>::Current)
+}
+
+/// Resolve optional key/source metadata in one selected scope. The converter must use the same map for
+/// the expression's dependencies; missing entries never borrow ordinary inference or its copy cache.
+pub(super) fn key_type_from(
+    c: &Checker,
+    key: &Expression,
+    names: &ResolvedNames,
+    context: Option<&ClassLikeMetadata>,
+    types: &HashMap<Span, TUnion, impl BuildHasher>,
+    convert: &dyn Fn(&Expression, &TUnion) -> Type,
+) -> Option<Type> {
+    key_type_with(c, key, names, context, &ExpressionTypes::Selected { types, convert })
+}
+
+enum ExpressionTypes<'a, S> {
+    Current,
+    Selected {
+        types: &'a HashMap<Span, TUnion, S>,
+        convert: &'a dyn Fn(&Expression, &TUnion) -> Type,
+    },
+}
+
+impl<S: BuildHasher> ExpressionTypes<'_, S> {
+    fn get(&self, c: &Checker, expression: &Expression) -> Option<Type> {
+        match self {
+            Self::Current => c.phpstan_type(expression),
+            Self::Selected { types, convert } => Some(convert(expression, types.get(&expression.span())?)),
+        }
+    }
+
+    fn copied(&self, c: &Checker, at: Span) -> Option<Type> {
+        match self {
+            Self::Current => copied_key(c, at),
+            Self::Selected { types, .. } => types.get(&at).map(|raw| c.to_phpstan(raw)),
+        }
+    }
+}
+
+fn key_type_with(
+    c: &Checker,
+    key: &Expression,
+    names: &ResolvedNames,
+    context: Option<&ClassLikeMetadata>,
+    types: &ExpressionTypes<impl BuildHasher>,
+) -> Option<Type> {
     let key = unparenthesized(key);
     Some(match key {
         Expression::Literal(Literal::Integer(i)) => {
@@ -451,18 +500,18 @@ pub(super) fn key_type(
                 u.operator,
                 UnaryPrefixOperator::Negation(_) | UnaryPrefixOperator::Plus(_)
             ) {
-                let value = key_type(c, u.operand, names, context)?;
+                let value = key_type_with(c, u.operand, names, context, types)?;
                 signed(
                     value,
                     matches!(u.operator, UnaryPrefixOperator::Negation(_)),
                 )
-                .or_else(|| c.phpstan_type(key))?
+                .or_else(|| types.get(c, key))?
             } else {
-                c.phpstan_type(key)?
+                types.get(c, key)?
             }
         }
         Expression::ConstantAccess(a) => {
-            if let Some(value) = c.phpstan_type(key) {
+            if let Some(value) = types.get(c, key) {
                 // An observed local declaration may have a flow-selected value unlike reflection.
                 return Some(value);
             }
@@ -502,19 +551,19 @@ pub(super) fn key_type(
                     false,
                 ),
                 Expression::Static(_) => (Type::Object(c.display(context?), vec![], false), true),
-                e => (key_type(c, e, names, context)?, true),
+                e => (key_type_with(c, e, names, context, types)?, true),
             };
-            receiver_constant(c, &holder, name.value, late)?
+            receiver_constant(c, &holder, name.value, late, types)?
         }
         Expression::Variable(_) => {
-            let actual = c.phpstan_type(key)?;
+            let actual = types.get(c, key)?;
             // Prelude NAN/INF erase float precision; PHP_DEBUG's 0|1 becomes an integer range. Recover
             // only finite scalar keys from a straight-line copy, never widening the actual narrowed type.
             // A mutation/reference/control-flow join has no source edge.
             if inferred_keys(&actual).is_none()
                 && let Some(super::infer::Origin::Copy(from)) = c.origins.get(&key.span())
             {
-                copied_key(c, *from)
+                types.copied(c, *from)
                     .filter(|source| {
                         inferred_keys(source).is_some() && is_super_type_of(&actual, source).yes()
                     })
@@ -523,7 +572,7 @@ pub(super) fn key_type(
                 actual
             }
         }
-        _ => c.phpstan_type(key)?,
+        _ => types.get(c, key)?,
     })
 }
 
@@ -553,18 +602,18 @@ fn signed(t: Type, negative: bool) -> Option<Type> {
 }
 
 /// ClassConstFetchHandler: a constant class-string is exact, an object/generic class-string is late-bound.
-fn receiver_constant(c: &Checker, holder: &Type, name: &[u8], late: bool) -> Option<Type> {
+fn receiver_constant(c: &Checker, holder: &Type, name: &[u8], late: bool, types: &ExpressionTypes<impl BuildHasher>) -> Option<Type> {
     match holder {
-        Type::ConstString(class) => class_constant(c, std::str::from_utf8(class).ok()?, name, false),
+        Type::ConstString(class) => class_constant(c, std::str::from_utf8(class).ok()?, name, false, types),
         Type::Object(class, _, _) | Type::Static(class, _) | Type::This(class) => {
-            class_constant(c, class, name, late)
+            class_constant(c, class, name, late, types)
         }
-        Type::ClassString(Some(bound)) => receiver_constant(c, bound, name, true),
-        Type::Template(t) => receiver_constant(c, &t.bound, name, late),
+        Type::ClassString(Some(bound)) => receiver_constant(c, bound, name, true, types),
+        Type::Template(t) => receiver_constant(c, &t.bound, name, late, types),
         Type::Union(parts) | Type::Intersection(parts) => {
             let found: Vec<_> = parts
                 .iter()
-                .filter_map(|p| receiver_constant(c, p, name, late))
+                .filter_map(|p| receiver_constant(c, p, name, late, types))
                 .collect();
             (!found.is_empty()).then(|| union(found))
         }
@@ -574,7 +623,7 @@ fn receiver_constant(c: &Checker, holder: &Type, name: &[u8], late: bool) -> Opt
 
 /// InitializerExprTypeResolver::getClassConstFetchTypeByReflection(): exact fetches use the initializer;
 /// late-bound fetches of non-final classes use the reflected PHPDoc/native type, or mixed if overridable.
-fn class_constant(c: &Checker, class: &str, name: &[u8], late: bool) -> Option<Type> {
+fn class_constant(c: &Checker, class: &str, name: &[u8], late: bool, types: &ExpressionTypes<impl BuildHasher>) -> Option<Type> {
     let known = reflection::known(c, class);
     if name.eq_ignore_ascii_case(b"class") {
         return (!late || known.is_some_and(|k| k.is_final()))
@@ -624,7 +673,7 @@ fn class_constant(c: &Checker, class: &str, name: &[u8], late: bool) -> Option<T
         let owner =
             crate::codebase::initializer_owner(c.codebase, meta?.name, mago_word::word(name))
                 .and_then(|owner| c.codebase.get_class_like_by_name(owner))?;
-        return Some(initializer_order(c, k.span, owner, value));
+        return Some(initializer_order_with(c, k.span, owner, value, types));
     }
     builtin
 }
@@ -637,12 +686,23 @@ pub(super) fn initializer_order(
     class: &ClassLikeMetadata,
     value: Type,
 ) -> Type {
+    initializer_order_with(c, at, class, value, &ExpressionTypes::<RandomState>::Current)
+}
+
+fn initializer_order_with(
+    c: &Checker,
+    at: Span,
+    class: &ClassLikeMetadata,
+    value: Type,
+    types: &ExpressionTypes<impl BuildHasher>,
+) -> Type {
     fn ordered(
         c: &Checker,
         expression: &Expression,
         names: &ResolvedNames,
         class: &ClassLikeMetadata,
         value: &Type,
+        types: &ExpressionTypes<impl BuildHasher>,
     ) -> Option<Type> {
         let Type::ConstArray(actual) = value else {
             return Some(value.clone());
@@ -651,7 +711,7 @@ pub(super) fn initializer_order(
             Expression::Array(a) => &a.elements,
             Expression::LegacyArray(a) => &a.elements,
             Expression::Access(Access::ClassConstant(_)) => {
-                return key_type(c, expression, names, Some(class));
+                return key_type_with(c, expression, names, Some(class), types);
             }
             Expression::ConstantAccess(access) => {
                 let constant = c.codebase.get_constant(names.get(access)).or_else(|| {
@@ -659,7 +719,7 @@ pub(super) fn initializer_order(
                         .then(|| c.codebase.get_constant(access.name.value()))
                         .flatten()
                 })?;
-                return Some(initializer_order(c, constant.span, class, value.clone()));
+                return Some(initializer_order_with(c, constant.span, class, value.clone(), types));
             }
             _ => return None,
         };
@@ -671,7 +731,7 @@ pub(super) fn initializer_order(
                 // fallback rather than inventing a source order for an unsupported key sequence.
                 return None;
             };
-            let keys = inferred_keys(&key_type(c, kv.key, names, Some(class))?)?;
+            let keys = inferred_keys(&key_type_with(c, kv.key, names, Some(class), types)?)?;
             let key = keys.first().filter(|_| keys.len() == 1)?;
             let key = match key {
                 Key::Int(i) => Type::ConstInt(*i),
@@ -691,7 +751,7 @@ pub(super) fn initializer_order(
             .iter()
             .zip(expressions)
             .map(|(old, expression)| {
-                ordered(c, expression, names, class, &actual.values[*old])
+                ordered(c, expression, names, class, &actual.values[*old], types)
                     .unwrap_or_else(|| actual.values[*old].clone())
             })
             .collect();
@@ -753,7 +813,7 @@ pub(super) fn initializer_order(
             };
             find.walk_program(program, &mut ());
             find.expression
-                .and_then(|e| ordered(c, e, &names, class, &value))
+                .and_then(|e| ordered(c, e, &names, class, &value, types))
         })
         .unwrap_or(value)
 }
