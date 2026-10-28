@@ -561,9 +561,9 @@ fn clear_object_property_narrowings<'ctx, 'arena, A>(
     let aliased_source = method_context.is_some_and(|method| {
         let Some(declaring) = method.declaring_method_id else { return false };
         let Some(storage) = context.codebase.get_class_like(declaring.get_class_name().as_bytes()) else { return false };
-        let Some(class) = invalidating_class.and_then(|name| context.codebase.get_class_like(name.as_bytes())) else {
-            return false;
-        };
+        let class = invalidating_class
+            .and_then(|name| context.codebase.get_class_like(name.as_bytes()))
+            .unwrap_or(storage);
         storage.kind.is_trait() && storage.name != class.name
             && class.trait_alias_map.iter().any(|(alias, source)| {
                 *source == method.requested_name

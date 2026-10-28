@@ -310,5 +310,53 @@
         "Dumped type: int|null",
         null,
         false
+    ],
+    [
+        "receivers.php",
+        313,
+        "phpstan.dumpType",
+        "Dumped type: int|null",
+        null,
+        false
+    ],
+    [
+        "receivers.php",
+        325,
+        "phpstan.dumpType",
+        "Dumped type: 'bar'|'foo'",
+        null,
+        false
+    ],
+    [
+        "receivers.php",
+        335,
+        "phpstan.dumpType",
+        "Dumped type: 'bar'|'foo'",
+        null,
+        false
+    ],
+    [
+        "receivers.php",
+        349,
+        "phpstan.dumpType",
+        "Dumped type: int",
+        null,
+        false
+    ],
+    [
+        "receivers.php",
+        364,
+        "phpstan.dumpType",
+        "Dumped type: int",
+        null,
+        false
+    ],
+    [
+        "receivers.php",
+        365,
+        "phpstan.dumpType",
+        "Dumped type: int|null",
+        null,
+        false
     ]
 ]

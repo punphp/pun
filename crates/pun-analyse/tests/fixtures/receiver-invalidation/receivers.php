@@ -302,3 +302,67 @@ function aliasedReturns(ReturningChild $box): void
         dumpType($box->value);
     }
 }
+
+class ClauseBox extends Box
+{
+    public function inspectClause(bool $flag): void
+    {
+        if ($flag || $this->value !== null) {
+            $this->mutate();
+            if (!$flag) {
+                dumpType($this->value);
+            }
+        }
+    }
+}
+
+function nullableReceiverGuard(?Box $box): void
+{
+    if ($box !== null) { $tag = 'foo'; }
+    else { $tag = 'bar'; }
+    $box->mutate();
+    if ($box !== null) {
+        dumpType($tag);
+    }
+}
+
+function nullsafeReceiverGuard(?Box $box): void
+{
+    if ($box !== null) { $tag = 'foo'; }
+    else { $tag = 'bar'; }
+    $box?->mutate();
+    if ($box !== null) {
+        dumpType($tag);
+    }
+}
+
+class ExternalSink
+{
+    /** @psalm-external-mutation-free */
+    public function inspect(Box $box): int { return 1; }
+}
+
+function externalArgumentProperty(ExternalSink $sink, Box $box): void
+{
+    if ($box->value !== null) {
+        $sink->inspect($box);
+        dumpType($box->value);
+    }
+}
+
+class ShapeBox extends Box
+{
+    private ?int $secret;
+
+    /** @var object{value: int|null} */
+    public object $nested;
+
+    public function inspect(ShapeBox $box): void
+    {
+        if ($box->secret !== null && $box->nested->value !== null) {
+            $box->nothing();
+            dumpType($box->secret);
+            dumpType($box->nested->value);
+        }
+    }
+}
