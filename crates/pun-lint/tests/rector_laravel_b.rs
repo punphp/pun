@@ -16,7 +16,7 @@ use std::path::{Path, PathBuf};
 use lint_c::{run_class_with, run_dirs};
 use pun_lint::Rule;
 use pun_lint::rules::{
-    AddFactoryExtendsPhpdoc, AddHasFactoryTrait, AddRelationGenerics, NoAppArrayAccess, AddQueryClosureType, AddRelationQueryClosureType, PreferLatestOldest, PreferProtectedModelMethods,
+    AddFactoryExtendsPhpdoc, AddHasFactoryTrait, AddRelationGenerics, AddTapClosureType, NoAppArrayAccess, AddQueryClosureType, AddRelationQueryClosureType, PreferLatestOldest, PreferProtectedModelMethods,
     ContainerService, PreferClassContainerKey, PreferClosureOnlyBind, PreferCollectionAll, PreferQueryBuilderCall, PreferRequestValidate,
     NoCollectionAliases, NoNegatedContains, NoNegatedFilter, NoNegatedWhen, NoUselessValueCall,
     NoUselessWithCall,
@@ -352,4 +352,9 @@ fn add_generic_return_type_to_relations() {
     let stubs = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/rector-laravel-stubs");
     run(&["Oracle/Laravel12", "Pun/Laravel12"], &[stubs]);
     run(&["Pun/NoApplication"], &without);
+}
+
+#[test]
+fn type_hint_tappable_call() {
+    check(AddTapClosureType, "TypeHintTappableCallRector");
 }

@@ -7010,7 +7010,7 @@
         "TypeHintTappableCall",
         "TypeHintTappableCallRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/laravel/no-app-array-access",

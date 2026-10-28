@@ -570,6 +570,7 @@ pub const PROJECT_RULES: &[&str] = &[
     "lint/laravel/prefer-query-builder-call",
     "lint/laravel/prefer-class-container-key",
     "lint/laravel/add-relation-query-closure-type",
+    "lint/laravel/add-tap-closure-type",
     "lint/laravel/no-app-array-access",
     "lint/laravel/no-collection-aliases",
     "lint/laravel/no-negated-contains",

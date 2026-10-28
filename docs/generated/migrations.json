@@ -11649,7 +11649,7 @@
         "rules": [
           "lint/laravel/add-tap-closure-type"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {

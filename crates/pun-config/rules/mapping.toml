@@ -444,7 +444,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "laravel/add-query-closure-type" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Type-hint the closure parameter of Eloquent where()/whereHas() and similar query methods." }
 "laravel/add-relation-generics" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add generic return type to relations in child of Illuminate\\Database\\Eloquent\\Model" }
 "laravel/add-relation-query-closure-type" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add type hinting to where relation has methods e.g. `whereHas`, `orWhereHas`, `whereDoesntHave`, `orWhereDoesntHave`, `whereHasMorph`, `orWhereHasMorph`, `whereDoesntHaveMorph`, `orWhereDoesntHaveMorph`" }
-"laravel/add-tap-closure-type" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Automatically type hints your tappable closures" }
+"laravel/add-tap-closure-type" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Automatically type hints your tappable closures" }
 "laravel/no-app-array-access" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "Replace magical call on $this->app[\"something\"] to standalone type assign variable" }
 "laravel/no-collection-aliases" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "Use the base collection methods instead of their aliases." }
 "laravel/no-controller-middleware" = { fix = "none", ported = true, origin = "mago", status = "decided", summary = "This rule warns against applying middlewares in controllers." }

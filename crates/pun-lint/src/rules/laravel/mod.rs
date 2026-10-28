@@ -7,6 +7,7 @@
 
 mod add_factory_extends_phpdoc;
 mod add_relation_generics;
+mod add_tap_closure_type;
 mod add_has_factory_trait;
 mod add_query_closure_type;
 mod add_relation_query_closure_type;
@@ -68,6 +69,7 @@ mod print;
 
 pub use add_factory_extends_phpdoc::AddFactoryExtendsPhpdoc;
 pub use add_relation_generics::AddRelationGenerics;
+pub use add_tap_closure_type::AddTapClosureType;
 pub use add_has_factory_trait::AddHasFactoryTrait;
 pub use no_app_array_access::NoAppArrayAccess;
 pub use add_query_closure_type::AddQueryClosureType;
@@ -227,6 +229,7 @@ pub(crate) fn all() -> Vec<Box<dyn Rule>> {
         Box::new(PreferClassContainerKey::default()),
         Box::new(AddFactoryExtendsPhpdoc),
         Box::new(AddRelationGenerics),
+        Box::new(AddTapClosureType),
         Box::new(NoAppArrayAccess),
     ]
 }
