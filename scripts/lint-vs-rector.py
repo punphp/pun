@@ -69,8 +69,9 @@ def compare(name: str, pun: str, env: dict) -> bool:
     # check-only run sees only in a later round. Only the rules with a Rector class: the Mago-ported ones have
     # nothing to compare with.
     ids = sorted(set(pun_id[c] for c in classes))
+    # The PHP version of pun-bench-rector.php's `withPhpVersion(80400)`, not composer.json's (laravel-framework's ^8.3).
     (work / "pun-rector-lint.toml").write_text(
-        "[lint.rules]\n" + "".join(f'"{i.removeprefix("lint/")}" = "error"\n' for i in ids))
+        '[php]\nversion = "8.4"\n\n[lint.rules]\n' + "".join(f'"{i.removeprefix("lint/")}" = "error"\n' for i in ids))
     ours = subprocess.run([pun, "lint", "--config", "pun-rector-lint.toml", "--fix", "--test", "--format=json", "-v",
                            "--no-cache", *bench.LINT[name]], cwd=work, env=env, capture_output=True, text=True)
     if ours.returncode not in (0, 1):

@@ -34,6 +34,7 @@ mod no_unused_constructor_param;
 mod no_null_default_argument;
 mod add_param_type_sprintf;
 mod class_dependency;
+pub(crate) mod add_param_type_sprintf;
 mod class_method;
 mod laravel;
 mod pest;

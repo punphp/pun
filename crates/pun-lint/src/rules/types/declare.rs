@@ -157,7 +157,7 @@ fn class(codebase: &CodebaseMetadata, name: &impl AsRef<[u8]>) -> String {
 }
 
 /// The declaration of one type that is not `null`.
-fn atomic_declaration(
+pub(crate) fn atomic_declaration(
     atomic: &TAtomic,
     codebase: &CodebaseMetadata,
     php_version: u32,

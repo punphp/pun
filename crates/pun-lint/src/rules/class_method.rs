@@ -944,6 +944,20 @@ pub(crate) fn data_provider_methods(
     ancestors: &[Node<'_, '_>],
     class: &ClassInfo<'_, '_>,
 ) -> Vec<Vec<u8>> {
+    (0..class.members.len())
+        .flat_map(|index| method_data_providers(source, ancestors, class, index, true))
+        .collect()
+}
+
+/// `DataProviderMethodsFinder::findDataProviderNodes(...)->getClassMethods()`, as names: the methods of the class
+/// that the `@dataProvider` tags (with `doc_tags`), then the `DataProvider` attributes, of member `index` name.
+pub(crate) fn method_data_providers(
+    source: &str,
+    ancestors: &[Node<'_, '_>],
+    class: &ClassInfo<'_, '_>,
+    index: usize,
+    doc_tags: bool,
+) -> Vec<Vec<u8>> {
     let method_names: Vec<&[u8]> = class
         .members
         .iter()
@@ -969,11 +983,8 @@ pub(crate) fn data_provider_methods(
             out.push(found.to_vec());
         }
     };
-    for (index, member) in class.members.iter().enumerate() {
-        let ClassLikeMember::Method(method) = member else {
-            continue;
-        };
-        if let Some(doc) = member_doc(source, class, index) {
+    if let Some(ClassLikeMember::Method(method)) = class.members.get(index) {
+        if let Some(doc) = member_doc(source, class, index).filter(|_| doc_tags) {
             for line in doc.lines() {
                 let line = line.trim_start();
                 let line = line.strip_prefix("/**").unwrap_or(line);

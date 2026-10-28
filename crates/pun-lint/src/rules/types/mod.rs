@@ -34,6 +34,19 @@ mod add_function_void_return;
 mod add_magic_method_types;
 mod add_method_void_return;
 mod add_native_scalar_return;
+mod add_param_type_array_any_all;
+mod add_param_type_array_dim_fetch;
+mod add_param_type_array_function;
+mod add_param_type_array_map;
+mod add_param_type_array_reduce;
+mod add_param_type_arrow_dim_fetch;
+mod add_param_type_data_provider;
+mod add_param_type_dim_fetch_key;
+mod add_param_type_method_call;
+mod add_param_type_parent_call;
+mod add_param_type_property;
+mod add_param_type_spl_fixed_array;
+mod add_param_type_variable_call;
 mod add_never_return;
 mod add_property_type_assigns;
 mod add_property_type_behat_context;
@@ -69,6 +82,7 @@ mod prefer_instanceof;
 mod prefer_specific_return_type;
 pub(crate) mod property_type;
 pub(crate) mod rector_type;
+mod param;
 pub(crate) mod silent_void;
 mod type_factory;
 
@@ -107,6 +121,19 @@ pub use add_property_type_jms::{AddPropertyTypeJmsObject, AddPropertyTypeJmsScal
 pub use add_property_type_setter_getter::AddPropertyTypeSetterGetter;
 pub use add_property_type_setup::AddPropertyTypeSetup;
 pub use add_property_type_setup_docblock::AddPropertyTypeSetupDocblock;
+pub use add_param_type_array_any_all::{AddParamTypeArrayAnyAll, PreferNarrowParamType};
+pub use add_param_type_array_dim_fetch::AddParamTypeArrayDimFetch;
+pub use add_param_type_array_function::AddParamTypeArrayFunction;
+pub use add_param_type_array_map::AddParamTypeArrayMap;
+pub use add_param_type_array_reduce::AddParamTypeArrayReduce;
+pub use add_param_type_arrow_dim_fetch::AddParamTypeArrowDimFetch;
+pub use add_param_type_data_provider::AddParamTypeDataProvider;
+pub use add_param_type_dim_fetch_key::AddParamTypeDimFetchKey;
+pub use add_param_type_method_call::AddParamTypeMethodCall;
+pub use add_param_type_parent_call::AddParamTypeParentCall;
+pub use add_param_type_property::AddParamTypeProperty;
+pub use add_param_type_spl_fixed_array::AddParamTypeSplFixedArray;
+pub use add_param_type_variable_call::AddParamTypeVariableCall;
 pub use add_return_type_from_cast::AddReturnTypeFromCast;
 pub use add_return_type_from_constant::AddReturnTypeFromConstant;
 pub use add_return_type_from_get_repository::AddReturnTypeFromGetRepository;
@@ -210,6 +237,21 @@ pub(crate) fn all() -> Vec<Box<dyn Rule>> {
         Box::new(AddVarPhpdocFromDimFetch),
         Box::new(AddGetterReturnPhpdoc),
         Box::new(PreferGenericCollectionPhpdoc),
+        // The parameter rules, in Rector's order too.
+        Box::new(AddParamTypeSplFixedArray),
+        Box::new(AddParamTypeDataProvider),
+        Box::new(AddParamTypeMethodCall::default()),
+        Box::new(AddParamTypeParentCall),
+        Box::new(AddParamTypeArrayMap),
+        Box::new(AddParamTypeArrayReduce),
+        Box::new(AddParamTypeArrowDimFetch),
+        Box::new(AddParamTypeProperty),
+        Box::new(AddParamTypeVariableCall),
+        Box::new(AddParamTypeArrayDimFetch),
+        Box::new(AddParamTypeDimFetchKey),
+        Box::new(AddParamTypeArrayFunction),
+        Box::new(PreferNarrowParamType),
+        Box::new(AddParamTypeArrayAnyAll),
     ]
 }
 

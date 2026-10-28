@@ -29,7 +29,7 @@ pub(crate) struct Annotated<'s> {
 }
 
 impl<'s> Annotated<'s> {
-    /// The class, method or property `node`, whose ancestors are `ancestors`; `None` for any other node.
+    /// The class, method, function or property `node`, whose ancestors are `ancestors`; `None` for any other node.
     pub(crate) fn of(
         source: &'s str,
         node: Node<'_, '_>,
@@ -38,6 +38,7 @@ impl<'s> Annotated<'s> {
         let lists: &Sequence<'_, AttributeList<'_>> = match node {
             Node::Class(class) => &class.attribute_lists,
             Node::Method(method) => &method.attribute_lists,
+            Node::Function(function) => &function.attribute_lists,
             Node::Property(mago_syntax::cst::Property::Plain(property)) => {
                 &property.attribute_lists
             }
