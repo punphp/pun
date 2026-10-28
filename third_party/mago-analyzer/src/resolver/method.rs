@@ -21,6 +21,7 @@ use mago_codex::ttype::get_mixed;
 use mago_codex::ttype::get_specialized_template_type;
 use mago_codex::ttype::template::GenericTemplate;
 use mago_codex::ttype::template::TemplateResult;
+use mago_codex::ttype::union::TUnion;
 use mago_reporting::Annotation;
 use mago_reporting::Issue;
 use mago_span::HasSpan;
@@ -172,13 +173,38 @@ pub fn resolve_method_targets<'ctx, 'ast, 'arena, A>(
 where
     A: Arena,
 {
-    let mut result = MethodResolutionResult::default();
-    let mut asserted_descendant_method_references = Vec::new();
-
     let was_inside_general_use = block_context.flags.inside_general_use();
     block_context.flags.set_inside_general_use(true);
-    object.analyze(context, block_context, artifacts)?;
+    let result = object.analyze(context, block_context, artifacts);
     block_context.flags.set_inside_general_use(was_inside_general_use);
+    result?;
+
+    resolve_method_targets_after_receiver(
+        context,
+        block_context,
+        artifacts,
+        object,
+        selector,
+        is_null_safe,
+        access_span,
+        None,
+    )
+}
+
+/// Resolve a receiver that has already been evaluated, optionally using its
+/// ensured scope view without replacing its own stored expression result.
+pub(crate) fn resolve_method_targets_after_receiver<'ctx, 'ast, 'arena, A: Arena>(
+    context: &mut Context<'ctx, 'arena, A>,
+    block_context: &mut BlockContext<'ctx>,
+    artifacts: &mut AnalysisArtifacts,
+    object: &'ast Expression<'arena>,
+    selector: &'ast ClassLikeMemberSelector<'arena>,
+    is_null_safe: bool,
+    access_span: Span,
+    receiver_type: Option<&TUnion>,
+) -> Result<MethodResolutionResult, AnalysisError> {
+    let mut result = MethodResolutionResult::default();
+    let mut asserted_descendant_method_references = Vec::new();
 
     let resolved_selectors = resolve_member_selector(context, block_context, artifacts, selector, false)?;
     let mut method_names = Vec::new();
@@ -195,7 +221,7 @@ where
         }
     }
 
-    if let Some(object_type) = artifacts.get_expression_type(object) {
+    if let Some(object_type) = receiver_type.or_else(|| artifacts.get_expression_type(object)) {
         let mut object_atomics = object_type.types.iter().collect::<Vec<_>>();
 
         while let Some(object_atomic) = object_atomics.pop() {

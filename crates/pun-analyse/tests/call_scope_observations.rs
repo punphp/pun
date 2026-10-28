@@ -39,6 +39,13 @@ const ORACLE: &str = include_str!("fixtures/call-scope-observations/expected.jso
 // Type unions are sets. PHPStan's presentation order differs from Mago's; keep
 // every member, shape key and literal while canonicalizing only union order.
 fn canonical(s: &str) -> String {
+    if let Some((key, value)) = s.split_once(": ")
+        && key
+            .bytes()
+            .all(|b| b.is_ascii_alphanumeric() || matches!(b, b'_' | b'?'))
+    {
+        return format!("{key}: {}", canonical(value));
+    }
     let mut parts = Vec::new();
     let mut start = 0;
     let mut depth = 0;
@@ -99,7 +106,8 @@ fn describe(t: &TUnion) -> String {
             {
                 format!("Closure(): {}", describe(c.return_type.as_ref().unwrap()))
             }
-            TAtomic::Array(TArray::List(a)) => format!(
+            TAtomic::Array(a) if a.is_empty() => "array{}".into(),
+            TAtomic::Array(TArray::List(a)) if a.known_elements.is_some() => format!(
                 "array{{{}}}",
                 a.known_elements
                     .as_ref()
@@ -109,15 +117,17 @@ fn describe(t: &TUnion) -> String {
                     .collect::<Vec<_>>()
                     .join(", ")
             ),
-            TAtomic::Array(TArray::Keyed(a)) => format!(
+            TAtomic::Array(TArray::Keyed(a)) if a.known_items.is_some() => format!(
                 "array{{{}}}",
                 a.known_items
                     .as_ref()
                     .unwrap()
                     .iter()
-                    .map(|(k, (_, t))| match k {
-                        ArrayKey::String(s) => format!("{s}: {}", describe(t)),
-                        ArrayKey::Integer(n) => format!("{n}: {}", describe(t)),
+                    .map(|(k, (optional, t))| match k {
+                        ArrayKey::String(s) =>
+                            format!("{s}{}: {}", if *optional { "?" } else { "" }, describe(t)),
+                        ArrayKey::Integer(n) =>
+                            format!("{n}{}: {}", if *optional { "?" } else { "" }, describe(t)),
                         _ => panic!("unexpected symbolic key in oracle fixture"),
                     })
                     .collect::<Vec<_>>()
@@ -686,6 +696,142 @@ fn pricing_closures_and_anonymous_constructors_keeps_declaration_events_isolated
     assert_eq!(baseline.expression_types, observed.expression_types);
     assert_eq!(baseline_result.issues, observed_result.issues);
     check(&file, &observed, ORACLE);
+}
+
+#[test]
+fn nullsafe_devices_and_exit_scopes() {
+    const CODE: &[u8] = include_bytes!("fixtures/call-scope-observations/nullsafe-scopes.php");
+    const ORACLE: &str =
+        include_str!("fixtures/call-scope-observations/nullsafe-scopes-expected.json");
+    check_nullsafe_scopes(CODE, ORACLE);
+}
+
+#[test]
+fn nullsafe_nested_devices_templates_and_assigned_spines() {
+    check_nullsafe_scopes(
+        include_bytes!("fixtures/call-scope-observations/nullsafe-scope-edges.php"),
+        include_str!("fixtures/call-scope-observations/nullsafe-scope-edges-expected.json"),
+    );
+}
+
+#[test]
+fn nullsafe_result_null_comes_from_the_original_receiver() {
+    check_nullsafe_scopes(
+        include_bytes!("fixtures/call-scope-observations/nullsafe-scope-results.php"),
+        include_str!("fixtures/call-scope-observations/nullsafe-scope-results-expected.json"),
+    );
+}
+
+#[test]
+fn nullsafe_selector_errors_abort_before_argument_effects() {
+    use mago_analyzer::error::AnalysisError;
+
+    struct FailSelector(u32, u32);
+    impl ExpressionHook for FailSelector {
+        fn before_expression(
+            &self,
+            expression: &Expression<'_>,
+            _: &mut HookContext<'_, '_>,
+        ) -> HookResult<ExpressionHookResult> {
+            let span = expression.span();
+            if (span.start.offset, span.end.offset) == (self.0, self.1) {
+                Err(PluginError::Internal {
+                    reason: "nullsafe selector failed".into(),
+                })
+            } else {
+                Ok(ExpressionHookResult::Continue)
+            }
+        }
+    }
+
+    const CODE: &[u8] = b"<?php
+class NullsafeSelectorFailure { public function foo($value): void {} }
+function exercise(?NullsafeSelectorFailure $receiver): void {
+    $receiver?->{($method = 'foo')}($later = 1);
+}";
+    let selector = b"($method = 'foo')";
+    let start = CODE
+        .windows(selector.len())
+        .position(|s| s == selector)
+        .unwrap() as u32;
+    let end = start + selector.len() as u32;
+    let arena = LocalArena::new();
+    let file = File::ephemeral(
+        Cow::Borrowed(b"nullsafe-selector-error.php"),
+        Cow::Borrowed(CODE),
+    );
+    let program = parse_file(&arena, &file);
+    assert!(!program.has_errors());
+    let names = NameResolver::new(&arena).resolve(program);
+    let settings = Settings::default();
+    let mut codebase = scan_program(&arena, &file, program, &names, settings.version);
+    let mut references = SymbolReferences::new();
+    populate_codebase(
+        &mut codebase,
+        &mut references,
+        Default::default(),
+        Default::default(),
+    );
+    let events = Events::default();
+    let mut registry = providers(&events);
+    registry.register_expression_hook(FailSelector(start, end));
+    let mut result = AnalysisResult::new(references);
+    assert!(matches!(
+        Analyzer::new(&arena, &file, &names, &codebase, &registry, settings)
+            .analyze_with_artifacts(program, &mut result),
+        Err(AnalysisError::Plugin(PluginError::Internal { reason })) if reason == "nullsafe selector failed"
+    ));
+    let receiver = CODE
+        .windows(b"$receiver?->".len())
+        .position(|s| s == b"$receiver?->")
+        .unwrap() as u32;
+    let later = b"$later = 1";
+    let later_start = CODE.windows(later.len()).position(|s| s == later).unwrap() as u32;
+    let events = events.0.lock().unwrap();
+    assert_eq!(
+        events.get(&(
+            "expression-before",
+            receiver,
+            receiver + b"$receiver".len() as u32
+        )),
+        Some(&1)
+    );
+    assert_eq!(events.get(&("expression-before", start, end)), Some(&1));
+    assert!(!events.contains_key(&(
+        "expression-before",
+        later_start,
+        later_start + later.len() as u32
+    )));
+}
+
+fn check_nullsafe_scopes(code: &'static [u8], oracle: &str) {
+    let baseline_events = Events::default();
+    let (_, baseline, baseline_result) = analyze(code, oracle, false, &providers(&baseline_events));
+    let observed_events = Events::default();
+    let (file, observed, observed_result) =
+        analyze(code, oracle, true, &providers(&observed_events));
+    assert_eq!(
+        *baseline_events.0.lock().unwrap(),
+        *observed_events.0.lock().unwrap()
+    );
+    let expected: Value = serde_json::from_str(oracle).unwrap();
+    let events = observed_events.0.lock().unwrap();
+    for (position, count) in expected["function_events"]
+        .as_object()
+        .into_iter()
+        .flatten()
+    {
+        let start = position.parse::<u32>().unwrap();
+        let actual: usize = events
+            .iter()
+            .filter(|((kind, position, _), _)| *kind == "function-before" && *position == start)
+            .map(|(_, count)| count)
+            .sum();
+        assert_eq!(actual as u64, count.as_u64().unwrap());
+    }
+    assert_eq!(baseline.expression_types, observed.expression_types);
+    assert_eq!(baseline_result.issues, observed_result.issues);
+    check(&file, &observed, oracle);
 }
 
 #[test]

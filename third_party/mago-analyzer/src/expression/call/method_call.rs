@@ -30,6 +30,7 @@ use crate::analyzable::Analyzable;
 use crate::artifacts::AnalysisArtifacts;
 use crate::context::Context;
 use crate::context::block::BlockContext;
+use crate::context::non_nullability::EnsuredNonNullability;
 use crate::error::AnalysisError;
 use crate::expression::call::analyze_invocation_targets;
 use crate::expression::call::record_external_method_call;
@@ -53,6 +54,7 @@ use crate::resolver::method::UnresolvedMethod;
 use crate::resolver::method::report_non_documented_method;
 use crate::resolver::method::report_non_existent_method;
 use crate::resolver::method::resolve_method_targets;
+use crate::resolver::method::resolve_method_targets_after_receiver;
 use crate::utils::availability;
 use crate::utils::expression::get_block_expression_id;
 use crate::visibility::check_method_visibility_by_id;
@@ -96,6 +98,7 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for MethodCall<'arena> {
             &self.argument_list,
             false, // is_nullsafe
             self.span(),
+            None,
         )?;
 
         if context.plugin_registry.has_method_call_hooks() {
@@ -143,7 +146,15 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for NullSafeMethodCall<'arena> {
         // PHPStan's NullsafeMethodCallHandler always returns a non-terminating expression result.
         let has_returned = block_context.flags.has_returned();
         let control_actions = block_context.control_actions.clone();
-        analyze_method_call(
+        let before = block_context.clone();
+        let inside_general_use = block_context.flags.inside_general_use();
+        block_context.flags.set_inside_general_use(true);
+        let receiver_result = self.object.analyze(context, block_context, artifacts);
+        block_context.flags.set_inside_general_use(inside_general_use);
+        receiver_result?;
+        let ensured = crate::context::non_nullability::ensure(self.object, context, block_context, artifacts);
+        let receiver_type = ensured.original_type.clone();
+        let result = analyze_method_call(
             context,
             block_context,
             artifacts,
@@ -152,7 +163,15 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for NullSafeMethodCall<'arena> {
             &self.argument_list,
             true, // is_nullsafe
             self.span(),
-        )?;
+            Some(&ensured),
+        );
+        ensured.revert(context, block_context, artifacts);
+        result?;
+        if receiver_type.is_null() {
+            *block_context = before;
+        } else if crate::context::non_nullability::may_be_null(&receiver_type) {
+            crate::context::non_nullability::merge_short_circuit(block_context, &before, context);
+        }
         block_context.flags.set_has_returned(has_returned);
         block_context.control_actions = control_actions;
 
@@ -288,6 +307,7 @@ fn analyze_method_call<'ctx, 'ast, 'arena, A>(
     argument_list: &'ast ArgumentList<'arena>,
     is_null_safe: bool,
     span: Span,
+    receiver: Option<&EnsuredNonNullability<'arena>>,
 ) -> Result<(), AnalysisError>
 where
     A: Arena,
@@ -301,8 +321,24 @@ where
         block_context.called_methods.insert(method_name);
     }
 
-    let mut method_resolution =
-        resolve_method_targets(context, block_context, artifacts, object, selector, is_null_safe, span)?;
+    let mut method_resolution = if let Some(receiver) = receiver {
+        let mut resolution = resolve_method_targets_after_receiver(
+            context,
+            block_context,
+            artifacts,
+            object,
+            selector,
+            is_null_safe,
+            span,
+            Some(&receiver.receiver_type),
+        )?;
+        // The plain twin resolves on a non-null device. Only the receiver's
+        // original value determines the nullsafe expression's short-circuit.
+        resolution.encountered_null = receiver.original_type.is_nullable();
+        resolution
+    } else {
+        resolve_method_targets(context, block_context, artifacts, object, selector, is_null_safe, span)?
+    };
 
     if artifacts.get_expression_type(object).is_some_and(|ty| ty.is_null() && (is_null_safe || ty.has_nullsafe_null()))
     {

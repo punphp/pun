@@ -2934,3 +2934,34 @@ uses each arm's `getKeepVoidType()`. The match expression itself cannot project 
 from each named call arm's ordinary `null`, raw `void`, and keep-void `void` types.
 The match handler and Checker integration remain separate work. The broader comment near the
 upstream arm union does not replace `ExpressionResult::projectsVoidToNull()`'s syntax predicate.
+
+### Nullsafe calls restore shallow receiver devices
+
+`context/non_nullability.rs` follows PHPStan 2.3.1's
+[`NonNullabilityHelper::ensureShallowNonNullability` and `revertNonNullability`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Analyser/ExprHandler/Helper/NonNullabilityHelper.php).
+The nullsafe method handler evaluates the receiver once, then specifies its non-null scope view.
+Method resolution consumes that view without replacing the receiver's stored expression type.
+Nested devices retain the original receiver nullability for short-circuit decisions.
+
+The device saves the immediate parent of an array offset. Reverting its specification updates
+ancestor containers without discarding unrelated writes. Specification runs with alias and
+conditional transfers detached. An assignment in the receiver spine does not alias its LHS.
+Definitely null receivers restore the pre-call scope. Possibly null receivers join that scope
+with the reverted call scope, as in
+[`NullsafeMethodCallHandler::processExpr`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Analyser/ExprHandler/NullsafeMethodCallHandler.php#L61-L148).
+The expression's short-circuit null comes from the original receiver, not the temporary device.
+
+The nullsafe join drops fetch holders present on only one incoming edge, after it derives
+conditional holders. This follows `ScopeOps::finishMerge` without changing ordinary property
+memoization. This matters when a receiver assignment occurs only on the call edge.
+
+The three `nullsafe-scope-*.php` public fixtures retain 57 PHPStan type observations and all
+seven public diagnostics. The inference tests also compare observation-enabled and disabled
+artifacts, diagnostics and published hooks, including the receiver function's single evaluation.
+Regenerate each capture from its fixture directory with
+`php capture.php /absolute/path/to/phpstan-2.3.1.phar nullsafe-scopes.php --function-events`,
+substituting `nullsafe-scope-edges.php` or `nullsafe-scope-results.php` for the other captures.
+
+This is the live scope prerequisite. Nullsafe call observation registration, historical selector
+indexing and stored-consumption pricing remain separate work. These tests do not claim that the
+unfinished nullsafe observation matrix passes or replace any of its frozen expectations.

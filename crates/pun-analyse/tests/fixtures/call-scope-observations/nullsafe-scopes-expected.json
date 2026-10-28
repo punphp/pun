@@ -1,0 +1,325 @@
+{
+    "calls": {
+        "446": {
+            "line": 11,
+            "expression": "$inspect->inspect($grid, $grid['nest'], $grid['nest']['sink'])",
+            "names": [
+                {
+                    "name": "inspect",
+                    "filtered": false,
+                    "types": [
+                        {
+                            "start": 446,
+                            "end": 454,
+                            "expression": "$inspect",
+                            "type": "nullsafescopesink"
+                        },
+                        {
+                            "start": 464,
+                            "end": 469,
+                            "expression": "$grid",
+                            "type": "array{nest: array{sink: nullsafescopesink|null}, other: 0|1}"
+                        },
+                        {
+                            "start": 471,
+                            "end": 484,
+                            "expression": "$grid['nest']",
+                            "type": "array{sink: nullsafescopesink|null}"
+                        },
+                        {
+                            "start": 486,
+                            "end": 507,
+                            "expression": "$grid['nest']['sink']",
+                            "type": "nullsafescopesink|null"
+                        }
+                    ]
+                }
+            ]
+        },
+        "674": {
+            "line": 16,
+            "expression": "$inspect->inspect($sink, $born)",
+            "names": [
+                {
+                    "name": "inspect",
+                    "filtered": false,
+                    "types": [
+                        {
+                            "start": 674,
+                            "end": 682,
+                            "expression": "$inspect",
+                            "type": "nullsafescopesink"
+                        },
+                        {
+                            "start": 692,
+                            "end": 697,
+                            "expression": "$sink",
+                            "type": "nullsafescopesink|null"
+                        },
+                        {
+                            "start": 699,
+                            "end": 704,
+                            "expression": "$born",
+                            "type": "1"
+                        }
+                    ]
+                }
+            ]
+        },
+        "773": {
+            "line": 19,
+            "expression": "$inspect->inspect($sink, $neverBorn)",
+            "names": [
+                {
+                    "name": "inspect",
+                    "filtered": false,
+                    "types": [
+                        {
+                            "start": 773,
+                            "end": 781,
+                            "expression": "$inspect",
+                            "type": "nullsafescopesink"
+                        },
+                        {
+                            "start": 791,
+                            "end": 796,
+                            "expression": "$sink",
+                            "type": "null"
+                        },
+                        {
+                            "start": 798,
+                            "end": 808,
+                            "expression": "$neverBorn",
+                            "type": "*ERROR*"
+                        }
+                    ]
+                }
+            ]
+        },
+        "901": {
+            "line": 22,
+            "expression": "$inspect->inspect($sink, $definitelyBorn)",
+            "names": [
+                {
+                    "name": "inspect",
+                    "filtered": false,
+                    "types": [
+                        {
+                            "start": 901,
+                            "end": 909,
+                            "expression": "$inspect",
+                            "type": "nullsafescopesink"
+                        },
+                        {
+                            "start": 919,
+                            "end": 924,
+                            "expression": "$sink",
+                            "type": "nullsafescopesink"
+                        },
+                        {
+                            "start": 926,
+                            "end": 941,
+                            "expression": "$definitelyBorn",
+                            "type": "3"
+                        }
+                    ]
+                }
+            ]
+        },
+        "1110": {
+            "line": 27,
+            "expression": "$inspect->inspect($sink->child)",
+            "names": [
+                {
+                    "name": "inspect",
+                    "filtered": false,
+                    "types": [
+                        {
+                            "start": 1110,
+                            "end": 1118,
+                            "expression": "$inspect",
+                            "type": "nullsafescopesink"
+                        },
+                        {
+                            "start": 1128,
+                            "end": 1140,
+                            "expression": "$sink->child",
+                            "type": "nullsafescopesink|null"
+                        }
+                    ]
+                }
+            ]
+        },
+        "1310": {
+            "line": 32,
+            "expression": "$inspect->inspect($sink)",
+            "names": [
+                {
+                    "name": "inspect",
+                    "filtered": false,
+                    "types": [
+                        {
+                            "start": 1310,
+                            "end": 1318,
+                            "expression": "$inspect",
+                            "type": "nullsafescopesink"
+                        },
+                        {
+                            "start": 1328,
+                            "end": 1333,
+                            "expression": "$sink",
+                            "type": "null"
+                        }
+                    ]
+                }
+            ]
+        },
+        "1425": {
+            "line": 35,
+            "expression": "$inspect->inspect($sink, $born)",
+            "names": [
+                {
+                    "name": "inspect",
+                    "filtered": false,
+                    "types": [
+                        {
+                            "start": 1425,
+                            "end": 1433,
+                            "expression": "$inspect",
+                            "type": "nullsafescopesink"
+                        },
+                        {
+                            "start": 1443,
+                            "end": 1448,
+                            "expression": "$sink",
+                            "type": "nullsafescopesink"
+                        },
+                        {
+                            "start": 1450,
+                            "end": 1455,
+                            "expression": "$born",
+                            "type": "*ERROR*"
+                        }
+                    ]
+                }
+            ]
+        },
+        "1592": {
+            "line": 40,
+            "expression": "$inspect->inspect($born)",
+            "names": [
+                {
+                    "name": "inspect",
+                    "filtered": false,
+                    "types": [
+                        {
+                            "start": 1592,
+                            "end": 1600,
+                            "expression": "$inspect",
+                            "type": "nullsafescopesink"
+                        },
+                        {
+                            "start": 1610,
+                            "end": 1615,
+                            "expression": "$born",
+                            "type": "1"
+                        }
+                    ]
+                }
+            ]
+        },
+        "1840": {
+            "line": 46,
+            "expression": "$inspect->inspect($holders, $holders['sink'])",
+            "names": [
+                {
+                    "name": "inspect",
+                    "filtered": false,
+                    "types": [
+                        {
+                            "start": 1840,
+                            "end": 1848,
+                            "expression": "$inspect",
+                            "type": "nullsafescopesink"
+                        },
+                        {
+                            "start": 1858,
+                            "end": 1866,
+                            "expression": "$holders",
+                            "type": "array{sink: nullsafescopesink|null}"
+                        },
+                        {
+                            "start": 1868,
+                            "end": 1884,
+                            "expression": "$holders['sink']",
+                            "type": "nullsafescopesink|null"
+                        }
+                    ]
+                }
+            ]
+        },
+        "2057": {
+            "line": 51,
+            "expression": "$inspect->inspect($sink, $born)",
+            "names": [
+                {
+                    "name": "inspect",
+                    "filtered": false,
+                    "types": [
+                        {
+                            "start": 2057,
+                            "end": 2065,
+                            "expression": "$inspect",
+                            "type": "nullsafescopesink"
+                        },
+                        {
+                            "start": 2075,
+                            "end": 2080,
+                            "expression": "$sink",
+                            "type": "nullsafescopesink|null"
+                        },
+                        {
+                            "start": 2082,
+                            "end": 2087,
+                            "expression": "$born",
+                            "type": "1"
+                        }
+                    ]
+                }
+            ]
+        }
+    },
+    "errors": [
+        [
+            18,
+            "method.nonObject",
+            "Cannot call method foo() on null.",
+            null,
+            true
+        ],
+        [
+            19,
+            "variable.undefined",
+            "Undefined variable: $neverBorn",
+            null,
+            true
+        ],
+        [
+            34,
+            "method.nonObject",
+            "Cannot call method foo() on null.",
+            null,
+            true
+        ],
+        [
+            35,
+            "variable.undefined",
+            "Undefined variable: $born",
+            null,
+            true
+        ]
+    ],
+    "function_events": {
+        "2006": 1
+    }
+}

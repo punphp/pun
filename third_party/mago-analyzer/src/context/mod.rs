@@ -41,6 +41,7 @@ type PropertyTypes = Vec<(Word, Rc<TUnion>)>;
 pub mod assertion;
 pub mod block;
 pub mod block_flags;
+pub(crate) mod non_nullability;
 pub mod scope;
 pub mod utils;
 
@@ -74,6 +75,7 @@ where
     pub(super) raw_callback_gather_depth: u8,
     pub(super) observations: crate::observations::ObservationState<'ctx, 'arena>,
     pub(super) observation_program: Option<&'arena mago_syntax::cst::Program<'arena>>,
+    pub(super) ensured_non_null_types: Vec<WordMap<TUnion>>,
 }
 
 impl<'ctx, 'arena, A> Context<'ctx, 'arena, A>
@@ -114,6 +116,7 @@ where
             raw_callback_gather_depth: 0,
             observations: crate::observations::ObservationState::default(),
             observation_program: None,
+            ensured_non_null_types: Vec::new(),
         }
     }
 
@@ -308,6 +311,7 @@ where
         fork.property_types = self.property_types.clone();
         fork.class_initializers = self.class_initializers.clone();
         fork.constant_types = self.constant_types.clone();
+        fork.ensured_non_null_types = self.ensured_non_null_types.clone();
         fork.observation_program = self.observation_program;
         fork.observations.calls = self.observations.calls.clone();
         fork.observations.pricing = true;
