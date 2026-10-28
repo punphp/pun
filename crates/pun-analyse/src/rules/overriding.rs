@@ -4,8 +4,7 @@
 //! ones from PHPStan's reflection (data/native-methods.json, written by scripts/export-native-methods.php).
 //! checkPhpDocMethodSignatures (MethodSignatureRule) and checkMissingOverrideMethodAttribute are off below level 3.
 //! ponytail: PHP 8.1 and up only, so the helpers' PHP 7 branches (no contravariance, covariance, tentative return
-//! types or abstract trait methods) are left out; Mago keeps a class's interfaces and traits unordered, so when two
-//! of them declare the method, the first by name wins instead of the first declared.
+//! types or abstract trait methods) are left out; the trait walk still breaks competing declarations by name.
 
 use std::collections::{HashMap, HashSet, VecDeque};
 use std::sync::OnceLock;
@@ -311,7 +310,8 @@ impl<'a> Checker<'a, '_> {
         }
     }
 
-    /// `getImmediateInterfaces()`, by name.
+    /// ClassReflection::getImmediateInterfaces(): exclude parent-provided and transitively inherited interfaces,
+    /// retaining native reflection's declaration order. Built-in entries already export this exact list.
     fn immediate_interfaces(&self, class: Class<'a>) -> Vec<Class<'a>> {
         let names: Vec<String> = match class {
             Class::User(k) => {
@@ -324,6 +324,37 @@ impl<'a> Checker<'a, '_> {
                     .filter(|n| !is_enum || !(n.starts_with("__internal_do_not_use__") || n == "unitenum" || n == "backedenum"))
                     .collect();
                 names.sort();
+                // The populated codex uses a set. Recover only its ordering from the declaration's CST, resolving
+                // imported names in that file rather than sorting either the aliases or resolved names.
+                if names.len() > 1 && let Some(contents) = self.file_contents(k.span.file_id) {
+                    let arena = mago_allocator::LocalArena::new();
+                    let file = mago_database::file::File::ephemeral(
+                        std::borrow::Cow::Borrowed(b"interfaces.php".as_slice()),
+                        std::borrow::Cow::Owned([b"<?php ".as_slice(), &contents[k.span.to_range_usize()], b";"].concat()),
+                    );
+                    let program = mago_syntax::parser::parse_file(&arena, &file);
+                    let scope = super::doc::scopes_of(k.span.file_id, &contents).at(k.span.start.offset);
+                    let mut pending = vec![Node::Program(program)];
+                    let mut order = Vec::new();
+                    while let Some(node) = pending.pop() {
+                        let types = match node {
+                            Node::Class(k) => k.implements.as_ref().map(|i| &i.types),
+                            Node::Interface(k) => k.extends.as_ref().map(|i| &i.types),
+                            Node::Enum(k) => k.implements.as_ref().map(|i| &i.types),
+                            Node::AnonymousClass(k) => k.implements.as_ref().map(|i| &i.types),
+                            _ => {
+                                pending.extend(node.children().into_iter().rev());
+                                continue;
+                            }
+                        };
+                        for id in types.into_iter().flatten() {
+                            let resolved = scope.resolve(mago_names::kind::NameKind::Default, id.value()).0;
+                            order.push(String::from_utf8_lossy(&resolved).to_ascii_lowercase());
+                        }
+                        break;
+                    }
+                    names.sort_by_key(|n| order.iter().position(|written| written == n).unwrap_or(usize::MAX));
+                }
                 if is_enum {
                     names.push("UnitEnum".to_string());
                     names.extend(k.enum_type.is_some().then(|| "BackedEnum".to_string()));
@@ -332,7 +363,35 @@ impl<'a> Checker<'a, '_> {
             }
             Class::Builtin(b) => b.interfaces.clone(),
         };
-        names.iter().filter_map(|n| self.reflected(n)).collect()
+        let interfaces: Vec<_> = names.iter().filter_map(|n| self.reflected(n)).collect();
+        let mut indirect = self.parent_class(class).map(|p| self.native_interface_names(p)).unwrap_or_default();
+        for interface in &interfaces {
+            indirect.extend(self.native_interface_names(*interface));
+        }
+        interfaces.into_iter().filter(|i| !indirect.contains(&class_display(self, *i).to_ascii_lowercase())).collect()
+    }
+
+    /// Native reflection's complete interface-name set. User metadata already includes transitive ancestors;
+    /// the exported built-in data instead lists immediate interfaces, so expand just those native edges.
+    fn native_interface_names(&self, class: Class<'a>) -> HashSet<String> {
+        let mut names = HashSet::new();
+        let mut pending = vec![class];
+        let mut seen = HashSet::new();
+        while let Some(class) = pending.pop() {
+            match class {
+                Class::User(k) => names.extend(k.all_parent_interfaces.iter().map(|i| i.to_string().to_ascii_lowercase())),
+                Class::Builtin(b) => {
+                    if seen.insert(&b.name) {
+                        for name in &b.interfaces {
+                            names.insert(name.to_ascii_lowercase());
+                            pending.extend(self.reflected(name));
+                        }
+                        pending.extend(self.parent_class(class));
+                    }
+                }
+            }
+        }
+        names
     }
 
     pub(super) fn parent_class(&self, class: Class<'a>) -> Option<Class<'a>> {
@@ -618,23 +677,45 @@ impl<'a> Checker<'a, '_> {
         out
     }
 
-    /// `getInterfaces()`: every interface the class implements.
+    /// ClassReflection::getInterfaces(): own immediate interfaces, parents' immediate interfaces and their
+    /// ancestors, then own interfaces' ancestors. Replacing an existing associative-array key keeps its position.
     pub(super) fn all_interfaces(&self, class: Class<'a>) -> Vec<Class<'a>> {
-        let mut out = Vec::new();
-        let mut pending = vec![class];
-        // a circular hierarchy (which PHP refuses) ends after ANCESTRY classes
+        let immediate = self.immediate_interfaces(class);
+        let mut out = immediate.clone();
+        let mut seen: HashSet<_> = out.iter().map(|i| class_display(self, *i)).collect();
+        for parent in std::iter::successors(self.parent_class(class), |p| self.parent_class(*p)).take(ANCESTRY) {
+            for interface in self.immediate_interfaces(parent) {
+                if seen.insert(class_display(self, interface)) {
+                    out.push(interface);
+                }
+                self.collect_interfaces(interface, &mut out, &mut seen);
+            }
+        }
+        for interface in immediate {
+            self.collect_interfaces(interface, &mut out, &mut seen);
+        }
+        out
+    }
+
+    /// ClassReflection::collectInterfaces(), including its stack order and per-call visited set.
+    fn collect_interfaces(&self, interface: Class<'a>, out: &mut Vec<Class<'a>>, seen: &mut HashSet<String>) {
+        let mut pending = vec![interface];
+        let mut collected = HashSet::new();
         let mut steps = 0;
         while let Some(c) = pending.pop()
             && steps <= ANCESTRY * ANCESTRY
         {
             steps += 1;
             for i in self.immediate_interfaces(c) {
-                pending.push(i);
-                out.push(i);
+                let name = class_display(self, i);
+                if collected.insert(name.clone()) {
+                    if seen.insert(name) {
+                        out.push(i);
+                    }
+                    pending.push(i);
+                }
             }
-            pending.extend(self.parent_class(c));
         }
-        out
     }
 }
 
