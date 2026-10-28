@@ -3752,6 +3752,8 @@ impl Type {
         match self {
             Type::Array(_, item) => vec![(self.iterable_key_type(), (**item).clone())],
             Type::Intersection(types) => types.iter().flat_map(Type::general_arrays).collect(),
+            // TemplateIntersectionType inherits IntersectionType::getArrays().
+            Type::Template(t) if matches!(t.bound, Type::Intersection(_)) => t.bound.general_arrays(),
             _ => vec![],
         }
     }
@@ -3977,7 +3979,12 @@ fn common_array_accessories(arrays: &[Type]) -> Vec<Type> {
         None => found.push((t, vec![i])),
     };
     for (i, a) in arrays.iter().enumerate() {
-        if let Type::Intersection(types) = a {
+        // TemplateIntersectionType exposes its bound's immediate getTypes(), not resolved templates.
+        let intersection = match a {
+            Type::Template(t) => &t.bound,
+            _ => a,
+        };
+        if let Type::Intersection(types) = intersection {
             for t in types {
                 if matches!(t, Type::Template(_)) {
                     break;

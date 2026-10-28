@@ -1,0 +1,1546 @@
+[
+    {
+        "bound": "list<never>",
+        "other": "array{}",
+        "elementTemplate": false,
+        "argument": false,
+        "reverse": false,
+        "descriptions": [
+            "list<never>",
+            "list<never>",
+            "list<never>"
+        ],
+        "queries": [
+            "Yes",
+            "Yes",
+            "Maybe"
+        ],
+        "template": null
+    },
+    {
+        "bound": "list<never>",
+        "other": "array{}",
+        "elementTemplate": false,
+        "argument": false,
+        "reverse": true,
+        "descriptions": [
+            "list<never>",
+            "list<never>",
+            "list<never>"
+        ],
+        "queries": [
+            "Yes",
+            "Yes",
+            "Maybe"
+        ],
+        "template": null
+    },
+    {
+        "bound": "list<never>",
+        "other": "array{}",
+        "elementTemplate": false,
+        "argument": true,
+        "reverse": false,
+        "descriptions": [
+            "list<never>",
+            "list<never>",
+            "list<never>"
+        ],
+        "queries": [
+            "Yes",
+            "Yes",
+            "Maybe"
+        ],
+        "template": null
+    },
+    {
+        "bound": "list<never>",
+        "other": "array{}",
+        "elementTemplate": false,
+        "argument": true,
+        "reverse": true,
+        "descriptions": [
+            "list<never>",
+            "list<never>",
+            "list<never>"
+        ],
+        "queries": [
+            "Yes",
+            "Yes",
+            "Maybe"
+        ],
+        "template": null
+    },
+    {
+        "bound": "list<int>",
+        "other": "array{}",
+        "elementTemplate": false,
+        "argument": false,
+        "reverse": false,
+        "descriptions": [
+            "list<int>",
+            "list<int>",
+            "list<int>"
+        ],
+        "queries": [
+            "Yes",
+            "Yes",
+            "Maybe"
+        ],
+        "template": null
+    },
+    {
+        "bound": "list<int>",
+        "other": "array{}",
+        "elementTemplate": false,
+        "argument": false,
+        "reverse": true,
+        "descriptions": [
+            "list<int>",
+            "list<int>",
+            "list<int>"
+        ],
+        "queries": [
+            "Yes",
+            "Yes",
+            "Maybe"
+        ],
+        "template": null
+    },
+    {
+        "bound": "list<int>",
+        "other": "array{}",
+        "elementTemplate": false,
+        "argument": true,
+        "reverse": false,
+        "descriptions": [
+            "list<int>",
+            "list<int>",
+            "list<int>"
+        ],
+        "queries": [
+            "Yes",
+            "Yes",
+            "Maybe"
+        ],
+        "template": null
+    },
+    {
+        "bound": "list<int>",
+        "other": "array{}",
+        "elementTemplate": false,
+        "argument": true,
+        "reverse": true,
+        "descriptions": [
+            "list<int>",
+            "list<int>",
+            "list<int>"
+        ],
+        "queries": [
+            "Yes",
+            "Yes",
+            "Maybe"
+        ],
+        "template": null
+    },
+    {
+        "bound": "list<int>",
+        "other": "array{'value'}",
+        "elementTemplate": false,
+        "argument": false,
+        "reverse": false,
+        "descriptions": [
+            "list<'value'|int>",
+            "list<'value'|int>",
+            "list<int|string>"
+        ],
+        "queries": [
+            "Yes",
+            "Yes",
+            "Maybe"
+        ],
+        "template": null
+    },
+    {
+        "bound": "list<int>",
+        "other": "array{'value'}",
+        "elementTemplate": false,
+        "argument": false,
+        "reverse": true,
+        "descriptions": [
+            "list<'value'|int>",
+            "list<'value'|int>",
+            "list<int|string>"
+        ],
+        "queries": [
+            "Yes",
+            "Yes",
+            "Maybe"
+        ],
+        "template": null
+    },
+    {
+        "bound": "list<int>",
+        "other": "array{'value'}",
+        "elementTemplate": false,
+        "argument": true,
+        "reverse": false,
+        "descriptions": [
+            "list<'value'|int>",
+            "list<'value'|int>",
+            "list<int|string>"
+        ],
+        "queries": [
+            "Yes",
+            "Yes",
+            "Maybe"
+        ],
+        "template": null
+    },
+    {
+        "bound": "list<int>",
+        "other": "array{'value'}",
+        "elementTemplate": false,
+        "argument": true,
+        "reverse": true,
+        "descriptions": [
+            "list<'value'|int>",
+            "list<'value'|int>",
+            "list<int|string>"
+        ],
+        "queries": [
+            "Yes",
+            "Yes",
+            "Maybe"
+        ],
+        "template": null
+    },
+    {
+        "bound": "list<int>",
+        "other": "array{key: string}",
+        "elementTemplate": false,
+        "argument": false,
+        "reverse": false,
+        "descriptions": [
+            "array<'key'|int<0, max>, int|string>",
+            "array<'key'|int<0, max>, int|string>",
+            "array<int<0, max>|string, int|string>"
+        ],
+        "queries": [
+            "Yes",
+            "Maybe",
+            "Maybe"
+        ],
+        "template": null
+    },
+    {
+        "bound": "list<int>",
+        "other": "array{key: string}",
+        "elementTemplate": false,
+        "argument": false,
+        "reverse": true,
+        "descriptions": [
+            "array<'key'|int<0, max>, int|string>",
+            "array<'key'|int<0, max>, int|string>",
+            "array<int<0, max>|string, int|string>"
+        ],
+        "queries": [
+            "Yes",
+            "Maybe",
+            "Maybe"
+        ],
+        "template": null
+    },
+    {
+        "bound": "list<int>",
+        "other": "array{key: string}",
+        "elementTemplate": false,
+        "argument": true,
+        "reverse": false,
+        "descriptions": [
+            "array<'key'|int<0, max>, int|string>",
+            "array<'key'|int<0, max>, int|string>",
+            "array<int<0, max>|string, int|string>"
+        ],
+        "queries": [
+            "Yes",
+            "Maybe",
+            "Maybe"
+        ],
+        "template": null
+    },
+    {
+        "bound": "list<int>",
+        "other": "array{key: string}",
+        "elementTemplate": false,
+        "argument": true,
+        "reverse": true,
+        "descriptions": [
+            "array<'key'|int<0, max>, int|string>",
+            "array<'key'|int<0, max>, int|string>",
+            "array<int<0, max>|string, int|string>"
+        ],
+        "queries": [
+            "Yes",
+            "Maybe",
+            "Maybe"
+        ],
+        "template": null
+    },
+    {
+        "bound": "list<int>",
+        "other": "array<int, string>",
+        "elementTemplate": false,
+        "argument": false,
+        "reverse": false,
+        "descriptions": [
+            "array<int, int|string>",
+            "array<int, int|string>",
+            "array<int, int|string>"
+        ],
+        "queries": [
+            "Yes",
+            "Maybe",
+            "Maybe"
+        ],
+        "template": null
+    },
+    {
+        "bound": "list<int>",
+        "other": "array<int, string>",
+        "elementTemplate": false,
+        "argument": false,
+        "reverse": true,
+        "descriptions": [
+            "array<int, int|string>",
+            "array<int, int|string>",
+            "array<int, int|string>"
+        ],
+        "queries": [
+            "Yes",
+            "Maybe",
+            "Maybe"
+        ],
+        "template": null
+    },
+    {
+        "bound": "list<int>",
+        "other": "array<int, string>",
+        "elementTemplate": false,
+        "argument": true,
+        "reverse": false,
+        "descriptions": [
+            "array<int, int|string>",
+            "array<int, int|string>",
+            "array<int, int|string>"
+        ],
+        "queries": [
+            "Yes",
+            "Maybe",
+            "Maybe"
+        ],
+        "template": null
+    },
+    {
+        "bound": "list<int>",
+        "other": "array<int, string>",
+        "elementTemplate": false,
+        "argument": true,
+        "reverse": true,
+        "descriptions": [
+            "array<int, int|string>",
+            "array<int, int|string>",
+            "array<int, int|string>"
+        ],
+        "queries": [
+            "Yes",
+            "Maybe",
+            "Maybe"
+        ],
+        "template": null
+    },
+    {
+        "bound": "list<int>",
+        "other": "list<string>",
+        "elementTemplate": false,
+        "argument": false,
+        "reverse": false,
+        "descriptions": [
+            "list<int|string>",
+            "list<int|string>",
+            "list<int|string>"
+        ],
+        "queries": [
+            "Yes",
+            "Yes",
+            "Maybe"
+        ],
+        "template": null
+    },
+    {
+        "bound": "list<int>",
+        "other": "list<string>",
+        "elementTemplate": false,
+        "argument": false,
+        "reverse": true,
+        "descriptions": [
+            "list<int|string>",
+            "list<int|string>",
+            "list<int|string>"
+        ],
+        "queries": [
+            "Yes",
+            "Yes",
+            "Maybe"
+        ],
+        "template": null
+    },
+    {
+        "bound": "list<int>",
+        "other": "list<string>",
+        "elementTemplate": false,
+        "argument": true,
+        "reverse": false,
+        "descriptions": [
+            "list<int|string>",
+            "list<int|string>",
+            "list<int|string>"
+        ],
+        "queries": [
+            "Yes",
+            "Yes",
+            "Maybe"
+        ],
+        "template": null
+    },
+    {
+        "bound": "list<int>",
+        "other": "list<string>",
+        "elementTemplate": false,
+        "argument": true,
+        "reverse": true,
+        "descriptions": [
+            "list<int|string>",
+            "list<int|string>",
+            "list<int|string>"
+        ],
+        "queries": [
+            "Yes",
+            "Yes",
+            "Maybe"
+        ],
+        "template": null
+    },
+    {
+        "bound": "non-empty-list<int>",
+        "other": "array{'value'}",
+        "elementTemplate": false,
+        "argument": false,
+        "reverse": false,
+        "descriptions": [
+            "non-empty-list<'value'|int>",
+            "non-empty-list<'value'|int>",
+            "list<int|string>"
+        ],
+        "queries": [
+            "Yes",
+            "Yes",
+            "Yes"
+        ],
+        "template": null
+    },
+    {
+        "bound": "non-empty-list<int>",
+        "other": "array{'value'}",
+        "elementTemplate": false,
+        "argument": false,
+        "reverse": true,
+        "descriptions": [
+            "non-empty-list<'value'|int>",
+            "non-empty-list<'value'|int>",
+            "list<int|string>"
+        ],
+        "queries": [
+            "Yes",
+            "Yes",
+            "Yes"
+        ],
+        "template": null
+    },
+    {
+        "bound": "non-empty-list<int>",
+        "other": "array{'value'}",
+        "elementTemplate": false,
+        "argument": true,
+        "reverse": false,
+        "descriptions": [
+            "non-empty-list<'value'|int>",
+            "non-empty-list<'value'|int>",
+            "list<int|string>"
+        ],
+        "queries": [
+            "Yes",
+            "Yes",
+            "Yes"
+        ],
+        "template": null
+    },
+    {
+        "bound": "non-empty-list<int>",
+        "other": "array{'value'}",
+        "elementTemplate": false,
+        "argument": true,
+        "reverse": true,
+        "descriptions": [
+            "non-empty-list<'value'|int>",
+            "non-empty-list<'value'|int>",
+            "list<int|string>"
+        ],
+        "queries": [
+            "Yes",
+            "Yes",
+            "Yes"
+        ],
+        "template": null
+    },
+    {
+        "bound": "non-empty-list<int>",
+        "other": "array{}",
+        "elementTemplate": false,
+        "argument": false,
+        "reverse": false,
+        "descriptions": [
+            "list<int>",
+            "list<int>",
+            "list<int>"
+        ],
+        "queries": [
+            "Yes",
+            "Yes",
+            "Maybe"
+        ],
+        "template": null
+    },
+    {
+        "bound": "non-empty-list<int>",
+        "other": "array{}",
+        "elementTemplate": false,
+        "argument": false,
+        "reverse": true,
+        "descriptions": [
+            "list<int>",
+            "list<int>",
+            "list<int>"
+        ],
+        "queries": [
+            "Yes",
+            "Yes",
+            "Maybe"
+        ],
+        "template": null
+    },
+    {
+        "bound": "non-empty-list<int>",
+        "other": "array{}",
+        "elementTemplate": false,
+        "argument": true,
+        "reverse": false,
+        "descriptions": [
+            "list<int>",
+            "list<int>",
+            "list<int>"
+        ],
+        "queries": [
+            "Yes",
+            "Yes",
+            "Maybe"
+        ],
+        "template": null
+    },
+    {
+        "bound": "non-empty-list<int>",
+        "other": "array{}",
+        "elementTemplate": false,
+        "argument": true,
+        "reverse": true,
+        "descriptions": [
+            "list<int>",
+            "list<int>",
+            "list<int>"
+        ],
+        "queries": [
+            "Yes",
+            "Yes",
+            "Maybe"
+        ],
+        "template": null
+    },
+    {
+        "bound": "non-empty-list<int>",
+        "other": "list<string>",
+        "elementTemplate": false,
+        "argument": false,
+        "reverse": false,
+        "descriptions": [
+            "list<int|string>",
+            "list<int|string>",
+            "list<int|string>"
+        ],
+        "queries": [
+            "Yes",
+            "Yes",
+            "Maybe"
+        ],
+        "template": null
+    },
+    {
+        "bound": "non-empty-list<int>",
+        "other": "list<string>",
+        "elementTemplate": false,
+        "argument": false,
+        "reverse": true,
+        "descriptions": [
+            "list<int|string>",
+            "list<int|string>",
+            "list<int|string>"
+        ],
+        "queries": [
+            "Yes",
+            "Yes",
+            "Maybe"
+        ],
+        "template": null
+    },
+    {
+        "bound": "non-empty-list<int>",
+        "other": "list<string>",
+        "elementTemplate": false,
+        "argument": true,
+        "reverse": false,
+        "descriptions": [
+            "list<int|string>",
+            "list<int|string>",
+            "list<int|string>"
+        ],
+        "queries": [
+            "Yes",
+            "Yes",
+            "Maybe"
+        ],
+        "template": null
+    },
+    {
+        "bound": "non-empty-list<int>",
+        "other": "list<string>",
+        "elementTemplate": false,
+        "argument": true,
+        "reverse": true,
+        "descriptions": [
+            "list<int|string>",
+            "list<int|string>",
+            "list<int|string>"
+        ],
+        "queries": [
+            "Yes",
+            "Yes",
+            "Maybe"
+        ],
+        "template": null
+    },
+    {
+        "bound": "list<int>",
+        "other": "non-empty-list<string>",
+        "elementTemplate": false,
+        "argument": false,
+        "reverse": false,
+        "descriptions": [
+            "list<int|string>",
+            "list<int|string>",
+            "list<int|string>"
+        ],
+        "queries": [
+            "Yes",
+            "Yes",
+            "Maybe"
+        ],
+        "template": null
+    },
+    {
+        "bound": "list<int>",
+        "other": "non-empty-list<string>",
+        "elementTemplate": false,
+        "argument": false,
+        "reverse": true,
+        "descriptions": [
+            "list<int|string>",
+            "list<int|string>",
+            "list<int|string>"
+        ],
+        "queries": [
+            "Yes",
+            "Yes",
+            "Maybe"
+        ],
+        "template": null
+    },
+    {
+        "bound": "list<int>",
+        "other": "non-empty-list<string>",
+        "elementTemplate": false,
+        "argument": true,
+        "reverse": false,
+        "descriptions": [
+            "list<int|string>",
+            "list<int|string>",
+            "list<int|string>"
+        ],
+        "queries": [
+            "Yes",
+            "Yes",
+            "Maybe"
+        ],
+        "template": null
+    },
+    {
+        "bound": "list<int>",
+        "other": "non-empty-list<string>",
+        "elementTemplate": false,
+        "argument": true,
+        "reverse": true,
+        "descriptions": [
+            "list<int|string>",
+            "list<int|string>",
+            "list<int|string>"
+        ],
+        "queries": [
+            "Yes",
+            "Yes",
+            "Maybe"
+        ],
+        "template": null
+    },
+    {
+        "bound": "non-empty-array<string, int>",
+        "other": "array{key: string}",
+        "elementTemplate": false,
+        "argument": false,
+        "reverse": false,
+        "descriptions": [
+            "non-empty-array<string, int|string>",
+            "non-empty-array<string, int|string>",
+            "array<string, int|string>"
+        ],
+        "queries": [
+            "Yes",
+            "No",
+            "Yes"
+        ],
+        "template": null
+    },
+    {
+        "bound": "non-empty-array<string, int>",
+        "other": "array{key: string}",
+        "elementTemplate": false,
+        "argument": false,
+        "reverse": true,
+        "descriptions": [
+            "non-empty-array<string, int|string>",
+            "non-empty-array<string, int|string>",
+            "array<string, int|string>"
+        ],
+        "queries": [
+            "Yes",
+            "No",
+            "Yes"
+        ],
+        "template": null
+    },
+    {
+        "bound": "non-empty-array<string, int>",
+        "other": "array{key: string}",
+        "elementTemplate": false,
+        "argument": true,
+        "reverse": false,
+        "descriptions": [
+            "non-empty-array<string, int|string>",
+            "non-empty-array<string, int|string>",
+            "array<string, int|string>"
+        ],
+        "queries": [
+            "Yes",
+            "No",
+            "Yes"
+        ],
+        "template": null
+    },
+    {
+        "bound": "non-empty-array<string, int>",
+        "other": "array{key: string}",
+        "elementTemplate": false,
+        "argument": true,
+        "reverse": true,
+        "descriptions": [
+            "non-empty-array<string, int|string>",
+            "non-empty-array<string, int|string>",
+            "array<string, int|string>"
+        ],
+        "queries": [
+            "Yes",
+            "No",
+            "Yes"
+        ],
+        "template": null
+    },
+    {
+        "bound": "non-empty-array<string, int>",
+        "other": "array{}",
+        "elementTemplate": false,
+        "argument": false,
+        "reverse": false,
+        "descriptions": [
+            "array<string, int>",
+            "array<string, int>",
+            "array<string, int>"
+        ],
+        "queries": [
+            "Yes",
+            "No",
+            "Maybe"
+        ],
+        "template": null
+    },
+    {
+        "bound": "non-empty-array<string, int>",
+        "other": "array{}",
+        "elementTemplate": false,
+        "argument": false,
+        "reverse": true,
+        "descriptions": [
+            "array<string, int>",
+            "array<string, int>",
+            "array<string, int>"
+        ],
+        "queries": [
+            "Yes",
+            "No",
+            "Maybe"
+        ],
+        "template": null
+    },
+    {
+        "bound": "non-empty-array<string, int>",
+        "other": "array{}",
+        "elementTemplate": false,
+        "argument": true,
+        "reverse": false,
+        "descriptions": [
+            "array<string, int>",
+            "array<string, int>",
+            "array<string, int>"
+        ],
+        "queries": [
+            "Yes",
+            "No",
+            "Maybe"
+        ],
+        "template": null
+    },
+    {
+        "bound": "non-empty-array<string, int>",
+        "other": "array{}",
+        "elementTemplate": false,
+        "argument": true,
+        "reverse": true,
+        "descriptions": [
+            "array<string, int>",
+            "array<string, int>",
+            "array<string, int>"
+        ],
+        "queries": [
+            "Yes",
+            "No",
+            "Maybe"
+        ],
+        "template": null
+    },
+    {
+        "bound": "non-empty-array<string, int>",
+        "other": "array<string, string>",
+        "elementTemplate": false,
+        "argument": false,
+        "reverse": false,
+        "descriptions": [
+            "array<string, int|string>",
+            "array<string, int|string>",
+            "array<string, int|string>"
+        ],
+        "queries": [
+            "Yes",
+            "No",
+            "Maybe"
+        ],
+        "template": null
+    },
+    {
+        "bound": "non-empty-array<string, int>",
+        "other": "array<string, string>",
+        "elementTemplate": false,
+        "argument": false,
+        "reverse": true,
+        "descriptions": [
+            "array<string, int|string>",
+            "array<string, int|string>",
+            "array<string, int|string>"
+        ],
+        "queries": [
+            "Yes",
+            "No",
+            "Maybe"
+        ],
+        "template": null
+    },
+    {
+        "bound": "non-empty-array<string, int>",
+        "other": "array<string, string>",
+        "elementTemplate": false,
+        "argument": true,
+        "reverse": false,
+        "descriptions": [
+            "array<string, int|string>",
+            "array<string, int|string>",
+            "array<string, int|string>"
+        ],
+        "queries": [
+            "Yes",
+            "No",
+            "Maybe"
+        ],
+        "template": null
+    },
+    {
+        "bound": "non-empty-array<string, int>",
+        "other": "array<string, string>",
+        "elementTemplate": false,
+        "argument": true,
+        "reverse": true,
+        "descriptions": [
+            "array<string, int|string>",
+            "array<string, int|string>",
+            "array<string, int|string>"
+        ],
+        "queries": [
+            "Yes",
+            "No",
+            "Maybe"
+        ],
+        "template": null
+    },
+    {
+        "bound": "list<int>",
+        "other": null,
+        "elementTemplate": false,
+        "argument": false,
+        "reverse": false,
+        "descriptions": [
+            "T of list<int> = array{} (function fixture(), parameter)",
+            "T of list<int> = array{}",
+            "T of list<int> = array"
+        ],
+        "queries": [
+            "Yes",
+            "Yes",
+            "Maybe"
+        ],
+        "template": {
+            "name": "T",
+            "scope": "function fixture()",
+            "argument": false,
+            "bound": [
+                "list<int>",
+                "list<int>",
+                "list<int>"
+            ],
+            "default": [
+                "array{}",
+                "array{}",
+                "array"
+            ]
+        }
+    },
+    {
+        "bound": "list<int>",
+        "other": null,
+        "elementTemplate": false,
+        "argument": true,
+        "reverse": false,
+        "descriptions": [
+            "T of list<int> = array{} (function fixture(), argument)",
+            "T of list<int> = array{}",
+            "T of list<int> = array"
+        ],
+        "queries": [
+            "Yes",
+            "Yes",
+            "Maybe"
+        ],
+        "template": {
+            "name": "T",
+            "scope": "function fixture()",
+            "argument": true,
+            "bound": [
+                "list<int>",
+                "list<int>",
+                "list<int>"
+            ],
+            "default": [
+                "array{}",
+                "array{}",
+                "array"
+            ]
+        }
+    },
+    {
+        "bound": "non-empty-list<int>",
+        "other": null,
+        "elementTemplate": false,
+        "argument": false,
+        "reverse": false,
+        "descriptions": [
+            "T of non-empty-list<int> = array{} (function fixture(), parameter)",
+            "T of non-empty-list<int> = array{}",
+            "T of list<int> = array"
+        ],
+        "queries": [
+            "Yes",
+            "Yes",
+            "Yes"
+        ],
+        "template": {
+            "name": "T",
+            "scope": "function fixture()",
+            "argument": false,
+            "bound": [
+                "non-empty-list<int>",
+                "non-empty-list<int>",
+                "list<int>"
+            ],
+            "default": [
+                "array{}",
+                "array{}",
+                "array"
+            ]
+        }
+    },
+    {
+        "bound": "non-empty-list<int>",
+        "other": null,
+        "elementTemplate": false,
+        "argument": true,
+        "reverse": false,
+        "descriptions": [
+            "T of non-empty-list<int> = array{} (function fixture(), argument)",
+            "T of non-empty-list<int> = array{}",
+            "T of list<int> = array"
+        ],
+        "queries": [
+            "Yes",
+            "Yes",
+            "Yes"
+        ],
+        "template": {
+            "name": "T",
+            "scope": "function fixture()",
+            "argument": true,
+            "bound": [
+                "non-empty-list<int>",
+                "non-empty-list<int>",
+                "list<int>"
+            ],
+            "default": [
+                "array{}",
+                "array{}",
+                "array"
+            ]
+        }
+    },
+    {
+        "bound": "list<never>",
+        "other": null,
+        "elementTemplate": false,
+        "argument": false,
+        "reverse": false,
+        "descriptions": [
+            "T of list<never> = array{} (function fixture(), parameter)",
+            "T of list<never> = array{}",
+            "T of list<never> = array"
+        ],
+        "queries": [
+            "Yes",
+            "Yes",
+            "Maybe"
+        ],
+        "template": {
+            "name": "T",
+            "scope": "function fixture()",
+            "argument": false,
+            "bound": [
+                "list<never>",
+                "list<never>",
+                "list<never>"
+            ],
+            "default": [
+                "array{}",
+                "array{}",
+                "array"
+            ]
+        }
+    },
+    {
+        "bound": "list<never>",
+        "other": null,
+        "elementTemplate": false,
+        "argument": true,
+        "reverse": false,
+        "descriptions": [
+            "T of list<never> = array{} (function fixture(), argument)",
+            "T of list<never> = array{}",
+            "T of list<never> = array"
+        ],
+        "queries": [
+            "Yes",
+            "Yes",
+            "Maybe"
+        ],
+        "template": {
+            "name": "T",
+            "scope": "function fixture()",
+            "argument": true,
+            "bound": [
+                "list<never>",
+                "list<never>",
+                "list<never>"
+            ],
+            "default": [
+                "array{}",
+                "array{}",
+                "array"
+            ]
+        }
+    },
+    {
+        "bound": "array<string, int>",
+        "other": null,
+        "elementTemplate": false,
+        "argument": false,
+        "reverse": false,
+        "descriptions": [
+            "T of array<string, int> = array{} (function fixture(), parameter)",
+            "T of array<string, int> = array{}",
+            "T of array<string, int> = array"
+        ],
+        "queries": [
+            "Yes",
+            "No",
+            "Maybe"
+        ],
+        "template": {
+            "name": "T",
+            "scope": "function fixture()",
+            "argument": false,
+            "bound": [
+                "array<string, int>",
+                "array<string, int>",
+                "array<string, int>"
+            ],
+            "default": [
+                "array{}",
+                "array{}",
+                "array"
+            ]
+        }
+    },
+    {
+        "bound": "array<string, int>",
+        "other": null,
+        "elementTemplate": false,
+        "argument": true,
+        "reverse": false,
+        "descriptions": [
+            "T of array<string, int> = array{} (function fixture(), argument)",
+            "T of array<string, int> = array{}",
+            "T of array<string, int> = array"
+        ],
+        "queries": [
+            "Yes",
+            "No",
+            "Maybe"
+        ],
+        "template": {
+            "name": "T",
+            "scope": "function fixture()",
+            "argument": true,
+            "bound": [
+                "array<string, int>",
+                "array<string, int>",
+                "array<string, int>"
+            ],
+            "default": [
+                "array{}",
+                "array{}",
+                "array"
+            ]
+        }
+    },
+    {
+        "bound": "int",
+        "other": null,
+        "elementTemplate": false,
+        "argument": false,
+        "reverse": false,
+        "descriptions": [
+            "T of int = array{} (function fixture(), parameter)",
+            "T of int = array{}",
+            "T of int = array"
+        ],
+        "queries": [
+            "No",
+            "No",
+            "No"
+        ],
+        "template": {
+            "name": "T",
+            "scope": "function fixture()",
+            "argument": false,
+            "bound": [
+                "int",
+                "int",
+                "int"
+            ],
+            "default": [
+                "array{}",
+                "array{}",
+                "array"
+            ]
+        }
+    },
+    {
+        "bound": "int",
+        "other": null,
+        "elementTemplate": false,
+        "argument": true,
+        "reverse": false,
+        "descriptions": [
+            "T of int = array{} (function fixture(), argument)",
+            "T of int = array{}",
+            "T of int = array"
+        ],
+        "queries": [
+            "No",
+            "No",
+            "No"
+        ],
+        "template": {
+            "name": "T",
+            "scope": "function fixture()",
+            "argument": true,
+            "bound": [
+                "int",
+                "int",
+                "int"
+            ],
+            "default": [
+                "array{}",
+                "array{}",
+                "array"
+            ]
+        }
+    },
+    {
+        "bound": "list<int>",
+        "other": "null",
+        "elementTemplate": false,
+        "argument": false,
+        "reverse": false,
+        "descriptions": [
+            "T of list<int> = array{} (function fixture(), parameter)|null",
+            "(T of list<int> = array{})|null",
+            "(T of list<int> = array)|null"
+        ],
+        "queries": [
+            "Maybe",
+            "Maybe",
+            "Maybe"
+        ],
+        "template": null
+    },
+    {
+        "bound": "list<int>",
+        "other": "null",
+        "elementTemplate": false,
+        "argument": false,
+        "reverse": true,
+        "descriptions": [
+            "T of list<int> = array{} (function fixture(), parameter)|null",
+            "(T of list<int> = array{})|null",
+            "(T of list<int> = array)|null"
+        ],
+        "queries": [
+            "Maybe",
+            "Maybe",
+            "Maybe"
+        ],
+        "template": null
+    },
+    {
+        "bound": "list<int>",
+        "other": "null",
+        "elementTemplate": false,
+        "argument": true,
+        "reverse": false,
+        "descriptions": [
+            "T of list<int> = array{} (function fixture(), argument)|null",
+            "(T of list<int> = array{})|null",
+            "(T of list<int> = array)|null"
+        ],
+        "queries": [
+            "Maybe",
+            "Maybe",
+            "Maybe"
+        ],
+        "template": null
+    },
+    {
+        "bound": "list<int>",
+        "other": "null",
+        "elementTemplate": false,
+        "argument": true,
+        "reverse": true,
+        "descriptions": [
+            "T of list<int> = array{} (function fixture(), argument)|null",
+            "(T of list<int> = array{})|null",
+            "(T of list<int> = array)|null"
+        ],
+        "queries": [
+            "Maybe",
+            "Maybe",
+            "Maybe"
+        ],
+        "template": null
+    },
+    {
+        "bound": "list<int>",
+        "other": "int",
+        "elementTemplate": false,
+        "argument": false,
+        "reverse": false,
+        "descriptions": [
+            "int|T of list<int> = array{} (function fixture(), parameter)",
+            "int|T of list<int> = array{}",
+            "int|T of list<int> = array"
+        ],
+        "queries": [
+            "Maybe",
+            "Maybe",
+            "Maybe"
+        ],
+        "template": null
+    },
+    {
+        "bound": "list<int>",
+        "other": "int",
+        "elementTemplate": false,
+        "argument": false,
+        "reverse": true,
+        "descriptions": [
+            "int|T of list<int> = array{} (function fixture(), parameter)",
+            "int|T of list<int> = array{}",
+            "int|T of list<int> = array"
+        ],
+        "queries": [
+            "Maybe",
+            "Maybe",
+            "Maybe"
+        ],
+        "template": null
+    },
+    {
+        "bound": "list<int>",
+        "other": "int",
+        "elementTemplate": false,
+        "argument": true,
+        "reverse": false,
+        "descriptions": [
+            "int|T of list<int> = array{} (function fixture(), argument)",
+            "int|T of list<int> = array{}",
+            "int|T of list<int> = array"
+        ],
+        "queries": [
+            "Maybe",
+            "Maybe",
+            "Maybe"
+        ],
+        "template": null
+    },
+    {
+        "bound": "list<int>",
+        "other": "int",
+        "elementTemplate": false,
+        "argument": true,
+        "reverse": true,
+        "descriptions": [
+            "int|T of list<int> = array{} (function fixture(), argument)",
+            "int|T of list<int> = array{}",
+            "int|T of list<int> = array"
+        ],
+        "queries": [
+            "Maybe",
+            "Maybe",
+            "Maybe"
+        ],
+        "template": null
+    },
+    {
+        "bound": "list<U>",
+        "other": "array{}",
+        "elementTemplate": true,
+        "argument": false,
+        "reverse": false,
+        "descriptions": [
+            "list<U of int = 1 (function fixture(), parameter)>",
+            "list<U of int = 1>",
+            "list<U of int = int>"
+        ],
+        "queries": [
+            "Yes",
+            "Yes",
+            "Maybe"
+        ],
+        "template": null
+    },
+    {
+        "bound": "list<U>",
+        "other": "array{}",
+        "elementTemplate": true,
+        "argument": false,
+        "reverse": true,
+        "descriptions": [
+            "list<U of int = 1 (function fixture(), parameter)>",
+            "list<U of int = 1>",
+            "list<U of int = int>"
+        ],
+        "queries": [
+            "Yes",
+            "Yes",
+            "Maybe"
+        ],
+        "template": null
+    },
+    {
+        "bound": "list<U>",
+        "other": "array{}",
+        "elementTemplate": true,
+        "argument": true,
+        "reverse": false,
+        "descriptions": [
+            "list<U of int = 1 (function fixture(), argument)>",
+            "list<U of int = 1>",
+            "list<U of int = int>"
+        ],
+        "queries": [
+            "Yes",
+            "Yes",
+            "Maybe"
+        ],
+        "template": null
+    },
+    {
+        "bound": "list<U>",
+        "other": "array{}",
+        "elementTemplate": true,
+        "argument": true,
+        "reverse": true,
+        "descriptions": [
+            "list<U of int = 1 (function fixture(), argument)>",
+            "list<U of int = 1>",
+            "list<U of int = int>"
+        ],
+        "queries": [
+            "Yes",
+            "Yes",
+            "Maybe"
+        ],
+        "template": null
+    },
+    {
+        "bound": "list<U>",
+        "other": "array{'value'}",
+        "elementTemplate": true,
+        "argument": false,
+        "reverse": false,
+        "descriptions": [
+            "list<'value'|U of int = 1 (function fixture(), parameter)>",
+            "list<'value'|U of int = 1>",
+            "list<string|U of int = int>"
+        ],
+        "queries": [
+            "Yes",
+            "Yes",
+            "Maybe"
+        ],
+        "template": null
+    },
+    {
+        "bound": "list<U>",
+        "other": "array{'value'}",
+        "elementTemplate": true,
+        "argument": false,
+        "reverse": true,
+        "descriptions": [
+            "list<'value'|U of int = 1 (function fixture(), parameter)>",
+            "list<'value'|U of int = 1>",
+            "list<string|U of int = int>"
+        ],
+        "queries": [
+            "Yes",
+            "Yes",
+            "Maybe"
+        ],
+        "template": null
+    },
+    {
+        "bound": "list<U>",
+        "other": "array{'value'}",
+        "elementTemplate": true,
+        "argument": true,
+        "reverse": false,
+        "descriptions": [
+            "list<'value'|U of int = 1 (function fixture(), argument)>",
+            "list<'value'|U of int = 1>",
+            "list<string|U of int = int>"
+        ],
+        "queries": [
+            "Yes",
+            "Yes",
+            "Maybe"
+        ],
+        "template": null
+    },
+    {
+        "bound": "list<U>",
+        "other": "array{'value'}",
+        "elementTemplate": true,
+        "argument": true,
+        "reverse": true,
+        "descriptions": [
+            "list<'value'|U of int = 1 (function fixture(), argument)>",
+            "list<'value'|U of int = 1>",
+            "list<string|U of int = int>"
+        ],
+        "queries": [
+            "Yes",
+            "Yes",
+            "Maybe"
+        ],
+        "template": null
+    }
+]
