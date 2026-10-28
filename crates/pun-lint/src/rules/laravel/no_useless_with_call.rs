@@ -76,16 +76,13 @@ fn may_be_callable(facts: &Facts, t: &TUnion) -> bool {
             Some(value) => is_callable_string(facts, value),
             None => true,
         },
-        TAtomic::Object(TObject::Named(n)) => {
-            let Some(class) = facts.codebase.get_class_like(n.name.as_bytes()) else {
-                return true;
-            };
-            !class.flags.is_final()
-                || facts
+        TAtomic::Object(TObject::Named(n)) => (facts.codebase.get_class_like(n.name.as_bytes()))
+            .is_none_or(|class| {
+                let invoke = facts
                     .codebase
-                    .get_declaring_method(class.name.as_bytes(), b"__invoke")
-                    .is_some()
-        }
+                    .get_declaring_method(class.name.as_bytes(), b"__invoke");
+                !class.flags.is_final() || invoke.is_some()
+            }),
         _ => true,
     })
 }

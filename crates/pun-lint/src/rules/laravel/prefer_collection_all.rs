@@ -87,14 +87,10 @@ fn value_type(ctx: &Context<'_>, t: &TUnion) -> Option<TUnion> {
         else {
             return None;
         };
-        let class = codebase.get_class_like(named.name.as_bytes())?;
-        let value = get_specialized_template_type(
-            codebase,
-            name,
-            enumerable.name,
-            class,
-            named.type_parameters.as_deref(),
-        )?;
+        let value = (codebase.get_class_like(named.name.as_bytes())).and_then(|class| {
+            let parameters = named.type_parameters.as_deref();
+            get_specialized_template_type(codebase, name, enumerable.name, class, parameters)
+        })?;
         types.extend(value.types.iter().cloned());
     }
     Some(TUnion::from_vec(types))
@@ -138,10 +134,8 @@ fn this_out_called(ctx: &Context<'_>, ancestors: &[Node<'_, '_>], object: &Expre
 /// `Some` when the method `method` of `class` has a `this-out` tag in its doc comment: the last doc comment before its
 /// name, with only modifiers and attributes after it.
 fn this_out_tagged(facts: &Facts, class: &[u8], method: &[u8]) -> Option<()> {
-    let name = facts
-        .codebase
-        .get_declaring_method(class, method)?
-        .name_span?;
+    let declared = facts.codebase.get_declaring_method(class, method);
+    let name = declared.and_then(|m| m.name_span)?;
     let source = facts.source_of(name.file_id)?;
     let before = &source[..name.start.offset as usize];
     let start = before.rfind("/**")?;
