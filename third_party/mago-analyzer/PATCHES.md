@@ -2635,3 +2635,21 @@ does not expose counterfactual scopes to named-argument selection or claim dynam
 All 207 new oracle records and 106 tests across 18 selected public targets pass. Existing scope,
 variable, native, loop, foreach, coalesce, failed-offset, and unset captures remain unchanged.
 Fresh dependency instrumentation covers all 160 changed executable lines without exclusions.
+
+### Requested method identity before storage selection
+
+`resolver::method::ResolvedMethod` and `invocation::MethodTargetContext` retain `requested_name`,
+the ASCII-case-folded lookup name before trait or ancestor storage selection. Trait aliases keep
+their own lookup identity while `declaring_method_id` continues to identify the original storage.
+Instance, static, callable, partial, constructor, attribute, magic and implicit invocations carry
+the corresponding name without changing resolution, signatures, diagnostics or side effects.
+Synthetic constructor and string-cast invocations retain `__construct` and `__toString`, even
+when those methods are aliases of differently named trait declarations.
+
+The public `requested_method_names` test observes real invocation hooks and return providers.
+It distinguishes original and aliased trait calls, case folding, dynamic alternatives, inheritance,
+constructors and implicit string casts. A fresh PHPStan 2.3.1 reflection probe at pinned revision
+`cb3b7e99489b2e3789ee2eec10501cb7a72580ea` confirms why storage identity alone is insufficient:
+the original `@phpstan-impure` trait method reflects maybe side effects, while its alias reflects
+yes. This API only exposes the missing identity; purity consumption and isolated expression
+observations remain separate changes.

@@ -479,6 +479,7 @@ where
         // Use the original name of the class it was called on
         // This is important for first-class callables with static return types
         classname: called_on_class_metadata.original_name,
+        requested_name: method_name.to_ascii_lowercase(),
         method_identifier: declaring_method_id,
         static_class_type,
         declaring_object: None,
@@ -909,6 +910,7 @@ where
 
     Some(ResolvedMethod {
         classname: mixin_metadata.original_name,
+        requested_name: method_name.to_ascii_lowercase(),
         method_identifier: declaring_method_id,
         static_class_type,
         declaring_object: None,

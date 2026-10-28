@@ -337,6 +337,7 @@ where
                 effective_signature: None,
                 method_context: Some(MethodTargetContext {
                     invocation_kind: MethodInvocationKind::Instance,
+                    requested_name: constructor_id.get_method_name(),
                     declaring_method_id: Some(constructor_declraing_id),
                     class_like_metadata: metadata,
                     class_type: StaticClassType::Exact(metadata.original_name),
@@ -618,6 +619,7 @@ where
                 effective_signature: None,
                 method_context: Some(MethodTargetContext {
                     invocation_kind: MethodInvocationKind::Instance,
+                    requested_name: constructor_id.get_method_name(),
                     declaring_method_id: Some(constructor_declaring_id),
                     class_like_metadata,
                     class_type: StaticClassType::Exact(class_like_metadata.original_name),

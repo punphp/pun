@@ -48,6 +48,8 @@ pub struct ResolvedMethod {
     /// The name of the class this method is called on, not necessarily the same
     /// as the class of the method itself, especially in cases of inheritance.
     pub classname: Word,
+    /// The selector's case-folded name, before trait/ancestor storage lookup.
+    pub requested_name: Word,
     /// The method identifiers that were successfully resolved.
     pub method_identifier: MethodIdentifier,
     /// The type of `$this` or the static class type if it's a static method.
@@ -516,6 +518,7 @@ where
 
         resolved_methods.push(ResolvedMethod {
             method_identifier: declaring_method_id,
+            requested_name: method_name.to_ascii_lowercase(),
             static_class_type,
             declaring_object,
             classname,

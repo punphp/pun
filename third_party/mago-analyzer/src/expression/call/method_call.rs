@@ -204,6 +204,7 @@ pub fn analyze_implicit_method_call<'ctx, 'arena, A>(
     artifacts: &mut AnalysisArtifacts,
     object_type: &TObject,
     object_variable: Option<&[u8]>,
+    requested_name: Word,
     method_identifier: MethodIdentifier,
     class_like_metadata: &'ctx ClassLikeMetadata,
     method_metadata: &'ctx FunctionLikeMetadata,
@@ -227,6 +228,7 @@ where
 
     let method_target_context = MethodTargetContext {
         invocation_kind: MethodInvocationKind::Instance,
+        requested_name: requested_name.to_ascii_lowercase(),
         declaring_method_id: Some(method_identifier),
         class_like_metadata,
         class_type: StaticClassType::Object(object_type.clone()),
@@ -337,6 +339,7 @@ where
 
         let method_target_context = MethodTargetContext {
             invocation_kind: MethodInvocationKind::Instance,
+            requested_name: resolved_method.requested_name,
             declaring_method_id: Some(resolved_method.method_identifier),
             class_like_metadata: metadata,
             class_type: resolved_method.static_class_type,
@@ -471,6 +474,7 @@ where
             effective_signature: None,
             method_context: MethodTargetContext {
                 invocation_kind,
+                requested_name: unresolved.method_name.to_ascii_lowercase(),
                 declaring_method_id: None,
                 class_like_metadata,
                 class_type: unresolved.class_type,
@@ -543,6 +547,7 @@ where
             effective_signature: None,
             method_context: Some(MethodTargetContext {
                 invocation_kind,
+                requested_name: magic_call_method.requested_name,
                 declaring_method_id: Some(magic_call_method.method_identifier),
                 class_like_metadata,
                 class_type: magic_call_method.static_class_type,

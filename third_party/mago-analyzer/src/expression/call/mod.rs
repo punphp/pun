@@ -413,8 +413,11 @@ where
     A: Arena,
 {
     let mut identifier = function_like;
-    let original_class_for_method_context =
-        if let FunctionLikeIdentifier::Method(class_name, _) = function_like { Some(class_name) } else { None };
+    let original_method_context = if let FunctionLikeIdentifier::Method(class_name, method_name) = function_like {
+        Some((class_name, method_name.to_ascii_lowercase()))
+    } else {
+        None
+    };
 
     let metadata = context
         .codebase
@@ -502,7 +505,7 @@ where
     }
 
     // If this is a method, we need to create a method context so that static types can be resolved properly
-    let method_context = if let Some(original_class_name) = original_class_for_method_context {
+    let method_context = if let Some((original_class_name, requested_name)) = original_method_context {
         // Look up the class metadata for the class this method is being called on (not where it's declared)
         if let Some(class_like_metadata) = context.codebase.get_class_like(original_class_name.as_bytes()) {
             // Create the method identifier using the looked up identifier (which points to where the method is declared)
@@ -514,6 +517,7 @@ where
 
             Some(MethodTargetContext {
                 invocation_kind: MethodInvocationKind::Static,
+                requested_name,
                 declaring_method_id,
                 class_like_metadata,
                 class_type: StaticClassType::Name(original_class_name),

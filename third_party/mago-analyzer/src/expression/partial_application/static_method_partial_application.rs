@@ -108,6 +108,7 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for StaticMethodPartialApplication<'
                     effective_signature: None,
                     method_context: Some(MethodTargetContext {
                         invocation_kind: MethodInvocationKind::Static,
+                        requested_name: resolved_method.requested_name,
                         declaring_method_id: Some(resolved_method.method_identifier),
                         class_like_metadata,
                         class_type: resolved_method.static_class_type,
