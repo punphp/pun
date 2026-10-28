@@ -2745,3 +2745,32 @@ Nonvariadic unpack expressions are evaluated before template inference. A provid
 leaves no type uses the existing mixed fallback, not a second evaluation during validation.
 Public controls cover these boundaries, generic variadic unpacks, absent and unknown
 dependencies, formula-budget exhaustion, and recovered calls with a missing selector.
+
+### Unpacked operands retain written evaluation order
+
+`invocation/analyzer.rs` evaluates unpacked operands alongside ordinary non-closure arguments
+in their written order. Closures remain deferred for contextual specialization and raw callback
+gathering. Parameter binding, template inference and validation consume the completed expression
+types without evaluating an unpack again. A semantic hook that leaves no type keeps the existing
+mixed fallback. Zero-parameter callees also evaluate their unpacked operands.
+
+This follows PHPStan 2.3.1's
+[`ArgumentsHandler::processArgs()` processing order](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Analyser/ArgumentsHandler.php#L198-L230)
+and its
+[single evolving-scope expression walk](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Analyser/ArgumentsHandler.php#L647-L695).
+The existing variadic by-reference flag and callee argument context still reach the same argument
+analyzer. The patch does not change named-parameter selection, providers or observation pricing.
+
+The public `call_scope_observations` tests compare operand types and exact expression-hook counts
+with fresh PHPStan captures. `unpack-boundaries.php` preserves the filtered named-argument fixture
+byte for byte. Its controls distinguish earlier and later assignments, pure calls and impure calls,
+for both identifier and dynamic method selectors. `unpack-order.php` adds ordinary, generic,
+variadic, by-reference, consecutive-unpack and zero-parameter calls. Semantic-hook controls require
+one evaluation even when no expression type is supplied. A failing unpack stops the walk before
+later ordinary operands and propagates the plugin error.
+
+From `crates/pun-analyse/tests/fixtures/call-scope-observations`, regenerate each new capture with
+`php capture-unpack-order.php /absolute/path/to/phpstan-2.3.1.phar unpack-boundaries.php`
+or the same command with `unpack-order.php`.
+Assignment-derived conditional holders and Pun's filtered named-argument consumer are separate
+changes. These operand captures do not claim to validate those consumers.

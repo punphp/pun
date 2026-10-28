@@ -1,0 +1,109 @@
+{
+    "calls": {},
+    "arguments": {
+        "521": {
+            "expression": "$arguments",
+            "line": 20,
+            "end": 531,
+            "unpacked": true,
+            "type": "array{left: 1}",
+            "visits": 1
+        },
+        "645": {
+            "expression": "$arguments",
+            "line": 22,
+            "end": 655,
+            "unpacked": true,
+            "type": "array{left: 1}",
+            "visits": 1
+        },
+        "706": {
+            "expression": "$arguments",
+            "line": 24,
+            "end": 716,
+            "unpacked": true,
+            "type": "array{left: 1}",
+            "visits": 1
+        },
+        "833": {
+            "expression": "$arguments",
+            "line": 26,
+            "end": 843,
+            "unpacked": true,
+            "type": "array{left: 1}",
+            "visits": 1
+        },
+        "883": {
+            "expression": "$arguments",
+            "line": 28,
+            "end": 893,
+            "unpacked": true,
+            "type": "array{1}",
+            "visits": 1
+        },
+        "960": {
+            "expression": "$arguments",
+            "line": 30,
+            "end": 970,
+            "unpacked": true,
+            "type": "array{1}",
+            "visits": 1
+        },
+        "976": {
+            "expression": "$arguments = [2]",
+            "line": 30,
+            "end": 992,
+            "unpacked": true,
+            "type": "array{2}",
+            "visits": 1
+        },
+        "998": {
+            "expression": "$arguments",
+            "line": 30,
+            "end": 1008,
+            "unpacked": true,
+            "type": "array{2}",
+            "visits": 1
+        },
+        "1030": {
+            "expression": "boundarySkipped()",
+            "line": 31,
+            "end": 1047,
+            "unpacked": true,
+            "type": "array",
+            "visits": 1
+        },
+        "1068": {
+            "expression": "boundarySkipped()",
+            "line": 32,
+            "end": 1085,
+            "unpacked": true,
+            "type": "array",
+            "visits": 1
+        },
+        "1104": {
+            "expression": "boundarySkipped()",
+            "line": 33,
+            "end": 1121,
+            "unpacked": true,
+            "type": "array",
+            "visits": 1
+        },
+        "1139": {
+            "expression": "boundarySkipped()",
+            "line": 34,
+            "end": 1156,
+            "unpacked": true,
+            "type": "array",
+            "visits": 1
+        },
+        "1198": {
+            "expression": "$arguments",
+            "line": 36,
+            "end": 1208,
+            "unpacked": true,
+            "type": "array{1}",
+            "visits": 1
+        }
+    }
+}

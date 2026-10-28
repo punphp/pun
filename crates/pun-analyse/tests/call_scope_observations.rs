@@ -937,3 +937,149 @@ fn nonvariadic_unpack_is_evaluated_once_even_when_a_semantic_hook_has_no_type() 
             .unwrap() as usize,
     );
 }
+
+fn check_unpack_order(code: &'static [u8], oracle: &str) {
+    let events = Events::default();
+    let (_, artifacts, _) = analyze(code, oracle, false, &providers(&events));
+    let oracle: Value = serde_json::from_str(oracle).unwrap();
+    let events = events.0.lock().unwrap();
+    let mut differences = BTreeMap::new();
+    for (start, expected) in oracle["arguments"].as_object().unwrap() {
+        let start = start.parse::<u32>().unwrap();
+        let end = expected["end"].as_u64().unwrap() as u32;
+        let actual = artifacts.expression_types.get(&(start, end)).map(|ty| {
+            if ty
+                .get_single_array()
+                .is_some_and(|array| array.is_vanilla())
+            {
+                "array".to_owned()
+            } else {
+                describe(ty)
+            }
+        });
+        let before = events
+            .get(&("expression-before", start, end))
+            .copied()
+            .unwrap_or(0);
+        let after = events
+            .get(&("expression-after", start, end))
+            .copied()
+            .unwrap_or(0);
+        let visits = expected["visits"].as_u64().unwrap() as usize;
+        if actual.as_deref() != expected["type"].as_str() || before != visits || after != visits {
+            differences.insert(start, (expected.clone(), actual, before, after));
+        }
+    }
+    assert!(differences.is_empty(), "{differences:#?}");
+}
+
+#[test]
+fn unpacked_boundary_operands_keep_earlier_and_later_writes_and_impurity_in_order() {
+    check_unpack_order(
+        include_bytes!("fixtures/call-scope-observations/unpack-boundaries.php"),
+        include_str!("fixtures/call-scope-observations/unpack-boundaries-expected.json"),
+    );
+}
+
+#[test]
+fn unpacked_variadic_generic_reference_and_empty_callees_evaluate_each_operand_once() {
+    check_unpack_order(
+        include_bytes!("fixtures/call-scope-observations/unpack-order.php"),
+        include_str!("fixtures/call-scope-observations/unpack-order-expected.json"),
+    );
+}
+
+#[test]
+fn variadic_and_empty_callees_do_not_replay_untyped_unpack_expressions() {
+    const CODE: &[u8] = include_bytes!("fixtures/call-scope-observations/unpack-order.php");
+    const ORACLE: &str =
+        include_str!("fixtures/call-scope-observations/unpack-order-expected.json");
+    let events = Events::default();
+    let mut registry = providers(&events);
+    registry.register_expression_hook(UntypedUnpack);
+    let (_, artifacts, _) = analyze(CODE, ORACLE, false, &registry);
+    let oracle: Value = serde_json::from_str(ORACLE).unwrap();
+    let events = events.0.lock().unwrap();
+    let mut checked = 0;
+    for (start, argument) in oracle["arguments"].as_object().unwrap() {
+        if argument["expression"] != "boundarySkipped()" {
+            continue;
+        }
+        let start = start.parse::<u32>().unwrap();
+        let end = argument["end"].as_u64().unwrap() as u32;
+        assert_eq!(events.get(&("expression-before", start, end)), Some(&1));
+        assert!(!artifacts.expression_types.contains_key(&(start, end)));
+        checked += 1;
+    }
+    assert_eq!(checked, 4);
+}
+
+#[test]
+fn unpack_operand_errors_propagate_before_later_ordinary_operands() {
+    use mago_analyzer::error::AnalysisError;
+
+    struct FailAt(u32, u32);
+    impl ExpressionHook for FailAt {
+        fn before_expression(
+            &self,
+            expression: &Expression<'_>,
+            _: &mut HookContext<'_, '_>,
+        ) -> HookResult<ExpressionHookResult> {
+            let span = expression.span();
+            if (span.start.offset, span.end.offset) == (self.0, self.1) {
+                Err(PluginError::Internal {
+                    reason: "unpacked operand failed".into(),
+                })
+            } else {
+                Ok(ExpressionHookResult::Continue)
+            }
+        }
+    }
+
+    const CODE: &[u8] = include_bytes!("fixtures/call-scope-observations/unpack-order.php");
+    let oracle: Value = serde_json::from_str(include_str!(
+        "fixtures/call-scope-observations/unpack-order-expected.json"
+    ))
+    .unwrap();
+    let (start, expected) = oracle["arguments"]
+        .as_object()
+        .unwrap()
+        .iter()
+        .map(|(start, expected)| (start.parse::<u32>().unwrap(), expected))
+        .min_by_key(|(start, _)| *start)
+        .unwrap();
+    let end = expected["end"].as_u64().unwrap() as u32;
+    let arena = LocalArena::new();
+    let file = File::ephemeral(Cow::Borrowed(b"unpack-error.php"), Cow::Borrowed(CODE));
+    let program = parse_file(&arena, &file);
+    assert!(!program.has_errors());
+    let names = NameResolver::new(&arena).resolve(program);
+    let settings = Settings::default();
+    let mut codebase = scan_program(&arena, &file, program, &names, settings.version);
+    let mut references = SymbolReferences::new();
+    populate_codebase(
+        &mut codebase,
+        &mut references,
+        Default::default(),
+        Default::default(),
+    );
+    let events = Events::default();
+    let mut registry = providers(&events);
+    registry.register_expression_hook(FailAt(start, end));
+    let mut result = AnalysisResult::new(references);
+    assert!(matches!(
+        Analyzer::new(&arena, &file, &names, &codebase, &registry, settings)
+            .analyze_with_artifacts(program, &mut result),
+        Err(AnalysisError::Plugin(PluginError::Internal { reason })) if reason == "unpacked operand failed"
+    ));
+    let later = b"$arguments = ['right' => 1]";
+    let later_start = CODE.windows(later.len()).position(|s| s == later).unwrap() as u32;
+    assert!(later_start > end);
+    let events = events.0.lock().unwrap();
+    assert_eq!(events.get(&("expression-before", start, end)), Some(&1));
+    assert!(!events.contains_key(&(
+        "expression-before",
+        later_start,
+        later_start + later.len() as u32,
+    )));
+}

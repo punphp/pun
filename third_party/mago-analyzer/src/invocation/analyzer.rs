@@ -319,8 +319,37 @@ where
     let calling_instance_type = calling_class_like.and_then(|(_, atomic)| atomic);
     let method_class_type = method_call_context.map(|ctx| &ctx.class_type);
 
-    for (argument_offset, parameter) in &non_closure_arguments {
-        let Some(argument) = invocation.arguments_source.get_argument(*argument_offset) else {
+    // Like PHPStan's ArgumentsHandler, defer closures but evaluate every other
+    // operand once in its written order, including unpacked operands.
+    let mut non_closure_parameters = non_closure_arguments.iter().peekable();
+    for (offset, argument) in invocation.arguments_source.iter_arguments().enumerate() {
+        if argument.is_unpacked()
+            && let Some(argument_expression) = argument.value()
+        {
+            let referenced_parameter = invocation
+                .target
+                .parameter_count()
+                .checked_sub(1)
+                .and_then(|offset| invocation.target.get_parameter(offset))
+                .is_some_and(|parameter| parameter.is_variadic() && parameter.is_by_reference());
+            analyze_and_store_argument_type(
+                context,
+                block_context,
+                artifacts,
+                &invocation.target,
+                argument_expression,
+                usize::MAX,
+                &mut analyzed_argument_types,
+                referenced_parameter,
+                None,
+                None,
+            )?;
+            continue;
+        }
+
+        let Some((argument_offset, parameter)) =
+            non_closure_parameters.next_if(|(argument_offset, _)| *argument_offset == offset)
+        else {
             continue;
         };
         let Some(argument_expression) = argument.value() else {
@@ -639,21 +668,6 @@ where
                 let Some(argument_expression) = argument.value() else {
                     continue;
                 };
-
-                if artifacts.get_expression_type(argument_expression).is_none() {
-                    analyze_and_store_argument_type(
-                        context,
-                        block_context,
-                        artifacts,
-                        &invocation.target,
-                        argument_expression,
-                        usize::MAX,
-                        &mut analyzed_argument_types,
-                        false,
-                        None,
-                        None,
-                    )?;
-                }
 
                 let argument_value_type =
                     artifacts.get_expression_type(argument_expression).cloned().unwrap_or_else(get_mixed);
@@ -991,21 +1005,6 @@ where
                     continue;
                 };
 
-                if artifacts.get_expression_type(argument_expression).is_none() {
-                    analyze_and_store_argument_type(
-                        context,
-                        block_context,
-                        artifacts,
-                        &invocation.target,
-                        argument_expression,
-                        usize::MAX,
-                        &mut analyzed_argument_types,
-                        last_parameter_ref.is_by_reference(),
-                        None,
-                        None,
-                    )?;
-                }
-
                 let argument_value_type =
                     artifacts.get_expression_type(argument_expression).cloned().unwrap_or_else(get_mixed);
 
@@ -1111,21 +1110,6 @@ where
                     let Some(argument_expression) = unpacked_argument.value() else {
                         continue;
                     };
-
-                    if artifacts.get_expression_type(argument_expression).is_none() {
-                        analyze_and_store_argument_type(
-                            context,
-                            block_context,
-                            artifacts,
-                            &invocation.target,
-                            argument_expression,
-                            usize::MAX,
-                            &mut analyzed_argument_types,
-                            last_parameter_ref.is_by_reference(),
-                            None,
-                            None,
-                        )?;
-                    }
 
                     let argument_value_type =
                         artifacts.get_expression_type(argument_expression).cloned().unwrap_or_else(get_mixed); // Get type of the iterable
