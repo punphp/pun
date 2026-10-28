@@ -1,4 +1,5 @@
 use std::borrow::Cow;
+use std::collections::BTreeMap;
 use std::rc::Rc;
 use std::sync::Arc;
 
@@ -10,6 +11,7 @@ use crate::metadata::class_like::ClassLikeMetadata;
 use crate::misc::GenericParent;
 use crate::ttype::atomic::TAtomic;
 use crate::ttype::atomic::array::TArray;
+use crate::ttype::atomic::array::key::ArrayKey;
 use crate::ttype::atomic::array::keyed::TKeyedArray;
 use crate::ttype::atomic::array::list::TList;
 use crate::ttype::atomic::generic::TGenericParameter;
@@ -1346,6 +1348,134 @@ pub(crate) fn is_atomic_intersection_contained_by(
     true
 }
 
+type ConstantArrayItems = BTreeMap<ArrayKey, (bool, TUnion)>;
+
+/// Definite ConstantArrayType views, not the asserted offsets of an ordinary generic array.
+fn constant_array_parts(array: &TArray) -> Option<(ConstantArrayItems, Option<(TUnion, TUnion)>)> {
+    match array {
+        TArray::Keyed(array) if array.is_constant_shape() => Some((
+            array.known_items.as_deref().cloned().unwrap_or_default(),
+            array
+                .parameters
+                .as_ref()
+                .filter(|(key, _)| !key.is_never())
+                .map(|(key, value)| ((**key).clone(), (**value).clone())),
+        )),
+        TArray::List(array) if array.known_elements.is_some() => Some((
+            array
+                .known_elements
+                .as_ref()?
+                .iter()
+                .map(|(key, item)| (ArrayKey::Integer(*key as i64), item.clone()))
+                .collect(),
+            (!array.element_type.is_never()).then(|| (get_non_negative_int(), (*array.element_type).clone())),
+        )),
+        _ => None,
+    }
+}
+
+/// TypeCombinator::intersectDefiniteConstantArrays. Each side's extras apply only to absent keys.
+fn intersect_constant_arrays(
+    left: &TArray,
+    right: &TArray,
+    left_items: ConstantArrayItems,
+    right_items: ConstantArrayItems,
+    left_tail: Option<(TUnion, TUnion)>,
+    right_tail: Option<(TUnion, TUnion)>,
+    codebase: &CodebaseMetadata,
+    intersection_performed: &mut bool,
+) -> Option<TAtomic> {
+    *intersection_performed = true;
+    let tail = match (&left_tail, &right_tail) {
+        (Some((left_key, left_value)), Some((right_key, right_value))) => {
+            let key = intersect_union_types(left_key, right_key, codebase)?;
+            let value = intersect_union_types(left_value, right_value, codebase)?;
+            if key.is_never() || value.is_never() {
+                return None;
+            }
+            Some((key, value))
+        }
+        _ => None,
+    };
+    let mut items = BTreeMap::new();
+    for key in left_items
+        .keys()
+        .chain(right_items.keys().filter(|key| !left_items.contains_key(key)))
+    {
+        let (optional, value) = match (left_items.get(key), right_items.get(key)) {
+            (Some((left_optional, left_value)), Some((right_optional, right_value))) => {
+                // ConstantArrayType::isSuperTypeOf rejects disjoint shared values before dispatch,
+                // even for an optional field. Keep that public intersector boundary.
+                let value = intersect_union_types(left_value, right_value, codebase)?;
+                if value.is_never() {
+                    if *left_optional && *right_optional {
+                        continue;
+                    }
+                    return None;
+                }
+                (*left_optional && *right_optional, value)
+            }
+            (left, right) => {
+                let ((optional, value), other_tail) = match left {
+                    Some(item) => (item, &right_tail),
+                    None => (right?, &left_tail),
+                };
+                let other = other_tail.as_ref().filter(|(keys, _)| {
+                    intersect_union_types(&TUnion::from_atomic(key.to_atomic()), keys, codebase)
+                        .is_some_and(|key| !key.is_never())
+                });
+                let value = other.and_then(|(_, other)| intersect_union_types(value, other, codebase));
+                let Some(value) = value.filter(|value| !value.is_never()) else {
+                    if *optional {
+                        continue;
+                    }
+                    return None;
+                };
+                (*optional, value)
+            }
+        };
+        items.insert(*key, (optional, value));
+    }
+    let non_empty = left.is_non_empty() || right.is_non_empty() || items.values().any(|(optional, _)| !optional);
+    if non_empty && items.is_empty() && tail.is_none() {
+        return None;
+    }
+    let callable = match (left.callable(), right.callable()) {
+        (Some(left), Some(right)) => Some(intersect_atomic_types(left, right, codebase, intersection_performed)?),
+        (left, right) => left.or(right).cloned(),
+    };
+    let mut array = if matches!(left, TArray::List(_)) || matches!(right, TArray::List(_)) {
+        let elements = items
+            .into_iter()
+            .map(|(key, item)| Some((usize::try_from(key.get_integer()?).ok()?, item)))
+            .collect::<Option<BTreeMap<_, _>>>()?;
+        let mut list = TList::from_known_elements(elements);
+        if let Some((_, value)) = tail {
+            list.element_type = Arc::new(value);
+            list.known_count = None;
+        }
+        list.non_empty = non_empty;
+        TArray::List(list)
+    } else {
+        let mut array = TKeyedArray::new().with_non_empty(non_empty);
+        if !items.is_empty() {
+            array.known_items = Some(Arc::new(items));
+        }
+        if let Some((mut key, value)) = tail {
+            key.flags
+                .set(UnionFlags::CONSTANT_ARRAY_KEY, array.known_items.is_some());
+            array.parameters = Some((Arc::new(key), Arc::new(value)));
+        }
+        array.known_non_list = matches!(left, TArray::Keyed(array) if array.known_non_list)
+            || matches!(right, TArray::Keyed(array) if array.known_non_list);
+        TArray::Keyed(array)
+    };
+    if let Some(callable) = callable {
+        array.add_intersection_type(callable);
+    }
+    Some(TAtomic::Array(array))
+}
+
 /// This is the core logic used by `intersect_union_types`.
 fn intersect_atomic_types(
     type_1: &TAtomic,
@@ -1401,6 +1531,20 @@ fn intersect_atomic_types(
     }
 
     if let (TAtomic::Array(left_array), TAtomic::Array(right_array)) = (type_1, type_2) {
+        if let (Some((left_items, left_tail)), Some((right_items, right_tail))) =
+            (constant_array_parts(left_array), constant_array_parts(right_array))
+        {
+            return intersect_constant_arrays(
+                left_array,
+                right_array,
+                left_items,
+                right_items,
+                left_tail,
+                right_tail,
+                codebase,
+                intersection_performed,
+            );
+        }
         let array_has_known_shape = |array: &TArray| match array {
             TArray::List(list) => list.known_elements.is_some(),
             TArray::Keyed(keyed) => keyed.known_items.is_some(),

@@ -917,3 +917,27 @@ flags, so an impure override remains distinguishable from an unspecified declara
 The analyzer uses that distinction for PHPStan's receiver-local side-effect decision.
 The public `receiver_invalidation` target checks both purity override directions against
 fresh PHPStan 2.3.1 output for a scanned class and an analyzed caller.
+
+## Definite constant-array intersections
+
+`intersect_union_types()` intersects the explicit fields of two constant-array shapes
+instead of rejecting every pair that needs refinements from both operands. The source
+contract is PHPStan 2.3.1's `TypeCombinator::intersectDefiniteConstantArrays()` at
+revision `cb3b7e99489b2e3789ee2eec10501cb7a72580ea`.
+
+Each shape's extra key and value types apply only to the other shape's absent fields.
+A missing or impossible required field rejects the intersection. An impossible optional
+extra field is omitted. Both open tails intersect, while a sealed operand closes the result.
+List counts, non-empty constraints, and callable conjuncts remain separate from the fields.
+Generic arrays with asserted offsets retain the existing intersection path.
+
+The public `definite_array_intersections` target compares structural type records against
+the real PHPStan type API. Its capture makes closed input shapes explicitly sealed because
+PHPDoc notation alone retains legacy `Maybe` sealedness. The separate
+`assignment_derived_conditions` target retains complete public analyser records, including
+the compound-RHS and bounded multi-consequence regressions that need this intersection.
+
+This port does not add a representation for multiple retained array conjuncts or for legacy
+unknown sealedness. The capture rejects multiple constant-array projections instead of
+silently describing them as a generic array. List inputs use the public `TList` constructor
+after field scanning because explicit-key list PHPDoc syntax is a separate parser boundary.

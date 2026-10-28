@@ -3002,8 +3002,7 @@ unpacks at levels 0, 4, and 5. The public regression uses `pun_analyse::run` wit
 identifier filtering. Literal arrays with multiple possible keys retain their existing
 live producer behavior; singleton-key pricing supplies the derived consequences.
 
-The strict matrix retains independent prerequisite failures instead of substituting
-expectations. Combining partial closed-array consequences needs PHPStan's definite
-constant-array intersection, which Mago's shared intersector does not yet implement.
-The nested `isset()` control also retains the missing `isset.variable` diagnostic at
-levels 4 and 5. Neither boundary is repaired by this assignment patch.
+Combining partial closed-array consequences uses the separate definite constant-array
+intersection port in `mago-codex`. The strict matrix also exercises the independent
+`isset.variable` diagnostic consumer at levels 4 and 5. Assignment pricing does not
+emit that diagnostic or replace the consumer's incoming-operand observation.

@@ -1,0 +1,880 @@
+{
+    "compound": [
+        {
+            "items": {
+                "s:copy": [
+                    false,
+                    "'leftleft'"
+                ],
+                "s:nested": [
+                    false,
+                    {
+                        "items": {
+                            "s:left": [
+                                false,
+                                "1"
+                            ]
+                        },
+                        "tail": null,
+                        "callable": false,
+                        "size": "1",
+                        "nonempty": "Yes",
+                        "constant": true
+                    }
+                ]
+            },
+            "tail": null,
+            "callable": false,
+            "size": "2",
+            "nonempty": "Yes",
+            "constant": true
+        },
+        {
+            "items": {
+                "s:copy": [
+                    false,
+                    "'leftleft'"
+                ],
+                "s:nested": [
+                    false,
+                    {
+                        "items": {
+                            "s:left": [
+                                false,
+                                "1"
+                            ]
+                        },
+                        "tail": null,
+                        "callable": false,
+                        "size": "1",
+                        "nonempty": "Yes",
+                        "constant": true
+                    }
+                ]
+            },
+            "tail": null,
+            "callable": false,
+            "size": "2",
+            "nonempty": "Yes",
+            "constant": true
+        }
+    ],
+    "partial": [
+        {
+            "items": {
+                "s:a": [
+                    false,
+                    "1"
+                ],
+                "s:b": [
+                    false,
+                    "3"
+                ]
+            },
+            "tail": null,
+            "callable": false,
+            "size": "2",
+            "nonempty": "Yes",
+            "constant": true
+        },
+        {
+            "items": {
+                "s:a": [
+                    false,
+                    "1"
+                ],
+                "s:b": [
+                    false,
+                    "3"
+                ]
+            },
+            "tail": null,
+            "callable": false,
+            "size": "2",
+            "nonempty": "Yes",
+            "constant": true
+        }
+    ],
+    "disjoint-required-keys": [
+        "never",
+        "never"
+    ],
+    "disjoint-required-values": [
+        "never",
+        "never"
+    ],
+    "optional-keys": [
+        {
+            "items": {},
+            "tail": null,
+            "callable": false,
+            "size": "0",
+            "nonempty": "No",
+            "constant": true
+        },
+        {
+            "items": {},
+            "tail": null,
+            "callable": false,
+            "size": "0",
+            "nonempty": "No",
+            "constant": true
+        }
+    ],
+    "optional-values": [
+        "never",
+        "never"
+    ],
+    "required-optional-values": [
+        "never",
+        "never"
+    ],
+    "unique-optional": [
+        {
+            "items": {
+                "s:a": [
+                    false,
+                    "int"
+                ]
+            },
+            "tail": null,
+            "callable": false,
+            "size": "1",
+            "nonempty": "Yes",
+            "constant": true
+        },
+        {
+            "items": {
+                "s:a": [
+                    false,
+                    "int"
+                ]
+            },
+            "tail": null,
+            "callable": false,
+            "size": "1",
+            "nonempty": "Yes",
+            "constant": true
+        }
+    ],
+    "empty-optional": [
+        {
+            "items": {},
+            "tail": null,
+            "callable": false,
+            "size": "0",
+            "nonempty": "No",
+            "constant": true
+        },
+        {
+            "items": {},
+            "tail": null,
+            "callable": false,
+            "size": "0",
+            "nonempty": "No",
+            "constant": true
+        }
+    ],
+    "empty-required": [
+        "never",
+        "never"
+    ],
+    "list-partial": [
+        {
+            "items": {
+                "i:0": [
+                    false,
+                    "1"
+                ],
+                "i:1": [
+                    false,
+                    "3"
+                ]
+            },
+            "tail": null,
+            "callable": false,
+            "size": "2",
+            "nonempty": "Yes",
+            "constant": true
+        },
+        {
+            "items": {
+                "i:0": [
+                    false,
+                    "1"
+                ],
+                "i:1": [
+                    false,
+                    "3"
+                ]
+            },
+            "tail": null,
+            "callable": false,
+            "size": "2",
+            "nonempty": "Yes",
+            "constant": true
+        }
+    ],
+    "list-optional": [
+        {
+            "items": {
+                "i:0": [
+                    false,
+                    "1"
+                ],
+                "i:1": [
+                    true,
+                    "3"
+                ]
+            },
+            "tail": null,
+            "callable": false,
+            "size": "int<1,2>",
+            "nonempty": "Yes",
+            "constant": true
+        },
+        {
+            "items": {
+                "i:0": [
+                    false,
+                    "1"
+                ],
+                "i:1": [
+                    true,
+                    "3"
+                ]
+            },
+            "tail": null,
+            "callable": false,
+            "size": "int<1,2>",
+            "nonempty": "Yes",
+            "constant": true
+        }
+    ],
+    "open-partial": [
+        {
+            "items": {
+                "s:a": [
+                    false,
+                    "1"
+                ]
+            },
+            "tail": [
+                "string",
+                "1|2"
+            ],
+            "callable": false,
+            "size": "int<1,max>",
+            "nonempty": "Yes",
+            "constant": true
+        },
+        {
+            "items": {
+                "s:a": [
+                    false,
+                    "1"
+                ]
+            },
+            "tail": [
+                "string",
+                "1|2"
+            ],
+            "callable": false,
+            "size": "int<1,max>",
+            "nonempty": "Yes",
+            "constant": true
+        }
+    ],
+    "open-values-disjoint": [
+        "never",
+        "never"
+    ],
+    "open-keys-disjoint": [
+        "never",
+        "never"
+    ],
+    "open-unique": [
+        {
+            "items": {
+                "s:a": [
+                    false,
+                    "1"
+                ],
+                "s:b": [
+                    false,
+                    "2"
+                ]
+            },
+            "tail": [
+                "string",
+                "int"
+            ],
+            "callable": false,
+            "size": "int<2,max>",
+            "nonempty": "Yes",
+            "constant": true
+        },
+        {
+            "items": {
+                "s:a": [
+                    false,
+                    "1"
+                ],
+                "s:b": [
+                    false,
+                    "2"
+                ]
+            },
+            "tail": [
+                "string",
+                "int"
+            ],
+            "callable": false,
+            "size": "int<2,max>",
+            "nonempty": "Yes",
+            "constant": true
+        }
+    ],
+    "open-unique-optional": [
+        {
+            "items": {
+                "s:a": [
+                    true,
+                    "1"
+                ],
+                "s:b": [
+                    true,
+                    "2"
+                ]
+            },
+            "tail": [
+                "string",
+                "int"
+            ],
+            "callable": false,
+            "size": "int<0,max>",
+            "nonempty": "Maybe",
+            "constant": true
+        },
+        {
+            "items": {
+                "s:a": [
+                    true,
+                    "1"
+                ],
+                "s:b": [
+                    true,
+                    "2"
+                ]
+            },
+            "tail": [
+                "string",
+                "int"
+            ],
+            "callable": false,
+            "size": "int<0,max>",
+            "nonempty": "Maybe",
+            "constant": true
+        }
+    ],
+    "open-closed": [
+        {
+            "items": {
+                "s:a": [
+                    false,
+                    "1"
+                ],
+                "s:b": [
+                    false,
+                    "2"
+                ]
+            },
+            "tail": null,
+            "callable": false,
+            "size": "2",
+            "nonempty": "Yes",
+            "constant": true
+        },
+        {
+            "items": {
+                "s:a": [
+                    false,
+                    "1"
+                ],
+                "s:b": [
+                    false,
+                    "2"
+                ]
+            },
+            "tail": null,
+            "callable": false,
+            "size": "2",
+            "nonempty": "Yes",
+            "constant": true
+        }
+    ],
+    "open-excluded-required": [
+        "never",
+        "never"
+    ],
+    "open-excluded-optional": [
+        {
+            "items": {
+                "s:a": [
+                    false,
+                    "1"
+                ]
+            },
+            "tail": null,
+            "callable": false,
+            "size": "1",
+            "nonempty": "Yes",
+            "constant": true
+        },
+        {
+            "items": {
+                "s:a": [
+                    false,
+                    "1"
+                ]
+            },
+            "tail": null,
+            "callable": false,
+            "size": "1",
+            "nonempty": "Yes",
+            "constant": true
+        }
+    ],
+    "open-unique-disjoint-required": [
+        "never",
+        "never"
+    ],
+    "open-optional-dropped": [
+        "never",
+        "never"
+    ],
+    "open-optional-excluded-keys": [
+        {
+            "items": {},
+            "tail": [
+                "int",
+                "int"
+            ],
+            "callable": false,
+            "size": "int<0,max>",
+            "nonempty": "Maybe",
+            "constant": false
+        },
+        {
+            "items": {},
+            "tail": [
+                "int",
+                "int"
+            ],
+            "callable": false,
+            "size": "int<0,max>",
+            "nonempty": "Maybe",
+            "constant": false
+        }
+    ],
+    "empty-open": [
+        {
+            "items": {},
+            "tail": null,
+            "callable": false,
+            "size": "0",
+            "nonempty": "No",
+            "constant": true
+        },
+        {
+            "items": {},
+            "tail": null,
+            "callable": false,
+            "size": "0",
+            "nonempty": "No",
+            "constant": true
+        }
+    ],
+    "generic-control": [
+        {
+            "items": {},
+            "tail": [
+                "string",
+                "1|2"
+            ],
+            "callable": false,
+            "size": "int<0,max>",
+            "nonempty": "Maybe",
+            "constant": false
+        },
+        {
+            "items": {},
+            "tail": [
+                "string",
+                "1|2"
+            ],
+            "callable": false,
+            "size": "int<0,max>",
+            "nonempty": "Maybe",
+            "constant": false
+        }
+    ],
+    "generic-cross-control": [
+        {
+            "items": {},
+            "tail": [
+                "string",
+                "int"
+            ],
+            "callable": false,
+            "size": "int<0,max>",
+            "nonempty": "Maybe",
+            "constant": false
+        },
+        {
+            "items": {},
+            "tail": [
+                "string",
+                "int"
+            ],
+            "callable": false,
+            "size": "int<0,max>",
+            "nonempty": "Maybe",
+            "constant": false
+        }
+    ],
+    "shared-never": [
+        "never",
+        "never"
+    ],
+    "shared-optional-never": [
+        {
+            "items": {
+                "s:b": [
+                    false,
+                    "1"
+                ],
+                "s:c": [
+                    false,
+                    "3"
+                ]
+            },
+            "tail": null,
+            "callable": false,
+            "size": "2",
+            "nonempty": "Yes",
+            "constant": true
+        },
+        {
+            "items": {
+                "s:b": [
+                    false,
+                    "1"
+                ],
+                "s:c": [
+                    false,
+                    "3"
+                ]
+            },
+            "tail": null,
+            "callable": false,
+            "size": "2",
+            "nonempty": "Yes",
+            "constant": true
+        }
+    ],
+    "list-keyed": [
+        {
+            "items": {
+                "i:0": [
+                    false,
+                    "1"
+                ],
+                "i:1": [
+                    false,
+                    "3"
+                ]
+            },
+            "tail": null,
+            "callable": false,
+            "size": "2",
+            "nonempty": "Yes",
+            "constant": true
+        },
+        {
+            "items": {
+                "i:0": [
+                    false,
+                    "1"
+                ],
+                "i:1": [
+                    false,
+                    "3"
+                ]
+            },
+            "tail": null,
+            "callable": false,
+            "size": "2",
+            "nonempty": "Yes",
+            "constant": true
+        }
+    ],
+    "list-open": [
+        {
+            "items": {
+                "i:0": [
+                    false,
+                    "1"
+                ],
+                "i:1": [
+                    false,
+                    "2"
+                ]
+            },
+            "tail": [
+                "int<0,max>",
+                "int"
+            ],
+            "callable": false,
+            "size": "int<2,max>",
+            "nonempty": "Yes",
+            "constant": true
+        },
+        {
+            "items": {
+                "i:0": [
+                    false,
+                    "1"
+                ],
+                "i:1": [
+                    false,
+                    "2"
+                ]
+            },
+            "tail": [
+                "int<0,max>",
+                "int"
+            ],
+            "callable": false,
+            "size": "int<2,max>",
+            "nonempty": "Yes",
+            "constant": true
+        }
+    ],
+    "callable-left": [
+        {
+            "items": {
+                "i:0": [
+                    false,
+                    "class-string"
+                ],
+                "i:1": [
+                    false,
+                    "'run'"
+                ]
+            },
+            "tail": null,
+            "callable": true,
+            "size": "2",
+            "nonempty": "Yes",
+            "constant": true
+        },
+        {
+            "items": {
+                "i:0": [
+                    false,
+                    "class-string"
+                ],
+                "i:1": [
+                    false,
+                    "'run'"
+                ]
+            },
+            "tail": null,
+            "callable": true,
+            "size": "2",
+            "nonempty": "Yes",
+            "constant": true
+        }
+    ],
+    "callable-both": [
+        {
+            "items": {
+                "i:0": [
+                    false,
+                    "class-string"
+                ],
+                "i:1": [
+                    false,
+                    "'run'"
+                ]
+            },
+            "tail": null,
+            "callable": true,
+            "size": "2",
+            "nonempty": "Yes",
+            "constant": true
+        },
+        {
+            "items": {
+                "i:0": [
+                    false,
+                    "class-string"
+                ],
+                "i:1": [
+                    false,
+                    "'run'"
+                ]
+            },
+            "tail": null,
+            "callable": true,
+            "size": "2",
+            "nonempty": "Yes",
+            "constant": true
+        }
+    ],
+    "callable-cross-left": [
+        {
+            "items": {
+                "i:0": [
+                    false,
+                    "class-string"
+                ],
+                "i:1": [
+                    false,
+                    "'run'"
+                ]
+            },
+            "tail": null,
+            "callable": true,
+            "size": "2",
+            "nonempty": "Yes",
+            "constant": true
+        },
+        {
+            "items": {
+                "i:0": [
+                    false,
+                    "class-string"
+                ],
+                "i:1": [
+                    false,
+                    "'run'"
+                ]
+            },
+            "tail": null,
+            "callable": true,
+            "size": "2",
+            "nonempty": "Yes",
+            "constant": true
+        }
+    ],
+    "callable-cross-both": [
+        {
+            "items": {
+                "i:0": [
+                    false,
+                    "class-string"
+                ],
+                "i:1": [
+                    false,
+                    "'run'"
+                ]
+            },
+            "tail": null,
+            "callable": true,
+            "size": "2",
+            "nonempty": "Yes",
+            "constant": true
+        },
+        {
+            "items": {
+                "i:0": [
+                    false,
+                    "class-string"
+                ],
+                "i:1": [
+                    false,
+                    "'run'"
+                ]
+            },
+            "tail": null,
+            "callable": true,
+            "size": "2",
+            "nonempty": "Yes",
+            "constant": true
+        }
+    ],
+    "list-open-cross": [
+        {
+            "items": {
+                "i:0": [
+                    false,
+                    "1"
+                ],
+                "i:1": [
+                    false,
+                    "3"
+                ]
+            },
+            "tail": [
+                "int<0,max>",
+                "int"
+            ],
+            "callable": false,
+            "size": "int<2,max>",
+            "nonempty": "Yes",
+            "constant": true
+        },
+        {
+            "items": {
+                "i:0": [
+                    false,
+                    "1"
+                ],
+                "i:1": [
+                    false,
+                    "3"
+                ]
+            },
+            "tail": [
+                "int<0,max>",
+                "int"
+            ],
+            "callable": false,
+            "size": "int<2,max>",
+            "nonempty": "Yes",
+            "constant": true
+        }
+    ],
+    "nonempty-disjoint-optional": [
+        "never",
+        "never"
+    ],
+    "open-never-values": [
+        "never",
+        "never"
+    ],
+    "open-never-keys": [
+        "never",
+        "never"
+    ],
+    "sealed-never-key-optionals": [
+        {
+            "items": {},
+            "tail": null,
+            "callable": false,
+            "size": "0",
+            "nonempty": "No",
+            "constant": true
+        },
+        {
+            "items": {},
+            "tail": null,
+            "callable": false,
+            "size": "0",
+            "nonempty": "No",
+            "constant": true
+        }
+    ]
+}
