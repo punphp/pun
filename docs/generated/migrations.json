@@ -7631,7 +7631,7 @@
         "rules": [
           "lint/complexity/prefer-property-exists"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {

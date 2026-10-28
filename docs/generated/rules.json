@@ -4837,7 +4837,7 @@
         "IssetOnPropertyObjectToPropertyExistsRector",
         "Rector\\CodeQuality\\Rector\\Isset_\\IssetOnPropertyObjectToPropertyExistsRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/complexity/prefer-simple-condition",

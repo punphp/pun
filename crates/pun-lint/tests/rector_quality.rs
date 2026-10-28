@@ -50,7 +50,8 @@ use pun_lint::rules::{
     NoAlwaysFalseCondition, NoAlwaysTrueIf, NoAlwaysTrueInstanceof, NoAlwaysTrueInstanceofAssert,
     NoConstantCondition, NoConstantViaVariable, NoPhpdocClassCaseMismatch, NoRedundantForeachGuard,
     NoTypedPropertyInstanceof, NoUnusedTestMethodParam, NoUselessCast, NoUselessFilterVar,
-    NoUselessMath, PreferInstanceMethod, RequireConsistentReturn, RequirePreviousException,
+    NoUselessMath, PreferInstanceMethod, PreferPropertyExists, RequireConsistentReturn,
+    RequirePreviousException,
 };
 use pun_lint::{Linter, Rule};
 
@@ -152,6 +153,14 @@ fn explicit_return_null() {
 }
 
 #[test]
+fn isset_on_property_object_to_property_exists() {
+    check(
+        PreferPropertyExists,
+        "IssetOnPropertyObjectToPropertyExistsRector",
+    );
+}
+
+#[test]
 fn fix_class_case_sensitivity_var_docblock() {
     check(
         NoPhpdocClassCaseMismatch,
@@ -235,6 +244,10 @@ fn rules_ignore_nodes_outside_their_targets() {
         (
             || Box::new(NoPhpdocClassCaseMismatch),
             "FixClassCaseSensitivityVarDocblockRector",
+        ),
+        (
+            || Box::new(PreferPropertyExists),
+            "IssetOnPropertyObjectToPropertyExistsRector",
         ),
         (
             || Box::new(NoAlwaysTrueInstanceofAssert),

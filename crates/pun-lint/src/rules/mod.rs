@@ -210,6 +210,7 @@ mod prefer_null_coalesce;
 mod prefer_ord_first_byte;
 mod prefer_php_version_id;
 mod prefer_property_default;
+mod prefer_property_exists;
 mod prefer_property_over_local_getter;
 mod prefer_round_mode_enum;
 mod prefer_self_over_static;
@@ -444,6 +445,7 @@ pub use prefer_null_coalesce::PreferNullCoalesce;
 pub use prefer_ord_first_byte::PreferOrdFirstByte;
 pub use prefer_php_version_id::PreferPhpVersionId;
 pub use prefer_property_default::PreferPropertyDefault;
+pub use prefer_property_exists::PreferPropertyExists;
 pub use prefer_property_over_local_getter::PreferPropertyOverLocalGetter;
 pub use prefer_round_mode_enum::PreferRoundModeEnum;
 pub use prefer_self_over_static::PreferSelfOverStatic;
@@ -524,6 +526,7 @@ pub const PROJECT_RULES: &[&str] = &[
     "lint/complexity/no-constant-via-variable",
     "lint/complexity/require-consistent-return",
     "lint/complexity/no-phpdoc-class-case-mismatch",
+    "lint/complexity/prefer-property-exists",
 ];
 
 /// Every rule, in a fixed order.
@@ -772,5 +775,6 @@ fn ungrouped() -> Vec<Box<dyn Rule>> {
         Box::new(NoConstantViaVariable),
         Box::new(RequireConsistentReturn),
         Box::new(NoPhpdocClassCaseMismatch),
+        Box::new(PreferPropertyExists),
     ]
 }
