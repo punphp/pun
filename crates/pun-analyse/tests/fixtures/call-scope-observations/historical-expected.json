@@ -1,0 +1,126 @@
+{
+    "calls": {
+        "516": {
+            "line": 20,
+            "expression": "$object->$name(0)",
+            "names": [
+                {
+                    "name": "bar",
+                    "filtered": true,
+                    "types": [
+                        {
+                            "start": 516,
+                            "end": 523,
+                            "expression": "$object",
+                            "type": "HistorySecond"
+                        },
+                        {
+                            "start": 531,
+                            "end": 532,
+                            "expression": "0",
+                            "type": "0"
+                        },
+                        {
+                            "start": 438,
+                            "end": 445,
+                            "expression": "$object",
+                            "type": "HistorySecond"
+                        },
+                        {
+                            "start": 452,
+                            "end": 460,
+                            "expression": "[$value]",
+                            "type": "array{2}"
+                        },
+                        {
+                            "start": 453,
+                            "end": 459,
+                            "expression": "$value",
+                            "type": "2"
+                        }
+                    ]
+                },
+                {
+                    "name": "foo",
+                    "filtered": true,
+                    "types": [
+                        {
+                            "start": 516,
+                            "end": 523,
+                            "expression": "$object",
+                            "type": "HistorySecond"
+                        },
+                        {
+                            "start": 531,
+                            "end": 532,
+                            "expression": "0",
+                            "type": "0"
+                        },
+                        {
+                            "start": 438,
+                            "end": 445,
+                            "expression": "$object",
+                            "type": "HistoryFirst"
+                        },
+                        {
+                            "start": 452,
+                            "end": 460,
+                            "expression": "[$value]",
+                            "type": "array{1}"
+                        },
+                        {
+                            "start": 453,
+                            "end": 459,
+                            "expression": "$value",
+                            "type": "1"
+                        }
+                    ]
+                }
+            ]
+        },
+        "572": {
+            "line": 22,
+            "expression": "$object->foo(0)",
+            "names": [
+                {
+                    "name": "foo",
+                    "filtered": false,
+                    "types": [
+                        {
+                            "start": 572,
+                            "end": 579,
+                            "expression": "$object",
+                            "type": "HistorySecond"
+                        },
+                        {
+                            "start": 585,
+                            "end": 586,
+                            "expression": "0",
+                            "type": "0"
+                        },
+                        {
+                            "start": 438,
+                            "end": 445,
+                            "expression": "$object",
+                            "type": "HistorySecond"
+                        },
+                        {
+                            "start": 452,
+                            "end": 460,
+                            "expression": "[$value]",
+                            "type": "array{'later'}"
+                        },
+                        {
+                            "start": 453,
+                            "end": 459,
+                            "expression": "$value",
+                            "type": "'later'"
+                        }
+                    ]
+                }
+            ]
+        }
+    },
+    "errors": [],
+    "function_events": []
+}

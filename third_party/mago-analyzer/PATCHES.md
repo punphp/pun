@@ -2848,3 +2848,25 @@ The public selector fixture covers literal unions, integer alternatives, unknown
 callable strings, class strings, literal-bound templates and template intersections.
 From `crates/pun-analyse/tests/fixtures/call-scope-observations`, regenerate its capture with
 `php capture.php /absolute/path/to/phpstan-2.3.1.phar selector-names.php --dependencies`.
+
+### Requested historical dependencies retain their own evaluation scopes
+
+`observations/history.rs` indexes explicitly requested expressions outside their asking call.
+The real walk retains each reached expression's before-scope and its children's stored results.
+Call entry imports those snapshots without importing unrelated expression types. An unreached
+request still has no answer. Ordinary analysis does not build the index or retain scopes.
+
+Filtered questions apply the future call's name predicate to the historical expression's own
+before-scope, following PHPStan 2.3.1's
+[`NodeCallbackScope::doGetType()`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Analyser/NodeCallbackScope.php#L120-L147)
+and [`preprocessScope()`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Analyser/NodeCallbackScope.php#L254-L269).
+Identifier calls keep the existing asking-position compatibility check. When a historical
+expression needs pricing there, its indexed CST runs only in the isolated pricing context.
+Published hooks, live artifacts and live diagnostics remain unchanged.
+
+The public historical fixture checks all 15 PHPStan observations: earlier receivers,
+derived arrays and their variable dependencies under two names, followed by an identifier call
+after a later write. Its current receiver differs from its earlier receiver under one predicate.
+The identifier question instead sees the later value in both the variable and the derived array.
+From `crates/pun-analyse/tests/fixtures/call-scope-observations`, regenerate the complete capture with
+`php capture-historical.php /absolute/path/to/phpstan-2.3.1.phar historical.php --dependencies --function-events`.

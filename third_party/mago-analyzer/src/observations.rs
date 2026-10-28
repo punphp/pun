@@ -42,6 +42,8 @@ use crate::{
     utils::expression::get_block_expression_id,
 };
 
+mod history;
+
 /// One call and the expressions its consumer will query, including dependencies.
 /// An expression not reached by the real walk has no answer, not a mixed answer.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -197,6 +199,8 @@ struct CallObservation<'ctx, 'arena> {
 pub(crate) struct ObservationState<'ctx, 'arena> {
     stored: StoredResults,
     pub calls: Vec<CallContext>,
+    history: Option<history::History<'arena>>,
+    retained: HashMap<Span, HashMap<Span, EvaluatedExpression<'ctx>>>,
     active: HashMap<Span, CallObservation<'ctx, 'arena>>,
     pub completed: HashMap<Span, Vec<NamedCallScope>>,
     pub pricing: bool,
@@ -260,6 +264,14 @@ fn capture<'ctx, 'arena, A: Arena>(
     scope: &BlockContext<'ctx>,
 ) -> PricingScope<'ctx> {
     let root = root.clone();
+    let historical = Rc::clone(
+        &context
+            .observations
+            .history
+            .as_ref()
+            .expect("requested expressions are indexed")
+            .expressions,
+    );
     let before = Rc::new(snapshot(scope));
     let certainty = Rc::clone(&before);
     let prototype = context.fork_for_observation();
@@ -275,7 +287,8 @@ fn capture<'ctx, 'arena, A: Arena>(
             finder.walk_expression(&root, &mut ());
             let expression = finder
                 .found
-                .expect("evaluated expression belongs to its retained subtree");
+                .or_else(|| historical.get(&span).cloned())
+                .expect("evaluated expression belongs to its retained subtree or requested history");
             let mut scope = snapshot(&before);
             let mut sandbox = artifacts.clone();
             sandbox.loop_scope = None;
@@ -296,32 +309,58 @@ fn capture<'ctx, 'arena, A: Arena>(
     }
 }
 
+fn prepare_history<'ctx, 'arena, A: Arena>(context: &mut Context<'ctx, 'arena, A>) {
+    if context.observations.history.is_none() {
+        context.observations.history = Some(history::History::new(
+            context
+                .observation_program
+                .expect("requested observations retain the program"),
+            &context.settings.call_scope_observations,
+            context.arena,
+        ));
+    }
+}
+
 /// Called only for requested subtrees; ordinary analysis never clones a scope.
 pub(crate) fn before<'ctx, 'arena, A: Arena>(
     expression: &Expression<'arena>,
     context: &mut Context<'ctx, 'arena, A>,
     scope: &BlockContext<'ctx>,
 ) {
-    if context.observations.pricing || context.raw_callback_gather_depth > 0 {
+    if context.observations.pricing || context.raw_callback_gather_depth > 0 || context.observation_program.is_none() {
         return;
     }
+    prepare_history(context);
     let span = expression.span();
     let calls: Vec<_> = context
         .observations
         .active
         .values()
-        .filter(|c| {
-            c.request.call.file_id == span.file_id
-                && c.request.call.start.offset <= span.start.offset
-                && c.request.call.end.offset >= span.end.offset
-        })
+        .filter(|c| history::contains(c.request.call, span))
         .map(|c| (c.request.call, c.selector, c.request.expressions.contains(&span)))
         .collect();
-    if calls.is_empty() {
+    let history = context
+        .observations
+        .history
+        .as_ref()
+        .expect("requested expressions are indexed");
+    let queries = history.queries.get(&span).cloned().unwrap_or_default();
+    if calls.is_empty() && !history.expressions.keys().any(|root| history::contains(*root, span)) {
         return;
     }
     let mut reads = Reads::default();
     reads.walk_expression(expression, &mut ());
+    for (call, selector) in queries {
+        let result = EvaluatedExpression {
+            before: capture(expression, selector, context, scope),
+        };
+        context
+            .observations
+            .retained
+            .entry(call)
+            .or_default()
+            .insert(span, result);
+    }
     for (call, selector, requested) in calls {
         if requested {
             let result = EvaluatedExpression {
@@ -559,6 +598,7 @@ pub(crate) fn begin_call<'ctx, 'arena, A: Arena>(
         .iter()
         .find(|r| r.call == call.span())?
         .clone();
+    prepare_history(context);
     let (selector, identifier) = match &call.method {
         ClassLikeMemberSelector::Identifier(n) => (None, Some(word(n.value))),
         ClassLikeMemberSelector::Variable(v) => (Some(&*context.arena.alloc(Expression::Variable(v.clone()))), None),
@@ -575,7 +615,12 @@ pub(crate) fn begin_call<'ctx, 'arena, A: Arena>(
             identifier,
             receiver: call.object.span(),
             request,
-            evaluated: HashMap::default(),
+            evaluated: context
+                .observations
+                .retained
+                .get(&call.span())
+                .cloned()
+                .unwrap_or_default(),
         },
     );
     Some(call.span())

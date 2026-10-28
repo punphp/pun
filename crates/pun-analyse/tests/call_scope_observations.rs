@@ -1115,3 +1115,39 @@ fn constant_method_names_follow_union_vetoes_and_template_bounds() {
     assert_eq!(baseline_result.issues, observed_result.issues);
     check(&file, &observed, ORACLE);
 }
+
+#[test]
+fn historical_dependencies_keep_own_positions_and_identifier_asking_scope() {
+    const CODE: &[u8] = include_bytes!("fixtures/call-scope-observations/historical.php");
+    const ORACLE: &str = include_str!("fixtures/call-scope-observations/historical-expected.json");
+    let baseline_events = Events::default();
+    let (_, baseline, baseline_result) = analyze(CODE, ORACLE, false, &providers(&baseline_events));
+    let observed_events = Events::default();
+    // Request a real but not-yet-evaluated argument too. The original strict
+    // oracle must still match: an AST index is not permission to invent answers.
+    let mut requests: Value = serde_json::from_str(ORACLE).unwrap();
+    let calls = requests["calls"].as_object_mut().unwrap();
+    let later = calls.values().max_by_key(|c| c["line"].as_u64()).unwrap();
+    let future = later["names"][0]["types"][1].clone();
+    let earlier = calls
+        .values_mut()
+        .min_by_key(|c| c["line"].as_u64())
+        .unwrap();
+    earlier["names"][0]["types"]
+        .as_array_mut()
+        .unwrap()
+        .push(future);
+    let (file, observed, observed_result) = analyze(
+        CODE,
+        &requests.to_string(),
+        true,
+        &providers(&observed_events),
+    );
+    assert_eq!(
+        *baseline_events.0.lock().unwrap(),
+        *observed_events.0.lock().unwrap()
+    );
+    assert_eq!(baseline.expression_types, observed.expression_types);
+    assert_eq!(baseline_result.issues, observed_result.issues);
+    check(&file, &observed, ORACLE);
+}
