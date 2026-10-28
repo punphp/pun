@@ -1,6 +1,9 @@
 //! Mago's inferred types as PHPStan's types (`pun_phpstan::types::Type`), so rules compare and describe them the way
 //! PHPStan's rules do (`Type::describe(VerbosityLevel)`).
 
+use std::collections::HashMap;
+use std::hash::BuildHasher;
+
 use mago_codex::misc::GenericParent;
 use mago_codex::ttype::atomic::TAtomic;
 use mago_codex::ttype::atomic::array::TArray;
@@ -27,23 +30,66 @@ fn text(b: &[u8]) -> String {
     String::from_utf8_lossy(b).into_owned()
 }
 
+#[derive(Clone, Copy)]
+enum ConversionScope {
+    Current,
+    Selected,
+}
+
 impl<'a, 'arena> Checker<'a, 'arena> {
     /// `$scope->getType($expr)`: Mago's type of an expression the rules asked about, as PHPStan's.
     pub(in super::super) fn phpstan_type(&self, e: &mago_syntax::cst::Expression) -> Option<Type> {
         Some(self.phpstan_type_from(e, self.type_of(e)?))
     }
 
+    /// Convert an expression and all its dependencies in the supplied scope, without ordinary-scope recovery.
+    pub(in super::super) fn phpstan_type_in(
+        &self,
+        e: &Expression,
+        types: &HashMap<Span, TUnion, impl BuildHasher>,
+    ) -> Option<Type> {
+        Some(self.phpstan_type_from_in(e, types.get(&e.span())?, types))
+    }
+
     /// Selectors are stored as spans rather than Expression nodes, but have the same scope-owned metadata.
     pub(super) fn phpstan_type_at(&self, at: Span) -> Option<Type> {
-        let actual = self.types.get(&at)?;
+        self.phpstan_type_at_in(at, &self.types)
+    }
+
+    pub(in super::super) fn phpstan_type_at_in(
+        &self,
+        at: Span,
+        types: &HashMap<Span, TUnion, impl BuildHasher>,
+    ) -> Option<Type> {
+        let actual = types.get(&at)?;
         Some(declared::with_classes(self, || {
-            let source = self.source_type(at, &self.origins);
+            let source = self.source_type(at, &self.origins, types);
             self.restore_inferred(at, self.to_phpstan(actual), source.as_ref())
         }))
     }
 
     /// Convert an observed scope value using the expression's own source metadata.
     pub(in super::super) fn phpstan_type_from(&self, e: &mago_syntax::cst::Expression, t: &TUnion) -> Type {
+        self.phpstan_type_from_with(e, t, &self.types, ConversionScope::Current)
+    }
+
+    /// Restore source metadata using only the selected scope's dependency values, not Checker.types.
+    pub(in super::super) fn phpstan_type_from_in(
+        &self,
+        e: &Expression,
+        t: &TUnion,
+        types: &HashMap<Span, TUnion, impl BuildHasher>,
+    ) -> Type {
+        self.phpstan_type_from_with(e, t, types, ConversionScope::Selected)
+    }
+
+    fn phpstan_type_from_with(
+        &self,
+        e: &Expression,
+        t: &TUnion,
+        types: &HashMap<Span, TUnion, impl BuildHasher>,
+        scope: ConversionScope,
+    ) -> Type {
         use mago_syntax::cst::Expression as E;
         // NewHandler retains the named object for unknown/abstract instantiations, despite their errors.
         // An abstract declaration's asFinal() is a no-op, not an exact reflection or an unreachable value.
@@ -55,23 +101,32 @@ impl<'a, 'arena> Checker<'a, 'arena> {
             return Type::Object(self.reflected_name(self.names.get(id)), vec![], false);
         }
         declared::with_classes(self, || {
-            let source = self.source_type(e.span(), &self.origins).or_else(|| {
+            let source = self.source_type(e.span(), &self.origins, types).or_else(|| {
                 match e.unparenthesized() {
                     E::Access(Access::ClassConstant(_)) => {
-                        arrays::key_type(self, e, self.names, self.class_scope())
+                        match scope {
+                            ConversionScope::Current => arrays::key_type(self, e, self.names, self.class_scope()),
+                            ConversionScope::Selected => arrays::key_type_from(
+                                self, e, self.names, self.class_scope(), types,
+                                &|e, t| self.phpstan_type_from_in(e, t, types),
+                            ),
+                        }
                     }
                     _ => None,
                 }
             });
             // Mago's keyed arrays are BTreeMaps: only the literal still knows PHP's insertion order. Unknown
             // keys/unpacks keep the inferred fallback, rather than inventing an order for a nonliteral shape.
-            let ty = self.literal_array(e).unwrap_or_else(|| {
+            let ty = self.literal_array(e, types, scope).unwrap_or_else(|| {
                 source.as_ref().and_then(|s| self.source_array(t, s))
                     .unwrap_or_else(|| self.to_phpstan(t))
             });
             let ty = source.as_ref().and_then(|s| self.source_template(e.span(), &ty, s))
                 .unwrap_or(ty);
-            let ty = self.refine_method_guards(e, ty);
+            let ty = match scope {
+                ConversionScope::Current => self.refine_method_guards(e, ty),
+                ConversionScope::Selected => self.refine_method_guards_in(e, ty, types),
+            };
             self.restore_inferred(e.span(), ty, source.as_ref())
         })
     }
@@ -148,11 +203,12 @@ impl<'a, 'arena> Checker<'a, 'arena> {
         &self,
         span: Span,
         origins: &std::collections::HashMap<Span, infer::Origin>,
+        types: &HashMap<Span, TUnion, impl BuildHasher>,
     ) -> Option<Type> {
-        let source = self.origin_type(origins.get(&span)?, origins);
+        let source = self.origin_type(origins.get(&span)?, origins, types);
         // Reconciliation may erase benevolence, but the original observed source value still owns it.
         // Recover only through these source edges, never by matching an unrelated equal declaration.
-        match self.types.get(&span).filter(|t| super::super::return_types::is_benevolent(t)) {
+        match types.get(&span).filter(|t| super::super::return_types::is_benevolent(t)) {
             Some(observed) => {
                 let actual = self.to_phpstan(observed);
                 Some(source.map_or(actual.clone(), |source| restore(actual, &source)))
@@ -184,6 +240,7 @@ impl<'a, 'arena> Checker<'a, 'arena> {
         &self,
         origin: &infer::Origin,
         origins: &std::collections::HashMap<Span, infer::Origin>,
+        types: &HashMap<Span, TUnion, impl BuildHasher>,
     ) -> Option<Type> {
         let function = |key: &(mago_word::Word, mago_word::Word)| {
             Some((
@@ -211,11 +268,11 @@ impl<'a, 'arena> Checker<'a, 'arena> {
                     .find(|(n, _)| n.is_empty() || n == name)
                     .map(|(_, t)| t)
             }
-            infer::Origin::Copy(from) => self.source_type(*from, origins),
+            infer::Origin::Copy(from) => self.source_type(*from, origins, types),
             infer::Origin::Unset(from, offsets) => {
-                let source = self.source_type(*from, origins)?;
+                let source = self.source_type(*from, origins, types)?;
                 let keys = offsets.iter().map(|span| {
-                    self.types.get(span).and_then(|t| array_key(self.to_phpstan(t)))
+                    types.get(span).and_then(|t| array_key(self.to_phpstan(t)))
                 }).collect::<Vec<_>>();
                 Some(unset_order(source, &keys))
             }
@@ -223,26 +280,26 @@ impl<'a, 'arena> Checker<'a, 'arena> {
                 let mut builder = ShapeBuilder::new();
                 for (key, value) in items {
                     let key = match key {
-                        Some(key) => Some(array_key(self.to_phpstan(self.types.get(key)?))?),
+                        Some(key) => Some(array_key(self.to_phpstan(types.get(key)?))?),
                         None => None,
                     };
                     if key == Some(Type::ConstInt(i64::MAX)) { return None; }
-                    let actual = self.to_phpstan(self.types.get(value)?);
-                    let value = self.source_type(*value, origins)
+                    let actual = self.to_phpstan(types.get(value)?);
+                    let value = self.source_type(*value, origins, types)
                         .map_or(actual.clone(), |source| restore(actual, &source));
                     builder.set(key, value, false);
                 }
                 Some(builder.get())
             }
             infer::Origin::Offset(array, key) => {
-                let Type::ConstArray(source) = self.source_type(*array, origins)? else {
+                let Type::ConstArray(source) = self.source_type(*array, origins, types)? else {
                     return None;
                 };
-                let key = array_key(self.to_phpstan(self.types.get(key)?))?;
+                let key = array_key(self.to_phpstan(types.get(key)?))?;
                 source.keys.iter().position(|k| *k == key).map(|i| source.values[i].clone())
             }
             infer::Origin::AfterMethodCall(call, previous) => {
-                let actual = self.to_phpstan(self.types.get(&call.receiver)?);
+                let actual = self.to_phpstan(types.get(&call.receiver)?);
                 let classes = actual.object_class_names();
                 // An annotation or magic fallback is not evidence for the invoked PHP signature. Every
                 // native alternative/variant must be known and reference-free, including unpacked calls.
@@ -267,7 +324,7 @@ impl<'a, 'arena> Checker<'a, 'arena> {
                                     })
                             })
                     });
-                safe.then(|| self.origin_type(previous, origins)).flatten()
+                safe.then(|| self.origin_type(previous, origins, types)).flatten()
             }
             infer::Origin::Call(call) | infer::Origin::Callback(call, ..) => {
                 let (name, args) = (&call.name, &call.args);
@@ -285,7 +342,7 @@ impl<'a, 'arena> Checker<'a, 'arena> {
                             n.as_deref() == Some("array") || (*i == 0 && n.is_none())
                         })?
                         .1;
-                    let source = self.source_type(*from, origins)?;
+                    let source = self.source_type(*from, origins, types)?;
                     return Some(if matches!(source, Type::Mixed { .. }) {
                         Type::array(source.clone(), source)
                     } else {
@@ -295,9 +352,9 @@ impl<'a, 'arena> Checker<'a, 'arena> {
                 let (f, declaring, receiver_map) =
                     if call.receiver.is_some() || call.class.is_some() {
                         let (mut receiver, class) = if let Some(span) = call.receiver {
-                            let actual = self.to_phpstan(self.types.get(&span)?);
+                            let actual = self.to_phpstan(types.get(&span)?);
                             let mut receiver = self
-                                .source_type(span, origins)
+                                .source_type(span, origins, types)
                                 .map_or(actual.clone(), |source| restore(actual, &source));
                             while let Type::Template(template) = receiver {
                                 receiver = template.bound;
@@ -394,10 +451,10 @@ impl<'a, 'arena> Checker<'a, 'arena> {
                     let Some(p) = positions[i].and_then(|i| params.get(i)) else {
                         continue;
                     };
-                    let actual = self.types.get(span)?;
+                    let actual = types.get(span)?;
                     let actual = self.to_phpstan(actual);
                     let actual = self
-                        .source_type(*span, origins)
+                        .source_type(*span, origins, types)
                         .map_or(actual.clone(), |source| restore(actual, &source));
                     map = map.union(declared::with_classes(self, || {
                         pun_phpstan::types::infer_template_types(p, &actual)
@@ -414,15 +471,23 @@ impl<'a, 'arena> Checker<'a, 'arena> {
     }
 
     /// InitializerExprTypeResolver::getArrayType(), bounded to required constant keys and literal unpacks.
-    fn literal_array(&self, e: &Expression) -> Option<Type> {
+    fn literal_array(
+        &self,
+        e: &Expression,
+        types: &HashMap<Span, TUnion, impl BuildHasher>,
+        scope: ConversionScope,
+    ) -> Option<Type> {
         let elements = literal_elements(e)?;
         if elements.len() > 256 { return None; }
+        let convert = |e: &Expression| {
+            types.get(&e.span()).map(|t| self.phpstan_type_from_with(e, t, types, scope))
+        };
         let mut builder = ShapeBuilder::new();
         for element in elements.iter() {
-            let value = self.phpstan_type(element.get_value()?)?;
+            let value = convert(element.get_value()?)?;
             match element {
                 ArrayElement::KeyValue(kv) => {
-                    let key = array_key(self.phpstan_type(kv.key)?)?;
+                    let key = array_key(convert(kv.key)?)?;
                     // There is no next auto index beyond PHP_INT_MAX. Keep Mago's result for that edge.
                     if key == Type::ConstInt(i64::MAX) { return None; }
                     builder.set(Some(key), value, false);
