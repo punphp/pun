@@ -1,0 +1,91 @@
+<?php
+
+namespace App\Tests;
+
+use PHPUnit\Framework\Attributes as A;
+use PHPUnit\Framework\Attributes\DataProvider;
+
+interface HasTests
+{
+    #[\PHPUnit\Framework\Attributes\Test]
+    public function inInterface(): void;
+}
+
+trait SharedTests
+{
+	#[\PHPUnit\Framework\Attributes\Test]
+	public static function tabbed(): void {}
+}
+
+enum Kind
+{
+    case A;
+
+    #[\PHPUnit\Framework\Attributes\Test]
+    public function enum(): void {}
+}
+
+final class CasesTest
+{
+    /**
+     * A doc comment.
+     */
+    #[\PHPUnit\Framework\Attributes\Test]
+    #[DataProvider('provide')]
+    public function withProvider(int $a): void {}
+
+    #[A\Test]
+    public function testAliased(): void {}
+
+    #[\phpunit\framework\attributes\TEST]
+    public function testCaseInsensitive(): void {}
+
+    #[\PHPUnit\Framework\Attributes\Test]
+    #[Test]
+    public function unimportedTest(): void {}
+
+    #[\PHPUnit\Framework\Attributes\Test]
+    public function Test(): void {}
+
+    #[\PHPUnit\Framework\Attributes\Test]
+    public function test_(): void {}
+
+    #[\PHPUnit\Framework\Attributes\Test]
+    public function x(): void {}
+
+    public function test1(): void {}
+
+    public function testé(): void {}
+
+    public function tester(): void {}
+
+    #[\PHPUnit\Framework\Attributes\Test]
+    public function _double(): void {}
+
+    #[\PHPUnit\Framework\Attributes\Test]
+    protected function protected(): void {}
+
+    #[\PHPUnit\Framework\Attributes\Test]
+    private  function   spaces(): void {}
+
+    public function provide(): array { return []; }
+}
+
+$anonymous = new class {
+    #[\PHPUnit\Framework\Attributes\Test]
+    public function anonymous(): void {}
+};
+
+final class UpperCasesTest
+{
+    #[\PHPUnit\Framework\Attributes\Test]
+    public function Test_(): void {}
+
+    #[\PHPUnit\Framework\Attributes\Test]
+    public function X(): void {}
+
+    #[\PHPUnit\Framework\Attributes\Test]
+    public function testTwice(): void {}
+}
+
+function testFunction(): void {}

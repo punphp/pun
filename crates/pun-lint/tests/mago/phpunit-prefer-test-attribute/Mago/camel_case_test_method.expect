@@ -1,0 +1,1 @@
+43 61 Use `#[Test]` attribute instead of `test` prefix on method `testSomethingWorks`.

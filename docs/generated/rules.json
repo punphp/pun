@@ -12493,7 +12493,7 @@
       "upstream": [
         "prefer-test-attribute"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/phpunit/prefer-test-prefix",

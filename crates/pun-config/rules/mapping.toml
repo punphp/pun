@@ -716,7 +716,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "phpunit/prefer-specific-will-method" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "Changes $mock->will() call to more specific method" }
 "phpunit/prefer-standalone-asserts-over-callback" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Replaces identical compare in $this->callable() sole return to standalone PHPUnit asserts that show more detailed failure messages" }
 "phpunit/prefer-stub-var" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Update the @var docblock of a property changed to a Stub native type, from MockObject to Stub" }
-"phpunit/prefer-test-attribute" = { fix = "safe", sets = ["code-quality"], ported = false, origin = "mago", status = "decided", summary = "Suggests using PHPUnit's `#[Test]` attribute instead of the `test` method name prefix." }
+"phpunit/prefer-test-attribute" = { fix = "safe", sets = ["code-quality"], ported = true, origin = "mago", status = "decided", summary = "Suggests using PHPUnit's `#[Test]` attribute instead of the `test` method name prefix." }
 "phpunit/prefer-test-prefix" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "Replace @test with prefixed function" }
 "phpunit/prefer-test-with-attribute" = { fix = "safe", ported = true, status = "decided", summary = "Change @testWith() annotation to #[TestWith] attribute" }
 "phpunit/prefer-this-call" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "Changes PHPUnit calls from self::assert*() to $this->assert*()" }

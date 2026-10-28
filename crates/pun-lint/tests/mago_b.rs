@@ -148,6 +148,7 @@ mago! {
     require_phpdoc "style" "require-phpdoc";
     no_controller_middleware "laravel" "no-controller-middleware";
     prefer_view_array "laravel" "prefer-view-array";
+    prefer_test_attribute "phpunit" "prefer-test-attribute";
 }
 
 #[test]

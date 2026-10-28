@@ -26297,7 +26297,7 @@
         "rules": [
           "lint/phpunit/prefer-test-attribute"
         ],
-        "note": "Same. Options: same. Planned: not ported yet.",
+        "note": "Same. Options: same.",
         "unsupported": false
       },
       {
