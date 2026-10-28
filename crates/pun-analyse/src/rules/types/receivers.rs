@@ -18,16 +18,25 @@ pub const IDENTIFIERS: &[&str] = &["method.nonObject", "staticMethod.nonObject"]
 impl<'a> Checker<'a, '_> {
     /// Restore the literal method accessory Mago does not carry. Called by `phpstan_type()` after conversion;
     /// the existing branch guards determine where it holds, rather than the debug rule's rendering.
-    pub(in super::super) fn refine_method_guards(&self, e: &Expression, mut ty: Type) -> Type {
+    pub(in super::super) fn refine_method_guards(&self, e: &Expression, ty: Type) -> Type {
+        self.refine_method_guards_in(e, ty, &self.types)
+    }
+
+    pub(super) fn refine_method_guards_in(
+        &self,
+        e: &Expression,
+        mut ty: Type,
+        types: &std::collections::HashMap<Span, TUnion, impl std::hash::BuildHasher>,
+    ) -> Type {
         // ObjectType keeps require-extends in its method reflection extension, not its nominal ancestors.
         // Undo Mago's appended requirements before combinators deduplicate them with explicit intersections.
-        if let Some(raw) = self.type_of(e).and_then(|raw| without_requirements(self, raw)) {
+        if let Some(raw) = types.get(&e.span()).and_then(|raw| without_requirements(self, raw)) {
             ty = self.to_phpstan(&raw);
         }
         let Some(receiver) = super::super::scope::method_receiver(e, &|id| self.resolved(id)) else { return ty; };
         let prefix = format!("{receiver}::");
         let original = self.guards.iter().find_map(|g| match g {
-            super::super::scope::Guard::MethodSource(key, _) if key.starts_with(&prefix) => self.method_guard_source(key).map(|(ty, _)| ty),
+            super::super::scope::Guard::MethodSource(key, _) if key.starts_with(&prefix) => self.method_guard_source_in(key, types).map(|(ty, _)| ty),
             _ => None,
         });
         if let Some(original) = &original {
@@ -46,7 +55,7 @@ impl<'a> Checker<'a, '_> {
         for guard in &self.guards {
             let super::super::scope::Guard::Method(key) = guard else { continue; };
             let Some(method) = key.strip_prefix(&prefix) else { continue; };
-            if !self.has_method_guard(key) {
+            if !self.has_method_guard_in(key, types) {
                 // A definitely non-callable array receives only CallableType's object|string element constraint,
                 // not hasMethod(). A final object therefore keeps its missing-method error; an int becomes never.
                 ty = declared::with_classes(self, || intersect(vec![ty, pun_phpstan::types::union(vec![Type::ObjectWithoutClass, Type::String])]));
