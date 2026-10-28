@@ -542,7 +542,8 @@ impl<'a> Checker<'a, '_> {
                 let owner = if declaring.kind.is_trait() {
                     match implementing { Class::User(k) => k, Class::Builtin(_) => declaring }
                 } else { declaring };
-                let reflected_name = if name == f.name { f.original_name } else { name };
+                let reflected_name = self.codebase.get_method_original_name(owner.name.as_bytes(), name.as_bytes())
+                    .unwrap_or(f.original_name);
                 Facts {
                     declaring: declared::original_name(owner),
                     accepts_named_arguments: declared::reflected_accepts_named(self, owner, &name.to_string()),
@@ -586,6 +587,7 @@ impl<'a> Checker<'a, '_> {
     /// class `k` shows it: with the template types `k`'s ancestry gives it.
     fn declaring_display(&self, k: &ClassLikeMetadata, found: Found<'a>) -> String {
         let name = match found {
+            Found::User { declaring, implementing, .. } if declaring.kind.is_trait() => class_display(self, implementing),
             Found::User { declaring, .. } => self.display(declaring),
             Found::Builtin { declaring, .. } => declaring.name.clone(),
         };
@@ -1274,10 +1276,7 @@ pub fn inherited_case(c: &mut Checker, m: &Method, name: &str) {
             let Some(found) = c.native_method(ancestor, &lower) else {
                 continue;
             };
-            let found_name = match found {
-                Found::User { f, .. } => String::from_utf8_lossy(f.original_name.as_bytes()).into_owned(),
-                Found::Builtin { m, .. } => m.name.clone(),
-            };
+            let found_name = c.facts(found, k).name;
             if found_name != name {
                 messages.push(format!(
                     "Method {}::{name}() does not match {kind} method name: {}::{found_name}().",
