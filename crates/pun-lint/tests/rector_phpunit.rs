@@ -696,6 +696,13 @@ fn entity_document_create_mock_to_direct_new() {
 /// intersections, a blank before `<`, unions PHPStan merges); Pun leaves those providers alone.
 /// Pun/low_precedence: an item whose operator binds looser than `yield` (`and`, `or`) gets parentheses, where Rector
 /// writes `yield $a and $b`, which yields `$a` only.
+/// Pun/declined_docs: more docs Pun leaves alone where Rector changes them: a `@phpstan-return` tag, a type with `&`,
+/// a `(...)[]`, a key PHPStan reads as another (`float`, a union, a nested array's), a union nested in a union's
+/// generic. Pun/anonymous_self: `self` in an anonymous class,
+/// which Rector prints as `\AnonymousClass<hash>`. Pun/tabs: a provider indented with tabs, which Rector keeps.
+/// Pun/unread_doc and Pun/unread_parent_doc: a `@dataProvider` doc (of the class's or a parent's method) with an
+/// `@_tag`, which Pun's doc reader does not follow; Pun leaves the class alone. Pun/missing_element: an array with an
+/// empty element makes Rector fail on the file; Pun leaves the provider alone.
 #[test]
 fn yield_data_provider() {
     check(PreferYieldDataProvider, "YieldDataProviderRector");

@@ -17,9 +17,10 @@
 //! forms, `class-string<X>`, `T[]`, `?T` and unions of them that PHPStan prints without merging members. It leaves a
 //! provider alone whose `@return` type is any other (a shape, a callable, an integer range, a literal, an
 //! intersection, a union PHPStan merges), whose doc has a `@phpstan-return` or `@psalm-return` tag, a second `@return`,
-//! a template or a type alias, or text after the `@return` tag that phpdoc-parser takes into its description, and one
-//! indented with a tab, as php-parser prints new statements with spaces. A `@return` value phpdoc-parser cannot read
-//! (`array<int>$x`) stays as written.
+//! a template or a type alias, and one indented with a tab, whose indentation php-parser keeps for the new statements
+//! and Pun does not follow. A `@return` value phpdoc-parser cannot read (`array<int>$x`) stays as written; a
+//! description, on the tag's line or below it, stays too. A `@dataProvider` tag of a parent class's method is read
+//! with the `use` imports of the file being changed, as Rector reads it.
 //!
 //! Rector changes every provider of a class in one pass; Pun does too, and in later fix rounds leaves a class alone
 //! whose span the project's codebase (scanned before the first round) no longer matches.
@@ -31,7 +32,7 @@ use std::cmp::Ordering;
 
 use mago_syntax::cst::{
     ArrayElement, ClassLikeMember, Expression, Literal, Method, MethodBody, Node, NodeKind,
-    Statement, UnaryPrefixOperator, Yield,
+    Statement, TokenSeparatedSequence, UnaryPrefixOperator, Yield,
 };
 use pun_problem::{Edit, Safety, Span};
 
@@ -101,20 +102,23 @@ impl Rule for PreferYieldDataProvider {
             })
             .collect();
         // `DataProviderClassMethodFinder::find`
-        let Some(mut names) = provider_names(ctx, ctx.source, &scope, &methods) else {
+        let Some(mut names) = provider_names(ctx, ctx.source, &scope, &scope, &methods) else {
             return;
         };
-        for parent in class_parents(ctx, &class.name) {
-            if parent.eq_ignore_ascii_case(TEST_CASE) {
-                break;
-            }
-            let Some(metadata) = facts.codebase.get_class_like(parent.as_bytes()) else {
-                break;
-            };
-            let Some(source) = facts.source_of(metadata.span.file_id) else {
-                continue;
-            };
-            match parent_provider_names(ctx, &source, metadata.span.start.offset as usize) {
+        // the parents up to `TestCase`, each with a source (as the test class extends it, each is a user class)
+        let parents = class_parents(ctx, &class.name);
+        for (metadata, source) in parents
+            .iter()
+            .take_while(|p| !p.eq_ignore_ascii_case(TEST_CASE))
+            .filter_map(|p| facts.codebase.get_class_like(p.as_bytes()))
+            .filter_map(|m| Some((m, facts.source_of(m.span.file_id)?)))
+        {
+            match parent_provider_names(
+                ctx,
+                ancestors,
+                &source,
+                metadata.span.start.offset as usize,
+            ) {
                 Some(more) => names.extend(more),
                 None => return,
             }
@@ -161,12 +165,13 @@ impl Rule for PreferYieldDataProvider {
     }
 }
 
-/// `resolverDataProviderClassMethodNames` over `methods`, declared in `source` at `scope`; `None` where Rector fails
-/// (a `#[DataProvider]` without arguments) or Pun does not read a doc as phpdoc-parser does.
+/// `resolverDataProviderClassMethodNames` over `methods`, declared in `source` at `scope`; a doc's tags are read as at
+/// `tag_scope`. `None` where Pun does not read a doc as phpdoc-parser does.
 fn provider_names(
     ctx: &Context<'_>,
     source: &str,
     scope: &[Node<'_, '_>],
+    tag_scope: &[Node<'_, '_>],
     methods: &[&Method<'_>],
 ) -> Option<Vec<String>> {
     let mut names = Vec::new();
@@ -175,9 +180,12 @@ fn provider_names(
         for list in method.attribute_lists.iter() {
             for attribute in list.attributes.iter() {
                 if resolve(scope, &attribute.name).eq_ignore_ascii_case(DATA_PROVIDER) {
-                    // `$attribute->args[0]`, whose absence Rector does not survive
-                    let argument = attribute.argument_list.as_ref()?.arguments.iter().next()?;
-                    attributes.push(argument.value());
+                    // `$attribute->args[0]->value`, `null` (with a warning) without arguments
+                    let argument = attribute
+                        .argument_list
+                        .as_ref()
+                        .and_then(|list| list.arguments.iter().next());
+                    attributes.push(argument.and_then(|a| a.value()));
                 }
             }
         }
@@ -194,7 +202,7 @@ fn provider_names(
         let Some(doc) = Doc::of(source, scope, node_span(*method).start) else {
             continue;
         };
-        for (_, value) in named_tags(ctx, scope, &doc, "dataProvider")? {
+        for (_, value) in named_tags(ctx, tag_scope, &doc, "dataProvider")? {
             if let TagValue::Generic(value) = value {
                 names.push(value.trim_matches(['(', ')']).to_string());
             }
@@ -204,8 +212,15 @@ fn provider_names(
 }
 
 /// The provider names of the class declared at `start` in `source` (a parent class's file, read again as Rector's
-/// `AstResolver` does).
-fn parent_provider_names(ctx: &Context<'_>, source: &str, start: usize) -> Option<Vec<String>> {
+/// `AstResolver` does). Its attributes' names resolve in that file; its doc tags in its namespace with the `use`
+/// imports of the file being changed, whose ancestors are `current` (`ClassAnnotationMatcher` reads those from
+/// `UseImportsResolver`, which knows the current file only).
+fn parent_provider_names(
+    ctx: &Context<'_>,
+    current: &[Node<'_, '_>],
+    source: &str,
+    start: usize,
+) -> Option<Vec<String>> {
     let arena = mago_allocator::LocalArena::new();
     let file = mago_database::file::File::ephemeral(
         std::borrow::Cow::Borrowed(b"parent.php"),
@@ -230,31 +245,38 @@ fn parent_provider_names(ctx: &Context<'_>, source: &str, start: usize) -> Optio
             .collect();
         let mut scope = path.to_vec();
         scope.push(node);
-        names = provider_names(ctx, source, &scope, &methods);
+        let tag_scope: Vec<Node<'_, '_>> = current
+            .iter()
+            .copied()
+            .filter(|n| matches!(n, Node::Program(_)))
+            .chain(
+                scope
+                    .iter()
+                    .copied()
+                    .filter(|n| !matches!(n, Node::Program(_))),
+            )
+            .collect();
+        names = provider_names(ctx, source, &scope, &tag_scope, &methods);
         false
     });
     names
 }
 
 /// `collectReturnArrayNodesFromClassMethod`.
-fn returned_array<'a>(list: &List<'a>) -> Option<&'a Expression<'a>> {
+fn returned_array<'a>(list: &List<'a>) -> Option<ArrayParts<'a>> {
     let mut yielded_from = None;
     for statement in &list.stmts {
         let expr = match statement {
-            Statement::Return(r) => {
-                let value = unparenthesize(r.value?);
-                return is_array(value).then_some(value);
-            }
+            Statement::Return(r) => return array_parts(r.value?),
             Statement::Expression(e) => unparenthesize(e.expression),
             _ => return None,
         };
         match expr {
             Expression::Yield(Yield::From(from)) => {
-                let iterator = unparenthesize(from.iterator);
-                if !is_array(iterator) || yielded_from.is_some() {
+                if yielded_from.is_some() {
                     return None;
                 }
-                yielded_from = Some(iterator);
+                yielded_from = Some(array_parts(from.iterator)?);
             }
             Expression::Assignment(_) => {}
             _ => return None,
@@ -267,22 +289,30 @@ fn returned_array<'a>(list: &List<'a>) -> Option<&'a Expression<'a>> {
     yielded_from
 }
 
-fn is_array(expr: &Expression<'_>) -> bool {
-    matches!(expr, Expression::Array(_) | Expression::LegacyArray(_))
+/// An array literal's opening token and its elements.
+type ArrayParts<'a> = (
+    mago_span::Span,
+    &'a TokenSeparatedSequence<'a, ArrayElement<'a>>,
+);
+
+/// The parts of `expr` when it is an array literal.
+fn array_parts<'a>(expr: &'a Expression<'a>) -> Option<ArrayParts<'a>> {
+    match unparenthesize(expr) {
+        Expression::Array(a) => Some((a.left_bracket, &a.elements)),
+        Expression::LegacyArray(a) => Some((a.left_parenthesis, &a.elements)),
+        _ => None,
+    }
 }
 
-/// Whether a top-level statement is a `return` or a `yield from`, which the transform removes.
+/// Whether a top-level statement (a `return` or an expression, as [`returned_array`] found them) is a `return` or a
+/// `yield from`, which the transform removes.
 fn is_removed(statement: &Statement<'_>) -> bool {
-    match statement {
-        Statement::Return(_) => true,
-        Statement::Expression(e) => {
-            matches!(
-                unparenthesize(e.expression),
-                Expression::Yield(Yield::From(_))
-            )
-        }
-        _ => false,
-    }
+    matches!(statement, Statement::Return(_))
+        || matches!(
+            statement,
+            Statement::Expression(e)
+                if matches!(unparenthesize(e.expression), Expression::Yield(Yield::From(_)))
+        )
 }
 
 /// `transformArrayToYieldsOnMethodNode`: the edits for one provider; `None` where Pun leaves it alone.
@@ -293,14 +323,9 @@ fn transform(
     class: &ClassInfo<'_, '_>,
     method: &Method<'_>,
     list: &List<'_>,
-    array: &Expression<'_>,
+    (open, elements): ArrayParts<'_>,
 ) -> Option<Vec<Edit>> {
     let source = ctx.source;
-    let (open, elements) = match array {
-        Expression::Array(a) => (a.left_bracket, &a.elements),
-        Expression::LegacyArray(a) => (a.left_parenthesis, &a.elements),
-        _ => unreachable!("an array literal"),
-    };
     let mut edits = Vec::new();
     // the doc comment's `@return` tag
     let node = Node::Method(method);
@@ -439,11 +464,9 @@ fn new_doc(
         {
             return None;
         }
+        // a tag's child runs on to the next tag, its description's lines and blank lines included
         if name == "@return" {
             returns.push(i);
-        } else if !returns.is_empty() && !text.is_empty() && !text.starts_with('@') {
-            // phpdoc-parser takes it into the tag's description
-            return None;
         }
     }
     let [index] = returns[..] else {
@@ -457,14 +480,11 @@ fn new_doc(
         at: doc.span.start,
     };
     let (ty, rest) = parse_type(value)?;
-    // a description, which may go on over the next lines, as written
+    // a description, which may start on or go on over the next lines, as written
     let description = rest.trim_start_matches([' ', '\t']);
-    if !rest.is_empty() && !rest.starts_with([' ', '\t']) {
+    if !rest.is_empty() && !rest.starts_with([' ', '\t', '\r', '\n']) {
         // phpdoc-parser's `InvalidTagValueNode`: no `@return` value to change
         return Some(None);
-    }
-    if description.starts_with(['\r', '\n']) {
-        return None;
     }
     let mut removed = vec![false; doc.len()];
     match reader.top(&ty)? {
@@ -473,7 +493,13 @@ fn new_doc(
             Some(Some(doc.print(&removed)))
         }
         Top::Change(key, value) => {
-            let tag = format!("@return \\Iterator<{key}, {value}> {description}");
+            // the tag printed anew: its type, then a description on its line after a space
+            let blank = if description.starts_with(['\r', '\n']) {
+                ""
+            } else {
+                " "
+            };
+            let tag = format!("@return \\Iterator<{key}, {value}>{blank}{description}");
             let all = doc.text_all();
             let from = text.as_ptr() as usize - all.as_ptr() as usize;
             Some(Some(format!(
