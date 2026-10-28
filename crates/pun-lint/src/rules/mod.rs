@@ -126,7 +126,7 @@ mod no_phpdoc_class_case_mismatch;
 mod no_redundant_foreach_guard;
 mod no_redundant_null_check;
 mod no_redundant_promoted_assign;
-mod no_redundant_property_default;
+pub(crate) mod no_redundant_property_default;
 mod no_redundant_readonly_property;
 mod no_redundant_write_visibility;
 mod no_request_variable;

@@ -86,7 +86,11 @@ pub(crate) fn get_type<'f>(facts: &'f Facts, expr: &Expression<'_>) -> RectorTyp
                 },
                 RectorType::Scope(t) => Shape {
                     union: t.is_some_and(|t| {
-                        t.types.iter().filter(|a| !matches!(a, TAtomic::Null)).count() > 1
+                        t.types
+                            .iter()
+                            .filter(|a| !matches!(a, TAtomic::Null))
+                            .count()
+                            > 1
                     }),
                     null: false,
                 },

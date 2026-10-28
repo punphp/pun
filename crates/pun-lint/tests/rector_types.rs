@@ -7,13 +7,15 @@
 
 mod lint_c;
 
-use lint_c::{run_class, run_class_at, run_class_stubs};
+use lint_c::{run_class, run_class_at, run_class_stubs, run_oracle_class};
 use pun_lint::Rule;
 use pun_lint::rules::{
     AddArrayReturn, AddArrowFunctionReturn, AddBoolReturn, AddBoolReturnFromConst,
     AddClosureNeverReturn, AddClosureReturn, AddClosureVoidReturn, AddFluentReturn,
     AddFunctionVoidReturn, AddMagicMethodTypes, AddMethodVoidReturn, AddNeverReturn,
-    AddNullableReturn, AddNumericReturn, AddNumericReturnFromScalar, AddReturnTypeFromCast,
+    AddNullableReturn, AddNumericReturn, AddDoctrineRepositoryReturnType, AddPropertyTypeAssigns,
+    AddPropertyTypeBehatContext, AddPropertyTypeGetRepository, AddPropertyTypeConstructor,
+    AddPropertyTypeJmsObject, AddPropertyTypeJmsScalar, AddPropertyTypeSetterGetter, AddNumericReturnFromScalar, AddReturnTypeFromCast,
     AddReturnTypeFromConstant, AddReturnTypeFromNativeCall, AddReturnTypeFromNew,
     AddReturnTypeFromParam, AddReturnTypeFromParent, AddReturnTypeFromProperty,
     AddReturnTypeFromSymfonySerializer, AddReturnTypeFromTernary, AddReturnTypeFromTypedCall,
@@ -332,4 +334,86 @@ fn left_alone_at_other_versions() {
         let fixed = linter.fix(std::path::Path::new("f.php"), input).unwrap();
         assert_eq!(fixed.source, input, "PHP {version}");
     }
+}
+
+#[test]
+fn typed_property_from_strict_constructor() {
+    // INTERSECTION_TYPES, as the fixtures' config sets
+    run_class_stubs(
+        vec![Box::new(AddPropertyTypeConstructor)],
+        "TypedPropertyFromStrictConstructorRector",
+        80100,
+        &["doctrine-stubs"],
+    );
+}
+
+#[test]
+fn typed_property_from_assigns() {
+    // config/configured_rule.php: TYPED_PROPERTIES
+    run_class_stubs(
+        vec![Box::new(AddPropertyTypeAssigns::default())],
+        "TypedPropertyFromAssignsRector",
+        70400,
+        &["php-parser-stubs", "phpunit-stubs"],
+    );
+}
+
+#[test]
+fn typed_property_from_assigns_complex_types() {
+    // config/complex_types.php: INTERSECTION_TYPES
+    run_class_stubs(
+        vec![Box::new(AddPropertyTypeAssigns::default())],
+        "TypedPropertyFromAssignsRectorComplexTypes",
+        80100,
+        &["phpunit-stubs"],
+    );
+}
+
+#[test]
+fn typed_property_from_assigns_php82() {
+    // config/configured_rule_php82.php: NULL_FALSE_TRUE_STANDALONE_TYPE
+    run_class_at(vec![Box::new(AddPropertyTypeAssigns::default())], "TypedPropertyFromAssignsRectorPhp82", 80200);
+}
+
+#[test]
+fn typed_property_from_assigns_inline_public() {
+    // config/inline_public_configured_rule.php: inline_public, INTERSECTION_TYPES
+    let mut rule = AddPropertyTypeAssigns::default();
+    rule.configure(&serde_json::json!({"inline-public": true})).unwrap();
+    run_class_at(vec![Box::new(rule)], "TypedPropertyFromAssignsRectorInlinePublic", 80100);
+}
+
+#[test]
+fn property_type_from_strict_setter_getter() {
+    // config/configured_rule.php: the rule alone, Rector's default PHP version
+    run_class(vec![Box::new(AddPropertyTypeSetterGetter)], "PropertyTypeFromStrictSetterGetterRector");
+}
+
+#[test]
+fn scalar_typed_property_from_jms_serializer_attribute_type() {
+    // config/configured_rule.php: ATTRIBUTES
+    run_class_at(vec![Box::new(AddPropertyTypeJmsScalar)], "ScalarTypedPropertyFromJMSSerializerAttributeTypeRector", 80000);
+}
+
+#[test]
+fn object_typed_property_from_jms_serializer_attribute_type() {
+    // config/configured_rule.php: ATTRIBUTES
+    run_class_at(vec![Box::new(AddPropertyTypeJmsObject)], "ObjectTypedPropertyFromJMSSerializerAttributeTypeRector", 80000);
+}
+
+#[test]
+fn typed_static_property_in_behat_context() {
+    // No upstream fixtures: Oracle/ only, Rector run at PHP 8.0 with Source/ autoloaded.
+    run_oracle_class(vec![Box::new(AddPropertyTypeBehatContext)], "TypedStaticPropertyInBehatContextRector", 80000);
+}
+
+#[test]
+fn typed_property_from_get_repository_set_up() {
+    // config/configured_rule.php: TYPED_PROPERTIES
+    run_class_stubs(
+        vec![Box::new(AddPropertyTypeGetRepository)],
+        "TypedPropertyFromGetRepositorySetUpRector",
+        70400,
+        &["phpunit-stubs"],
+    );
 }

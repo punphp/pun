@@ -20,6 +20,11 @@ mod add_magic_method_types;
 mod add_method_void_return;
 mod add_native_scalar_return;
 mod add_never_return;
+mod add_property_type_assigns;
+mod add_property_type_behat_context;
+mod add_property_type_constructor;
+mod add_property_type_jms;
+mod add_property_type_setter_getter;
 mod add_return_type_from_cast;
 mod add_return_type_from_constant;
 mod add_return_type_from_native_call;
@@ -34,11 +39,13 @@ mod add_return_type_from_yield;
 mod add_scalar_return;
 mod add_union_return;
 pub(crate) mod declare;
+mod doctrine_repository;
 mod native;
 mod never;
 mod no_nullsafe_on_non_null;
 mod prefer_identical_same_type;
 mod prefer_instanceof;
+pub(crate) mod property_type;
 mod rector_type;
 pub(crate) mod silent_void;
 mod type_factory;
@@ -55,6 +62,11 @@ pub use add_magic_method_types::AddMagicMethodTypes;
 pub use add_method_void_return::AddMethodVoidReturn;
 pub use add_native_scalar_return::{AddNumericReturn, AddStringReturn};
 pub use add_never_return::AddNeverReturn;
+pub use add_property_type_assigns::AddPropertyTypeAssigns;
+pub use add_property_type_behat_context::AddPropertyTypeBehatContext;
+pub use add_property_type_constructor::AddPropertyTypeConstructor;
+pub use add_property_type_jms::{AddPropertyTypeJmsObject, AddPropertyTypeJmsScalar};
+pub use add_property_type_setter_getter::AddPropertyTypeSetterGetter;
 pub use add_return_type_from_cast::AddReturnTypeFromCast;
 pub use add_return_type_from_constant::AddReturnTypeFromConstant;
 pub use add_return_type_from_native_call::AddReturnTypeFromNativeCall;
@@ -68,10 +80,11 @@ pub use add_return_type_from_typed_call::AddReturnTypeFromTypedCall;
 pub use add_return_type_from_yield::AddReturnTypeFromYield;
 pub use add_scalar_return::{AddNumericReturnFromScalar, AddStringReturnFromScalar};
 pub use add_union_return::{AddNullableReturn, AddUnionReturn};
+pub use doctrine_repository::{AddDoctrineRepositoryReturnType, AddPropertyTypeGetRepository};
+pub(crate) use never::has_parent_class_method;
 pub use no_nullsafe_on_non_null::NoNullsafeOnNonNull;
 pub use prefer_identical_same_type::PreferIdenticalSameType;
 pub use prefer_instanceof::PreferInstanceof;
-pub(crate) use never::has_parent_class_method;
 
 use mago_syntax::cst::{
     Block, Expression, Extends, Identifier, MethodBody, Modifier, Node, Return, Sequence, Statement,
@@ -120,6 +133,14 @@ pub(crate) fn all() -> Vec<Box<dyn Rule>> {
         Box::new(PreferInstanceof),
         Box::new(PreferIdenticalSameType),
         Box::new(NoNullsafeOnNonNull),
+        Box::new(AddPropertyTypeConstructor),
+        Box::new(AddPropertyTypeAssigns::default()),
+        Box::new(AddPropertyTypeSetterGetter),
+        Box::new(AddPropertyTypeJmsScalar),
+        Box::new(AddPropertyTypeJmsObject),
+        Box::new(AddPropertyTypeBehatContext),
+        Box::new(AddPropertyTypeGetRepository),
+        Box::new(AddDoctrineRepositoryReturnType),
     ]
 }
 

@@ -885,7 +885,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "types/add-closure-return-type" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add return type to closures based on known return values" }
 "types/add-closure-void-return" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add closure return type void if there is no return" }
 "types/add-datetime-property-type" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Set DateTime to DateTimeInterface for DateTime property with DateTimeInterface docblock" }
-"types/add-doctrine-repository-return-type" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add return type to classes that extend Doctrine\\ORM\\EntityRepository based on return Doctrine method names" }
+"types/add-doctrine-repository-return-type" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add return type to classes that extend Doctrine\\ORM\\EntityRepository based on return Doctrine method names" }
 "types/add-fluent-return-type" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add return type from strict return $this" }
 "types/add-function-void-return" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add function return type void if there is no return" }
 "types/add-getter-return-phpdoc" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add @return array docblock to a getter method based on @var of the property" }
@@ -915,13 +915,13 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "types/add-param-type-sprintf" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add string type to parameters used in sprintf calls" }
 "types/add-param-type-variable-call" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add closure param object type based on the argument the assigned closure variable is called with" }
 "types/add-private-method-array-return-type" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add strict return array type to private methods based on created empty array and returned" }
-"types/add-property-type-assigns" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add typed property from assigned types" }
-"types/add-property-type-behat-context" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add known property types to Behat context static properties" }
-"types/add-property-type-constructor" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add typed properties based only on strict constructor types" }
-"types/add-property-type-get-repository" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add strict typed property to a private test case property based on its @var object type, when assigned via entity manager getRepository() fetch in setUp()" }
-"types/add-property-type-jms-object" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add object typed property from JMS Serializer Type attribute" }
-"types/add-property-type-jms-scalar" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add scalar typed property from JMS Serializer Type attribute" }
-"types/add-property-type-setter-getter" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add property type based on strict setter and getter method" }
+"types/add-property-type-assigns" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add typed property from assigned types" }
+"types/add-property-type-behat-context" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add known property types to Behat context static properties" }
+"types/add-property-type-constructor" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add typed properties based only on strict constructor types" }
+"types/add-property-type-get-repository" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add strict typed property to a private test case property based on its @var object type, when assigned via entity manager getRepository() fetch in setUp()" }
+"types/add-property-type-jms-object" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add object typed property from JMS Serializer Type attribute" }
+"types/add-property-type-jms-scalar" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add scalar typed property from JMS Serializer Type attribute" }
+"types/add-property-type-setter-getter" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add property type based on strict setter and getter method" }
 "types/add-return-phpdoc-common-object" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add @return docblock array of objects, that have common denominator interface/parent class" }
 "types/add-return-phpdoc-dim-assigned-object" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add @return docblock array of objects, that are dim assigned to returned variable" }
 "types/add-return-phpdoc-direct-array" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add simple @return array docblock based on direct single level direct return of []" }

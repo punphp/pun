@@ -6785,7 +6785,7 @@
         "rules": [
           "lint/types/add-doctrine-repository-return-type"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -8123,7 +8123,7 @@
         "rules": [
           "lint/types/add-property-type-jms-object"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -8287,7 +8287,7 @@
         "rules": [
           "lint/types/add-property-type-setter-getter"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -9635,7 +9635,7 @@
         "rules": [
           "lint/types/add-property-type-jms-scalar"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -10349,7 +10349,7 @@
         "rules": [
           "lint/types/add-property-type-assigns"
         ],
-        "note": "Same. Options: configurable: options carry 1:1 (same keys, kebab-cased). Planned: not ported yet.",
+        "note": "Same. Options: configurable: options carry 1:1 (same keys, kebab-cased).",
         "unsupported": false
       },
       {
@@ -10389,7 +10389,7 @@
         "rules": [
           "lint/types/add-property-type-get-repository"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -10399,7 +10399,7 @@
         "rules": [
           "lint/types/add-property-type-constructor"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -10419,7 +10419,7 @@
         "rules": [
           "lint/types/add-property-type-behat-context"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {

@@ -475,3 +475,32 @@ Lint 7 rector-laravel attribute rules (2026-10-27; the 31 `*PropertyTo*Attribute
 - **Pun leaves alone what Rector breaks:** `new static(...)` in `newCollection()` (Rector writes
   `#[CollectedBy(static::class)]`, which PHP rejects), a tab in the class's or method's indentation (Rector writes its
   own spaces), and an array with an empty item (php-parser does not parse it).
+
+Lint types property rules (2026-10-28; `add-property-type-constructor`, `-assigns`, `-setter-getter`, `-jms-scalar`,
+`-jms-object`, `-behat-context`, `-get-repository`, `add-doctrine-repository-return-type`, `no-nullsafe-on-non-null`,
+`prefer-identical-same-type`, `prefer-instanceof`):
+
+- **Assistant's call: one port of what the property rules share.** `rules/types/property_type.rs` holds PHPStan's types
+  as these rules combine them (a local port of `TypeFactory::createMixedPassedOrUnionType` and `uniquateTypes`, to
+  merge with pun-ty-return's), `StaticTypeMapper` for `TypeKind::PROPERTY`, `PropertyTypeChangeGuard`,
+  `PropertyTypeOverrideGuard`, `AssignToPropertyTypeInferer` and the `@var` edits. `ConstructorAssignDetector` is
+  `no_redundant_property_default::is_property_assigned`; its `isLocalPropertyFetchName` now counts `self::$x` and
+  `static::$x` too, as upstream's does.
+- **Assistant's call: two PHPStan extensions where Mago's types differ.** `parse_url($url, $component)` with a constant
+  component is `string|false|null` (Mago orders it `false|null|non-empty-string`), and a variable `method_exists()`
+  narrowed (Mago's bare `has-method<...>`) is its parameter's declared type intersected with
+  `class-string|(object&hasMethod)`: `object|string` untyped, `object` for `object`. Where Pun does not know the type
+  before the narrowing (the parameter is assigned in the method) the property stays (`Pun/method_exists_reassigned`).
+- **Pun leaves alone what Rector breaks or cannot print:** `is_a()` with one argument (Rector crashes) or a spread,
+  an anonymous class (`instanceof \AnonymousClass<hash>`), `!$a ?: $b` where Rector drops the parentheses; a multi-line
+  string constant in a public property's new `@var` (Rector prints its accessory types); a JMS `Type` written with a
+  leading `\` (Rector prints `\\Foo`, which does not parse); `lowercase-string` and `uppercase-string` JMS types (Rector
+  crashes and leaves the file; Pun leaves the class).
+- **Matched the oracle where it surprises:** a Behat `@var` naming an aliased import keeps the alias (`?\Moment`, as
+  `AliasedObjectType` prints), `@var self` is the class, and a class need not exist; a Behat `@var` over several lines
+  or with a spaced generic (`Collection<int, Item>`) still types the property and keeps the doc; upstream ships no
+  Behat fixtures, so `TypedStaticPropertyInBehatContextRector` has Oracle cases only; JMS `true` and `false` give `bool`;
+  a JMS `float` with `@var string The price` drops the doc, description and all (`removeVarTag`).
+- **Known differences, left for later:** Rector skips a JMS-typed property named `$protected` for no reason found in
+  its source; Pun types it. A JMS `Type` argument that is a constant expression other than a string or `X::class` is
+  not read.

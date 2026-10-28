@@ -74,7 +74,7 @@ pub fn run_class(rules: Vec<Box<dyn Rule>>, class: &str) {
 
 /// As [`run_class`], at the PHP version `php_version`.
 pub fn run_class_at(rules: Vec<Box<dyn Rule>>, class: &str, php_version: u32) {
-    run_class_full(rules, class, php_version, &[], &[]);
+    run_class_full(rules, class, php_version, &[], &[], true);
 }
 
 /// As [`run_class_at`]; the fixtures named in `preset_too` (`Fixture/in_for.php.inc`) make a change the laravel
@@ -86,13 +86,19 @@ pub fn run_class_with(
     php_version: u32,
     preset_too: &[&str],
 ) {
-    run_class_full(rules, class, php_version, &[], preset_too);
+    run_class_full(rules, class, php_version, &[], preset_too, true);
 }
 
 /// As [`run_class_at`], with the classes of the directories `stubs` (under tests/) known too.
 #[allow(dead_code)]
 pub fn run_class_stubs(rules: Vec<Box<dyn Rule>>, class: &str, php_version: u32, stubs: &[&str]) {
-    run_class_full(rules, class, php_version, stubs, &[]);
+    run_class_full(rules, class, php_version, stubs, &[], true);
+}
+
+/// As [`run_class_at`] for a Rector class without upstream fixtures: tests/rector/<class>/{Oracle,Pun} only.
+#[allow(dead_code)]
+pub fn run_oracle_class(rules: Vec<Box<dyn Rule>>, class: &str, php_version: u32) {
+    run_class_full(rules, class, php_version, &[], &[], false);
 }
 
 fn run_class_full(
@@ -101,15 +107,21 @@ fn run_class_full(
     php_version: u32,
     stubs: &[&str],
     preset_too: &[&str],
+    fixture: bool,
 ) {
     let linter = Linter::new(rules, php_version);
     let pipeline = laravel();
     let root = Path::new(env!("CARGO_MANIFEST_DIR"))
         .join("tests/rector")
         .join(class);
-    assert!(
+    assert_eq!(
         root.join("Fixture").is_dir(),
-        "{class}: no Fixture directory"
+        fixture,
+        "{class}: a Fixture directory where upstream has fixtures, and only there"
+    );
+    assert!(
+        root.join("Oracle").is_dir() || fixture,
+        "{class}: no Oracle directory"
     );
     for sub in ["Fixture", "Oracle", "Pun"] {
         let dir = root.join(sub);

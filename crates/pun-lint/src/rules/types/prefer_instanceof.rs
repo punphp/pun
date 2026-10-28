@@ -142,7 +142,10 @@ fn class_name(
         let [TAtomic::Scalar(TScalar::String(s))] = t.types.as_ref() else {
             return None;
         };
-        return declared(facts, &String::from_utf8_lossy(s.get_known_literal_value()?));
+        return declared(
+            facts,
+            &String::from_utf8_lossy(s.get_known_literal_value()?),
+        );
     }
     let scope = || class_scope(ancestors).filter(|s| s.name.is_some());
     match unparenthesize(fetch.class) {
@@ -166,7 +169,11 @@ fn class_name(
 }
 
 /// `$object::class`: a `class-string` of the object's class when that class is final, a `string` otherwise.
-fn final_class(facts: &Facts, object: &Expression<'_>, scope: Option<ClassScope>) -> Option<String> {
+fn final_class(
+    facts: &Facts,
+    object: &Expression<'_>,
+    scope: Option<ClassScope>,
+) -> Option<String> {
     let t = facts.full_type(node_span(object))?;
     let name = match t.types.as_ref() {
         [TAtomic::Object(TObject::Named(named))] if named.intersection_types.is_none() => {
@@ -183,7 +190,8 @@ fn final_class(facts: &Facts, object: &Expression<'_>, scope: Option<ClassScope>
         _ => return None,
     };
     let class = facts.codebase.get_class_like(name.as_bytes())?;
-    (class.flags.is_final() || class.kind == mago_codex::symbol::SymbolKind::Enum).then(|| class.original_name.to_string())
+    (class.flags.is_final() || class.kind == mago_codex::symbol::SymbolKind::Enum)
+        .then(|| class.original_name.to_string())
 }
 
 /// `name` when a class-like is declared under exactly that name (Rector's corrector compares the reflection's

@@ -12,7 +12,7 @@ use pun_problem::{Edit, Span};
 use crate::Context;
 use crate::rules::lint_b_doc::Doc;
 use crate::rules::prefer_absolute_include::print_string;
-use crate::rules::rector_stmts::{line_indent, previous_token_end};
+use crate::rules::rector_stmts::{line_indent, previous_token_end, tokens};
 use crate::rules::types::facts::facts;
 use crate::syntax::node_span;
 
@@ -24,6 +24,8 @@ pub(crate) struct Annotated<'s> {
     pub doc: Option<Doc<'s>>,
     /// Whether another comment comes before the doc comment (php-parser reprints them all when the doc changes).
     other_comments: bool,
+    /// The end of the token before the node, where its comments may start.
+    comments_from: usize,
 }
 
 impl<'s> Annotated<'s> {
@@ -46,22 +48,22 @@ impl<'s> Annotated<'s> {
         };
         let start = node_span(&node).start;
         let doc = Doc::of(source, ancestors, start);
-        let other_comments = doc.as_ref().is_some_and(|d| {
-            let outer = ancestors
-                .iter()
-                .rev()
-                .map(|a| node_span(a).start)
-                .find(|&s| s < start)
-                .unwrap_or(0);
-            !source[previous_token_end(source, outer, start)..d.span.start]
-                .trim()
-                .is_empty()
-        });
+        let outer = ancestors
+            .iter()
+            .rev()
+            .map(|a| node_span(a).start)
+            .find(|&s| s < start)
+            .unwrap_or(0);
+        let comments_from = previous_token_end(source, outer, start);
+        let other_comments = doc
+            .as_ref()
+            .is_some_and(|d| !source[comments_from..d.span.start].trim().is_empty());
         Some(Annotated {
             start,
             last_attribute_end: lists.last().map(|l| node_span(l).end),
             doc,
             other_comments,
+            comments_from,
         })
     }
 
@@ -116,6 +118,39 @@ impl<'s> Annotated<'s> {
             edits.push(Edit::new(Span::new(at_start, self.start), lead));
         }
         Some(edits)
+    }
+
+    /// The edit that gives the doc comment `new_doc` (`""` removes it) when other comments come before it, where
+    /// [`Self::edits`] gives none: php-parser's `pComments()` reprints every comment, each reformatted, joined and
+    /// followed by a line break and the node's indentation. `None` without other comments or with a tab in the
+    /// indentation.
+    pub(crate) fn edit_with_comments(&self, source: &str, new_doc: &str) -> Option<Edit> {
+        let doc = self.doc.as_ref().filter(|_| self.other_comments)?.span;
+        let indent = line_indent(source, self.start);
+        if indent.contains('\t') {
+            return None;
+        }
+        let nl = format!("\n{indent}");
+        let mut comments: Vec<String> = Vec::new();
+        for token in tokens(source, self.comments_from, self.start) {
+            if !token.kind.is_comment() {
+                continue;
+            }
+            let text = if token.start == doc.start {
+                new_doc
+            } else {
+                source[token.start..token.end].trim_end_matches(['\n', '\r'])
+            };
+            if !text.is_empty() {
+                comments.push(reformatted(text).replace('\n', &nl));
+            }
+        }
+        let start = self.comments_from + source[self.comments_from..].len()
+            - source[self.comments_from..].trim_start().len();
+        Some(Edit::new(
+            Span::new(start, self.start),
+            format!("{}{nl}", comments.join(&nl)),
+        ))
     }
 }
 

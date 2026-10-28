@@ -15677,7 +15677,7 @@
         "ChildDoctrineRepositoryClassTypeRector",
         "Rector\\TypeDeclaration\\Rector\\Class_\\ChildDoctrineRepositoryClassTypeRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/types/add-fluent-return-type",
@@ -16277,7 +16277,7 @@
         "TypedPropertyFromAssigns",
         "TypedPropertyFromAssignsRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/types/add-property-type-behat-context",
@@ -16297,7 +16297,7 @@
         "TypedStaticPropertyInBehatContext",
         "TypedStaticPropertyInBehatContextRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/types/add-property-type-constructor",
@@ -16317,7 +16317,7 @@
         "TypedPropertyFromStrictConstructor",
         "TypedPropertyFromStrictConstructorRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/types/add-property-type-get-repository",
@@ -16337,7 +16337,7 @@
         "TypedPropertyFromGetRepositorySetUp",
         "TypedPropertyFromGetRepositorySetUpRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/types/add-property-type-jms-object",
@@ -16357,7 +16357,7 @@
         "ObjectTypedPropertyFromJMSSerializerAttributeTypeRector",
         "Rector\\TypeDeclaration\\Rector\\Class_\\ObjectTypedPropertyFromJMSSerializerAttributeTypeRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/types/add-property-type-jms-scalar",
@@ -16377,7 +16377,7 @@
         "ScalarTypedPropertyFromJMSSerializerAttributeType",
         "ScalarTypedPropertyFromJMSSerializerAttributeTypeRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/types/add-property-type-setter-getter",
@@ -16397,7 +16397,7 @@
         "PropertyTypeFromStrictSetterGetterRector",
         "Rector\\TypeDeclaration\\Rector\\Class_\\PropertyTypeFromStrictSetterGetterRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/types/add-return-phpdoc-common-object",

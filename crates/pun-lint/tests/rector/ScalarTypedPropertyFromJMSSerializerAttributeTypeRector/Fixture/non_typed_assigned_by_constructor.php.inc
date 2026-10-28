@@ -1,0 +1,33 @@
+<?php
+
+namespace Rector\Tests\TypeDeclaration\Rector\Class_\ScalarTypedPropertyFromJMSSerializerAttributeTypeRector\Fixture;
+
+final class NonTypedAssignedByConstructor
+{
+    #[\JMS\Serializer\Annotation\Type('string')]
+    private $name;
+
+    public function __construct($name)
+    {
+        $this->name = $name;
+    }
+}
+
+?>
+-----
+<?php
+
+namespace Rector\Tests\TypeDeclaration\Rector\Class_\ScalarTypedPropertyFromJMSSerializerAttributeTypeRector\Fixture;
+
+final class NonTypedAssignedByConstructor
+{
+    #[\JMS\Serializer\Annotation\Type('string')]
+    private ?string $name = null;
+
+    public function __construct($name)
+    {
+        $this->name = $name;
+    }
+}
+
+?>

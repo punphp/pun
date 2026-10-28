@@ -13,11 +13,13 @@
 use mago_codex::ttype::TType;
 use mago_codex::ttype::atomic::TAtomic;
 use mago_codex::ttype::atomic::array::TArray;
+use mago_codex::ttype::atomic::object::TObject;
 use mago_codex::ttype::atomic::scalar::TScalar;
 use mago_codex::ttype::atomic::scalar::class_like_string::TClassLikeString;
 use mago_codex::ttype::union::TUnion;
-use mago_codex::ttype::atomic::object::TObject;
-use mago_syntax::cst::{Access, BinaryOperator, ClassLikeConstantSelector, Expression, Node, NodeKind};
+use mago_syntax::cst::{
+    Access, BinaryOperator, ClassLikeConstantSelector, Expression, Node, NodeKind,
+};
 use pun_problem::{Edit, Fix, Safety};
 
 use super::facts::{Facts, facts};
@@ -52,7 +54,8 @@ impl Rule for PreferIdenticalSameType {
             _ => return,
         };
         let (left, right) = (unparenthesize(binary.lhs), unparenthesize(binary.rhs));
-        if matches!(left, Expression::ArrayAccess(_)) || matches!(right, Expression::ArrayAccess(_)) {
+        if matches!(left, Expression::ArrayAccess(_)) || matches!(right, Expression::ArrayAccess(_))
+        {
             return;
         }
         let facts = facts(ctx);
@@ -110,8 +113,7 @@ fn atomic_has_object(facts: &Facts, atomic: &TAtomic) -> bool {
                     .any(|(_, (_, t))| has_object(facts, t))
         }
         TAtomic::Array(TArray::Keyed(keyed)) => {
-            (keyed.parameters.iter())
-                .any(|(k, v)| has_object(facts, k) || has_object(facts, v))
+            (keyed.parameters.iter()).any(|(k, v)| has_object(facts, k) || has_object(facts, v))
                 || (keyed.known_items.iter().flat_map(|m| m.iter()))
                     .any(|(_, (_, t))| has_object(facts, t))
         }
@@ -131,7 +133,10 @@ fn object_class_fetch(facts: &Facts, expr: &Expression<'_>) -> Option<bool> {
     if !constant.value.eq_ignore_ascii_case(b"class")
         || matches!(
             unparenthesize(fetch.class),
-            Expression::Identifier(_) | Expression::Self_(_) | Expression::Static(_) | Expression::Parent(_)
+            Expression::Identifier(_)
+                | Expression::Self_(_)
+                | Expression::Static(_)
+                | Expression::Parent(_)
         )
     {
         return None;
@@ -157,9 +162,8 @@ fn is_declared_class(facts: &Facts, name: &[u8]) -> bool {
 /// `normalizeScalarType`, as a key to compare: a string, `bool`, `int` or `float` type is its general type; any other
 /// type is itself. `None` for a union that is not one of those (Rector compares it, then skips it as a union).
 fn normalized(t: &TUnion) -> Option<String> {
-    let all = |f: fn(&TScalar) -> bool| {
-        (t.types.iter()).all(|a| matches!(a, TAtomic::Scalar(s) if f(s)))
-    };
+    let all =
+        |f: fn(&TScalar) -> bool| (t.types.iter()).all(|a| matches!(a, TAtomic::Scalar(s) if f(s)));
     if all(TScalar::is_any_string) {
         return Some("string".to_string());
     }

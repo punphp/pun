@@ -136,9 +136,7 @@ fn callee<'f>(
                 return None;
             };
             let class = match t.types.as_ref() {
-                [TAtomic::Object(TObject::Named(named))]
-                    if named.intersection_types.is_none() =>
-                {
+                [TAtomic::Object(TObject::Named(named))] if named.intersection_types.is_none() => {
                     if named.is_this || named.is_static {
                         scope?.name.clone()?
                     } else {

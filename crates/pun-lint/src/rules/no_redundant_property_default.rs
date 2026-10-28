@@ -64,7 +64,8 @@ impl Rule for NoRedundantPropertyDefault {
             left_brace,
             path: &path,
             extends,
-            constructor,
+            constructor: Some(constructor),
+            test_case: None,
         };
         let mut edits = Vec::new();
         for member in members.iter() {
@@ -190,10 +191,19 @@ fn is_this(expr: &Expression<'_>) -> bool {
     matches!(unparenthesize(expr), Expression::Variable(Variable::Direct(v)) if v.name == b"$this")
 }
 
-/// `$this->name`.
+/// `$this->name`, `self::$name` or `static::$name`.
 fn is_fetch(expr: &Expression<'_>, name: &[u8]) -> bool {
-    matches!(unparenthesize(expr), Expression::Access(Access::Property(a))
-        if is_this(a.object) && matches!(&a.property, ClassLikeMemberSelector::Identifier(id) if id.value == name))
+    match unparenthesize(expr) {
+        Expression::Access(Access::Property(a)) => {
+            is_this(a.object)
+                && matches!(&a.property, ClassLikeMemberSelector::Identifier(id) if id.value == name)
+        }
+        Expression::Access(Access::StaticProperty(a)) => {
+            matches!(a.class, Expression::Self_(_) | Expression::Static(_))
+                && matches!(&a.property, Variable::Direct(v) if &v.name[1..] == name)
+        }
+        _ => false,
+    }
 }
 
 /// `PropertyAssignMatcher::matchPropertyAssignExpr`: an assignment to `$this->name` or `$this->name[...]`.
@@ -218,7 +228,37 @@ struct Scope<'s, 'p, 'a> {
     left_brace: mago_span::Span,
     path: &'p [Node<'a, 'a>],
     extends: Option<&'a Extends<'a>>,
-    constructor: &'a Method<'a>,
+    constructor: Option<&'a Method<'a>>,
+    /// Whether the class is a PHPUnit test case, when the caller knows; else it extends `PHPUnit\Framework\TestCase`.
+    test_case: Option<bool>,
+}
+
+/// `ConstructorAssignDetector::isPropertyAssigned` for the property `name` of the class or anonymous class `node`,
+/// whose ancestors are `ancestors`; `test_case` says whether it is a PHPUnit test case.
+pub(crate) fn is_property_assigned(
+    source: &str,
+    node: Node<'_, '_>,
+    ancestors: &[Node<'_, '_>],
+    test_case: bool,
+    name: &[u8],
+) -> bool {
+    let (members, left_brace, extends) = match node {
+        Node::Class(c) => (&c.members, c.left_brace, c.extends.as_ref()),
+        Node::AnonymousClass(c) => (&c.members, c.left_brace, c.extends.as_ref()),
+        _ => return false,
+    };
+    let mut path = ancestors.to_vec();
+    path.push(node);
+    let scope = Scope {
+        source,
+        members,
+        left_brace,
+        path: &path,
+        extends,
+        constructor: method(members, b"__construct"),
+        test_case: Some(test_case),
+    };
+    scope.is_assigned(name)
 }
 
 /// What a walk of an initializing method found.
@@ -252,11 +292,13 @@ impl<'a> Scope<'_, '_, 'a> {
 
     /// The constructor, `setUp()` and `setUpBeforeClass()` of a test case, and the autowired methods.
     fn initializers(&self) -> Vec<&'a Method<'a>> {
-        let mut out = vec![self.constructor];
-        let test_case = self.extends.is_some_and(|e| {
-            e.types.iter().any(|t| {
-                resolve_class_name(self.path, t)
-                    .eq_ignore_ascii_case("PHPUnit\\Framework\\TestCase")
+        let mut out: Vec<&'a Method<'a>> = self.constructor.into_iter().collect();
+        let test_case = self.test_case.unwrap_or_else(|| {
+            self.extends.is_some_and(|e| {
+                e.types.iter().any(|t| {
+                    resolve_class_name(self.path, t)
+                        .eq_ignore_ascii_case("PHPUnit\\Framework\\TestCase")
+                })
             })
         });
         if test_case {
@@ -347,7 +389,10 @@ impl<'a> Scope<'_, '_, 'a> {
     /// `isFilledViaMethodCallInConstructStmts`: a constructor statement calling a class method that assigns the
     /// property in a statement of its own body.
     fn filled_via_method_call(&self, name: &[u8]) -> bool {
-        first_level(self.constructor).any(|statement| {
+        let Some(constructor) = self.constructor else {
+            return false;
+        };
+        first_level(constructor).any(|statement| {
             let Statement::Expression(e) = statement else { return false };
             let (selector, own) = match unparenthesize(e.expression) {
                 Expression::Call(Call::Method(call)) => (&call.method, is_this(call.object)),
