@@ -2671,3 +2671,34 @@ scanned-stub purity control. It includes inherited aliases, fluent and void retu
 guards, independent receivers, constructors, and private-parent properties. All 32 selected
 public tests across twelve targets pass, as do seven instrumented tests. Whole-crate coverage
 and the combined original-fixture gate remain separate checks.
+
+### Sequential optional-array joins and offset order
+
+`context/variable_scope.rs` reduces eligible sealed keyed-array pairs even when the union contains
+other alternatives. The bounded reduction requires equal shared value types, ignoring holder
+certainty flags, and permits at most one extra required key. Optional entries retain their separate
+optionality metadata. This prevents independent nullable-property appends from accumulating an
+exponential number of shapes without widening discriminators or unrelated alternatives.
+
+Continuing-edge joins retain the incoming array order before reduction. A merged pair occupies the
+primary superset's slot and starts with its value types. This includes equal-key pairs with different
+optional entries. The shared codex combiner is unchanged. Loop widening and foreach projection keep
+their existing paths.
+
+`utils/expression/array.rs` consumes offset alternatives in forward order. Its stack stores the
+initial alternatives, deferred intersection bases, and generic constraints in reverse so each pop
+visits the next incoming alternative. No callable metadata or diagnostic selection changes here.
+
+The source contract is PHPStan 2.3.1 at `cb3b7e99489b2e3789ee2eec10501cb7a72580ea`:
+`TypeCombinator.php:1525–1760`, `ConstantArrayType.php:2987–3114`, and `UnionType.php:978–996`.
+This is not a complete `reduceArrays` port.
+
+The public `sequential_scope_joins` target compares complete four-configuration captures for
+sequential appends, tagged alternatives, required empty alternatives, and `list<never>` templates.
+Its ordering controls cover both superset positions, unrelated alternatives, equal-key optionality,
+and template bounds in both orders. A public analyzer hook also retains a deferred intersection
+around the same template bounds and compares offset member order with PHPStan's scope API.
+The unchanged `Methods/data/bug-12110.php` supplies the large sequential-join control.
+
+The fixture's `capture.php` and `capture-offset-order.php` regenerate the diagnostics and scope
+captures with the pinned PHPStan PHAR. Existing expectations remain unchanged.

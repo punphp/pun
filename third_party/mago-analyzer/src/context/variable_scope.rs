@@ -225,7 +225,18 @@ impl BlockContext<'_> {
                         let combined = if !existing.types.iter().chain(ty.types.iter())
                             .any(|atomic| matches!(atomic, TAtomic::Array(array) if !array.is_sealed()))
                         {
-                            combine_union_types_preserving_array_shapes(existing, ty, codebase, CombinerOptions::default())
+                            let mut combined = combine_union_types_preserving_array_shapes(existing, ty, codebase, CombinerOptions::default());
+                            // reduceArrays retains incoming array positions before choosing a primary
+                            // superset. Keep that order independently of the shared combiner's sorting.
+                            let mut arrays: Vec<_> = combined.types.iter().filter(|atomic| atomic.is_array()).cloned().collect();
+                            if arrays.len() > 1 {
+                                arrays.sort_by_key(|atomic| existing.types.iter().chain(ty.types.iter()).position(|incoming| incoming == atomic));
+                                let mut arrays = arrays.into_iter();
+                                for atomic in combined.types.to_mut().iter_mut().filter(|atomic| atomic.is_array()) {
+                                    *atomic = arrays.next().unwrap();
+                                }
+                            }
+                            combined
                         } else {
                             combine_union_types(existing, ty, codebase, CombinerOptions::default())
                         };
@@ -256,20 +267,37 @@ impl BlockContext<'_> {
                     i += 1;
                 }
             }
-            // ConstantArrayType::isKeysSupersetOf/mergeWith can fold one extra key
-            // into an optional entry without widening any shared value or discriminator.
-            if let [TAtomic::Array(TArray::Keyed(left)), TAtomic::Array(TArray::Keyed(right))] = types.as_slice()
-                && left.parameters.is_none()
-                && right.parameters.is_none()
-                && let (Some(left), Some(right)) = (&left.known_items, &right.known_items)
-            {
-                let (small, large) = if left.len() < right.len() { (left, right) } else { (right, left) };
-                if !small.is_empty()
-                    && large.len() == small.len() + 1
-                    && small.iter().all(|(key, entry)| large.get(key) == Some(entry))
-                {
-                    types = combine(types, codebase, CombinerOptions::default());
+            // TypeCombinator::reduceArrays visits eligible pairs even when other alternatives
+            // remain. This bounded legacyIsKeysSupersetOf subset keeps common values identical;
+            // optionality may differ, and at most one extra required key is allowed.
+            let mut i = 0;
+            'arrays: while i < types.len() {
+                for j in i + 1..types.len() {
+                    if let (TAtomic::Array(TArray::Keyed(left)), TAtomic::Array(TArray::Keyed(right))) = (&types[i], &types[j])
+                        && left.parameters.is_none()
+                        && right.parameters.is_none()
+                        && let (Some(left), Some(right)) = (&left.known_items, &right.known_items)
+                    {
+                        let (small, large, primary, secondary) = if left.len() <= right.len() {
+                            (left, right, j, i)
+                        } else {
+                            (right, left, i, j)
+                        };
+                        if !small.is_empty()
+                            && small.iter().all(|(key, (_, value))| large.get(key).is_some_and(|(_, other)| equal_types(value, other)))
+                            && large.iter().filter(|(key, (optional, _))| !*optional && !small.contains_key(key)).count() <= 1
+                        {
+                            // Equal shared values cannot form the combiner's discriminated alternatives.
+                            // mergeWith retains the superset's slot and unions its values first.
+                            let pair = combine(vec![types[primary].clone(), types[secondary].clone()], codebase, CombinerOptions::default());
+                            types.remove(secondary);
+                            let primary = primary - usize::from(secondary < primary);
+                            types.splice(primary..=primary, pair);
+                            continue 'arrays;
+                        }
+                    }
                 }
+                i += 1;
             }
             *reduced.types.to_mut() = types;
             *ty = Rc::new(reduced);

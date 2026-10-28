@@ -1,0 +1,266 @@
+{
+    "default": [
+        [
+            "ordering.php",
+            22,
+            "method.resultUnused",
+            "Call to method SequentialScopeOrder\\Alpha::ping() on a separate line has no effect.",
+            null,
+            true
+        ],
+        [
+            "ordering.php",
+            23,
+            "method.resultUnused",
+            "Call to method SequentialScopeOrder\\Zulu::ping() on a separate line has no effect.",
+            null,
+            true
+        ],
+        [
+            "ordering.php",
+            34,
+            "method.resultUnused",
+            "Call to method SequentialScopeOrder\\Alpha::ping() on a separate line has no effect.",
+            null,
+            true
+        ],
+        [
+            "ordering.php",
+            45,
+            "method.resultUnused",
+            "Call to method SequentialScopeOrder\\Zulu::ping() on a separate line has no effect.",
+            null,
+            true
+        ],
+        [
+            "ordering.php",
+            58,
+            "method.resultUnused",
+            "Call to method SequentialScopeOrder\\Middle::ping() on a separate line has no effect.",
+            null,
+            true
+        ],
+        [
+            "ordering.php",
+            71,
+            "method.resultUnused",
+            "Call to method SequentialScopeOrder\\Alpha::ping() on a separate line has no effect.",
+            null,
+            true
+        ],
+        [
+            "ordering.php",
+            86,
+            "method.resultUnused",
+            "Call to method SequentialScopeOrder\\Alpha::ping() on a separate line has no effect.",
+            null,
+            true
+        ],
+        [
+            "ordering.php",
+            98,
+            "method.resultUnused",
+            "Call to method SequentialScopeOrder\\Alpha::ping() on a separate line has no effect.",
+            null,
+            true
+        ]
+    ],
+    "quiet": [
+        [
+            "ordering.php",
+            22,
+            "method.resultUnused",
+            "Call to method SequentialScopeOrder\\Alpha::ping() on a separate line has no effect.",
+            null,
+            true
+        ],
+        [
+            "ordering.php",
+            23,
+            "method.resultUnused",
+            "Call to method SequentialScopeOrder\\Zulu::ping() on a separate line has no effect.",
+            null,
+            true
+        ],
+        [
+            "ordering.php",
+            34,
+            "method.resultUnused",
+            "Call to method SequentialScopeOrder\\Alpha::ping() on a separate line has no effect.",
+            null,
+            true
+        ],
+        [
+            "ordering.php",
+            45,
+            "method.resultUnused",
+            "Call to method SequentialScopeOrder\\Zulu::ping() on a separate line has no effect.",
+            null,
+            true
+        ],
+        [
+            "ordering.php",
+            58,
+            "method.resultUnused",
+            "Call to method SequentialScopeOrder\\Middle::ping() on a separate line has no effect.",
+            null,
+            true
+        ],
+        [
+            "ordering.php",
+            71,
+            "method.resultUnused",
+            "Call to method SequentialScopeOrder\\Alpha::ping() on a separate line has no effect.",
+            null,
+            true
+        ],
+        [
+            "ordering.php",
+            86,
+            "method.resultUnused",
+            "Call to method SequentialScopeOrder\\Alpha::ping() on a separate line has no effect.",
+            null,
+            true
+        ],
+        [
+            "ordering.php",
+            98,
+            "method.resultUnused",
+            "Call to method SequentialScopeOrder\\Alpha::ping() on a separate line has no effect.",
+            null,
+            true
+        ]
+    ],
+    "foreach-off": [
+        [
+            "ordering.php",
+            22,
+            "method.resultUnused",
+            "Call to method SequentialScopeOrder\\Alpha::ping() on a separate line has no effect.",
+            null,
+            true
+        ],
+        [
+            "ordering.php",
+            23,
+            "method.resultUnused",
+            "Call to method SequentialScopeOrder\\Zulu::ping() on a separate line has no effect.",
+            null,
+            true
+        ],
+        [
+            "ordering.php",
+            34,
+            "method.resultUnused",
+            "Call to method SequentialScopeOrder\\Alpha::ping() on a separate line has no effect.",
+            null,
+            true
+        ],
+        [
+            "ordering.php",
+            45,
+            "method.resultUnused",
+            "Call to method SequentialScopeOrder\\Zulu::ping() on a separate line has no effect.",
+            null,
+            true
+        ],
+        [
+            "ordering.php",
+            58,
+            "method.resultUnused",
+            "Call to method SequentialScopeOrder\\Middle::ping() on a separate line has no effect.",
+            null,
+            true
+        ],
+        [
+            "ordering.php",
+            71,
+            "method.resultUnused",
+            "Call to method SequentialScopeOrder\\Alpha::ping() on a separate line has no effect.",
+            null,
+            true
+        ],
+        [
+            "ordering.php",
+            86,
+            "method.resultUnused",
+            "Call to method SequentialScopeOrder\\Alpha::ping() on a separate line has no effect.",
+            null,
+            true
+        ],
+        [
+            "ordering.php",
+            98,
+            "method.resultUnused",
+            "Call to method SequentialScopeOrder\\Alpha::ping() on a separate line has no effect.",
+            null,
+            true
+        ]
+    ],
+    "loop-off": [
+        [
+            "ordering.php",
+            22,
+            "method.resultUnused",
+            "Call to method SequentialScopeOrder\\Alpha::ping() on a separate line has no effect.",
+            null,
+            true
+        ],
+        [
+            "ordering.php",
+            23,
+            "method.resultUnused",
+            "Call to method SequentialScopeOrder\\Zulu::ping() on a separate line has no effect.",
+            null,
+            true
+        ],
+        [
+            "ordering.php",
+            34,
+            "method.resultUnused",
+            "Call to method SequentialScopeOrder\\Alpha::ping() on a separate line has no effect.",
+            null,
+            true
+        ],
+        [
+            "ordering.php",
+            45,
+            "method.resultUnused",
+            "Call to method SequentialScopeOrder\\Zulu::ping() on a separate line has no effect.",
+            null,
+            true
+        ],
+        [
+            "ordering.php",
+            58,
+            "method.resultUnused",
+            "Call to method SequentialScopeOrder\\Middle::ping() on a separate line has no effect.",
+            null,
+            true
+        ],
+        [
+            "ordering.php",
+            71,
+            "method.resultUnused",
+            "Call to method SequentialScopeOrder\\Alpha::ping() on a separate line has no effect.",
+            null,
+            true
+        ],
+        [
+            "ordering.php",
+            86,
+            "method.resultUnused",
+            "Call to method SequentialScopeOrder\\Alpha::ping() on a separate line has no effect.",
+            null,
+            true
+        ],
+        [
+            "ordering.php",
+            98,
+            "method.resultUnused",
+            "Call to method SequentialScopeOrder\\Alpha::ping() on a separate line has no effect.",
+            null,
+            true
+        ]
+    ]
+}

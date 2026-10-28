@@ -203,7 +203,7 @@ where
         );
     }
 
-    let mut array_atomic_types = array_like_type.types.iter().collect::<Vec<_>>();
+    let mut array_atomic_types = array_like_type.types.iter().rev().collect::<Vec<_>>();
 
     let mut value_type = None;
     let preserve_array_shapes = block_context.flags.inside_reference()
@@ -220,13 +220,13 @@ where
     let mut reported_undefined_key = false;
     while let Some(atomic_var_type) = array_atomic_types.pop() {
         if let TAtomic::Derived(TDerived::Intersection(intersection)) = atomic_var_type {
-            array_atomic_types.extend(intersection.get_base_type().types.iter());
+            array_atomic_types.extend(intersection.get_base_type().types.iter().rev());
 
             continue;
         }
 
         if let TAtomic::GenericParameter(parameter) = atomic_var_type {
-            array_atomic_types.extend(parameter.constraint.types.as_ref());
+            array_atomic_types.extend(parameter.constraint.types.iter().rev());
 
             continue;
         }

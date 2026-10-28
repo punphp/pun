@@ -1,0 +1,74 @@
+{
+    "default": [
+        [
+            "constraints.php",
+            22,
+            "method.resultUnused",
+            "Call to method SequentialConstraintOrder\\Alpha::ping() on a separate line has no effect.",
+            null,
+            true
+        ],
+        [
+            "constraints.php",
+            33,
+            "method.resultUnused",
+            "Call to method SequentialConstraintOrder\\Zulu::ping() on a separate line has no effect.",
+            null,
+            true
+        ]
+    ],
+    "quiet": [
+        [
+            "constraints.php",
+            22,
+            "method.resultUnused",
+            "Call to method SequentialConstraintOrder\\Alpha::ping() on a separate line has no effect.",
+            null,
+            true
+        ],
+        [
+            "constraints.php",
+            33,
+            "method.resultUnused",
+            "Call to method SequentialConstraintOrder\\Zulu::ping() on a separate line has no effect.",
+            null,
+            true
+        ]
+    ],
+    "foreach-off": [
+        [
+            "constraints.php",
+            22,
+            "method.resultUnused",
+            "Call to method SequentialConstraintOrder\\Alpha::ping() on a separate line has no effect.",
+            null,
+            true
+        ],
+        [
+            "constraints.php",
+            33,
+            "method.resultUnused",
+            "Call to method SequentialConstraintOrder\\Zulu::ping() on a separate line has no effect.",
+            null,
+            true
+        ]
+    ],
+    "loop-off": [
+        [
+            "constraints.php",
+            22,
+            "method.resultUnused",
+            "Call to method SequentialConstraintOrder\\Alpha::ping() on a separate line has no effect.",
+            null,
+            true
+        ],
+        [
+            "constraints.php",
+            33,
+            "method.resultUnused",
+            "Call to method SequentialConstraintOrder\\Zulu::ping() on a separate line has no effect.",
+            null,
+            true
+        ]
+    ]
+}

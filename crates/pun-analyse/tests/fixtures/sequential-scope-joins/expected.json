@@ -1,0 +1,298 @@
+{
+    "default": [
+        [
+            "joins.php",
+            11,
+            "phpstan.dumpType",
+            "Dumped type: array{}|array{a: int}",
+            null,
+            false
+        ],
+        [
+            "joins.php",
+            15,
+            "phpstan.dumpType",
+            "Dumped type: array{}|array{a?: int, b?: string}",
+            null,
+            false
+        ],
+        [
+            "joins.php",
+            19,
+            "phpstan.dumpType",
+            "Dumped type: array{}|array{a?: int, b?: string, c?: bool}",
+            null,
+            false
+        ],
+        [
+            "joins.php",
+            35,
+            "phpstan.dumpType",
+            "Dumped type: array{a: 1, b?: 'a', c?: 'b', d?: true}",
+            null,
+            false
+        ],
+        [
+            "joins.php",
+            49,
+            "phpstan.dumpType",
+            "Dumped type: array{kind: 'left', payload: 1, z_optional?: 3}|array{kind: 'right', payload: 2, z_optional?: 3}",
+            null,
+            false
+        ],
+        [
+            "joins.php",
+            51,
+            "phpstan.dumpType",
+            "Dumped type: array{kind: 'left', payload: 1, z_optional?: 3}",
+            null,
+            false
+        ],
+        [
+            "joins.php",
+            63,
+            "phpstan.dumpType",
+            "Dumped type: array{}|array{a: 1, b: 2}",
+            null,
+            false
+        ],
+        [
+            "joins.php",
+            67,
+            "phpstan.dumpType",
+            "Dumped type: array{}|array{a: 1, b: 2, c?: 3}|array{c: 3}",
+            null,
+            false
+        ],
+        [
+            "joins.php",
+            82,
+            "phpstan.dumpType",
+            "Dumped type: list<never>",
+            null,
+            false
+        ]
+    ],
+    "quiet": [
+        [
+            "joins.php",
+            11,
+            "phpstan.dumpType",
+            "Dumped type: array{}|array{a: int}",
+            null,
+            false
+        ],
+        [
+            "joins.php",
+            15,
+            "phpstan.dumpType",
+            "Dumped type: array{}|array{a?: int, b?: string}",
+            null,
+            false
+        ],
+        [
+            "joins.php",
+            19,
+            "phpstan.dumpType",
+            "Dumped type: array{}|array{a?: int, b?: string, c?: bool}",
+            null,
+            false
+        ],
+        [
+            "joins.php",
+            35,
+            "phpstan.dumpType",
+            "Dumped type: array{a: 1, b?: 'a', c?: 'b', d?: true}",
+            null,
+            false
+        ],
+        [
+            "joins.php",
+            49,
+            "phpstan.dumpType",
+            "Dumped type: array{kind: 'left', payload: 1, z_optional?: 3}|array{kind: 'right', payload: 2, z_optional?: 3}",
+            null,
+            false
+        ],
+        [
+            "joins.php",
+            51,
+            "phpstan.dumpType",
+            "Dumped type: array{kind: 'left', payload: 1, z_optional?: 3}",
+            null,
+            false
+        ],
+        [
+            "joins.php",
+            63,
+            "phpstan.dumpType",
+            "Dumped type: array{}|array{a: 1, b: 2}",
+            null,
+            false
+        ],
+        [
+            "joins.php",
+            67,
+            "phpstan.dumpType",
+            "Dumped type: array{}|array{a: 1, b: 2, c?: 3}|array{c: 3}",
+            null,
+            false
+        ],
+        [
+            "joins.php",
+            82,
+            "phpstan.dumpType",
+            "Dumped type: list<never>",
+            null,
+            false
+        ]
+    ],
+    "foreach-off": [
+        [
+            "joins.php",
+            11,
+            "phpstan.dumpType",
+            "Dumped type: array{}|array{a: int}",
+            null,
+            false
+        ],
+        [
+            "joins.php",
+            15,
+            "phpstan.dumpType",
+            "Dumped type: array{}|array{a?: int, b?: string}",
+            null,
+            false
+        ],
+        [
+            "joins.php",
+            19,
+            "phpstan.dumpType",
+            "Dumped type: array{}|array{a?: int, b?: string, c?: bool}",
+            null,
+            false
+        ],
+        [
+            "joins.php",
+            35,
+            "phpstan.dumpType",
+            "Dumped type: array{a: 1, b?: 'a', c?: 'b', d?: true}",
+            null,
+            false
+        ],
+        [
+            "joins.php",
+            49,
+            "phpstan.dumpType",
+            "Dumped type: array{kind: 'left', payload: 1, z_optional?: 3}|array{kind: 'right', payload: 2, z_optional?: 3}",
+            null,
+            false
+        ],
+        [
+            "joins.php",
+            51,
+            "phpstan.dumpType",
+            "Dumped type: array{kind: 'left', payload: 1, z_optional?: 3}",
+            null,
+            false
+        ],
+        [
+            "joins.php",
+            63,
+            "phpstan.dumpType",
+            "Dumped type: array{}|array{a: 1, b: 2}",
+            null,
+            false
+        ],
+        [
+            "joins.php",
+            67,
+            "phpstan.dumpType",
+            "Dumped type: array{}|array{a: 1, b: 2, c?: 3}|array{c: 3}",
+            null,
+            false
+        ],
+        [
+            "joins.php",
+            82,
+            "phpstan.dumpType",
+            "Dumped type: list<never>",
+            null,
+            false
+        ]
+    ],
+    "loop-off": [
+        [
+            "joins.php",
+            11,
+            "phpstan.dumpType",
+            "Dumped type: array{}|array{a: int}",
+            null,
+            false
+        ],
+        [
+            "joins.php",
+            15,
+            "phpstan.dumpType",
+            "Dumped type: array{}|array{a?: int, b?: string}",
+            null,
+            false
+        ],
+        [
+            "joins.php",
+            19,
+            "phpstan.dumpType",
+            "Dumped type: array{}|array{a?: int, b?: string, c?: bool}",
+            null,
+            false
+        ],
+        [
+            "joins.php",
+            35,
+            "phpstan.dumpType",
+            "Dumped type: array{a: 1, b?: 'a', c?: 'b', d?: true}",
+            null,
+            false
+        ],
+        [
+            "joins.php",
+            49,
+            "phpstan.dumpType",
+            "Dumped type: array{kind: 'left', payload: 1, z_optional?: 3}|array{kind: 'right', payload: 2, z_optional?: 3}",
+            null,
+            false
+        ],
+        [
+            "joins.php",
+            51,
+            "phpstan.dumpType",
+            "Dumped type: array{kind: 'left', payload: 1, z_optional?: 3}",
+            null,
+            false
+        ],
+        [
+            "joins.php",
+            63,
+            "phpstan.dumpType",
+            "Dumped type: array{}|array{a: 1, b: 2}",
+            null,
+            false
+        ],
+        [
+            "joins.php",
+            67,
+            "phpstan.dumpType",
+            "Dumped type: array{}|array{a: 1, b: 2, c?: 3}|array{c: 3}",
+            null,
+            false
+        ],
+        [
+            "joins.php",
+            82,
+            "phpstan.dumpType",
+            "Dumped type: list<never>",
+            null,
+            false
+        ]
+    ]
+}
