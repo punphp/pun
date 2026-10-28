@@ -61,6 +61,8 @@ pub(crate) struct Checks {
     pub(super) type_aliases: Vec<(String, String)>,
     /// [`Project::reported`].
     reported: Option<crate::project::Reported>,
+    /// [`Project::method_rules`], independent of identifier filtering.
+    method_rules: crate::MethodRules,
     /// [`Project::precise_unused_parameter_line`].
     precise_unused_parameter_line: bool,
     /// The method and property extensions of `featureToggles.internalTag`, at level 2 (config.level2.neon).
@@ -133,6 +135,7 @@ impl Checks {
             internal_tag: project.internal_tag,
             type_aliases: project.type_aliases.clone(),
             reported: project.reported.clone(),
+            method_rules: project.method_rules,
             precise_unused_parameter_line: project.precise_unused_parameter_line,
             internal_members,
             deprecations: project.deprecation_rules,
@@ -294,6 +297,7 @@ fn checker<'a, 'arena>(
         include_settings: &project.include_file,
         include_state,
         closure_bind: 0,
+        method_rules: project.method_rules,
         errors: Vec::new(),
     }
 }

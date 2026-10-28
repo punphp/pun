@@ -169,7 +169,22 @@ fn project(cfg: &Config, analysed: Vec<PathBuf>) -> Result<pun_analyse::Project>
         IgnoredErrors::new(&ignores.unwrap_or_default(), true).with_rules(rule_of_identifier);
     let on: std::collections::HashSet<String> =
         cfg.analyse.rules.iter().map(|r| r.id.clone()).collect();
+    let method_rules = pun_analyse::MethodRules {
+        call_methods: on.contains("analyse/undefined/method"),
+        overriding_method: on.contains("analyse/classes/incompatible-override"),
+        consistent_constructor: on.contains("analyse/classes/inconsistent-constructor"),
+        renamed_named_arguments: on.contains("analyse/types/renamed-parameter-in-subtype"),
+    };
+    project.method_rules = method_rules;
     project.reported = Some(std::sync::Arc::new(move |id| {
+        // Both registered comparison owners emit these identifiers. Their invocation gates, not the
+        // identifier's single canonical mapping, decide which owner's errors exist.
+        if method_rules.consistent_constructor && matches!(id,
+            "method.childParameterType" | "method.visibility" | "parameter.byRef" | "parameter.missing"
+            | "parameter.notByRef" | "parameter.notOptional" | "parameter.notVariadic" | "parameter.variadic"
+        ) {
+            return true;
+        }
         // Unmatched/comment-policy errors come from ignore processing, not a configurable rule.
         rule_of_identifier(id).map_or_else(|| id == "phpstan.parse" || id.starts_with("ignore."), |r| on.contains(r))
     }));

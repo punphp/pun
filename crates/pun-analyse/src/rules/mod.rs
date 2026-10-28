@@ -917,6 +917,8 @@ pub struct Checker<'a, 'arena> {
     include_state: include_file::State,
     /// How many `Closure::bind()` calls the walk is inside (`isInClosureBind()`).
     closure_bind: usize,
+    /// Registrations of the owners of named-argument call and rename records.
+    method_rules: crate::MethodRules,
     errors: Vec<Error>,
 }
 
@@ -2051,18 +2053,24 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         _: &mut (),
     ) {
         self.bind_method_arguments(call.object, &call.method, &call.argument_list, false);
-        named_argument::call(self, call.object, &call.method, &call.argument_list, true);
+        if self.method_rules.call_methods {
+            named_argument::call(self, call.object, &call.method, &call.argument_list, true);
+        }
         internal::method_call(self, call.span(), call.object, &call.method);
         strict::dynamic_call(self, call.span(), call.object, &call.method);
-        types::method_call(self, call.span(), call.object, &call.method, &call.argument_list, true);
-        if let Some(name) = types::dynamic_names::member(&call.method) {
-            types::dynamic_names::check(self, name, false, "Method", call.object, true, "method.nameNotString");
+        if self.method_rules.call_methods {
+            types::method_call(self, call.span(), call.object, &call.method, &call.argument_list, true);
+            if let Some(name) = types::dynamic_names::member(&call.method) {
+                types::dynamic_names::check(self, name, false, "Method", call.object, true, "method.nameNotString");
+            }
         }
         types::nullsafe_method(self, call);
     }
     fn walk_in_method_call(&mut self, call: &'ast MethodCall<'arena>, _: &mut ()) {
         self.bind_method_arguments(call.object, &call.method, &call.argument_list, false);
-        named_argument::call(self, call.object, &call.method, &call.argument_list, false);
+        if self.method_rules.call_methods {
+            named_argument::call(self, call.object, &call.method, &call.argument_list, false);
+        }
         dead_code::method_check(self, call);
         internal::method_call(self, call.span(), call.object, &call.method);
         strict::dynamic_call(self, call.span(), call.object, &call.method);
@@ -2075,12 +2083,14 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Checker<'_, 'arena> {
         }
         // A static closure has no `$this`, even when its parameter carries a binding annotation. The undefined
         // variable check reports it; there is no receiver on which to check methods.
-        if self.this_defined() {
+        if self.method_rules.call_methods && self.this_defined() {
             calls::method_call(self, call);
         }
-        types::method_call(self, call.span(), call.object, &call.method, &call.argument_list, false);
-        if let Some(name) = types::dynamic_names::member(&call.method) {
-            types::dynamic_names::check(self, name, false, "Method", call.object, false, "method.nameNotString");
+        if self.method_rules.call_methods {
+            types::method_call(self, call.span(), call.object, &call.method, &call.argument_list, false);
+            if let Some(name) = types::dynamic_names::member(&call.method) {
+                types::dynamic_names::check(self, name, false, "Method", call.object, false, "method.nameNotString");
+            }
         }
         assign::arguments(self, assign::Callee::Method(call));
     }

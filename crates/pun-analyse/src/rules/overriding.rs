@@ -976,13 +976,18 @@ pub fn method<'arena>(c: &mut Checker<'_, 'arena>, m: &Method<'arena>, name: &st
     let k = c.class_scope().expect("a method is walked inside its class-like");
     let mut collected = Vec::new();
     let messages = declared::with_classes(c, || {
-        let mut out = overriding_method(c, m, name, k, &mut collected);
-        // OverridingMethodRule::addErrors(): MethodSignatureRule (checkPhpDocMethodSignatures, level 3) when the
-        // rule itself found nothing
-        if out.is_empty() && c.level >= 3 && c.method_purity_override {
-            out = purity_override(c, m, name, k);
+        let mut out = Vec::new();
+        if c.method_rules.overriding_method {
+            out = overriding_method(c, m, name, k, &mut collected);
+            // OverridingMethodRule::addErrors(): MethodSignatureRule (checkPhpDocMethodSignatures, level 3) when the
+            // rule itself found nothing
+            if out.is_empty() && c.level >= 3 && c.method_purity_override {
+                out = purity_override(c, m, name, k);
+            }
         }
-        out.extend(consistent_constructor(c, m, name, k, &mut collected));
+        if c.method_rules.consistent_constructor {
+            out.extend(consistent_constructor(c, m, name, k, &mut collected));
+        }
         out
     });
     for record in collected {

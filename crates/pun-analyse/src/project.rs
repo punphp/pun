@@ -107,10 +107,36 @@ pub struct Project {
     /// Which identifiers the run reports, `None` for all: the others are dropped before any ignore sees them, as
     /// PHPStan never reports the errors of a rule it doesn't run.
     pub reported: Option<Reported>,
+    /// Independent registrations of the method rules that produce or join named-argument records.
+    pub method_rules: MethodRules,
 }
 
 /// [`Project::reported`].
 pub type Reported = std::sync::Arc<dyn Fn(&str) -> bool + Send + Sync>;
+
+/// Rule registration, not identifier filtering or FunctionCallParametersCheck's argument switches.
+#[derive(Clone, Copy)]
+pub struct MethodRules {
+    /// CallMethodsRule, including its ordinary diagnostics and named-argument call records.
+    pub call_methods: bool,
+    /// OverridingMethodRule, including MethodSignatureRule and parameter-rename records.
+    pub overriding_method: bool,
+    /// ConsistentConstructorRule, independently of OverridingMethodRule.
+    pub consistent_constructor: bool,
+    /// MethodCallWithPossiblyRenamedNamedArgumentRule's post-file join.
+    pub renamed_named_arguments: bool,
+}
+
+impl Default for MethodRules {
+    fn default() -> Self {
+        Self {
+            call_methods: true,
+            overriding_method: true,
+            consistent_constructor: true,
+            renamed_named_arguments: true,
+        }
+    }
+}
 
 /// phpstan-strict-rules' `strictRules.*` switches of the ported rules.
 #[derive(Clone, Copy, Default)]
@@ -296,6 +322,7 @@ impl Project {
                 .map(PathBuf::from)
                 .collect(),
             reported: None,
+            method_rules: MethodRules::default(),
         }
     }
 
@@ -347,6 +374,7 @@ impl Project {
             type_aliases: Vec::new(),
             stubs: Vec::new(),
             reported: None,
+            method_rules: MethodRules::default(),
         }
     }
 }

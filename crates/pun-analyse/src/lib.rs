@@ -19,7 +19,7 @@ use rayon::prelude::*;
 pub use codebase::CouldNotReadFile;
 pub use laravel::Laravel;
 pub use mago::{Dumped, MagoIssue, MagoRun, run_mago};
-pub use project::{Project, Reported, StrictRules};
+pub use project::{MethodRules, Project, Reported, StrictRules};
 pub use relative_path::RelativePath;
 pub use rules::Larastan;
 
@@ -87,7 +87,12 @@ pub fn analyse_project(project: &Project) -> Result<Analysis, CouldNotReadFile> 
         .flat_map_iter(|f| rules::check_file(f, &codebase, &settings, &files, &sources))
         .chain(rules::unused_traits(project, &codebase, &sources))
         .collect();
-    let errors = rules::renamed_named_arguments(errors, &sources, project.report_ignores_without_comments);
+    let errors = rules::renamed_named_arguments(
+        errors,
+        &sources,
+        project.report_ignores_without_comments,
+        project.method_rules.renamed_named_arguments,
+    );
     // the codebase is large: freed off the critical path
     std::thread::spawn(move || drop((codebase, sources)));
     let analysed: Vec<String> = project.analysed.iter().map(|p| display(p)).collect();

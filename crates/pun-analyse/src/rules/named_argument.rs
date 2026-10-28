@@ -371,10 +371,15 @@ pub(crate) fn resolve(
     errors: Vec<Error>,
     sources: &crate::codebase::Sources,
     explain_ignores: bool,
+    enabled: bool,
 ) -> Vec<Error> {
     let (mut records, mut errors): (Vec<_>, Vec<_>) = errors
         .into_iter()
         .partition(|e| e.message.starts_with(ENTRY));
+    // An unregistered CollectedDataNode rule never joins or consumes provisional unmatched ignores.
+    if !enabled {
+        return errors;
+    }
     records.sort_by(|a, b| a.file_path.cmp(&b.file_path));
     let mut calls: BTreeMap<(&str, &str, &str), Vec<&Error>> = BTreeMap::new();
     for e in &records {
