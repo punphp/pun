@@ -4,6 +4,18 @@
 //! holds the cases where Pun keeps the meaning but not Rector's bytes, its expected output derived by hand. Each one
 //! must pass as `format(pun lint --fix) == format(expected)` with format being the laravel preset, and the text edits
 //! must give the expected bytes before format too.
+//!
+//! ReturnTypeFromSymfonySerializerRector/Pun/serializer_broken.php.inc holds the class arguments where Rector writes a
+//! return type that does not parse or names no class: `'\App\Holder'` (Rector: `\\App\Holder`), `Holder::CLASS`
+//! (`\App\Holder::CLASS`), `Holder::{$c}` (`\App\Holder::c`) and `self::class` in an anonymous class (Rector's
+//! internal `\AnonymousClass<hash>`). Pun writes `\App\Holder` for the first two and leaves the other two alone.
+//!
+//! ReturnTypeFromStrictNativeCallRector/Pun/unreachable_call.php.inc and ReturnTypeFromStrictTernaryRector/Pun/
+//! ternary_unreached.php.inc: Rector types a `return strlen($s)` or `return $x ? 1 : 2` after an `exit` with the
+//! scope before it and writes `int`; Mago's analysis does not reach it, so Pun leaves the method alone.
+//!
+//! AddReturnTypeDeclarationBasedOnParentClassMethodRector/Pun/parent_cycle.php.inc: two classes that extend each
+//! other, which Rector stops on ("Circular reference to class"); Pun leaves both alone.
 
 mod lint_c;
 

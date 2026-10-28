@@ -12,7 +12,6 @@ use mago_codex::metadata::CodebaseMetadata;
 use mago_codex::ttype::TType;
 use mago_codex::ttype::atomic::TAtomic;
 use mago_codex::ttype::atomic::array::TArray;
-use mago_codex::ttype::atomic::array::key::ArrayKey;
 use mago_codex::ttype::atomic::array::keyed::TKeyedArray;
 use mago_codex::ttype::atomic::object::TObject;
 use mago_codex::ttype::atomic::object::named::TNamedObject;
@@ -42,17 +41,20 @@ pub(crate) enum Created {
 pub(crate) fn create_keep_constant(types: Vec<TAtomic>) -> Created {
     let mut unwrapped = Vec::new();
     for t in types {
-        if is_constant_array(&t) {
-            unwrapped.extend(unwrap_constant_array(&t));
-        } else {
-            unwrapped.push(t);
+        match &t {
+            TAtomic::Array(a) if is_constant_array(&t) => {
+                unwrapped.extend(unwrap_constant_array(a));
+            }
+            _ => unwrapped.push(t),
         }
     }
     let mut types = uniquate(unwrapped);
     match types.len() {
-        0 => Created::Mixed,
         1 => Created::Single(types.remove(0)),
-        _ if types.iter().any(|t| matches!(t, TAtomic::Mixed(_))) => Created::Mixed,
+        // no types (an empty union), or one of them mixed
+        _ if types.is_empty() || types.iter().any(|t| matches!(t, TAtomic::Mixed(_))) => {
+            Created::Mixed
+        }
         _ => Created::Union(types),
     }
 }
@@ -129,19 +131,17 @@ fn is_constant_value(t: &TAtomic) -> bool {
 fn type_hash(t: &TAtomic) -> String {
     match t {
         TAtomic::Mixed(_) => "mixed".to_string(),
-        TAtomic::Array(TArray::Keyed(k)) if !is_constant_array(t) && !k.non_empty => {
-            match k.get_generic_parameters() {
-                Some((key, item)) => {
-                    format!(
-                        "{}{}{}[]",
-                        union_hash(item),
-                        union_hash(key),
-                        describe(item)
-                    )
-                }
-                None => describe_atomic(t),
-            }
-        }
+        // a keyed array with parameters is not constant
+        TAtomic::Array(TArray::Keyed(TKeyedArray {
+            parameters: Some((key, item)),
+            non_empty: false,
+            ..
+        })) => format!(
+            "{}{}{}[]",
+            union_hash(item),
+            union_hash(key),
+            describe(item)
+        ),
         TAtomic::Object(TObject::Named(n)) if n.type_parameters.is_none() => {
             String::from_utf8_lossy(n.name.as_bytes()).to_ascii_lowercase()
         }
@@ -192,12 +192,12 @@ pub(crate) fn is_constant_array(t: &TAtomic) -> bool {
 }
 
 /// A constant array's entries: (key, optional, item).
-fn constant_entries(t: &TAtomic) -> Vec<(TAtomic, bool, &TUnion)> {
+fn constant_entries(t: &TArray) -> Vec<(TAtomic, bool, &TUnion)> {
     match t {
-        TAtomic::Array(TArray::Keyed(k)) => (k.known_items.iter().flat_map(|i| i.iter()))
-            .map(|(key, (optional, item))| (array_key(key), *optional, item))
+        TArray::Keyed(k) => (k.known_items.iter().flat_map(|i| i.iter()))
+            .map(|(key, (optional, item))| (key.to_atomic(), *optional, item))
             .collect(),
-        TAtomic::Array(TArray::List(l)) => (l.known_elements.iter().flat_map(|e| e.iter()))
+        TArray::List(l) => (l.known_elements.iter().flat_map(|e| e.iter()))
             .map(|(i, (optional, item))| {
                 (
                     TAtomic::Scalar(TScalar::literal_int(*i as i64)),
@@ -206,22 +206,13 @@ fn constant_entries(t: &TAtomic) -> Vec<(TAtomic, bool, &TUnion)> {
                 )
             })
             .collect(),
-        _ => Vec::new(),
-    }
-}
-
-fn array_key(key: &ArrayKey) -> TAtomic {
-    match key {
-        ArrayKey::Integer(i) => TAtomic::Scalar(TScalar::literal_int(*i)),
-        ArrayKey::String(s) => TAtomic::Scalar(TScalar::literal_string(*s)),
-        _ => TAtomic::Scalar(TScalar::ArrayKey),
     }
 }
 
 /// `unwrapConstantArrayTypes`: the item types of a constant array (its iterable value type, flattened), each as an
 /// `array<key, item>` with the key at the same place in its flattened key type (`mixed` past its end); an item that
 /// is a constant array is unwrapped too, each of its arrays the item of one array. `[]` is `array<never, never>`.
-fn unwrap_constant_array(t: &TAtomic) -> Vec<TAtomic> {
+fn unwrap_constant_array(t: &TArray) -> Vec<TAtomic> {
     let entries = constant_entries(t);
     if entries.is_empty() {
         return vec![array_of(TAtomic::Never, TAtomic::Never)];
@@ -244,8 +235,10 @@ fn unwrap_constant_array(t: &TAtomic) -> Vec<TAtomic> {
             .get(at)
             .cloned()
             .unwrap_or(TAtomic::Mixed(Default::default()));
-        if is_constant_array(&item) {
-            for inner in unwrap_constant_array(&item) {
+        if let TAtomic::Array(a) = &item
+            && is_constant_array(&item)
+        {
+            for inner in unwrap_constant_array(a) {
                 out.push(array_of(key.clone(), inner));
             }
             continue;
@@ -446,6 +439,16 @@ pub(crate) fn merged_arrays(types: Vec<TAtomic>) -> Vec<TAtomic> {
     if types.iter().filter(|t| general(t)).count() < 2 {
         return types;
     }
+    // the union of non-empty arrays is non-empty (`array_map(...) ?: 1`)
+    let non_empty = types.iter().filter(|t| general(t)).all(|t| {
+        matches!(
+            t,
+            TAtomic::Array(TArray::Keyed(TKeyedArray {
+                non_empty: true,
+                ..
+            }))
+        ) || matches!(t, TAtomic::Array(TArray::List(l)) if l.non_empty)
+    });
     let mut out = Vec::new();
     let mut merged = false;
     for t in types {
@@ -453,10 +456,12 @@ pub(crate) fn merged_arrays(types: Vec<TAtomic>) -> Vec<TAtomic> {
             out.push(t);
         } else if !merged {
             merged = true;
-            out.push(array_of(
-                TAtomic::Mixed(Default::default()),
-                TAtomic::Mixed(Default::default()),
-            ));
+            let mut array = TKeyedArray::new_with_parameters(
+                Arc::new(TUnion::from_atomic(TAtomic::Mixed(Default::default()))),
+                Arc::new(TUnion::from_atomic(TAtomic::Mixed(Default::default()))),
+            );
+            array.non_empty = non_empty;
+            out.push(TAtomic::Array(TArray::Keyed(array)));
         }
     }
     out

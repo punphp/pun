@@ -54,10 +54,7 @@ impl Rule for AddReturnTypeFromNativeCall {
             return;
         }
         let mut types: Vec<TAtomic> = Vec::new();
-        for r in &returns {
-            let Some(value) = r.value else {
-                return;
-            };
+        for value in returns.iter().filter_map(|r| r.value) {
             // `ExclusiveNativeCallLikeReturnMatcher`: a function, method or static method call of a built-in
             let target = match value {
                 Expression::Call(Call::Function(c)) => Target::Function(c.function),

@@ -53,18 +53,19 @@ impl Rule for AddReturnTypeFromYield {
                 f.return_type_hint.as_ref(),
                 None,
             ),
-            Node::Method(m) => {
-                let MethodBody::Concrete(body) = &m.body else {
-                    return;
-                };
-                (
-                    node_span(&m.name),
-                    node_span(&m.parameter_list).end,
-                    body,
-                    m.return_type_hint.as_ref(),
-                    Some(m),
-                )
-            }
+            Node::Method(
+                m @ Method {
+                    body: MethodBody::Concrete(body),
+                    ..
+                },
+            ) => (
+                node_span(&m.name),
+                node_span(&m.parameter_list).end,
+                body,
+                m.return_type_hint.as_ref(),
+                Some(m),
+            ),
+            // an abstract method
             _ => return,
         };
         if !has_only_yielding_expressions(ctx.source, body) {

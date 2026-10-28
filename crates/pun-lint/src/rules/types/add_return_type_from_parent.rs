@@ -9,7 +9,7 @@ use mago_codex::ttype::atomic::TAtomic;
 use mago_codex::ttype::atomic::object::TObject;
 use mago_codex::ttype::atomic::object::named::TNamedObject;
 use mago_span::HasSpan;
-use mago_syntax::cst::{Modifier, Node, NodeKind};
+use mago_syntax::cst::{Method, Modifier, Node, NodeKind};
 
 use super::declare::{return_declaration, text_order};
 use super::facts::{Facts, facts, is_tentative};
@@ -42,23 +42,28 @@ impl Rule for AddReturnTypeFromParent {
         ctx: &Context<'_>,
         out: &mut Vec<Report>,
     ) {
-        let Node::Method(m) = node else {
+        let Node::Method(
+            m @ Method {
+                return_type_hint: None,
+                ..
+            },
+        ) = node
+        else {
             return;
         };
-        if m.return_type_hint.is_some() {
-            return;
-        }
         // a method of a class (`Class_`, anonymous ones too)
-        let Some(Node::Class(_) | Node::AnonymousClass(_)) = ancestors.iter().rev().find(|a| {
-            matches!(
-                a,
-                Node::Class(_)
-                    | Node::AnonymousClass(_)
-                    | Node::Interface(_)
-                    | Node::Trait(_)
-                    | Node::Enum(_)
-            )
-        }) else {
+        let Some(class_like @ (Node::Class(_) | Node::AnonymousClass(_))) =
+            ancestors.iter().rev().find(|a| {
+                matches!(
+                    a,
+                    Node::Class(_)
+                        | Node::AnonymousClass(_)
+                        | Node::Interface(_)
+                        | Node::Trait(_)
+                        | Node::Enum(_)
+                )
+            })
+        else {
             return;
         };
         let name = m.name.value.to_ascii_lowercase();
@@ -71,22 +76,13 @@ impl Rule for AddReturnTypeFromParent {
         {
             return;
         }
-        let Some(scope) = class_scope(ancestors) else {
-            return;
-        };
         let facts = facts(ctx);
-        let class = match &scope.name {
-            Some(n) => n.clone(),
-            None => {
-                let Some(Node::AnonymousClass(c)) = ancestors
-                    .iter()
-                    .rev()
-                    .find(|a| matches!(a, Node::AnonymousClass(_)))
-                else {
-                    return;
-                };
-                facts.anonymous_class_name(c.span())
-            }
+        let class = match class_like {
+            Node::AnonymousClass(c) => facts.anonymous_class_name(c.span()),
+            // a named class always has its name
+            _ => class_scope(ancestors)
+                .and_then(|s| s.name)
+                .unwrap_or_default(),
         };
         let Some(r#type) = parent_return_type(&facts, &class, &name, ctx.php_version) else {
             return;
@@ -109,6 +105,7 @@ fn parent_return_type(
 ) -> Option<String> {
     let codebase = &facts.codebase;
     let mut parent = parent_method(codebase, class, method)?;
+    // a bound for circular parents (Pun/parent_cycle), which Mago keeps
     for _ in 0..64 {
         if parent
             .method_metadata

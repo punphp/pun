@@ -82,7 +82,11 @@ pub(crate) fn return_declaration<'a>(
     }
     names.sort_by_key(|n| {
         let key = order_key(n);
-        order.iter().position(|o| *o == key).unwrap_or(order.len())
+        // a `self` written for a declared `static` keeps its place
+        order
+            .iter()
+            .position(|o| *o == key || (key == "self" && o == "static"))
+            .unwrap_or(order.len())
     });
     // a DNF type (PHP 8.2) wraps each intersection of a union in parentheses
     if (names.len() > 1 || nullable) && names.iter().any(|n| n.contains('&')) {
@@ -96,8 +100,9 @@ pub(crate) fn return_declaration<'a>(
         }
     }
     match (names.as_slice(), nullable) {
-        ([], true) => (php_version >= NULL_FALSE_TRUE_STANDALONE_TYPE).then(|| "null".to_string()),
-        ([], false) => None,
+        ([], nullable) => {
+            (nullable && php_version >= NULL_FALSE_TRUE_STANDALONE_TYPE).then(|| "null".to_string())
+        }
         ([one], false) => Some(one.clone()),
         ([one], true) if one == "void" || one == "never" || one == "mixed" => None,
         ([one], true) if one.starts_with('(') => Some(format!("{one}|null")),

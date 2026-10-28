@@ -15,7 +15,7 @@ use mago_syntax::cst::{Access, Call, Expression, Literal, Node, NodeKind};
 use super::declare::{return_declaration, text_order, union_order};
 use super::facts::{Facts, facts};
 use super::silent_void::Place;
-use super::type_factory::{Created, infer_returns};
+use super::type_factory::{Created, infer_returns, is_accessory_array};
 use super::{
     SCALAR_TYPES, add_return_type, class_scope, has_only_return_with_expr, returns_scoped, untyped,
 };
@@ -65,14 +65,14 @@ impl Rule for AddReturnTypeFromTypedCall {
         {
             return;
         }
+        if !has_only_return_with_expr(&place, f.body, &returns) {
+            return;
+        }
         let current = scope.as_ref().and_then(|s| s.name.clone());
         // collectStrictReturnTypes
         let mut nodes: Vec<String> = Vec::new();
         let mut has_call = false;
-        for r in &returns {
-            let Some(value) = r.value else {
-                return;
-            };
+        for value in returns.iter().filter_map(|r| r.value) {
             let declared = match value {
                 Expression::Call(Call::Function(c)) => {
                     has_call = true;
@@ -132,9 +132,6 @@ impl Rule for AddReturnTypeFromTypedCall {
             }
         }
         if !has_call || nodes.is_empty() {
-            return;
-        }
-        if !has_only_return_with_expr(&place, f.body, &returns) {
             return;
         }
         let r#type = match nodes.as_slice() {
@@ -207,8 +204,12 @@ fn call_return(
                     let order = signature_order(ret);
                     types.sort_by_key(|t| {
                         let key = atomic_key(t);
-                        order.iter().position(|o| *o == key).unwrap_or(order.len())
+                        order.iter().position(|o| o == key).unwrap_or(order.len())
                     });
+                }
+                // the signature resolved for the arguments is a list or a non-empty array (`array_values()`)
+                if types.iter().any(is_accessory_array) {
+                    return None;
                 }
                 (types, Vec::new())
             }
@@ -257,9 +258,10 @@ fn declaration(facts: &Facts, t: &[TAtomic], order: &[String], php_version: u32)
     return_declaration(union_order(t), &facts.codebase, php_version, order, true)
 }
 
-/// The members of a PHPStan type string (`float|0|positive-int`, `($num is float ? float : int<0, max>)`) in the
-/// order they first appear, as the keys [`return_declaration`] orders by: what a declaration writes for each, its
-/// last name segment in lowercase. Generic arguments and shapes are skipped.
+/// The members of a conditional PHPStan type string (`($num is float ? float : int<0, max>)`) in the order they
+/// first appear, as the keys [`return_declaration`] orders by: what a declaration writes for each, its last name
+/// segment in lowercase. Generic arguments and shapes are skipped. (The one such signature with integer literals,
+/// `db2_autocommit()`, is not in Mago's prelude.)
 fn signature_order(ret: &str) -> Vec<String> {
     let mut flat = String::new();
     let mut depth = 0usize;
@@ -279,16 +281,13 @@ fn signature_order(ret: &str) -> Vec<String> {
             continue;
         }
         let lower = word.to_ascii_lowercase();
-        let key =
-            if lower.ends_with("-int") || lower.bytes().all(|b| b.is_ascii_digit() || b == b'-') {
-                "int".to_string()
-            } else if lower.ends_with("-string") {
-                "string".to_string()
-            } else if lower == "list" || lower.ends_with("-array") || lower.ends_with("-list") {
-                "array".to_string()
-            } else {
-                lower.rsplit('\\').next().unwrap_or(&lower).to_string()
-            };
+        let key = if lower.ends_with("-string") {
+            "string".to_string()
+        } else if lower == "list" || lower.ends_with("-array") || lower.ends_with("-list") {
+            "array".to_string()
+        } else {
+            lower.rsplit('\\').next().unwrap_or(&lower).to_string()
+        };
         if !order.contains(&key) {
             order.push(key);
         }
@@ -300,14 +299,14 @@ fn signature_order(ret: &str) -> Vec<String> {
 /// `list<string>`), as Mago's types; `None` for one a declaration has no word for.
 fn signature_types(codebase: &CodebaseMetadata, ret: &str) -> Option<Vec<TAtomic>> {
     let mut ret = ret.trim();
-    while let Some(inner) = ret.strip_prefix('(').and_then(|r| r.strip_suffix(')')) {
-        ret = inner.trim();
-    }
     if let Some(inner) = ret
         .strip_prefix("__benevolent<")
         .and_then(|r| r.strip_suffix('>'))
     {
         ret = inner;
+    }
+    while let Some(inner) = ret.strip_prefix('(').and_then(|r| r.strip_suffix(')')) {
+        ret = inner.trim();
     }
     let mut members: Vec<&str> = Vec::new();
     let (mut depth, mut start) = (0usize, 0usize);
@@ -341,12 +340,12 @@ fn signature_types(codebase: &CodebaseMetadata, ret: &str) -> Option<Vec<TAtomic
             "bool" => TAtomic::Scalar(TScalar::bool()),
             "float" => TAtomic::Scalar(TScalar::float()),
             "object" => TAtomic::Object(TObject::Any),
-            "array" | "list" | "non-empty-array" | "non-empty-list" => {
-                TAtomic::Array(TArray::Keyed(TKeyedArray::new_with_parameters(
-                    std::sync::Arc::new(mago_codex::ttype::get_arraykey()),
-                    std::sync::Arc::new(mago_codex::ttype::get_mixed()),
-                )))
-            }
+            // a list or a non-empty array is an intersection in PHPStan, which a return declaration does not write
+            "list" | "non-empty-array" | "non-empty-list" => return None,
+            "array" => TAtomic::Array(TArray::Keyed(TKeyedArray::new_with_parameters(
+                std::sync::Arc::new(mago_codex::ttype::get_arraykey()),
+                std::sync::Arc::new(mago_codex::ttype::get_mixed()),
+            ))),
             b if b == "int" || b.ends_with("-int") || b.parse::<i64>().is_ok() => {
                 TAtomic::Scalar(TScalar::int())
             }
@@ -363,21 +362,16 @@ fn signature_types(codebase: &CodebaseMetadata, ret: &str) -> Option<Vec<TAtomic
 }
 
 /// The key [`signature_order`] gives the declaration of `t`.
-fn atomic_key(t: &TAtomic) -> String {
+fn atomic_key(t: &TAtomic) -> &'static str {
     match t {
-        TAtomic::Scalar(TScalar::Integer(_)) => "int".to_string(),
-        TAtomic::Scalar(TScalar::Float(_)) => "float".to_string(),
-        TAtomic::Scalar(TScalar::String(_) | TScalar::ClassLikeString(_)) => "string".to_string(),
-        TAtomic::Scalar(TScalar::Bool(b)) if b.is_true() => "true".to_string(),
-        TAtomic::Scalar(TScalar::Bool(b)) if b.is_false() => "false".to_string(),
-        TAtomic::Scalar(TScalar::Bool(_)) => "bool".to_string(),
-        TAtomic::Array(_) => "array".to_string(),
-        TAtomic::Null => "null".to_string(),
-        TAtomic::Object(TObject::Named(n)) => String::from_utf8_lossy(n.name.as_bytes())
-            .rsplit('\\')
-            .next()
-            .unwrap_or_default()
-            .to_ascii_lowercase(),
-        _ => String::new(),
+        TAtomic::Scalar(TScalar::Integer(_)) => "int",
+        TAtomic::Scalar(TScalar::Float(_)) => "float",
+        TAtomic::Scalar(TScalar::Bool(b)) if b.is_true() => "true",
+        TAtomic::Scalar(TScalar::Bool(b)) if b.is_false() => "false",
+        TAtomic::Scalar(TScalar::Bool(_)) => "bool",
+        TAtomic::Array(_) => "array",
+        TAtomic::Null => "null",
+        // a string: no conditional signature returns another kind with a declaration
+        _ => "string",
     }
 }
