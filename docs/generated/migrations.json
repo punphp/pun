@@ -6855,7 +6855,7 @@
         "rules": [
           "lint/types/no-nullsafe-on-non-null"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -7587,7 +7587,7 @@
         "rules": [
           "lint/types/prefer-instanceof"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -10501,7 +10501,7 @@
         "rules": [
           "lint/types/prefer-identical-same-type"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {

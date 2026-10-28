@@ -18,6 +18,10 @@ use pun_lint::rules::{
     AddReturnTypeFromParam, AddReturnTypeFromParent, AddReturnTypeFromProperty,
     AddReturnTypeFromSymfonySerializer, AddReturnTypeFromTernary, AddReturnTypeFromTypedCall,
     AddReturnTypeFromYield, AddStringReturn, AddStringReturnFromScalar, AddUnionReturn,
+    AddReturnTypeFromConstant, AddReturnTypeFromNew, AddReturnTypeFromParam,
+    AddReturnTypeFromProperty, AddReturnTypeFromTernary, AddStringReturn,
+    AddStringReturnFromScalar, AddUnionReturn, NoNullsafeOnNonNull, PreferIdenticalSameType,
+    PreferInstanceof,
 };
 
 fn check(rule: impl Rule + 'static, class: &str) {
@@ -249,6 +253,15 @@ fn add_return_type_declaration_from_yields() {
     check(
         AddReturnTypeFromYield,
         "AddReturnTypeDeclarationFromYieldsRector",
+fn inline_is_a_instance_of() {
+    check(PreferInstanceof, "InlineIsAInstanceOfRector");
+}
+
+#[test]
+fn use_identical_over_equal_with_same_type() {
+    check(
+        PreferIdenticalSameType,
+        "UseIdenticalOverEqualWithSameTypeRector",
     );
 }
 
@@ -267,6 +280,10 @@ fn return_type_from_symfony_serializer() {
         vec![Box::new(AddReturnTypeFromSymfonySerializer)],
         "ReturnTypeFromSymfonySerializerRector",
         70000,
+fn cleanup_unneeded_nullsafe_operator() {
+    check(
+        NoNullsafeOnNonNull,
+        "CleanupUnneededNullsafeOperatorRector",
     );
 }
 

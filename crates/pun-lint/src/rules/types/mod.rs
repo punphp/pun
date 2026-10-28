@@ -36,6 +36,10 @@ mod add_union_return;
 pub(crate) mod declare;
 mod native;
 mod never;
+mod no_nullsafe_on_non_null;
+mod prefer_identical_same_type;
+mod prefer_instanceof;
+mod rector_type;
 pub(crate) mod silent_void;
 mod type_factory;
 
@@ -64,6 +68,9 @@ pub use add_return_type_from_typed_call::AddReturnTypeFromTypedCall;
 pub use add_return_type_from_yield::AddReturnTypeFromYield;
 pub use add_scalar_return::{AddNumericReturnFromScalar, AddStringReturnFromScalar};
 pub use add_union_return::{AddNullableReturn, AddUnionReturn};
+pub use no_nullsafe_on_non_null::NoNullsafeOnNonNull;
+pub use prefer_identical_same_type::PreferIdenticalSameType;
+pub use prefer_instanceof::PreferInstanceof;
 pub(crate) use never::has_parent_class_method;
 
 use mago_syntax::cst::{
@@ -110,6 +117,9 @@ pub(crate) fn all() -> Vec<Box<dyn Rule>> {
         Box::new(AddReturnTypeFromParam),
         Box::new(AddFluentReturn),
         Box::new(AddNeverReturn),
+        Box::new(PreferInstanceof),
+        Box::new(PreferIdenticalSameType),
+        Box::new(NoNullsafeOnNonNull),
     ]
 }
 

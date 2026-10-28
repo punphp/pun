@@ -16977,7 +16977,7 @@
         "CleanupUnneededNullsafeOperatorRector",
         "Rector\\CodeQuality\\Rector\\NullsafeMethodCall\\CleanupUnneededNullsafeOperatorRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/types/prefer-generic-collection-phpdoc",
@@ -17017,7 +17017,7 @@
         "UseIdenticalOverEqualWithSameType",
         "UseIdenticalOverEqualWithSameTypeRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/types/prefer-instanceof",
@@ -17037,7 +17037,7 @@
         "InlineIsAInstanceOfRector",
         "Rector\\CodeQuality\\Rector\\FuncCall\\InlineIsAInstanceOfRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/types/prefer-narrow-param-type",
