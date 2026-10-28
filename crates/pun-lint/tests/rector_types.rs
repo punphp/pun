@@ -7,7 +7,7 @@
 
 mod lint_c;
 
-use lint_c::{run_class, run_class_at, run_class_with};
+use lint_c::{run_class, run_class_at, run_class_stubs};
 use pun_lint::Rule;
 use pun_lint::rules::{
     AddArrayReturn, AddArrowFunctionReturn, AddBoolReturn, AddBoolReturnFromConst,
@@ -235,7 +235,7 @@ fn return_type_from_strict_typed_call() {
         ("ReturnTypeFromStrictTypedCallRectorPhp80", 80000),
     ] {
         // rector-src runs these with PHPUnit installed (Fixture/return_in_test_method.php.inc)
-        run_class_with(
+        run_class_stubs(
             vec![Box::new(AddReturnTypeFromTypedCall)],
             dir,
             version,
