@@ -3819,6 +3819,7 @@ fn process_arrays(arrays: Vec<Type>) -> Vec<Type> {
 
 /// `TypeCombinator::reduceArrays()` for shapes without unsealed extras (PHPDoc shapes outside bleeding edge).
 fn reduce_arrays(arrays: &[Type]) -> Vec<Type> {
+    let mut retained = Vec::new();
     let mut to_process: Vec<Option<ConstArray>> = Vec::new();
     let mut empty = None;
     // (processArrayTypes() calls it with constant arrays only)
@@ -3829,10 +3830,13 @@ fn reduce_arrays(arrays: &[Type]) -> Vec<Type> {
         }
         to_process.extend(a.constant_arrays().into_iter().map(Some));
     }
-    // the empty array takes part in the merging (an empty constant array is a plain `array{}`: intersect() folds an
-    // accessory into it)
-    if let Some(Type::ConstArray(c)) = empty {
-        to_process.push(Some(*c));
+    // Plain empty shapes take part in merging. Template/intersection identity must
+    // survive separately, as reduceArrays' $newArrays rather than $arraysToProcess.
+    if let Some(empty) = empty {
+        match empty {
+            Type::ConstArray(c) => to_process.push(Some(*c)),
+            empty => retained.push(empty),
+        }
     }
     let mut per_key: Vec<(Type, Vec<usize>)> = Vec::new();
     for (i, a) in to_process.iter().enumerate() {
@@ -3895,10 +3899,9 @@ fn reduce_arrays(arrays: &[Type]) -> Vec<Type> {
     }
     // ponytail: reduceArrays' second pass and final collapses only apply to shapes with unsealed extras
     // (bleeding edge) or past ConstantArrayTypeBuilder::ARRAY_COUNT_LIMIT, neither of which signatures reach.
-    to_process
+    retained
         .into_iter()
-        .flatten()
-        .map(|a| Type::ConstArray(Box::new(a)))
+        .chain(to_process.into_iter().flatten().map(|a| Type::ConstArray(Box::new(a))))
         .collect()
 }
 

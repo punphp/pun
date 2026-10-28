@@ -1398,5 +1398,533 @@
             "array<string, int>"
         ],
         "template": false
+    },
+    {
+        "bound": "list<int>",
+        "other": "array{}",
+        "argument": false,
+        "reverse": false,
+        "otherTemplate": null,
+        "descriptions": [
+            "list{}&T of list<int> = array{} (function fixture(), parameter)",
+            "list{}&T of list<int> = array{}",
+            "list<*NEVER*>&T of list<int> = array"
+        ],
+        "template": false,
+        "union": {
+            "with": "array{'final'}",
+            "reverse": false,
+            "descriptions": [
+                "(list{}&T of list<int> = array{} (function fixture(), parameter))|array{'final'}",
+                "(list{}&T of list<int> = array{})|array{'final'}",
+                "list<string>"
+            ]
+        }
+    },
+    {
+        "bound": "list<int>",
+        "other": "array{}",
+        "argument": false,
+        "reverse": false,
+        "otherTemplate": null,
+        "descriptions": [
+            "list{}&T of list<int> = array{} (function fixture(), parameter)",
+            "list{}&T of list<int> = array{}",
+            "list<*NEVER*>&T of list<int> = array"
+        ],
+        "template": false,
+        "union": {
+            "with": "array{'final'}",
+            "reverse": true,
+            "descriptions": [
+                "(list{}&T of list<int> = array{} (function fixture(), parameter))|array{'final'}",
+                "(list{}&T of list<int> = array{})|array{'final'}",
+                "list<string>"
+            ]
+        }
+    },
+    {
+        "bound": "list<int>",
+        "other": "array{}",
+        "argument": true,
+        "reverse": false,
+        "otherTemplate": null,
+        "descriptions": [
+            "list{}&T of list<int> = array{} (function fixture(), argument)",
+            "list{}&T of list<int> = array{}",
+            "list<*NEVER*>&T of list<int> = array"
+        ],
+        "template": false,
+        "union": {
+            "with": "array{'final'}",
+            "reverse": false,
+            "descriptions": [
+                "(list{}&T of list<int> = array{} (function fixture(), argument))|array{'final'}",
+                "(list{}&T of list<int> = array{})|array{'final'}",
+                "list<string>"
+            ]
+        }
+    },
+    {
+        "bound": "list<int>",
+        "other": "array{}",
+        "argument": true,
+        "reverse": false,
+        "otherTemplate": null,
+        "descriptions": [
+            "list{}&T of list<int> = array{} (function fixture(), argument)",
+            "list{}&T of list<int> = array{}",
+            "list<*NEVER*>&T of list<int> = array"
+        ],
+        "template": false,
+        "union": {
+            "with": "array{'final'}",
+            "reverse": true,
+            "descriptions": [
+                "(list{}&T of list<int> = array{} (function fixture(), argument))|array{'final'}",
+                "(list{}&T of list<int> = array{})|array{'final'}",
+                "list<string>"
+            ]
+        }
+    },
+    {
+        "bound": "array<int, int>",
+        "other": "array{}",
+        "argument": false,
+        "reverse": false,
+        "otherTemplate": null,
+        "descriptions": [
+            "array{}",
+            "array{}",
+            "array"
+        ],
+        "template": false,
+        "union": {
+            "with": "array{'final'}",
+            "reverse": false,
+            "descriptions": [
+                "array{}|array{'final'}",
+                "array{}|array{'final'}",
+                "list<string>"
+            ]
+        }
+    },
+    {
+        "bound": "array<int, int>",
+        "other": "array{}",
+        "argument": false,
+        "reverse": false,
+        "otherTemplate": null,
+        "descriptions": [
+            "array{}",
+            "array{}",
+            "array"
+        ],
+        "template": false,
+        "union": {
+            "with": "array{'final'}",
+            "reverse": true,
+            "descriptions": [
+                "array{}|array{'final'}",
+                "array{}|array{'final'}",
+                "list<string>"
+            ]
+        }
+    },
+    {
+        "bound": "array<int, int>",
+        "other": "array{}",
+        "argument": true,
+        "reverse": false,
+        "otherTemplate": null,
+        "descriptions": [
+            "array{}",
+            "array{}",
+            "array"
+        ],
+        "template": false,
+        "union": {
+            "with": "array{'final'}",
+            "reverse": false,
+            "descriptions": [
+                "array{}|array{'final'}",
+                "array{}|array{'final'}",
+                "list<string>"
+            ]
+        }
+    },
+    {
+        "bound": "array<int, int>",
+        "other": "array{}",
+        "argument": true,
+        "reverse": false,
+        "otherTemplate": null,
+        "descriptions": [
+            "array{}",
+            "array{}",
+            "array"
+        ],
+        "template": false,
+        "union": {
+            "with": "array{'final'}",
+            "reverse": true,
+            "descriptions": [
+                "array{}|array{'final'}",
+                "array{}|array{'final'}",
+                "list<string>"
+            ]
+        }
+    },
+    {
+        "bound": "array{}",
+        "other": "array{}",
+        "argument": false,
+        "reverse": false,
+        "otherTemplate": null,
+        "descriptions": [
+            "T of array{} = array{} (function fixture(), parameter)",
+            "T of array{} = array{}",
+            "T of array = array"
+        ],
+        "template": true,
+        "union": {
+            "with": "array{'final'}",
+            "reverse": false,
+            "descriptions": [
+                "T of array{} = array{} (function fixture(), parameter)|array{'final'}",
+                "(T of array{} = array{})|array{'final'}",
+                "list<string>"
+            ]
+        }
+    },
+    {
+        "bound": "array{}",
+        "other": "array{}",
+        "argument": false,
+        "reverse": false,
+        "otherTemplate": null,
+        "descriptions": [
+            "T of array{} = array{} (function fixture(), parameter)",
+            "T of array{} = array{}",
+            "T of array = array"
+        ],
+        "template": true,
+        "union": {
+            "with": "array{'final'}",
+            "reverse": true,
+            "descriptions": [
+                "T of array{} = array{} (function fixture(), parameter)|array{'final'}",
+                "(T of array{} = array{})|array{'final'}",
+                "list<string>"
+            ]
+        }
+    },
+    {
+        "bound": "array{}",
+        "other": "array{}",
+        "argument": true,
+        "reverse": false,
+        "otherTemplate": null,
+        "descriptions": [
+            "T of array{} = array{} (function fixture(), argument)",
+            "T of array{} = array{}",
+            "T of array = array"
+        ],
+        "template": true,
+        "union": {
+            "with": "array{'final'}",
+            "reverse": false,
+            "descriptions": [
+                "T of array{} = array{} (function fixture(), argument)|array{'final'}",
+                "(T of array{} = array{})|array{'final'}",
+                "list<string>"
+            ]
+        }
+    },
+    {
+        "bound": "array{}",
+        "other": "array{}",
+        "argument": true,
+        "reverse": false,
+        "otherTemplate": null,
+        "descriptions": [
+            "T of array{} = array{} (function fixture(), argument)",
+            "T of array{} = array{}",
+            "T of array = array"
+        ],
+        "template": true,
+        "union": {
+            "with": "array{'final'}",
+            "reverse": true,
+            "descriptions": [
+                "T of array{} = array{} (function fixture(), argument)|array{'final'}",
+                "(T of array{} = array{})|array{'final'}",
+                "list<string>"
+            ]
+        }
+    },
+    {
+        "bound": "non-empty-list<int>",
+        "other": "array{}",
+        "argument": false,
+        "reverse": false,
+        "otherTemplate": null,
+        "descriptions": [
+            "*NEVER*",
+            "*NEVER*",
+            "*NEVER*"
+        ],
+        "template": false,
+        "union": {
+            "with": "array{'final'}",
+            "reverse": false,
+            "descriptions": [
+                "array{'final'}",
+                "array{'final'}",
+                "array<int, string>"
+            ]
+        }
+    },
+    {
+        "bound": "non-empty-list<int>",
+        "other": "array{}",
+        "argument": false,
+        "reverse": false,
+        "otherTemplate": null,
+        "descriptions": [
+            "*NEVER*",
+            "*NEVER*",
+            "*NEVER*"
+        ],
+        "template": false,
+        "union": {
+            "with": "array{'final'}",
+            "reverse": true,
+            "descriptions": [
+                "array{'final'}",
+                "array{'final'}",
+                "array<int, string>"
+            ]
+        }
+    },
+    {
+        "bound": "non-empty-list<int>",
+        "other": "array{}",
+        "argument": true,
+        "reverse": false,
+        "otherTemplate": null,
+        "descriptions": [
+            "*NEVER*",
+            "*NEVER*",
+            "*NEVER*"
+        ],
+        "template": false,
+        "union": {
+            "with": "array{'final'}",
+            "reverse": false,
+            "descriptions": [
+                "array{'final'}",
+                "array{'final'}",
+                "array<int, string>"
+            ]
+        }
+    },
+    {
+        "bound": "non-empty-list<int>",
+        "other": "array{}",
+        "argument": true,
+        "reverse": false,
+        "otherTemplate": null,
+        "descriptions": [
+            "*NEVER*",
+            "*NEVER*",
+            "*NEVER*"
+        ],
+        "template": false,
+        "union": {
+            "with": "array{'final'}",
+            "reverse": true,
+            "descriptions": [
+                "array{'final'}",
+                "array{'final'}",
+                "array<int, string>"
+            ]
+        }
+    },
+    {
+        "bound": "list<int>",
+        "other": "array{}",
+        "argument": false,
+        "reverse": false,
+        "otherTemplate": null,
+        "descriptions": [
+            "list{}&T of list<int> = array{} (function fixture(), parameter)",
+            "list{}&T of list<int> = array{}",
+            "list<*NEVER*>&T of list<int> = array"
+        ],
+        "template": false,
+        "union": {
+            "with": "array{0?: int}",
+            "reverse": false,
+            "descriptions": [
+                "(list{}&T of list<int> = array{} (function fixture(), parameter))|array{0?: int}",
+                "(list{}&T of list<int> = array{})|array{0?: int}",
+                "list<int>"
+            ]
+        }
+    },
+    {
+        "bound": "list<int>",
+        "other": "array{}",
+        "argument": false,
+        "reverse": false,
+        "otherTemplate": null,
+        "descriptions": [
+            "list{}&T of list<int> = array{} (function fixture(), parameter)",
+            "list{}&T of list<int> = array{}",
+            "list<*NEVER*>&T of list<int> = array"
+        ],
+        "template": false,
+        "union": {
+            "with": "array{0?: int}",
+            "reverse": true,
+            "descriptions": [
+                "(list{}&T of list<int> = array{} (function fixture(), parameter))|array{0?: int}",
+                "(list{}&T of list<int> = array{})|array{0?: int}",
+                "list<int>"
+            ]
+        }
+    },
+    {
+        "bound": "list<int>",
+        "other": "array{}",
+        "argument": true,
+        "reverse": false,
+        "otherTemplate": null,
+        "descriptions": [
+            "list{}&T of list<int> = array{} (function fixture(), argument)",
+            "list{}&T of list<int> = array{}",
+            "list<*NEVER*>&T of list<int> = array"
+        ],
+        "template": false,
+        "union": {
+            "with": "array{0?: int}",
+            "reverse": false,
+            "descriptions": [
+                "(list{}&T of list<int> = array{} (function fixture(), argument))|array{0?: int}",
+                "(list{}&T of list<int> = array{})|array{0?: int}",
+                "list<int>"
+            ]
+        }
+    },
+    {
+        "bound": "list<int>",
+        "other": "array{}",
+        "argument": true,
+        "reverse": false,
+        "otherTemplate": null,
+        "descriptions": [
+            "list{}&T of list<int> = array{} (function fixture(), argument)",
+            "list{}&T of list<int> = array{}",
+            "list<*NEVER*>&T of list<int> = array"
+        ],
+        "template": false,
+        "union": {
+            "with": "array{0?: int}",
+            "reverse": true,
+            "descriptions": [
+                "(list{}&T of list<int> = array{} (function fixture(), argument))|array{0?: int}",
+                "(list{}&T of list<int> = array{})|array{0?: int}",
+                "list<int>"
+            ]
+        }
+    },
+    {
+        "bound": "list<int>",
+        "other": "array{}",
+        "argument": false,
+        "reverse": false,
+        "otherTemplate": null,
+        "descriptions": [
+            "list{}&T of list<int> = array{} (function fixture(), parameter)",
+            "list{}&T of list<int> = array{}",
+            "list<*NEVER*>&T of list<int> = array"
+        ],
+        "template": false,
+        "union": {
+            "with": "array{}",
+            "reverse": false,
+            "descriptions": [
+                "array{}",
+                "array{}",
+                "array"
+            ]
+        }
+    },
+    {
+        "bound": "list<int>",
+        "other": "array{}",
+        "argument": false,
+        "reverse": false,
+        "otherTemplate": null,
+        "descriptions": [
+            "list{}&T of list<int> = array{} (function fixture(), parameter)",
+            "list{}&T of list<int> = array{}",
+            "list<*NEVER*>&T of list<int> = array"
+        ],
+        "template": false,
+        "union": {
+            "with": "array{}",
+            "reverse": true,
+            "descriptions": [
+                "list{}&T of list<int> = array{} (function fixture(), parameter)",
+                "list{}&T of list<int> = array{}",
+                "list<*NEVER*>&T of list<int> = array"
+            ]
+        }
+    },
+    {
+        "bound": "list<int>",
+        "other": "array{}",
+        "argument": true,
+        "reverse": false,
+        "otherTemplate": null,
+        "descriptions": [
+            "list{}&T of list<int> = array{} (function fixture(), argument)",
+            "list{}&T of list<int> = array{}",
+            "list<*NEVER*>&T of list<int> = array"
+        ],
+        "template": false,
+        "union": {
+            "with": "array{}",
+            "reverse": false,
+            "descriptions": [
+                "array{}",
+                "array{}",
+                "array"
+            ]
+        }
+    },
+    {
+        "bound": "list<int>",
+        "other": "array{}",
+        "argument": true,
+        "reverse": false,
+        "otherTemplate": null,
+        "descriptions": [
+            "list{}&T of list<int> = array{} (function fixture(), argument)",
+            "list{}&T of list<int> = array{}",
+            "list<*NEVER*>&T of list<int> = array"
+        ],
+        "template": false,
+        "union": {
+            "with": "array{}",
+            "reverse": true,
+            "descriptions": [
+                "list{}&T of list<int> = array{} (function fixture(), argument)",
+                "list{}&T of list<int> = array{}",
+                "list<*NEVER*>&T of list<int> = array"
+            ]
+        }
     }
 ]
