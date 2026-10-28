@@ -13,7 +13,7 @@ mod lint_c;
 
 use std::path::{Path, PathBuf};
 
-use lint_c::{run_class_with, run_dirs};
+use lint_c::{run_class_paths, run_dirs};
 use pun_lint::Rule;
 use pun_lint::rules::{
     AddFactoryExtendsPhpdoc, AddHasFactoryTrait, AddQueryClosureType, AddRelationGenerics,
@@ -27,7 +27,7 @@ use pun_lint::rules::{
 
 fn check(rule: impl Rule + 'static, class: &str) {
     let stubs = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/rector-laravel-stubs");
-    run_class_with(vec![Box::new(rule)], class, 80400, &[&stubs]);
+    run_class_paths(vec![Box::new(rule)], class, 80400, &[&stubs]);
 }
 
 #[test]

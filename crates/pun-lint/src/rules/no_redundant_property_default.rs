@@ -132,7 +132,8 @@ pub(crate) fn is_assigned_in_constructor<'a>(
         left_brace,
         path,
         extends,
-        constructor,
+        constructor: Some(constructor),
+        test_case: None,
     }
     .is_assigned(name)
 }

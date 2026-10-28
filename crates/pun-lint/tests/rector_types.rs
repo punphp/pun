@@ -11,17 +11,15 @@ use lint_c::{run_class, run_class_at, run_class_stubs, run_oracle_class};
 use pun_lint::Rule;
 use pun_lint::rules::{
     AddArrayReturn, AddArrowFunctionReturn, AddBoolReturn, AddBoolReturnFromConst,
-    AddClosureNeverReturn, AddClosureReturn, AddClosureVoidReturn, AddFluentReturn,
-    AddFunctionVoidReturn, AddMagicMethodTypes, AddMethodVoidReturn, AddNeverReturn,
-    AddNullableReturn, AddNumericReturn, AddDoctrineRepositoryReturnType, AddPropertyTypeAssigns,
-    AddPropertyTypeBehatContext, AddPropertyTypeGetRepository, AddPropertyTypeConstructor,
-    AddPropertyTypeJmsObject, AddPropertyTypeJmsScalar, AddPropertyTypeSetterGetter, AddNumericReturnFromScalar, AddReturnTypeFromCast,
-    AddReturnTypeFromConstant, AddReturnTypeFromNativeCall, AddReturnTypeFromNew,
-    AddReturnTypeFromParam, AddReturnTypeFromParent, AddReturnTypeFromProperty,
-    AddReturnTypeFromSymfonySerializer, AddReturnTypeFromTernary, AddReturnTypeFromTypedCall,
-    AddReturnTypeFromYield, AddStringReturn, AddStringReturnFromScalar, AddUnionReturn,
-    AddReturnTypeFromConstant, AddReturnTypeFromNew, AddReturnTypeFromParam,
-    AddReturnTypeFromProperty, AddReturnTypeFromTernary, AddStringReturn,
+    AddClosureNeverReturn, AddClosureReturn, AddClosureVoidReturn, AddDoctrineRepositoryReturnType,
+    AddFluentReturn, AddFunctionVoidReturn, AddMagicMethodTypes, AddMethodVoidReturn,
+    AddNeverReturn, AddNullableReturn, AddNumericReturn, AddNumericReturnFromScalar,
+    AddPropertyTypeAssigns, AddPropertyTypeBehatContext, AddPropertyTypeConstructor,
+    AddPropertyTypeGetRepository, AddPropertyTypeJmsObject, AddPropertyTypeJmsScalar,
+    AddPropertyTypeSetterGetter, AddReturnTypeFromCast, AddReturnTypeFromConstant,
+    AddReturnTypeFromNativeCall, AddReturnTypeFromNew, AddReturnTypeFromParam,
+    AddReturnTypeFromParent, AddReturnTypeFromProperty, AddReturnTypeFromSymfonySerializer,
+    AddReturnTypeFromTernary, AddReturnTypeFromTypedCall, AddReturnTypeFromYield, AddStringReturn,
     AddStringReturnFromScalar, AddUnionReturn, NoNullsafeOnNonNull, PreferIdenticalSameType,
     PreferInstanceof,
 };
@@ -255,15 +253,6 @@ fn add_return_type_declaration_from_yields() {
     check(
         AddReturnTypeFromYield,
         "AddReturnTypeDeclarationFromYieldsRector",
-fn inline_is_a_instance_of() {
-    check(PreferInstanceof, "InlineIsAInstanceOfRector");
-}
-
-#[test]
-fn use_identical_over_equal_with_same_type() {
-    check(
-        PreferIdenticalSameType,
-        "UseIdenticalOverEqualWithSameTypeRector",
     );
 }
 
@@ -282,10 +271,6 @@ fn return_type_from_symfony_serializer() {
         vec![Box::new(AddReturnTypeFromSymfonySerializer)],
         "ReturnTypeFromSymfonySerializerRector",
         70000,
-fn cleanup_unneeded_nullsafe_operator() {
-    check(
-        NoNullsafeOnNonNull,
-        "CleanupUnneededNullsafeOperatorRector",
     );
 }
 
@@ -337,6 +322,24 @@ fn left_alone_at_other_versions() {
 }
 
 #[test]
+fn inline_is_a_instance_of() {
+    check(PreferInstanceof, "InlineIsAInstanceOfRector");
+}
+
+#[test]
+fn use_identical_over_equal_with_same_type() {
+    check(
+        PreferIdenticalSameType,
+        "UseIdenticalOverEqualWithSameTypeRector",
+    );
+}
+
+#[test]
+fn cleanup_unneeded_nullsafe_operator() {
+    check(NoNullsafeOnNonNull, "CleanupUnneededNullsafeOperatorRector");
+}
+
+#[test]
 fn typed_property_from_strict_constructor() {
     // INTERSECTION_TYPES, as the fixtures' config sets
     run_class_stubs(
@@ -372,39 +375,63 @@ fn typed_property_from_assigns_complex_types() {
 #[test]
 fn typed_property_from_assigns_php82() {
     // config/configured_rule_php82.php: NULL_FALSE_TRUE_STANDALONE_TYPE
-    run_class_at(vec![Box::new(AddPropertyTypeAssigns::default())], "TypedPropertyFromAssignsRectorPhp82", 80200);
+    run_class_at(
+        vec![Box::new(AddPropertyTypeAssigns::default())],
+        "TypedPropertyFromAssignsRectorPhp82",
+        80200,
+    );
 }
 
 #[test]
 fn typed_property_from_assigns_inline_public() {
     // config/inline_public_configured_rule.php: inline_public, INTERSECTION_TYPES
     let mut rule = AddPropertyTypeAssigns::default();
-    rule.configure(&serde_json::json!({"inline-public": true})).unwrap();
-    run_class_at(vec![Box::new(rule)], "TypedPropertyFromAssignsRectorInlinePublic", 80100);
+    rule.configure(&serde_json::json!({"inline-public": true}))
+        .unwrap();
+    run_class_at(
+        vec![Box::new(rule)],
+        "TypedPropertyFromAssignsRectorInlinePublic",
+        80100,
+    );
 }
 
 #[test]
 fn property_type_from_strict_setter_getter() {
     // config/configured_rule.php: the rule alone, Rector's default PHP version
-    run_class(vec![Box::new(AddPropertyTypeSetterGetter)], "PropertyTypeFromStrictSetterGetterRector");
+    run_class(
+        vec![Box::new(AddPropertyTypeSetterGetter)],
+        "PropertyTypeFromStrictSetterGetterRector",
+    );
 }
 
 #[test]
 fn scalar_typed_property_from_jms_serializer_attribute_type() {
     // config/configured_rule.php: ATTRIBUTES
-    run_class_at(vec![Box::new(AddPropertyTypeJmsScalar)], "ScalarTypedPropertyFromJMSSerializerAttributeTypeRector", 80000);
+    run_class_at(
+        vec![Box::new(AddPropertyTypeJmsScalar)],
+        "ScalarTypedPropertyFromJMSSerializerAttributeTypeRector",
+        80000,
+    );
 }
 
 #[test]
 fn object_typed_property_from_jms_serializer_attribute_type() {
     // config/configured_rule.php: ATTRIBUTES
-    run_class_at(vec![Box::new(AddPropertyTypeJmsObject)], "ObjectTypedPropertyFromJMSSerializerAttributeTypeRector", 80000);
+    run_class_at(
+        vec![Box::new(AddPropertyTypeJmsObject)],
+        "ObjectTypedPropertyFromJMSSerializerAttributeTypeRector",
+        80000,
+    );
 }
 
 #[test]
 fn typed_static_property_in_behat_context() {
     // No upstream fixtures: Oracle/ only, Rector run at PHP 8.0 with Source/ autoloaded.
-    run_oracle_class(vec![Box::new(AddPropertyTypeBehatContext)], "TypedStaticPropertyInBehatContextRector", 80000);
+    run_oracle_class(
+        vec![Box::new(AddPropertyTypeBehatContext)],
+        "TypedStaticPropertyInBehatContextRector",
+        80000,
+    );
 }
 
 #[test]
@@ -415,5 +442,16 @@ fn typed_property_from_get_repository_set_up() {
         "TypedPropertyFromGetRepositorySetUpRector",
         70400,
         &["phpunit-stubs"],
+    );
+}
+
+#[test]
+fn child_doctrine_repository_class_type() {
+    // config/configured_rule.php: the rule alone, Rector's default PHP version
+    run_class_stubs(
+        vec![Box::new(AddDoctrineRepositoryReturnType)],
+        "ChildDoctrineRepositoryClassTypeRector",
+        80400,
+        &["doctrine-stubs"],
     );
 }

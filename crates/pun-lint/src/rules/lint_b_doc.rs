@@ -47,10 +47,10 @@ impl<'s> Doc<'s> {
             .map(|a| node_span(a).start)
             .find(|&s| s < start)
             .unwrap_or(0);
-        Some(Self::at(
+        Self::at(
             source,
             doc_comment(source, previous_token_end(source, outer, start), start)?,
-        ))
+        )
     }
 
     /// [`Doc::of`] as php-parser's `getDocComment()` reads it: the last doc comment among the node's comments, which
@@ -65,10 +65,10 @@ impl<'s> Doc<'s> {
         let doc = tokens(source, previous_token_end(source, outer, start), start)
             .into_iter()
             .rfind(|t| t.kind == TokenKind::DocBlockComment)?;
-        Some(Self::at(source, Span::new(doc.start, doc.end)))
+        Self::at(source, Span::new(doc.start, doc.end))
     }
 
-    fn at(source: &'s str, span: Span) -> Self {
+    fn at(source: &'s str, span: Span) -> Option<Self> {
         let text = &source[span.start..span.end];
         // PHP's lexer makes a doc comment of `/**` and white space only; `/***/` is a plain comment.
         if !text
@@ -80,12 +80,12 @@ impl<'s> Doc<'s> {
         }
         let tokens = lex(text);
         let children = children(text, &tokens);
-        Doc {
+        Some(Doc {
             span,
             text,
             tokens,
             children,
-        }
+        })
     }
 
     /// The number of child nodes.

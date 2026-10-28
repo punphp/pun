@@ -99,7 +99,13 @@ pub fn run_class_stubs(rules: Vec<Box<dyn Rule>>, class: &str, php_version: u32,
 #[allow(dead_code)]
 pub fn run_class_paths(rules: Vec<Box<dyn Rule>>, class: &str, php_version: u32, stubs: &[&Path]) {
     check_dirs(class, true);
-    run_dirs(rules, class, &["Fixture", "Oracle", "Pun"], php_version, stubs);
+    run_dirs(
+        rules,
+        class,
+        &["Fixture", "Oracle", "Pun"],
+        php_version,
+        stubs,
+    );
 }
 
 /// As [`run_class_at`] for a Rector class without upstream fixtures: tests/rector/<class>/{Oracle,Pun} only.
@@ -120,7 +126,14 @@ fn run_class_full(
     let tests = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests");
     let stubs: Vec<PathBuf> = stubs.iter().map(|d| tests.join(d)).collect();
     let stubs: Vec<&Path> = stubs.iter().map(PathBuf::as_path).collect();
-    run_dirs_full(rules, class, &["Fixture", "Oracle", "Pun"], php_version, &stubs, preset_too);
+    run_dirs_full(
+        rules,
+        class,
+        &["Fixture", "Oracle", "Pun"],
+        php_version,
+        &stubs,
+        preset_too,
+    );
 }
 
 /// tests/rector/<class> has a Fixture directory exactly when upstream has fixtures, and an Oracle one otherwise.
