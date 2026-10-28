@@ -3250,6 +3250,8 @@ mod tests {
             function_is_final: false,
             allow_mixin_static_rebind: false,
             preserve_parameter_dependencies: false,
+            preserve_initializer_object_identity: false,
+            preserve_initializer_union_order: false,
         };
 
         let mut actual = input;
