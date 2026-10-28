@@ -178,6 +178,7 @@ mod php_parser;
 mod phpstan_describe;
 mod phpdoc_tag;
 mod phpunit;
+pub(crate) mod phpdoc_writer;
 mod prefer_absolute_include;
 mod prefer_array_all;
 mod prefer_array_any;

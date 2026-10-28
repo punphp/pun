@@ -93,3 +93,8 @@ pub(crate) fn class_imports(
         imports,
     )
 }
+
+/// [`resolve_class_name`] of a name as written (in a doc comment too).
+pub(crate) fn resolve_written_class_name(ancestors: &[Node<'_, '_>], written: &str) -> String {
+    resolve_written(ancestors, written).0
+}

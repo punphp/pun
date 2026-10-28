@@ -9,6 +9,7 @@ pub mod facts;
 pub(crate) mod names;
 
 mod add_array_return;
+mod add_return_phpdoc_direct_array;
 mod add_bool_return;
 mod add_bool_return_from_const;
 mod add_closure_never_return;
@@ -40,6 +41,7 @@ mod add_scalar_return;
 mod add_union_return;
 pub(crate) mod declare;
 mod doctrine_repository;
+pub(crate) mod docblock;
 mod native;
 mod never;
 mod no_nullsafe_on_non_null;
@@ -51,6 +53,7 @@ pub(crate) mod silent_void;
 mod type_factory;
 
 pub use add_array_return::AddArrayReturn;
+pub use add_return_phpdoc_direct_array::AddReturnPhpdocDirectArray;
 pub use add_bool_return::AddBoolReturn;
 pub use add_bool_return_from_const::AddBoolReturnFromConst;
 pub use add_closure_never_return::AddClosureNeverReturn;

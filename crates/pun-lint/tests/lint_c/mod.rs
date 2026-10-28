@@ -7,12 +7,22 @@ use pun_format::Pipeline;
 use pun_lint::rules::facts::with_sources;
 use pun_lint::{Linter, Rule};
 
+/// The files under `dir`, its subdirectories too (Rector's `yieldFilesFromDirectory`).
+fn files(dir: &Path, out: &mut Vec<PathBuf>) {
+    for entry in std::fs::read_dir(dir).unwrap() {
+        let path = entry.unwrap().path();
+        if path.is_dir() {
+            files(&path, out);
+        } else {
+            out.push(path);
+        }
+    }
+}
+
 /// The fixtures of one directory, sorted: `(path, input, expected)`.
 fn fixtures(dir: &Path) -> Vec<(PathBuf, String, String)> {
-    let mut paths: Vec<PathBuf> = std::fs::read_dir(dir)
-        .unwrap()
-        .map(|e| e.unwrap().path())
-        .collect();
+    let mut paths = Vec::new();
+    files(dir, &mut paths);
     paths.sort();
     assert!(!paths.is_empty(), "no fixtures in {}", dir.display());
     paths
