@@ -36,10 +36,9 @@ impl Rule for PreferTestAttribute {
         let Node::Method(method) = node else {
             return;
         };
-        let name = method.name.value;
-        let Ok(name) = std::str::from_utf8(name) else {
-            return;
-        };
+        // the source is UTF-8, and an identifier ends on a character boundary
+        let name_span = method.name.span();
+        let name = &ctx.source[name_span.start.offset as usize..name_span.end.offset as usize];
         if !name.starts_with("test") && !name.starts_with("Test") {
             return;
         }

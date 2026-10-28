@@ -439,11 +439,11 @@ fn resolve_return_is_void(ctx: &Context<'_>, classes: &[String], method: &[u8]) 
 }
 
 /// What becomes of a `return` with a value in the closure.
-enum Change {
+enum Change<'a> {
     /// `return value;` becomes `return;`.
     Bare,
     /// A nested `return throw ...;` becomes `throw ...;`.
-    Throw,
+    Throw(&'a mago_syntax::cst::Throw<'a>),
     /// A `return throw ...;` at the closure's top level stays.
     Keep,
 }
@@ -488,7 +488,7 @@ fn print_closure(
         // "return throw new X" becomes a bare "throw new X" statement
         let change = match unparenthesize(value) {
             Expression::Throw(_) if top_level(r) => Change::Keep,
-            Expression::Throw(_) => Change::Throw,
+            Expression::Throw(throw) => Change::Throw(throw),
             // only strip side-effect-free values
             Expression::Literal(_)
             | Expression::CompositeString(
@@ -579,17 +579,14 @@ fn print_closure(
                         "",
                     ));
                 }
-                Change::Throw => {
-                    let Expression::Throw(throw) = unparenthesize(value) else {
-                        unreachable!()
-                    };
+                Change::Throw(throw) => {
                     let before = previous_token_end(
                         source,
                         body.left_brace.end.offset as usize,
                         r_span.start,
                     );
                     let start = first_comment(source, before, r_span.start).unwrap_or(r_span.start);
-                    let printed = reindent(source, node_span(throw), &cut, "");
+                    let printed = reindent(source, node_span(*throw), &cut, "");
                     edits.push(Edit::new(
                         Span::new(start, r_span.end),
                         format!("{printed};"),

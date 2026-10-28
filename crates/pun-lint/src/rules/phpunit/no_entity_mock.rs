@@ -236,12 +236,9 @@ impl Rule for NoEntityMock {
                     removed = true;
                 }
                 let setter = resolve_method_name(&facts, &method_name, class);
-                let Some(will_return) =
+                // a string (UTF-8 or not) is no expression to set
+                if let Some(FirstArg::Expr(arg)) =
                     first_arg_value(find_in(&state, expr, &named("willReturn")))
-                else {
-                    return;
-                };
-                if let FirstArg::Expr(arg) = will_return
                     && !setter.is_empty()
                     && setter != "0"
                     && !removed
@@ -438,10 +435,12 @@ fn lookup(class: &str) -> &str {
 
 /// `DoctrineEntityDocumentAnalyser::isEntityClass`.
 fn is_entity_class(facts: &Facts, class: &str) -> bool {
-    let Some(metadata) = facts.codebase.get_class_like(lookup(class).as_bytes()) else {
-        return false;
-    };
-    let Some(source) = facts.source_of(metadata.span.file_id) else {
+    // a class without a source file (a built-in one) has no doc comment
+    let Some((metadata, source)) = facts
+        .codebase
+        .get_class_like(lookup(class).as_bytes())
+        .and_then(|m| Some((m, facts.source_of(m.span.file_id)?)))
+    else {
         return false;
     };
     let start = metadata.span.start.offset as usize;
