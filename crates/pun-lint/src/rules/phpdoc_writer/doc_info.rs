@@ -284,11 +284,6 @@ impl PhpDocInfo {
         // hotfix of extra space with callable ()
         CALLABLE.replace_all(&printer.print_doc(), "callable(").into_owned()
     }
-
-    /// The doc comment as it was read.
-    pub fn original(&self) -> &str {
-        &self.text
-    }
 }
 
 /// `PhpDocInfoPrinter`'s state while it prints one doc.

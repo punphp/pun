@@ -30,8 +30,6 @@ pub enum TypeNode {
     },
     /// `NullableTypeNode`.
     Nullable(Box<TypeNode>),
-    /// `CallableTypeNode`, printed as written.
-    Callable(String),
     /// Any other node, printed as PHPStan's `toPhpDocNode()` prints it.
     Raw(String),
 }
@@ -110,7 +108,7 @@ fn from_parsed(node: &Node, in_array: bool) -> Option<TypeNode> {
 impl fmt::Display for TypeNode {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            TypeNode::Identifier(name) | TypeNode::Callable(name) | TypeNode::Raw(name) => {
+            TypeNode::Identifier(name) | TypeNode::Raw(name) => {
                 f.write_str(name)
             }
             TypeNode::Array {
@@ -168,9 +166,6 @@ fn join(types: &[TypeNode], separator: &str) -> String {
 
 /// `SpacingAwareArrayTypeNode::__toString()`.
 fn print_array(inner: &TypeNode, generic_parent: bool) -> String {
-    if let TypeNode::Callable(callable) = inner {
-        return format!("({callable})[]");
-    }
     let printed = inner.to_string();
     if generic_parent && inner.is_union_or_array() {
         return format!("array<{printed}>");

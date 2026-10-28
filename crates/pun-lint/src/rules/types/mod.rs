@@ -10,6 +10,20 @@ pub(crate) mod names;
 
 mod add_array_return;
 mod add_return_phpdoc_direct_array;
+mod add_getter_return_phpdoc;
+mod add_param_phpdoc_from_callable_call;
+mod add_param_phpdoc_from_dim_fetch;
+mod add_param_phpdoc_from_local_calls;
+mod add_param_phpdoc_from_reference_assign;
+mod add_return_phpdoc_common_object;
+mod add_return_phpdoc_dim_assigned_object;
+mod add_return_phpdoc_json_array;
+mod add_return_phpdoc_scalar_array;
+mod add_var_phpdoc_from_constructor_param;
+mod add_var_phpdoc_from_default;
+mod add_var_phpdoc_from_dim_fetch;
+mod add_var_phpdoc_from_getter;
+mod prefer_generic_collection_phpdoc;
 mod add_bool_return;
 mod add_bool_return_from_const;
 mod add_closure_never_return;
@@ -54,6 +68,20 @@ mod type_factory;
 
 pub use add_array_return::AddArrayReturn;
 pub use add_return_phpdoc_direct_array::AddReturnPhpdocDirectArray;
+pub use add_getter_return_phpdoc::AddGetterReturnPhpdoc;
+pub use add_param_phpdoc_from_callable_call::AddParamPhpdocFromCallableCall;
+pub use add_param_phpdoc_from_dim_fetch::AddParamPhpdocFromDimFetch;
+pub use add_param_phpdoc_from_local_calls::AddParamPhpdocFromLocalCalls;
+pub use add_param_phpdoc_from_reference_assign::AddParamPhpdocFromReferenceAssign;
+pub use add_return_phpdoc_common_object::AddReturnPhpdocCommonObject;
+pub use add_return_phpdoc_dim_assigned_object::AddReturnPhpdocDimAssignedObject;
+pub use add_return_phpdoc_json_array::AddReturnPhpdocJsonArray;
+pub use add_return_phpdoc_scalar_array::AddReturnPhpdocScalarArray;
+pub use add_var_phpdoc_from_constructor_param::AddVarPhpdocFromConstructorParam;
+pub use add_var_phpdoc_from_default::AddVarPhpdocFromDefault;
+pub use add_var_phpdoc_from_dim_fetch::AddVarPhpdocFromDimFetch;
+pub use add_var_phpdoc_from_getter::AddVarPhpdocFromGetter;
+pub use prefer_generic_collection_phpdoc::PreferGenericCollectionPhpdoc;
 pub use add_bool_return::AddBoolReturn;
 pub use add_bool_return_from_const::AddBoolReturnFromConst;
 pub use add_closure_never_return::AddClosureNeverReturn;
@@ -144,6 +172,22 @@ pub(crate) fn all() -> Vec<Box<dyn Rule>> {
         Box::new(AddPropertyTypeBehatContext),
         Box::new(AddPropertyTypeGetRepository),
         Box::new(AddDoctrineRepositoryReturnType),
+        // the docblock rules, in Rector's order (src/Config/Level/TypeDeclarationDocblocksLevel.php)
+        Box::new(AddVarPhpdocFromDefault),
+        Box::new(AddParamPhpdocFromDimFetch),
+        Box::new(AddParamPhpdocFromLocalCalls),
+        Box::new(AddParamPhpdocFromReferenceAssign),
+        Box::new(AddParamPhpdocFromCallableCall),
+        Box::new(AddReturnPhpdocCommonObject),
+        Box::new(AddReturnPhpdocScalarArray),
+        Box::new(AddReturnPhpdocDirectArray),
+        Box::new(AddReturnPhpdocDimAssignedObject),
+        Box::new(AddReturnPhpdocJsonArray),
+        Box::new(AddVarPhpdocFromConstructorParam),
+        Box::new(AddVarPhpdocFromGetter),
+        Box::new(AddVarPhpdocFromDimFetch),
+        Box::new(AddGetterReturnPhpdoc),
+        Box::new(PreferGenericCollectionPhpdoc),
     ]
 }
 

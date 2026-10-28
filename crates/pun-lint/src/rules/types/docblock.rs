@@ -3,7 +3,9 @@
 //! report whose fix writes the changed doc comment through [`crate::rules::phpdoc_writer`].
 
 use mago_syntax::cst::{
-    Block, FunctionLikeParameterList, FunctionLikeReturnTypeHint, Hint, Method, MethodBody, Node, Return,
+    Access, Assignment, AssignmentOperator, Block, ClassLikeMember, ClassLikeMemberSelector, Expression,
+    FunctionLikeParameterList, FunctionLikeReturnTypeHint, Hint, Method, MethodBody, Node, Property, PropertyItem,
+    Return, Sequence, Statement, Variable,
 };
 use pun_phpstan::types::Type;
 use pun_problem::{Edit, Fix, Safety, Span};
@@ -63,11 +65,6 @@ impl<'ast, 'arena> FunctionLike<'ast, 'arena> {
         self.return_type.is_some_and(|r| !is_array_hint(&r.hint))
     }
 
-    /// Whether the return type is `array`.
-    pub fn returns_array(&self) -> bool {
-        self.return_type.is_some_and(|r| is_array_hint(&r.hint))
-    }
-
     /// Whether it is a private method.
     pub fn is_private(&self) -> bool {
         self.method.is_some_and(|m| m.modifiers.iter().any(|m| m.is_private()))
@@ -123,6 +120,31 @@ pub(crate) fn doc_report(
     }
 }
 
+/// The report of a rule that changed the doc comments `changes` (a target and its changed doc each).
+pub(crate) fn docs_report(span: Span, message: &str, source: &str, changes: &[(DocTarget, PhpDocInfo)]) -> Report {
+    Report {
+        span,
+        message: message.to_string(),
+        help: None,
+        fix: Some(Fix {
+            safety: Safety::Unsafe,
+            edits: changes
+                .iter()
+                .map(|(target, info)| target.edit(source, &info.print()))
+                .collect(),
+        }),
+    }
+}
+
+/// Where a class's report points: its name, or `class` of an anonymous class.
+pub(crate) fn class_span(node: Node<'_, '_>) -> Span {
+    match node {
+        Node::Class(c) => node_span(&c.name),
+        Node::AnonymousClass(c) => node_span(&c.class),
+        _ => node_span(&node),
+    }
+}
+
 /// `Type::getReferencedClasses()`.
 pub(crate) fn referenced_classes(t: &Type) -> Vec<String> {
     match t {
@@ -144,4 +166,151 @@ pub(crate) fn referenced_classes(t: &Type) -> Vec<String> {
         Type::ConstArray(a) => a.keys.iter().chain(a.values.iter()).flat_map(referenced_classes).collect(),
         _ => vec![],
     }
+}
+
+/// A class's members (`Class_`, an anonymous class too).
+pub(crate) fn class_members<'ast, 'arena>(
+    node: Node<'ast, 'arena>,
+) -> Option<(&'ast Sequence<'arena, ClassLikeMember<'arena>>, bool)> {
+    match node {
+        Node::Class(c) => Some((&c.members, false)),
+        Node::AnonymousClass(c) => Some((&c.members, true)),
+        _ => None,
+    }
+}
+
+/// `Class_::getMethods()`.
+pub(crate) fn methods<'ast, 'arena>(
+    members: &'ast Sequence<'arena, ClassLikeMember<'arena>>,
+) -> impl Iterator<Item = &'ast Method<'arena>> {
+    members.iter().filter_map(|m| match m {
+        ClassLikeMember::Method(m) => Some(m),
+        _ => None,
+    })
+}
+
+/// `Class_::getMethod()`: the method of that name, case-insensitively.
+pub(crate) fn method<'ast, 'arena>(
+    members: &'ast Sequence<'arena, ClassLikeMember<'arena>>,
+    name: &str,
+) -> Option<&'ast Method<'arena>> {
+    methods(members).find(|m| m.name.value.eq_ignore_ascii_case(name.as_bytes()))
+}
+
+/// A `Property` statement as Rector reads it.
+pub(crate) struct PropertyView<'ast, 'arena> {
+    pub start: usize,
+    pub hint: Option<&'ast Hint<'arena>>,
+    /// The names of its items, without `$`.
+    pub names: Vec<&'arena str>,
+    /// The default of its first item.
+    pub default: Option<&'ast Expression<'arena>>,
+    pub is_private: bool,
+}
+
+/// `Class_::getProperties()`.
+pub(crate) fn properties<'ast, 'arena>(
+    members: &'ast Sequence<'arena, ClassLikeMember<'arena>>,
+) -> Vec<PropertyView<'ast, 'arena>> {
+    let name = |item: &'ast PropertyItem<'arena>| {
+        let v = match item {
+            PropertyItem::Abstract(i) => &i.variable,
+            PropertyItem::Concrete(i) => &i.variable,
+        };
+        std::str::from_utf8(&v.name[1..]).unwrap_or("")
+    };
+    let default = |item: &'ast PropertyItem<'arena>| match item {
+        PropertyItem::Concrete(i) => Some(i.value),
+        PropertyItem::Abstract(_) => None,
+    };
+    members
+        .iter()
+        .filter_map(|m| match m {
+            ClassLikeMember::Property(p) => Some(p),
+            _ => None,
+        })
+        .map(|p| {
+            let (modifiers, hint, items): (_, _, Vec<&'ast PropertyItem<'arena>>) = match p {
+                Property::Plain(p) => (&p.modifiers, p.hint.as_ref(), p.items.iter().collect()),
+                Property::Hooked(p) => (&p.modifiers, p.hint.as_ref(), vec![&p.item]),
+            };
+            PropertyView {
+                start: node_span(p).start,
+                hint,
+                names: items.iter().map(|i| name(i)).collect(),
+                default: items.first().and_then(|i| default(i)),
+                is_private: modifiers.iter().any(|m| m.is_private()),
+            }
+        })
+        .collect()
+}
+
+/// `$this->isName($expr, 'this')` of a direct variable.
+pub(crate) fn is_this(expr: &Expression<'_>) -> bool {
+    variable_name(expr) == Some("this")
+}
+
+/// The name of a direct variable, without `$`.
+pub(crate) fn variable_name<'a>(expr: &Expression<'a>) -> Option<&'a str> {
+    match expr {
+        Expression::Variable(Variable::Direct(v)) => std::str::from_utf8(&v.name[1..]).ok(),
+        _ => None,
+    }
+}
+
+/// `$this->name` of a property fetch on `$this`: the name.
+pub(crate) fn this_property<'a>(expr: &Expression<'a>) -> Option<&'a str> {
+    match expr {
+        Expression::Access(Access::Property(p)) if is_this(p.object) => match &p.property {
+            ClassLikeMemberSelector::Identifier(id) => std::str::from_utf8(id.value).ok(),
+            _ => None,
+        },
+        _ => None,
+    }
+}
+
+/// The statements of a method's body (`null` for an abstract method).
+pub(crate) fn method_statements<'ast, 'arena>(m: &'ast Method<'arena>) -> Option<Vec<&'ast Statement<'arena>>> {
+    match &m.body {
+        MethodBody::Concrete(b) => Some(b.statements.iter().collect()),
+        MethodBody::Abstract(_) => None,
+    }
+}
+
+/// The property `$this->x` the sole `return` statement of a method returns.
+pub(crate) fn returned_this_property<'arena>(m: &Method<'arena>) -> Option<&'arena str> {
+    match method_statements(m)?.as_slice() {
+        [Statement::Return(r)] => this_property(r.value?),
+        _ => None,
+    }
+}
+
+/// `BetterNodeFinder::findInstancesOfScoped()` over `node`'s children: each node `found` takes, not looking into
+/// classes, functions and closures (methods and arrow functions are looked into).
+pub(crate) fn find_scoped<'ast, 'arena>(node: Node<'ast, 'arena>, found: &mut dyn FnMut(Node<'ast, 'arena>)) {
+    node.visit_children(|child| {
+        found(child);
+        match child {
+            Node::Function(_) | Node::Closure(_) | Node::Class(_) => {}
+            Node::AnonymousClass(class) => {
+                if let Some(args) = &class.argument_list {
+                    find_scoped(Node::PartialArgumentList(args), found);
+                }
+            }
+            _ => find_scoped(child, found),
+        }
+    });
+}
+
+/// The simple assignments (`=`) under `node`, scoped.
+pub(crate) fn assignments<'ast, 'arena>(node: Node<'ast, 'arena>) -> Vec<&'ast Assignment<'arena>> {
+    let mut out = Vec::new();
+    find_scoped(node, &mut |n| {
+        if let Node::Assignment(a) = n
+            && matches!(a.operator, AssignmentOperator::Assign(_))
+        {
+            out.push(a);
+        }
+    });
+    out
 }
