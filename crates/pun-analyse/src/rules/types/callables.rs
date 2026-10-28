@@ -99,7 +99,7 @@ fn of_signature(c: &Checker, s: &Signature, source: Span) -> Acceptor {
     }
 }
 
-/// `InaccessibleMethod`: no parameters, variadic.
+/// `TrivialParametersAcceptor` (also used for inaccessible methods): no parameters, variadic.
 fn inaccessible() -> Acceptor {
     Acceptor {
         optional: vec![],
@@ -133,6 +133,23 @@ fn acceptors(c: &Checker, t: &Type, source: Span, inaccessible: &mut Option<Stri
     };
     match t {
         Type::Closure(s) | Type::Callable(Some(s)) => Some(vec![of_signature(c, s, source)]),
+        Type::Callable(None) => Some(vec![self::inaccessible()]),
+        Type::Object(name, _, _) if name.eq_ignore_ascii_case("Closure") => {
+            Some(vec![self::inaccessible()])
+        }
+        Type::Intersection(parts) => {
+            let variants = parts
+                .iter()
+                .filter(|part| declared::with_classes(c, || part.is_callable().yes()))
+                .map(|part| acceptors(c, part, source, inaccessible))
+                .collect::<Option<Vec<_>>>()?;
+            variants.into_iter().reduce(|combined, next| {
+                combined
+                    .iter()
+                    .flat_map(|left| next.iter().map(|right| params::combine(&[left, right])))
+                    .collect()
+            })
+        }
         Type::ConstString(s) => match std::str::from_utf8(s).ok()?.split_once("::") {
             Some((class, name)) => method(class, name, inaccessible),
             None => c.function(s).map(|(_, v)| v.all),

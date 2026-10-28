@@ -11,6 +11,7 @@ use mago_codex::ttype::atomic::array::TArray;
 use mago_codex::ttype::atomic::array::key::ArrayKey;
 use mago_codex::ttype::atomic::array::keyed::TKeyedArray;
 use mago_codex::ttype::atomic::array::list::TList;
+use mago_codex::ttype::atomic::callable::TCallable;
 use mago_codex::ttype::atomic::generic::TGenericParameter;
 use mago_codex::ttype::atomic::iterable::TIterable;
 use mago_codex::ttype::atomic::mixed::truthiness::TMixedTruthiness;
@@ -31,6 +32,7 @@ use mago_codex::ttype::comparator::union_comparator;
 use mago_codex::ttype::get_arraykey;
 use mago_codex::ttype::get_closed_resource;
 use mago_codex::ttype::get_empty;
+use mago_codex::ttype::get_explicit_mixed;
 use mago_codex::ttype::get_float;
 use mago_codex::ttype::get_mixed;
 use mago_codex::ttype::get_mixed_iterable;
@@ -38,7 +40,6 @@ use mago_codex::ttype::get_mixed_keyed_array;
 use mago_codex::ttype::get_mixed_list;
 use mago_codex::ttype::get_mixed_maybe_from_loop;
 use mago_codex::ttype::get_never;
-use mago_codex::ttype::get_non_empty_string;
 use mago_codex::ttype::get_null;
 use mago_codex::ttype::get_numeric;
 use mago_codex::ttype::get_object;
@@ -722,7 +723,9 @@ where
 
     'outer: for atomic in existing_var_type.types.as_ref() {
         match atomic {
-            TAtomic::Array(TArray::Keyed(TKeyedArray { known_items, parameters, non_empty, known_non_list })) => {
+            TAtomic::Array(
+                array @ TArray::Keyed(TKeyedArray { known_items, parameters, non_empty, known_non_list, callable }),
+            ) => {
                 if *known_non_list {
                     did_remove_type = true;
                     continue;
@@ -741,22 +744,35 @@ where
                 }
 
                 let element_type = if let Some((key_parameter, value_parameter)) = parameters {
-                    if !key_parameter.has_int() {
+                    if !key_parameter.has_int() && !key_parameter.is_mixed() {
                         did_remove_type = true;
                         continue 'outer;
                     }
 
-                    Arc::clone(value_parameter)
+                    if callable.is_some() && value_parameter.is_vanilla_mixed() {
+                        Arc::new(get_mixed())
+                    } else {
+                        Arc::clone(value_parameter)
+                    }
                 } else {
                     Arc::new(get_mixed())
                 };
 
                 did_remove_type = true;
-                acceptable_types.push(if is_non_empty || *non_empty {
-                    TAtomic::Array(TArray::List(TList::new_non_empty(element_type)))
-                } else {
-                    TAtomic::Array(TArray::List(TList::new(element_type)))
-                });
+                let mut list = TList::new(element_type);
+                list.non_empty = is_non_empty || *non_empty;
+                list.callable = callable.clone();
+                if let Some(view) = array.callable_array_view(context.codebase) {
+                    list.known_elements = view.known_items.map(|items| {
+                        Arc::new(
+                            items
+                                .iter()
+                                .map(|(key, value)| (key.get_integer().unwrap() as usize, value.clone()))
+                                .collect(),
+                        )
+                    });
+                }
+                acceptable_types.push(TAtomic::Array(TArray::List(list)));
             }
             TAtomic::Array(TArray::List(_)) => {
                 acceptable_types.push(atomic.clone());
@@ -789,7 +805,9 @@ where
             TAtomic::Callable(callable) => {
                 did_remove_type = true;
                 if !callable.is_closure() {
-                    acceptable_types.push(get_callable_array_shape());
+                    let mut list = TList::new_non_empty(Arc::new(get_mixed()));
+                    list.callable = Some(Arc::new(TAtomic::Callable(callable.clone())));
+                    acceptable_types.push(TAtomic::Array(TArray::List(list)));
                 }
             }
             _ => {
@@ -881,7 +899,7 @@ where
             TAtomic::Callable(callable) => {
                 did_remove_type = true;
                 if !callable.is_closure() {
-                    acceptable_types.push(get_callable_array_shape());
+                    acceptable_types.push(get_callable_array_shape(callable));
                 }
             }
             _ => {
@@ -1521,16 +1539,13 @@ where
     new_var_type
 }
 
-fn get_callable_array_shape() -> TAtomic {
-    let mut known_items = BTreeMap::new();
-
-    known_items.insert(
-        ArrayKey::Integer(0),
-        (false, TUnion::from_vec(vec![TAtomic::Object(TObject::Any), TAtomic::Scalar(TScalar::class_string())])),
-    );
-    known_items.insert(ArrayKey::Integer(1), (false, get_non_empty_string()));
-
-    TAtomic::Array(TArray::Keyed(TKeyedArray::new().with_known_items(known_items).with_non_empty(true)))
+fn get_callable_array_shape(callable: &TCallable) -> TAtomic {
+    // IsArrayFunctionTypeSpecifyingExtension intersects ArrayType<mixed, mixed> with the
+    // incoming callable. Its two-element shape is a derived view, not a replacement value.
+    let mut array = TKeyedArray::new_with_parameters(Arc::new(get_explicit_mixed()), Arc::new(get_explicit_mixed()));
+    array.non_empty = true;
+    array.callable = Some(Arc::new(TAtomic::Callable(callable.clone())));
+    TAtomic::Array(TArray::Keyed(array))
 }
 
 fn reconcile_non_empty_countable<A>(
@@ -1550,19 +1565,26 @@ where
 
     for atomic in new_var_type.types.to_mut().drain(..) {
         match atomic {
-            TAtomic::Array(TArray::List(TList { non_empty, element_type, known_elements, known_count })) => {
+            TAtomic::Array(TArray::List(TList { callable, non_empty, element_type, known_elements, known_count })) => {
                 if !non_empty {
                     did_remove_type = true;
                 }
 
                 acceptable_types.push(TAtomic::Array(TArray::List(TList {
+                    callable,
                     non_empty: true,
                     element_type,
                     known_elements,
                     known_count,
                 })));
             }
-            TAtomic::Array(TArray::Keyed(TKeyedArray { non_empty, parameters, known_items, known_non_list })) => {
+            TAtomic::Array(TArray::Keyed(TKeyedArray {
+                callable,
+                non_empty,
+                parameters,
+                known_items,
+                known_non_list,
+            })) => {
                 if !non_empty {
                     did_remove_type = true;
                     if parameters.is_none() && known_items.as_ref().is_none_or(|items| items.is_empty()) {
@@ -1571,6 +1593,7 @@ where
                 }
 
                 acceptable_types.push(TAtomic::Array(TArray::Keyed(TKeyedArray {
+                    callable,
                     non_empty: true,
                     parameters,
                     known_items,
@@ -1626,7 +1649,9 @@ where
     let mut existing_var_type = existing_var_type.clone();
 
     for atomic in existing_var_types {
-        if let TAtomic::Array(TArray::List(TList { non_empty, known_count, element_type, known_elements })) = atomic {
+        if let TAtomic::Array(TArray::List(TList { callable, non_empty, known_count, element_type, known_elements })) =
+            atomic
+        {
             let needs_replacement = match known_count {
                 Some(existing_count) => !*non_empty || *existing_count < count,
                 None if exact => true,
@@ -1639,6 +1664,7 @@ where
                     let new_known_count = if exact { Some(count) } else { known_count.map(|_| count) };
 
                     existing_var_type.types.to_mut().push(TAtomic::Array(TArray::List(TList {
+                        callable: callable.clone(),
                         element_type: Arc::clone(element_type),
                         known_elements: known_elements.clone(),
                         known_count: new_known_count,
@@ -1649,6 +1675,7 @@ where
                 did_remove_type = true;
             }
         } else if let TAtomic::Array(TArray::Keyed(TKeyedArray {
+            callable,
             non_empty,
             parameters,
             known_items,
@@ -1665,6 +1692,7 @@ where
                 }
 
                 existing_var_type.types.to_mut().push(TAtomic::Array(TArray::Keyed(TKeyedArray {
+                    callable: callable.clone(),
                     known_items: known_items.clone(),
                     parameters: parameters.clone(),
                     non_empty: true,
@@ -2157,6 +2185,7 @@ where
                 // Narrow mixed to a keyed array with the specific key having a non-null value
                 let mut keyed_array = get_mixed_keyed_array();
                 keyed_array.types.to_mut()[0] = TAtomic::Array(TArray::Keyed(TKeyedArray {
+                    callable: None,
                     known_items: Some(
                         BTreeMap::from([(
                             *key_name,

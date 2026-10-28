@@ -398,7 +398,9 @@ fn get_combined_keyed_array_union_container(
         };
 
         let (key, value) = array.parameters.as_ref()?;
-        (array.known_items.is_none() && (Arc::ptr_eq(input_key, key) || input_key.as_ref() == key.as_ref()))
+        (array.callable == input.callable
+            && array.known_items.is_none()
+            && (Arc::ptr_eq(input_key, key) || input_key.as_ref() == key.as_ref()))
             .then_some((array, value.as_ref()))
     });
 
@@ -419,6 +421,7 @@ fn get_combined_keyed_array_union_container(
         parameters: Some((Arc::clone(input_key), Arc::new(value))),
         non_empty,
         known_non_list,
+        callable: input.callable.clone(),
     })))
 }
 

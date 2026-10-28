@@ -141,9 +141,9 @@ pub fn is_contained_by(
         }
 
         // intersection <= intersection (e.g., A&B <= C&D)
-        if input_type_part.has_intersection_types() {
+        if input_type_part.has_intersection_types() && !matches!(container_type_part, TAtomic::Array(_)) {
             // We have proven the input is a subtype of all the container's parts.
-            // This is sufficient.
+            // Arrays also carry their key/value constraints on the concrete base.
             return true;
         }
     }

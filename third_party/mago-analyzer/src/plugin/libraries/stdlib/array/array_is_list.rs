@@ -45,6 +45,11 @@ impl FunctionReturnTypeProvider for ArrayIsListProvider {
         let array = invocation.get_argument(0, &[b"array"])?;
         let array_type = context.get_expression_type(array)?;
 
+        // PHPStan's array_is_list stub returns bool; the callable's constant-array
+        // projection must not turn its conditional Mago stub into a literal result.
+        if array_type.types.iter().any(|atomic| matches!(atomic, TAtomic::Array(array) if array.callable().is_some())) {
+            return Some(get_bool());
+        }
         array_type.types.iter().any(generic_keyed_array_can_be_list).then_some(get_bool())
     }
 }
@@ -58,7 +63,7 @@ fn generic_keyed_array_can_be_list(atomic: &TAtomic) -> bool {
         return false;
     };
 
-    key_type.types.iter().any(
+    key_type.is_mixed() || key_type.types.iter().any(
         |key_atomic| matches!(key_atomic, TAtomic::GenericParameter(parameter) if parameter.constraint.is_array_key()),
     )
 }

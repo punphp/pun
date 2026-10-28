@@ -449,6 +449,7 @@ where
     let array_type = if !array_creation_info.property_types.is_empty() {
         if array_creation_info.is_list {
             TUnion::from_vec(vec![TAtomic::Array(TArray::List(TList {
+                callable: None,
                 known_count: if array_creation_info.known_int_offset {
                     Some(array_creation_info.property_types.len())
                 } else {
@@ -471,6 +472,7 @@ where
             }))])
         } else {
             TUnion::from_vec(vec![TAtomic::Array(TArray::Keyed(TKeyedArray {
+                callable: None,
                 known_items: Some(array_creation_info.property_types.into()),
                 parameters: if array_creation_info.can_create_objectlike {
                     None
@@ -490,6 +492,7 @@ where
         get_empty_keyed_array()
     } else if array_creation_info.is_list {
         TUnion::from_vec(vec![TAtomic::Array(TArray::List(TList {
+            callable: None,
             known_elements: None,
             element_type: Arc::new(item_value_type.unwrap_or_else(get_mixed)),
             known_count: None,
@@ -497,6 +500,7 @@ where
         }))])
     } else {
         TUnion::from_vec(vec![TAtomic::Array(TArray::Keyed(TKeyedArray {
+            callable: None,
             known_items: None,
             parameters: match (item_key_type, item_value_type) {
                 (Some(key), Some(value)) => Some((Arc::new(key), Arc::new(value))),

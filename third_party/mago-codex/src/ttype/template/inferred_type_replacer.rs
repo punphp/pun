@@ -257,6 +257,11 @@ fn replace_atomic(
     codebase: &CodebaseMetadata,
     polarity: Variance,
 ) -> TAtomic {
+    if let TAtomic::Array(array) = &mut atomic
+        && let Some(callable) = array.callable_mut()
+    {
+        *callable = replace_atomic(callable.clone(), template_result, codebase, polarity);
+    }
     match &mut atomic {
         TAtomic::Conditional(conditional) => {
             *Arc::make_mut(&mut conditional.subject) =

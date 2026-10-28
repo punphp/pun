@@ -41,6 +41,9 @@ use pun_phpstan::types::Tri;
 pub(super) fn registry(contents: &[u8]) -> PluginRegistry {
     let mut registry = PluginRegistry::new();
     registry.register_function_provider(Benevolent);
+    registry.register_function_provider(
+        mago_analyzer::plugin::libraries::stdlib::array::ArrayIsListProvider,
+    );
     let builtins = BuiltinFunctions::default();
     registry.register_function_call_hook(builtins.clone());
     registry.register_function_provider(builtins);
@@ -88,6 +91,8 @@ impl FunctionReturnTypeProvider for BuiltinFunctions {
             b"str_repeat",
             b"filter_input",
             b"filter_var",
+            b"count",
+            b"sizeof",
         ])
     }
 
@@ -96,6 +101,40 @@ impl FunctionReturnTypeProvider for BuiltinFunctions {
         context: &ProviderContext<'_, '_, '_>,
         invocation: &InvocationInfo<'_, '_, '_>,
     ) -> Option<TUnion> {
+        if invocation.function_name().eq_ignore_ascii_case("count")
+            || invocation.function_name().eq_ignore_ascii_case("sizeof")
+        {
+            let array = context.get_expression_type(invocation.get_argument(0, &[b"value"])?)?;
+            // CountFunctionReturnTypeExtension delegates normal counts to the value's size.
+            let arrays = array.types
+                .iter()
+                .map(|atomic| {
+                    if let TAtomic::Array(array) = atomic {
+                        Some(array)
+                    } else {
+                        None
+                    }
+                })
+                .collect::<Option<Vec<_>>>()?;
+            if invocation.get_argument(1, &[b"mode"]).is_some_and(|mode| {
+                context
+                    .get_expression_type(mode)
+                    .and_then(TUnion::get_single_literal_int_value)
+                    != Some(0)
+            }) && arrays.iter().any(|array| {
+                let (_, values) = get_array_parameters(array, context.codebase());
+                values
+                    .types
+                    .iter()
+                    .any(|value| value.is_array() || value.is_mixed())
+            }) {
+                return arrays
+                    .iter()
+                    .all(|array| array.is_non_empty())
+                    .then(|| get_int_range(Some(1), None));
+            }
+            return Some(TArray::get_union_size(&arrays, context.codebase()));
+        }
         if invocation.function_name().eq_ignore_ascii_case("str_repeat") {
             // Stored callable signatures do not run PHPStan's dynamic extension. Do not retain the
             // prelude's conditional non-empty refinement on that separate reflection-only path either.

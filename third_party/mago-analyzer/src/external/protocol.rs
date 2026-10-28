@@ -2872,7 +2872,13 @@ fn decode_complete_array(reader: &mut PayloadReader<'_>, depth: usize) -> Result
             };
 
             let non_empty = reader.read_bool("list non-empty flag")?;
-            TArray::List(TList { element_type, known_elements: known_elements.map(Into::into), known_count, non_empty })
+            TArray::List(TList {
+                callable: None,
+                element_type,
+                known_elements: known_elements.map(Into::into),
+                known_count,
+                non_empty,
+            })
         }
         2 => {
             let known_items = if reader.read_bool("known array items presence")? {
@@ -2899,6 +2905,7 @@ fn decode_complete_array(reader: &mut PayloadReader<'_>, depth: usize) -> Result
 
             let non_empty = reader.read_bool("array non-empty flag")?;
             TArray::Keyed(TKeyedArray {
+                callable: None,
                 known_items: known_items.map(Into::into),
                 parameters,
                 non_empty,
@@ -3222,6 +3229,17 @@ pub(super) mod testing {
     use super::*;
 
     mod object_exclusions;
+
+    #[test]
+    fn ordinary_wire_arrays_do_not_invent_callable_constraints() {
+        // Complete keyed-array kind, absent known items, absent parameters, not non-empty.
+        let mut reader = PayloadReader::new(&[2, 0, 0, 0]);
+        let array = decode_complete_array(&mut reader, 0).unwrap();
+        reader.finish().unwrap();
+        assert!(array.is_empty());
+        assert!(array.callable().is_none());
+        assert_eq!(array, TArray::Keyed(TKeyedArray::new()));
+    }
 
     #[test]
     fn string_casing_tags_roundtrip_and_reject_older_peers() {

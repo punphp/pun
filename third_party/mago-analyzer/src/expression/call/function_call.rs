@@ -1,8 +1,10 @@
 use mago_allocator::Arena;
 use mago_codex::identifier::function_like::FunctionLikeIdentifier;
 use mago_codex::ttype::TType;
+use mago_codex::ttype::atomic::TAtomic;
 use mago_codex::ttype::atomic::callable::TCallable;
 use mago_codex::ttype::atomic::callable::TCallableSignature;
+use mago_codex::ttype::atomic::object::TObject;
 use mago_codex::ttype::cast::cast_atomic_to_callable;
 use mago_codex::ttype::expander::contains_parameter_variable;
 use mago_codex::ttype::get_error;
@@ -233,7 +235,13 @@ where
                     }
 
                     targets.push(InvocationTarget::Callable {
-                        signature: callable_signature.clone(),
+                        // ObjectType(Closure)'s trivial acceptor contributes mixed to the
+                        // invocation return, without erasing its callable intersection's signature.
+                        signature: if matches!(atomic, TAtomic::Object(TObject::Named(object)) if object.name.as_bytes().eq_ignore_ascii_case(b"Closure")) {
+                            callable_signature.clone().with_return_type(Some(std::sync::Arc::new(mago_codex::ttype::get_mixed())))
+                        } else {
+                            callable_signature.clone()
+                        },
                         effective_signature: None,
                         span: expression.span(),
                         source: callable_signature.get_source(),

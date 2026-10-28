@@ -119,6 +119,7 @@ impl FunctionReturnTypeProvider for TypeStructureProvider {
         Some(TUnion::from_atomic(TAtomic::Object(TObject::Named(TNamedObject::new_with_type_parameters(
             word("Flow\\Types\\Type\\Logical\\StructureType"),
             Some(vec![TUnion::from_atomic(TAtomic::Array(TArray::Keyed(TKeyedArray {
+                callable: None,
                 parameters: if allows_extra_fields {
                     Some((Arc::new(get_arraykey()), Arc::new(get_mixed())))
                 } else {

@@ -284,6 +284,13 @@ pub(crate) fn expand_atomic(
     new_return_type_parts: &mut Vec<TAtomic>,
     never_kind: &mut NeverKind,
 ) {
+    if let TAtomic::Array(array) = return_type_part
+        && let Some(callable) = array.callable_mut()
+    {
+        let mut constraint = TUnion::from_atomic(callable.clone());
+        expand_union(codebase, &mut constraint, options);
+        *callable = constraint.get_single().clone();
+    }
     match return_type_part {
         TAtomic::Array(array_type) => match array_type {
             TArray::Keyed(keyed_data) => {

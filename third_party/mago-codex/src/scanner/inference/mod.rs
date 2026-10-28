@@ -842,6 +842,7 @@ fn infer_with_constant_sources<'arena>(
                 known_elements: Some(entries.into()),
                 element_type: Arc::new(get_never()),
                 non_empty: !elements.is_empty(),
+                callable: None,
             }))))
         }
         Expression::Array(Array { elements, .. }) | Expression::LegacyArray(LegacyArray { elements, .. })

@@ -261,6 +261,7 @@ where
 
     if atomic_type.is_null() || atomic_type.is_void() {
         atomic_type = TAtomic::Array(TArray::List(TList {
+            callable: None,
             element_type: Arc::new(get_never()),
             known_elements: None,
             known_count: None,
@@ -297,6 +298,7 @@ where
 
         if array.is_empty() && key_type.is_none() {
             *array = TArray::List(TList {
+                callable: array.callable().cloned().map(Arc::new),
                 element_type: Arc::new(combined_value_type),
                 known_elements: None,
                 known_count: None,
@@ -388,6 +390,7 @@ where
                             known_items.insert(ArrayKey::String(ustr), (false, current_type.clone()));
 
                             *array = TArray::Keyed(TKeyedArray {
+                                callable: list.callable.clone(),
                                 parameters,
                                 known_items: Some(known_items.into()),
                                 non_empty: true,
@@ -436,7 +439,7 @@ where
     A: Arena,
 {
     let mut collection_types = Vec::new();
-    let mut extended_shape = false;
+    let mut extended_shapes = Vec::new();
 
     if let Some(key_type) = key_type {
         // PHP coerces null to empty string '' when used as array key.
@@ -462,6 +465,7 @@ where
                 TAtomic::Array(array_type) => match array_type {
                     TArray::List(list) => {
                         collection_types.push(TAtomic::Array(TArray::List(TList {
+                            callable: list.callable.clone(),
                             element_type: Arc::new(value_type.clone()),
                             known_elements: list.known_elements.clone(),
                             known_count: None,
@@ -504,6 +508,7 @@ where
                         });
 
                         collection_types.push(TAtomic::Array(TArray::Keyed(TKeyedArray {
+                            callable: keyed_array.callable.clone(),
                             parameters: Some((Arc::new((*key_type).clone()), Arc::new(value_type.clone()))),
                             known_items: widened_known_items.map(Into::into),
                             non_empty: true,
@@ -513,6 +518,7 @@ where
                 },
                 TAtomic::Null | TAtomic::Void => {
                     collection_types.push(TAtomic::Array(TArray::Keyed(TKeyedArray {
+                        callable: None,
                         parameters: Some((Arc::new((*key_type).clone()), Arc::new(value_type.clone()))),
                         known_items: None,
                         non_empty: true,
@@ -535,16 +541,17 @@ where
                             && list.element_type.is_never()
                             && current_known_count < context.settings.array_combination_threshold as usize
                         {
-                            collection_types.push(TAtomic::Array(TArray::List(TList {
-                                element_type: Arc::new(get_never()),
-                                known_elements: Some(
-                                    BTreeMap::from([(current_known_count, (false, value_type.clone()))]).into(),
-                                ),
-                                known_count: None,
-                                non_empty: true,
-                            })));
+                            // This is the complete successor value, not an alternative containing
+                            // only the appended offset. Real-edge joins keep array alternatives apart.
+                            let mut elements = list.known_elements.as_deref().cloned().unwrap_or_default();
+                            elements.insert(current_known_count, (false, value_type.clone()));
+                            let mut extended = TList::from_known_elements(elements);
+                            extended.callable = list.callable.clone();
+                            collection_types.push(TAtomic::Array(TArray::List(extended)));
+                            extended_shapes.push(original_type.clone());
                         } else {
                             collection_types.push(TAtomic::Array(TArray::List(TList {
+                                callable: list.callable.clone(),
                                 element_type: Arc::new(value_type.clone()),
                                 known_elements: None,
                                 known_count: None,
@@ -568,7 +575,7 @@ where
                                 report_array_append_overflow(context, target_span, max_entry_optional);
 
                                 collection_types.push(TAtomic::Array(TArray::Keyed(existing_array.clone())));
-                                extended_shape = true;
+                                extended_shapes.push(original_type.clone());
                                 continue;
                             }
 
@@ -578,15 +585,17 @@ where
                             new_items.insert(ArrayKey::Integer(next_key), (false, value_type.clone()));
 
                             collection_types.push(TAtomic::Array(TArray::Keyed(TKeyedArray {
+                                callable: existing_array.callable.clone(),
                                 known_items: Some(new_items.into()),
                                 parameters: None,
                                 non_empty: true,
                                 known_non_list: existing_array.known_non_list,
                             })));
 
-                            extended_shape = true;
+                            extended_shapes.push(original_type.clone());
                         } else {
                             collection_types.push(TAtomic::Array(TArray::List(TList {
+                                callable: existing_array.callable.clone(),
                                 element_type: Arc::new(value_type.clone()),
                                 known_elements: None,
                                 known_count: None,
@@ -597,6 +606,7 @@ where
                 },
                 TAtomic::Null | TAtomic::Void => {
                     collection_types.push(TAtomic::Array(TArray::List(TList {
+                        callable: None,
                         element_type: Arc::new(value_type.clone()),
                         known_elements: None,
                         known_count: None,
@@ -609,9 +619,7 @@ where
     }
 
     root_type.types.to_mut().retain(|t| !t.is_null() && !t.is_void());
-    if extended_shape {
-        root_type.types.to_mut().retain(|t| !matches!(t, TAtomic::Array(TArray::Keyed(_))));
-    }
+    root_type.types.to_mut().retain(|t| !extended_shapes.contains(t));
 
     if collection_types.is_empty() {
         return root_type;
@@ -705,6 +713,7 @@ where
 
         if array_expression_type.is_never() {
             let atomic = wrap_atomic(TAtomic::Array(TArray::Keyed(TKeyedArray {
+                callable: None,
                 known_items: None,
                 parameters: None,
                 non_empty: false,

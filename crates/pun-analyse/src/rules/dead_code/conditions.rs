@@ -769,6 +769,18 @@ fn compare(c: &mut Checker, b: &Binary) {
         format!("{kind} comparison using {sigil} between {l} and {r} will always evaluate to {text}.")
     };
     let mut tips = Vec::new();
+    // CountFunctionReturnTypeExtension refines PHPStan's PHPDoc return, not its native
+    // int return. A comparison depending on that exact size needs the certainty tip.
+    if kind == "Strict"
+        && [(b.lhs, &right), (b.rhs, &left)].iter().any(|(expression, other)| {
+            let Expression::Call(Call::Function(call)) = unparen(expression) else { return false };
+            !other.is_integer().no()
+                && matches!(function_of(c, call.function), Some(noop::Function::Builtin(function))
+            if function.name.eq_ignore_ascii_case("count") || function.name.eq_ignore_ascii_case("sizeof"))
+        })
+    {
+        tips.push("Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain: false in your %configurationFile%.");
+    }
     if value && last == Some(false) && !kind.is_empty() {
         tips.push(REMOVE_TIP);
     }

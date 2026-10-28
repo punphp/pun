@@ -7,6 +7,7 @@ use mago_word::word;
 
 use crate::ttype::TType;
 use crate::ttype::TypeRef;
+use crate::ttype::atomic::TAtomic;
 use crate::ttype::atomic::array::key::ArrayKey;
 use crate::ttype::union::TUnion;
 
@@ -28,6 +29,9 @@ pub struct TKeyedArray {
     /// Flag indicating if the array is known not to be a list.
     #[cfg_attr(feature = "serde", serde(skip))]
     pub known_non_list: bool,
+    /// A value-owned callable intersection, independent of its array/offset projection.
+    #[cfg_attr(feature = "serde", serde(default))]
+    pub callable: Option<Arc<TAtomic>>,
 }
 
 impl PartialEq for TKeyedArray {
@@ -37,7 +41,10 @@ impl PartialEq for TKeyedArray {
             return true;
         }
 
-        if self.non_empty != other.non_empty || self.known_non_list != other.known_non_list {
+        if self.non_empty != other.non_empty
+            || self.known_non_list != other.known_non_list
+            || self.callable != other.callable
+        {
             return false;
         }
 
@@ -73,7 +80,13 @@ impl TKeyedArray {
     #[inline]
     #[must_use]
     pub fn new_with_parameters(key_type: Arc<TUnion>, value_type: Arc<TUnion>) -> Self {
-        Self { known_items: None, parameters: Some((key_type, value_type)), non_empty: false, known_non_list: false }
+        Self {
+            known_items: None,
+            parameters: Some((key_type, value_type)),
+            non_empty: false,
+            known_non_list: false,
+            callable: None,
+        }
     }
 
     #[inline]

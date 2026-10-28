@@ -766,6 +766,7 @@ fn adjust_array_offset(
                 };
 
                 base_atomic_type = TAtomic::Array(TArray::Keyed(TKeyedArray {
+                    callable: None,
                     known_items: Some(BTreeMap::from([(key, (optional, result_type.clone()))]).into()),
                     parameters: Some((Arc::new(get_arraykey()), Arc::new(get_mixed()))),
                     non_empty: !optional,

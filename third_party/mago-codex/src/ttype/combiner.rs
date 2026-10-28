@@ -139,18 +139,24 @@ pub fn combine_preserving_array_shapes(
     codebase: &CodebaseMetadata,
     options: CombinerOptions,
 ) -> Vec<TAtomic> {
-    if types.iter().filter(|atomic| atomic.is_array()).count() < 2 {
+    if types.iter().filter(|atomic| atomic.is_array()).count() < 2
+        && !types.iter().any(|atomic| matches!(atomic, TAtomic::Array(array) if array.callable().is_some()))
+    {
         return combine(types, codebase, options);
     }
 
     let (mut array_types, other_types): (Vec<_>, Vec<_>) = types.into_iter().partition(TAtomic::is_array);
     let mut combined_types = if other_types.is_empty() { Vec::new() } else { combine(other_types, codebase, options) };
 
-    if combined_types.iter().any(|atomic| matches!(atomic, TAtomic::Mixed(mixed) if mixed.is_vanilla())) {
+    if combined_types
+        .iter()
+        .any(|atomic| matches!(atomic, TAtomic::Mixed(mixed) if mixed.is_vanilla() && !mixed.is_isset_from_loop()))
+    {
         return combined_types;
     }
 
-    combined_types.retain(|atomic| !atomic.is_never());
+    combined_types
+        .retain(|atomic| !atomic.is_never() && !matches!(atomic, TAtomic::Mixed(mixed) if mixed.is_isset_from_loop()));
     for atomic in &mut combined_types {
         if matches!(atomic, TAtomic::Void) {
             *atomic = TAtomic::Null;
@@ -171,6 +177,20 @@ pub fn combine(types: Vec<TAtomic>, codebase: &CodebaseMetadata, options: Combin
         return vec![TAtomic::Never];
     }
 
+    if types.len() == 1 {
+        return types;
+    }
+
+    // An incoming callable absorbs its narrowed array/object alternatives at real-edge joins.
+    // Keep distinct callable origins; only remove non-callable atomics proven to be subtypes.
+    let mut types = types;
+    let callables: Vec<_> = types.iter().filter(|atomic| matches!(atomic, TAtomic::Callable(_))).cloned().collect();
+    types.retain(|atomic| {
+        matches!(atomic, TAtomic::Callable(_))
+            || !callables.iter().any(|callable| {
+                atomic_comparator::is_contained_by(codebase, atomic, callable, false, &mut ComparisonResult::new())
+            })
+    });
     if types.len() == 1 {
         return types;
     }
@@ -204,6 +224,12 @@ pub fn combine(types: Vec<TAtomic>, codebase: &CodebaseMetadata, options: Combin
         return vec![TAtomic::Mixed(crate::ttype::atomic::mixed::subtraction::union(
             &excluded, &TUnion::from_vec(types.clone()), codebase,
         ).with_is_explicit(is_explicit_mixed))];
+    }
+
+    // A callable intersection is a constraint on one array alternative, not an element type.
+    // Folding it into ordinary array parameters would either erase it or infect an unrelated tuple.
+    if types.iter().any(|atomic| matches!(atomic, TAtomic::Array(array) if array.callable().is_some())) {
+        return combine_preserving_array_shapes(types, codebase, options);
     }
 
     // Equal positive object identities combine their negative constraints, not their
@@ -384,6 +410,7 @@ pub fn combine(types: Vec<TAtomic>, codebase: &CodebaseMetadata, options: Combin
             },
             non_empty: combination.flags.contains(CombinationFlags::KEYED_ARRAY_ALWAYS_FILLED),
             known_non_list: combination.flags.contains(CombinationFlags::KEYED_ARRAY_KNOWN_NON_LIST),
+            callable: None,
         })));
     }
 
@@ -397,6 +424,7 @@ pub fn combine(types: Vec<TAtomic>, codebase: &CodebaseMetadata, options: Combin
             element_type: Arc::new(list_parameter),
             non_empty: combination.flags.contains(CombinationFlags::LIST_ARRAY_ALWAYS_FILLED),
             known_count: None,
+            callable: None,
         })));
     }
 
@@ -408,6 +436,7 @@ pub fn combine(types: Vec<TAtomic>, codebase: &CodebaseMetadata, options: Combin
             parameters: None,
             non_empty: false,
             known_non_list: false,
+            callable: None,
         })));
     }
 
@@ -730,7 +759,7 @@ fn scrape_type_properties(
         std::mem::swap(&mut sealed_arrays, &mut combination.sealed_arrays);
         for array in std::iter::once(array).chain(sealed_arrays) {
             match array {
-                TArray::List(TList { element_type, known_elements, non_empty, known_count: _ }) => {
+                TArray::List(TList { element_type, known_elements, non_empty, known_count: _, .. }) => {
                     if combination.flags.contains(CombinationFlags::HAS_KEYED_ARRAY)
                         && !combination.flags.contains(CombinationFlags::KEYED_ARRAY_SOMETIMES_FILLED)
                         && combination.keyed_array_parameters.is_none()
@@ -818,7 +847,7 @@ fn scrape_type_properties(
                             Some((*element_type).clone())
                         };
                 }
-                TArray::Keyed(TKeyedArray { parameters, known_items, non_empty, known_non_list }) => {
+                TArray::Keyed(TKeyedArray { parameters, known_items, non_empty, known_non_list, .. }) => {
                     let mut had_previous_keyed_array = combination.flags.contains(CombinationFlags::HAS_KEYED_ARRAY);
                     let sealed_budget_available = !combination.sealed_keyed_budget_exhausted
                         && combination.sealed_arrays.len() < options.array_combination_threshold as usize;
@@ -850,6 +879,7 @@ fn scrape_type_properties(
                                 parameters,
                                 non_empty,
                                 known_non_list,
+                                callable: None,
                             }));
 
                             continue;
@@ -886,6 +916,7 @@ fn scrape_type_properties(
                                 known_non_list: combination
                                     .flags
                                     .contains(CombinationFlags::KEYED_ARRAY_KNOWN_NON_LIST),
+                                callable: None,
                             });
                             combination.sealed_arrays.push(frozen);
                             combination.flags.remove(CombinationFlags::HAS_KEYED_ARRAY);
@@ -914,6 +945,7 @@ fn scrape_type_properties(
                                 known_non_list: combination
                                     .flags
                                     .contains(CombinationFlags::KEYED_ARRAY_KNOWN_NON_LIST),
+                                callable: None,
                             });
                             combination.sealed_arrays.push(frozen);
                             combination.sealed_arrays.push(TArray::Keyed(TKeyedArray {
@@ -921,6 +953,7 @@ fn scrape_type_properties(
                                 parameters,
                                 non_empty,
                                 known_non_list,
+                                callable: None,
                             }));
                             combination.flags.remove(CombinationFlags::HAS_KEYED_ARRAY);
                             combination.flags.remove(CombinationFlags::KEYED_ARRAY_KNOWN_NON_LIST);
@@ -1531,7 +1564,7 @@ fn flush_sealed_keyed_arrays_into_combination(
         };
 
         any_keyed = true;
-        let TKeyedArray { known_items, parameters, non_empty, known_non_list } = keyed;
+        let TKeyedArray { known_items, parameters, non_empty, known_non_list, .. } = keyed;
 
         if known_non_list {
             combination.flags.insert(CombinationFlags::KEYED_ARRAY_KNOWN_NON_LIST);
@@ -1798,6 +1831,66 @@ mod tests {
     }
 
     #[test]
+    fn ordinary_empty_and_budgeted_arrays_do_not_gain_callable_constraints() {
+        let codebase = CodebaseMetadata::default();
+        let empty = combine(vec![TAtomic::Array(TArray::Keyed(TKeyedArray::new())),
+            TAtomic::Array(TArray::List(TList::from_known_elements(BTreeMap::new())))], &codebase,
+            CombinerOptions::default().with_overwrite_empty_array());
+        assert_eq!(empty.len(), 1);
+        let TAtomic::Array(array) = &empty[0] else { panic!("expected empty array"); };
+        assert!(array.is_empty());
+        assert!(array.callable().is_none());
+
+        let shapes = ["a", "b", "c"].into_iter().map(|key| TAtomic::Array(TArray::Keyed(
+            TKeyedArray::new().with_known_items(BTreeMap::from([
+                (ArrayKey::String(word(key)), (false, crate::ttype::get_int()))]))))).collect();
+        let combined = combine(shapes, &codebase, CombinerOptions::default().with_array_combination_threshold(2));
+        assert_eq!(combined.len(), 1);
+        let TAtomic::Array(TArray::Keyed(array)) = &combined[0] else { panic!("expected keyed array"); };
+        assert!(array.callable.is_none());
+        let items = array.known_items.as_ref().unwrap();
+        assert_eq!(items.len(), 3);
+        for key in ["a", "b", "c"] {
+            let (optional, ty) = &items[&ArrayKey::String(word(key))];
+            assert!(*optional);
+            assert!(ty.is_int());
+        }
+    }
+
+    #[test]
+    fn callable_array_alternatives_do_not_merge_constraints_or_lose_mixed_flags() {
+        let codebase = CodebaseMetadata::default();
+        let mut array = TArray::Keyed(TKeyedArray::new_with_parameters(
+            Arc::new(crate::ttype::get_mixed()),
+            Arc::new(crate::ttype::get_mixed()),
+        ));
+        array.add_intersection_type(crate::ttype::get_mixed_callable().get_single().clone());
+        let constrained = TAtomic::Array(array);
+        let ordinary = TAtomic::Array(TArray::List(TList::from_known_elements(BTreeMap::from([(
+            0,
+            (false, crate::ttype::get_literal_int(7)),
+        )]))));
+        for reverse in [false, true] {
+            for (extra, expected) in [
+                (ordinary.clone(), vec![ordinary.clone(), constrained.clone()]),
+                (TAtomic::Mixed(TMixed::isset_from_loop()), vec![constrained.clone()]),
+                (TAtomic::Mixed(TMixed::new()), vec![TAtomic::Mixed(TMixed::new())]),
+                (TAtomic::Mixed(TMixed::truthy()), vec![TAtomic::Mixed(TMixed::truthy())]),
+                (
+                    TAtomic::Mixed(TMixed::new().with_is_non_null(true)),
+                    vec![TAtomic::Mixed(TMixed::with_subtracted_type(crate::ttype::get_null()))],
+                ),
+            ] {
+                let mut input = vec![constrained.clone(), extra];
+                if reverse {
+                    input.reverse();
+                }
+                assert_eq!(TUnion::from_vec(combine(input, &codebase, Default::default())), TUnion::from_vec(expected));
+            }
+        }
+    }
+
+    #[test]
     fn callable_unions_keep_distinct_effects_from_the_same_closure() {
         use crate::identifier::function_like::FunctionLikeIdentifier;
         use crate::ttype::atomic::callable::parameter::TCallableParameter;
@@ -1889,6 +1982,7 @@ mod tests {
                     parameters: None,
                     non_empty,
                     known_non_list: true,
+                    callable: None,
                 }));
                 let codebase = CodebaseMetadata::new();
                 let options = CombinerOptions::default();

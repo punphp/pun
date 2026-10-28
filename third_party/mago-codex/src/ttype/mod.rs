@@ -1415,6 +1415,10 @@ fn intersect_atomic_types(
 
         let key = intersect_union_types(&left_key, &right_key, codebase).unwrap_or_else(get_never);
         let value = intersect_union_types(&left_value, &right_value, codebase).unwrap_or_else(get_never);
+        let callable = match (left_array.callable(), right_array.callable()) {
+            (Some(left), Some(right)) => Some(intersect_atomic_types(left, right, codebase, intersection_performed)?),
+            (left, right) => left.or(right).cloned(),
+        };
 
         let is_list = left_array.is_list() || right_array.is_list();
         let non_empty = left_array.is_non_empty() || right_array.is_non_empty();
@@ -1424,15 +1428,23 @@ fn intersect_atomic_types(
         }
 
         *intersection_performed = true;
-        let array = if is_list {
+        let mut array = if is_list {
             let mut list = TList::new(Arc::new(value));
             list.non_empty = non_empty;
             TArray::List(list)
         } else {
             TArray::Keyed(TKeyedArray::new_with_parameters(Arc::new(key), Arc::new(value)).with_non_empty(non_empty))
         };
+        if let Some(callable) = callable {
+            array.add_intersection_type(callable);
+        }
 
         return Some(TAtomic::Array(array));
+    }
+
+    // Concrete arrays accept callable constraints, not the object conjunctions below.
+    if type_1.is_array() || type_2.is_array() {
+        return None;
     }
 
     if let (TAtomic::Scalar(TScalar::String(s)), TAtomic::Scalar(TScalar::Numeric))
@@ -1645,6 +1657,9 @@ fn get_iterable_parameters_impl(
 
 #[must_use]
 pub fn get_array_parameters(array_type: &TArray, codebase: &CodebaseMetadata) -> (TUnion, TUnion) {
+    if let Some(view) = array_type.callable_array_view(codebase) {
+        return get_array_parameters(&TArray::Keyed(view), codebase);
+    }
     match array_type {
         TArray::Keyed(keyed_data) => {
             let mut key_types = vec![];
@@ -1753,6 +1768,9 @@ pub fn get_iterable_value_parameter(atomic: &TAtomic, codebase: &CodebaseMetadat
 
 #[must_use]
 pub fn get_array_value_parameter(array_type: &TArray, codebase: &CodebaseMetadata) -> TUnion {
+    if let Some(view) = array_type.callable_array_view(codebase) {
+        return get_array_value_parameter(&TArray::Keyed(view), codebase);
+    }
     match array_type {
         TArray::Keyed(keyed_data) => {
             let mut value_param;
@@ -1950,6 +1968,74 @@ mod tests {
     fn assert_exact(actual: &TUnion, expected: &TUnion) {
         assert_eq!(actual.types, expected.types);
         assert_eq!(actual.flags, expected.flags);
+    }
+
+    #[test]
+    fn array_intersections_preserve_callable_constraints_and_reject_objects() {
+        use super::TType;
+        use super::atomic::TAtomic;
+        use super::atomic::array::{TArray, keyed::TKeyedArray};
+        use std::sync::Arc;
+
+        let codebase = CodebaseMetadata::new();
+        let signature = super::get_mixed_callable().get_single().clone();
+        let mut callable =
+            TArray::Keyed(TKeyedArray::new_with_parameters(Arc::new(get_mixed()), Arc::new(get_mixed())));
+        callable.add_intersection_type(signature.clone());
+        let callable = TUnion::from_atomic(TAtomic::Array(callable));
+        let strings = get_list(get_string());
+        for (left, right) in [(&callable, &strings), (&strings, &callable)] {
+            let result = super::intersect_union_types(left, right, &codebase).unwrap();
+            let TAtomic::Array(array) = result.get_single() else { panic!("concrete array") };
+            assert_eq!(array.callable(), Some(&signature));
+            assert!(array.is_list());
+            assert_eq!(
+                super::get_array_value_parameter(array, &codebase),
+                TUnion::from_vec(vec![
+                    super::get_class_string().get_single().clone(),
+                    super::get_truthy_string().get_single().clone(),
+                ])
+            );
+        }
+        let object = super::get_named_object(mago_word::word("Example"), None);
+        for (left, right) in [(&callable, &object), (&object, &callable)] {
+            assert!(super::intersect_union_types(left, right, &codebase).is_none());
+        }
+    }
+
+    #[test]
+    fn intersecting_callable_arrays_checks_both_element_and_signature_constraints() {
+        use std::sync::Arc;
+        use super::TType;
+        use super::atomic::TAtomic;
+        use super::atomic::array::{TArray, keyed::TKeyedArray};
+        use super::atomic::callable::{TCallable, TCallableSignature, parameter::TCallableParameter};
+        use super::comparator::{ComparisonResult, atomic_comparator};
+
+        let codebase = CodebaseMetadata::new();
+        let signature = |argument| TAtomic::Callable(TCallable::Signature(
+            TCallableSignature::new(false, false)
+                .with_parameters(vec![TCallableParameter::new(Some(Arc::new(argument)), false, false, false)])
+                .with_return_type(Some(Arc::new(get_string()))),
+        ));
+        let array = |values, callable| {
+            let mut array = TArray::Keyed(TKeyedArray::new_with_parameters(Arc::new(get_mixed()), Arc::new(values)));
+            array.add_intersection_type(callable);
+            TAtomic::Array(array)
+        };
+        let argument = TUnion::from_vec(vec![get_int().get_single().clone(), get_string().get_single().clone()]);
+        let integers = array(get_string(), signature(get_int()));
+        let any = array(get_mixed(), signature(argument.clone()));
+        for (left, right) in [(&integers, &any), (&any, &integers)] {
+            assert!(!atomic_comparator::is_contained_by(&codebase, left, right, false, &mut ComparisonResult::new()));
+            let result = super::intersect_union_types(
+                &TUnion::from_atomic(left.clone()), &TUnion::from_atomic(right.clone()), &codebase,
+            ).unwrap();
+            let TAtomic::Array(result) = result.get_single() else { panic!("concrete array") };
+            assert_eq!(result.callable(), Some(&signature(argument.clone())));
+            assert!(result.callable_array_view(&codebase).unwrap().known_items.as_ref().unwrap()
+                .values().all(|(_, value)| !value.has_object_type()));
+        }
     }
 
     #[test]

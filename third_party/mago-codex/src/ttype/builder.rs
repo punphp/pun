@@ -1121,6 +1121,7 @@ fn get_list_type(
         known_count: None,
         known_elements: None,
         non_empty,
+        callable: None,
     })))
 }
 

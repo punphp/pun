@@ -522,7 +522,10 @@ impl<'a, 'arena> Checker<'a, 'arena> {
             ),
             TAtomic::Resource(_) => Type::Resource,
             TAtomic::Object(o) => self.object(o),
-            TAtomic::Array(a) => self.array(a),
+            TAtomic::Array(a) => match a.callable() {
+                Some(callable) => intersect(vec![self.array(a), self.atom(callable)]),
+                None => self.array(a),
+            },
             TAtomic::Iterable(i) => {
                 let it = Type::Iterable(
                     Box::new(self.to_phpstan(&i.key_type)),
@@ -533,6 +536,8 @@ impl<'a, 'arena> Checker<'a, 'arena> {
             TAtomic::Callable(TCallable::Signature(s)) => {
                 if s.is_closure {
                     Type::Closure(self.signature(s))
+                } else if unspecified_callable(&self.signature(s)) {
+                    Type::Callable(None)
                 } else {
                     Type::Callable(Some(self.signature(s)))
                 }
@@ -796,12 +801,26 @@ impl<'a, 'arena> Checker<'a, 'arena> {
                             .collect(),
                     );
                 }
-                let list = Type::list(item);
+                let mut parts = vec![Type::list(item)];
                 if l.non_empty || l.known_elements.as_ref().is_some_and(|k| k.values().any(|(o, _)| !o)) {
-                    intersect(vec![list, Type::Accessory(Accessory::NonEmptyArray)])
-                } else {
-                    list
+                    parts.push(Type::Accessory(Accessory::NonEmptyArray));
                 }
+                if l.callable.is_some() {
+                    parts.extend(
+                        l.known_elements
+                            .iter()
+                            .flat_map(|elements| elements.iter())
+                            .filter_map(|(key, (optional, value))| {
+                                (!optional).then(|| {
+                                    Type::Accessory(Accessory::HasOffsetValue(
+                                        Box::new(Type::ConstInt(*key as i64)),
+                                        Box::new(self.to_phpstan(value)),
+                                    ))
+                                })
+                            }),
+                    );
+                }
+                intersect(parts)
             }
             TArray::Keyed(k) => {
                 match &k.parameters {
@@ -900,7 +919,8 @@ fn restore_metadata(actual: Type, source: &Type, restore_list: bool) -> Type {
     let matching = |actual: &Type, source: &[Type]| {
         source.iter().position(|s| {
             pun_phpstan::types::is_super_type_of(s, actual).yes()
-                || (matches!(actual, Type::Callable(Some(a)) if unspecified_callable(a))
+                || ((matches!(actual, Type::Callable(None))
+                    || matches!(actual, Type::Callable(Some(a)) if unspecified_callable(a)))
                     && matches!(s, Type::Callable(Some(_))))
         })
     };
@@ -955,6 +975,7 @@ fn restore_metadata(actual: Type, source: &Type, restore_list: bool) -> Type {
         },
         // Mago's PHPDoc parser reads an unnamed trailing `&` as an intersection and rejects the tag. The
         // surviving native callable is exactly TCallableSignature::mixed(false), not an inferred signature.
+        (Type::Callable(None), source @ Type::Callable(Some(_))) => source.clone(),
         (Type::Callable(Some(actual)), source) if unspecified_callable(&actual) => {
             if matches!(source, Type::Callable(Some(_))) {
                 source.clone()
@@ -1151,5 +1172,29 @@ mod never_identity_tests {
             error.message
         }).collect();
         assert_eq!(actual, expected);
+    }
+}
+
+#[cfg(test)]
+mod callable_metadata_tests {
+    use super::*;
+
+    #[test]
+    fn erased_callable_metadata_retains_signatures_not_replaced_values() {
+        let concrete = Type::Callable(Some(Box::new(Signature {
+            params: vec![Param { name: String::new(), ty: Type::Int, optional: false, by_ref: false, variadic: false }],
+            ret: Type::String,
+            templates: vec![],
+        })));
+        let source = Type::Union(vec![concrete.clone(), Type::Null]);
+        let erased = Type::Callable(Some(Box::new(Signature {
+            params: vec![Param { name: String::new(), ty: mixed(), optional: true, by_ref: false, variadic: true }],
+            ret: mixed(),
+            templates: vec![],
+        })));
+        assert_eq!(restore(erased, &source), concrete);
+        assert_eq!(restore(Type::Callable(None), &source), concrete);
+        assert_eq!(restore(Type::Int, &source), Type::Int);
+        assert_eq!(restore(Type::ConstBool(false), &source), Type::ConstBool(false));
     }
 }

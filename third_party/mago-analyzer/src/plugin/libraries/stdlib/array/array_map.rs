@@ -137,6 +137,7 @@ impl FunctionReturnTypeProvider for ArrayMapProvider {
                     .collect();
 
                 let result = TList {
+                    callable: None,
                     element_type: if list.element_type.is_never() {
                         Arc::clone(&list.element_type)
                     } else {
@@ -267,6 +268,7 @@ fn zip_input_arrays(
     }
 
     Some(wrap_atomic(TAtomic::Array(TArray::List(TList {
+        callable: None,
         element_type: Arc::new(wrap_atomic(TAtomic::Array(TArray::Keyed(
             TKeyedArray::new().with_known_items(tuple_items).with_non_empty(true),
         )))),

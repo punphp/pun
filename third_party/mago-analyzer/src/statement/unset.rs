@@ -176,10 +176,11 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Unset<'arena> {
 
                     match array {
                         TArray::List(array) => {
-                            let TList { element_type, known_elements, known_count, non_empty } = array;
+                            let TList { callable, element_type, known_elements, known_count, non_empty } = array;
 
                             let Some(known_elements) = known_elements else {
                                 atomics.push(TAtomic::Array(TArray::Keyed(TKeyedArray {
+                                    callable,
                                     known_items: None,
                                     parameters: Some((Arc::new(get_int()), element_type)),
                                     non_empty: if let Some(known_count) = known_count {
@@ -198,6 +199,7 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Unset<'arena> {
                             let Some(ArrayKey::Integer(target_index)) = &array_key else {
                                 if array_key.is_none() {
                                     atomics.push(TAtomic::Array(TArray::List(TList {
+                                        callable,
                                         known_elements: Some(
                                             // We don't know the key value, so we can't unset it.
                                             // Mark all items as potentially undefined.
@@ -222,6 +224,7 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Unset<'arena> {
                                     // makes no sense.
                                     // An error will be emitted when we are analyzing the expression above, so ignore it here.
                                     atomics.push(TAtomic::Array(TArray::List(TList {
+                                        callable,
                                         known_elements: Some(known_elements.into()),
                                         element_type,
                                         known_count,
@@ -261,6 +264,7 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Unset<'arena> {
 
                             if !element_removed {
                                 atomics.push(TAtomic::Array(TArray::List(TList {
+                                    callable,
                                     known_elements: Some(known_elements.into()),
                                     element_type,
                                     known_count,
@@ -281,6 +285,7 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Unset<'arena> {
 
                             if maintain_list {
                                 atomics.push(TAtomic::Array(TArray::List(TList {
+                                    callable,
                                     known_count,
                                     non_empty,
                                     known_elements: known_elements.map(Into::into),
@@ -292,6 +297,7 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for Unset<'arena> {
                                 // this makes the list no longer a list array, but rather a keyed array.
                                 // we need to convert the list into a keyed array.
                                 atomics.push(TAtomic::Array(TArray::Keyed(TKeyedArray {
+                                    callable,
                                     known_items: known_elements.map(|known_elements| {
                                         known_elements
                                             .into_iter()
@@ -495,6 +501,7 @@ fn constant_array(atomic: &TAtomic) -> Option<TKeyedArray> {
     match atomic {
         TAtomic::Array(TArray::Keyed(array)) if array.parameters.is_none() => Some(array.clone()),
         TAtomic::Array(TArray::List(array)) if array.element_type.is_never() => Some(TKeyedArray {
+            callable: array.callable.clone(),
             known_items: array.known_elements.as_ref().map(|items| {
                 Arc::new(items.iter().map(|(key, value)| (ArrayKey::Integer(*key as i64), value.clone())).collect())
             }),

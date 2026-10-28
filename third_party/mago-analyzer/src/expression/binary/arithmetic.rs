@@ -1028,6 +1028,7 @@ fn compose_keyed_plus(left: &TKeyedArray, right: &TKeyedArray) -> TKeyedArray {
         left.is_non_empty() || right.is_non_empty() || composed_known.values().any(|(optional, _)| !*optional);
 
     TKeyedArray {
+        callable: left.callable.clone(),
         known_items: Some(composed_known).filter(|m| !m.is_empty()).map(Into::into),
         parameters: composed_parameters,
         non_empty,

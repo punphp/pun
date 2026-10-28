@@ -861,6 +861,11 @@ pub fn populate_atomic_type(
         };
     }
 
+    if let TAtomic::Array(array) = unpopulated_atomic
+        && let Some(callable) = array.callable_mut()
+    {
+        populate!(atomic callable);
+    }
     match unpopulated_atomic {
         TAtomic::Array(array) => match array {
             TArray::List(list) => {

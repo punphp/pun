@@ -1782,7 +1782,12 @@ fn describe_intersection_itself(this: &Type, types: &[Type], level: Level) -> St
     let mut described: Vec<(usize, String)> = Vec::new();
     let sorted = sort_types(types);
     for (i, t) in sorted.iter().enumerate() {
-        if level != Level::Precise && matches!(t, Type::Accessory(Accessory::HasMethod(_))) {
+        if level != Level::Precise
+            && matches!(
+                t,
+                Type::Accessory(Accessory::HasMethod(_) | Accessory::HasOffsetValue(..))
+            )
+        {
             continue;
         }
         if let Type::Accessory(a) = t

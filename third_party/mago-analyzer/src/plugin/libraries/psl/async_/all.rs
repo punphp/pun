@@ -62,6 +62,7 @@ impl FunctionReturnTypeProvider for AllProvider {
 pub(super) fn unwrap_awaitable_array(array: &TArray, context: &ProviderContext<'_, '_, '_>) -> Option<TUnion> {
     match array {
         TArray::List(list) => Some(TUnion::from_atomic(TAtomic::Array(TArray::List(TList {
+            callable: None,
             element_type: Arc::new(if list.element_type.is_never() {
                 get_never()
             } else {
@@ -96,6 +97,7 @@ pub(super) fn unwrap_awaitable_array(array: &TArray, context: &ProviderContext<'
                 };
 
                 return Some(TUnion::from_atomic(TAtomic::Array(TArray::Keyed(TKeyedArray {
+                    callable: None,
                     parameters,
                     non_empty: keyed.non_empty,
                     known_items: Some(new_items.into()),
@@ -107,6 +109,7 @@ pub(super) fn unwrap_awaitable_array(array: &TArray, context: &ProviderContext<'
             let inner = unwrap_awaitable_type(&value_type)?;
 
             Some(TUnion::from_atomic(TAtomic::Array(TArray::Keyed(TKeyedArray {
+                callable: None,
                 parameters: Some((Arc::new(key_type), Arc::new(inner))),
                 non_empty: keyed.non_empty,
                 known_items: None,

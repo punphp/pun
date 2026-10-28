@@ -232,7 +232,7 @@ where
         }
 
         match atomic_var_type {
-            TAtomic::Array(TArray::List(_)) => {
+            TAtomic::Array(array @ TArray::List(_)) => {
                 let new_type = handle_array_access_on_list(
                     context,
                     block_context,
@@ -243,10 +243,15 @@ where
                     &mut has_valid_expected_index,
                     &mut expected_index_types,
                 );
+                let new_type = if in_assignment {
+                    new_type
+                } else {
+                    array.refine_callable_offset(index_type, new_type, context.codebase)
+                };
 
                 accumulate_value_type(&mut value_type, new_type, context.codebase, preserve_array_shapes);
             }
-            TAtomic::Array(TArray::Keyed(_)) => {
+            TAtomic::Array(array @ TArray::Keyed(_)) => {
                 let mut possibly_undefined = false;
                 let mut has_key_in_other_variant = false;
                 let mut new_type = handle_array_access_on_keyed_array(
@@ -267,6 +272,11 @@ where
                 );
 
                 new_type.set_possibly_undefined(possibly_undefined, None);
+                let new_type = if in_assignment {
+                    new_type
+                } else {
+                    array.refine_callable_offset(index_type, new_type, context.codebase)
+                };
 
                 if has_key_in_other_variant {
                     has_union_key_mismatch = true;

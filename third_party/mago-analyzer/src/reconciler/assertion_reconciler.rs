@@ -14,8 +14,6 @@ use mago_codex::ttype::atomic::TAtomic;
 use mago_codex::ttype::atomic::array::TArray;
 use mago_codex::ttype::atomic::array::keyed::TKeyedArray;
 use mago_codex::ttype::atomic::array::list::TList;
-use mago_codex::ttype::atomic::derived::TDerived;
-use mago_codex::ttype::atomic::derived::intersection::TDerivedIntersection;
 use mago_codex::ttype::atomic::generic::TGenericParameter;
 use mago_codex::ttype::atomic::iterable::TIterable;
 use mago_codex::ttype::atomic::object::TObject;
@@ -212,6 +210,7 @@ where
             }
 
             acceptable_atomic_types.push(TAtomic::Array(TArray::Keyed(TKeyedArray {
+                callable: existing_keyed_array.callable.clone(),
                 known_items: Some(new_known_items),
                 parameters: existing_keyed_array.parameters.clone(),
                 non_empty: has_non_optional || existing_keyed_array.non_empty || *new_type_non_empty,
@@ -272,6 +271,7 @@ where
             }
 
             acceptable_atomic_types.push(TAtomic::Array(TArray::List(TList {
+                callable: existing_list.callable.clone(),
                 known_elements: Some(new_known_elements),
                 element_type: Arc::clone(&existing_list.element_type),
                 non_empty: has_non_optional || existing_list.non_empty || *new_type_non_empty,
@@ -294,6 +294,128 @@ where
     }
 
     get_never()
+}
+
+#[cfg(test)]
+mod callable_intersection_tests {
+    use super::*;
+    use mago_allocator::LocalArena;
+    use mago_codex::populator::populate_codebase;
+    use mago_codex::reference::SymbolReferences;
+    use mago_codex::scanner::scan_program;
+    use mago_codex::ttype::{get_arraykey, get_mixed_list, get_string};
+    use mago_collector::Collector;
+    use mago_database::file::File;
+    use mago_names::resolver::NameResolver;
+    use mago_span::HasSpan;
+    use mago_syntax::parser::parse_file;
+    use crate::plugin::PluginRegistry;
+    use crate::settings::Settings;
+    use std::borrow::Cow;
+
+    #[test]
+    fn array_intersections_keep_callable_constraints_and_concrete_values() {
+        let arena = LocalArena::new();
+        let file = File::ephemeral(Cow::Borrowed(b"callable-intersections.php"),
+            Cow::Borrowed(b"<?php final class LeftValue {} final class RightValue {}"));
+        let program = parse_file(&arena, &file);
+        let names = NameResolver::new(&arena).resolve(program);
+        let mut codebase = scan_program(&arena, &file, program, &names, PHPVersion::PHP85);
+        populate_codebase(&mut codebase, &mut SymbolReferences::new(), Default::default(), Default::default());
+        let settings = Settings::default();
+        let registry = PluginRegistry::default();
+        let mut context = Context::new(&arena, &codebase, &file, &names, &settings, program.span(),
+            program.trivia.as_slice(), Collector::new(&arena, &file, program, &[]), &registry, None, None);
+        let callable = Arc::new(get_mixed_callable().get_single().clone());
+        let value = |class| TUnion::from_vec(vec![get_string().get_single().clone(),
+            TAtomic::Object(TObject::Named(TNamedObject::new(word(class))))]);
+        for keyed in [false, true] {
+            for first_known in [false, true] {
+                for second_known in [false, true] {
+                    for second_callable in [false, true] {
+                        let array = |class, known: bool, callable: Option<Arc<TAtomic>>| {
+                            let array = if keyed {
+                                TArray::Keyed(TKeyedArray {
+                                    parameters: Some((Arc::new(get_arraykey()), Arc::new(value(class)))),
+                                    known_items: known.then(|| Arc::new(BTreeMap::from([
+                                        (mago_codex::ttype::atomic::array::key::ArrayKey::Integer(1), (false, get_string()))]))),
+                                    callable, non_empty: true, known_non_list: false,
+                                })
+                            } else {
+                                TArray::List(TList {
+                                    element_type: Arc::new(value(class)),
+                                    known_elements: known.then(|| Arc::new(BTreeMap::from([(1, (false, get_string()))]))),
+                                    callable, non_empty: true, known_count: None,
+                                })
+                            };
+                            TUnion::from_atomic(TAtomic::Array(array))
+                        };
+                        let first = array("LeftValue", first_known, Some(Arc::clone(&callable)));
+                        let second = array("RightValue", second_known,
+                            second_callable.then(|| Arc::clone(&callable)));
+                        let result = intersect_union_with_union(&mut context, &first, &second).unwrap();
+                        let result = result.get_single_array().unwrap();
+                        assert_eq!(result.callable(), Some(callable.as_ref()));
+                        // (LeftValue|string) & (RightValue|string) = string for unrelated final classes.
+                        let concrete_value = match result {
+                            TArray::List(list) => list.element_type.as_ref(),
+                            TArray::Keyed(array) => array.parameters.as_ref().unwrap().1.as_ref(),
+                        };
+                        assert!(concrete_value.is_string(), "{}", concrete_value.get_id());
+                        assert!(result.is_non_empty());
+                        if first_known || second_known {
+                            let view = result.callable_array_view(&codebase).unwrap();
+                            assert!(view.known_items.unwrap()[&mago_codex::ttype::atomic::array::key::ArrayKey::Integer(1)].1.is_always_truthy());
+                        }
+                    }
+                }
+            }
+        }
+        let mut list = TList::from_known_elements(BTreeMap::from([(1, (false, get_string()))]));
+        list.callable = Some(Arc::clone(&callable));
+        let input = TUnion::from_atomic(TAtomic::Array(TArray::List(list.clone())));
+        let result = refine_atomic_with_union(&mut context, &TAtomic::Array(TArray::List(list)), &input);
+        assert_eq!(result.get_single_array().unwrap().callable(), Some(callable.as_ref()));
+
+        let mut keyed = TKeyedArray::new().with_known_items(BTreeMap::from([
+            (mago_codex::ttype::atomic::array::key::ArrayKey::Integer(1), (false, get_string())),
+        ]));
+        keyed.callable = Some(Arc::clone(&callable));
+        let input = TUnion::from_atomic(TAtomic::Array(TArray::Keyed(keyed.clone())));
+        let result = refine_atomic_with_union(&mut context, &TAtomic::Array(TArray::Keyed(keyed)), &input);
+        assert_eq!(result.get_single_array().unwrap().callable(), Some(callable.as_ref()));
+
+        let assertion = Assertion::IsType(get_mixed_list().get_single().clone());
+        for input in [get_mixed_callable(), TUnion::from_atomic(TAtomic::Array(TArray::Keyed(
+            TKeyedArray::new_with_parameters(Arc::new(get_int()), Arc::new(get_string())))))] {
+            let result = reconcile(&mut context, &assertion, Some(&input), None, false, None, false, false);
+            let result = result.get_single_array().unwrap();
+            assert_eq!(result.callable().is_some(), input.get_single_array().is_none());
+            if input.get_single_array().is_some() {
+                assert!(result.get_list().unwrap().element_type.is_string());
+            }
+        }
+
+        let callable_type = callable.as_ref();
+        assert_eq!(intersect_atomic_with_callable(&mut context, callable_type, callable_type), Some(callable_type.clone()));
+        let iterable = TAtomic::Iterable(TIterable::mixed());
+        assert_eq!(intersect_atomic_with_callable(&mut context, &iterable, callable_type), None);
+
+        let reference = TAtomic::Reference(mago_codex::ttype::atomic::reference::TReference::Symbol {
+            name: mago_word::word("UnresolvedInvokable"),
+            parameters: None,
+            variances: None,
+            intersection_types: None,
+        });
+        for (first, second) in [(&reference, callable_type), (callable_type, &reference)] {
+            let result = intersect_atomic_with_atomic(&mut context, first, second).unwrap();
+            let TAtomic::Reference(mago_codex::ttype::atomic::reference::TReference::Symbol {
+                name, intersection_types, ..
+            }) = result else { panic!("callable refinement must retain the concrete reference"); };
+            assert_eq!(name, mago_word::word("UnresolvedInvokable"));
+            assert_eq!(intersection_types.as_deref().unwrap().as_slice(), &[callable_type.clone()]);
+        }
+    }
 }
 
 fn intersect_union_with_atomic<A>(
@@ -385,11 +507,11 @@ where
     }
 
     if matches!(second_type, TAtomic::Callable(_)) {
-        return intersect_atomic_with_callable(context, first_type);
+        return intersect_atomic_with_callable(context, first_type, second_type);
     }
 
     if matches!(first_type, TAtomic::Callable(_)) {
-        return intersect_atomic_with_callable(context, second_type);
+        return intersect_atomic_with_callable(context, second_type, first_type);
     }
 
     match (first_type, second_type) {
@@ -645,7 +767,11 @@ fn get_bound_template_index(class_metadata: &ClassLikeMetadata, bound_type: &TUn
     class_metadata.get_template_index_for_name(*parameter_name)
 }
 
-fn intersect_atomic_with_callable<A>(context: &Context<'_, '_, A>, atomic: &TAtomic) -> Option<TAtomic>
+fn intersect_atomic_with_callable<A>(
+    context: &Context<'_, '_, A>,
+    atomic: &TAtomic,
+    callable: &TAtomic,
+) -> Option<TAtomic>
 where
     A: Arena,
 {
@@ -654,6 +780,13 @@ where
     }
 
     if cast_atomic_to_callable(atomic, context.codebase, None).is_some() {
+        if matches!(atomic, TAtomic::Object(TObject::Named(object)) if object.get_name().as_bytes().eq_ignore_ascii_case(b"Closure"))
+            && callable != get_mixed_callable().get_single()
+        {
+            let mut intersection = atomic.clone();
+            intersection.add_intersection_type(callable.clone());
+            return Some(intersection);
+        }
         return Some(atomic.clone());
     }
 
@@ -661,18 +794,11 @@ where
         return None;
     }
 
-    let callable = get_mixed_callable().get_single().clone();
+    // Strings were handled above; every remaining potentially callable kind supports
+    // concrete intersections (arrays, inheritable named objects, references and templates).
     let mut intersected = atomic.clone();
-    if intersected.can_be_intersected() {
-        let _ = intersected.add_intersection_type(callable);
-
-        return Some(intersected);
-    }
-
-    let mut intersection = TDerivedIntersection::new(TUnion::from_atomic(intersected));
-    intersection.add_intersection_type(callable);
-
-    Some(TAtomic::Derived(TDerived::Intersection(intersection)))
+    intersected.add_intersection_type(callable.clone());
+    Some(intersected)
 }
 
 fn intersect_list_arrays<A>(
@@ -684,6 +810,10 @@ where
     A: Arena,
 {
     let element_type = intersect_union_with_union(context, &first_list.element_type, &second_list.element_type);
+    let callable = match (&first_list.callable, &second_list.callable) {
+        (Some(first), Some(second)) => Some(Arc::new(intersect_atomic_with_atomic(context, first, second)?)),
+        (first, second) => first.clone().or_else(|| second.clone()),
+    };
 
     match (first_list.known_elements.as_deref(), second_list.known_elements.as_deref()) {
         (Some(first_list_known_elements), Some(second_list_known_elements)) => {
@@ -705,6 +835,7 @@ where
 
             if let Some(element_type) = element_type {
                 return Some(TAtomic::Array(TArray::List(TList {
+                    callable,
                     known_elements: Some(second_list_known_elements.into()),
                     element_type: Arc::new(element_type),
                     non_empty: true,
@@ -723,6 +854,7 @@ where
 
             if let Some(element_type) = element_type {
                 return Some(TAtomic::Array(TArray::List(TList {
+                    callable,
                     known_elements: Some(second_known_elements.into()),
                     element_type: Arc::new(element_type),
                     non_empty: false,
@@ -741,6 +873,7 @@ where
 
             if let Some(element_type) = element_type {
                 return Some(TAtomic::Array(TArray::List(TList {
+                    callable,
                     known_elements: Some(first_known_elements.into()),
                     element_type: Arc::new(element_type),
                     non_empty: false,
@@ -753,6 +886,7 @@ where
         _ => {
             if let Some(element_type) = element_type {
                 return Some(TAtomic::Array(TArray::List(TList {
+                    callable,
                     known_elements: None,
                     element_type: Arc::new(element_type),
                     non_empty: true,
@@ -774,6 +908,10 @@ where
     A: Arena,
 {
     let known_non_list = first_keyed_array.known_non_list || second_keyed_array.known_non_list;
+    let callable = match (&first_keyed_array.callable, &second_keyed_array.callable) {
+        (Some(first), Some(second)) => Some(Arc::new(intersect_atomic_with_atomic(context, first, second)?)),
+        (first, second) => first.clone().or_else(|| second.clone()),
+    };
     let parameters = match (&first_keyed_array.parameters, &second_keyed_array.parameters) {
         (Some(first_parameters), Some(second_parameters)) => {
             let key = intersect_union_with_union(context, &first_parameters.0, &second_parameters.0);
@@ -812,6 +950,7 @@ where
             }
 
             Some(TAtomic::Array(TArray::Keyed(TKeyedArray {
+                callable,
                 known_items: Some(intersected_items.into()),
                 parameters,
                 non_empty: true,
@@ -830,6 +969,7 @@ where
             }
 
             Some(TAtomic::Array(TArray::Keyed(TKeyedArray {
+                callable,
                 known_items: Some(second_known_items),
                 parameters,
                 non_empty: true,
@@ -848,6 +988,7 @@ where
             }
 
             Some(TAtomic::Array(TArray::Keyed(TKeyedArray {
+                callable,
                 known_items: Some(first_known_items),
                 parameters,
                 non_empty: true,
@@ -855,6 +996,7 @@ where
             })))
         }
         _ => Some(TAtomic::Array(TArray::Keyed(TKeyedArray {
+            callable,
             known_items: None,
             parameters,
             non_empty: true,
