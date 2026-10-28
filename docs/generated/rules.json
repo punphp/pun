@@ -5271,7 +5271,7 @@
         "SimplifyIfReturnBool",
         "SimplifyIfReturnBoolRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/control-flow/prefer-yield-from",

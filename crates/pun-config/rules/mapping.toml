@@ -357,7 +357,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "control-flow/prefer-bool-return" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Simplify `if` control structures that return the boolean result of their condition." }
 "control-flow/prefer-combined-isset" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Using `isset($var) &&` multiple times should be done in one call." }
 "control-flow/prefer-combined-unset" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Calling `unset` on multiple items should be done in one call." }
-"control-flow/prefer-returned-condition" = { fix = "safe", sets = ["code-quality"], ported = false, status = "decided", summary = "Shortens if return false/true to direct return" }
+"control-flow/prefer-returned-condition" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "Shortens if return false/true to direct return" }
 "control-flow/prefer-yield-from" = { fix = "safe", sets = ["code-quality"], ported = true, status = "decided", summary = "If the function explicitly returns an array, and has the return type `iterable`, then `yield from` must be used instead of `return`." }
 "dead-code/no-always-false-condition" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Reduce always false in a `if (a || b)` condition" }
 "dead-code/no-always-true-if" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove if condition that is always true" }

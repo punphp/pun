@@ -35,6 +35,10 @@
 //! (`array<int, string>|void` becomes `string[]|null`); Pun prints keywords and class names as Rector does and leaves
 //! a function with any other kind of type in that union alone.
 //!
+//! SimplifyIfReturnBoolRector/Pun/operand_parentheses: where an operand php-parser prints with its own code needs
+//! parentheses in the returned value (a ternary under the new `(bool)` or in an `&&` printed anew), Rector writes
+//! `(bool) $a ?: $b`, which means something else, or reprints the ternary; Pun leaves the `if` alone.
+//!
 //! RemoveDeadInstanceOfRector/Source/vendor/{Node,If_}.php are not upstream: they declare the nikic/php-parser 5
 //! types a fixture names, which Rector's run loads from its vendor directory.
 //!
@@ -50,8 +54,8 @@ use pun_lint::rules::{
     NoAlwaysFalseCondition, NoAlwaysTrueIf, NoAlwaysTrueInstanceof, NoAlwaysTrueInstanceofAssert,
     NoConstantCondition, NoConstantViaVariable, NoPhpdocClassCaseMismatch, NoRedundantForeachGuard,
     NoTypedPropertyInstanceof, NoUnusedTestMethodParam, NoUselessCast, NoUselessFilterVar,
-    NoUselessMath, PreferInstanceMethod, PreferPropertyExists, RequireConsistentReturn,
-    RequirePreviousException,
+    NoUselessMath, PreferInstanceMethod, PreferPropertyExists, PreferReturnedCondition,
+    RequireConsistentReturn, RequirePreviousException,
 };
 use pun_lint::{Linter, Rule};
 
@@ -161,6 +165,11 @@ fn isset_on_property_object_to_property_exists() {
 }
 
 #[test]
+fn simplify_if_return_bool() {
+    check(PreferReturnedCondition, "SimplifyIfReturnBoolRector");
+}
+
+#[test]
 fn fix_class_case_sensitivity_var_docblock() {
     check(
         NoPhpdocClassCaseMismatch,
@@ -248,6 +257,10 @@ fn rules_ignore_nodes_outside_their_targets() {
         (
             || Box::new(PreferPropertyExists),
             "IssetOnPropertyObjectToPropertyExistsRector",
+        ),
+        (
+            || Box::new(PreferReturnedCondition),
+            "SimplifyIfReturnBoolRector",
         ),
         (
             || Box::new(NoAlwaysTrueInstanceofAssert),

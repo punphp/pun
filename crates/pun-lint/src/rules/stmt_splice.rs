@@ -11,6 +11,7 @@
 //! the node holding it anew; [`splice`] gives `None` there. Rector changes every statement of a list in one pass, so
 //! the statements a rule changes next to each other are one run of removals and additions.
 
+use mago_span::HasSpan;
 use mago_syntax::cst::{Expression, ForeachTarget, Node, Statement};
 use pun_problem::{Edit, Span};
 
@@ -261,24 +262,42 @@ pub(crate) fn run_edits<'ast, 'arena>(
     }
     match splice(source, tokens, &list, index, count, &new) {
         Some(edits) => Some(edits),
-        None => holder_reprint(source, tokens, ancestors, &new).map(|e| vec![e]),
+        None => holder_reprint(source, tokens, ancestors, &new),
     }
 }
 
 /// The node whose statement list was the changed statements alone, printed anew with `new` as its statements:
 /// php-parser's `pArray` gives up on a list whose only statement it removes, and the printer falls back to printing
-/// the node holding it (`pStmt_ClassMethod`, `pStmt_Function`, `pExpr_Closure`, `pStmt_Foreach`, `pStmt_While`). Pun
-/// prints those;
-/// under any other node it leaves the code alone.
+/// the node holding it (`pStmt_ClassMethod`, `pStmt_Function`, `pExpr_Closure`, `pStmt_Foreach`, `pStmt_While`,
+/// `pStmt_If`, `pStmt_ElseIf`, `pStmt_Else`, `pStmt_Case`). Pun prints those; under any other node it leaves the
+/// code alone. `pStmt_If` keeps the code of its `elseif` and `else` clauses, one space before each.
 fn holder_reprint(
     source: &str,
     tokens: &[Token],
     ancestors: &[Node<'_, '_>],
     new: &[NewStatement],
-) -> Option<Edit> {
+) -> Option<Vec<Edit>> {
     let n = ancestors.len();
-    if !matches!(ancestors.get(n.checked_sub(2)?), Some(Node::Block(_))) {
-        return None;
+    let parent = ancestors.get(n.checked_sub(2)?)?;
+    let body = |level: usize| -> String {
+        let nl = format!("\n{}", " ".repeat(level));
+        new.iter()
+            .map(|s| s.print_in_list(source, tokens, level, &nl))
+            .collect()
+    };
+    let text = |s: mago_span::Span| &source[s.start.offset as usize..s.end.offset as usize];
+    let case = |span: mago_span::Span, head: String| {
+        let span = node_span(&span);
+        let level = indentation(source, span.start);
+        Some(vec![Edit::new(span, format!("{head}:{}", body(level + 4)))])
+    };
+    match parent {
+        Node::SwitchExpressionCase(c) => {
+            return case(c.span(), format!("case {}", text(c.expression.span())));
+        }
+        Node::SwitchDefaultCase(c) => return case(c.span(), "default".to_string()),
+        Node::Block(_) => {}
+        _ => return None,
     }
     let owner = ancestors[..n - 2].iter().rev().find(|a| {
         !matches!(
@@ -286,13 +305,52 @@ fn holder_reprint(
             Node::Statement(_) | Node::MethodBody(_) | Node::ForeachBody(_) | Node::WhileBody(_)
         )
     })?;
-    let body = |level: usize| -> String {
-        let nl = format!("\n{}", " ".repeat(level));
-        new.iter()
-            .map(|s| s.print_in_list(source, tokens, level, &nl))
-            .collect()
+    // `head {` and the statements at the indent of the line `start` is on, then `}`
+    let braced = |start: usize, end: usize, head: String| {
+        let level = indentation(source, start);
+        Edit::new(
+            Span::new(start, end),
+            format!("{head} {{{}\n{}}}", body(level + 4), " ".repeat(level)),
+        )
     };
     match owner {
+        Node::IfStatementBody(if_body) => {
+            let r#if = ancestors[..n - 2].iter().rev().find_map(|a| match a {
+                Node::If(r#if) => Some(*r#if),
+                _ => None,
+            })?;
+            let start = node_span(r#if).start;
+            let end = node_span(if_body.statement).end;
+            let mut edits = vec![braced(
+                start,
+                end,
+                format!("if ({})", text(r#if.condition.span())),
+            )];
+            let mut previous = end;
+            let clauses = (if_body.else_if_clauses.iter().map(|c| c.span()))
+                .chain(if_body.else_clause.iter().map(|c| c.span()));
+            for clause in clauses {
+                let clause = node_span(&clause);
+                edits.push(Edit::new(
+                    Span::new(previous, clause.start),
+                    " ".to_string(),
+                ));
+                previous = clause.end;
+            }
+            Some(edits)
+        }
+        Node::IfStatementBodyElseIfClause(clause) => {
+            let span = node_span(*clause);
+            Some(vec![braced(
+                span.start,
+                span.end,
+                format!("elseif ({})", text(clause.condition.span())),
+            )])
+        }
+        Node::IfStatementBodyElseClause(clause) => {
+            let span = node_span(*clause);
+            Some(vec![braced(span.start, span.end, "else".to_string())])
+        }
         Node::Foreach(foreach) => {
             let text = |e: &Expression<'_>| {
                 let s = node_span(e);
@@ -304,7 +362,7 @@ fn holder_reprint(
             };
             let span = node_span(*foreach);
             let level = indentation(source, span.start);
-            Some(Edit::new(
+            Some(vec![Edit::new(
                 span,
                 format!(
                     "foreach ({} as {target}) {{{}\n{}}}",
@@ -312,13 +370,13 @@ fn holder_reprint(
                     body(level + 4),
                     " ".repeat(level)
                 ),
-            ))
+            )])
         }
         Node::While(r#while) => {
             let span = node_span(*r#while);
             let level = indentation(source, span.start);
             let condition = node_span(r#while.condition);
-            Some(Edit::new(
+            Some(vec![Edit::new(
                 span,
                 format!(
                     "while ({}) {{{}\n{}}}",
@@ -326,8 +384,8 @@ fn holder_reprint(
                     body(level + 4),
                     " ".repeat(level)
                 ),
-            ))
+            )])
         }
-        holder => reprint_function_like(source, tokens, *holder, &body),
+        holder => reprint_function_like(source, tokens, *holder, &body).map(|e| vec![e]),
     }
 }

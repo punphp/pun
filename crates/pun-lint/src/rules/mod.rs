@@ -212,6 +212,7 @@ mod prefer_php_version_id;
 mod prefer_property_default;
 mod prefer_property_exists;
 mod prefer_property_over_local_getter;
+mod prefer_returned_condition;
 mod prefer_round_mode_enum;
 mod prefer_self_over_static;
 mod prefer_serialize_method;
@@ -447,6 +448,7 @@ pub use prefer_php_version_id::PreferPhpVersionId;
 pub use prefer_property_default::PreferPropertyDefault;
 pub use prefer_property_exists::PreferPropertyExists;
 pub use prefer_property_over_local_getter::PreferPropertyOverLocalGetter;
+pub use prefer_returned_condition::PreferReturnedCondition;
 pub use prefer_round_mode_enum::PreferRoundModeEnum;
 pub use prefer_self_over_static::PreferSelfOverStatic;
 pub use prefer_serialize_method::PreferSerializeMethod;
@@ -527,6 +529,7 @@ pub const PROJECT_RULES: &[&str] = &[
     "lint/complexity/require-consistent-return",
     "lint/complexity/no-phpdoc-class-case-mismatch",
     "lint/complexity/prefer-property-exists",
+    "lint/control-flow/prefer-returned-condition",
 ];
 
 /// Every rule, in a fixed order.
@@ -776,5 +779,6 @@ fn ungrouped() -> Vec<Box<dyn Rule>> {
         Box::new(RequireConsistentReturn),
         Box::new(NoPhpdocClassCaseMismatch),
         Box::new(PreferPropertyExists),
+        Box::new(PreferReturnedCondition),
     ]
 }

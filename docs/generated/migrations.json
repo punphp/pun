@@ -9855,7 +9855,7 @@
         "rules": [
           "lint/control-flow/prefer-returned-condition"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
