@@ -2586,3 +2586,17 @@ incoming-isset, strict-mixed, variable, failed-offset, coalesce, native, and try
 scope tests and all 257 captured records pass, as do all 79 PHPStan-crate tests. Fresh exact-source
 instrumentation covers 169/169 changed analyser lines and 7/7 shared PHPStan lines without
 exclusions. Cargo, Rayon, and the test harness each use one job, with incremental compilation disabled.
+
+### Continuing if-branch union order
+
+`src/statement/if.rs` joins continuing scopes in reverse branch order. PHPStan 2.3.1's
+`IfHandler.php:112,136,149` merges each later branch into the accumulated earlier scopes, and
+`ExpressionTypeHolder::and()` unions the receiver's type before the other holder's type.
+Both PHPDoc and native holder joins retain that order. The pure-call collector exposes underlying
+union order when it selects the last reflected method for a no-effect diagnostic. Sorting type
+descriptions or changing the diagnostic would leave the shared scope contract wrong.
+
+A fresh seven-function public oracle matrix distinguishes both assignment orders, explicit else,
+elseif, and full else chains, with two terminating-branch controls. Before this correction five
+diagnostics choose the wrong class. Afterward all seven complete diagnostics match. The original
+level-4 DeadCode fixture supplies the maintained regression test.

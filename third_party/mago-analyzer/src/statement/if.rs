@@ -521,6 +521,10 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for If<'arena> {
             block_context.definitely_uninitialized_property_ids = property_ids;
         }
 
+        // IfHandler merges each later branch into the accumulated earlier scopes.
+        // Union member order is observable when resolving collected method calls.
+        if_scope.variable_branches.reverse();
+        if_scope.native_branches.reverse();
         block_context.merge_variable_scope_types(&if_scope.variable_branches, context.codebase);
         block_context.apply_variable_conditions(context.codebase);
         block_context.native_locals = crate::native::join(&if_scope.native_branches, context.codebase);
