@@ -177,8 +177,7 @@ fn call_like(ctx: &Context<'_>, ancestors: &[Node<'_, '_>], node: Node<'_, '_>) 
                 .iter()
                 .filter_map(|arg| match arg {
                     PartialArgument::Named(named) => Some((Some(named.name.value), named.value)),
-                    PartialArgument::Positional(p) => Some((None, p.value)),
-                    _ => None,
+                    other => other.value().map(|v| (None, v)),
                 })
                 .collect();
             let class = facts(ctx).anonymous_class_name(mago_span::HasSpan::span(new));

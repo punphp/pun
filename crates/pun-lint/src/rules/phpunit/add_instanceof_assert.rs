@@ -10,6 +10,9 @@
 //! whose parameter there is a class (`add-instanceof-assert-for-argument`, the first such call, assert calls aside),
 //! goes `$this->assertInstanceOf(\X::class, $x);`, once for each collected assignment.
 //!
+//! Mago does not type a call that returns a class no file declares as that class, as PHPStan does, so Pun collects
+//! no such assignment (tests/rector/AddInstanceofAssertForNullableInstanceRector/Pun/unknown_class).
+//!
 //! Rector prints the new statement after the one before it, on a line of its own at that statement's indent (in
 //! spaces, a tab counting as 4), or before the list's first statement and its comments.
 
@@ -103,7 +106,9 @@ fn run(
             }
             block_list(ctx.source, block)
         }
-        Node::Foreach(foreach) => {
+        // a `foreach`, the other node kind of `targets()`
+        _ => {
+            let Node::Foreach(foreach) = node else { return };
             if !is_in_test_class(ctx, ancestors, None) {
                 return;
             }
@@ -116,7 +121,6 @@ fn run(
                 }
             }
         }
-        _ => return,
     };
     if list.len() < 2 {
         return;
@@ -170,12 +174,8 @@ fn collect(ctx: &Context<'_>, list: &List<'_>) -> Vec<Collected> {
             continue;
         };
         // TypeCombinator::removeNull(), an ObjectType
-        let Some(t) = facts.full_type(node_span(assignment)) else {
-            continue;
-        };
-        let rest: Vec<&TAtomic> = t
-            .types
-            .iter()
+        let rest: Vec<&TAtomic> = (facts.full_type(node_span(assignment)).iter())
+            .flat_map(|t| t.types.iter())
             .filter(|a| !matches!(a, TAtomic::Null))
             .collect();
         let class = match rest[..] {
@@ -231,15 +231,13 @@ fn matched_receivers(
         let Node::MethodCall(call) = node else {
             return false;
         };
-        let Expression::Variable(variable) = call.object else {
+        // a variable without a name: Rector reads its name after its type, and returns alike
+        let Expression::Variable(Variable::Direct(direct)) = call.object else {
             return false;
         };
         if !is_nullable(ctx, call.object) {
             return false;
         }
-        let Variable::Direct(direct) = variable else {
-            return false;
-        };
         let name = &direct.name[1..];
         // avoid duplicated assert for the same variable used multiple times in one statement
         if names.contains(&name) {
@@ -279,15 +277,16 @@ fn matched_argument(
             let Expression::Variable(variable) = value else {
                 continue;
             };
+            // a variable without a name: Rector reads its name after its type, and returns alike
+            let Variable::Direct(direct) = variable else {
+                return false;
+            };
             if !is_nullable(ctx, value) {
                 return false;
             }
             // should not happen
             let Some(parameter_type) = parameter_types.as_ref().and_then(|t| t.get(position))
             else {
-                return false;
-            };
-            let Variable::Direct(direct) = variable else {
                 return false;
             };
             matched = match_by_name(collection, &direct.name[1..]);
@@ -385,7 +384,7 @@ fn is_object_type(t: &TUnion) -> bool {
 
 /// The edit that puts the asserts before the statement at `i` of `list`, as php-parser's format-preserving printer
 /// inserts statements: each on a line of its own after the statement before, at that statement's indent, or before
-/// the first statement (and its comments), each followed by a line break to its indent.
+/// the first statement and its comments, each followed by a line break to its indent.
 fn insert_before(source: &str, list: &List<'_>, i: usize, asserts: &[&Collected]) -> Edit {
     let indent_of = |pos: usize| {
         let width: usize = line_indent(source, pos)

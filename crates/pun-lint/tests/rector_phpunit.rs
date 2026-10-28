@@ -727,7 +727,8 @@ fn create_stub_over_create_mock_arg() {
 /// printed anew with a comment or a line break in its parameters, and a tab indent across lines or before the `}` of
 /// a closure printed anew (Rector writes spaces). Pun/intersection_order: two classes of the receiver's intersection
 /// declare the method, one returning `void`; Rector reads the first as written, and Mago keeps an intersection's
-/// members in an order of its own, so Pun leaves the call alone.
+/// members in an order of its own, so Pun leaves the call alone. Pun/rector_fails: `setUp()` mocks a class written as an
+/// expression without a name (`$this->make()::class`), which makes Rector fail on the file; Pun leaves it alone.
 #[test]
 fn void_method_with_callback_to_will_return_callback() {
     check(
@@ -736,6 +737,8 @@ fn void_method_with_callback_to_will_return_callback() {
     );
 }
 
+/// Pun/unknown_class: `$x` is assigned a call that returns a class no file declares; PHPStan types it as that class,
+/// and Mago does not, so Pun adds no assert (the argument rule collects its variables alike).
 #[test]
 fn add_instanceof_assert_for_nullable_instance() {
     check(

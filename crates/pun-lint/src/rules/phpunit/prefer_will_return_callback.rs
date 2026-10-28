@@ -217,52 +217,42 @@ pub(super) enum Caller {
 /// PHPStan reduces it as `TypeCombinator::intersect()` does.
 pub(super) fn caller(ctx: &Context<'_>, expr: &Expression<'_>) -> Caller {
     let facts = facts(ctx);
-    let Some(t) = facts.full_type(node_span(expr)) else {
+    let types = facts
+        .full_type(node_span(expr))
+        .map_or(&[][..], |t| t.types.as_ref());
+    let [atomic @ TAtomic::Object(_)] = types else {
         return Caller::Other;
     };
-    let atomic = match t.types.as_ref() {
-        [TAtomic::Never] => return Caller::Never,
-        [atomic @ TAtomic::Object(_)] => atomic,
-        _ => return Caller::Other,
-    };
-    let mut members = Vec::new();
+    let mut members: Vec<String> = Vec::new();
     for member in
         std::iter::once(atomic).chain(atomic.get_intersection_types().into_iter().flatten())
     {
-        match member {
-            TAtomic::Object(TObject::Named(named)) if !named.is_this => {
-                members.push(named.name.to_string())
-            }
-            TAtomic::Object(TObject::Enum(e)) => members.push(e.name.to_string()),
+        let name = match member {
+            TAtomic::Object(TObject::Named(named)) if !named.is_this => named.name.to_string(),
+            TAtomic::Object(TObject::Enum(e)) => e.name.to_string(),
             // `object` adds nothing to a class
-            TAtomic::Object(TObject::Any) => {}
+            TAtomic::Object(TObject::Any) => continue,
             _ => return Caller::Other,
+        };
+        if !members.iter().any(|m| m.eq_ignore_ascii_case(&name)) {
+            members.push(name);
         }
     }
+    // `TypeCombinator::intersect()`: a class another member is a subtype of goes, and two members no object can be
+    // both make `never`
     let codebase = &facts.codebase;
-    let mut i = 0;
-    while i < members.len() {
-        let mut j = i + 1;
-        let mut removed_i = false;
-        while j < members.len() {
-            let a = is_super_type_of(codebase, &members[j], &members[i]);
-            if a == Some(true) {
-                members.remove(j);
-                continue;
-            }
-            if is_super_type_of(codebase, &members[i], &members[j]) == Some(true) {
-                members.remove(i);
-                removed_i = true;
-                break;
-            }
-            if a == Some(false) {
-                return Caller::Never;
-            }
-            j += 1;
-        }
-        if !removed_i {
-            i += 1;
-        }
+    let all = members.clone();
+    members.retain(|m| {
+        !all.iter()
+            .any(|n| !n.eq_ignore_ascii_case(m) && is_super_type_of(codebase, m, n) == Some(true))
+    });
+    let excluded = members.iter().enumerate().any(|(i, a)| {
+        members[i + 1..]
+            .iter()
+            .any(|b| is_super_type_of(codebase, b, a) == Some(false))
+    });
+    if excluded {
+        return Caller::Never;
     }
     match members.len() {
         0 => Caller::Other,
@@ -271,17 +261,11 @@ pub(super) fn caller(ctx: &Context<'_>, expr: &Expression<'_>) -> Caller {
     }
 }
 
-/// `ObjectType::isSuperTypeOf()` between two classes: `Some(true)` for yes, `Some(false)` for no, `None` for maybe.
+/// `ObjectType::isSuperTypeOf()` between two classes of other names: `Some(true)` for yes, `Some(false)` for no,
+/// `None` for maybe (a class it does not know included).
 fn is_super_type_of(codebase: &CodebaseMetadata, this: &str, that: &str) -> Option<bool> {
-    let (Some(this_class), Some(that_class)) = (
-        codebase.get_class_like(this.as_bytes()),
-        codebase.get_class_like(that.as_bytes()),
-    ) else {
-        return this.eq_ignore_ascii_case(that).then_some(true);
-    };
-    if this.eq_ignore_ascii_case(that) {
-        return Some(true);
-    }
+    let this_class = codebase.get_class_like(this.as_bytes())?;
+    let that_class = codebase.get_class_like(that.as_bytes())?;
     if this_class.kind == SymbolKind::Trait || that_class.kind == SymbolKind::Trait {
         return Some(false);
     }
@@ -346,6 +330,10 @@ fn setup_assigned_mock_types(
             Expression::Self_(_) => "self".to_string(),
             Expression::Static(_) => "static".to_string(),
             Expression::Parent(_) => "parent".to_string(),
+            // `getName()` of a variable is its name, which names no class
+            Expression::Variable(Variable::Direct(v)) => {
+                String::from_utf8_lossy(&v.name[1..]).into()
+            }
             // Assert::string() fails
             _ => return None,
         };
