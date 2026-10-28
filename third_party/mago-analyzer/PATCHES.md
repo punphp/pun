@@ -2774,3 +2774,39 @@ From `crates/pun-analyse/tests/fixtures/call-scope-observations`, regenerate eac
 or the same command with `unpack-order.php`.
 Assignment-derived conditional holders and Pun's filtered named-argument consumer are separate
 changes. These operand captures do not claim to validate those consumers.
+
+### Bounded finite offsets in live array literals
+
+`expression/array.rs` retains bounded integer and string alternatives as constant slots.
+The source is PHPStan 2.3.1 at `cb3b7e99489b2e3789ee2eec10501cb7a72580ea`:
+
+- [`ArrayHandler::processExpr`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Analyser/ExprHandler/ArrayHandler.php#L173-L190)
+  passes each key and value's evaluated type to the initializer resolver.
+- [`ConstantArrayTypeBuilder::setOffsetValueType`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Type/Constant/ConstantArrayTypeBuilder.php#L130-L440)
+  owns optional slots, matched-key overwrites, and the possible next automatic indexes.
+- [`InitializerExprTypeResolver::getArrayType`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Reflection/InitializerExprTypeResolver.php#L644-L765)
+  passes literal offsets and optional constant unpack slots to that builder.
+- [`IntegerRangeType::getFiniteTypes`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Type/IntegerRangeType.php#L725-L744)
+  bounds range enumeration at 129 values. A finite offset must contain fewer than 256
+  alternatives. More than 256 accumulated slots degrade to generic key and value parameters.
+
+A finite offset does not produce a union of singleton arrays. Existing required slots widen,
+existing optional slots receive the replacement value, and unmatched keys become optional.
+Append visits existing slots in insertion order before it adds the highest possible next index.
+Numeric strings use `ArrayKey::from_string` before slot identity and duplicate conversion.
+Constant unpacks preserve optional slots and feed integer slots through the append operation.
+
+`finite_array_literal_keys` compares the public analyzer's live constant slots, optionality,
+nonempty and list flags, exact counts, and degraded key and value types with 50 fresh PHPStan
+scope captures. These include 255 versus 256 finite alternatives, 129 versus 130 range values,
+256 versus 257 accumulated slots, and exhausted automatic indexes. The test also compares all
+five public Pun diagnostics with PHPStan's finalized level-5 analyser results, including the
+message, identifier, tip, and ignorable flag. The capture retains PHPStan's precise descriptions
+without rewriting them.
+`fixtures/finite-array-literal-keys/capture.php` regenerates the capture from the pinned PHAR.
+
+This patch does not add assignment-derived correlations, change filtered-scope observations,
+or change Pun's type converter. The live artifact test does not claim byte-identical shape display
+order, optional-shape nonempty display, list accessories, or the `oversized-array` display accessory.
+Those require metadata outside this file. Constant-array union unpacks retain their existing path.
+A finite key after a general or union unpack does not reseal that fallback's generic parameters.
