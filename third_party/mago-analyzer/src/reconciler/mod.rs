@@ -509,7 +509,9 @@ pub fn reconcile_keyed_types<'ctx, A>(
             }
         }
     }
-    block_context.apply_variable_conditions(context.codebase);
+    // Parent-container updates are side effects of specification, not extra specified expressions.
+    let specified = new_types.keys().copied().collect();
+    block_context.apply_specified_variable_conditions(context.codebase, &specified);
 }
 
 fn reconcile_optional_entry_type<A>(

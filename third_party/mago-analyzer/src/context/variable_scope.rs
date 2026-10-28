@@ -12,13 +12,14 @@ use mago_codex::ttype::combine_union_types_preserving_array_shapes;
 use mago_codex::ttype::combiner::{CombinerOptions, combine};
 use mago_codex::ttype::comparator::ComparisonResult;
 use mago_codex::ttype::comparator::atomic_comparator;
-use mago_codex::ttype::comparator::union_comparator::{can_expression_types_be_identical, is_contained_by};
+use mago_codex::ttype::comparator::union_comparator::is_contained_by;
+use mago_codex::ttype::{get_never, intersect_union_types};
 use mago_codex::ttype::union::TUnion;
 use mago_span::Span;
 use mago_word::{Word, WordMap, WordSet};
 
 use super::BlockContext;
-use crate::context::scope::var_has_root;
+use crate::context::scope::{var_has_root, var_references_dynamic};
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum VariableCertainty {
@@ -33,6 +34,15 @@ impl VariableCertainty {
     }
     pub fn is_absent(self) -> bool {
         self == Self::Absent
+    }
+
+    /// TrinaryLogic::extremeIdentity keeps a certainty only when all alternatives agree.
+    fn join(self, other: Self) -> Self {
+        if self == other {
+            self
+        } else {
+            Self::Possible
+        }
     }
 }
 
@@ -130,6 +140,17 @@ fn certainty(
     }
 }
 
+/// ExpressionTypeHolder::equalTypes does not compare the holder's certainty.
+fn equal_types(left: &TUnion, right: &TUnion) -> bool {
+    let without_certainty = |ty: &TUnion| {
+        let mut ty = ty.clone();
+        ty.set_possibly_undefined(false, None);
+        ty.set_possibly_undefined_from_try(false);
+        ty
+    };
+    without_certainty(left) == without_certainty(right)
+}
+
 impl BlockContext<'_> {
     pub fn can_any_variable_exist(&self) -> bool {
         self.variable_state.after_extract_call
@@ -169,7 +190,10 @@ impl BlockContext<'_> {
         self.variable_state.absent.retain(|target| !var_has_root(*target, name));
         self.variable_state
             .conditional
-            .retain(|holder| !var_has_root(holder.guard, name) && !var_has_root(holder.target, name));
+            .retain(|holder| {
+                !var_has_root(holder.guard, name) && !var_references_dynamic(holder.guard, name)
+                    && !var_has_root(holder.target, name) && !var_references_dynamic(holder.target, name)
+            });
     }
 
     /// ScopeOps joins actual continuing edges. Projection and loop widening remain separate.
@@ -269,8 +293,21 @@ impl BlockContext<'_> {
             .state
             .conditional
             .iter()
-            .filter(|holder| branches.clone().all(|branch| branch.state.conditional.contains(holder)))
-            .cloned()
+            .filter_map(|holder| {
+                let mut merged = holder.clone();
+                for branch in branches.clone().skip(1) {
+                    let other = branch.state.conditional.iter().find(|other| {
+                        other.guard == holder.guard && other.guard_type == holder.guard_type
+                            && other.target == holder.target && other.certainty == holder.certainty
+                    })?;
+                    if let (Some(ours), Some(theirs)) = (&merged.target_type, &other.target_type) {
+                        merged.target_type = Some(Rc::new(combine_union_types_preserving_array_shapes(
+                            ours, theirs, codebase, CombinerOptions::default(),
+                        )));
+                    }
+                }
+                Some(merged)
+            })
             .collect();
         let names: WordSet = branches
             .clone()
@@ -283,44 +320,97 @@ impl BlockContext<'_> {
                     .copied()
             })
             .collect();
-        for name in names {
-            let initial = first.certainty(name);
-            let joined = if branches.clone().all(|branch| branch.certainty(name) == initial) {
-                initial
-            } else {
-                VariableCertainty::Possible
-            };
-            self.set_variable_certainty(name, joined, None);
-            for branch in branches.clone() {
-                let branch_certainty = branch.certainty(name);
-                if branch_certainty == joined {
+
+        // ScopeOps::createConditionalExpressions derives guards once per incoming edge.
+        // A branch's set difference may discriminate even when its full type overlaps another edge.
+        let guards: Vec<_> = branches.clone().map(|branch| {
+            let mut guards = Vec::new();
+            for (guard, our_type) in &branch.locals {
+                if branch.certainty(*guard) != VariableCertainty::Defined {
                     continue;
                 }
-                for (guard, guard_type) in &branch.locals {
-                    if *guard == name || branch.certainty(*guard) != VariableCertainty::Defined {
+                let mut their_type: Option<TUnion> = None;
+                let mut defined = true;
+                for other in branches.clone().filter(|other| !std::ptr::eq(*other, branch)) {
+                    if other.certainty(*guard) != VariableCertainty::Defined {
+                        defined = false;
+                        break;
+                    }
+                    let other_type = &other.locals[guard];
+                    their_type = Some(match their_type {
+                        Some(ty) => combine_union_types_preserving_array_shapes(
+                            &ty, other_type, codebase, CombinerOptions::default(),
+                        ),
+                        None => (**other_type).clone(),
+                    });
+                }
+                let Some(their_type) = their_type.filter(|_| defined) else { continue };
+                let Some(merged) = self.locals.get(guard) else { continue };
+                if equal_types(merged, &their_type) || equal_types(our_type, &their_type) {
+                    continue;
+                }
+                let remainder = our_type.difference(&their_type, codebase);
+                if remainder.is_never() || equal_types(merged, &remainder) {
+                    continue;
+                }
+                guards.push((*guard, Rc::new(remainder), their_type));
+            }
+            guards
+        }).collect();
+
+        for name in names {
+            let joined = branches.clone().skip(1).fold(first.certainty(name), |joined, branch| {
+                joined.join(branch.certainty(name))
+            });
+            self.set_variable_certainty(name, joined, None);
+            for (branch, guards) in branches.clone().zip(&guards) {
+                let branch_certainty = branch.certainty(name);
+                if branch_certainty == joined && match (branch.locals.get(&name), self.locals.get(&name)) {
+                    (Some(ours), Some(merged)) => equal_types(ours, merged),
+                    (None, None) => true,
+                    _ => false,
+                } {
+                    continue;
+                }
+                for (guard, guard_type, their_guard_type) in guards {
+                    if *guard == name {
                         continue;
                     }
-                    // A disjoint branch type is a representable type difference. Overlapping types cannot
-                    // establish this implication; PHPStan also rejects a non-discriminating guard.
-                    if !branches
-                        .clone()
-                        .filter(|other| !std::ptr::eq(*other, branch))
-                        .all(|other| {
-                            other.certainty(*guard) == VariableCertainty::Defined
-                                && other.locals.get(guard).is_some_and(|other_type| {
-                                    !can_expression_types_be_identical(codebase, guard_type, other_type, false, false)
-                                })
-                        })
+                    if branch_certainty != VariableCertainty::Absent
+                        && guard_type.types.iter().all(|ty| matches!(ty, TAtomic::Array(array) if array.is_sealed()))
+                        && branches.clone().filter(|other| !std::ptr::eq(*other, branch))
+                            .any(|other| other.locals.get(&name).zip(self.locals.get(&name))
+                                .is_some_and(|(other, merged)| equal_types(other, merged)))
                     {
+                        // ScopeOps excludes subtype-absorbed targets paired with constant-array guards.
                         continue;
                     }
-                    self.variable_state.conditional.push(ConditionalVariable {
+                    // The present-target loop rejects supertype/overlapping guards. Absent targets
+                    // use ScopeOps' separate loop and are applied only by exact guard matching.
+                    if branch_certainty != VariableCertainty::Absent && (
+                        is_contained_by(codebase, guard_type, their_guard_type, false, false, false,
+                            &mut ComparisonResult::default())
+                        || is_contained_by(codebase, their_guard_type, guard_type, false, false, false,
+                            &mut ComparisonResult::default())
+                        || ((branches.clone().filter(|other| !std::ptr::eq(*other, branch))
+                            .any(|other| other.certainty(name) == VariableCertainty::Defined)
+                            || branch.locals.get(&name).is_some_and(|ty| equal_types(ty, guard_type)))
+                            && intersect_union_types(guard_type, their_guard_type, codebase)
+                                .is_some_and(|ty| !ty.is_never()))
+                    ) {
+                        continue;
+                    }
+                    let holder = ConditionalVariable {
                         guard: *guard,
                         guard_type: Rc::clone(guard_type),
                         target: name,
                         certainty: branch_certainty,
-                        target_type: branch.locals.get(&name).cloned(),
-                    });
+                        target_type: (branch_certainty != VariableCertainty::Absent)
+                            .then(|| branch.locals.get(&name).cloned()).flatten(),
+                    };
+                    if !self.variable_state.conditional.contains(&holder) {
+                        self.variable_state.conditional.push(holder);
+                    }
                 }
             }
         }
@@ -343,34 +433,78 @@ impl BlockContext<'_> {
         }
     }
 
-    /// ScopeOps::matchConditionalExpressions: consume actual narrowed guard types to a fixed point.
+    /// Existing clients supply an already-filtered scope rather than reconciliation's specified keys.
     pub fn apply_variable_conditions(&mut self, codebase: &CodebaseMetadata) {
-        let mut remaining = self.variable_state.conditional.clone();
+        let specified = self.locals.keys().filter(|key| {
+            self.variable_certainty(**key) == VariableCertainty::Defined
+        }).copied().collect();
+        self.apply_specified_variable_conditions(codebase, &specified);
+    }
+
+    /// ScopeOps::matchConditionalExpressions and MutatingScope's consequent intersection.
+    pub fn apply_specified_variable_conditions(&mut self, codebase: &CodebaseMetadata, specified: &WordSet) {
+        let originally_specified = specified;
+        let mut specified: WordMap<_> = specified.iter().filter_map(|key| {
+            self.locals.get(key).map(|ty| (*key, (self.variable_certainty(*key), Some(Rc::clone(ty)))))
+        }).collect();
+        let targets: WordSet = self.variable_state.conditional.iter().map(|holder| holder.target).collect();
+        let mut conditions: WordMap<Vec<&ConditionalVariable>> = WordMap::default();
         loop {
-            let mut matched = false;
-            remaining.retain(|holder| {
-                if self.variable_certainty(holder.guard) != VariableCertainty::Defined {
-                    return true;
+            let before = specified.len();
+            for target in &targets {
+                if conditions.contains_key(target) {
+                    continue;
                 }
-                let actual = &self.locals[&holder.guard];
-                if !is_contained_by(
-                    codebase,
-                    actual,
-                    &holder.guard_type,
-                    false,
-                    false,
-                    false,
-                    &mut ComparisonResult::default(),
-                ) {
-                    return true;
+                // Exact matches take precedence; an absence consequent must never override an
+                // expression explicitly specified by this condition, or match just a guard subtype.
+                let mut matched: Vec<_> = self.variable_state.conditional.iter().filter(|holder| {
+                    holder.target == *target
+                        && !(holder.certainty == VariableCertainty::Absent && originally_specified.contains(target))
+                        && specified.get(&holder.guard).is_some_and(|(certainty, ty)| {
+                            *certainty == VariableCertainty::Defined
+                                && ty.as_ref().is_some_and(|ty| equal_types(ty, &holder.guard_type))
+                        })
+                }).collect();
+                if matched.is_empty() {
+                    matched = self.variable_state.conditional.iter().filter(|holder| {
+                        holder.target == *target && holder.certainty != VariableCertainty::Absent
+                            && specified.get(&holder.guard).is_some_and(|(certainty, ty)| {
+                                *certainty == VariableCertainty::Defined && ty.as_ref().is_some_and(|ty| {
+                                    is_contained_by(codebase, ty, &holder.guard_type, false, false, false,
+                                        &mut ComparisonResult::default())
+                                })
+                            })
+                    }).collect();
                 }
-                self.set_variable_certainty(holder.target, holder.certainty, holder.target_type.clone());
-                matched = true;
-                false
-            });
-            if !matched {
+                if let Some(last) = matched.last() {
+                    specified.insert(*target, (last.certainty, last.target_type.clone()));
+                    conditions.insert(*target, matched);
+                }
+            }
+            if specified.len() == before {
                 break;
             }
+        }
+        let conditions: Vec<_> = conditions.into_iter().map(|(target, holders)| {
+            let certainty = holders.iter().skip(1).fold(holders[0].certainty, |certainty, holder| {
+                certainty.join(holder.certainty)
+            });
+            let ty = holders.iter().filter_map(|holder| holder.target_type.as_ref()).fold(
+                self.locals.get(&target).map(|ty| (**ty).clone()),
+                |ty, consequence| Some(ty.map_or_else(|| (**consequence).clone(), |ty| {
+                    intersect_union_types(&ty, consequence, codebase).unwrap_or_else(get_never)
+                })),
+            );
+            let certainty = if certainty != VariableCertainty::Absent
+                && self.variable_certainty(target) == VariableCertainty::Defined {
+                VariableCertainty::Defined
+            } else {
+                certainty
+            };
+            (target, certainty, ty.map(Rc::new))
+        }).collect();
+        for (target, certainty, ty) in conditions {
+            self.set_variable_certainty(target, certainty, ty);
         }
     }
 }

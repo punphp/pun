@@ -2600,3 +2600,38 @@ A fresh seven-function public oracle matrix distinguishes both assignment orders
 elseif, and full else chains, with two terminating-branch controls. Before this correction five
 diagnostics choose the wrong class. Afterward all seven complete diagnostics match. The original
 level-4 DeadCode fixture supplies the maintained regression test.
+
+### Conditional type holders on continuing branches
+
+`context/variable_scope.rs` retains conditional consequences when branch types differ, even when
+both branches definitely define the target. Guards use the representable difference between the
+incoming types. Absorbed or overlapping guards follow PHPStan 2.3.1's target exclusions rather
+than proving presence from a potentially shared value. Inherited consequences with the same guard
+merge their target types across continuing branches.
+
+Reconciliation supplies only explicitly specified expressions to holder matching. Exact matches
+take precedence over supertype matches, absence consequences require an exact match, and matching
+consequences intersect existing target types. Assignments and unsets invalidate holders that
+reference the changed variable, including symbolic indexes. A completed branch join does not
+specify all its expressions again.
+
+Ordinary array reads no longer insert derived values into `locals`. Those values belong to
+expression observations, not the specified expression holders used to create correlations.
+Explicit offset refinements still participate in reads, including coalesce and postfix-index
+controls. PHPStan keeps its derived `resolvedTypes` cache separate from `expressionTypes`.
+
+The source contract is PHPStan 2.3.1 at
+`cb3b7e99489b2e3789ee2eec10501cb7a72580ea`: `ScopeOps.php:371–592` creates holders,
+`:689–810` invalidates them, and `:985–1066` matches specified guards.
+`MutatingScope.php:4370–4409` intersects consequences, and `:4720–4775` merges same-guard holders.
+`MutatingScope::getType()` records derived values in `resolvedTypes`, independently of those holders.
+
+The public `conditional_type_correlation` target compares complete PHPStan captures in four
+configurations. Controls cover literal receiver calls, unpack arrays, asymmetric equality,
+overlapping and absorbed bounds, constant-array and interface guards, inherited consequences,
+prior target narrowing, writes, unsets, symbolic indexes, and unrelated branches. This change
+does not expose counterfactual scopes to named-argument selection or claim dynamic-name parity.
+
+All 207 new oracle records and 106 tests across 18 selected public targets pass. Existing scope,
+variable, native, loop, foreach, coalesce, failed-offset, and unset captures remain unchanged.
+Fresh dependency instrumentation covers all 160 changed executable lines without exclusions.

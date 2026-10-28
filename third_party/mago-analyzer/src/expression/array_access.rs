@@ -120,19 +120,9 @@ impl<'ast, 'arena> Analyzable<'ast, 'arena> for ArrayAccess<'arena> {
             }
             let access_type = Rc::new(access_type);
 
-            if let Some(keyed_array_var_id) = &keyed_array_var_id {
-                let can_store_result = block_context.flags.inside_assignment() || !container_type.is_mixed();
-
-                if !block_context.flags.inside_isset()
-                    && can_store_result
-                    && !access_type.is_error()
-                    && memchr::memmem::find(keyed_array_var_id.as_bytes(), b"[$").is_some()
-                    && !block_context.locals.contains_key(keyed_array_var_id)
-                {
-                    block_context.locals.insert(*keyed_array_var_id, Rc::clone(&access_type));
-                }
-            }
-
+            // A derived read is not a specified scope expression. Retain explicit
+            // offset refinements above, but do not manufacture conditional guards
+            // merely by observing a variable-key read.
             artifacts.set_rc_expression_type(self, access_type);
         } else {
             artifacts.set_expression_type(self, get_mixed());

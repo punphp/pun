@@ -881,3 +881,16 @@ before checking visibility, as PHPStan's `processSingleConstant()` does. Both vi
 type checks use that reflection and its declaring context. Diagnostic locations still use the CST
 declaration. Prototype selection and the final-override class display are unchanged. The complementary
 public, private, protected, and trait-reuse controls compare all diagnostics against a separate capture.
+
+## Representable conditional guard differences
+
+`TUnion::difference()` exposes the existing bounded subtraction used for mixed exclusions to
+the analyzer's conditional-holder owner. Unrepresentable differences retain the incoming type,
+so holder creation can reject guards that do not discriminate branches.
+
+Boolean subtraction also returns the opposite literal for `bool` minus a literal boolean.
+This follows PHPStan 2.3.1's `TypeCombinator::remove()` and `BooleanType::tryRemove()` rather
+than treating the broad boolean as a discriminating guard. The public
+`pun-analyse/tests/conditional_type_correlation.rs` capture checks both the false-only remainder
+and the overlapping true branch. Integer-range, literal-union, array, and object guard controls
+use the same API without a complete combiner or subtraction rewrite.

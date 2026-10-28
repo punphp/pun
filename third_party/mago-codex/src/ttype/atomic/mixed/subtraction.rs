@@ -9,11 +9,19 @@ use crate::ttype::atomic::TAtomic;
 use crate::ttype::atomic::array::TArray;
 use crate::ttype::atomic::object::TObject;
 use crate::ttype::atomic::scalar::TScalar;
+use crate::ttype::atomic::scalar::bool::TBool;
 use crate::ttype::atomic::scalar::int::TInteger;
 use crate::ttype::combiner::CombinerOptions;
 use crate::ttype::comparator::{ComparisonResult, atomic_comparator, union_comparator};
 use crate::ttype::union::TUnion;
 use crate::ttype::{combine_union_types, get_empty, get_empty_keyed_array, get_never, get_null, intersect_union_types};
+
+impl TUnion {
+    /// Representable set difference for conditional guards. Unrepresentable remainders stay unchanged.
+    pub fn difference(&self, excluded: &Self, codebase: &CodebaseMetadata) -> Self {
+        remove(self, excluded, codebase)
+    }
+}
 
 impl TMixed {
     /// The type excluded from this mixed value, independently of Mago's legacy truthiness flags.
@@ -93,6 +101,12 @@ pub(crate) fn remove(from: &TUnion, excluded: &TUnion, codebase: &CodebaseMetada
                     &mut ComparisonResult::new(),
                 ) {
                     Vec::new()
+                } else if let (
+                    TAtomic::Scalar(TScalar::Bool(TBool { value: None })),
+                    TAtomic::Scalar(TScalar::Bool(TBool { value: Some(value) })),
+                ) = (&atomic, remove)
+                {
+                    vec![TAtomic::Scalar(TScalar::Bool(TBool::new(Some(!value))))]
                 } else if let (TAtomic::Array(array), TAtomic::Array(empty)) = (&atomic, remove)
                     && empty.is_empty()
                 {

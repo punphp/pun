@@ -1,0 +1,6 @@
+parameters:
+    level: 0
+    phpVersion: 80500
+    checkMaybeUndefinedVariables: true
+    paths:
+        - correlations.php

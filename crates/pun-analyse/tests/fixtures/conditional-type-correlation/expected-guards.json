@@ -1,0 +1,290 @@
+{
+    "default": [
+        [
+            "guards.php",
+            17,
+            "phpstan.dumpType",
+            "Dumped type: ConditionalGuardBoundaries\\FirstTag",
+            null,
+            false
+        ],
+        [
+            "guards.php",
+            17,
+            "variable.undefined",
+            "Variable $value might not be defined.",
+            null,
+            true
+        ],
+        [
+            "guards.php",
+            32,
+            "phpstan.dumpType",
+            "Dumped type: int<1, max>",
+            null,
+            false
+        ],
+        [
+            "guards.php",
+            46,
+            "phpstan.dumpType",
+            "Dumped type: 1",
+            null,
+            false
+        ],
+        [
+            "guards.php",
+            63,
+            "phpstan.dumpType",
+            "Dumped type: 1|2",
+            null,
+            false
+        ],
+        [
+            "guards.php",
+            67,
+            "phpstan.dumpType",
+            "Dumped type: 1|2",
+            null,
+            false
+        ],
+        [
+            "guards.php",
+            71,
+            "phpstan.dumpType",
+            "Dumped type: 1|2",
+            null,
+            false
+        ],
+        [
+            "guards.php",
+            84,
+            "phpstan.dumpType",
+            "Dumped type: *ERROR*",
+            null,
+            false
+        ],
+        [
+            "guards.php",
+            84,
+            "variable.undefined",
+            "Undefined variable: $value",
+            null,
+            true
+        ]
+    ],
+    "quiet": [
+        [
+            "guards.php",
+            17,
+            "phpstan.dumpType",
+            "Dumped type: ConditionalGuardBoundaries\\FirstTag",
+            null,
+            false
+        ],
+        [
+            "guards.php",
+            32,
+            "phpstan.dumpType",
+            "Dumped type: int<1, max>",
+            null,
+            false
+        ],
+        [
+            "guards.php",
+            46,
+            "phpstan.dumpType",
+            "Dumped type: 1",
+            null,
+            false
+        ],
+        [
+            "guards.php",
+            63,
+            "phpstan.dumpType",
+            "Dumped type: 1|2",
+            null,
+            false
+        ],
+        [
+            "guards.php",
+            67,
+            "phpstan.dumpType",
+            "Dumped type: 1|2",
+            null,
+            false
+        ],
+        [
+            "guards.php",
+            71,
+            "phpstan.dumpType",
+            "Dumped type: 1|2",
+            null,
+            false
+        ],
+        [
+            "guards.php",
+            84,
+            "phpstan.dumpType",
+            "Dumped type: *ERROR*",
+            null,
+            false
+        ],
+        [
+            "guards.php",
+            84,
+            "variable.undefined",
+            "Undefined variable: $value",
+            null,
+            true
+        ]
+    ],
+    "foreach-off": [
+        [
+            "guards.php",
+            17,
+            "phpstan.dumpType",
+            "Dumped type: ConditionalGuardBoundaries\\FirstTag",
+            null,
+            false
+        ],
+        [
+            "guards.php",
+            17,
+            "variable.undefined",
+            "Variable $value might not be defined.",
+            null,
+            true
+        ],
+        [
+            "guards.php",
+            32,
+            "phpstan.dumpType",
+            "Dumped type: int<1, max>",
+            null,
+            false
+        ],
+        [
+            "guards.php",
+            46,
+            "phpstan.dumpType",
+            "Dumped type: 1",
+            null,
+            false
+        ],
+        [
+            "guards.php",
+            63,
+            "phpstan.dumpType",
+            "Dumped type: 1|2",
+            null,
+            false
+        ],
+        [
+            "guards.php",
+            67,
+            "phpstan.dumpType",
+            "Dumped type: 1|2",
+            null,
+            false
+        ],
+        [
+            "guards.php",
+            71,
+            "phpstan.dumpType",
+            "Dumped type: 1|2",
+            null,
+            false
+        ],
+        [
+            "guards.php",
+            84,
+            "phpstan.dumpType",
+            "Dumped type: *ERROR*",
+            null,
+            false
+        ],
+        [
+            "guards.php",
+            84,
+            "variable.undefined",
+            "Undefined variable: $value",
+            null,
+            true
+        ]
+    ],
+    "loop-off": [
+        [
+            "guards.php",
+            17,
+            "phpstan.dumpType",
+            "Dumped type: ConditionalGuardBoundaries\\FirstTag",
+            null,
+            false
+        ],
+        [
+            "guards.php",
+            17,
+            "variable.undefined",
+            "Variable $value might not be defined.",
+            null,
+            true
+        ],
+        [
+            "guards.php",
+            32,
+            "phpstan.dumpType",
+            "Dumped type: int<1, max>",
+            null,
+            false
+        ],
+        [
+            "guards.php",
+            46,
+            "phpstan.dumpType",
+            "Dumped type: 1",
+            null,
+            false
+        ],
+        [
+            "guards.php",
+            63,
+            "phpstan.dumpType",
+            "Dumped type: 1|2",
+            null,
+            false
+        ],
+        [
+            "guards.php",
+            67,
+            "phpstan.dumpType",
+            "Dumped type: 1|2",
+            null,
+            false
+        ],
+        [
+            "guards.php",
+            71,
+            "phpstan.dumpType",
+            "Dumped type: 1|2",
+            null,
+            false
+        ],
+        [
+            "guards.php",
+            84,
+            "phpstan.dumpType",
+            "Dumped type: *ERROR*",
+            null,
+            false
+        ],
+        [
+            "guards.php",
+            84,
+            "variable.undefined",
+            "Undefined variable: $value",
+            null,
+            true
+        ]
+    ]
+}

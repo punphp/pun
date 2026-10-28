@@ -1,0 +1,138 @@
+{
+    "default": [
+        [
+            "invalidation.php",
+            17,
+            "phpstan.dumpType",
+            "Dumped type: 1",
+            null,
+            false
+        ],
+        [
+            "invalidation.php",
+            21,
+            "phpstan.dumpType",
+            "Dumped type: 1|2",
+            null,
+            false
+        ],
+        [
+            "invalidation.php",
+            37,
+            "phpstan.dumpType",
+            "Dumped type: 1",
+            null,
+            false
+        ],
+        [
+            "invalidation.php",
+            41,
+            "phpstan.dumpType",
+            "Dumped type: 20",
+            null,
+            false
+        ]
+    ],
+    "quiet": [
+        [
+            "invalidation.php",
+            17,
+            "phpstan.dumpType",
+            "Dumped type: 1",
+            null,
+            false
+        ],
+        [
+            "invalidation.php",
+            21,
+            "phpstan.dumpType",
+            "Dumped type: 1|2",
+            null,
+            false
+        ],
+        [
+            "invalidation.php",
+            37,
+            "phpstan.dumpType",
+            "Dumped type: 1",
+            null,
+            false
+        ],
+        [
+            "invalidation.php",
+            41,
+            "phpstan.dumpType",
+            "Dumped type: 20",
+            null,
+            false
+        ]
+    ],
+    "foreach-off": [
+        [
+            "invalidation.php",
+            17,
+            "phpstan.dumpType",
+            "Dumped type: 1",
+            null,
+            false
+        ],
+        [
+            "invalidation.php",
+            21,
+            "phpstan.dumpType",
+            "Dumped type: 1|2",
+            null,
+            false
+        ],
+        [
+            "invalidation.php",
+            37,
+            "phpstan.dumpType",
+            "Dumped type: 1",
+            null,
+            false
+        ],
+        [
+            "invalidation.php",
+            41,
+            "phpstan.dumpType",
+            "Dumped type: 20",
+            null,
+            false
+        ]
+    ],
+    "loop-off": [
+        [
+            "invalidation.php",
+            17,
+            "phpstan.dumpType",
+            "Dumped type: 1",
+            null,
+            false
+        ],
+        [
+            "invalidation.php",
+            21,
+            "phpstan.dumpType",
+            "Dumped type: 1|2",
+            null,
+            false
+        ],
+        [
+            "invalidation.php",
+            37,
+            "phpstan.dumpType",
+            "Dumped type: 1",
+            null,
+            false
+        ],
+        [
+            "invalidation.php",
+            41,
+            "phpstan.dumpType",
+            "Dumped type: 20",
+            null,
+            false
+        ]
+    ]
+}
