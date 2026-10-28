@@ -6,7 +6,7 @@ use mago_syntax::cst::{Expression, Node, NodeKind};
 use pun_phpstan::types::Type;
 
 use super::docblock::{
-    assignments, class_members, class_span, docs_report, is_array_hint, method, properties,
+    assignments, class_members, docs_report, is_array_hint, method, properties,
     this_property,
 };
 use crate::rules::phpdoc_writer::type_mapper::is_useful_array_tag;
@@ -31,7 +31,7 @@ impl Rule for AddVarPhpdocFromConstructorParam {
         ctx: &Context<'_>,
         out: &mut Vec<Report>,
     ) {
-        let Some((members, _)) = class_members(node) else {
+        let Some((members, _, span)) = class_members(node) else {
             return;
         };
         let Some(constructor) = method(members, "__construct") else {
@@ -46,9 +46,7 @@ impl Rule for AddVarPhpdocFromConstructorParam {
                 continue;
             }
             let target = DocTarget::of(ctx.source, property.start);
-            let Some(mut info) = target.info(ctx.source) else {
-                continue;
-            };
+            let mut info = target.info(ctx.source);
             // @var tag already given
             if is_useful_array_tag(info.var_tag().map(|t| &t.ty)) {
                 continue;
@@ -66,8 +64,8 @@ impl Rule for AddVarPhpdocFromConstructorParam {
             }
         }
         if !changes.is_empty() {
-            out.push(docs_report(
-                class_span(node),
+            out.extend(docs_report(
+                span,
                 "Add the `@var` array type of the property from the constructor's assignment.",
                 ctx.source,
                 &changes,

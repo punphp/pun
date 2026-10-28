@@ -40,9 +40,7 @@ impl Rule for AddReturnPhpdocCommonObject {
             return;
         }
         let target = f.target(ctx.source);
-        let Some(mut info) = target.info(ctx.source) else {
-            return;
-        };
+        let mut info = target.info(ctx.source);
         if is_useful_array_tag(info.return_tag().map(|t| &t.ty)) {
             return;
         }
@@ -90,7 +88,7 @@ impl Rule for AddReturnPhpdocCommonObject {
         };
         let t = Type::array(resolve_key_type(&returned), Type::Object(shared, vec![]));
         if decorate_return(&mut info, &t) {
-            out.push(doc_report(
+            out.extend(doc_report(
                 f.name,
                 "Add the `@return` array type of the returned objects' shared type.",
                 ctx.source,
@@ -104,7 +102,7 @@ impl Rule for AddReturnPhpdocCommonObject {
 /// `$type->isObject()->yes()`.
 fn is_object(t: &Type) -> bool {
     match t {
-        Type::Object(..) | Type::EnumCase(..) | Type::ObjectWithoutClass => true,
+        Type::Object(..) | Type::EnumCase(..) | Type::This(_) | Type::ObjectWithoutClass => true,
         Type::Union(types) => types.iter().all(is_object),
         _ => false,
     }
@@ -125,17 +123,15 @@ fn first_shared_parent(facts: &Facts, classes: &[String]) -> Option<String> {
 fn parents_and_interfaces(facts: &Facts, class: &str) -> Vec<String> {
     let codebase = &facts.codebase;
     let mut out = Vec::new();
-    let mut current = codebase.get_class_like(class.as_bytes());
-    let Some(own) = current else {
-        return out;
-    };
+    let own = codebase.get_class_like(class.as_bytes());
+    let mut current = own;
     while let Some(parent) = current.and_then(|c| c.direct_parent_class) {
         let parent_class = codebase.get_class_like(parent.as_bytes());
         out.push(parent_class.map_or(parent.to_string(), |c| c.original_name.to_string()));
         current = parent_class;
     }
     let mut interfaces: Vec<String> = Vec::new();
-    for i in own.direct_parent_interfaces.iter().chain(own.all_parent_interfaces.iter()) {
+    for i in own.iter().flat_map(|own| own.direct_parent_interfaces.iter().chain(own.all_parent_interfaces.iter())) {
         let name = codebase
             .get_class_like(i.as_bytes())
             .map_or(i.to_string(), |c| c.original_name.to_string());
@@ -153,16 +149,8 @@ fn resolve_key_type(a: &ConstArray) -> Type {
     let Type::Union(keys) = const_array_key_type(a) else {
         return mixed();
     };
-    let mut types = Vec::new();
-    for key in &keys {
-        if key.is_string().yes() {
-            types.push(Type::String);
-        } else if key.is_integer().yes() {
-            types.push(Type::Int);
-        } else {
-            return mixed();
-        }
-    }
+    // (a constant array's keys are integers and strings)
+    let types: Vec<Type> = keys.iter().map(|key| if key.is_string().yes() { Type::String } else { Type::Int }).collect();
     let mut unique = uniquate_types(&types);
     if unique.len() == 1 {
         return unique.remove(0);

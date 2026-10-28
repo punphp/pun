@@ -28,13 +28,11 @@ impl Rule for AddParamPhpdocFromReferenceAssign {
         ctx: &Context<'_>,
         out: &mut Vec<Report>,
     ) {
-        let Some(f) = FunctionLike::of(node) else {
+        let Some(f) = FunctionLike::of(node).filter(|f| f.method.is_some()) else {
             return;
         };
         let target = f.target(ctx.source);
-        let Some(mut info) = target.info(ctx.source) else {
-            return;
-        };
+        let mut info = target.info(ctx.source);
         let mut scope = ancestors.to_vec();
         scope.push(node);
         let mut changed = false;
@@ -60,15 +58,15 @@ impl Rule for AddParamPhpdocFromReferenceAssign {
             let [expr] = exprs.as_slice() else {
                 continue;
             };
-            let Some(t) = expr_type(ctx, &scope, expr) else {
-                continue;
-            };
-            if decorate_param(&mut info, &Type::array(mixed(), t), &name, param.ellipsis.is_some()) {
+            // (a type Pun does not map, such as a closure's, adds nothing)
+            if let Some(t) = expr_type(ctx, &scope, expr)
+                && decorate_param(&mut info, &Type::array(mixed(), t), &name, param.ellipsis.is_some())
+            {
                 changed = true;
             }
         }
         if changed {
-            out.push(doc_report(
+            out.extend(doc_report(
                 f.name,
                 "Add the `@param` array type from the value assigned to the reference parameter.",
                 ctx.source,

@@ -8,12 +8,12 @@ use mago_syntax::cst::{
 use pun_phpstan::types::{Type, mixed};
 
 use super::class_scope;
-use super::docblock::{FunctionLike, class_name, doc_report};
+use super::docblock::{FunctionLike, doc_report};
 use super::facts::facts;
 use super::names::resolve_class_name;
 use super::silent_void::Place;
 use crate::rules::phpdoc_writer::type_mapper::is_useful_array_tag;
-use crate::rules::phpdoc_writer::{DocTarget, change_return_type};
+use crate::rules::phpdoc_writer::change_return_type;
 use crate::{Context, Report, Rule};
 
 pub struct AddReturnPhpdocJsonArray;
@@ -55,20 +55,12 @@ impl Rule for AddReturnPhpdocJsonArray {
             return;
         }
         let target = f.target(ctx.source);
-        let Some(mut info) = target.info(ctx.source) else {
-            return;
-        };
+        let mut info = target.info(ctx.source);
         if is_useful_array_tag(info.return_tag().map(|t| &t.ty)) {
             return;
         }
-        let current = match info.return_tag() {
-            Some(tag) => DocTarget::doc_type(tag, ancestors, class_name(ancestors).as_deref()),
-            None => mixed(),
-        };
-        if !change_return_type(&mut info, &current, &Type::array(Type::String, mixed())) {
-            return;
-        }
-        out.push(doc_report(
+        change_return_type(&mut info, &Type::array(Type::String, mixed()));
+        out.extend(doc_report(
             f.name,
             "Add the `@return array<string, mixed>` type of the decoded JSON.",
             ctx.source,

@@ -38,9 +38,7 @@ impl Rule for AddReturnPhpdocDimAssignedObject {
             return;
         }
         let target = f.target(ctx.source);
-        let Some(mut info) = target.info(ctx.source) else {
-            return;
-        };
+        let mut info = target.info(ctx.source);
         if let Some(tag) = info.return_tag()
             && let Type::Array(_, item) = DocTarget::doc_type(tag, ancestors, class_name(ancestors).as_deref())
             && !is_mixed(&item)
@@ -65,21 +63,23 @@ impl Rule for AddReturnPhpdocDimAssignedObject {
         };
         let mut inner = ancestors.to_vec();
         inner.push(node);
-        let Some(body) = f.body else {
-            return;
-        };
+        // (a method with a `return` has a body)
+        let body = f.body.expect("a body");
         if !is_exclusively_dim_assigned(ctx, &inner, Node::Block(body), name) {
             return;
         }
-        // `matchArrayObjectType()`
-        let Some(Type::Array(_, item)) = expr_type(ctx, &inner, returned) else {
+        // `matchArrayObjectType()`: an `ArrayType`, which PHPStan gives a variable appended to in a loop (appended to
+        // only outside loops it is a constant array, which Mago's list type does not tell)
+        let Some(Type::Array(_, item)) =
+            expr_type(ctx, &inner, returned).filter(|_| appended_in_loop(Node::Block(body), name, false))
+        else {
             return;
         };
         let Type::Object(class, args) = *item else {
             return;
         };
         if decorate_return(&mut info, &Type::array(mixed(), Type::Object(class, args))) {
-            out.push(doc_report(
+            out.extend(doc_report(
                 f.name,
                 "Add the `@return` array type of the objects appended to the returned variable.",
                 ctx.source,
@@ -151,6 +151,18 @@ fn is_exclusively_dim_assigned(
         }
     });
     exclusive
+}
+
+/// Whether `$name[] = ...` is in a loop under `node` (`in_loop`: `node` is in one).
+fn appended_in_loop(node: Node<'_, '_>, name: &str, in_loop: bool) -> bool {
+    let mut found = false;
+    node.visit_children(|child| {
+        let in_loop = in_loop || matches!(child, Node::Foreach(_) | Node::For(_) | Node::While(_) | Node::DoWhile(_));
+        found |= in_loop
+            && matches!(child, Node::Assignment(a) if matches!(a.lhs, Expression::ArrayAppend(d) if variable_name(d.array) == Some(name)));
+        found |= appended_in_loop(child, name, in_loop);
+    });
+    found
 }
 
 /// `NonExistingObjectType` is a class the reflection does not know.

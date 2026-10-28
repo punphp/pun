@@ -40,9 +40,7 @@ impl Rule for AddReturnPhpdocScalarArray {
             return;
         };
         let target = f.target(ctx.source);
-        let Some(mut info) = target.info(ctx.source) else {
-            return;
-        };
+        let mut info = target.info(ctx.source);
         // `getReturnType()` must be the implicit `mixed` of no `@return` tag
         if info.return_tag().is_some() {
             return;
@@ -80,15 +78,14 @@ impl Rule for AddReturnPhpdocScalarArray {
         if types.iter().any(|t| *t != types[0]) {
             return;
         }
-        if change_return_type(&mut info, &mixed(), &Type::array(mixed(), types[0].clone())) {
-            out.push(doc_report(
-                f.name,
-                "Add the `@return` array type of the scalars appended to the returned variable.",
-                ctx.source,
-                &target,
-                &info,
-            ));
-        }
+        change_return_type(&mut info, &Type::array(mixed(), types[0].clone()));
+        out.extend(doc_report(
+            f.name,
+            "Add the `@return` array type of the scalars appended to the returned variable.",
+            ctx.source,
+            &target,
+            &info,
+        ));
     }
 }
 

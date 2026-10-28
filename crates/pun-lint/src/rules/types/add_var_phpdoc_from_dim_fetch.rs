@@ -6,7 +6,7 @@ use mago_syntax::cst::{Expression, Node, NodeKind};
 use pun_phpstan::types::{Type, mixed};
 
 use super::docblock::{
-    assignments, class_members, class_span, docs_report, is_array_hint, methods, properties, this_property,
+    assignments, class_members, docs_report, is_array_hint, methods, properties, this_property,
 };
 use crate::rules::phpdoc_writer::type_mapper::{is_useful_array_tag, uniquate_types};
 use crate::rules::phpdoc_writer::{DocTarget, decorate_var, expr_type};
@@ -30,7 +30,7 @@ impl Rule for AddVarPhpdocFromDimFetch {
         ctx: &Context<'_>,
         out: &mut Vec<Report>,
     ) {
-        let Some((members, _)) = class_members(node) else {
+        let Some((members, _, span)) = class_members(node) else {
             return;
         };
         let mut scope = ancestors.to_vec();
@@ -41,15 +41,12 @@ impl Rule for AddVarPhpdocFromDimFetch {
                 continue;
             }
             let target = DocTarget::of(ctx.source, property.start);
-            let Some(mut info) = target.info(ctx.source) else {
-                continue;
-            };
+            let mut info = target.info(ctx.source);
             if is_useful_array_tag(info.var_tag().map(|t| &t.ty)) {
                 continue;
             }
             // `ArrayDimFetchFinder::findDimFetchAssignToPropertyName()`: `$this->name[] = expr` in the methods
-            let mut types = Vec::new();
-            let mut unknown = false;
+            let mut types: Vec<Option<Type>> = Vec::new();
             for m in methods(members) {
                 for a in assignments(Node::Method(m)) {
                     let Expression::ArrayAppend(append) = a.lhs else {
@@ -60,16 +57,13 @@ impl Rule for AddVarPhpdocFromDimFetch {
                     }
                     let mut method_scope = scope.clone();
                     method_scope.push(Node::Method(m));
-                    match expr_type(ctx, &method_scope, a.rhs) {
-                        Some(t) => types.push(t),
-                        None => unknown = true,
-                    }
+                    types.push(expr_type(ctx, &method_scope, a.rhs));
                 }
             }
-            // nothing to add
-            if types.is_empty() || unknown {
+            // nothing to add (or a type Pun does not map)
+            let Some(types) = types.into_iter().collect::<Option<Vec<Type>>>().filter(|t| !t.is_empty()) else {
                 continue;
-            }
+            };
             let mut unique = uniquate_types(&types);
             let item = if unique.len() > 1 {
                 Type::Union(unique)
@@ -81,8 +75,8 @@ impl Rule for AddVarPhpdocFromDimFetch {
             }
         }
         if !changes.is_empty() {
-            out.push(docs_report(
-                class_span(node),
+            out.extend(docs_report(
+                span,
                 "Add the `@var` array type of the property from the values appended to it.",
                 ctx.source,
                 &changes,

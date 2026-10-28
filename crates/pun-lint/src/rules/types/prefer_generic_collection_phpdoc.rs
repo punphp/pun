@@ -34,9 +34,7 @@ impl Rule for PreferGenericCollectionPhpdoc {
         if target.doc.is_none() {
             return;
         }
-        let Some(mut info) = target.info(ctx.source) else {
-            return;
-        };
+        let mut info = target.info(ctx.source);
         let Some(TypeNode::Union { types, .. }) = info.return_tag().map(|t| &t.ty) else {
             return;
         };
@@ -44,7 +42,7 @@ impl Rule for PreferGenericCollectionPhpdoc {
             return;
         };
         info.set_return_type(generic);
-        out.push(super::docblock::doc_report(
+        out.extend(super::docblock::doc_report(
             f.name,
             "Use a generic collection `@return` type.",
             ctx.source,

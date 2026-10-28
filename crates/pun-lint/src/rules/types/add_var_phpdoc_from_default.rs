@@ -6,7 +6,7 @@ use mago_codex::visibility::Visibility;
 use mago_syntax::cst::{Expression, Node, NodeKind};
 use pun_phpstan::types::{Type, is_super_type_of};
 
-use super::docblock::{class_members, class_name, class_span, docs_report, is_array_hint, properties};
+use super::docblock::{class_members, class_name, docs_report, is_array_hint, properties};
 use super::facts::{Facts, facts};
 use crate::rules::phpdoc_writer::type_mapper::is_useful_array_tag;
 use crate::rules::phpdoc_writer::{DocTarget, decorate_var, expr_type, phpstan_type};
@@ -31,7 +31,7 @@ impl Rule for AddVarPhpdocFromDefault {
         ctx: &Context<'_>,
         out: &mut Vec<Report>,
     ) {
-        let Some((members, _)) = class_members(node) else {
+        let Some((members, _, span)) = class_members(node) else {
             return;
         };
         let mut scope = ancestors.to_vec();
@@ -43,16 +43,16 @@ impl Rule for AddVarPhpdocFromDefault {
             if !property.hint.is_some_and(is_array_hint) || property.names.len() > 1 {
                 continue;
             }
-            let Some(default @ (Expression::Array(_) | Expression::LegacyArray(_))) = property.default else {
-                continue;
-            };
-            let Some(default_type) = expr_type(ctx, &scope, default) else {
+            // an array default, of a type Pun maps
+            let Some(default_type) = property
+                .default
+                .filter(|d| matches!(d, Expression::Array(_) | Expression::LegacyArray(_)))
+                .and_then(|d| expr_type(ctx, &scope, d))
+            else {
                 continue;
             };
             let target = DocTarget::of(ctx.source, property.start);
-            let Some(mut info) = target.info(ctx.source) else {
-                continue;
-            };
+            let mut info = target.info(ctx.source);
             // type is already known
             if is_useful_array_tag(info.var_tag().map(|t| &t.ty)) {
                 continue;
@@ -69,8 +69,8 @@ impl Rule for AddVarPhpdocFromDefault {
             }
         }
         if !changes.is_empty() {
-            out.push(docs_report(
-                class_span(node),
+            out.extend(docs_report(
+                span,
                 "Add the `@var` array type of the property from its default.",
                 ctx.source,
                 &changes,
@@ -105,7 +105,7 @@ fn has_useful_parent_property_var_tag(facts: &Facts, class: &str, name: &str, de
         let useful = p.name_span.and_then(|span| {
             let source = facts.source_of(span.file_id)?;
             let start = property_start(&source, span.start.offset as usize)?;
-            let info = DocTarget::of(&source, start).info(&source)?;
+            let info = DocTarget::of(&source, start).info(&source);
             Some(is_useful_array_tag(info.var_tag().map(|t| &t.ty)))
         });
         if useful != Some(true) {

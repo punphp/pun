@@ -8,7 +8,7 @@
 
 use std::cell::Cell;
 
-use pun_phpstan::types::{Accessory, ConstArray, Level, Type, intersect, mixed, to_phpdoc};
+use pun_phpstan::types::{Accessory, ConstArray, Level, ShapeBuilder, Type, intersect, mixed, to_phpdoc};
 
 use super::type_node::TypeNode;
 
@@ -25,16 +25,6 @@ pub fn is_integer_type(t: &Type) -> bool {
     matches!(t, Type::Int | Type::ConstInt(_) | Type::IntRange(..))
 }
 
-fn is_union(t: &Type) -> bool {
-    matches!(t, Type::Union(_) | Type::Benevolent(_))
-}
-
-fn union_members(t: &Type) -> &[Type] {
-    match t {
-        Type::Union(types) | Type::Benevolent(types) => types,
-        _ => std::slice::from_ref(t),
-    }
-}
 
 /// `ConstantArrayType::getKeyType()`.
 pub fn const_array_key_type(a: &ConstArray) -> Type {
@@ -59,7 +49,6 @@ struct Mapper {
 impl Mapper {
     fn map(&self, t: &Type) -> TypeNode {
         match t {
-            Type::Reasoned(t, _) => self.map(t),
             Type::Array(key, item) => self.array(key, item),
             Type::Bool => TypeNode::ident("bool"),
             Type::ConstBool(b) => TypeNode::ident(if *b { "true" } else { "false" }),
@@ -89,6 +78,11 @@ impl Mapper {
             Type::ObjectWithoutClass => TypeNode::ident("object"),
             Type::String => TypeNode::ident("string"),
             Type::Union(types) | Type::Benevolent(types) => self.union(types),
+            // `IntersectionTypeMapper` of objects: `IntersectionTypeNode`
+            Type::Intersection(types) if types.iter().all(|t| matches!(t, Type::Object(..))) => TypeNode::Raw(format!(
+                "({})",
+                types.iter().map(|t| self.map(t).to_string()).collect::<Vec<_>>().join(" & ")
+            )),
             Type::Void => TypeNode::ident("void"),
             other => TypeNode::Raw(to_phpdoc(other)),
         }
@@ -108,14 +102,9 @@ impl Mapper {
     fn union(&self, types: &[Type]) -> TypeNode {
         let mut nodes = Vec::new();
         let mut existing: Vec<String> = Vec::new();
+        // (an array of `never` was generalized to an array of `mixed` before)
         for t in types {
-            let t = match t {
-                Type::Array(key, item) if matches!(**item, Type::Never(_)) => {
-                    Type::array((**key).clone(), mixed())
-                }
-                t => t.clone(),
-            };
-            let mut node = self.map(&t);
+            let mut node = self.map(t);
             if let TypeNode::Array { inner, .. } = &mut node
                 && let TypeNode::Union { types: inner, .. } = &mut **inner
             {
@@ -142,73 +131,57 @@ impl Mapper {
     /// `ArrayTypeMapper::mapToPHPStanPhpDocTypeNode()`.
     fn array(&self, key: &Type, item: &Type) -> TypeNode {
         let is_generic = is_generic_array_candidate(key, item);
-        if is_union(item) && !is_generic {
-            return self.array_from_union(union_members(item));
+        if let Type::Union(types) | Type::Benevolent(types) = item
+            && !is_generic
+        {
+            return self.array_from_union(types);
         }
         if let Type::Array(inner_key, inner_item) = item
             && is_generic_array_candidate(inner_key, inner_item)
         {
-            return self.generic_array(key, item, true);
+            return self.generic_array(key, item);
         }
         if is_generic {
-            return self.generic_array(key, item, true);
+            return self.generic_array(key, item);
         }
-        // keep the `int` key of `array<int, mixed>`
-        if is_integer_type(key) && !Type::array(key.clone(), item.clone()).is_list().maybe() {
-            return TypeNode::Generic {
-                base: "array".to_string(),
-                args: vec![self.map(key), self.map(item)],
-            };
-        }
+        // (`array<int, mixed>` keeps its `int` key only when it is no maybe-list, which a general array by integer keys
+        // always is)
         TypeNode::Array {
             inner: Box::new(self.map(item)),
             generic_parent: false,
         }
     }
 
-    /// `createArrayTypeNodeFromUnionType()`.
+    /// `createArrayTypeNodeFromUnionType()`: each member's node once (the members of a union print apart).
     fn array_from_union(&self, types: &[Type]) -> TypeNode {
-        let mut nodes: Vec<(String, TypeNode)> = Vec::new();
-        for t in types {
-            let node = self.map(t);
-            let printed = node.to_string();
-            match nodes.iter_mut().find(|(p, _)| *p == printed) {
-                Some(slot) => slot.1 = node,
-                None => nodes.push((printed, node)),
+        let mut nodes: Vec<TypeNode> = Vec::new();
+        for node in types.iter().map(|t| self.map(t)) {
+            if !nodes.contains(&node) {
+                nodes.push(node);
             }
         }
-        let mut nodes: Vec<TypeNode> = nodes.into_iter().map(|(_, n)| n).collect();
-        let inner = if nodes.len() > 1 {
-            TypeNode::Union {
+        TypeNode::Array {
+            inner: Box::new(TypeNode::Union {
                 types: nodes,
                 wrapped: false,
-            }
-        } else {
-            nodes.remove(0)
-        };
-        TypeNode::Array {
-            inner: Box::new(inner),
+            }),
             generic_parent: false,
         }
     }
 
-    /// `createGenericArrayType()`.
-    fn generic_array(&self, key: &Type, item: &Type, with_key: bool) -> TypeNode {
+    /// `createGenericArrayType()` with the key (an array of class strings by a constant integer key, printed
+    /// without, is never mapped: the types are generalized first).
+    fn generic_array(&self, key: &Type, item: &Type) -> TypeNode {
         let item_node = self.map(item);
-        let with_key = with_key && !is_class_string_array(key, item);
-        let mut args = if with_key {
-            let key_node = self.map(key);
-            if matches!(item_node, TypeNode::Union { .. }) && is_pair_class_too_detailed(item) {
-                vec![key_node, self.map(&Type::ClassString(None))]
-            } else {
-                vec![key_node, item_node]
-            }
+        let key_node = self.map(key);
+        let mut args = if matches!(item_node, TypeNode::Union { .. }) && is_pair_class_too_detailed(item) {
+            vec![key_node, self.map(&Type::ClassString(None))]
         } else {
-            vec![item_node]
+            vec![key_node, item_node]
         };
         for arg in &mut args {
             if let TypeNode::Array { generic_parent, .. } = arg {
-                *generic_parent = with_key;
+                *generic_parent = true;
             }
         }
         TypeNode::Generic {
@@ -231,9 +204,7 @@ fn is_generic_array_candidate(key: &Type, item: &Type) -> bool {
     if is_mixed(key) {
         return false;
     }
-    if is_class_string_array(key, item) {
-        return true;
-    }
+    // (`isClassStringArrayType()` needs a constant integer key, which a generalized type never has)
     // skip simple arrays, like "string[]", from converting to obvious "array<int, string>"
     if key.is_integer().yes() && !item.is_array().yes() {
         return false;
@@ -242,19 +213,10 @@ fn is_generic_array_candidate(key: &Type, item: &Type) -> bool {
     !matches!(key, Type::Never(_))
 }
 
-/// `isClassStringArrayType()`.
-fn is_class_string_array(key: &Type, item: &Type) -> bool {
-    (is_mixed(key) || matches!(key, Type::ConstInt(_))) && matches!(item, Type::ClassString(Some(_)))
-}
-
 /// `isPairClassTooDetailed()`: a union of more than three generic class strings.
 fn is_pair_class_too_detailed(item: &Type) -> bool {
-    match item {
-        Type::Union(types) | Type::Benevolent(types) => {
-            types.iter().all(|t| matches!(t, Type::ClassString(Some(_)))) && types.len() > 3
-        }
-        _ => false,
-    }
+    matches!(item, Type::Union(types) | Type::Benevolent(types)
+        if types.iter().all(|t| matches!(t, Type::ClassString(Some(_)))) && types.len() > 3)
 }
 
 /// `TypeNormalizer::generalizeConstantTypes()`.
@@ -330,14 +292,14 @@ fn generalize_union(types: &[Type]) -> Type {
     }
     let mut unique = uniquate_types(&generalized);
     if unique.len() > 1 {
-        let union = Type::Union(unique);
+        let union = Type::Union(unique.clone());
         let short = Mapper {
             short_objects: true,
         }
         .map(&union)
         .to_string();
-        if short.len() > MAX_PRINTED_UNION_DOC_LENGTH && !avoid_printed_docblock_trimming(&union) {
-            if let Some(array) = narrow_to_always_known_array_type(&union) {
+        if short.len() > MAX_PRINTED_UNION_DOC_LENGTH && !avoid_printed_docblock_trimming(&union, &unique) {
+            if let Some(array) = narrow_to_always_known_array_type(&unique) {
                 return array;
             }
             return mixed();
@@ -357,8 +319,7 @@ fn is_implicit_numbered_list_key_type(a: &ConstArray) -> bool {
 }
 
 /// `narrowToAlwaysKnownArrayType()`.
-fn narrow_to_always_known_array_type(union: &Type) -> Option<Type> {
-    let types = union_members(union);
+fn narrow_to_always_known_array_type(types: &[Type]) -> Option<Type> {
     if !types.iter().all(|t| t.is_array().yes()) {
         return None;
     }
@@ -374,9 +335,8 @@ fn shared_array_structure(types: &[Type]) -> Type {
         };
         arrays.push((key, item));
     }
-    let Some(((first_key, _), rest)) = arrays.split_first() else {
-        return mixed();
-    };
+    // (never empty: a union's arrays, or their items)
+    let ((first_key, _), rest) = arrays.split_first().expect("an array");
     let mut key = (*first_key).clone();
     for (other, _) in rest {
         key = intersect(vec![key, (*other).clone()]);
@@ -389,8 +349,7 @@ fn shared_array_structure(types: &[Type]) -> Type {
 }
 
 /// `avoidPrintedDocblockTrimming()`: a union of objects only (no constant scalars or arrays).
-fn avoid_printed_docblock_trimming(union: &Type) -> bool {
-    let types = union_members(union);
+fn avoid_printed_docblock_trimming(union: &Type, types: &[Type]) -> bool {
     if types.iter().any(|t| {
         matches!(
             t,
@@ -407,11 +366,96 @@ fn avoid_printed_docblock_trimming(union: &Type) -> bool {
     !union.object_class_names().is_empty()
 }
 
+/// `TypeFactory::createMixedPassedOrUnionType()` (`createMixedPassedOrUnionTypeAndKeepConstant()` with
+/// `keep_constant`): the types unwrapped and unique, as a `UnionType` of them as they are (not
+/// `TypeCombinator::union()`); `mixed` when there is none or any is `mixed`.
+pub fn create_mixed_passed_or_union_type(types: &[Type], keep_constant: bool) -> Type {
+    let mut unwrapped = Vec::new();
+    for t in types.iter().flat_map(flatten_types) {
+        match t {
+            Type::ConstArray(a) => unwrapped.extend(unwrap_constant_array_types(&a)),
+            t => unwrapped.push(t),
+        }
+    }
+    let mut types = uniquate(&unwrapped, keep_constant);
+    // `createUnionOrSingleType()`
+    match types.len() {
+        0 => mixed(),
+        1 => types.remove(0),
+        _ if types.iter().any(is_mixed) => mixed(),
+        _ => Type::Union(types),
+    }
+}
+
+/// `TypeUtils::flattenTypes()`: a union's members, a constant array as each of its arrays.
+fn flatten_types(t: &Type) -> Vec<Type> {
+    match t {
+        Type::Union(types) | Type::Benevolent(types) => types.iter().flat_map(flatten_types).collect(),
+        // too many variants: the array itself
+        Type::ConstArray(a) if a.optional.len() > 14 => vec![t.clone()],
+        Type::ConstArray(a) => all_arrays(a),
+        t => vec![t.clone()],
+    }
+}
+
+/// `ConstantArrayType::getAllArrays()`: the array with each combination of its optional keys present.
+fn all_arrays(a: &ConstArray) -> Vec<Type> {
+    let optional = &a.optional;
+    let n = optional.len();
+    let combinations: Vec<Vec<usize>> = if n <= 10 {
+        // `powerSet()`
+        (0..1usize << n)
+            .map(|i| (0..n).filter(|j| (i >> (n - 1 - j)) & 1 == 1).map(|j| optional[j]).collect())
+            .collect()
+    } else {
+        vec![vec![], vec![optional[0]], vec![optional[n - 1]], optional.clone()]
+    };
+    let required: Vec<usize> = (0..a.keys.len()).filter(|i| !optional.contains(i)).collect();
+    let mut arrays = Vec::new();
+    for combination in combinations {
+        let mut keys: Vec<usize> = required.iter().chain(&combination).copied().collect();
+        keys.sort_unstable();
+        // (a list's optional keys are its last ones, so every combination is a list)
+        let mut builder = ShapeBuilder::new();
+        for i in keys {
+            builder.set(Some(a.keys[i].clone()), a.values[i].clone(), false);
+        }
+        arrays.push(builder.get());
+    }
+    arrays
+}
+
+/// `unwrapConstantArrayTypes()`: an `array<key, item>` for each item type, by position.
+fn unwrap_constant_array_types(a: &ConstArray) -> Vec<Type> {
+    let keys = flatten_types(&const_array_key_type(a));
+    let mut unwrapped = Vec::new();
+    for (position, item) in flatten_types(&const_array_item_type(a)).into_iter().enumerate() {
+        let key = keys.get(position).cloned().unwrap_or_else(mixed);
+        match item {
+            Type::ConstArray(inner) => {
+                for inner in unwrap_constant_array_types(&inner) {
+                    // preserve outer array -> inner array structure: array<outerKey, innerArray>
+                    unwrapped.push(Type::array(key.clone(), inner));
+                }
+            }
+            item => unwrapped.push(Type::array(key, item)),
+        }
+    }
+    unwrapped
+}
+
 /// `TypeFactory::uniquateTypes()` (constants not kept): the types with their values removed, the later of two with
 /// the same hash in the place of the first.
 pub fn uniquate_types(types: &[Type]) -> Vec<Type> {
+    uniquate(types, false)
+}
+
+/// `TypeFactory::uniquateTypes()`; with `keep_constant`, a constant is kept unless its type without the value is
+/// there too.
+fn uniquate(types: &[Type], keep_constant: bool) -> Vec<Type> {
     let (mut has_false, mut has_true) = (false, false);
     let mut unique: Vec<(String, Type)> = Vec::new();
+    let mut constant_hashes: Vec<(String, String)> = Vec::new();
     for t in types {
         // `normalizeBooleanType()`
         let mut t = t.clone();
@@ -425,6 +469,7 @@ pub fn uniquate_types(types: &[Type]) -> Vec<Type> {
             t = Type::Bool;
         }
         // `removeValueFromConstantType()`
+        let t_before = t.clone();
         let removed = match t {
             Type::ConstFloat(_) => Type::Float,
             Type::ConstString(_) => Type::String,
@@ -432,10 +477,22 @@ pub fn uniquate_types(types: &[Type]) -> Vec<Type> {
             Type::ConstBool(_) => Type::Bool,
             t => t,
         };
-        let hash = type_hash(&removed);
+        let removed_hash = type_hash(&removed);
+        let (hash, t) = if keep_constant && removed != t_before {
+            let hash = type_hash(&t_before);
+            constant_hashes.push((hash.clone(), removed_hash));
+            (hash, t_before)
+        } else {
+            (removed_hash, removed)
+        };
         match unique.iter_mut().find(|(h, _)| *h == hash) {
-            Some(slot) => slot.1 = removed,
-            None => unique.push((hash, removed)),
+            Some(slot) => slot.1 = t,
+            None => unique.push((hash, t)),
+        }
+    }
+    for (constant, removed) in &constant_hashes {
+        if unique.iter().any(|(h, _)| h == removed) {
+            unique.retain(|(h, _)| h != constant);
         }
     }
     unique.into_iter().map(|(_, t)| t).collect()
@@ -494,6 +551,7 @@ fn generalize_nested(a: &ConstArray, fresh: bool, nesting: &Cell<u32>) -> TypeNo
             kind: "array".to_string(),
             items: vec![],
             sealed: true,
+            unsealed: String::new(),
         };
     }
     let item_node = match &item {

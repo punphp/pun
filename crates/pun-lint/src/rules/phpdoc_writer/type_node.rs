@@ -4,7 +4,7 @@
 
 use std::fmt;
 
-use pun_phpstan::phpdoc::{Node, ShapeKey};
+use pun_phpstan::phpdoc::{ConstExpr, Node, ShapeKey};
 
 /// A type node.
 #[derive(Clone, Debug, PartialEq)]
@@ -22,11 +22,18 @@ pub enum TypeNode {
     Union { types: Vec<TypeNode>, wrapped: bool },
     /// `BracketsAwareIntersectionTypeNode`.
     Intersection(Vec<TypeNode>),
-    /// `ArrayShapeNode`: `kind{key?: value, ...}`.
+    /// `ArrayShapeNode`: `kind{key?: value, ...}`; `unsealed` is the printed `<K, V>` of `...<K, V>`.
     Shape {
         kind: String,
         items: Vec<(Option<String>, bool, TypeNode)>,
         sealed: bool,
+        unsealed: String,
+    },
+    /// `SpacingAwareCallableTypeNode`: `callable(int):string`, its parameters printed.
+    Callable {
+        ident: String,
+        params: Vec<String>,
+        ret: Box<TypeNode>,
     },
     /// `NullableTypeNode`.
     Nullable(Box<TypeNode>),
@@ -40,7 +47,7 @@ impl TypeNode {
     }
 
     /// The node phpdoc-parser parses from `node`, as Rector's `PhpDocNodeMapper` leaves it. `None` for a node Pun
-    /// does not print as Rector does (a constant, a callable, a conditional).
+    /// does not print as Rector does (a quoted string, an object shape, a conditional, an offset access).
     pub fn from_parsed(node: &Node) -> Option<TypeNode> {
         from_parsed(node, false)
     }
@@ -56,7 +63,7 @@ fn from_parsed(node: &Node, in_array: bool) -> Option<TypeNode> {
         Node::Ident(name) => TypeNode::Identifier(name.clone()),
         Node::This => TypeNode::ident("$this"),
         Node::Nullable(inner) => TypeNode::Nullable(Box::new(from_parsed(inner, false)?)),
-        // `UnionTypeNodePhpDocNodeVisitor`: a union inside `[]` is wrapped in parentheses
+        // `UnionTypeNodePhpDocNodeVisitor`: a union written in parentheses (inside `[]`, a callable's return) is wrapped
         Node::Union(types) => TypeNode::Union {
             types: types
                 .iter()
@@ -85,22 +92,56 @@ fn from_parsed(node: &Node, in_array: bool) -> Option<TypeNode> {
             kind,
             items,
             sealed,
-            unsealed: None,
+            unsealed,
         } => TypeNode::Shape {
             kind: kind.clone(),
             items: items
                 .iter()
                 .map(|i| {
+                    // (a quoted key is printed in its own quotes, which Pun's node does not keep)
                     let key = match &i.key {
                         None => None,
                         Some(ShapeKey::Int(k) | ShapeKey::Ident(k)) => Some(k.clone()),
-                        Some(_) => return None,
+                        Some(ShapeKey::Fetch(class, name)) => Some(format!("{class}::{name}")),
+                        Some(ShapeKey::Str(_)) => return None,
                     };
                     Some((key, i.optional, from_parsed(&i.value, false)?))
                 })
                 .collect::<Option<_>>()?,
             sealed: *sealed,
+            // `ArrayShapeUnsealedTypeNode`
+            unsealed: match unsealed {
+                None => String::new(),
+                Some((None, value)) => format!("<{}>", from_parsed(value, false)?),
+                Some((Some(key), value)) => {
+                    format!("<{}, {}>", from_parsed(key, false)?, from_parsed(value, false)?)
+                }
+            },
         },
+        // `CallableTypePhpDocNodeVisitor`: without its templates
+        Node::Callable { ident, params, ret, .. } => TypeNode::Callable {
+            ident: ident.clone(),
+            // `CallableTypeParameterNode`
+            params: params
+                .iter()
+                .map(|p| {
+                    let printed = format!(
+                        "{} {}{}{}",
+                        from_parsed(&p.ty, false)?,
+                        if p.by_ref { "&" } else { "" },
+                        if p.variadic { "..." } else { "" },
+                        p.name
+                    );
+                    Some(format!("{}{}", printed.trim(), if p.optional { "=" } else { "" }))
+                })
+                .collect::<Option<_>>()?,
+            // a union return is written in parentheses
+            ret: Box::new(from_parsed(ret, true)?),
+        },
+        // `ConstTypeNode`: a number or `Class::NAME` (`true`, `false`, `null` and `NAME` are identifiers, and an
+        // array is no type; a string is printed in its own quotes, which Pun's node does not keep)
+        Node::Const(ConstExpr::Int(v) | ConstExpr::Float(v)) => TypeNode::Raw(v.clone()),
+        Node::Const(ConstExpr::Fetch(class, name)) => TypeNode::Raw(format!("{class}::{name}")),
         _ => return None,
     })
 }
@@ -138,6 +179,7 @@ impl fmt::Display for TypeNode {
                 kind,
                 items,
                 sealed,
+                unsealed,
             } => {
                 let mut printed: Vec<String> = items
                     .iter()
@@ -147,11 +189,26 @@ impl fmt::Display for TypeNode {
                     })
                     .collect();
                 if !sealed {
-                    printed.push("...".to_string());
+                    printed.push(format!("...{unsealed}"));
                 }
                 write!(f, "{kind}{{{}}}", printed.join(", "))
             }
             TypeNode::Nullable(inner) => write!(f, "?{inner}"),
+            TypeNode::Callable { ident, params, ret } => {
+                let mut ret = ret.to_string();
+                if ret.contains('|') {
+                    ret = format!("({ret})");
+                }
+                // `normalizeParameterType()`, `normalizeReturnType()`
+                let params = params.join(", ");
+                let params = match (params.is_empty(), ret.as_str()) {
+                    (false, _) => format!("({params})"),
+                    (true, "mixed") => String::new(),
+                    (true, _) => "()".to_string(),
+                };
+                let ret = if ret != "mixed" || !params.is_empty() { format!(":{ret}") } else { String::new() };
+                write!(f, "{ident}{params}{ret}")
+            }
         }
     }
 }

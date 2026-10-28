@@ -100,49 +100,45 @@ pub(crate) fn class_name(ancestors: &[Node<'_, '_>]) -> Option<String> {
     class_scope(ancestors).and_then(|s| s.name)
 }
 
-/// The report of a rule that changed `info`, the doc comment of `target`.
+/// The report of a rule that changed `info`, the doc comment of `target`; `None` when the printed doc leaves the
+/// source as it is (Rector rewrites a not useful `mixed[]` tag with the same `mixed[]`).
 pub(crate) fn doc_report(
     span: Span,
     message: &str,
     source: &str,
     target: &DocTarget,
     info: &PhpDocInfo,
-) -> Report {
-    let edit: Edit = target.edit(source, &info.print());
-    Report {
+) -> Option<Report> {
+    report(span, message, source, vec![target.edit(source, &info.print())])
+}
+
+/// The report of a rule that changed the doc comments `changes` (a target and its changed doc each); `None` when
+/// none of them changes the source.
+pub(crate) fn docs_report(
+    span: Span,
+    message: &str,
+    source: &str,
+    changes: &[(DocTarget, PhpDocInfo)],
+) -> Option<Report> {
+    let edits = changes
+        .iter()
+        .map(|(target, info)| target.edit(source, &info.print()))
+        .collect();
+    report(span, message, source, edits)
+}
+
+/// The report with the `edits` that change the source, if any does.
+fn report(span: Span, message: &str, source: &str, mut edits: Vec<Edit>) -> Option<Report> {
+    edits.retain(|edit| source[edit.span.start..edit.span.end] != edit.text);
+    (!edits.is_empty()).then(|| Report {
         span,
         message: message.to_string(),
         help: None,
         fix: Some(Fix {
             safety: Safety::Unsafe,
-            edits: vec![edit],
+            edits,
         }),
-    }
-}
-
-/// The report of a rule that changed the doc comments `changes` (a target and its changed doc each).
-pub(crate) fn docs_report(span: Span, message: &str, source: &str, changes: &[(DocTarget, PhpDocInfo)]) -> Report {
-    Report {
-        span,
-        message: message.to_string(),
-        help: None,
-        fix: Some(Fix {
-            safety: Safety::Unsafe,
-            edits: changes
-                .iter()
-                .map(|(target, info)| target.edit(source, &info.print()))
-                .collect(),
-        }),
-    }
-}
-
-/// Where a class's report points: its name, or `class` of an anonymous class.
-pub(crate) fn class_span(node: Node<'_, '_>) -> Span {
-    match node {
-        Node::Class(c) => node_span(&c.name),
-        Node::AnonymousClass(c) => node_span(&c.class),
-        _ => node_span(&node),
-    }
+    })
 }
 
 /// `Type::getReferencedClasses()`.
@@ -153,7 +149,7 @@ pub(crate) fn referenced_classes(t: &Type) -> Vec<String> {
             out.extend(args.iter().flat_map(referenced_classes));
             out
         }
-        Type::EnumCase(name, _) => vec![name.clone()],
+        Type::EnumCase(name, _) | Type::This(name) => vec![name.clone()],
         Type::ClassString(Some(inner)) => referenced_classes(inner),
         Type::Union(types) | Type::Benevolent(types) | Type::Intersection(types) => {
             types.iter().flat_map(referenced_classes).collect()
@@ -168,13 +164,14 @@ pub(crate) fn referenced_classes(t: &Type) -> Vec<String> {
     }
 }
 
-/// A class's members (`Class_`, an anonymous class too).
+/// A class's members (`Class_`, an anonymous class too), whether it is anonymous, and where its report points (its
+/// name, or `class` of an anonymous class).
 pub(crate) fn class_members<'ast, 'arena>(
     node: Node<'ast, 'arena>,
-) -> Option<(&'ast Sequence<'arena, ClassLikeMember<'arena>>, bool)> {
+) -> Option<(&'ast Sequence<'arena, ClassLikeMember<'arena>>, bool, Span)> {
     match node {
-        Node::Class(c) => Some((&c.members, false)),
-        Node::AnonymousClass(c) => Some((&c.members, true)),
+        Node::Class(c) => Some((&c.members, false, node_span(&c.name))),
+        Node::AnonymousClass(c) => Some((&c.members, true, node_span(&c.class))),
         _ => None,
     }
 }

@@ -35,9 +35,7 @@ impl Rule for AddParamPhpdocFromDimFetch {
             return;
         };
         let target = f.target(ctx.source);
-        let Some(mut info) = target.info(ctx.source) else {
-            return;
-        };
+        let mut info = target.info(ctx.source);
         let mut scope = ancestors.to_vec();
         scope.push(node);
         let mut changed = false;
@@ -90,7 +88,7 @@ impl Rule for AddParamPhpdocFromDimFetch {
             changed = true;
         }
         if changed {
-            out.push(doc_report(
+            out.extend(doc_report(
                 f.name,
                 "Add the `@param` array key type from the parameter's reads.",
                 ctx.source,

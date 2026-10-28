@@ -6,7 +6,7 @@ use mago_syntax::cst::{Node, NodeKind};
 
 use super::MAGIC;
 use super::docblock::{
-    class_members, class_name, class_span, docs_report, is_array_hint, method_statements, methods,
+    class_members, class_name, docs_report, is_array_hint, method_statements, methods,
     properties, returned_this_property,
 };
 use crate::rules::phpdoc_writer::type_mapper::is_useful_array_tag;
@@ -32,7 +32,7 @@ impl Rule for AddVarPhpdocFromGetter {
         ctx: &Context<'_>,
         out: &mut Vec<Report>,
     ) {
-        let Some((members, _)) = class_members(node) else {
+        let Some((members, _, span)) = class_members(node) else {
             return;
         };
         let mut scope = ancestors.to_vec();
@@ -45,9 +45,7 @@ impl Rule for AddVarPhpdocFromGetter {
                 continue;
             }
             let target = DocTarget::of(ctx.source, property.start);
-            let Some(mut info) = target.info(ctx.source) else {
-                continue;
-            };
+            let mut info = target.info(ctx.source);
             // type is already known, skip it
             if is_useful_array_tag(info.var_tag().map(|t| &t.ty)) {
                 continue;
@@ -62,10 +60,7 @@ impl Rule for AddVarPhpdocFromGetter {
             let Some(getter) = getter else {
                 continue;
             };
-            let Some(getter_info) = DocTarget::of(ctx.source, node_span(getter).start).info(ctx.source)
-            else {
-                continue;
-            };
+            let getter_info = DocTarget::of(ctx.source, node_span(getter).start).info(ctx.source);
             let Some(tag) = getter_info.return_tag() else {
                 continue;
             };
@@ -75,8 +70,8 @@ impl Rule for AddVarPhpdocFromGetter {
             }
         }
         if !changes.is_empty() {
-            out.push(docs_report(
-                class_span(node),
+            out.extend(docs_report(
+                span,
                 "Add the `@var` array type of the property from its getter's `@return`.",
                 ctx.source,
                 &changes,

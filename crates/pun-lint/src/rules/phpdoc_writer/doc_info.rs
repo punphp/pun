@@ -48,16 +48,15 @@ pub struct TypedValue {
 pub enum TagValue {
     /// `@param`, `@var` or `@return` with a type.
     Typed(TypedValue),
-    /// `InvalidTagValueNode`: a value its tag's parser rejects.
-    Invalid,
-    /// Any other value, never reprinted.
+    /// Any other value, never reprinted: an untyped tag, or one its tag's parser rejects (`InvalidTagValueNode`, which
+    /// Rector's `DoctrineAnnotationDecorator` turns into a generic tag).
     Other,
 }
 
 #[derive(Clone, Debug)]
 pub enum ChildNode {
-    /// `PhpDocTextNode`, `empty` when its text is `''`.
-    Text { empty: bool },
+    /// `PhpDocTextNode`.
+    Text,
     /// `PhpDocTagNode`.
     Tag { name: String, value: TagValue },
 }
@@ -72,34 +71,33 @@ struct Child {
 }
 
 impl Child {
-    /// `(string) $phpDocChildNode` of a reprinted child.
-    fn print(&self) -> String {
+    /// The tag's name and typed value, when it is a typed tag.
+    fn typed(&self) -> Option<(&str, &TypedValue)> {
         match &self.node {
             ChildNode::Tag {
                 name,
                 value: TagValue::Typed(v),
-            } => {
-                let value = match name.as_str() {
-                    "@param" => format!(
-                        "{} {}{}{} {}",
-                        v.ty,
-                        if v.is_reference { "&" } else { "" },
-                        if v.is_variadic { "..." } else { "" },
-                        v.variable,
-                        v.description
-                    ),
-                    "@var" => format!(
-                        "{} {}",
-                        v.ty,
-                        format!("{} {}", v.variable, v.description).trim()
-                    ),
-                    _ => format!("{} {}", v.ty, v.description),
-                };
-                format!("{name} {}", value.trim()).trim().to_string()
-            }
-            // only typed tags are ever changed or added
-            _ => String::new(),
+            } => Some((name, v)),
+            _ => None,
         }
+    }
+
+    /// `(string) $phpDocChildNode` of a reprinted child: only typed tags are ever changed or added.
+    fn print(&self) -> String {
+        let (name, v) = self.typed().expect("a changed or added child is a typed tag");
+        let value = match name {
+            "@param" => format!(
+                "{} {}{}{} {}",
+                v.ty,
+                if v.is_reference { "&" } else { "" },
+                if v.is_variadic { "..." } else { "" },
+                v.variable,
+                v.description
+            ),
+            "@var" => format!("{} {}", v.ty, format!("{} {}", v.variable, v.description).trim()),
+            _ => format!("{} {}", v.ty, v.description),
+        };
+        format!("{name} {}", value.trim()).trim().to_string()
     }
 }
 
@@ -132,37 +130,31 @@ impl PhpDocInfo {
         }
     }
 
-    /// `PhpDocInfoFactory::createFromNode()` of a node whose doc comment is `text`. `None` where Pun does not read
-    /// the doc as phpdoc-parser does: a typed tag whose type spans lines.
-    pub fn parse(text: &str) -> Option<PhpDocInfo> {
+    /// `PhpDocInfoFactory::createFromNode()` of a node whose doc comment is `text`.
+    pub fn parse(text: &str) -> PhpDocInfo {
         let tokens = lex(text);
-        let mut children = Vec::new();
-        for (start, end) in child_ranges(text, &tokens) {
-            let node = child_node(text, &tokens, start, end)?;
-            children.push(Child {
+        let children = child_ranges(text, &tokens)
+            .into_iter()
+            .map(|(start, end)| Child {
                 start_end: Some((start, end)),
-                node,
+                node: child_node(text, &tokens, start, end),
                 changed: false,
-            });
-        }
-        Some(PhpDocInfo {
+            })
+            .collect::<Vec<_>>();
+        PhpDocInfo {
             text: text.to_string(),
             single_line: !tokens.iter().any(|t| t.0 == Kind::Eol),
             last_token_position: children.last().and_then(|c| c.start_end).map(|(_, e)| e),
             tokens,
             children,
-        })
+        }
     }
 
     /// The typed values of the tags named `name`, in order (`PhpDocNode::getReturnTagValues()` and its kin).
     fn typed(&self, name: &str) -> impl Iterator<Item = &TypedValue> {
-        self.children.iter().filter_map(move |c| match &c.node {
-            ChildNode::Tag {
-                name: n,
-                value: TagValue::Typed(v),
-            } if n == name => Some(v),
-            _ => None,
-        })
+        self.children
+            .iter()
+            .filter_map(move |c| c.typed().filter(|(n, _)| *n == name).map(|(_, v)| v))
     }
 
     /// `getReturnTagValue()`.
@@ -179,13 +171,6 @@ impl PhpDocInfo {
     pub fn param_tag(&self, name: &str) -> Option<&TypedValue> {
         let wanted = format!("${}", name.trim_start_matches('$'));
         self.typed("@param").find(|v| v.variable == wanted)
-    }
-
-    /// `hasInvalidTag()`.
-    pub fn has_invalid_tag(&self, name: &str) -> bool {
-        self.children.iter().any(|c| {
-            matches!(&c.node, ChildNode::Tag { name: n, value: TagValue::Invalid } if n == name)
-        })
     }
 
     /// The type of the tag named `name` (and naming `$variable`) set to `ty`, as `PhpDocTypeChanger` does: an existing
@@ -254,29 +239,15 @@ impl PhpDocInfo {
         self.print_format_preserving()
     }
 
-    /// `PhpDocInfoPrinter::printNew()`: `(string) $phpDocNode`, inlined when single-line.
+    /// `PhpDocInfoPrinter::printNew()`: `(string) $phpDocNode`.
     fn print_new(&self) -> String {
-        let children: Vec<String> = self
-            .children
-            .iter()
-            .map(|c| {
-                let s = c.print();
-                if s.is_empty() { s } else { format!(" {s}") }
-            })
-            .collect();
-        let doc = format!("/**\n *{}\n */", children.join("\n *"));
-        if self.single_line {
-            // `DocBlockInliner::inline()`
-            return doc.replace("\n * ", " ").replace("\n */", " */");
-        }
-        doc
+        let children: Vec<String> = self.children.iter().map(|c| format!(" {}", c.print())).collect();
+        // (never inlined: `addPhpDocTagNode()` made it multi-line)
+        format!("/**\n *{}\n */", children.join("\n *"))
     }
 
     /// `PhpDocInfoPrinter::printFormatPreserving()`.
     fn print_format_preserving(&self) -> String {
-        if self.tokens.is_empty() {
-            return String::new();
-        }
         let mut printer = Printer {
             info: self,
             current: 0,
@@ -296,14 +267,7 @@ impl Printer<'_> {
     /// `printPhpDocNode()`.
     fn print_doc(&mut self) -> String {
         let info = self.info;
-        // `EmptyPhpDocDetector`: only empty texts
-        if info
-            .children
-            .iter()
-            .all(|c| matches!(c.node, ChildNode::Text { empty: true }))
-        {
-            return String::new();
-        }
+        // (`EmptyPhpDocDetector` never finds a changed doc empty: it has the changed tag)
         let mut output = String::new();
         let count = info.children.len();
         for (key, child) in info.children.iter().enumerate() {
@@ -313,34 +277,24 @@ impl Printer<'_> {
         if !["//", "/**", "/*", "#"].iter().any(|s| output.starts_with(s)) && !output.is_empty() {
             output.insert_str(0, "/**");
         }
-        if output.starts_with("/**") && !output.trim_end().ends_with("*/") {
-            output.push_str(" */");
-        }
+        // (the doc's own `*/` is always printed)
         output.replace(" \r\n", "\r\n").replace(" \n", "\n")
     }
 
     /// `printDocChildNode()`.
+    /// Only typed tags are changed, and a child Rector added is changed.
     fn print_child(&mut self, child: &Child, key: usize, count: usize) -> String {
-        let reprint = child.changed;
-        if reprint
-            && matches!(&child.node, ChildNode::Tag { value: TagValue::Typed(_), .. })
-        {
+        if child.changed {
             if let Some((_, end)) = child.start_end {
                 self.current = end;
             }
             return self.standard_print(child);
         }
-        if let Some((start, end)) = child.start_end {
-            if !reprint {
-                let is_last = count == key;
-                self.correct_previously_reprinted_first_node(key, start);
-                let output = self.add_tokens_from_to(String::new(), self.current, end, is_last);
-                self.current = end;
-                return output.trim_end_matches([' ', '\t', '\n', '\r', '\0', '\x0B']).to_string();
-            }
-            self.current = end;
-        }
-        self.standard_print(child)
+        let (_, end) = child.start_end.expect("an unchanged child was read");
+        // (`correctPreviouslyReprintedFirstNode()` never moves back: every child before set the position)
+        let output = self.add_tokens_from_to(String::new(), self.current, end, count == key);
+        self.current = end;
+        output.trim_end_matches([' ', '\t', '\n', '\r', '\0', '\x0B']).to_string()
     }
 
     /// `printEnd()`.
@@ -371,29 +325,14 @@ impl Printer<'_> {
         output
     }
 
-    /// `correctPreviouslyReprintedFirstNode()`.
-    fn correct_previously_reprinted_first_node(&mut self, key: usize, start: usize) {
-        if self.current != 0 || key == 1 || start == 0 {
-            return;
-        }
-        let mut start = start;
-        if self.info.tokens[start - 1].0 == Kind::Eol {
-            start -= 1;
-        }
-        self.current = start;
-    }
-
     /// `standardPrintPhpDocChildNode()`.
     fn standard_print(&self, child: &Child) -> String {
         let printed = child.print();
         if self.info.single_line {
             return format!(" {printed}");
         }
-        if printed.is_empty() {
-            "\n *".to_string()
-        } else {
-            format!("\n * {printed}")
-        }
+        // (a typed tag never prints empty)
+        format!("\n * {printed}")
     }
 }
 
@@ -538,27 +477,32 @@ fn child_end(text: &str, tokens: &[(Kind, usize, usize)], start: usize) -> usize
     last.unwrap_or(start)
 }
 
-/// The child node of the tokens `[start, end)`. `None` for a typed tag Pun does not read as phpdoc-parser does.
-fn child_node(text: &str, tokens: &[(Kind, usize, usize)], start: usize, end: usize) -> Option<ChildNode> {
+/// The child node of the tokens `[start, end)`.
+fn child_node(text: &str, tokens: &[(Kind, usize, usize)], start: usize, end: usize) -> ChildNode {
     let first = &text[tokens[start].1..tokens[start].2];
     let Some(name) = tokens
         .get(start)
         .filter(|t| t.0 == Kind::Other)
         .and_then(|_| tag_name(first))
     else {
-        let empty = tokens[start..end].iter().all(|t| matches!(t.0, Kind::Ws | Kind::Eol));
-        return Some(ChildNode::Text { empty });
+        return ChildNode::Text;
     };
     let value = if TYPED.contains(&name) {
         let value_start = tokens[start].1 + name.len();
-        typed_value(text, tokens, name, value_start, tokens[end].1)?
+        typed_value(text, tokens, name, value_start, tokens[end].1)
     } else {
         TagValue::Other
     };
-    Some(ChildNode::Tag {
+    ChildNode::Tag {
         name: name.to_string(),
         value,
-    })
+    }
+}
+
+/// Whether `text` starts with the variable `$this` (`TOKEN_THIS_VARIABLE`).
+fn is_this_variable(text: &str) -> bool {
+    text.strip_prefix("$this")
+        .is_some_and(|after| !after.bytes().next().is_some_and(|c| c.is_ascii_alphanumeric() || c == b'_' || c >= 0x80))
 }
 
 /// A `@param`, `@var` or `@return` value, from `from` to `to` (bytes of the doc).
@@ -568,22 +512,18 @@ fn typed_value(
     name: &str,
     from: usize,
     to: usize,
-) -> Option<TagValue> {
+) -> TagValue {
     let value = &text[from..to];
-    let line_end = value.find(['\r', '\n']).unwrap_or(value.len());
     let leading = value.len() - value.trim_start_matches([' ', '\t']).len();
     let rest = &value[leading..];
     // a typeless `@param $a`
-    if name == "@param" && (rest.starts_with('$') || rest.starts_with('&') || rest.starts_with("...")) {
-        return Some(TagValue::Other);
+    if name == "@param" && ((rest.starts_with('$') && !is_this_variable(rest)) || rest.starts_with('&') || rest.starts_with("...")) {
+        return TagValue::Other;
     }
     let Ok((parsed, offset)) = phpdoc::parse_prefix(rest) else {
-        return Some(TagValue::Invalid);
+        return TagValue::Other;
     };
     let type_text = rest[..offset].trim_end_matches([' ', '\t']);
-    if leading + type_text.len() > line_end {
-        return None;
-    }
     let ty = TypeNode::from_parsed(&parsed).unwrap_or_else(|| TypeNode::Raw(type_text.to_string()));
     let mut at = leading + type_text.len();
     let preceded_by_ws = |at: usize| at > 0 && matches!(value.as_bytes()[at - 1], b' ' | b'\t');
@@ -609,7 +549,7 @@ fn typed_value(
             }
             // `parseRequiredVariableName()`: a `TOKEN_VARIABLE`, which `$this` is not
             let Some(len) = variable_len(&value[at..]).filter(|len| &value[at..at + len] != "$this") else {
-                return Some(TagValue::Invalid);
+                return TagValue::Other;
             };
             variable = value[at..at + len].to_string();
             at += len;
@@ -629,11 +569,9 @@ fn typed_value(
     let next = skip(at);
     if limit_start {
         let starts = &value[next..];
-        if starts.starts_with('|') || starts.starts_with('&') {
-            return Some(TagValue::Invalid);
-        }
+        // (a `TOKEN_UNION` or `TOKEN_INTERSECTION` never follows the type: the type parser takes it or fails)
         if next < value.len() && !starts.starts_with(['\r', '\n']) && !preceded_by_ws(next) {
-            return Some(TagValue::Invalid);
+            return TagValue::Other;
         }
     }
     // the description's lines joined by "\n" (each line break with the next line's `*` and one space), then
@@ -653,12 +591,12 @@ fn typed_value(
         .trim_matches([' ', '\t'])
         .trim_end_matches('\n')
         .replace('\n', "\n * ");
-    Some(TagValue::Typed(TypedValue {
+    TagValue::Typed(TypedValue {
         ty,
         parsed: Some(parsed),
         variable,
         is_reference,
         is_variadic,
         description,
-    }))
+    })
 }

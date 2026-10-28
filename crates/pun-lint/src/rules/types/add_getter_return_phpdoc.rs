@@ -5,11 +5,13 @@
 use mago_syntax::cst::{Node, NodeKind};
 
 use super::docblock::{
-    class_members, class_name, class_span, docs_report, is_array_hint, method, methods, properties,
+    class_members, class_name, docs_report, is_array_hint, method, methods, properties,
     returned_this_property,
 };
 use crate::rules::phpdoc_writer::type_mapper::is_useful_array_tag;
-use crate::rules::phpdoc_writer::{DocTarget, TypeNode, decorate_return_node};
+use pun_phpstan::phpdoc::Node as DocNode;
+
+use crate::rules::phpdoc_writer::{DocTarget, decorate_return_node};
 use crate::syntax::node_span;
 use crate::{Context, Report, Rule};
 
@@ -31,7 +33,7 @@ impl Rule for AddGetterReturnPhpdoc {
         ctx: &Context<'_>,
         out: &mut Vec<Report>,
     ) {
-        let Some((members, false)) = class_members(node) else {
+        let Some((members, false, span)) = class_members(node) else {
             return;
         };
         let mut scope = ancestors.to_vec();
@@ -43,9 +45,7 @@ impl Rule for AddGetterReturnPhpdoc {
                 continue;
             }
             let target = DocTarget::of(ctx.source, node_span(m).start);
-            let Some(mut info) = target.info(ctx.source) else {
-                continue;
-            };
+            let mut info = target.info(ctx.source);
             if is_useful_array_tag(info.return_tag().map(|t| &t.ty)) {
                 continue;
             }
@@ -66,14 +66,12 @@ impl Rule for AddGetterReturnPhpdoc {
                     node_span(param).start
                 }
             };
-            let Some(property_info) = DocTarget::of(ctx.source, start).info(ctx.source) else {
-                continue;
-            };
+            let property_info = DocTarget::of(ctx.source, start).info(ctx.source);
             let Some(var) = property_info.var_tag() else {
                 continue;
             };
             // is type useful?
-            if !matches!(var.ty, TypeNode::Generic { .. } | TypeNode::Array { .. }) {
+            if !matches!(var.parsed, Some(DocNode::Generic { .. } | DocNode::Array(_))) {
                 continue;
             }
             let t = DocTarget::doc_type(var, &scope, class.as_deref());
@@ -82,8 +80,8 @@ impl Rule for AddGetterReturnPhpdoc {
             }
         }
         if !changes.is_empty() {
-            out.push(docs_report(
-                class_span(node),
+            out.extend(docs_report(
+                span,
                 "Add the `@return` array type of the getter from its property's `@var`.",
                 ctx.source,
                 &changes,

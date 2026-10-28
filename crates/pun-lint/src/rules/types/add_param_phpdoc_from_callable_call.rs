@@ -6,9 +6,9 @@
 use mago_syntax::cst::{Argument, Call, Expression, FunctionLikeParameterList, Hint, Node, NodeKind};
 use pun_phpstan::types::{Type, mixed, union};
 
-use super::docblock::{FunctionLike, doc_report, is_array_hint, variable_name};
+use super::docblock::{FunctionLike, class_name, doc_report, is_array_hint, variable_name};
 use super::names::resolve_class_name;
-use crate::rules::phpdoc_writer::type_mapper::is_mixed;
+use crate::rules::phpdoc_writer::type_mapper::{create_mixed_passed_or_union_type, is_mixed};
 use crate::rules::phpdoc_writer::{change_param_type, native_expr_type};
 use crate::syntax::node_span;
 use crate::{Context, Report, Rule};
@@ -49,9 +49,7 @@ impl Rule for AddParamPhpdocFromCallableCall {
             return;
         }
         let target = f.target(ctx.source);
-        let Some(mut info) = target.info(ctx.source) else {
-            return;
-        };
+        let mut info = target.info(ctx.source);
         // `collectVariableNamesWithArrayType()`: the `array` parameters without a `@param` tag
         let names: Vec<String> = f
             .parameters
@@ -113,7 +111,9 @@ impl Rule for AddParamPhpdocFromCallableCall {
                 None => params_with_type.push((name.to_string(), vec![param_type])),
             }
         });
-        let mut changed = false;
+        if params_with_type.is_empty() {
+            return;
+        }
         for (name, types) in params_with_type {
             let t = if types.len() > 1 { union(types) } else { types.into_iter().next().unwrap() };
             let variadic = f
@@ -122,12 +122,9 @@ impl Rule for AddParamPhpdocFromCallableCall {
                 .iter()
                 .find(|p| &p.variable.name[1..] == name.as_bytes())
                 .is_some_and(|p| p.ellipsis.is_some());
-            changed |= change_param_type(&mut info, None, &Type::array(mixed(), t), &name, variadic);
+            change_param_type(&mut info, &Type::array(mixed(), t), &name, variadic);
         }
-        if !changed {
-            return;
-        }
-        out.push(doc_report(
+        out.extend(doc_report(
             f.name,
             "Add the `@param` array type from the callback's parameter type.",
             ctx.source,
@@ -170,10 +167,26 @@ fn hint_type(scope: &[Node<'_, '_>], hint: &Hint<'_>) -> Option<Type> {
         Hint::Float(_) => Type::Float,
         Hint::Bool(_) => Type::Bool,
         Hint::Array(_) => Type::array(mixed(), mixed()),
-        Hint::Mixed(_) => Type::Mixed { explicit: true },
+        // (`void`, `never` and `static` are no parameter types)
+        Hint::Mixed(_) | Hint::Void(_) | Hint::Never(_) | Hint::Static(_) => Type::Mixed { explicit: true },
+        Hint::Null(_) => Type::Null,
+        Hint::True(_) => Type::ConstBool(true),
+        Hint::False(_) => Type::ConstBool(false),
+        Hint::Iterable(_) => Type::Iterable(Box::new(mixed()), Box::new(mixed())),
+        Hint::Callable(_) => Type::Callable(None),
+        Hint::Parenthesized(p) => hint_type(scope, p.hint)?,
+        // `IntersectionTypeNodeMapper`
+        Hint::Intersection(i) => Type::Intersection(vec![hint_type(scope, i.left)?, hint_type(scope, i.right)?]),
         Hint::Object(_) => Type::ObjectWithoutClass,
         Hint::Nullable(n) => union(vec![hint_type(scope, n.hint)?, Type::Null]),
-        _ => return None,
+        // `UnionTypeNodeMapper`
+        Hint::Union(u) => {
+            create_mixed_passed_or_union_type(&[hint_type(scope, u.left)?, hint_type(scope, u.right)?], true)
+        }
+        // `NameNodeMapper`: `self` of a class is a `SelfStaticType`, printed `$this`
+        Hint::Self_(_) => Type::This(class_name(scope)?),
+        // `ParentStaticType`, printed `static`
+        Hint::Parent(_) => Type::Static(class_name(scope)?, vec![]),
     })
 }
 

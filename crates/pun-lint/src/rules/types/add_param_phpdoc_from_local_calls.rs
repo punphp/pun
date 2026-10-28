@@ -14,7 +14,8 @@ use super::docblock::{class_name, docs_report, is_array_hint, is_this, methods};
 use super::facts::facts;
 use super::names::resolve_class_name;
 use crate::rules::phpdoc_writer::type_mapper::{
-    const_array_item_type, const_array_key_type, is_mixed, is_mixed_array, is_useful_array_tag, uniquate_types,
+    create_mixed_passed_or_union_type,
+    const_array_item_type, const_array_key_type, is_mixed, is_mixed_array, is_useful_array_tag,
 };
 use crate::rules::phpdoc_writer::{DocTarget, decorate_param, expr_type};
 use crate::syntax::node_span;
@@ -43,9 +44,7 @@ impl Rule for AddParamPhpdocFromLocalCalls {
         };
         let mut scope = ancestors.to_vec();
         scope.push(node);
-        let Some(class_name) = class_name(&scope) else {
-            return;
-        };
+        let class_name = class_name(&scope).expect("a class has a name");
         let mut changes = Vec::new();
         for method in methods(&class.members) {
             let params = &method.parameter_list.parameters;
@@ -53,9 +52,7 @@ impl Rule for AddParamPhpdocFromLocalCalls {
                 continue;
             }
             let target = DocTarget::of(ctx.source, node_span(method).start);
-            let Some(mut info) = target.info(ctx.source) else {
-                continue;
-            };
+            let mut info = target.info(ctx.source);
             let name = String::from_utf8_lossy(method.name.value);
             let calls = local_method_calls(ctx, &scope, class, &class_name, &name);
             let types = resolve_types_from_calls(ctx, &scope, &calls);
@@ -91,7 +88,7 @@ impl Rule for AddParamPhpdocFromLocalCalls {
             }
         }
         if !changes.is_empty() {
-            out.push(docs_report(
+            out.extend(docs_report(
                 node_span(&class.name),
                 "Add the `@param` array types from the class's own calls.",
                 ctx.source,
@@ -241,7 +238,7 @@ fn normalize_type(ctx: &Context<'_>, t: Type) -> Type {
 /// back: its loop tests the first type against itself too.)
 fn union_to_single_type(types: Vec<Type>) -> Type {
     let types: Vec<Type> = types.into_iter().filter(|t| !is_array_mixed_mixed_type(t)).collect();
-    let united = create_mixed_passed_or_union_type(&types);
+    let united = create_mixed_passed_or_union_type(&types, false);
     if let Type::Union(members) = &united
         && members
             .iter()
@@ -261,60 +258,4 @@ fn is_array_mixed_mixed_type(t: &Type) -> bool {
     };
     let mixed_or_never = |t: &Type| is_mixed(t) || matches!(t, Type::Never(_));
     mixed_or_never(&item) && mixed_or_never(&key)
-}
-
-/// `TypeFactory::createMixedPassedOrUnionType()`.
-fn create_mixed_passed_or_union_type(types: &[Type]) -> Type {
-    let mut unwrapped = Vec::new();
-    for t in types {
-        for flat in flatten_types(t) {
-            match flat {
-                Type::ConstArray(a) => unwrapped.extend(unwrap_constant_array_types(&a)),
-                t => unwrapped.push(t),
-            }
-        }
-    }
-    let unique = uniquate_types(&unwrapped);
-    // `createUnionOrSingleType()`
-    match unique.len() {
-        0 => mixed(),
-        1 => unique.into_iter().next().expect("one type"),
-        _ if unique.iter().any(is_mixed) => mixed(),
-        _ => Type::Union(unique),
-    }
-}
-
-/// `TypeUtils::flattenTypes()`. A constant array with optional keys (`getAllArrays()`) stands for `mixed`.
-fn flatten_types(t: &Type) -> Vec<Type> {
-    let members = match t {
-        Type::Union(types) | Type::Benevolent(types) => types.clone(),
-        t => vec![t.clone()],
-    };
-    members
-        .into_iter()
-        .map(|t| match t {
-            Type::ConstArray(a) if !a.optional.is_empty() => mixed(),
-            t => t,
-        })
-        .collect()
-}
-
-/// `unwrapConstantArrayTypes()`: an `array<key, item>` per item type, by the key type of its position.
-fn unwrap_constant_array_types(a: &pun_phpstan::types::ConstArray) -> Vec<Type> {
-    let keys = flatten_types(&const_array_key_type(a));
-    let items = flatten_types(&const_array_item_type(a));
-    let mut out = Vec::new();
-    for (position, item) in items.into_iter().enumerate() {
-        let key = keys.get(position).cloned().unwrap_or_else(mixed);
-        match item {
-            Type::ConstArray(inner) => {
-                for inner in unwrap_constant_array_types(&inner) {
-                    // preserve outer array -> inner array structure: array<outerKey, innerArray>
-                    out.push(Type::Array(Box::new(key.clone()), Box::new(inner)));
-                }
-            }
-            item => out.push(Type::Array(Box::new(key), Box::new(item))),
-        }
-    }
-    out
 }
