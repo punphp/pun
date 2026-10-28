@@ -147,6 +147,7 @@ fn run_class_full(
                 // The rule did the work, not the formatter.
                 assert!(
                     preset_too.contains(&name.as_str())
+                        || FORMAT_OVERLAP.contains(&format!("{class}/{name}").as_str())
                         || format(&pipeline, &input) != format(&pipeline, &expected),
                     "{class} {name}"
                 );
@@ -157,3 +158,11 @@ fn run_class_full(
         }
     }
 }
+
+/// Fixtures whose expected half the laravel format also reaches on its own; the rule's text edits must still give
+/// the expected bytes and apply. FixClassCaseSensitivityVarDocblockRector/Fixture/{inline_var,property_var}: Pint's
+/// `fully_qualified_strict_types` fixes the case of an imported class in a `@var` too.
+const FORMAT_OVERLAP: &[&str] = &[
+    "FixClassCaseSensitivityVarDocblockRector/Fixture/inline_var.php.inc",
+    "FixClassCaseSensitivityVarDocblockRector/Fixture/property_var.php.inc",
+];
