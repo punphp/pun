@@ -894,3 +894,17 @@ than treating the broad boolean as a discriminating guard. The public
 `pun-analyse/tests/conditional_type_correlation.rs` capture checks both the false-only remainder
 and the overlapping true branch. Integer-range, literal-union, array, and object guard controls
 use the same API without a complete combiner or subtraction rewrite.
+
+## Same-key array-shape discrimination
+
+`shapes_are_discriminated()` applies PHPStan 2.3.1's constant-array reduction boundary
+to shapes with identical keys as well as asymmetric keys. Equal multi-key shapes can
+merge across one unrelated field, but a second unrelated field preserves their alternatives.
+Singleton shapes with disjoint values also remain separate. This retains sibling-offset
+correlations without forcing all ternary arrays into shape-preserving unions.
+
+The source contract is `ConstantArrayType::legacyIsKeysSupersetOf()` and
+`TypeCombinator::haveDisjointConstantScalarValues()` at PHPStan source revision
+`cb3b7e99489b2e3789ee2eec10501cb7a72580ea`. The public
+`pun-analyse/tests/shape_discrimination.rs` regression compares 58 complete upstream
+records across operand orders, sibling reads, legitimate reductions, and ordinary unions.

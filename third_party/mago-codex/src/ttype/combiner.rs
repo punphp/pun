@@ -1393,26 +1393,9 @@ fn shapes_are_discriminated(
     existing: &BTreeMap<ArrayKey, (bool, TUnion)>,
     codebase: &CodebaseMetadata,
 ) -> bool {
-    let mut has_asymmetric_keys = false;
-    for key in incoming.keys() {
-        if !existing.contains_key(key) {
-            has_asymmetric_keys = true;
-            break;
-        }
-    }
-
-    if !has_asymmetric_keys {
-        for key in existing.keys() {
-            if !incoming.contains_key(key) {
-                has_asymmetric_keys = true;
-                break;
-            }
-        }
-    }
-
-    if !has_asymmetric_keys {
-        return false;
-    }
+    // ConstantArrayType::legacyIsKeysSupersetOf permits one unrelated value only
+    // for equal-sized multi-key shapes. A second unrelated field keeps the alternatives.
+    let mut unrelated_key_allowed = incoming.len() >= 2 && incoming.keys().eq(existing.keys());
 
     for (key, (incoming_optional, incoming_type)) in incoming {
         if *incoming_optional {
@@ -1428,7 +1411,11 @@ fn shapes_are_discriminated(
         }
 
         if !union_comparator::can_expression_types_be_identical(codebase, incoming_type, existing_type, false, false) {
-            return true;
+            if unrelated_key_allowed {
+                unrelated_key_allowed = false;
+            } else {
+                return true;
+            }
         }
     }
 
