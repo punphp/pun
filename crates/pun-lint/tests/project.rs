@@ -4,6 +4,7 @@
 //! Its own binary: the project codebase is process-wide.
 
 use std::path::Path;
+use std::sync::Mutex;
 
 use pun_lint::Linter;
 use pun_lint::rules::AddReturnTypeFromProperty;
@@ -12,6 +13,9 @@ use pun_lint::rules::facts::{project_codebase, set_project_codebase};
 const ITEM: &str = "<?php\n\nclass Item\n{\n    public string $name = '';\n}\n";
 const HOLDER: &str = "<?php\n\nfinal class Holder\n{\n    private Item $item;\n\n    public function __construct()\n    {\n        $this->item = new Item();\n    }\n\n    public function name()\n    {\n        return $this->item->name;\n    }\n}\n";
 
+/// The tests take turns, as each sets the process-wide codebase.
+static LOCK: Mutex<()> = Mutex::new(());
+
 fn fix() -> String {
     let linter = Linter::new(vec![Box::new(AddReturnTypeFromProperty)], 80400);
     linter.fix(Path::new("holder.php"), HOLDER).unwrap().source
@@ -19,6 +23,7 @@ fn fix() -> String {
 
 #[test]
 fn a_file_sees_the_project_codebase() {
+    let _lock = LOCK.lock().unwrap_or_else(|e| e.into_inner());
     let files = [
         ("item.php".to_string(), ITEM.to_string()),
         ("holder.php".to_string(), HOLDER.to_string()),
@@ -32,12 +37,37 @@ fn a_file_sees_the_project_codebase() {
     );
 }
 
+/// A fix round lints a file changed after the project's codebase was scanned, so Mago's analysis gives `$this` no
+/// type there. PHPStan types it as the class (`ThisType`), so the private method `$this` calls stays used. Expected:
+/// the file unchanged, as Rector 2.6.1 (`RemoveUnusedPrivateMethodRector` and `AppToFacadeRector`) keeps
+/// `getRecentlyViewed()` in Pinkary's app/Jobs/IncrementViews.php after rewriting its `app()` call.
+#[test]
+fn a_changed_file_keeps_its_methods_called_on_this() {
+    use pun_lint::rules::NoUnusedPrivateMethod;
+    let _lock = LOCK.lock().unwrap_or_else(|e| e.into_inner());
+    let changed = "<?php\n\nfinal class Views\n{\n    public function handle(): int\n    {\n        return $this->recent();\n    }\n\n    private function recent(): int\n    {\n        return 1;\n    }\n}\n";
+    let scanned = changed.replace(
+        "return $this->recent();",
+        "$n = $this->recent();\n\n        return $n;",
+    );
+    let files = [("/p/views.php".to_string(), scanned)];
+    set_project_codebase(Some(project_codebase(&files, 80400)));
+    let linter = Linter::new(vec![Box::new(NoUnusedPrivateMethod)], 80400);
+    let fixed = linter
+        .fix(Path::new("/p/views.php"), changed)
+        .unwrap()
+        .source;
+    set_project_codebase(None);
+    assert_eq!(fixed, changed);
+}
+
 /// Classes Composer autoloads are scanned on demand, and `ClassMethodReturnTypeOverrideGuard` lets a method override
 /// a parent's untyped method only when both are in vendor/ or neither is. Expected: Rector 2.6.1
 /// (`ReturnTypeFromStrictConstantReturnRector` alone, PHP 8.4, `--autoload-file vendor/autoload.php` of a project
 /// whose psr-4 maps `Acme\` to vendor/acme/pkg/src/) types only the method whose parent is the project's.
 #[test]
 fn autoloaded_vendor_parents_guard_overrides() {
+    let _lock = LOCK.lock().unwrap_or_else(|e| e.into_inner());
     use pun_lint::rules::AddReturnTypeFromConstant;
     use pun_lint::rules::facts::project_codebase_autoloaded;
     let base = |ns: &str| {

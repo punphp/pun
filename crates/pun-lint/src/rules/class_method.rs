@@ -359,6 +359,36 @@ fn scope_of(
     }
 }
 
+/// The class PHPStan's `ThisType` names when `object` is `$this` in a method that has one: the class of the
+/// innermost class scope, unless a static method or static closure leaves `$this` undefined. Mago gives `$this` no
+/// type where a fix round changed the file after the project's codebase was scanned, as the codebase's spans no
+/// longer match the file's.
+fn this_class(
+    facts: &Facts,
+    ancestors: &[Node<'_, '_>],
+    class: &ClassInfo<'_, '_>,
+    path: &[Node<'_, '_>],
+    object: &Expression<'_>,
+) -> Option<String> {
+    let Expression::Variable(Variable::Direct(var)) = unparenthesize(object) else {
+        return None;
+    };
+    if var.name != b"$this" {
+        return None;
+    }
+    let scope = path
+        .iter()
+        .rposition(|n| matches!(n, Node::AnonymousClass(_)))
+        .map_or(path, |i| &path[i + 1..]);
+    let undefined = scope.iter().any(|n| match n {
+        Node::Method(m) => m.modifiers.contains_static(),
+        Node::Closure(c) => c.r#static.is_some(),
+        Node::ArrowFunction(f) => f.r#static.is_some(),
+        _ => false,
+    });
+    (!undefined).then(|| scope_of(facts, ancestors, class, path).0)
+}
+
 /// What `CallCollectionAnalyzer::isExists` reads of a caller's type.
 struct CallerType {
     /// `getObjectClassNames()`.
@@ -485,12 +515,14 @@ fn is_call_of(
     method: &[u8],
 ) -> bool {
     let (selector, caller, root, self_static) = match site {
-        CallSite::Object(object, selector) => (
-            *selector,
-            CallerType::of(type_of(facts, object)),
-            Some(*object),
-            false,
-        ),
+        CallSite::Object(object, selector) => {
+            let t = type_of(facts, object);
+            let caller = match this_class(facts, ancestors, class, path, object) {
+                Some(name) if t.is_none() => CallerType::named(name),
+                _ => CallerType::of(t),
+            };
+            (*selector, caller, Some(*object), false)
+        }
         CallSite::Static(class_expr, selector) => {
             let (caller, self_static) = static_caller(facts, ancestors, class, path, class_expr);
             (*selector, caller, None, self_static)
