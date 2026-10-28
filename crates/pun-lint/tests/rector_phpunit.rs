@@ -683,3 +683,11 @@ fn scalar_argument_to_expected_param_type() {
         "ScalarArgumentToExpectedParamTypeRector",
     );
 }
+
+/// Pun/rector_fails: a statement with a call on the mock but no `->method('literal')`, or a `createMock()` assigned to
+/// another spelling of the mock's variable, makes Rector fail on the file; Pun leaves the method alone.
+/// Pun/leading_backslash: a class string with a leading `\`, which Rector prints as `new \\X()`; Pun writes `new \X()`.
+#[test]
+fn entity_document_create_mock_to_direct_new() {
+    check(NoEntityMock, "EntityDocumentCreateMockToDirectNewRector");
+}

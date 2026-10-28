@@ -584,6 +584,8 @@ pub const PROJECT_RULES: &[&str] = &[
     "lint/laravel/prefer-status-assertion-method",
     "lint/laravel/prefer-typed-assert-closure",
     "lint/laravel/prefer-validation-rule-array",
+    // reads the mocked class's doc comment
+    "lint/phpunit/no-entity-mock",
 ];
 
 /// Every rule, in a fixed order.

@@ -382,13 +382,13 @@ fn overrides_set_levels_and_name_only_ported_rules() {
     // An override that turns on a rule Pun has not ported is a config error naming it.
     std::fs::write(
         d.join("pun.toml"),
-        format!("{toml}\n[[lint.overrides]]\nfiles = [\"x\"]\nrules = {{ \"phpunit/no-entity-mock\" = \"error\" }}\n"),
+        format!("{toml}\n[[lint.overrides]]\nfiles = [\"x\"]\nrules = {{ \"classes/add-dynamic-properties\" = \"error\" }}\n"),
     )
     .unwrap();
     let (lines, summary, code) = agent(&d, &["lint"]);
     assert_eq!((lines, code), (vec![], Some(2)));
     assert!(
-        summary.ends_with("rule not supported by Pun yet: `lint/phpunit/no-entity-mock`"),
+        summary.ends_with("rule not supported by Pun yet: `lint/classes/add-dynamic-properties`"),
         "{summary}"
     );
 }

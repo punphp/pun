@@ -613,7 +613,7 @@ fn pun_only_behaviour() {
     // No PHP fallback: a rule Pun hasn't ported stops every command, named under its Pun ID (exit 2).
     std::fs::write(
         dir.join("pun.toml"),
-        "[format]\npreset = \"empty\"\n[format.rules]\n\"arrays/syntax\" = true\n[lint.rules]\n\"phpunit/no-entity-mock\" = \"error\"\n",
+        "[format]\npreset = \"empty\"\n[format.rules]\n\"arrays/syntax\" = true\n[lint.rules]\n\"classes/add-dynamic-properties\" = \"error\"\n",
     )
     .unwrap();
     let toml = dir.join("pun.toml");
@@ -623,7 +623,7 @@ fn pun_only_behaviour() {
             (out.as_str(), err, code),
             (
                 "",
-                "x pun.toml  rule not supported by Pun yet: `lint/phpunit/no-entity-mock`\n  remove it from pun.toml to run the other rules\n".to_string(),
+                "x pun.toml  rule not supported by Pun yet: `lint/classes/add-dynamic-properties`\n  remove it from pun.toml to run the other rules\n".to_string(),
                 Some(2)
             ),
             "{cmd:?}"
@@ -632,14 +632,14 @@ fn pun_only_behaviour() {
     // Lint rules count too, even for `pun format`; several are listed together.
     std::fs::write(
         dir.join("pun.toml"),
-        "[format]\npreset = \"empty\"\n[lint.rules]\n\"phpunit/no-entity-mock\" = \"error\"\n\"phpunit/prefer-yield-data-provider\" = \"error\"\n",
+        "[format]\npreset = \"empty\"\n[lint.rules]\n\"classes/add-dynamic-properties\" = \"error\"\n\"types/add-property-type-jms-object\" = \"error\"\n",
     )
     .unwrap();
     let (_, err, code) = pun(&dir, &["format", "--test"]);
     assert_eq!(
         (err, code),
         (
-            "x pun.toml  rules not supported by Pun yet: `lint/phpunit/no-entity-mock`, `lint/phpunit/prefer-yield-data-provider`\n  remove them from pun.toml to run the other rules\n".to_string(),
+            "x pun.toml  rules not supported by Pun yet: `lint/classes/add-dynamic-properties`, `lint/types/add-property-type-jms-object`\n  remove them from pun.toml to run the other rules\n".to_string(),
             Some(2)
         )
     );
@@ -649,7 +649,7 @@ fn pun_only_behaviour() {
         (out, code),
         (
             format!(
-                "pun lint: error: {}: rules not supported by Pun yet: `lint/phpunit/no-entity-mock`, `lint/phpunit/prefer-yield-data-provider`\n",
+                "pun lint: error: {}: rules not supported by Pun yet: `lint/classes/add-dynamic-properties`, `lint/types/add-property-type-jms-object`\n",
                 toml.display()
             ),
             Some(2)
@@ -659,14 +659,14 @@ fn pun_only_behaviour() {
     // has unported rules).
     std::fs::write(
         dir.join("pun.toml"),
-        "[format]\npreset = \"empty\"\n[lint]\nsets = [\"code-quality\"]\n[lint.rules]\n\"phpunit/no-entity-mock\" = \"error\"\n",
+        "[format]\npreset = \"empty\"\n[lint]\nsets = [\"code-quality\"]\n[lint.rules]\n\"classes/add-dynamic-properties\" = \"error\"\n",
     )
     .unwrap();
     let (_, err, code) = pun(&dir, &["lint"]);
     assert_eq!(
         (err, code),
         (
-            "x pun.toml  rule not supported by Pun yet: `lint/phpunit/no-entity-mock`\n  remove it from pun.toml to run the other rules\n".to_string(),
+            "x pun.toml  rule not supported by Pun yet: `lint/classes/add-dynamic-properties`\n  remove it from pun.toml to run the other rules\n".to_string(),
             Some(2)
         )
     );

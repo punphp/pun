@@ -25,6 +25,7 @@ mod no_at_matcher;
 mod no_bare_mock_assign;
 mod no_bare_mock_builder;
 mod no_empty_test;
+mod no_entity_mock;
 mod no_expects_any;
 mod no_final_constructor_override;
 mod no_flipped_assertion;
@@ -102,6 +103,7 @@ pub use no_at_matcher::NoAtMatcher;
 pub use no_bare_mock_assign::NoBareMockAssign;
 pub use no_bare_mock_builder::NoBareMockBuilder;
 pub use no_empty_test::NoEmptyTest;
+pub use no_entity_mock::NoEntityMock;
 pub use no_expects_any::NoExpectsAny;
 pub use no_final_constructor_override::NoFinalConstructorOverride;
 pub use no_flipped_assertion::NoFlippedAssertion;
@@ -250,6 +252,7 @@ pub(crate) fn all() -> Vec<Box<dyn Rule>> {
         Box::new(PreferLocalOverSetupProperty),
         Box::new(RequireExactTestArgumentType),
         Box::new(PreferTestAttribute),
+        Box::new(NoEntityMock),
     ]
 }
 

@@ -11289,7 +11289,7 @@
         "EntityDocumentCreateMockToDirectNewRector",
         "Rector\\PHPUnit\\CodeQuality\\Rector\\ClassMethod\\EntityDocumentCreateMockToDirectNewRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/phpunit/no-expected-exception-annotation",
