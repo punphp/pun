@@ -33,13 +33,15 @@ impl Rule for NoControllerMiddleware {
         // `is_within_controller`: the innermost class-like scope is a class named `...Controller`
         let scope = ancestors.iter().rev().find_map(|a| match a {
             Node::Class(c) => Some(Some(c.name.value)),
-            Node::AnonymousClass(_)
-            | Node::Interface(_)
-            | Node::Trait(_)
-            | Node::Enum(_) => Some(None),
+            Node::AnonymousClass(_) | Node::Interface(_) | Node::Trait(_) | Node::Enum(_) => {
+                Some(None)
+            }
             _ => None,
         });
-        if !scope.flatten().is_some_and(|name| name.ends_with(b"Controller")) {
+        if !scope
+            .flatten()
+            .is_some_and(|name| name.ends_with(b"Controller"))
+        {
             return;
         }
         let is_this = matches!(call.object, Expression::Variable(Variable::Direct(v)) if v.name.eq_ignore_ascii_case(b"$this"));

@@ -6,12 +6,12 @@
 //! parameter of the closure or arrow function. php-parser prints the call anew, its arguments on one line, and moves
 //! the closure's lines to the indentation of the call's line.
 
-use mago_syntax::cst::{Expression, Node, NodeKind};
+use mago_syntax::cst::{ClassLikeMemberSelector, Expression, Node, NodeKind, StaticMethodCall};
 use pun_problem::{Edit, Fix, Safety};
 
-use super::print::{moved_with_edit, set_param_type};
+use super::is_name;
 use super::object_type::{class_string_class, is_object_type};
-use super::{is_name, member_name};
+use super::print::{moved_with_edit, set_param_type};
 use crate::rules::types::facts::facts;
 use crate::syntax::{node_span, unparenthesize};
 use crate::{Context, Report, Rule};
@@ -34,15 +34,29 @@ impl Rule for PreferTypedAssertClosure {
         ctx: &Context<'_>,
         out: &mut Vec<Report>,
     ) {
-        let Node::StaticMethodCall(call) = node else {
+        let Node::StaticMethodCall(
+            call @ StaticMethodCall {
+                method: ClassLikeMemberSelector::Identifier(method),
+                ..
+            },
+        ) = node
+        else {
             return;
         };
-        if !member_name(&call.method).is_some_and(|n| is_name(n, "assertDispatched")) {
+        if !is_name(method.value, "assertDispatched") {
             return;
         }
-        if !is_object_type(ctx, ancestors, call.class, "Illuminate\\Support\\Facades\\Bus")
-            && !is_object_type(ctx, ancestors, call.class, "Illuminate\\Support\\Facades\\Event")
-        {
+        if !is_object_type(
+            ctx,
+            ancestors,
+            call.class,
+            "Illuminate\\Support\\Facades\\Bus",
+        ) && !is_object_type(
+            ctx,
+            ancestors,
+            call.class,
+            "Illuminate\\Support\\Facades\\Event",
+        ) {
             return;
         }
         let [class, callback] = call.argument_list.arguments.as_slice() else {
@@ -69,7 +83,9 @@ impl Rule for PreferTypedAssertClosure {
         );
         out.push(Report {
             span: node_span(call),
-            message: format!("Type the closure's parameter as `{class}` instead of passing its class."),
+            message: format!(
+                "Type the closure's parameter as `{class}` instead of passing its class."
+            ),
             help: None,
             fix: Some(Fix {
                 safety: Safety::Unsafe,

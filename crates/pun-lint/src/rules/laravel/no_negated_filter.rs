@@ -58,7 +58,12 @@ impl Rule for NoNegatedFilter {
         if !not.operator.is_not() {
             return;
         }
-        if !is_object_type(ctx, ancestors, call.object, "Illuminate\\Support\\Enumerable") {
+        if !is_object_type(
+            ctx,
+            ancestors,
+            call.object,
+            "Illuminate\\Support\\Enumerable",
+        ) {
             return;
         }
         let inner = unparenthesize(not.operand);

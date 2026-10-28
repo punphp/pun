@@ -71,7 +71,11 @@ impl<'s> Doc<'s> {
     fn at(source: &'s str, span: Span) -> Self {
         let text = &source[span.start..span.end];
         // PHP's lexer makes a doc comment of `/**` and white space only; `/***/` is a plain comment.
-        if !text.as_bytes().get(3).is_some_and(|b| matches!(b, b' ' | b'\t' | b'\r' | b'\n')) {
+        if !text
+            .as_bytes()
+            .get(3)
+            .is_some_and(|b| matches!(b, b' ' | b'\t' | b'\r' | b'\n'))
+        {
             return None;
         }
         let tokens = lex(text);

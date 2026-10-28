@@ -45,20 +45,25 @@ impl Rule for PreferStatusAssertionMethod {
         let [argument] = call.argument_list.arguments.as_slice() else {
             return;
         };
-        if !is_object_type(ctx, ancestors, call.object, "Illuminate\\Testing\\TestResponse") {
+        if !is_object_type(
+            ctx,
+            ancestors,
+            call.object,
+            "Illuminate\\Testing\\TestResponse",
+        ) {
             return;
         }
         let facts = facts(ctx);
-        let Some(t) = facts.full_type(node_span(unparenthesize(argument.value()))) else {
-            return;
-        };
+        let t = facts.full_type(node_span(unparenthesize(argument.value())));
         // `isInteger()->yes()` and `getConstantScalarValues()`, one value
-        let values: Option<Vec<i64>> = (t.types.iter())
-            .map(|a| match a {
-                TAtomic::Scalar(TScalar::Integer(i)) => i.get_literal_value(),
-                _ => None,
-            })
-            .collect();
+        let values: Option<Vec<i64>> = t.and_then(|t| {
+            (t.types.iter())
+                .map(|a| match a {
+                    TAtomic::Scalar(TScalar::Integer(i)) => i.get_literal_value(),
+                    _ => None,
+                })
+                .collect()
+        });
         let Some(&[value]) = values.as_deref() else {
             return;
         };
@@ -81,7 +86,12 @@ impl Rule for PreferStatusAssertionMethod {
             help: None,
             fix: Some(Fix {
                 safety: Safety::Safe,
-                edits: reprinted_call(ctx.source, call.object, node_span(call).end, &format!("->{method}()")),
+                edits: reprinted_call(
+                    ctx.source,
+                    call.object,
+                    node_span(call).end,
+                    &format!("->{method}()"),
+                ),
             }),
         });
     }

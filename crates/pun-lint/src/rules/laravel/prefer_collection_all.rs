@@ -41,26 +41,28 @@ impl Rule for PreferCollectionAll {
         out: &mut Vec<Report>,
     ) {
         let (object, method) = match node {
-            Node::MethodCall(c) => (c.object, &c.method),
             Node::NullSafeMethodCall(c) => (c.object, &c.method),
-            _ => return,
+            _ => {
+                let Node::MethodCall(c) = node else { return };
+                (c.object, &c.method)
+            }
         };
         if !member_name(method).is_some_and(|n| is_name(n, "toArray"))
             || !is_object_type(ctx, ancestors, object, ENUMERABLE)
         {
             return;
         }
-        let facts = facts(ctx);
-        let Some(t) = facts.full_type(node_span(object)) else {
-            return;
-        };
         if this_out_called(ctx, ancestors, object) {
             return;
         }
-        let Some(values) = value_type(ctx, t) else {
+        let facts = facts(ctx);
+        let Some(values) = (facts.full_type(node_span(object))).and_then(|t| value_type(ctx, t))
+        else {
             return;
         };
-        if object_super_of_union(ctx, "Illuminate\\Contracts\\Support\\Arrayable", &values) != Tri::No {
+        if object_super_of_union(ctx, "Illuminate\\Contracts\\Support\\Arrayable", &values)
+            != Tri::No
+        {
             return;
         }
         out.push(replace(
@@ -77,10 +79,12 @@ fn value_type(ctx: &Context<'_>, t: &TUnion) -> Option<TUnion> {
     let facts = facts(ctx);
     let codebase = facts.documented();
     let enumerable = codebase.get_class_like(ENUMERABLE.as_bytes())?;
-    let name = (enumerable.get_template_type_names().into_iter()).find(|n| n.as_bytes() == b"TValue")?;
+    let name =
+        (enumerable.get_template_type_names().into_iter()).find(|n| n.as_bytes() == b"TValue")?;
     let mut types = Vec::new();
     for atomic in t.types.iter().filter(|a| !matches!(a, TAtomic::Null)) {
-        let TAtomic::Object(mago_codex::ttype::atomic::object::TObject::Named(named)) = atomic else {
+        let TAtomic::Object(mago_codex::ttype::atomic::object::TObject::Named(named)) = atomic
+        else {
             return None;
         };
         let class = codebase.get_class_like(named.name.as_bytes())?;
@@ -104,12 +108,9 @@ fn this_out_called(ctx: &Context<'_>, ancestors: &[Node<'_, '_>], object: &Expre
     let facts = facts(ctx);
     let text = |e: &Expression<'_>| &ctx.source[node_span(e).start..node_span(e).end];
     let receiver = text(unparenthesize(object));
-    let Some(&root) = (ancestors.iter())
+    let root = *(ancestors.iter())
         .find(|a| matches!(a, Node::Function(_) | Node::Method(_)))
-        .or(ancestors.first())
-    else {
-        return false;
-    };
+        .unwrap_or(&ancestors[0]);
     let mut stack = vec![root];
     while let Some(node) = stack.pop() {
         node.visit_children(|c| stack.push(c));
@@ -118,7 +119,8 @@ fn this_out_called(ctx: &Context<'_>, ancestors: &[Node<'_, '_>], object: &Expre
             Node::NullSafeMethodCall(c) => (c.object, &c.method),
             _ => continue,
         };
-        let (Some(method), Some(t)) = (member_name(method), facts.full_type(node_span(called))) else {
+        let (Some(method), Some(t)) = (member_name(method), facts.full_type(node_span(called)))
+        else {
             continue;
         };
         if text(unparenthesize(called)) != receiver {
@@ -136,7 +138,10 @@ fn this_out_called(ctx: &Context<'_>, ancestors: &[Node<'_, '_>], object: &Expre
 /// `Some` when the method `method` of `class` has a `this-out` tag in its doc comment: the last doc comment before its
 /// name, with only modifiers and attributes after it.
 fn this_out_tagged(facts: &Facts, class: &[u8], method: &[u8]) -> Option<()> {
-    let name = facts.codebase.get_declaring_method(class, method)?.name_span?;
+    let name = facts
+        .codebase
+        .get_declaring_method(class, method)?
+        .name_span?;
     let source = facts.source_of(name.file_id)?;
     let before = &source[..name.start.offset as usize];
     let start = before.rfind("/**")?;

@@ -16,12 +16,13 @@ use std::path::{Path, PathBuf};
 use lint_c::{run_class_with, run_dirs};
 use pun_lint::Rule;
 use pun_lint::rules::{
-    AddFactoryExtendsPhpdoc, AddHasFactoryTrait, AddRelationGenerics, AddTapClosureType, NoAppArrayAccess, AddQueryClosureType, AddRelationQueryClosureType, PreferLatestOldest, PreferProtectedModelMethods,
-    ContainerService, PreferClassContainerKey, PreferClosureOnlyBind, PreferCollectionAll, PreferQueryBuilderCall, PreferRequestValidate,
+    AddFactoryExtendsPhpdoc, AddHasFactoryTrait, AddQueryClosureType, AddRelationGenerics,
+    AddRelationQueryClosureType, AddTapClosureType, ContainerService, NoAppArrayAccess,
     NoCollectionAliases, NoNegatedContains, NoNegatedFilter, NoNegatedWhen, NoUselessValueCall,
-    NoUselessWithCall,
-    PreferDispatchHelper, PreferEnvironmentCheck, PreferStatusAssertionMethod, PreferTypedAssertClosure,
-    PreferValidationRuleArray,
+    NoUselessWithCall, PreferClassContainerKey, PreferClosureOnlyBind, PreferCollectionAll,
+    PreferDispatchHelper, PreferEnvironmentCheck, PreferLatestOldest, PreferProtectedModelMethods,
+    PreferQueryBuilderCall, PreferRequestValidate, PreferStatusAssertionMethod,
+    PreferTypedAssertClosure, PreferValidationRuleArray,
 };
 
 fn check(rule: impl Rule + 'static, class: &str) {
@@ -44,7 +45,10 @@ fn unalias_collection_methods() {
 
 #[test]
 fn avoid_negated_collection_filter_or_reject() {
-    check(NoNegatedFilter, "AvoidNegatedCollectionFilterOrRejectRector");
+    check(
+        NoNegatedFilter,
+        "AvoidNegatedCollectionFilterOrRejectRector",
+    );
 }
 
 #[test]
@@ -101,7 +105,10 @@ fn validation_rule_array_string_value_to_array() {
 
 #[test]
 fn eloquent_where_type_hint_closure_parameter() {
-    check(AddQueryClosureType, "EloquentWhereTypeHintClosureParameterRector");
+    check(
+        AddQueryClosureType,
+        "EloquentWhereTypeHintClosureParameterRector",
+    );
 }
 
 #[test]
@@ -121,7 +128,8 @@ fn make_model_attributes_and_scopes_protected() {
 }
 
 /// The fixtures run with the patterns of rector-laravel's config/configured_rule.php, Oracle/ and Pun/ with the default
-/// ones, and Configured/ (Rector's output with this configuration) with `$c?l`, `[!a-c]_date` and `x\_at`.
+/// ones, Configured/ (Rector's output with this configuration) with `$c?l`, `[!a-c]_date` and `x\_at`, and
+/// Unpatterned/ (Rector's output) with no pattern, which allows every column.
 #[test]
 fn eloquent_order_by_to_latest_or_oldest() {
     let class = "EloquentOrderByToLatestOrOldestRector";
@@ -132,10 +140,22 @@ fn eloquent_order_by_to_latest_or_oldest() {
             .unwrap();
         vec![Box::new(rule)]
     };
-    let fixture = serde_json::json!(["created_at", "submitted_a*", "*tested_at", "$allowed_variable_name"]);
+    let fixture = serde_json::json!([
+        "created_at",
+        "submitted_a*",
+        "*tested_at",
+        "$allowed_variable_name"
+    ]);
     run_dirs(configured(fixture), class, &["Fixture"], 80400, &[&stubs]);
     let own = serde_json::json!(["$c?l", "[!a-c]_date", "x\\_at"]);
     run_dirs(configured(own), class, &["Configured"], 80400, &[&stubs]);
+    run_dirs(
+        configured(serde_json::json!([])),
+        class,
+        &["Unpatterned"],
+        80400,
+        &[&stubs],
+    );
     let default: Vec<Box<dyn Rule>> = vec![Box::new(PreferLatestOldest::default())];
     run_dirs(default, class, &["Oracle", "Pun"], 80400, &[&stubs]);
 }
@@ -145,7 +165,10 @@ fn eloquent_order_by_to_latest_or_oldest_options() {
     let mut rule = PreferLatestOldest::default();
     assert!(rule.configure(&serde_json::json!(true)).is_err());
     assert!(rule.configure(&serde_json::json!({"other": []})).is_err());
-    assert!(rule.configure(&serde_json::json!({"allowed-patterns": [1]})).is_err());
+    assert!(
+        rule.configure(&serde_json::json!({"allowed-patterns": [1]}))
+            .is_err()
+    );
     rule.configure(&serde_json::json!(null)).unwrap();
     assert_eq!(rule.allowed_patterns, ["*_at", "*_date", "*_on"]);
     // Rector's `configure` without the key leaves no pattern, which allows every column
@@ -180,18 +203,38 @@ fn add_has_factory_to_models() {
     let stubs = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/rector-laravel-stubs");
     let configured = |items: serde_json::Value| -> Vec<Box<dyn Rule>> {
         let mut rule = AddHasFactoryTrait::default();
-        rule.configure(&serde_json::json!({ "items": items })).unwrap();
+        rule.configure(&serde_json::json!({ "items": items }))
+            .unwrap();
         vec![Box::new(rule)]
     };
     let fixture = serde_json::json!([
         "RectorLaravel\\Tests\\Rector\\Class_\\AddHasFactoryToModelsRector\\Fixture\\Configured\\User",
         "RectorLaravel\\Tests\\Rector\\Class_\\AddHasFactoryToModelsRectorConfigured\\Fixture\\SkipIfAlreadyPresent",
     ]);
-    run_dirs(configured(fixture), class, &["Fixture/Configured"], 80400, &[&stubs]);
+    run_dirs(
+        configured(fixture),
+        class,
+        &["Fixture/Configured"],
+        80400,
+        &[&stubs],
+    );
     let own = serde_json::json!(["App\\A", "app\\b", "\\App\\G", "App\\H", "App\\Missing"]);
     run_dirs(configured(own), class, &["Configured"], 80400, &[&stubs]);
+    run_dirs(
+        configured(serde_json::json!([])),
+        class,
+        &["Unpatterned"],
+        80400,
+        &[&stubs],
+    );
     let default: Vec<Box<dyn Rule>> = vec![Box::new(AddHasFactoryTrait::default())];
-    run_dirs(default, class, &["Fixture/WithoutConfiguration", "Oracle", "Pun"], 80400, &[&stubs]);
+    run_dirs(
+        default,
+        class,
+        &["Fixture/WithoutConfiguration", "Oracle", "Pun"],
+        80400,
+        &[&stubs],
+    );
 }
 
 #[test]
@@ -201,9 +244,15 @@ fn add_has_factory_to_models_options() {
     assert!(rule.items.is_empty());
     assert!(rule.configure(&serde_json::json!([])).is_err());
     assert!(rule.configure(&serde_json::json!({"other": []})).is_err());
-    assert!(rule.configure(&serde_json::json!({"items": "App\\A"})).is_err());
+    assert!(
+        rule.configure(&serde_json::json!({"items": "App\\A"}))
+            .is_err()
+    );
     // Rector fails on a name with `*` (no pattern matching in `isNames`)
-    assert!(rule.configure(&serde_json::json!({"items": ["App\\*"]})).is_err());
+    assert!(
+        rule.configure(&serde_json::json!({"items": ["App\\*"]}))
+            .is_err()
+    );
 }
 
 /// The fixtures run with rector-laravel's config/configured_rule.php (`exclude_methods`); Oracle/ without options.
@@ -229,7 +278,8 @@ fn eloquent_magic_method_to_query_builder_options() {
     assert!(rule.configure(&serde_json::json!({})).is_err());
     assert!(rule.configure(&serde_json::json!({"other": []})).is_err());
     assert!(rule.configure(&serde_json::json!({"items": [1]})).is_err());
-    rule.configure(&serde_json::json!({"items": ["a"]})).unwrap();
+    rule.configure(&serde_json::json!({"items": ["a"]}))
+        .unwrap();
     assert_eq!(rule.exclude_methods, ["a"]);
 }
 
@@ -238,11 +288,13 @@ fn eloquent_magic_method_to_query_builder_options() {
 /// writes the value objects.
 #[test]
 fn replace_service_container_call_arg() {
-    let constant = |class: &str| serde_json::json!({
-        "attributes": [],
-        "class": { "attributes": [], "name": class },
-        "name": { "attributes": [], "name": "class" },
-    });
+    let constant = |class: &str| {
+        serde_json::json!({
+            "attributes": [],
+            "class": { "attributes": [], "name": class },
+            "name": { "attributes": [], "name": "class" },
+        })
+    };
     let mut items = vec![
         serde_json::json!({
             "old-service": "encrypter",
@@ -257,7 +309,8 @@ fn replace_service_container_call_arg() {
     let class = "ReplaceServiceContainerCallArgRector";
     let rule = |items: &[serde_json::Value]| -> Vec<Box<dyn Rule>> {
         let mut rule = PreferClassContainerKey::default();
-        rule.configure(&serde_json::json!({ "items": items })).unwrap();
+        rule.configure(&serde_json::json!({ "items": items }))
+            .unwrap();
         vec![Box::new(rule)]
     };
     run_dirs(rule(&items), class, &["Fixture"], 80400, &[&stubs]);
@@ -290,7 +343,10 @@ fn replace_service_container_call_arg_options() {
     .unwrap();
     assert_eq!(
         rule.items,
-        [(ContainerService::Constant("A".into(), "FOO".into()), ContainerService::Name("b".into()))]
+        [(
+            ContainerService::Constant("A".into(), "FOO".into()),
+            ContainerService::Name("b".into())
+        )]
     );
 }
 
@@ -326,7 +382,11 @@ fn stubs_without_application() -> Vec<PathBuf> {
     }
     let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/rector-laravel-stubs");
     let mut dirs = Vec::new();
-    walk(&root, &root.join("Illuminate/Foundation/Application.php"), &mut dirs);
+    walk(
+        &root,
+        &root.join("Illuminate/Foundation/Application.php"),
+        &mut dirs,
+    );
     dirs
 }
 
@@ -336,7 +396,9 @@ fn stubs_without_application() -> Vec<PathBuf> {
 #[test]
 fn add_generic_return_type_to_relations() {
     let class = "AddGenericReturnTypeToRelationsRector";
-    let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/rector").join(class);
+    let root = Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("tests/rector")
+        .join(class);
     let without = stubs_without_application();
     let with = |version: &str| -> Vec<PathBuf> {
         let mut dirs = without.clone();
@@ -345,10 +407,22 @@ fn add_generic_return_type_to_relations() {
     };
     let run = |subs: &[&str], stubs: &[PathBuf]| {
         let stubs: Vec<&Path> = stubs.iter().map(PathBuf::as_path).collect();
-        run_dirs(vec![Box::new(AddRelationGenerics)], class, subs, 80400, &stubs);
+        run_dirs(
+            vec![Box::new(AddRelationGenerics)],
+            class,
+            subs,
+            80400,
+            &stubs,
+        );
     };
-    run(&["Fixture/OldGenerics", "Oracle/OldGenerics"], &with("11.14.0"));
-    run(&["Fixture/NewGenerics", "Oracle/NewGenerics"], &with("12.3.0"));
+    run(
+        &["Fixture/OldGenerics", "Oracle/OldGenerics"],
+        &with("11.14.0"),
+    );
+    run(
+        &["Fixture/NewGenerics", "Oracle/NewGenerics"],
+        &with("12.3.0"),
+    );
     let stubs = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/rector-laravel-stubs");
     run(&["Oracle/Laravel12", "Pun/Laravel12"], &[stubs]);
     run(&["Pun/NoApplication"], &without);

@@ -42,7 +42,8 @@ impl Rule for PreferViewArray {
             span: node_span(call),
             message: "Use array parameter in `view()` instead of chaining `with()`.".to_string(),
             help: Some(
-                "Refactor the code to use the array parameter in the `view()` function.".to_string(),
+                "Refactor the code to use the array parameter in the `view()` function."
+                    .to_string(),
             ),
             fix: None,
         });

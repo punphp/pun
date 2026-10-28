@@ -10,8 +10,7 @@
 //! `ClassConstFetch` (`{ class = { name = "Foo" }, name = { name = "class" } }`). Without it the rule does nothing.
 
 use mago_syntax::cst::{
-    Access, ClassLikeConstantSelector, CompositeString, Expression, FunctionCall, Identifier,
-    Literal, Node, NodeKind,
+    Access, CompositeString, Expression, FunctionCall, Identifier, Literal, Node, NodeKind,
 };
 use pun_problem::{Edit, Fix, Safety};
 use serde_json::Value;
@@ -58,7 +57,10 @@ impl Rule for PreferClassContainerKey {
         let mut parsed = Vec::new();
         for item in items {
             let item = item.as_object().ok_or(error)?;
-            if item.keys().any(|k| k != "old-service" && k != "new-service") {
+            if item
+                .keys()
+                .any(|k| k != "old-service" && k != "new-service")
+            {
                 return Err(error.into());
             }
             let service = |key: &str| item.get(key).and_then(service).ok_or(error);
@@ -69,7 +71,11 @@ impl Rule for PreferClassContainerKey {
     }
 
     fn targets(&self) -> Option<&'static [NodeKind]> {
-        Some(&[NodeKind::MethodCall, NodeKind::StaticMethodCall, NodeKind::FunctionCall])
+        Some(&[
+            NodeKind::MethodCall,
+            NodeKind::StaticMethodCall,
+            NodeKind::FunctionCall,
+        ])
     }
 
     fn visit<'ast, 'arena>(
@@ -79,22 +85,31 @@ impl Rule for PreferClassContainerKey {
         ctx: &Context<'_>,
         out: &mut Vec<Report>,
     ) {
-        if self.items.is_empty() {
-            return;
-        }
         let (valid, list) = match node {
             Node::MethodCall(c) => (
                 is_container_method(&c.method)
-                    && is_object_type(ctx, ancestors, c.object, "Illuminate\\Contracts\\Container\\Container"),
+                    && is_object_type(
+                        ctx,
+                        ancestors,
+                        c.object,
+                        "Illuminate\\Contracts\\Container\\Container",
+                    ),
                 &c.argument_list,
             ),
             Node::StaticMethodCall(c) => (
                 is_container_method(&c.method)
-                    && is_object_type(ctx, ancestors, c.class, "Illuminate\\Support\\Facades\\Application"),
+                    && is_object_type(
+                        ctx,
+                        ancestors,
+                        c.class,
+                        "Illuminate\\Support\\Facades\\Application",
+                    ),
                 &c.argument_list,
             ),
-            Node::FunctionCall(f) => (is_helper(ctx, ancestors, f), &f.argument_list),
-            _ => return,
+            _ => {
+                let Node::FunctionCall(f) = node else { return };
+                (is_helper(ctx, ancestors, f), &f.argument_list)
+            }
         };
         // `$node->args[0] instanceof Arg`: unpacked and named arguments count too
         let Some(first) = list.arguments.first().filter(|_| valid) else {
@@ -120,7 +135,9 @@ impl Rule for PreferClassContainerKey {
             return;
         }
         let code = match &current {
-            ContainerService::Name(s) => format!("'{}'", s.replace('\\', "\\\\").replace('\'', "\\'")),
+            ContainerService::Name(s) => {
+                format!("'{}'", s.replace('\\', "\\\\").replace('\'', "\\'"))
+            }
             ContainerService::Constant(class, constant) => format!("\\{class}::{constant}"),
         };
         out.push(Report {
@@ -141,7 +158,9 @@ fn service(v: &Value) -> Option<ContainerService> {
         return Some(ContainerService::Name(s.to_string()));
     }
     let o = v.as_object()?;
-    if o.keys().any(|k| !matches!(k.as_str(), "class" | "name" | "attributes")) {
+    if o.keys()
+        .any(|k| !matches!(k.as_str(), "class" | "name" | "attributes"))
+    {
         return None;
     }
     let name = |key: &str| o.get(key)?.get("name")?.as_str().map(str::to_string);
@@ -159,29 +178,37 @@ fn is_helper(ctx: &Context<'_>, ancestors: &[Node<'_, '_>], f: &FunctionCall<'_>
         named(f, name)
             && !(matches!(f.function, Expression::Identifier(Identifier::Local(_)))
                 && namespace_of(ancestors).is_some_and(|ns| {
-                    facts(ctx).codebase.function_exists(format!("{ns}\\{name}").as_bytes())
+                    facts(ctx)
+                        .codebase
+                        .function_exists(format!("{ns}\\{name}").as_bytes())
                 }))
     })
 }
 
 /// The argument as a service, when it is a string php-parser reads as a `String_` or a class constant whose class is
 /// written as a name.
-fn written(ctx: &Context<'_>, ancestors: &[Node<'_, '_>], value: &Expression<'_>) -> Option<ContainerService> {
+fn written(
+    ctx: &Context<'_>,
+    ancestors: &[Node<'_, '_>],
+    value: &Expression<'_>,
+) -> Option<ContainerService> {
     let bytes = match unparenthesize(value) {
         Expression::Literal(Literal::String(s)) => s.value?.to_vec(),
         Expression::CompositeString(CompositeString::Document(d)) => document_value(ctx, d)?,
         Expression::Access(Access::ClassConstant(c)) => {
-            let ClassLikeConstantSelector::Identifier(constant) = &c.constant else {
-                return None;
-            };
             let class = match unparenthesize(c.class) {
                 Expression::Identifier(id) => resolve_class_name(ancestors, id),
-                Expression::Self_(_) => "self".into(),
-                Expression::Static(_) => "static".into(),
-                Expression::Parent(_) => "parent".into(),
+                e @ (Expression::Self_(_) | Expression::Static(_) | Expression::Parent(_)) => {
+                    let span = node_span(e);
+                    ctx.source[span.start..span.end].to_string()
+                }
                 _ => return None,
             };
-            return Some(ContainerService::Constant(class, String::from_utf8_lossy(constant.value).into_owned()));
+            return Some(ContainerService::Constant(
+                class,
+                // `isMatchForChangeServiceContainerCallArgValue` compares the class alone
+                ctx.source[node_span(&c.constant).start..node_span(&c.constant).end].to_string(),
+            ));
         }
         _ => return None,
     };

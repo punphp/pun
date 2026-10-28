@@ -10,17 +10,19 @@
 //! that line's indentation. A class without statements is printed anew (`pStmt_Class`): each attribute group on its
 //! own line, the modifiers in php-parser's order, the names as written, `{` on the next line.
 
-use mago_syntax::cst::{AttributeList, ClassLikeMember, Extends, Implements, Modifier, Node, NodeKind, Sequence};
+use mago_syntax::cst::{
+    AttributeList, ClassLikeMember, Extends, Implements, Modifier, Node, NodeKind, Sequence,
+};
 use pun_problem::{Edit, Fix, Safety, Span};
 use serde_json::Value;
 
 use super::is_a;
 use super::names::resolve_class_name;
 use super::print::kept_nodes;
+use crate::rules::class_method::qualified;
 use crate::rules::rector_batch5::modifiers_text;
 use crate::rules::rector_conditions::indentation;
 use crate::rules::types::facts::facts;
-use crate::rules::types::namespace_of;
 use crate::syntax::node_span;
 use crate::{Context, Report, Rule};
 
@@ -36,6 +38,8 @@ pub struct AddHasFactoryTrait {
 struct Parts<'a> {
     attributes: &'a Sequence<'a, AttributeList<'a>>,
     modifiers: &'a Sequence<'a, Modifier<'a>>,
+    /// What follows `class`: ` Name`, or an anonymous class's arguments.
+    named: String,
     extends: Option<&'a Extends<'a>>,
     implements: Option<&'a Implements<'a>>,
     left_brace: usize,
@@ -78,16 +82,33 @@ impl Rule for AddHasFactoryTrait {
         out: &mut Vec<Report>,
     ) {
         let facts = facts(ctx);
-        let (name, parts, start) = match node {
-            Node::Class(c) => {
-                let local = String::from_utf8_lossy(c.name.value);
-                let name = match namespace_of(ancestors) {
-                    Some(ns) => format!("{ns}\\{local}"),
-                    None => local.into_owned(),
-                };
+        let source = ctx.source;
+        let (name, class, parts, start, members) = match node {
+            Node::AnonymousClass(c) => {
+                let start = c.new.span.start.offset as usize;
+                let list = c.argument_list.as_ref().filter(|l| !l.arguments.is_empty());
                 let parts = Parts {
                     attributes: &c.attribute_lists,
                     modifiers: &c.modifiers,
+                    named: list.map_or(String::new(), |l| {
+                        let args = kept_nodes(source, l.arguments.iter().map(node_span), start);
+                        format!("({})", args.join(", "))
+                    }),
+                    extends: c.extends.as_ref(),
+                    implements: c.implements.as_ref(),
+                    left_brace: c.left_brace.start.offset as usize,
+                    right_brace: c.right_brace.end.offset as usize,
+                };
+                let class = facts.anonymous_class_name(mago_span::HasSpan::span(c));
+                (None, class, parts, start, &c.members)
+            }
+            _ => {
+                let Node::Class(c) = node else { return };
+                let name = qualified(ancestors, c.name.value);
+                let parts = Parts {
+                    attributes: &c.attribute_lists,
+                    modifiers: &c.modifiers,
+                    named: format!(" {}", String::from_utf8_lossy(c.name.value)),
                     extends: c.extends.as_ref(),
                     implements: c.implements.as_ref(),
                     left_brace: c.left_brace.start.offset as usize,
@@ -96,54 +117,35 @@ impl Rule for AddHasFactoryTrait {
                 let start = (c.attribute_lists.first().map(|a| node_span(a).start))
                     .or_else(|| c.modifiers.first().map(|m| node_span(m).start))
                     .unwrap_or(c.class.span.start.offset as usize);
-                (Some(name), parts, start)
+                (Some(name.clone()), name, parts, start, &c.members)
             }
-            Node::AnonymousClass(c) => {
-                let parts = Parts {
-                    attributes: &c.attribute_lists,
-                    modifiers: &c.modifiers,
-                    extends: c.extends.as_ref(),
-                    implements: c.implements.as_ref(),
-                    left_brace: c.left_brace.start.offset as usize,
-                    right_brace: c.right_brace.end.offset as usize,
-                };
-                (None, parts, c.new.span.start.offset as usize)
-            }
-            _ => return,
-        };
-        let class = match (&name, node) {
-            (Some(name), _) => name.clone(),
-            (None, Node::AnonymousClass(c)) => facts.anonymous_class_name(mago_span::HasSpan::span(c)),
-            _ => return,
         };
         if !is_a(ctx, &class, &["Illuminate\\Database\\Eloquent\\Model"])
             || (!self.items.is_empty()
-                && !name.as_ref().is_some_and(|n| self.items.iter().any(|i| i.eq_ignore_ascii_case(n))))
+                && !name
+                    .as_ref()
+                    .is_some_and(|n| self.items.iter().any(|i| i.eq_ignore_ascii_case(n))))
         {
             return;
         }
-        let Some(meta) = facts.codebase.get_class_like(class.as_bytes()) else {
-            return;
-        };
-        let members = match node {
-            Node::Class(c) => &c.members,
-            Node::AnonymousClass(c) => &c.members,
-            _ => return,
-        };
         // The project's codebase is the files as they were; the class's own `use` is read from the syntax too.
         let own = members.iter().any(|m| match m {
             ClassLikeMember::TraitUse(u) => (u.trait_names.iter())
                 .any(|t| resolve_class_name(ancestors, t).eq_ignore_ascii_case(TRAIT)),
             _ => false,
         });
-        if own || meta.used_traits.iter().any(|t| t.as_bytes().eq_ignore_ascii_case(TRAIT.as_bytes())) {
+        let meta = facts.codebase.get_class_like(class.as_bytes());
+        let used = |t: &[u8]| t.eq_ignore_ascii_case(TRAIT.as_bytes());
+        if own || meta.is_none_or(|m| m.used_traits.iter().any(|t| used(t.as_bytes()))) {
             return;
         }
-        let source = ctx.source;
         let inside = &source[parts.left_brace + 1..parts.right_brace - 1];
         let first = inside.len() - inside.trim_start().len();
         let edit = if inside.trim().is_empty() {
-            Edit::new(Span::new(start, parts.right_brace), header(ctx, node, &parts, start))
+            Edit::new(
+                Span::new(start, parts.right_brace),
+                header(ctx, node, &parts, start),
+            )
         } else {
             let at = parts.left_brace + 1 + first;
             let indent = " ".repeat(indentation(source, at));
@@ -179,26 +181,14 @@ fn header(ctx: &Context<'_>, node: Node<'_, '_>, parts: &Parts<'_>, start: usize
     }
     out.push_str(&modifiers_text(parts.modifiers));
     out.push_str("class");
-    match node {
-        Node::Class(c) => {
-            out.push(' ');
-            out.push_str(text(node_span(&c.name)));
-        }
-        Node::AnonymousClass(c) => {
-            if let Some(list) = c.argument_list.as_ref().filter(|l| !l.arguments.is_empty()) {
-                let args = kept_nodes(source, list.arguments.iter().map(node_span), start);
-                out.push_str(&format!("({})", args.join(", ")));
-            }
-        }
-        _ => {}
-    }
-    if let Some(e) = parts.extends {
-        let names: Vec<&str> = e.types.iter().map(|t| text(node_span(t))).collect();
-        out.push_str(&format!(" extends {}", names.join(", ")));
-    }
-    if let Some(i) = parts.implements {
-        let names: Vec<&str> = i.types.iter().map(|t| text(node_span(t))).collect();
-        out.push_str(&format!(" implements {}", names.join(", ")));
+    out.push_str(&parts.named);
+    let lists = [
+        (" extends", parts.extends.map(|e| &e.types)),
+        (" implements", parts.implements.map(|i| &i.types)),
+    ];
+    for (keyword, types) in lists.into_iter().filter_map(|(k, t)| Some((k, t?))) {
+        let names: Vec<&str> = types.iter().map(|t| text(node_span(t))).collect();
+        out.push_str(&format!("{keyword} {}", names.join(", ")));
     }
     out.push_str(&format!("{nl}{{{nl}    {USE}{nl}}}"));
     out

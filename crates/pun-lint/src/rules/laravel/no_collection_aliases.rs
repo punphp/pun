@@ -45,7 +45,12 @@ impl Rule for NoCollectionAliases {
         let Some((alias, replacement)) = replacement else {
             return;
         };
-        if !is_object_type(ctx, ancestors, call.object, "Illuminate\\Support\\Enumerable") {
+        if !is_object_type(
+            ctx,
+            ancestors,
+            call.object,
+            "Illuminate\\Support\\Enumerable",
+        ) {
             return;
         }
         let span = node_span(&call.method);

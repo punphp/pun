@@ -5,8 +5,8 @@
 use mago_syntax::cst::{ArgumentList, Expression, FunctionLikeParameter, Node};
 use pun_problem::{Edit, Span};
 
-use crate::Context;
 use super::parent;
+use crate::Context;
 use crate::rules::lint_b_helpers::dereferenceable;
 use crate::rules::php_parser::tokens;
 use crate::rules::rector_code_quality::moved;
@@ -21,7 +21,9 @@ pub(crate) fn set_param_type(param: &FunctionLikeParameter<'_>, hint: &str) -> E
         None => {
             let at = (param.ampersand)
                 .or(param.ellipsis)
-                .map_or(node_span(&param.variable).start, |s| s.start.offset as usize);
+                .map_or(node_span(&param.variable).start, |s| {
+                    s.start.offset as usize
+                });
             Edit::new(Span::new(at, at), format!("{hint} "))
         }
     }
@@ -35,7 +37,12 @@ pub(crate) fn moved_with_edit(source: &str, span: Span, edit: &Edit, at: usize) 
     let adjust = indentation(source, at) as isize - indentation(source, span.start) as isize;
     format!(
         "{}{}{}",
-        reprint(source, &tokens, Span::new(span.start, edit.span.start), adjust),
+        reprint(
+            source,
+            &tokens,
+            Span::new(span.start, edit.span.start),
+            adjust
+        ),
         edit.text,
         reprint(source, &tokens, Span::new(edit.span.end, span.end), adjust)
     )
@@ -106,10 +113,21 @@ pub(crate) fn kept_arguments(source: &str, list: &ArgumentList<'_>, at: usize) -
 }
 
 /// As [`kept_arguments`], for the nodes at `spans`.
-pub(crate) fn kept_nodes(source: &str, spans: impl Iterator<Item = Span>, at: usize) -> Vec<String> {
+pub(crate) fn kept_nodes(
+    source: &str,
+    spans: impl Iterator<Item = Span>,
+    at: usize,
+) -> Vec<String> {
     let tokens = tokens(source);
     let level = indentation(source, at) as isize;
     spans
-        .map(|span| reprint(source, &tokens, span, level - indentation(source, span.start) as isize))
+        .map(|span| {
+            reprint(
+                source,
+                &tokens,
+                span,
+                level - indentation(source, span.start) as isize,
+            )
+        })
         .collect()
 }

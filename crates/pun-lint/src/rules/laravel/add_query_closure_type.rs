@@ -41,7 +41,12 @@ impl Rule for AddQueryClosureType {
         {
             return;
         }
-        let class = if is_object_type(ctx, ancestors, call.on, "Illuminate\\Database\\Eloquent\\Model") {
+        let class = if is_object_type(
+            ctx,
+            ancestors,
+            call.on,
+            "Illuminate\\Database\\Eloquent\\Model",
+        ) {
             "Illuminate\\Contracts\\Database\\Eloquent\\Builder"
         } else {
             "Illuminate\\Contracts\\Database\\Query\\Builder"

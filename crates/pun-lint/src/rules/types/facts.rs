@@ -107,13 +107,11 @@ pub fn project_codebase_autoloaded(
             FileType::Host
         };
         let file = mago_file(path, &without_docblocks(code), kind);
-        remember_source(file.id, code);
+        remember(file.id, path, code);
         remember_phar(&file, path);
-        if kind == FileType::Vendored {
-            (VENDOR.write().unwrap_or_else(|e| e.into_inner())).insert(file.id);
-        }
         named.extend(scan_into(&mut codebase, &file, version));
-        scan_into(&mut documented, &mago_file(path, code, kind), version);
+        let file = mago_file(path, code, kind);
+        scan_into(&mut documented, &file, version);
     }
     let mut asked: HashSet<Vec<u8>> = HashSet::new();
     while let Some(name) = named.pop() {
@@ -122,11 +120,8 @@ pub fn project_codebase_autoloaded(
         }
         if let Some((path, code)) = autoload(&name) {
             let file = mago_file(&path, &without_docblocks(&code), FileType::Vendored);
-            remember_source(file.id, &code);
+            remember(file.id, &path, &code);
             remember_phar(&file, &path);
-            if is_vendor_path(&path) {
-                (VENDOR.write().unwrap_or_else(|e| e.into_inner())).insert(file.id);
-            }
             named.extend(scan_into(&mut codebase, &file, version));
             let file = mago_file(&path, &code, FileType::Vendored);
             scan_into(&mut documented, &file, version);
@@ -151,11 +146,6 @@ pub fn project_codebase_autoloaded(
 /// The files [`project_codebase_autoloaded`] read from a `vendor/` directory. A file's id is a hash of its path, so
 /// the set only grows, and codebases built at the same time share it.
 static VENDOR: LazyLock<RwLock<HashSet<FileId>>> = LazyLock::new(Default::default);
-
-/// Whether `path` has a `vendor/` directory (Rector: its path contains `/vendor/`).
-fn is_vendor_path(path: &str) -> bool {
-    path.contains("/vendor/")
-}
 
 /// Whether `file` is vendor code of the project's codebase (Rector: its path contains `/vendor/`).
 pub(crate) fn is_vendor_file(file: FileId) -> bool {
@@ -955,20 +945,33 @@ fn scan_into(codebase: &mut CodebaseMetadata, file: &File, version: PHPVersion) 
     let arena = LocalArena::new();
     let program = parse_file(&arena, file);
     let names = NameResolver::new(&arena).resolve(program);
-    if let Ok(mut scanned) = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
+    let mut scanned = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
         scan_program(&arena, file, program, &names, version)
-    })) {
-        if file.file_type == FileType::Vendored {
-            (scanned.function_likes).retain(|(class, name), _| {
-                !class.as_bytes().is_empty() || PRELUDE.0.get_function(name.as_bytes()).is_none()
-            });
-        }
-        codebase.extend(scanned);
+    }))
+    .unwrap_or_default();
+    if file.file_type == FileType::Vendored {
+        (scanned.function_likes).retain(|(class, name), _| {
+            !class.as_bytes().is_empty() || PRELUDE.0.get_function(name.as_bytes()).is_none()
+        });
     }
+    codebase.extend(scanned);
     names
         .iter()
         .map(|(_, _, name, _)| name.to_ascii_lowercase())
         .collect()
+}
+
+/// Whether `path` has a `vendor/` directory (Rector: its path contains `/vendor/`).
+fn is_vendor_path(path: &str) -> bool {
+    path.contains("/vendor/")
+}
+
+/// [`remember_source`] for the file `id` at `path`, which counts as vendor code when [`is_vendor_path`] says so.
+fn remember(id: FileId, path: &str, code: &str) {
+    remember_source(id, code);
+    if is_vendor_path(path) {
+        (VENDOR.write().unwrap_or_else(|e| e.into_inner())).insert(id);
+    }
 }
 
 /// The facts of a file: the project's codebase, or the prelude with the file's own symbols.

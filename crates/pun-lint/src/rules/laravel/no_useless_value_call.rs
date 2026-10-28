@@ -37,7 +37,9 @@ impl Rule for NoUselessValueCall {
         ctx: &Context<'_>,
         out: &mut Vec<Report>,
     ) {
-        let Node::FunctionCall(call) = node else { return };
+        let Node::FunctionCall(call) = node else {
+            return;
+        };
         if !named(call, "value") {
             return;
         }

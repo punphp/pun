@@ -38,7 +38,9 @@ impl Rule for NoUselessWithCall {
         ctx: &Context<'_>,
         out: &mut Vec<Report>,
     ) {
-        let Node::FunctionCall(call) = node else { return };
+        let Node::FunctionCall(call) = node else {
+            return;
+        };
         if !named(call, "with") {
             return;
         }
@@ -80,7 +82,11 @@ fn may_be_callable(facts: &Facts, t: &TUnion) -> bool {
             let Some(class) = facts.codebase.get_class_like(n.name.as_bytes()) else {
                 return true;
             };
-            !class.flags.is_final() || facts.codebase.get_declaring_method(class.name.as_bytes(), b"__invoke").is_some()
+            !class.flags.is_final()
+                || facts
+                    .codebase
+                    .get_declaring_method(class.name.as_bytes(), b"__invoke")
+                    .is_some()
         }
         _ => true,
     })

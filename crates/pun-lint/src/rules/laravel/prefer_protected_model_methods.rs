@@ -13,8 +13,8 @@ use pun_problem::{Edit, Fix, Safety, Span};
 use super::is_a;
 use super::object_type::{is_hint_type, object_class};
 use crate::rules::rector_batch5::has_attribute;
-use crate::rules::types::class_scope;
 use crate::rules::types::facts::facts;
+use crate::rules::types::{ClassScope, class_scope};
 use crate::syntax::node_span;
 use crate::{Context, Report, Rule};
 
@@ -38,27 +38,30 @@ impl Rule for PreferProtectedModelMethods {
         ctx: &Context<'_>,
         out: &mut Vec<Report>,
     ) {
-        let Node::Method(method) = node else {
-            return;
-        };
+        let Node::Method(method) = node else { return };
         let has = |f: fn(&Modifier<'_>) -> bool| method.modifiers.iter().any(f);
         if has(|m| matches!(m, Modifier::Protected(_) | Modifier::Static(_)))
-            || !(is_attribute_method(ctx, ancestors, method) || is_scope_method(ctx, ancestors, method))
+            || !(is_attribute_method(ctx, ancestors, method)
+                || is_scope_method(ctx, ancestors, method))
         {
             return;
         }
-        let Some(scope) = class_scope(ancestors) else {
+        let Some(ClassScope {
+            name: Some(own),
+            parent_class,
+            ..
+        }) = class_scope(ancestors)
+        else {
             return;
         };
         let is_trait = ancestors.iter().rev().find_map(|a| match a {
-            Node::Class(_) | Node::AnonymousClass(_) | Node::Interface(_) | Node::Enum(_) => Some(false),
+            Node::Class(_) | Node::AnonymousClass(_) | Node::Interface(_) | Node::Enum(_) => {
+                Some(false)
+            }
             Node::Trait(_) => Some(true),
             _ => None,
         }) == Some(true);
-        let Some(own) = scope.name else {
-            return;
-        };
-        if let Some(parent) = &scope.parent_class
+        if let Some(parent) = &parent_class
             && has_public_method(ctx, parent, method.name.value, &mut Vec::new())
         {
             return;
@@ -88,7 +91,12 @@ fn is_attribute_method(ctx: &Context<'_>, ancestors: &[Node<'_, '_>], method: &M
         return true;
     }
     method.return_type_hint.as_ref().is_some_and(|r| {
-        is_hint_type(ctx, ancestors, &r.hint, "Illuminate\\Database\\Eloquent\\Casts\\Attribute")
+        is_hint_type(
+            ctx,
+            ancestors,
+            &r.hint,
+            "Illuminate\\Database\\Eloquent\\Casts\\Attribute",
+        )
     })
 }
 
@@ -99,15 +107,11 @@ fn is_scope_method(ctx: &Context<'_>, ancestors: &[Node<'_, '_>], method: &Metho
     let named = name.len() > b"scopeA".len()
         && name.starts_with(b"scope")
         && name[5].is_ascii_uppercase()
-        && method
-            .parameter_list
-            .parameters
-            .first()
-            .is_some_and(|p| {
-                p.hint.as_ref().is_none_or(|h| {
-                    is_hint_type(ctx, ancestors, h, "Illuminate\\Database\\Eloquent\\Builder")
-                })
-            });
+        && method.parameter_list.parameters.first().is_some_and(|p| {
+            p.hint.as_ref().is_none_or(|h| {
+                is_hint_type(ctx, ancestors, h, "Illuminate\\Database\\Eloquent\\Builder")
+            })
+        });
     named
         || has_attribute(
             ancestors,
@@ -136,11 +140,13 @@ fn has_public_method(ctx: &Context<'_>, class: &str, name: &[u8], seen: &mut Vec
         return false;
     };
     meta.mixins.iter().any(|mixin| {
-        let classes: Vec<Option<String>> = mixin.type_union.types.iter().map(object_class).collect();
+        let classes: Vec<Option<String>> =
+            mixin.type_union.types.iter().map(object_class).collect();
         !classes.is_empty()
-            && classes
-                .iter()
-                .all(|c| c.as_deref().is_some_and(|c| has_public_method(ctx, c, name, seen)))
+            && classes.iter().all(|c| {
+                c.as_deref()
+                    .is_some_and(|c| has_public_method(ctx, c, name, seen))
+            })
     })
 }
 
@@ -165,7 +171,10 @@ fn make_protected(source: &str, method: &Method<'_>) -> Edit {
     let end = node_span(method.modifiers.last().unwrap_or(first)).end;
     let rest = &source[end..];
     Edit::new(
-        Span::new(node_span(first).start, end + rest.len() - rest.trim_start().len()),
+        Span::new(
+            node_span(first).start,
+            end + rest.len() - rest.trim_start().len(),
+        ),
         text,
     )
 }

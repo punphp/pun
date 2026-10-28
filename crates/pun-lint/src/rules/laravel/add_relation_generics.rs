@@ -10,25 +10,29 @@
 //! `\Illuminate\Database\Eloquent\Relations\Pivot` for a `BelongsToMany` (from 12.3.0). An existing `@return` stays
 //! when its type is not the return type (generics aside), or already has the generics the rule would write.
 //!
-//! The doc's names resolve as Rector's `ObjectTypeSpecifier` does them ([`resolve_doc_class_name`]). Pun leaves the
+//! A `@return` type without generics resolves as Rector's `ObjectTypeSpecifier` does it ([`resolve_doc_class_name`]);
+//! a generic type and its arguments go to PHPStan's `TypeNodeResolver` ([`resolve_doc_string_name`]). Pun leaves the
 //! method alone where it does not read the `@return` tag as phpdoc-parser does: a value over several lines, or a type
 //! that is not a name, maybe with generics that are names or `$this`.
 
 use std::cmp::Ordering;
 
+use mago_codex::ttype::atomic::TAtomic;
+use mago_codex::ttype::atomic::object::TObject;
+use mago_codex::ttype::atomic::reference::TReference;
 use mago_syntax::cst::{
     Argument, Call, ClassLikeMemberSelector, Expression, Hint, MethodBody, Node, NodeKind,
 };
 use pun_problem::{Fix, Safety};
 
 use super::add_factory_extends_phpdoc::tag_name;
-use super::names::{resolve_class_name, resolve_doc_class_name};
+use super::names::{resolve_class_name, resolve_doc_class_name, resolve_doc_string_name};
 use super::object_type::class_string_class;
 use super::{is_a, member_name};
+use crate::rules::class_method::qualified;
 use crate::rules::lint_b_doc::Doc;
 use crate::rules::phpunit::annotations::Annotated;
 use crate::rules::types::facts::facts;
-use crate::rules::types::namespace_of;
 use crate::syntax::node_span;
 use crate::{Context, Report, Rule};
 
@@ -82,24 +86,22 @@ impl Rule for AddRelationGenerics {
             return;
         };
         // `shouldSkipNode`: a trait, or a class (not anonymous) that is a subclass of `Model`
-        let Some(at) = ancestors.iter().rposition(|a| {
+        let class_like = ancestors.iter().rev().find(|a| {
             matches!(
                 a,
-                Node::Class(_) | Node::AnonymousClass(_) | Node::Interface(_) | Node::Trait(_) | Node::Enum(_)
+                Node::Class(_)
+                    | Node::AnonymousClass(_)
+                    | Node::Interface(_)
+                    | Node::Trait(_)
+                    | Node::Enum(_)
             )
-        }) else {
-            return;
-        };
-        let (local, is_trait) = match ancestors[at] {
-            Node::Class(c) => (c.name.value, false),
-            Node::Trait(t) => (t.name.value, true),
+        });
+        let (local, is_trait) = match class_like {
+            Some(Node::Class(c)) => (c.name.value, false),
+            Some(Node::Trait(t)) => (t.name.value, true),
             _ => return,
         };
-        let local = String::from_utf8_lossy(local);
-        let own = match namespace_of(&ancestors[..at]) {
-            Some(ns) => format!("{ns}\\{local}"),
-            None => local.into_owned(),
-        };
+        let own = qualified(ancestors, local);
         if !is_trait && (own.eq_ignore_ascii_case(MODEL) || !is_a(ctx, &own, &[MODEL])) {
             return;
         }
@@ -110,9 +112,7 @@ impl Rule for AddRelationGenerics {
         if !is_a(ctx, &native, &[RELATION]) {
             return;
         }
-        let Some(annotated) = Annotated::of(ctx.source, node, ancestors) else {
-            return;
-        };
+        let annotated = Annotated::of(ctx.source, node, ancestors).unwrap();
         let Ok(tag) = return_tag(annotated.doc.as_ref()) else {
             return;
         };
@@ -122,35 +122,45 @@ impl Rule for AddRelationGenerics {
         // compare by their class's name, as `$this` does
         let parent = || {
             let class = facts.codebase.get_class_like(own.as_bytes())?;
-            let parent = facts.codebase.get_class_like(class.direct_parent_class.as_ref()?.as_bytes())?;
+            let parent = facts
+                .codebase
+                .get_class_like(class.direct_parent_class.as_ref()?.as_bytes())?;
             Some(parent.original_name.to_string())
         };
-        let doc_type = |written: &str| match written {
+        let doc_type = |written: &str, generic: bool| match written {
             "$this" => DocType::This(own.clone()),
             _ if written.eq_ignore_ascii_case("self") || written.eq_ignore_ascii_case("static") => {
                 DocType::Class(own.clone())
             }
-            _ if written.eq_ignore_ascii_case("parent") => parent().map_or(DocType::Other, DocType::Class),
+            _ if written.eq_ignore_ascii_case("parent") => {
+                parent().map_or(DocType::Other, DocType::Class)
+            }
+            _ if generic => DocType::Class(resolve_doc_string_name(ancestors, written)),
             _ => DocType::Class(resolve_doc_class_name(ancestors, written, exists)),
         };
         // `areNativeTypeAndPhpDocReturnTypeEqual`
-        if tag
-            .as_ref()
-            .is_some_and(|t| !matches!(doc_type(t.base), DocType::Class(c) if c == native))
-        {
+        if tag.as_ref().is_some_and(
+            |t| !matches!(doc_type(t.base, t.args.is_some()), DocType::Class(c) if c == native),
+        ) {
             return;
         }
         let Some(call) = relation_call(body) else {
             return;
         };
-        let method_name = member_name(&call.method).map(String::from_utf8_lossy).unwrap_or_default();
+        let method_name = member_name(&call.method)
+            .map(String::from_utf8_lossy)
+            .unwrap_or_default();
         let args: Vec<&Expression<'_>> = (call.argument_list.arguments.iter())
             .map(|a| match a {
                 Argument::Positional(a) => a.value,
                 Argument::Named(a) => a.value,
             })
             .collect();
-        let class_of = |e: &Expression<'_>| facts.full_type(node_span(e)).and_then(|t| class_string_class(ctx, t));
+        let class_of = |e: &Expression<'_>| {
+            facts
+                .full_type(node_span(e))
+                .and_then(|t| class_string_class(ctx, t))
+        };
         let Some(related) = class_of(args[0]) else {
             return;
         };
@@ -166,14 +176,14 @@ impl Rule for AddRelationGenerics {
         // `areGenericTypesEqual`
         if let Some(types) = tag.as_ref().and_then(|t| t.args.as_ref()) {
             let pivots = is_a(ctx, &native, &[BELONGS_TO_MANY, MORPH_TO_MANY]);
-            let mut types: Vec<DocType> = types.iter().map(|t| doc_type(t)).collect();
+            let mut types: Vec<DocType> = types.iter().map(|t| doc_type(t, true)).collect();
             // `TypeNodeResolver::resolveGenericTypeNode`: a generic class's missing template types take their defaults
-            if let Some(class) = facts.documented().get_class_like(native.as_bytes()) {
-                for template in class.template_types.values().skip(types.len()) {
-                    if let Some(default) = &template.default {
-                        types.push(default_type(&facts, default));
-                    }
-                }
+            let given = types.len();
+            let templates = (facts.documented().get_class_like(native.as_bytes()))
+                .into_iter()
+                .flat_map(|c| c.template_types.values().skip(given));
+            for default in templates.filter_map(|t| t.default.as_ref()) {
+                types.push(default_type(&facts, default));
             }
             let equal = |t: &DocType, class: &str| matches!(t, DocType::Class(c) | DocType::This(c) if c == class);
             let subtype = |t: &DocType, class: &str| match t {
@@ -209,7 +219,19 @@ impl Rule for AddRelationGenerics {
             }
         }
         let pivot = pivot_generic && is_a(ctx, &native, &[BELONGS_TO_MANY]);
-        self.report(ctx, method, &annotated, tag.as_ref(), &native, &related, child, intermediate, new_generics, pivot, out);
+        self.report(
+            ctx,
+            method,
+            &annotated,
+            tag.as_ref(),
+            &native,
+            &related,
+            child,
+            intermediate,
+            new_generics,
+            pivot,
+            out,
+        );
     }
 }
 
@@ -247,14 +269,25 @@ impl AddRelationGenerics {
                 let child = doc.text(tag.index).trim_end();
                 let from = child.as_ptr() as usize - text.as_ptr() as usize;
                 let value = format!("{ty} {}", tag.description);
-                format!("{}@return {}{}", &text[..from], value.trim(), &text[from + child.len()..])
+                format!(
+                    "{}@return {}{}",
+                    &text[..from],
+                    value.trim(),
+                    &text[from + child.len()..]
+                )
             }
-            (Some(doc), None) => doc.print_appending(&vec![false; doc.len()], &[&format!("@return {ty}")]),
+            (Some(doc), None) => {
+                doc.print_appending(&vec![false; doc.len()], &[&format!("@return {ty}")])
+            }
             (None, _) => format!("/**\n * @return {ty}\n */"),
         };
         // The tag printed as it is: nothing changes (a `BelongsToMany` from 11.15.0 to 12.3.0 gets generics the rule
         // does not count as done).
-        if annotated.doc.as_ref().is_some_and(|d| d.text_all() == new_doc) {
+        if annotated
+            .doc
+            .as_ref()
+            .is_some_and(|d| d.text_all() == new_doc)
+        {
             return;
         }
         let Some(edits) = annotated.edits(ctx.source, Some(&new_doc), &[]) else {
@@ -272,15 +305,18 @@ impl AddRelationGenerics {
     }
 }
 
-/// A template's default as a [`DocType`]: one named object is its class, anything else is not compared.
-fn default_type(facts: &crate::rules::types::facts::Facts, t: &mago_codex::ttype::union::TUnion) -> DocType {
+/// A template's default as a [`DocType`]: one object is its class (a class the codebase lacks stays a reference to
+/// its name, which PHPStan compares as that class), anything else is not compared.
+fn default_type(
+    facts: &crate::rules::types::facts::Facts,
+    t: &mago_codex::ttype::union::TUnion,
+) -> DocType {
     match &t.types[..] {
-        [mago_codex::ttype::atomic::TAtomic::Object(mago_codex::ttype::atomic::object::TObject::Named(n))] => {
-            DocType::Class(facts.codebase.get_class_like(n.name.as_bytes()).map_or_else(
-                || n.name.to_string(),
-                |c| c.original_name.to_string(),
-            ))
-        }
+        [TAtomic::Object(TObject::Named(n))] => DocType::Class(
+            (facts.codebase.get_class_like(n.name.as_bytes()))
+                .map_or(n.name.to_string(), |c| c.original_name.to_string()),
+        ),
+        [TAtomic::Reference(TReference::Symbol { name, .. })] => DocType::Class(name.to_string()),
         _ => DocType::Other,
     }
 }
@@ -308,7 +344,11 @@ struct ReturnTag<'s> {
 /// phpdoc-parser does.
 fn return_tag<'s>(doc: Option<&Doc<'s>>) -> Result<Option<ReturnTag<'s>>, ()> {
     let Some(doc) = doc else { return Ok(None) };
-    let Some(index) = (0..doc.len()).find(|&i| doc.words(i).first().is_some_and(|w| tag_name(w) == "@return")) else {
+    // a tag without a value is invalid (`InvalidTagValueNode`), and does not count
+    let Some(index) = (0..doc.len()).find(|&i| {
+        let words = doc.words(i);
+        words.len() > 1 && tag_name(words[0]) == "@return"
+    }) else {
         return Ok(None);
     };
     let text = doc.text(index);
@@ -363,7 +403,9 @@ fn return_tag<'s>(doc: Option<&Doc<'s>>) -> Result<Option<ReturnTag<'s>>, ()> {
 
 /// `getRelationMethodCall`: in the first `return` of the method (outside nested functions and classes), the first
 /// method call, followed down the method calls it is called on; a relation method with an argument.
-fn relation_call<'a>(body: &'a mago_syntax::cst::Block<'a>) -> Option<&'a mago_syntax::cst::MethodCall<'a>> {
+fn relation_call<'a>(
+    body: &'a mago_syntax::cst::Block<'a>,
+) -> Option<&'a mago_syntax::cst::MethodCall<'a>> {
     fn first_return<'a>(node: Node<'a, 'a>) -> Option<&'a mago_syntax::cst::Return<'a>> {
         if let Node::Return(r) = node {
             return Some(r);
@@ -391,7 +433,9 @@ fn relation_call<'a>(body: &'a mago_syntax::cst::Block<'a>) -> Option<&'a mago_s
     }
     /// The first method call in pre-order; `Err` at a first-class callable method call, which php-parser reads as
     /// a method call that Pun does not follow.
-    fn first_call<'a>(node: Node<'a, 'a>) -> Result<Option<&'a mago_syntax::cst::MethodCall<'a>>, ()> {
+    fn first_call<'a>(
+        node: Node<'a, 'a>,
+    ) -> Result<Option<&'a mago_syntax::cst::MethodCall<'a>>, ()> {
         match node {
             Node::MethodCall(c) => return Ok(Some(c)),
             Node::MethodPartialApplication(_) => return Err(()),
@@ -426,11 +470,9 @@ fn relation_call<'a>(body: &'a mago_syntax::cst::Block<'a>) -> Option<&'a mago_s
 /// `ApplicationAnalyzer::getVersion()`: `Illuminate\Foundation\Application::VERSION`, a string.
 fn laravel_version(ctx: &Context<'_>) -> Option<String> {
     let facts = facts(ctx);
-    let t = (facts.codebase).get_class_constant_type(b"Illuminate\\Foundation\\Application", b"VERSION")?;
-    let [mago_codex::ttype::atomic::TAtomic::Scalar(s)] = &t.types[..] else {
-        return None;
-    };
-    String::from_utf8(s.get_known_literal_string_value()?.to_vec()).ok()
+    let t = (facts.codebase)
+        .get_class_constant_type(b"Illuminate\\Foundation\\Application", b"VERSION")?;
+    String::from_utf8(t.get_single_literal_string_value()?.to_vec()).ok()
 }
 
 /// PHP's `version_compare()` without an operator (php-src ext/standard/versioning.c, `php_version_compare()`).
@@ -438,7 +480,13 @@ fn version_compare(a: &[u8], b: &[u8]) -> Ordering {
     if a.is_empty() || b.is_empty() {
         return (!a.is_empty()).cmp(&!b.is_empty());
     }
-    let prepared = |v: &[u8]| if v[0] == b'#' { v.to_vec() } else { canonical(v) };
+    let prepared = |v: &[u8]| {
+        if v[0] == b'#' {
+            v.to_vec()
+        } else {
+            canonical(v)
+        }
+    };
     let (v1, v2) = (prepared(a), prepared(b));
     let at = |v: &[u8], i: usize| v.get(i).copied().unwrap_or(0);
     // each pointer's segment ends at the next `.`; `n` is `None` once a string has no `.` left
@@ -541,7 +589,9 @@ fn special_form(s: &[u8]) -> i32 {
 fn strtol(s: &[u8]) -> i64 {
     s.iter()
         .take_while(|c| c.is_ascii_digit())
-        .fold(0i64, |n, &c| n.saturating_mul(10).saturating_add(i64::from(c - b'0')))
+        .fold(0i64, |n, &c| {
+            n.saturating_mul(10).saturating_add(i64::from(c - b'0'))
+        })
 }
 
 #[cfg(test)]

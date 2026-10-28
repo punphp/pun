@@ -23,7 +23,9 @@ use mago_syntax::cst::{
 use pun_problem::{Edit, Fix, Safety, Span};
 use pun_tokens::php_compat::fnmatch;
 
-use super::object_type::{is_object_type, name_class, special_class};
+use super::object_type::{
+    class_string_class, is_object_type, name_class, object_class, special_class,
+};
 use super::print::reprinted_call;
 use super::{is_name, member_name};
 use crate::rules::rector_batch5::{Value, float_string, value};
@@ -122,9 +124,15 @@ impl Rule for PreferLatestOldest {
         } else {
             "oldest"
         };
-        let edits = if matches!(get_value(ctx, ancestors, column), Got::Str(s, true) if s == "created_at") {
+        let edits = if matches!(get_value(ctx, ancestors, column), Got::Str(s, true) if s == "created_at")
+        {
             // The arguments go, so php-parser prints the call anew.
-            reprinted_call(ctx.source, call.object, node_span(call).end, &format!("->{method}()"))
+            reprinted_call(
+                ctx.source,
+                call.object,
+                node_span(call).end,
+                &format!("->{method}()"),
+            )
         } else {
             let mut edits = vec![Edit::new(node_span(&call.method), method.to_string())];
             let span = |a: &Argument<'_>| node_span(a);
@@ -144,7 +152,10 @@ impl Rule for PreferLatestOldest {
         };
         out.push(Report {
             span: node_span(call),
-            message: format!("Use `{method}()` instead of `{}()`.", String::from_utf8_lossy(name)),
+            message: format!(
+                "Use `{method}()` instead of `{}()`.",
+                String::from_utf8_lossy(name)
+            ),
             help: None,
             fix: Some(Fix {
                 safety: Safety::Unsafe,
@@ -156,7 +167,12 @@ impl Rule for PreferLatestOldest {
 
 impl PreferLatestOldest {
     /// `isAllowedPattern`.
-    fn is_allowed(&self, ctx: &Context<'_>, ancestors: &[Node<'_, '_>], column: &Expression<'_>) -> bool {
+    fn is_allowed(
+        &self,
+        ctx: &Context<'_>,
+        ancestors: &[Node<'_, '_>],
+        column: &Expression<'_>,
+    ) -> bool {
         if self.allowed_patterns.is_empty() {
             return true;
         }
@@ -169,8 +185,7 @@ impl PreferLatestOldest {
             return false;
         };
         let name = &v.name[1..];
-        (self.allowed_patterns.iter())
-            .any(|p| fnmatch(p.trim_start_matches('$').as_bytes(), name))
+        (self.allowed_patterns.iter()).any(|p| fnmatch(p.trim_start_matches('$').as_bytes(), name))
     }
 }
 
@@ -196,7 +211,9 @@ fn to_string(got: Got) -> (String, bool) {
         Got::Str(s, known) => (s, known),
         Got::Other(Value::Int(i)) => (i.to_string(), true),
         // a float PHP writes with an exponent is not read
-        Got::Other(Value::Float(f)) => float_string(f).map_or((String::new(), false), |s| (s, true)),
+        Got::Other(Value::Float(f)) => {
+            float_string(f).map_or((String::new(), false), |s| (s, true))
+        }
         Got::Other(Value::Bool(true)) => ("1".into(), true),
         // `false` and `null`; strings are never `Other`
         Got::Other(_) => (String::new(), true),
@@ -205,7 +222,11 @@ fn to_string(got: Got) -> (String, bool) {
 }
 
 /// `ValueResolver::getValue`.
-pub(crate) fn get_value(ctx: &Context<'_>, ancestors: &[Node<'_, '_>], expr: &Expression<'_>) -> Got {
+pub(crate) fn get_value(
+    ctx: &Context<'_>,
+    ancestors: &[Node<'_, '_>],
+    expr: &Expression<'_>,
+) -> Got {
     let expr = unparenthesize(expr);
     match expr {
         Expression::Binary(b) if matches!(b.operator, BinaryOperator::StringConcat(_)) => {
@@ -213,7 +234,9 @@ pub(crate) fn get_value(ctx: &Context<'_>, ancestors: &[Node<'_, '_>], expr: &Ex
             let (right, r) = to_string(get_value(ctx, ancestors, b.rhs));
             return Got::Str(left + &right, l && r);
         }
-        Expression::Access(Access::ClassConstant(c)) => return class_constant(ctx, ancestors, expr, c),
+        Expression::Access(Access::ClassConstant(c)) => {
+            return class_constant(ctx, ancestors, expr, c);
+        }
         Expression::Literal(Literal::String(_)) | Expression::ConstantAccess(_) => {}
         Expression::Literal(_) | Expression::UnaryPrefix(_) => {}
         _ => return type_value(ctx, expr),
@@ -238,7 +261,7 @@ fn class_constant(
         e @ (Expression::Self_(_) | Expression::Static(_) | Expression::Parent(_)) => {
             special_class(ancestors, e)
         }
-        _ => return type_value(ctx, expr),
+        e => return expression_class_value(ctx, expr, e, &c.constant),
     };
     let (Some(class), ClassLikeConstantSelector::Identifier(name)) = (class, &c.constant) else {
         return Got::Unknown;
@@ -256,6 +279,39 @@ fn class_constant(
     }) {
         Some(t) => literal(&t),
         None => Got::Str(format!("{class}::{constant}"), true),
+    }
+}
+
+/// The type of a constant fetched on a class written as an expression (`ConstExprEvaluator` cannot evaluate it), as
+/// PHPStan's `getClassConstFetchTypeByReflection` gives it: through a literal class string, the constant's value;
+/// through an object, its value only when the class or the constant is final (else PHPStan gives `mixed`, or the
+/// constant's declared type, neither of them one value).
+fn expression_class_value(
+    ctx: &Context<'_>,
+    expr: &Expression<'_>,
+    class: &Expression<'_>,
+    constant: &ClassLikeConstantSelector<'_>,
+) -> Got {
+    let facts = facts(ctx);
+    let (Some(t), ClassLikeConstantSelector::Identifier(name)) =
+        (facts.full_type(node_span(class)), constant)
+    else {
+        return Got::Unknown;
+    };
+    let class_string = class_string_class(ctx, t);
+    let read = match (&class_string, &t.types[..]) {
+        (Some(c), _) => facts.codebase.get_class_like(c.as_bytes()).is_some(),
+        (None, [atomic]) => object_class(atomic).is_some_and(|c| {
+            (facts.codebase.get_class_like(c.as_bytes())).is_some_and(|k| k.flags.is_final())
+                || (facts.codebase.get_class_constant(c.as_bytes(), name.value))
+                    .is_some_and(|k| k.flags.is_final())
+        }),
+        (None, _) => false,
+    };
+    if read {
+        type_value(ctx, expr)
+    } else {
+        Got::Unknown
     }
 }
 

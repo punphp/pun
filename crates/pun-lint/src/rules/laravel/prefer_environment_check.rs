@@ -8,7 +8,9 @@
 //! Compared with `'local'` or `'production'`, a facade call or a call on an `Illuminate\Foundation\Application`
 //! becomes `isLocal()` or `isProduction()` instead.
 
-use mago_syntax::cst::{BinaryOperator, Call, Expression, Node, NodeKind};
+use mago_syntax::cst::{
+    ArgumentList, BinaryOperator, Call, ClassLikeMemberSelector, Expression, Node, NodeKind,
+};
 
 use super::object_type::is_object_type;
 use super::{get_arg, is_name, member_name, replace};
@@ -34,8 +36,7 @@ impl Rule for PreferEnvironmentCheck {
         ctx: &Context<'_>,
         out: &mut Vec<Report>,
     ) {
-        let valid = |e: &Expression<'_>| valid_call(ctx, ancestors, e);
-        let (call, other, negated) = match node {
+        let (call, (method, list), other, negated) = match node {
             Node::FunctionCall(f) => {
                 if !named(f, "in_array") {
                     return;
@@ -46,12 +47,13 @@ impl Rule for PreferEnvironmentCheck {
                 ) else {
                     return;
                 };
-                if !valid(needle.value()) {
+                let Some(parts) = valid_call(ctx, ancestors, needle.value()) else {
                     return;
-                }
-                (needle.value(), haystack.value(), false)
+                };
+                (needle.value(), parts, haystack.value(), false)
             }
-            Node::Binary(b) => {
+            _ => {
+                let Node::Binary(b) = node else { return };
                 let negated = match b.operator {
                     BinaryOperator::Identical(_) | BinaryOperator::Equal(_) => false,
                     BinaryOperator::NotIdentical(_)
@@ -59,23 +61,17 @@ impl Rule for PreferEnvironmentCheck {
                     | BinaryOperator::AngledNotEqual(_) => true,
                     _ => return,
                 };
-                if valid(b.lhs) {
-                    (b.lhs, b.rhs, negated)
-                } else if valid(b.rhs) {
-                    (b.rhs, b.lhs, negated)
+                if let Some(parts) = valid_call(ctx, ancestors, b.lhs) {
+                    (b.lhs, parts, b.rhs, negated)
+                } else if let Some(parts) = valid_call(ctx, ancestors, b.rhs) {
+                    (b.rhs, parts, b.lhs, negated)
                 } else {
                     return;
                 }
             }
-            _ => return,
         };
         let call = unparenthesize(call);
         let other = unparenthesize(other);
-        let (method, list) = match call {
-            Expression::Call(Call::Method(m)) => (&m.method, &m.argument_list),
-            Expression::Call(Call::StaticMethod(s)) => (&s.method, &s.argument_list),
-            _ => unreachable!("valid_call checked the call"),
-        };
         let replacement = match other {
             Expression::Literal(mago_syntax::cst::Literal::String(s)) => {
                 method_name(ctx, ancestors, call, s.value)
@@ -105,27 +101,35 @@ impl Rule for PreferEnvironmentCheck {
     }
 }
 
-/// `validMethodCall`: `environment()` without arguments on an application or through the `App` facade.
-fn valid_call(ctx: &Context<'_>, ancestors: &[Node<'_, '_>], expr: &Expression<'_>) -> bool {
-    match unparenthesize(expr) {
-        Expression::Call(Call::Method(m)) => {
-            member_name(&m.method).is_some_and(|n| is_name(n, "environment"))
-                && m.argument_list.arguments.is_empty()
-                && is_object_type(
-                    ctx,
-                    ancestors,
-                    m.object,
-                    "Illuminate\\Contracts\\Foundation\\Application",
-                )
+/// `validMethodCall`: `environment()` without arguments on an application or through the `App` facade; the call's
+/// method and arguments.
+fn valid_call<'a>(
+    ctx: &Context<'_>,
+    ancestors: &[Node<'_, '_>],
+    expr: &'a Expression<'a>,
+) -> Option<(&'a ClassLikeMemberSelector<'a>, &'a ArgumentList<'a>)> {
+    let (method, list, on, is_static) = match unparenthesize(expr) {
+        Expression::Call(Call::Method(m)) => (&m.method, &m.argument_list, m.object, false),
+        Expression::Call(Call::StaticMethod(s)) => (&s.method, &s.argument_list, s.class, true),
+        _ => return None,
+    };
+    let on_application = || {
+        if is_static {
+            is_object_type(ctx, ancestors, on, "Illuminate\\Support\\Facades\\App")
+                || is_object_type(ctx, ancestors, on, "App")
+        } else {
+            is_object_type(
+                ctx,
+                ancestors,
+                on,
+                "Illuminate\\Contracts\\Foundation\\Application",
+            )
         }
-        Expression::Call(Call::StaticMethod(s)) => {
-            member_name(&s.method).is_some_and(|n| is_name(n, "environment"))
-                && s.argument_list.arguments.is_empty()
-                && (is_object_type(ctx, ancestors, s.class, "Illuminate\\Support\\Facades\\App")
-                    || is_object_type(ctx, ancestors, s.class, "App"))
-        }
-        _ => false,
-    }
+    };
+    (member_name(method).is_some_and(|n| is_name(n, "environment"))
+        && list.arguments.is_empty()
+        && on_application())
+    .then_some((method, list))
 }
 
 /// `getMethodName`: `isLocal` or `isProduction` for a string literal `'local'` or `'production'`, except on a method
@@ -137,7 +141,12 @@ fn method_name(
     value: Option<&[u8]>,
 ) -> Option<&'static str> {
     if let Expression::Call(Call::Method(m)) = call
-        && !is_object_type(ctx, ancestors, m.object, "Illuminate\\Foundation\\Application")
+        && !is_object_type(
+            ctx,
+            ancestors,
+            m.object,
+            "Illuminate\\Foundation\\Application",
+        )
     {
         return None;
     }

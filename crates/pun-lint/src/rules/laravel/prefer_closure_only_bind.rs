@@ -41,10 +41,16 @@ impl Rule for PreferClosureOnlyBind {
         out: &mut Vec<Report>,
     ) {
         let Node::MethodCall(call) = node else { return };
-        if !member_name(&call.method)
-            .is_some_and(|n| ["bind", "singleton", "bindIf", "singletonIf"].iter().any(|m| is_name(n, m)))
-            || !is_object_type(ctx, ancestors, call.object, "Illuminate\\Contracts\\Container\\Container")
-        {
+        if !member_name(&call.method).is_some_and(|n| {
+            ["bind", "singleton", "bindIf", "singletonIf"]
+                .iter()
+                .any(|m| is_name(n, m))
+        }) || !is_object_type(
+            ctx,
+            ancestors,
+            call.object,
+            "Illuminate\\Contracts\\Container\\Container",
+        ) {
             return;
         }
         let args: Vec<_> = call.argument_list.arguments.iter().collect();
@@ -59,7 +65,9 @@ impl Rule for PreferClosureOnlyBind {
             return;
         };
         let facts = facts(ctx);
-        let Some(class) = (facts.full_type(node_span(abstract_expr))).and_then(|t| class_string_class(ctx, t)) else {
+        let Some(class) =
+            (facts.full_type(node_span(abstract_expr))).and_then(|t| class_string_class(ctx, t))
+        else {
             return;
         };
         if inferred_super_of(ctx, closure, &class).is_none_or(|t| t == Tri::No) {
@@ -69,22 +77,29 @@ impl Rule for PreferClosureOnlyBind {
         let type_edit = match &closure.return_type_hint {
             Some(r) => Edit::new(node_span(&r.hint), hint),
             None => {
-                let close = closure.use_clause.as_ref().map_or(
-                    closure.parameter_list.right_parenthesis,
-                    |u| u.right_parenthesis,
-                );
+                let close = closure
+                    .use_clause
+                    .as_ref()
+                    .map_or(closure.parameter_list.right_parenthesis, |u| {
+                        u.right_parenthesis
+                    });
                 let at = close.end.offset as usize;
                 Edit::new(Span::new(at, at), format!(": {hint}"))
             }
         };
         out.push(Report {
             span: node_span(call),
-            message: format!("Declare `{class}` as the closure's return type instead of passing it."),
+            message: format!(
+                "Declare `{class}` as the closure's return type instead of passing it."
+            ),
             help: None,
             fix: Some(Fix {
                 safety: Safety::Safe,
                 edits: vec![
-                    Edit::new(Span::new(node_span(first).start, node_span(second).start), ""),
+                    Edit::new(
+                        Span::new(node_span(first).start, node_span(second).start),
+                        "",
+                    ),
                     type_edit,
                 ],
             }),
@@ -121,9 +136,10 @@ fn answer_of(ctx: &Context<'_>, value: &Expression<'_>, class: &str) -> Option<T
         return Some(max(then, answer_of(ctx, c.r#else, class)?));
     }
     let facts = facts(ctx);
-    let Some(t) = facts.native_type(node_span(value)).filter(|t| !t.types.is_empty()) else {
-        return Some(Tri::Yes);
-    };
+    // a value Mago has no type for is PHPStan's error type, `mixed`
+    let types = facts
+        .native_type(node_span(value))
+        .map_or(&[][..], |t| &t.types[..]);
     let exact = match value {
         Expression::Instantiation(i) => Some(matches!(
             i.class,
@@ -132,8 +148,8 @@ fn answer_of(ctx: &Context<'_>, value: &Expression<'_>, class: &str) -> Option<T
         Expression::Variable(_) => None,
         _ => Some(false),
     };
-    let mut best = Tri::No;
-    for atomic in t.types.iter() {
+    let mut best = if types.is_empty() { Tri::Yes } else { Tri::No };
+    for atomic in types {
         let answer = match atomic {
             TAtomic::Mixed(_) | TAtomic::Object(TObject::Any) => Tri::Yes,
             TAtomic::Callable(c) if c.get_signature().is_some_and(|s| s.is_closure) => {

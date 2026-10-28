@@ -57,8 +57,26 @@ impl Rule for AddTapClosureType {
         out: &mut Vec<Report>,
     ) {
         let (closure, value) = match node {
-            Node::MethodCall(call) => {
-                let args: Vec<&Expression<'_>> = call.argument_list.arguments.iter().map(argument_value).collect();
+            Node::FunctionCall(call) => {
+                let args: Vec<&Expression<'_>> = call
+                    .argument_list
+                    .arguments
+                    .iter()
+                    .map(argument_value)
+                    .collect();
+                if !named(call, "tap") || args.len() < 2 {
+                    return;
+                }
+                (args[1], args[0])
+            }
+            _ => {
+                let Node::MethodCall(call) = node else { return };
+                let args: Vec<&Expression<'_>> = call
+                    .argument_list
+                    .arguments
+                    .iter()
+                    .map(argument_value)
+                    .collect();
                 if !member_name(&call.method).is_some_and(|n| is_name(n, "tap"))
                     || args.is_empty()
                     || !is_object_type(ctx, ancestors, call.object, TAPPABLE)
@@ -67,14 +85,6 @@ impl Rule for AddTapClosureType {
                 }
                 (args[0], call.object)
             }
-            Node::FunctionCall(call) => {
-                let args: Vec<&Expression<'_>> = call.argument_list.arguments.iter().map(argument_value).collect();
-                if !named(call, "tap") || args.len() < 2 {
-                    return;
-                }
-                (args[1], args[0])
-            }
-            _ => return,
         };
         let Expression::Closure(closure) = closure else {
             return;
@@ -82,7 +92,8 @@ impl Rule for AddTapClosureType {
         if let Some(fix) = refactor_parameter(ctx, ancestors, closure, value) {
             out.push(Report {
                 span: node_span(closure.parameter_list.parameters.first().unwrap()),
-                message: "Type the tap closure's parameter with the tapped value's type.".to_string(),
+                message: "Type the tap closure's parameter with the tapped value's type."
+                    .to_string(),
                 help: None,
                 fix: Some(Fix {
                     safety: Safety::Unsafe,
@@ -118,8 +129,13 @@ fn refactor_parameter(
     // a `mixed`, a class the codebase does not know, `object` (Mago's type of a conditional return type PHPStan
     // resolves to `mixed`, a template's bound) and `never` (Mago's type of code it finds wrong)
     let unknown = |a: &TAtomic| match a {
-        TAtomic::Object(TObject::Named(n)) => facts.codebase.get_class_like(n.name.as_bytes()).is_none(),
-        TAtomic::Mixed(_) | TAtomic::Reference(_) | TAtomic::Object(TObject::Any) | TAtomic::Never => true,
+        TAtomic::Object(TObject::Named(n)) => {
+            facts.codebase.get_class_like(n.name.as_bytes()).is_none()
+        }
+        TAtomic::Mixed(_)
+        | TAtomic::Reference(_)
+        | TAtomic::Object(TObject::Any)
+        | TAtomic::Never => true,
         _ => false,
     };
     if t.types.iter().any(unknown) {
@@ -143,7 +159,10 @@ fn new_type(
     };
     let name = match new.class {
         Expression::Static(_) => {
-            let values = vec![Member::Class { name: "static".to_string(), generic: false }];
+            let values = vec![Member::Class {
+                name: "static".to_string(),
+                generic: false,
+            }];
             return Some((None, values));
         }
         Expression::Identifier(id) => resolve_class_name(ancestors, id),
@@ -152,7 +171,13 @@ fn new_type(
         _ => return None,
     };
     facts.codebase.get_class_like(name.as_bytes())?;
-    Some((Some(format!("\\{name}")), vec![Member::Class { name, generic: false }]))
+    Some((
+        Some(format!("\\{name}")),
+        vec![Member::Class {
+            name,
+            generic: false,
+        }],
+    ))
 }
 
 /// The edit that gives `param` the declaration `declared` of a value whose type has `values`, as `refactorParameter`
@@ -174,7 +199,8 @@ fn parameter_edit(
         if let Some(declared) = &declared {
             // the same text: nothing changes; another case of a type Pun does not compare: equal or not is unknown
             if text == declared
-                || (text.eq_ignore_ascii_case(declared) && members.iter().any(|m| *m == Member::Other))
+                || (text.eq_ignore_ascii_case(declared)
+                    && members.iter().any(|m| *m == Member::Other))
             {
                 return None;
             }
@@ -196,7 +222,10 @@ fn parameter_edit(
 /// The parameter declaration of a type: `Some(None)` where Rector has none (`null`, `never`, `void` alone),
 /// `None` where Pun does not know Rector's.
 fn declaration(facts: &Facts, types: &[TAtomic], php_version: u32) -> Option<Option<String>> {
-    if types.iter().all(|a| matches!(a, TAtomic::Null | TAtomic::Never | TAtomic::Void)) {
+    if types
+        .iter()
+        .all(|a| matches!(a, TAtomic::Null | TAtomic::Never | TAtomic::Void))
+    {
         return Some(None);
     }
     let declared = return_declaration(union_order(types), &facts.codebase, php_version, &[], true)?;
@@ -206,7 +235,13 @@ fn declaration(facts: &Facts, types: &[TAtomic], php_version: u32) -> Option<Opt
         "?static" => "?self".to_string(),
         m => m.to_string(),
     };
-    Some(Some(declared.split('|').map(self_named).collect::<Vec<_>>().join("|")))
+    Some(Some(
+        declared
+            .split('|')
+            .map(self_named)
+            .collect::<Vec<_>>()
+            .join("|"),
+    ))
 }
 
 /// A part of a type as `TypeComparator` compares it.
@@ -227,11 +262,18 @@ enum Member {
 }
 
 /// The members of a parameter's hint (`?T` is `T|null`); `None` for an intersection.
-fn hint_members(ancestors: &[Node<'_, '_>], hint: &Hint<'_>, own: Option<&str>) -> Option<Vec<Member>> {
+fn hint_members(
+    ancestors: &[Node<'_, '_>],
+    hint: &Hint<'_>,
+    own: Option<&str>,
+) -> Option<Vec<Member>> {
     let mut out = Vec::new();
     let mut stack = vec![hint];
     while let Some(h) = stack.pop() {
-        let class = |name: String| Member::Class { name, generic: false };
+        let class = |name: String| Member::Class {
+            name,
+            generic: false,
+        };
         out.push(match h {
             Hint::Parenthesized(p) => {
                 stack.push(&p.hint);
@@ -278,7 +320,10 @@ fn value_members(facts: &Facts, types: &[TAtomic], own: Option<&str>) -> Vec<Mem
             TAtomic::Null => Member::Null,
             TAtomic::Object(TObject::Named(n)) if n.intersection_types.is_none() => {
                 match (n.is_this || n.is_static, own) {
-                    (true, Some(own)) => Member::Class { name: own.to_string(), generic: false },
+                    (true, Some(own)) => Member::Class {
+                        name: own.to_string(),
+                        generic: false,
+                    },
                     _ => class(&n.name.to_string()),
                 }
             }

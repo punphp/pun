@@ -17,8 +17,8 @@ use mago_syntax::cst::{
 };
 use pun_problem::{Edit, Fix, Safety, Span};
 
-use super::object_type::{is_hint_type, is_object_type};
 use super::member_name;
+use super::object_type::{is_hint_type, is_object_type};
 use super::print::kept_arguments;
 use crate::rules::rector_code_quality::named;
 use crate::rules::types::facts::facts;
@@ -92,10 +92,11 @@ impl Rule for PreferRequestValidate {
         let params: Vec<&FunctionLikeParameter<'_>> =
             method.parameter_list.parameters.iter().collect();
         let mut edits = Vec::new();
-        let var = match params
-            .iter()
-            .find(|p| p.hint.as_ref().is_some_and(|h| is_hint_type(ctx, ancestors, h, REQUEST)))
-        {
+        let var = match params.iter().find(|p| {
+            p.hint
+                .as_ref()
+                .is_some_and(|h| is_hint_type(ctx, ancestors, h, REQUEST))
+        }) {
             Some(p) if p.ellipsis.is_some() => return,
             Some(p) => String::from_utf8_lossy(p.variable.name).into_owned(),
             None => {
@@ -147,13 +148,25 @@ impl Rule for PreferRequestValidate {
 }
 
 /// `$var->name(args)`, as php-parser prints a new call at `at` over kept arguments.
-fn method_call(ctx: &Context<'_>, var: &str, name: &str, list: &ArgumentList<'_>, at: usize) -> String {
-    format!("{var}->{name}({})", kept_arguments(ctx.source, list, at).join(", "))
+fn method_call(
+    ctx: &Context<'_>,
+    var: &str,
+    name: &str,
+    list: &ArgumentList<'_>,
+    at: usize,
+) -> String {
+    format!(
+        "{var}->{name}({})",
+        kept_arguments(ctx.source, list, at).join(", ")
+    )
 }
 
 /// The calls `pick` takes, outermost first, in the method's own scope: arrow functions and an anonymous class's
 /// arguments count, a closure, a function and a class's body do not. A taken call's arguments are not searched.
-fn collect<'ast, 'arena>(node: Node<'ast, 'arena>, pick: &mut dyn FnMut(Node<'ast, 'arena>) -> bool) {
+fn collect<'ast, 'arena>(
+    node: Node<'ast, 'arena>,
+    pick: &mut dyn FnMut(Node<'ast, 'arena>) -> bool,
+) {
     node.visit_children(|child| {
         if pick(child) {
             return;
@@ -178,7 +191,9 @@ fn collect<'ast, 'arena>(node: Node<'ast, 'arena>, pick: &mut dyn FnMut(Node<'as
 /// Whether an unqualified `request()` in a namespace calls that namespace's own `request` function, which php-parser's
 /// name resolution prefers when it exists.
 fn namespaced(ctx: &Context<'_>, ancestors: &[Node<'_, '_>], call: &FunctionCall<'_>) -> bool {
-    let (Expression::Identifier(Identifier::Local(_)), Some(ns)) = (call.function, namespace_of(ancestors)) else {
+    let (Expression::Identifier(Identifier::Local(_)), Some(ns)) =
+        (call.function, namespace_of(ancestors))
+    else {
         return false;
     };
     facts(ctx)
@@ -189,9 +204,7 @@ fn namespaced(ctx: &Context<'_>, ancestors: &[Node<'_, '_>], call: &FunctionCall
 /// Whether the method's prototype (`getPrototype()->getDeclaringClass()`) is another class's: an ancestor class has a
 /// non-private method of that name (for the constructor, an abstract one), or an interface of the class has one.
 fn overrides(ctx: &Context<'_>, ancestors: &[Node<'_, '_>], method: &Method<'_>) -> bool {
-    let Some(scope) = class_scope(ancestors) else {
-        return false;
-    };
+    let parents = class_scope(ancestors).map_or(Vec::new(), |s| s.parents);
     let facts = facts(ctx);
     let codebase = &facts.codebase;
     let constructor = method.name.value.eq_ignore_ascii_case(b"__construct");
@@ -206,7 +219,7 @@ fn overrides(ctx: &Context<'_>, ancestors: &[Node<'_, '_>], method: &Method<'_>)
                 interface || (!m.visibility.is_private() && (!constructor || m.is_abstract))
             })
     };
-    scope.parents.iter().any(|p| {
+    parents.iter().any(|p| {
         declared_in(p)
             || codebase.get_class_like(p.as_bytes()).is_some_and(|c| {
                 (c.all_parent_classes.iter())

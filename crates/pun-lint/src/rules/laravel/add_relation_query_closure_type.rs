@@ -44,13 +44,28 @@ impl Rule for AddRelationQueryClosureType {
             return;
         };
         // `getPosition`: the morph methods take the closure third, the others second
-        let position = if METHODS[4..].iter().any(|m| is_name(call.name, m)) { 2 } else { 1 };
-        let Some(Some(param)) = call.arguments.get(position).and_then(|a| closure_first_param(a)) else {
+        let position = if METHODS[4..].iter().any(|m| is_name(call.name, m)) {
+            2
+        } else {
+            1
+        };
+        let Some(Some(param)) = call
+            .arguments
+            .get(position)
+            .and_then(|a| closure_first_param(a))
+        else {
             return;
         };
-        if !METHODS.iter().any(|m| is_matching_call(ctx, ancestors, &call, m)) {
+        if !METHODS
+            .iter()
+            .any(|m| is_matching_call(ctx, ancestors, &call, m))
+        {
             return;
         }
-        out.extend(type_param(&node, param, "Illuminate\\Contracts\\Database\\Query\\Builder"));
+        out.extend(type_param(
+            &node,
+            param,
+            "Illuminate\\Contracts\\Database\\Query\\Builder",
+        ));
     }
 }

@@ -10,7 +10,7 @@
 //! statement, each on a new line at the statement's indentation; what stood between that token and the statement
 //! (its comments, or the rest of a line) follows them.
 
-use mago_syntax::cst::{AssignmentOperator, Expression, Node, NodeKind};
+use mago_syntax::cst::{AssignmentOperator, Expression, ExpressionStatement, Node, NodeKind};
 use pun_problem::{Edit, Fix, Safety, Span};
 
 use super::object_type::is_object_type;
@@ -39,10 +39,13 @@ impl Rule for NoAppArrayAccess {
         ctx: &Context<'_>,
         out: &mut Vec<Report>,
     ) {
-        let Node::ExpressionStatement(statement) = node else {
-            return;
-        };
-        let Expression::Assignment(assign) = statement.expression else {
+        let Node::ExpressionStatement(
+            statement @ ExpressionStatement {
+                expression: Expression::Assignment(assign),
+                ..
+            },
+        ) = node
+        else {
             return;
         };
         let (AssignmentOperator::Assign(_), Expression::Call(mago_syntax::cst::Call::Method(call))) =
@@ -53,14 +56,20 @@ impl Rule for NoAppArrayAccess {
         let Expression::ArrayAccess(access) = unparenthesize(call.object) else {
             return;
         };
-        if !is_object_type(ctx, ancestors, access.array, "Illuminate\\Contracts\\Foundation\\Application")
-            || !matches!(get_value(ctx, ancestors, access.index), Got::Str(s, _) if s == "validator")
+        if !is_object_type(
+            ctx,
+            ancestors,
+            access.array,
+            "Illuminate\\Contracts\\Foundation\\Application",
+        ) || !matches!(get_value(ctx, ancestors, access.index), Got::Str(s, _) if s == "validator")
         {
             return;
         }
         let source = ctx.source;
         let start = node_span(statement).start;
-        let outer = (ancestors.iter().rev().map(|a| node_span(a).start)).find(|&s| s < start).unwrap_or(0);
+        let outer = (ancestors.iter().rev().map(|a| node_span(a).start))
+            .find(|&s| s < start)
+            .unwrap_or(0);
         let at = previous_token_end(source, outer, start);
         let indent = " ".repeat(indentation(source, start));
         let fetch = kept_nodes(source, std::iter::once(node_span(access)), start).concat();

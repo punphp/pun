@@ -22,11 +22,13 @@ pub(crate) struct CallParts<'a> {
 }
 
 /// The parts of a `MethodCall` or `StaticMethodCall` node whose method is written as a name.
-pub(crate) fn call_parts<'a>(node: &Node<'a, 'a>) -> Option<CallParts<'a>> {
-    let (on, is_static, method, list) = match node {
-        Node::MethodCall(m) => (m.object, false, &m.method, &m.argument_list),
+pub(crate) fn call_parts<'a>(n: &Node<'a, 'a>) -> Option<CallParts<'a>> {
+    let (on, is_static, method, list) = match n {
         Node::StaticMethodCall(s) => (s.class, true, &s.method, &s.argument_list),
-        _ => return None,
+        _ => {
+            let Node::MethodCall(m) = n else { return None };
+            (m.object, false, &m.method, &m.argument_list)
+        }
     };
     Some(CallParts {
         on,
@@ -67,10 +69,12 @@ fn is_proxy_call(ctx: &Context<'_>, ancestors: &[Node<'_, '_>], call: &CallParts
         e @ (Expression::Self_(_) | Expression::Static(_) | Expression::Parent(_)) => {
             special_class(ancestors, e)
         }
-        e => facts.full_type(node_span(e)).and_then(|t| match &t.types[..] {
-            [atomic] => object_class(atomic),
-            _ => None,
-        }),
+        e => facts
+            .full_type(node_span(e))
+            .and_then(|t| match &t.types[..] {
+                [atomic] => object_class(atomic),
+                _ => None,
+            }),
     };
     class.is_some_and(|class| {
         is_a(ctx, &class, &[MODEL])

@@ -46,7 +46,12 @@ impl Rule for NoNegatedContains {
         } else {
             return;
         };
-        if !is_object_type(ctx, ancestors, call.object, "Illuminate\\Support\\Enumerable") {
+        if !is_object_type(
+            ctx,
+            ancestors,
+            call.object,
+            "Illuminate\\Support\\Enumerable",
+        ) {
             return;
         }
         let span = node_span(call);
@@ -58,7 +63,10 @@ impl Rule for NoNegatedContains {
         );
         out.push(replace(
             node_span(not),
-            format!("Use `{replacement}()` instead of negating `{}()`.", String::from_utf8_lossy(name)),
+            format!(
+                "Use `{replacement}()` instead of negating `{}()`.",
+                String::from_utf8_lossy(name)
+            ),
             code,
         ));
     }

@@ -75,7 +75,9 @@ impl Rule for PreferQueryBuilderCall {
         ctx: &Context<'_>,
         out: &mut Vec<Report>,
     ) {
-        let Node::StaticMethodCall(call) = node else { return };
+        let Node::StaticMethodCall(call) = node else {
+            return;
+        };
         let Some(name) = member_name(&call.method) else {
             return;
         };
@@ -99,7 +101,9 @@ impl Rule for PreferQueryBuilderCall {
         let args = kept_arguments(source, &call.argument_list, start).join(", ");
         out.push(Report {
             span: node_span(call),
-            message: format!("Call `{method}()` on `query()` instead of through the model's magic static call."),
+            message: format!(
+                "Call `{method}()` on `query()` instead of through the model's magic static call."
+            ),
             help: None,
             fix: Some(Fix {
                 safety: Safety::Unsafe,
@@ -181,9 +185,8 @@ fn is_magic_method(ctx: &Context<'_>, model: &str, method: &str) -> bool {
                 codebase.method_exists(b.as_bytes(), method.as_bytes()) && public_instance(b)
             });
     }
-    let Some(declaring) = codebase.get_declaring_method_class(model.as_bytes(), method.as_bytes()) else {
-        return false;
-    };
-    let declaring = declaring.to_string();
-    public_instance(&declaring) && is_a(ctx, &declaring, &BUILDERS)
+    (codebase.get_declaring_method_class(model.as_bytes(), method.as_bytes())).is_some_and(|d| {
+        let declaring = d.to_string();
+        public_instance(&declaring) && is_a(ctx, &declaring, &BUILDERS)
+    })
 }

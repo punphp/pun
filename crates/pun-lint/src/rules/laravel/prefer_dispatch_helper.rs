@@ -6,11 +6,11 @@
 //! `Illuminate\Foundation\Events\Dispatchable` becomes `event(new \Event(...))`. The class must be one the codebase
 //! knows; `self`, `static` and `parent` stay as they are written.
 
-use mago_syntax::cst::{Expression, Node, NodeKind};
+use mago_syntax::cst::{ClassLikeMemberSelector, Expression, Node, NodeKind, StaticMethodCall};
 
 use super::object_type::{name_class, special_class};
 use super::print::kept_arguments;
-use super::{is_name, member_name, replace};
+use super::{is_name, replace};
 use crate::rules::types::facts::facts;
 use crate::syntax::node_span;
 use crate::{Context, Report, Rule};
@@ -33,12 +33,16 @@ impl Rule for PreferDispatchHelper {
         ctx: &Context<'_>,
         out: &mut Vec<Report>,
     ) {
-        let Node::StaticMethodCall(call) = node else {
+        let Node::StaticMethodCall(
+            call @ StaticMethodCall {
+                method: ClassLikeMemberSelector::Identifier(method),
+                ..
+            },
+        ) = node
+        else {
             return;
         };
-        let Some(name) = member_name(&call.method) else {
-            return;
-        };
+        let name = method.value;
         let sync = is_name(name, "dispatchSync");
         if !sync && !is_name(name, "dispatch") {
             return;
@@ -69,7 +73,8 @@ impl Rule for PreferDispatchHelper {
         } else {
             return;
         };
-        let args = kept_arguments(ctx.source, &call.argument_list, node_span(call).start).join(", ");
+        let args =
+            kept_arguments(ctx.source, &call.argument_list, node_span(call).start).join(", ");
         out.push(replace(
             node_span(call),
             format!("Use the `{helper}()` helper instead of the static `dispatch` method."),

@@ -5,23 +5,24 @@
 //! compared ignoring ASCII case) has a default `Foo::class` or a string gets
 //! `@extends \Illuminate\Database\Eloquent\Factories\Factory<\Foo>` in its doc comment, unless the doc has an
 //! `@extends` tag already (the name compared exactly). The model is the class's resolved name as written (`self`
-//! stays `self`) or the string's value, printed after one `\`.
+//! stays `self`) or the string's value, printed after one `\`. A class expression PHP rejects in a property's default
+//! (`$x::class`) leaves the class alone.
 //!
 //! Without a doc comment, a new one goes before the class (its attributes included); an existing one gets the tag as
 //! a new last line (`PhpDocInfoPrinter`, see [`Doc::print_appending`]).
 
 use mago_syntax::cst::{
-    Access, ClassLikeMember, CompositeString, Expression, Literal,
-    Node, NodeKind, Property, PropertyItem,
+    Access, ClassLikeMember, CompositeString, Expression, Literal, Node, NodeKind, Property,
+    PropertyItem,
 };
 use pun_problem::{Edit, Fix, Safety, Span};
 
 use super::is_a;
 use super::names::resolve_class_name;
 use super::prefer_validation_rule_array::document_value;
+use crate::rules::class_method::qualified;
 use crate::rules::lint_b_doc::Doc;
 use crate::rules::rector_conditions::indentation;
-use crate::rules::types::namespace_of;
 use crate::syntax::{node_span, unparenthesize};
 use crate::{Context, Report, Rule};
 
@@ -46,11 +47,7 @@ impl Rule for AddFactoryExtendsPhpdoc {
         out: &mut Vec<Report>,
     ) {
         let Node::Class(class) = node else { return };
-        let local = String::from_utf8_lossy(class.name.value);
-        let name = match namespace_of(ancestors) {
-            Some(ns) => format!("{ns}\\{local}"),
-            None => local.into_owned(),
-        };
+        let name = qualified(ancestors, class.name.value);
         if !is_a(ctx, &name, &[FACTORY]) {
             return;
         }
@@ -71,18 +68,22 @@ impl Rule for AddFactoryExtendsPhpdoc {
         let Some(model) = model_name(ctx, ancestors, item.value) else {
             return;
         };
-        let tag = format!(
-            "@extends \\{FACTORY}<\\{}>",
-            model.trim_start_matches('\\')
-        );
+        let tag = format!("@extends \\{FACTORY}<\\{}>", model.trim_start_matches('\\'));
         let start = node_span(class).start;
         let source = ctx.source;
         let edit = match Doc::of(source, ancestors, start) {
             Some(doc) => {
-                if (0..doc.len()).any(|i| doc.words(i).first().is_some_and(|w| tag_name(w) == "@extends")) {
+                if (0..doc.len()).any(|i| {
+                    doc.words(i)
+                        .first()
+                        .is_some_and(|w| tag_name(w) == "@extends")
+                }) {
                     return;
                 }
-                Edit::new(doc.span, doc.print_appending(&vec![false; doc.len()], &[&tag]))
+                Edit::new(
+                    doc.span,
+                    doc.print_appending(&vec![false; doc.len()], &[&tag]),
+                )
             }
             None => {
                 let indent = " ".repeat(indentation(source, start));
@@ -113,15 +114,21 @@ fn item_name<'a>(item: &PropertyItem<'a>) -> &'a [u8] {
 }
 
 /// `getModelName`: the class name of `X::class` (any constant of a class written as a name), or a string's value.
-fn model_name(ctx: &Context<'_>, ancestors: &[Node<'_, '_>], value: &Expression<'_>) -> Option<String> {
+fn model_name(
+    ctx: &Context<'_>,
+    ancestors: &[Node<'_, '_>],
+    value: &Expression<'_>,
+) -> Option<String> {
     let bytes = match unparenthesize(value) {
         Expression::Access(Access::ClassConstant(c)) => {
+            // PHP rejects any other class expression in a property's default
             return match c.class {
                 Expression::Identifier(id) => Some(resolve_class_name(ancestors, id)),
-                Expression::Self_(_) => Some("self".into()),
-                Expression::Static(_) => Some("static".into()),
-                Expression::Parent(_) => Some("parent".into()),
-                _ => None,
+                e => matches!(
+                    e,
+                    Expression::Self_(_) | Expression::Static(_) | Expression::Parent(_)
+                )
+                .then(|| ctx.source[node_span(e).start..node_span(e).end].to_string()),
             };
         }
         Expression::Literal(Literal::String(s)) => s.value?.to_vec(),

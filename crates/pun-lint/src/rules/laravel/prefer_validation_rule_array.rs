@@ -20,9 +20,9 @@ use pun_problem::{Edit, Fix, Safety};
 
 use super::object_type::is_object_type;
 use super::{is_a, is_name, member_name};
+use crate::rules::class_method::qualified;
 use crate::rules::prefer_absolute_include::print_string;
 use crate::rules::rector_code_quality::text;
-use crate::rules::types::namespace_of;
 use crate::syntax::{node_span, unparenthesize};
 use crate::{Context, Report, Rule};
 
@@ -34,7 +34,11 @@ impl Rule for PreferValidationRuleArray {
     }
 
     fn targets(&self) -> Option<&'static [NodeKind]> {
-        Some(&[NodeKind::MethodCall, NodeKind::StaticMethodCall, NodeKind::Class])
+        Some(&[
+            NodeKind::MethodCall,
+            NodeKind::StaticMethodCall,
+            NodeKind::Class,
+        ])
     }
 
     fn visit<'ast, 'arena>(
@@ -58,7 +62,12 @@ impl Rule for PreferValidationRuleArray {
                     first.value()
                 } else if is_name(name, "make") {
                     let [_, rules] = args else { return };
-                    if !is_object_type(ctx, ancestors, call.object, "Illuminate\\Validation\\Factory") {
+                    if !is_object_type(
+                        ctx,
+                        ancestors,
+                        call.object,
+                        "Illuminate\\Validation\\Factory",
+                    ) {
                         return;
                     }
                     rules.value()
@@ -73,17 +82,19 @@ impl Rule for PreferValidationRuleArray {
                 let [_, rules] = call.argument_list.arguments.as_slice() else {
                     return;
                 };
-                if !is_object_type(ctx, ancestors, call.class, "Illuminate\\Support\\Facades\\Validator") {
+                if !is_object_type(
+                    ctx,
+                    ancestors,
+                    call.class,
+                    "Illuminate\\Support\\Facades\\Validator",
+                ) {
                     return;
                 }
                 rules.value()
             }
-            Node::Class(class) => {
-                let name = String::from_utf8_lossy(class.name.value);
-                let name = match namespace_of(ancestors) {
-                    Some(ns) => format!("{ns}\\{name}"),
-                    None => name.into_owned(),
-                };
+            _ => {
+                let Node::Class(class) = node else { return };
+                let name = qualified(ancestors, class.name.value);
                 if !is_a(ctx, &name, &["Illuminate\\Foundation\\Http\\FormRequest"]) {
                     return;
                 }
@@ -103,7 +114,6 @@ impl Rule for PreferValidationRuleArray {
                 report(node, edits, out);
                 return;
             }
-            _ => return,
         };
         report(node, rule_edits(ctx, unparenthesize(rules)), out);
     }
@@ -115,7 +125,9 @@ fn report(node: Node<'_, '_>, edits: Vec<Edit>, out: &mut Vec<Report>) {
     }
     out.push(Report {
         span: node_span(&node),
-        message: "Write each validation rule as an item of an array instead of joining them with `|`.".to_string(),
+        message:
+            "Write each validation rule as an item of an array instead of joining them with `|`."
+                .to_string(),
         help: None,
         fix: Some(Fix {
             safety: Safety::Safe,
@@ -173,15 +185,17 @@ fn rule_edits(ctx: &Context<'_>, rules: &Expression<'_>) -> Vec<Edit> {
             Expression::CompositeString(CompositeString::Document(d)) => {
                 match (document_value(ctx, d), document_parts(ctx, d)) {
                     (Some(value), _) => string_rules(&value),
-                    (None, Some(parts)) => interpolated_rules(&parts),
-                    (None, None) => None,
+                    (None, parts) => parts.and_then(|p| interpolated_rules(&p)),
                 }
             }
             _ => continue,
         };
         // A string that is not UTF-8 stays (php-parser escapes its bytes one by one).
         if let Some(items) = items {
-            edits.push(Edit::new(node_span(value), format!("[{}]", items.join(", "))));
+            edits.push(Edit::new(
+                node_span(value),
+                format!("[{}]", items.join(", ")),
+            ));
         }
     }
     edits
@@ -225,7 +239,12 @@ fn interpolated_rules(parts: &[Part<'_>]) -> Option<Vec<String>> {
     if !current.is_empty() {
         rules.push(current);
     }
-    Some(rules.iter().map(|r| format!("\"{}\"", r.concat())).collect())
+    Some(
+        rules
+            .iter()
+            .map(|r| format!("\"{}\"", r.concat()))
+            .collect(),
+    )
 }
 
 /// The value of a heredoc or nowdoc php-parser reads as a `String_` (no interpolated part), as [`document_parts`]
@@ -242,15 +261,14 @@ pub(crate) fn document_value(ctx: &Context<'_>, doc: &DocumentString<'_>) -> Opt
 }
 
 /// php-parser's `parseDocString`: the parts of a heredoc or nowdoc, each literal part without the closing label's
-/// indentation at the start of its lines (`stripIndentation`), the last one without its final newline, then decoded
-/// (a heredoc's escapes); a literal part left empty goes. Mixed tabs and spaces count as no indentation, as
-/// php-parser recovers from that error.
+/// indentation at the start of its lines (`stripIndentation`), then decoded (a heredoc's escapes); a literal part left
+/// empty goes. The newline before the closing label is not in Mago's last part. Mixed tabs and spaces count as no
+/// indentation, as php-parser recovers from that error.
 fn document_parts<'s>(ctx: &Context<'s>, doc: &DocumentString<'_>) -> Option<Vec<Part<'s>>> {
     let indent = match doc.indentation {
         DocumentIndentation::Whitespace(n) | DocumentIndentation::Tab(n) => n,
         DocumentIndentation::None | DocumentIndentation::Mixed(..) => 0,
     };
-    let count = doc.parts.len();
     let mut out = Vec::new();
     for (i, part) in doc.parts.iter().enumerate() {
         let literal = match part {
@@ -264,15 +282,7 @@ fn document_parts<'s>(ctx: &Context<'s>, doc: &DocumentString<'_>) -> Option<Vec
                 continue;
             }
         };
-        let mut raw = strip_indentation(literal.raw, indent, i == 0);
-        if i == count - 1 {
-            for newline in [&b"\r\n"[..], b"\n", b"\r"] {
-                if raw.ends_with(newline) {
-                    raw.truncate(raw.len() - newline.len());
-                    break;
-                }
-            }
-        }
+        let raw = strip_indentation(literal.raw, indent, i == 0);
         let value = match doc.kind {
             DocumentKind::Nowdoc => raw,
             DocumentKind::Heredoc => {
@@ -307,7 +317,10 @@ fn strip_indentation(raw: &[u8], indent: usize, at_line_start: bool) -> Vec<u8> 
     let mut i = 0;
     while i < raw.len() {
         if line_start {
-            let blanks = raw[i..].iter().take_while(|b| matches!(b, b' ' | b'\t')).count();
+            let blanks = raw[i..]
+                .iter()
+                .take_while(|b| matches!(b, b' ' | b'\t'))
+                .count();
             i += blanks.min(indent);
             line_start = false;
             continue;

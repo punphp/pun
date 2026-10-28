@@ -9,7 +9,7 @@ use mago_codex::ttype::atomic::object::TObject;
 use mago_codex::ttype::atomic::reference::TReference;
 use mago_codex::ttype::atomic::scalar::TScalar;
 use mago_codex::ttype::union::TUnion;
-use mago_syntax::cst::{Access, Expression, Hint, Node, Variable};
+use mago_syntax::cst::{Expression, Hint, Node, Variable};
 
 use super::is_a;
 use super::names::resolve_class_name;
@@ -29,13 +29,13 @@ pub(crate) fn is_object_type(
         Expression::Identifier(id) => {
             name_class(ancestors, id).is_some_and(|name| is_a(ctx, &name, &[class]))
         }
-        Expression::Access(Access::ClassConstant(_)) => false,
         Expression::Static(_) | Expression::Self_(_) | Expression::Parent(_) => {
             special_class(ancestors, expr).is_some_and(|name| is_a(ctx, &name, &[class]))
         }
         e => match facts(ctx).full_type(node_span(e)) {
             Some(t) => is_type_of(ctx, t, class),
-            None => unanalysed_param_hint(ancestors, e).is_some_and(|h| is_hint_type(ctx, ancestors, h, class)),
+            None => unanalysed_param_hint(ancestors, e)
+                .is_some_and(|h| is_hint_type(ctx, ancestors, h, class)),
         },
     }
 }
@@ -43,7 +43,10 @@ pub(crate) fn is_object_type(
 /// The type hint of the parameter a variable stands for in a function Mago did not analyse (a second declaration of
 /// a function's name, which PHPStan analyses as it is): the variable is a parameter of the enclosing function and the
 /// body never assigns it.
-fn unanalysed_param_hint<'a>(ancestors: &[Node<'a, 'a>], expr: &Expression<'_>) -> Option<&'a Hint<'a>> {
+fn unanalysed_param_hint<'a>(
+    ancestors: &[Node<'a, 'a>],
+    expr: &Expression<'_>,
+) -> Option<&'a Hint<'a>> {
     let Expression::Variable(Variable::Direct(v)) = expr else {
         return None;
     };
@@ -95,7 +98,12 @@ pub(crate) fn is_type_of(ctx: &Context<'_>, t: &TUnion, class: &str) -> bool {
 /// `static` is `mixed`). A nullable or union type matches when, without `null` (nothing left but `null` does not
 /// match) and then without `false`, every part is such a class name: PHPStan's `isSuperTypeOf` of what is left, where
 /// nothing left (`never`) is a match. An intersection type is `mixed`.
-pub(crate) fn is_hint_type(ctx: &Context<'_>, ancestors: &[Node<'_, '_>], hint: &Hint<'_>, class: &str) -> bool {
+pub(crate) fn is_hint_type(
+    ctx: &Context<'_>,
+    ancestors: &[Node<'_, '_>],
+    hint: &Hint<'_>,
+    class: &str,
+) -> bool {
     let named = |h: &Hint<'_>| match h {
         Hint::Identifier(id) => is_a(ctx, &resolve_class_name(ancestors, id), &[class]),
         Hint::Self_(_) => class_scope(ancestors)
@@ -172,19 +180,12 @@ fn is_subclass(ctx: &Context<'_>, name: &str, class: &str) -> bool {
     })
 }
 
-/// The class a name written as a class (`Foo`, `\Foo`, `self`, `static`, `parent`) stands for.
+/// The class a name written as a class (`Foo`, `\Foo`) stands for; `self`, `static` and `parent` are expressions of
+/// their own ([`special_class`]).
 pub(crate) fn name_class(
     ancestors: &[Node<'_, '_>],
     id: &mago_syntax::cst::Identifier<'_>,
 ) -> Option<String> {
-    let written = id.value();
-    let scope = || class_scope(ancestors);
-    if written.eq_ignore_ascii_case(b"self") || written.eq_ignore_ascii_case(b"static") {
-        return scope()?.name;
-    }
-    if written.eq_ignore_ascii_case(b"parent") {
-        return scope()?.parent_class;
-    }
     Some(resolve_class_name(ancestors, id))
 }
 
@@ -280,7 +281,11 @@ pub(crate) fn exact_class_super_of(ctx: &Context<'_>, sup: &str, sub: &str, exac
 pub(crate) fn object_super_of_union(ctx: &Context<'_>, class: &str, t: &TUnion) -> Tri {
     let mut answers = t.types.iter().map(|a| object_super_of(ctx, class, a));
     let first = answers.next().unwrap_or(Tri::Yes);
-    if answers.all(|a| a == first) { first } else { Tri::Maybe }
+    if answers.all(|a| a == first) {
+        first
+    } else {
+        Tri::Maybe
+    }
 }
 
 /// `ObjectType($class)->isSuperTypeOf()` of one part of a type: an object of a class as [`class_super_of`] (a closure
