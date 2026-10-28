@@ -1083,3 +1083,16 @@ fn unpack_operand_errors_propagate_before_later_ordinary_operands() {
         later_start + later.len() as u32,
     )));
 }
+
+#[test]
+fn nested_shared_scope_values_merge_without_erasing_unrelated_fields() {
+    const CODE: &[u8] = include_bytes!("fixtures/call-scope-observations/nested-shared-joins.php");
+    const ORACLE: &str =
+        include_str!("fixtures/call-scope-observations/nested-shared-joins-expected.json");
+    let registry = PluginRegistry::with_library_providers();
+    let (_, baseline, baseline_result) = analyze(CODE, ORACLE, false, &registry);
+    let (file, observed, observed_result) = analyze(CODE, ORACLE, true, &registry);
+    assert_eq!(baseline.expression_types, observed.expression_types);
+    assert_eq!(baseline_result.issues, observed_result.issues);
+    check(&file, &observed, ORACLE);
+}

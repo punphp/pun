@@ -2810,3 +2810,29 @@ or change Pun's type converter. The live artifact test does not claim byte-ident
 order, optional-shape nonempty display, list accessories, or the `oversized-array` display accessory.
 Those require metadata outside this file. Constant-array union unpacks retain their existing path.
 A finite key after a general or union unpack does not reseal that fallback's generic parameters.
+
+### Nullable nested values in shared closed-array joins
+
+`BlockContext::merge_variable_scope_types` extends its existing closed-array pair reduction
+to same-key shapes with at least two slots. PHPStan 2.3.1's
+[`ConstantArrayType::legacyIsKeysSupersetOf`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Type/Constant/ConstantArrayType.php#L2987-L3041)
+allows one shared-value comparison to answer No. A nullable nested value instead answers
+Yes/Maybe, following
+[`ConstantArrayType::isSuperTypeOf`](https://github.com/phpstan/phpstan-src/blob/cb3b7e99489b2e3789ee2eec10501cb7a72580ea/src/Type/Constant/ConstantArrayType.php#L767-L879).
+
+The added proof compares identical non-null alternatives and recursively checks plain keyed
+shapes with the same keys. It removes only explicit null alternatives, not void, mixed exclusions
+or template bounds. At most one remaining unproved value comparison is allowed: the pair is
+eligible even if that comparison is No. Pairs needing broader trinary type relations retain their
+existing alternatives. Mago's coercive Boolean containment and nonempty-array identity shortcut
+are not substitutes for this proof. Existing superset slot order and optional-key reduction remain.
+The new eligibility path excludes callable intersections and differing list metadata on the outer
+shapes as well as the recursively compared values.
+
+The public `call_scope_observations` regression compares all 16 frozen PHPStan observations for
+overlapping and unrelated nested values in both branch orders. Both overlapping root observations
+fail before the correction. Disjoint nested values plus a differing sibling remain separate shapes.
+Observation-enabled and disabled walks retain identical live types and diagnostics.
+Regenerate with `php capture.php /absolute/path/to/phpstan-2.3.1.phar nested-shared-joins.php`
+from `crates/pun-analyse/tests/fixtures/call-scope-observations`.
+This is a shared scope-join correction, not a nullsafe or assignment-specific rewrite.

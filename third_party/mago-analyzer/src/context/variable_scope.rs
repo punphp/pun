@@ -151,6 +151,31 @@ fn equal_types(left: &TUnion, right: &TUnion) -> bool {
     without_certainty(left) == without_certainty(right)
 }
 
+// ConstantArrayType::isSuperTypeOf returns Yes/Maybe in both directions when
+// same-key values differ only by null, recursively through plain keyed shapes.
+// This proves non-No without substituting Mago's coercive containment or its
+// identity comparator, which skips known slots in nonempty keyed arrays.
+fn equal_nullable_shape_values(left: &TUnion, right: &TUnion) -> bool {
+    let left: Vec<_> = left.types.iter().filter(|atomic| !atomic.is_null()).collect();
+    let right: Vec<_> = right.types.iter().filter(|atomic| !atomic.is_null()).collect();
+    if left == right {
+        return true;
+    }
+    let ([left], [right]) = (left.as_slice(), right.as_slice()) else {
+        return false;
+    };
+    if let (TAtomic::Array(TArray::Keyed(left)), TAtomic::Array(TArray::Keyed(right))) = (*left, *right)
+        && left.parameters.is_none() && right.parameters.is_none()
+        && left.callable.is_none() && right.callable.is_none()
+        && left.known_non_list == right.known_non_list
+        && let (Some(left), Some(right)) = (&left.known_items, &right.known_items)
+        && left.keys().eq(right.keys())
+    {
+        return left.iter().all(|(key, (_, value))| equal_nullable_shape_values(value, &right[key].1));
+    }
+    false
+}
+
 impl BlockContext<'_> {
     pub fn can_any_variable_exist(&self) -> bool {
         self.variable_state.after_extract_call
@@ -268,26 +293,32 @@ impl BlockContext<'_> {
                 }
             }
             // TypeCombinator::reduceArrays visits eligible pairs even when other alternatives
-            // remain. This bounded legacyIsKeysSupersetOf subset keeps common values identical;
-            // optionality may differ, and at most one extra required key is allowed.
+            // remain. Equal shared values allow one extra required key. Equal-sized multi-key
+            // shapes additionally allow one No value comparison; nullable differences are Maybe.
             let mut i = 0;
             'arrays: while i < types.len() {
                 for j in i + 1..types.len() {
-                    if let (TAtomic::Array(TArray::Keyed(left)), TAtomic::Array(TArray::Keyed(right))) = (&types[i], &types[j])
-                        && left.parameters.is_none()
-                        && right.parameters.is_none()
-                        && let (Some(left), Some(right)) = (&left.known_items, &right.known_items)
+                    if let (TAtomic::Array(TArray::Keyed(left_array)), TAtomic::Array(TArray::Keyed(right_array))) = (&types[i], &types[j])
+                        && left_array.parameters.is_none()
+                        && right_array.parameters.is_none()
+                        && let (Some(left), Some(right)) = (&left_array.known_items, &right_array.known_items)
                     {
                         let (small, large, primary, secondary) = if left.len() <= right.len() {
                             (left, right, j, i)
                         } else {
                             (right, left, i, j)
                         };
-                        if !small.is_empty()
+                        let equal_shared = !small.is_empty()
                             && small.iter().all(|(key, (_, value))| large.get(key).is_some_and(|(_, other)| equal_types(value, other)))
-                            && large.iter().filter(|(key, (optional, _))| !*optional && !small.contains_key(key)).count() <= 1
-                        {
-                            // Equal shared values cannot form the combiner's discriminated alternatives.
+                            && large.iter().filter(|(key, (optional, _))| !*optional && !small.contains_key(key)).count() <= 1;
+                        let nullable_shared = left_array.callable.is_none() && right_array.callable.is_none()
+                            && left_array.known_non_list == right_array.known_non_list
+                            && small.len() >= 2 && small.keys().eq(large.keys())
+                            && small.iter().filter(|(key, (_, value))| !equal_nullable_shape_values(value, &large[*key].1))
+                                .take(2).count() <= 1;
+                        if equal_shared || nullable_shared {
+                            // At most one unproved comparison is safe even if its answer is No;
+                            // all remaining shared values are proved Yes/Maybe in both directions.
                             // mergeWith retains the superset's slot and unions its values first.
                             let pair = combine(vec![types[primary].clone(), types[secondary].clone()], codebase, CombinerOptions::default());
                             types.remove(secondary);
