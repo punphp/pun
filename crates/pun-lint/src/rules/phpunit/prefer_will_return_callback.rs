@@ -29,9 +29,10 @@ use mago_codex::symbol::SymbolKind;
 use mago_codex::ttype::TType;
 use mago_codex::ttype::atomic::TAtomic;
 use mago_codex::ttype::atomic::object::TObject;
+use mago_span::HasSpan;
 use mago_syntax::cst::{
     Access, Argument, Call, ClassLikeMember, ClassLikeMemberSelector, Closure, CompositeString,
-    Expression, Literal, MethodBody, MethodCall, Node, NodeKind, Statement, Terminator, Variable,
+    Expression, Literal, MethodBody, MethodCall, Node, NodeKind, Statement, Variable,
 };
 use mago_syntax::token::TokenKind;
 use pun_problem::{Edit, Safety, Span};
@@ -422,8 +423,8 @@ pub(super) fn mocked_classes(
 }
 
 /// Whether the mocked method's native return type is `void`, as `resolveFromReflection()` reads it on the first of
-/// `classes` that has the method natively; `None` when none has it, or when those that have it disagree (Pun does not
-/// follow PHPStan's order of an intersection's members).
+/// `classes` that has the method natively; `None` when none has it, or when those that have it disagree: Rector reads
+/// the first as written, and Mago keeps an intersection's members in an order of its own (Pun/intersection_order).
 fn resolve_return_is_void(ctx: &Context<'_>, classes: &[String], method: &[u8]) -> Option<bool> {
     let facts = facts(ctx);
     let mut found: Option<bool> = None;
@@ -581,13 +582,11 @@ fn print_closure(
                     if matches!(value, Expression::Parenthesized(_)) {
                         return None;
                     }
-                    let Terminator::Semicolon(semicolon) = r.terminator else {
-                        return None;
-                    };
+                    // a `;`: a `?>` in the closure declined it above
                     edits.push(Edit::new(
                         Span::new(
                             r.r#return.span.end.offset as usize,
-                            semicolon.start.offset as usize,
+                            r.terminator.span().start.offset as usize,
                         ),
                         "",
                     ));
