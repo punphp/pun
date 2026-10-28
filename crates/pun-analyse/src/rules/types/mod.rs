@@ -183,17 +183,17 @@ impl<'ast, 'arena> MutWalker<'ast, 'arena, ()> for Wanted<'_> {
         }
     }
     fn walk_in_property_access(&mut self, p: &'ast PropertyAccess<'arena>, _: &mut ()) {
-        if self.level >= 2 {
+        if !self.check_this_only {
             access::typed(p.object, &mut self.spans);
         }
     }
     fn walk_in_null_safe_property_access(&mut self, p: &'ast NullSafePropertyAccess<'arena>, _: &mut ()) {
-        if self.level >= 2 {
-            access::typed(p.object, &mut self.spans);
+        if !self.check_this_only || super::Checker::is_this_expression(p.object) {
+            self.spans.push(p.object.span());
         }
     }
     fn walk_in_static_property_access(&mut self, p: &'ast StaticPropertyAccess<'arena>, _: &mut ()) {
-        if self.level >= 2 {
+        if !self.check_this_only || super::Checker::is_this_expression(p.class) {
             access::typed_class(p.class, &mut self.spans);
         }
     }

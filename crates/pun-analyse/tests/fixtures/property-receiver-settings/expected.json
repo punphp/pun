@@ -1,0 +1,929 @@
+{
+    "receivers.php:0-default": [
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Access to an undefined property PropertyReceiverSettings\\Subject::$missingThis.",
+            "line": 14,
+            "ignorable": true,
+            "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property",
+            "identifier": "property.notFound"
+        },
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Access to an undefined property PropertyReceiverSettings\\Subject::$missingParenthesizedThis.",
+            "line": 15,
+            "ignorable": true,
+            "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property",
+            "identifier": "property.notFound"
+        },
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Access to an undefined property PropertyReceiverSettings\\Subject::$missingNullsafeThis.",
+            "line": 16,
+            "ignorable": true,
+            "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property",
+            "identifier": "property.notFound"
+        },
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Access to an undefined property PropertyReceiverSettings\\Subject::$missingParenthesizedNullsafeThis.",
+            "line": 17,
+            "ignorable": true,
+            "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property",
+            "identifier": "property.notFound"
+        },
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Access to an undefined static property PropertyReceiverSettings\\Subject::$missingStaticThis.",
+            "line": 28,
+            "ignorable": true,
+            "identifier": "staticProperty.notFound"
+        },
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Access to an undefined static property PropertyReceiverSettings\\Subject::$missingParenthesizedStaticThis.",
+            "line": 29,
+            "ignorable": true,
+            "identifier": "staticProperty.notFound"
+        },
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Access to an undefined static property PropertyReceiverSettings\\Subject::$missingNamedSelf.",
+            "line": 36,
+            "ignorable": true,
+            "identifier": "staticProperty.notFound"
+        },
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Access to an undefined static property static(PropertyReceiverSettings\\Subject)::$missingNamedStatic.",
+            "line": 37,
+            "ignorable": true,
+            "identifier": "staticProperty.notFound"
+        },
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Access to an undefined static property PropertyReceiverSettings\\Subject::$missingNamedClass.",
+            "line": 38,
+            "ignorable": true,
+            "identifier": "staticProperty.notFound"
+        }
+    ],
+    "receivers.php:0-this": [
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Access to an undefined property PropertyReceiverSettings\\Subject::$missingThis.",
+            "line": 14,
+            "ignorable": true,
+            "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property",
+            "identifier": "property.notFound"
+        },
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Access to an undefined property PropertyReceiverSettings\\Subject::$missingParenthesizedThis.",
+            "line": 15,
+            "ignorable": true,
+            "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property",
+            "identifier": "property.notFound"
+        },
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Access to an undefined property PropertyReceiverSettings\\Subject::$missingNullsafeThis.",
+            "line": 16,
+            "ignorable": true,
+            "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property",
+            "identifier": "property.notFound"
+        },
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Access to an undefined property PropertyReceiverSettings\\Subject::$missingParenthesizedNullsafeThis.",
+            "line": 17,
+            "ignorable": true,
+            "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property",
+            "identifier": "property.notFound"
+        },
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Access to an undefined static property PropertyReceiverSettings\\Subject::$missingStaticThis.",
+            "line": 28,
+            "ignorable": true,
+            "identifier": "staticProperty.notFound"
+        },
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Access to an undefined static property PropertyReceiverSettings\\Subject::$missingParenthesizedStaticThis.",
+            "line": 29,
+            "ignorable": true,
+            "identifier": "staticProperty.notFound"
+        },
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Access to an undefined static property PropertyReceiverSettings\\Subject::$missingNamedSelf.",
+            "line": 36,
+            "ignorable": true,
+            "identifier": "staticProperty.notFound"
+        },
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Access to an undefined static property static(PropertyReceiverSettings\\Subject)::$missingNamedStatic.",
+            "line": 37,
+            "ignorable": true,
+            "identifier": "staticProperty.notFound"
+        },
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Access to an undefined static property PropertyReceiverSettings\\Subject::$missingNamedClass.",
+            "line": 38,
+            "ignorable": true,
+            "identifier": "staticProperty.notFound"
+        }
+    ],
+    "receivers.php:0-all": [
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Access to an undefined property PropertyReceiverSettings\\Subject::$missingThis.",
+            "line": 14,
+            "ignorable": true,
+            "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property",
+            "identifier": "property.notFound"
+        },
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Access to an undefined property PropertyReceiverSettings\\Subject::$missingParenthesizedThis.",
+            "line": 15,
+            "ignorable": true,
+            "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property",
+            "identifier": "property.notFound"
+        },
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Access to an undefined property PropertyReceiverSettings\\Subject::$missingNullsafeThis.",
+            "line": 16,
+            "ignorable": true,
+            "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property",
+            "identifier": "property.notFound"
+        },
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Access to an undefined property PropertyReceiverSettings\\Subject::$missingParenthesizedNullsafeThis.",
+            "line": 17,
+            "ignorable": true,
+            "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property",
+            "identifier": "property.notFound"
+        },
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Access to an undefined property PropertyReceiverSettings\\Subject::$missingCopy.",
+            "line": 20,
+            "ignorable": true,
+            "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property",
+            "identifier": "property.notFound"
+        },
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Access to an undefined property PropertyReceiverSettings\\Subject::$missingParenthesizedCopy.",
+            "line": 21,
+            "ignorable": true,
+            "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property",
+            "identifier": "property.notFound"
+        },
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Access to an undefined property PropertyReceiverSettings\\Subject::$missingOrdinary.",
+            "line": 22,
+            "ignorable": true,
+            "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property",
+            "identifier": "property.notFound"
+        },
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Access to an undefined property PropertyReceiverSettings\\Subject::$missingParenthesizedOrdinary.",
+            "line": 23,
+            "ignorable": true,
+            "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property",
+            "identifier": "property.notFound"
+        },
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Cannot access property $missingOnNumber on int.",
+            "line": 24,
+            "ignorable": true,
+            "identifier": "property.nonObject"
+        },
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Access to an undefined property PropertyReceiverSettings\\Subject::$missingNullable.",
+            "line": 25,
+            "ignorable": true,
+            "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property",
+            "identifier": "property.notFound"
+        },
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Access to an undefined property PropertyReceiverSettings\\Subject::$missingParenthesizedNullable.",
+            "line": 26,
+            "ignorable": true,
+            "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property",
+            "identifier": "property.notFound"
+        },
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Access to an undefined static property PropertyReceiverSettings\\Subject::$missingStaticThis.",
+            "line": 28,
+            "ignorable": true,
+            "identifier": "staticProperty.notFound"
+        },
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Access to an undefined static property PropertyReceiverSettings\\Subject::$missingParenthesizedStaticThis.",
+            "line": 29,
+            "ignorable": true,
+            "identifier": "staticProperty.notFound"
+        },
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Access to an undefined static property PropertyReceiverSettings\\Subject::$missingStaticCopy.",
+            "line": 30,
+            "ignorable": true,
+            "identifier": "staticProperty.notFound"
+        },
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Access to an undefined static property PropertyReceiverSettings\\Subject::$missingParenthesizedStaticCopy.",
+            "line": 31,
+            "ignorable": true,
+            "identifier": "staticProperty.notFound"
+        },
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Access to an undefined static property PropertyReceiverSettings\\Subject::$missingDynamicClass.",
+            "line": 32,
+            "ignorable": true,
+            "identifier": "staticProperty.notFound"
+        },
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Access to an undefined static property PropertyReceiverSettings\\Subject::$missingParenthesizedDynamicClass.",
+            "line": 33,
+            "ignorable": true,
+            "identifier": "staticProperty.notFound"
+        },
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Cannot access static property $missingStaticOnNumber on int.",
+            "line": 34,
+            "ignorable": true,
+            "identifier": "staticProperty.nonObject"
+        },
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Access to an undefined static property PropertyReceiverSettings\\Subject::$missingNamedSelf.",
+            "line": 36,
+            "ignorable": true,
+            "identifier": "staticProperty.notFound"
+        },
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Access to an undefined static property static(PropertyReceiverSettings\\Subject)::$missingNamedStatic.",
+            "line": 37,
+            "ignorable": true,
+            "identifier": "staticProperty.notFound"
+        },
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Access to an undefined static property PropertyReceiverSettings\\Subject::$missingNamedClass.",
+            "line": 38,
+            "ignorable": true,
+            "identifier": "staticProperty.notFound"
+        }
+    ],
+    "receivers.php:5-default": [
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Access to an undefined property PropertyReceiverSettings\\Subject::$missingThis.",
+            "line": 14,
+            "ignorable": true,
+            "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property",
+            "identifier": "property.notFound"
+        },
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Access to an undefined property PropertyReceiverSettings\\Subject::$missingParenthesizedThis.",
+            "line": 15,
+            "ignorable": true,
+            "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property",
+            "identifier": "property.notFound"
+        },
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Access to an undefined property PropertyReceiverSettings\\Subject::$missingNullsafeThis.",
+            "line": 16,
+            "ignorable": true,
+            "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property",
+            "identifier": "property.notFound"
+        },
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Using nullsafe property access on non-nullable type $this(PropertyReceiverSettings\\Subject). Use -> instead.",
+            "line": 16,
+            "ignorable": true,
+            "identifier": "nullsafe.neverNull"
+        },
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Access to an undefined property PropertyReceiverSettings\\Subject::$missingParenthesizedNullsafeThis.",
+            "line": 17,
+            "ignorable": true,
+            "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property",
+            "identifier": "property.notFound"
+        },
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Using nullsafe property access on non-nullable type $this(PropertyReceiverSettings\\Subject). Use -> instead.",
+            "line": 17,
+            "ignorable": true,
+            "identifier": "nullsafe.neverNull"
+        },
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Access to an undefined property PropertyReceiverSettings\\Subject::$missingCopy.",
+            "line": 20,
+            "ignorable": true,
+            "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property",
+            "identifier": "property.notFound"
+        },
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Access to an undefined property PropertyReceiverSettings\\Subject::$missingParenthesizedCopy.",
+            "line": 21,
+            "ignorable": true,
+            "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property",
+            "identifier": "property.notFound"
+        },
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Access to an undefined property PropertyReceiverSettings\\Subject::$missingOrdinary.",
+            "line": 22,
+            "ignorable": true,
+            "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property",
+            "identifier": "property.notFound"
+        },
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Access to an undefined property PropertyReceiverSettings\\Subject::$missingParenthesizedOrdinary.",
+            "line": 23,
+            "ignorable": true,
+            "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property",
+            "identifier": "property.notFound"
+        },
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Cannot access property $missingOnNumber on int.",
+            "line": 24,
+            "ignorable": true,
+            "identifier": "property.nonObject"
+        },
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Access to an undefined property PropertyReceiverSettings\\Subject::$missingNullable.",
+            "line": 25,
+            "ignorable": true,
+            "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property",
+            "identifier": "property.notFound"
+        },
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Access to an undefined property PropertyReceiverSettings\\Subject::$missingParenthesizedNullable.",
+            "line": 26,
+            "ignorable": true,
+            "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property",
+            "identifier": "property.notFound"
+        },
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Access to an undefined static property PropertyReceiverSettings\\Subject::$missingStaticThis.",
+            "line": 28,
+            "ignorable": true,
+            "identifier": "staticProperty.notFound"
+        },
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Access to an undefined static property PropertyReceiverSettings\\Subject::$missingParenthesizedStaticThis.",
+            "line": 29,
+            "ignorable": true,
+            "identifier": "staticProperty.notFound"
+        },
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Access to an undefined static property PropertyReceiverSettings\\Subject::$missingStaticCopy.",
+            "line": 30,
+            "ignorable": true,
+            "identifier": "staticProperty.notFound"
+        },
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Access to an undefined static property PropertyReceiverSettings\\Subject::$missingParenthesizedStaticCopy.",
+            "line": 31,
+            "ignorable": true,
+            "identifier": "staticProperty.notFound"
+        },
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Access to an undefined static property PropertyReceiverSettings\\Subject::$missingDynamicClass.",
+            "line": 32,
+            "ignorable": true,
+            "identifier": "staticProperty.notFound"
+        },
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Access to an undefined static property PropertyReceiverSettings\\Subject::$missingParenthesizedDynamicClass.",
+            "line": 33,
+            "ignorable": true,
+            "identifier": "staticProperty.notFound"
+        },
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Cannot access static property $missingStaticOnNumber on int.",
+            "line": 34,
+            "ignorable": true,
+            "identifier": "staticProperty.nonObject"
+        },
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Access to an undefined static property PropertyReceiverSettings\\Subject::$missingNamedSelf.",
+            "line": 36,
+            "ignorable": true,
+            "identifier": "staticProperty.notFound"
+        },
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Access to an undefined static property static(PropertyReceiverSettings\\Subject)::$missingNamedStatic.",
+            "line": 37,
+            "ignorable": true,
+            "identifier": "staticProperty.notFound"
+        },
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Access to an undefined static property PropertyReceiverSettings\\Subject::$missingNamedClass.",
+            "line": 38,
+            "ignorable": true,
+            "identifier": "staticProperty.notFound"
+        }
+    ],
+    "receivers.php:5-this": [
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Access to an undefined property PropertyReceiverSettings\\Subject::$missingThis.",
+            "line": 14,
+            "ignorable": true,
+            "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property",
+            "identifier": "property.notFound"
+        },
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Access to an undefined property PropertyReceiverSettings\\Subject::$missingParenthesizedThis.",
+            "line": 15,
+            "ignorable": true,
+            "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property",
+            "identifier": "property.notFound"
+        },
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Access to an undefined property PropertyReceiverSettings\\Subject::$missingNullsafeThis.",
+            "line": 16,
+            "ignorable": true,
+            "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property",
+            "identifier": "property.notFound"
+        },
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Using nullsafe property access on non-nullable type $this(PropertyReceiverSettings\\Subject). Use -> instead.",
+            "line": 16,
+            "ignorable": true,
+            "identifier": "nullsafe.neverNull"
+        },
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Access to an undefined property PropertyReceiverSettings\\Subject::$missingParenthesizedNullsafeThis.",
+            "line": 17,
+            "ignorable": true,
+            "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property",
+            "identifier": "property.notFound"
+        },
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Using nullsafe property access on non-nullable type $this(PropertyReceiverSettings\\Subject). Use -> instead.",
+            "line": 17,
+            "ignorable": true,
+            "identifier": "nullsafe.neverNull"
+        },
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Access to an undefined static property PropertyReceiverSettings\\Subject::$missingStaticThis.",
+            "line": 28,
+            "ignorable": true,
+            "identifier": "staticProperty.notFound"
+        },
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Access to an undefined static property PropertyReceiverSettings\\Subject::$missingParenthesizedStaticThis.",
+            "line": 29,
+            "ignorable": true,
+            "identifier": "staticProperty.notFound"
+        },
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Access to an undefined static property PropertyReceiverSettings\\Subject::$missingNamedSelf.",
+            "line": 36,
+            "ignorable": true,
+            "identifier": "staticProperty.notFound"
+        },
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Access to an undefined static property static(PropertyReceiverSettings\\Subject)::$missingNamedStatic.",
+            "line": 37,
+            "ignorable": true,
+            "identifier": "staticProperty.notFound"
+        },
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Access to an undefined static property PropertyReceiverSettings\\Subject::$missingNamedClass.",
+            "line": 38,
+            "ignorable": true,
+            "identifier": "staticProperty.notFound"
+        }
+    ],
+    "receivers.php:5-all": [
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Access to an undefined property PropertyReceiverSettings\\Subject::$missingThis.",
+            "line": 14,
+            "ignorable": true,
+            "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property",
+            "identifier": "property.notFound"
+        },
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Access to an undefined property PropertyReceiverSettings\\Subject::$missingParenthesizedThis.",
+            "line": 15,
+            "ignorable": true,
+            "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property",
+            "identifier": "property.notFound"
+        },
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Access to an undefined property PropertyReceiverSettings\\Subject::$missingNullsafeThis.",
+            "line": 16,
+            "ignorable": true,
+            "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property",
+            "identifier": "property.notFound"
+        },
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Using nullsafe property access on non-nullable type $this(PropertyReceiverSettings\\Subject). Use -> instead.",
+            "line": 16,
+            "ignorable": true,
+            "identifier": "nullsafe.neverNull"
+        },
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Access to an undefined property PropertyReceiverSettings\\Subject::$missingParenthesizedNullsafeThis.",
+            "line": 17,
+            "ignorable": true,
+            "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property",
+            "identifier": "property.notFound"
+        },
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Using nullsafe property access on non-nullable type $this(PropertyReceiverSettings\\Subject). Use -> instead.",
+            "line": 17,
+            "ignorable": true,
+            "identifier": "nullsafe.neverNull"
+        },
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Access to an undefined property PropertyReceiverSettings\\Subject::$missingCopy.",
+            "line": 20,
+            "ignorable": true,
+            "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property",
+            "identifier": "property.notFound"
+        },
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Access to an undefined property PropertyReceiverSettings\\Subject::$missingParenthesizedCopy.",
+            "line": 21,
+            "ignorable": true,
+            "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property",
+            "identifier": "property.notFound"
+        },
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Access to an undefined property PropertyReceiverSettings\\Subject::$missingOrdinary.",
+            "line": 22,
+            "ignorable": true,
+            "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property",
+            "identifier": "property.notFound"
+        },
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Access to an undefined property PropertyReceiverSettings\\Subject::$missingParenthesizedOrdinary.",
+            "line": 23,
+            "ignorable": true,
+            "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property",
+            "identifier": "property.notFound"
+        },
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Cannot access property $missingOnNumber on int.",
+            "line": 24,
+            "ignorable": true,
+            "identifier": "property.nonObject"
+        },
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Access to an undefined property PropertyReceiverSettings\\Subject::$missingNullable.",
+            "line": 25,
+            "ignorable": true,
+            "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property",
+            "identifier": "property.notFound"
+        },
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Access to an undefined property PropertyReceiverSettings\\Subject::$missingParenthesizedNullable.",
+            "line": 26,
+            "ignorable": true,
+            "tip": "Learn more: https://phpstan.org/blog/solving-phpstan-access-to-undefined-property",
+            "identifier": "property.notFound"
+        },
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Access to an undefined static property PropertyReceiverSettings\\Subject::$missingStaticThis.",
+            "line": 28,
+            "ignorable": true,
+            "identifier": "staticProperty.notFound"
+        },
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Access to an undefined static property PropertyReceiverSettings\\Subject::$missingParenthesizedStaticThis.",
+            "line": 29,
+            "ignorable": true,
+            "identifier": "staticProperty.notFound"
+        },
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Access to an undefined static property PropertyReceiverSettings\\Subject::$missingStaticCopy.",
+            "line": 30,
+            "ignorable": true,
+            "identifier": "staticProperty.notFound"
+        },
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Access to an undefined static property PropertyReceiverSettings\\Subject::$missingParenthesizedStaticCopy.",
+            "line": 31,
+            "ignorable": true,
+            "identifier": "staticProperty.notFound"
+        },
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Access to an undefined static property PropertyReceiverSettings\\Subject::$missingDynamicClass.",
+            "line": 32,
+            "ignorable": true,
+            "identifier": "staticProperty.notFound"
+        },
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Access to an undefined static property PropertyReceiverSettings\\Subject::$missingParenthesizedDynamicClass.",
+            "line": 33,
+            "ignorable": true,
+            "identifier": "staticProperty.notFound"
+        },
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Cannot access static property $missingStaticOnNumber on int.",
+            "line": 34,
+            "ignorable": true,
+            "identifier": "staticProperty.nonObject"
+        },
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Access to an undefined static property PropertyReceiverSettings\\Subject::$missingNamedSelf.",
+            "line": 36,
+            "ignorable": true,
+            "identifier": "staticProperty.notFound"
+        },
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Access to an undefined static property static(PropertyReceiverSettings\\Subject)::$missingNamedStatic.",
+            "line": 37,
+            "ignorable": true,
+            "identifier": "staticProperty.notFound"
+        },
+        {
+            "file": "$ROOT/receivers.php",
+            "message": "Access to an undefined static property PropertyReceiverSettings\\Subject::$missingNamedClass.",
+            "line": 38,
+            "ignorable": true,
+            "identifier": "staticProperty.notFound"
+        }
+    ],
+    "controls.php:0-default": [
+        {
+            "file": "$ROOT/controls.php",
+            "message": "Access to protected property $hiddenStatic of class PropertyReceiverControls\\Target.",
+            "line": 20,
+            "ignorable": true,
+            "identifier": "staticProperty.protected"
+        },
+        {
+            "file": "$ROOT/controls.php",
+            "message": "Static access to instance property PropertyReceiverControls\\Target::$value.",
+            "line": 21,
+            "ignorable": true,
+            "identifier": "property.staticAccess"
+        },
+        {
+            "file": "$ROOT/controls.php",
+            "message": "Access to an undefined static property PropertyReceiverControls\\Target::$missingNamedClass.",
+            "line": 22,
+            "ignorable": true,
+            "identifier": "staticProperty.notFound"
+        }
+    ],
+    "controls.php:0-this": [
+        {
+            "file": "$ROOT/controls.php",
+            "message": "Access to protected property $hiddenStatic of class PropertyReceiverControls\\Target.",
+            "line": 20,
+            "ignorable": true,
+            "identifier": "staticProperty.protected"
+        },
+        {
+            "file": "$ROOT/controls.php",
+            "message": "Static access to instance property PropertyReceiverControls\\Target::$value.",
+            "line": 21,
+            "ignorable": true,
+            "identifier": "property.staticAccess"
+        },
+        {
+            "file": "$ROOT/controls.php",
+            "message": "Access to an undefined static property PropertyReceiverControls\\Target::$missingNamedClass.",
+            "line": 22,
+            "ignorable": true,
+            "identifier": "staticProperty.notFound"
+        }
+    ],
+    "controls.php:0-all": [
+        {
+            "file": "$ROOT/controls.php",
+            "message": "Access to protected property PropertyReceiverControls\\Target::$hidden.",
+            "line": 17,
+            "ignorable": true,
+            "identifier": "property.protected"
+        },
+        {
+            "file": "$ROOT/controls.php",
+            "message": "Access to protected property $hiddenStatic of class PropertyReceiverControls\\Target.",
+            "line": 18,
+            "ignorable": true,
+            "identifier": "staticProperty.protected"
+        },
+        {
+            "file": "$ROOT/controls.php",
+            "message": "Access to protected property $hiddenStatic of class PropertyReceiverControls\\Target.",
+            "line": 20,
+            "ignorable": true,
+            "identifier": "staticProperty.protected"
+        },
+        {
+            "file": "$ROOT/controls.php",
+            "message": "Static access to instance property PropertyReceiverControls\\Target::$value.",
+            "line": 21,
+            "ignorable": true,
+            "identifier": "property.staticAccess"
+        },
+        {
+            "file": "$ROOT/controls.php",
+            "message": "Access to an undefined static property PropertyReceiverControls\\Target::$missingNamedClass.",
+            "line": 22,
+            "ignorable": true,
+            "identifier": "staticProperty.notFound"
+        }
+    ],
+    "controls.php:5-default": [
+        {
+            "file": "$ROOT/controls.php",
+            "message": "Access to protected property PropertyReceiverControls\\Target::$hidden.",
+            "line": 17,
+            "ignorable": true,
+            "identifier": "property.protected"
+        },
+        {
+            "file": "$ROOT/controls.php",
+            "message": "Access to protected property $hiddenStatic of class PropertyReceiverControls\\Target.",
+            "line": 18,
+            "ignorable": true,
+            "identifier": "staticProperty.protected"
+        },
+        {
+            "file": "$ROOT/controls.php",
+            "message": "Access to protected property $hiddenStatic of class PropertyReceiverControls\\Target.",
+            "line": 20,
+            "ignorable": true,
+            "identifier": "staticProperty.protected"
+        },
+        {
+            "file": "$ROOT/controls.php",
+            "message": "Static access to instance property PropertyReceiverControls\\Target::$value.",
+            "line": 21,
+            "ignorable": true,
+            "identifier": "property.staticAccess"
+        },
+        {
+            "file": "$ROOT/controls.php",
+            "message": "Access to an undefined static property PropertyReceiverControls\\Target::$missingNamedClass.",
+            "line": 22,
+            "ignorable": true,
+            "identifier": "staticProperty.notFound"
+        },
+        {
+            "file": "$ROOT/controls.php",
+            "message": "Property PropertyReceiverControls\\Target::$value (int) does not accept string.",
+            "line": 32,
+            "ignorable": true,
+            "identifier": "assign.propertyType"
+        }
+    ],
+    "controls.php:5-this": [
+        {
+            "file": "$ROOT/controls.php",
+            "message": "Access to protected property $hiddenStatic of class PropertyReceiverControls\\Target.",
+            "line": 20,
+            "ignorable": true,
+            "identifier": "staticProperty.protected"
+        },
+        {
+            "file": "$ROOT/controls.php",
+            "message": "Static access to instance property PropertyReceiverControls\\Target::$value.",
+            "line": 21,
+            "ignorable": true,
+            "identifier": "property.staticAccess"
+        },
+        {
+            "file": "$ROOT/controls.php",
+            "message": "Access to an undefined static property PropertyReceiverControls\\Target::$missingNamedClass.",
+            "line": 22,
+            "ignorable": true,
+            "identifier": "staticProperty.notFound"
+        },
+        {
+            "file": "$ROOT/controls.php",
+            "message": "Property PropertyReceiverControls\\Target::$value (int) does not accept string.",
+            "line": 32,
+            "ignorable": true,
+            "identifier": "assign.propertyType"
+        }
+    ],
+    "controls.php:5-all": [
+        {
+            "file": "$ROOT/controls.php",
+            "message": "Access to protected property PropertyReceiverControls\\Target::$hidden.",
+            "line": 17,
+            "ignorable": true,
+            "identifier": "property.protected"
+        },
+        {
+            "file": "$ROOT/controls.php",
+            "message": "Access to protected property $hiddenStatic of class PropertyReceiverControls\\Target.",
+            "line": 18,
+            "ignorable": true,
+            "identifier": "staticProperty.protected"
+        },
+        {
+            "file": "$ROOT/controls.php",
+            "message": "Access to protected property $hiddenStatic of class PropertyReceiverControls\\Target.",
+            "line": 20,
+            "ignorable": true,
+            "identifier": "staticProperty.protected"
+        },
+        {
+            "file": "$ROOT/controls.php",
+            "message": "Static access to instance property PropertyReceiverControls\\Target::$value.",
+            "line": 21,
+            "ignorable": true,
+            "identifier": "property.staticAccess"
+        },
+        {
+            "file": "$ROOT/controls.php",
+            "message": "Access to an undefined static property PropertyReceiverControls\\Target::$missingNamedClass.",
+            "line": 22,
+            "ignorable": true,
+            "identifier": "staticProperty.notFound"
+        },
+        {
+            "file": "$ROOT/controls.php",
+            "message": "Property PropertyReceiverControls\\Target::$value (int) does not accept string.",
+            "line": 32,
+            "ignorable": true,
+            "identifier": "assign.propertyType"
+        }
+    ]
+}

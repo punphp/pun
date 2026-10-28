@@ -1,5 +1,5 @@
-//! AccessPropertiesRule's AccessPropertiesCheck once `checkThisOnly` is off (level 2): a fetch on any expression,
-//! through RuleLevelHelper's `findTypeToCheck()`. Fetches on `$this` stay with property_access.rs.
+//! AccessPropertiesCheck and AccessStaticPropertiesCheck on expression receivers eligible under `checkThisOnly`.
+//! Non-nullsafe fetches on `$this` stay with property_access.rs.
 
 use mago_codex::metadata::class_like::ClassLikeMetadata;
 use mago_span::{HasSpan, Span};
@@ -102,7 +102,7 @@ impl<'a> Checker<'a, '_> {
     }
 }
 
-/// The receivers whose type the check reads: every property fetch's object but `$this`'s (level 2).
+/// The non-nullsafe receivers whose type the check reads; `$this` stays with property_access.rs.
 pub(super) fn typed(object: &Expression, spans: &mut Vec<Span>) {
     if !is_this(object) {
         spans.push(object.span());
@@ -123,7 +123,7 @@ pub(in super::super) fn property_fetch(
     nullsafe: bool,
     allowed: bool,
 ) {
-    if c.level < 2 || is_this(object) {
+    if !c.checks_expression(object) || !nullsafe && is_this(object) {
         return;
     }
     let ClassLikeMemberSelector::Identifier(id) = selector else {
@@ -230,6 +230,7 @@ pub(in super::super) fn property_fetch(
 /// The class expressions of static property fetches the check reads (`$x::$name`; names and keywords are
 /// property_access.rs's).
 pub(super) fn typed_class(class: &Expression, spans: &mut Vec<Span>) {
+    let class = super::flow::unparen(class);
     if !matches!(
         class,
         Expression::Identifier(_) | Expression::Self_(_) | Expression::Static(_) | Expression::Parent(_)
@@ -242,12 +243,12 @@ pub(super) fn typed_class(class: &Expression, spans: &mut Vec<Span>) {
 /// no allowed-undefined context exempts it (oracle-checked: `isset($class::$x)` on `C|false` is reported).
 /// `property` has its `$` (a dynamic name is not checked).
 pub(in super::super) fn static_property_fetch(c: &mut Checker, p: &StaticPropertyAccess, property: &[u8]) {
-    if c.level < 2 {
+    if !c.checks_expression(p.class) {
         return;
     }
     let name = String::from_utf8_lossy(&property[1..]).into_owned();
     let ty = c
-        .phpstan_type(p.class)
+        .phpstan_type(super::flow::unparen(p.class))
         .map(|t| if super::super::assign::contains_nullsafe(p.class) { t.remove_null() } else { t });
     let found = {
         let c = &*c;
