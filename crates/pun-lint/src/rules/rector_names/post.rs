@@ -107,6 +107,9 @@ pub(crate) struct Carry {
     pending: Pending,
     used: (Vec<ObjType>, Vec<String>, Vec<String>),
     short_names: Option<Vec<(String, String)>>,
+    /// The docs as the round left them: the next round runs on the same nodes and their `PhpDocInfo`, never on the
+    /// printed text parsed again.
+    docs: Vec<Option<Doc>>,
 }
 
 /// `PendingImports`.
@@ -289,12 +292,14 @@ impl<'s> Session<'s> {
     }
 
     /// What a round of the file leaves for the next (`FileProcessor::processFile()` runs the post rectors again on
-    /// a changed file): the `FileNode`'s `PendingImports` and `UsedImports`, and `ShortNameResolver`'s cache by path.
+    /// a changed file): the `FileNode`'s `PendingImports` and `UsedImports`, `ShortNameResolver`'s cache by path, and
+    /// the docs.
     pub fn carry(&self) -> Carry {
         Carry {
             pending: self.pending.clone(),
             used: self.used.clone(),
             short_names: self.short_names.clone(),
+            docs: self.docs.iter().map(|d| d.doc.clone()).collect(),
         }
     }
 
@@ -303,6 +308,9 @@ impl<'s> Session<'s> {
         self.pending = carry.pending;
         self.used = carry.used;
         self.short_names = carry.short_names;
+        for (state, doc) in self.docs.iter_mut().zip(carry.docs) {
+            state.doc = doc;
+        }
     }
 
     /// `RenamedNameCollector::add()`.
