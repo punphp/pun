@@ -732,18 +732,9 @@ fn walk(node: &mut Node, parent_template: bool, f: &mut dyn FnMut(&mut String, b
             f(base, false);
             args.iter_mut().for_each(|t| walk(t, false, f));
         }
-        Node::Callable {
-            ident,
-            templates,
-            params,
-            ret,
-        } => {
+        // Rector's `SpacingAwareCallableTypeNode` keeps no templates
+        Node::Callable { ident, params, ret, .. } => {
             f(ident, false);
-            for template in templates {
-                for t in [&mut template.bound, &mut template.lower, &mut template.default].into_iter().flatten() {
-                    walk(t, true, f);
-                }
-            }
             params.iter_mut().for_each(|p| walk(&mut p.ty, false, f));
             walk(ret, false, f);
         }
@@ -1531,10 +1522,8 @@ fn typed(text: &str, tokens: &[parser::Tok], name: &str, from: usize, to: usize)
             }
         } else if NAMED.contains(&name) {
             at = skip(at);
-            let len = match is_this(&value[at..]) {
-                true => 5,
-                false => variable_len(&value[at..])?,
-            };
+            // `parseRequiredVariableName()`: a `TOKEN_VARIABLE`, which `$this` is not
+            let len = variable_len(&value[at..]).filter(|_| !is_this(&value[at..]))?;
             let variable = value[at..at + len].to_string();
             at += len;
             Form::Named(variable)

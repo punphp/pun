@@ -47,9 +47,14 @@ pub(crate) struct PhpName {
 }
 
 impl PhpName {
-    /// `Name::toString()` of the original name: the written name without its leading `\`.
+    /// `Name::toString()` of the original name: the written name without its leading `\`, or without the
+    /// `namespace\` of a `Name\Relative` (whose parts leave it out).
     pub fn original(&self) -> &str {
-        self.written.trim_start_matches('\\')
+        let written = self.written.trim_start_matches('\\');
+        match written.get(..10) {
+            Some(prefix) if written.len() > 10 && prefix.eq_ignore_ascii_case("namespace\\") => &written[10..],
+            _ => written,
+        }
     }
 }
 

@@ -371,10 +371,8 @@ fn dedupe_implements(session: &mut Session<'_>) {
     let mut removed = Vec::new();
     for class in session.view.class_likes.iter().filter(|c| c.is_class) {
         let mut seen: Vec<String> = Vec::new();
-        for (span, _) in &class.implements {
-            let Some(i) = session.view.names.iter().position(|n| n.span == *span) else {
-                continue;
-            };
+        // each `implements` name is one of the file's names
+        for (span, i) in class.implements.iter().filter_map(|(span, _)| Some((span, session.view.names.iter().position(|n| n.span == *span)?))) {
             let name = session.name_string(i);
             if seen.contains(&name) {
                 removed.push(*span);
