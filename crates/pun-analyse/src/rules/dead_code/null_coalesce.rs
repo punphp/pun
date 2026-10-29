@@ -86,7 +86,7 @@ pub(in super::super) fn isset(c: &mut Checker, construct: &IssetConstruct) {
             c,
             operator: "in isset()".to_string(),
             identifier: "isset",
-            advanced: c.level >= 4,
+            advanced: c.check_advanced_isset,
         };
         match check.check(value, None) {
             Some((identifier, message)) => {
@@ -255,7 +255,7 @@ pub(in super::super) fn coalesce(c: &mut Checker, left: &Expression, right: &Exp
         c,
         operator: format!("on left side of {operator}"),
         identifier: "nullCoalesce",
-        advanced: c.level >= 4,
+        advanced: c.check_advanced_isset,
     };
     // in a trait, per class context (ConstantConditionInTraitHelper)
     let found = check.check(left, None).or_else(|| {

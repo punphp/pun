@@ -1,0 +1,2793 @@
+{
+    "0-default": [],
+    "0-on": [],
+    "0-off": [],
+    "1-default": [
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $defined in isset() always exists and is not nullable.",
+            "line": 13,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $missing in isset() is never defined.",
+            "line": 13,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $null in isset() always exists and is always null.",
+            "line": 13,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $defined in isset() always exists and is not nullable.",
+            "line": 14,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $laterMissing in isset() is never defined.",
+            "line": 14,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $defined on left side of ?? always exists and is not nullable.",
+            "line": 15,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $missingCoalesce on left side of ?? is never defined.",
+            "line": 15,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $null on left side of ?? always exists and is always null.",
+            "line": 15,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $defined on left side of ??= always exists and is not nullable.",
+            "line": 16,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $neverAssigned on left side of ??= is never defined.",
+            "line": 18,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Property AdvancedIssetSettings\\Properties::$initialized in isset() is not nullable nor uninitialized.",
+            "line": 58,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Property AdvancedIssetSettings\\Properties::$initialized on left side of ?? is not nullable nor uninitialized.",
+            "line": 59,
+            "ignorable": true,
+            "identifier": "nullCoalesce.initializedProperty"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Property AdvancedIssetSettings\\Properties::$initialized on left side of ??= is not nullable nor uninitialized.",
+            "line": 60,
+            "ignorable": true,
+            "identifier": "nullCoalesce.initializedProperty"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $missingObject in isset() is never defined.",
+            "line": 71,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $missingCoalesceObject on left side of ?? is never defined.",
+            "line": 72,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Offset 'missing' on array{required: object} in isset() does not exist.",
+            "line": 97,
+            "ignorable": true,
+            "identifier": "isset.offset"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Offset 'missing' on array{required: object} on left side of ?? does not exist.",
+            "line": 98,
+            "ignorable": true,
+            "identifier": "nullCoalesce.offset"
+        }
+    ],
+    "1-on": [
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $defined in isset() always exists and is not nullable.",
+            "line": 13,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $missing in isset() is never defined.",
+            "line": 13,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $null in isset() always exists and is always null.",
+            "line": 13,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $defined in isset() always exists and is not nullable.",
+            "line": 14,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $laterMissing in isset() is never defined.",
+            "line": 14,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $defined on left side of ?? always exists and is not nullable.",
+            "line": 15,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $missingCoalesce on left side of ?? is never defined.",
+            "line": 15,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $null on left side of ?? always exists and is always null.",
+            "line": 15,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $defined on left side of ??= always exists and is not nullable.",
+            "line": 16,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $neverAssigned on left side of ??= is never defined.",
+            "line": 18,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Offset 'required' on array{required: int, nullable: int|null, optional?: int, nested: array{leaf: int}} in isset() always exists and is not nullable.",
+            "line": 24,
+            "ignorable": true,
+            "identifier": "isset.offset"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Offset 'absent' on array{required: int, nullable: int|null, optional?: int, nested: array{leaf: int}} in isset() does not exist.",
+            "line": 25,
+            "ignorable": true,
+            "identifier": "isset.offset"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Offset 'leaf' on array{leaf: int} in isset() always exists and is not nullable.",
+            "line": 25,
+            "ignorable": true,
+            "identifier": "isset.offset"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Offset 'required' on array{required: int, nullable: int|null, optional?: int, nested: array{leaf: int}} on left side of ?? always exists and is not nullable.",
+            "line": 26,
+            "ignorable": true,
+            "identifier": "nullCoalesce.offset"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Offset 'absent' on array{required: int, nullable: int|null, optional?: int, nested: array{leaf: int}} on left side of ?? does not exist.",
+            "line": 27,
+            "ignorable": true,
+            "identifier": "nullCoalesce.offset"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Offset 'leaf' on array{leaf: int} on left side of ?? always exists and is not nullable.",
+            "line": 27,
+            "ignorable": true,
+            "identifier": "nullCoalesce.offset"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Offset 'required' on array{required: int, nullable: int|null, optional?: int, nested: array{leaf: int}} on left side of ??= always exists and is not nullable.",
+            "line": 28,
+            "ignorable": true,
+            "identifier": "nullCoalesce.offset"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Offset 'absentAssignment' on array{required: int} on left side of ??= does not exist.",
+            "line": 36,
+            "ignorable": true,
+            "identifier": "nullCoalesce.offset"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Property AdvancedIssetSettings\\Properties::$initialized in isset() is not nullable nor uninitialized.",
+            "line": 58,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Property AdvancedIssetSettings\\Properties::$initialized on left side of ?? is not nullable nor uninitialized.",
+            "line": 59,
+            "ignorable": true,
+            "identifier": "nullCoalesce.initializedProperty"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Property AdvancedIssetSettings\\Properties::$initialized on left side of ??= is not nullable nor uninitialized.",
+            "line": 60,
+            "ignorable": true,
+            "identifier": "nullCoalesce.initializedProperty"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Property AdvancedIssetSettings\\Properties::$defaulted (int) in isset() is not nullable.",
+            "line": 66,
+            "ignorable": true,
+            "identifier": "isset.property"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Property AdvancedIssetSettings\\Properties::$defaulted (int) on left side of ?? is not nullable.",
+            "line": 67,
+            "ignorable": true,
+            "identifier": "nullCoalesce.property"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Property AdvancedIssetSettings\\Properties::$defaulted (int) on left side of ??= is not nullable.",
+            "line": 68,
+            "ignorable": true,
+            "identifier": "nullCoalesce.property"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $missingObject in isset() is never defined.",
+            "line": 71,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $missingCoalesceObject on left side of ?? is never defined.",
+            "line": 72,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Expression on left side of ?? is not nullable.",
+            "line": 82,
+            "ignorable": true,
+            "identifier": "nullCoalesce.expr"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Expression on left side of ?? is always null.",
+            "line": 83,
+            "ignorable": true,
+            "identifier": "nullCoalesce.expr"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Property AdvancedIssetSettings\\Properties::$defaulted (int) on left side of ?? is not nullable.",
+            "line": 84,
+            "ignorable": true,
+            "identifier": "nullCoalesce.property"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Offset 'missing' on array{required: object} in isset() does not exist.",
+            "line": 97,
+            "ignorable": true,
+            "identifier": "isset.offset"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Offset 'missing' on array{required: object} on left side of ?? does not exist.",
+            "line": 98,
+            "ignorable": true,
+            "identifier": "nullCoalesce.offset"
+        }
+    ],
+    "1-off": [
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $defined in isset() always exists and is not nullable.",
+            "line": 13,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $missing in isset() is never defined.",
+            "line": 13,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $null in isset() always exists and is always null.",
+            "line": 13,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $defined in isset() always exists and is not nullable.",
+            "line": 14,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $laterMissing in isset() is never defined.",
+            "line": 14,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $defined on left side of ?? always exists and is not nullable.",
+            "line": 15,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $missingCoalesce on left side of ?? is never defined.",
+            "line": 15,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $null on left side of ?? always exists and is always null.",
+            "line": 15,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $defined on left side of ??= always exists and is not nullable.",
+            "line": 16,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $neverAssigned on left side of ??= is never defined.",
+            "line": 18,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Property AdvancedIssetSettings\\Properties::$initialized in isset() is not nullable nor uninitialized.",
+            "line": 58,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Property AdvancedIssetSettings\\Properties::$initialized on left side of ?? is not nullable nor uninitialized.",
+            "line": 59,
+            "ignorable": true,
+            "identifier": "nullCoalesce.initializedProperty"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Property AdvancedIssetSettings\\Properties::$initialized on left side of ??= is not nullable nor uninitialized.",
+            "line": 60,
+            "ignorable": true,
+            "identifier": "nullCoalesce.initializedProperty"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $missingObject in isset() is never defined.",
+            "line": 71,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $missingCoalesceObject on left side of ?? is never defined.",
+            "line": 72,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Offset 'missing' on array{required: object} in isset() does not exist.",
+            "line": 97,
+            "ignorable": true,
+            "identifier": "isset.offset"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Offset 'missing' on array{required: object} on left side of ?? does not exist.",
+            "line": 98,
+            "ignorable": true,
+            "identifier": "nullCoalesce.offset"
+        }
+    ],
+    "3-default": [
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $defined in isset() always exists and is not nullable.",
+            "line": 13,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $missing in isset() is never defined.",
+            "line": 13,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $null in isset() always exists and is always null.",
+            "line": 13,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $defined in isset() always exists and is not nullable.",
+            "line": 14,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $laterMissing in isset() is never defined.",
+            "line": 14,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $defined on left side of ?? always exists and is not nullable.",
+            "line": 15,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $missingCoalesce on left side of ?? is never defined.",
+            "line": 15,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $null on left side of ?? always exists and is always null.",
+            "line": 15,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $defined on left side of ??= always exists and is not nullable.",
+            "line": 16,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $neverAssigned on left side of ??= is never defined.",
+            "line": 18,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Property AdvancedIssetSettings\\Properties::$initialized in isset() is not nullable nor uninitialized.",
+            "line": 58,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Property AdvancedIssetSettings\\Properties::$initialized on left side of ?? is not nullable nor uninitialized.",
+            "line": 59,
+            "ignorable": true,
+            "identifier": "nullCoalesce.initializedProperty"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Property AdvancedIssetSettings\\Properties::$initialized on left side of ??= is not nullable nor uninitialized.",
+            "line": 60,
+            "ignorable": true,
+            "identifier": "nullCoalesce.initializedProperty"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $missingObject in isset() is never defined.",
+            "line": 71,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $missingCoalesceObject on left side of ?? is never defined.",
+            "line": 72,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Property AdvancedIssetSettings\\Properties::$defaulted (int) does not accept string.",
+            "line": 89,
+            "ignorable": true,
+            "identifier": "assign.propertyType"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Offset 'missing' on array{required: object} in isset() does not exist.",
+            "line": 97,
+            "ignorable": true,
+            "identifier": "isset.offset"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Offset 'missing' on array{required: object} on left side of ?? does not exist.",
+            "line": 98,
+            "ignorable": true,
+            "identifier": "nullCoalesce.offset"
+        }
+    ],
+    "3-on": [
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $defined in isset() always exists and is not nullable.",
+            "line": 13,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $missing in isset() is never defined.",
+            "line": 13,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $null in isset() always exists and is always null.",
+            "line": 13,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $defined in isset() always exists and is not nullable.",
+            "line": 14,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $laterMissing in isset() is never defined.",
+            "line": 14,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $defined on left side of ?? always exists and is not nullable.",
+            "line": 15,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $missingCoalesce on left side of ?? is never defined.",
+            "line": 15,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $null on left side of ?? always exists and is always null.",
+            "line": 15,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $defined on left side of ??= always exists and is not nullable.",
+            "line": 16,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $neverAssigned on left side of ??= is never defined.",
+            "line": 18,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Offset 'required' on array{required: int, nullable: int|null, optional?: int, nested: array{leaf: int}} in isset() always exists and is not nullable.",
+            "line": 24,
+            "ignorable": true,
+            "identifier": "isset.offset"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Offset 'absent' on array{required: int, nullable: int|null, optional?: int, nested: array{leaf: int}} in isset() does not exist.",
+            "line": 25,
+            "ignorable": true,
+            "identifier": "isset.offset"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Offset 'leaf' on array{leaf: int} in isset() always exists and is not nullable.",
+            "line": 25,
+            "ignorable": true,
+            "identifier": "isset.offset"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Offset 'required' on array{required: int, nullable: int|null, optional?: int, nested: array{leaf: int}} on left side of ?? always exists and is not nullable.",
+            "line": 26,
+            "ignorable": true,
+            "identifier": "nullCoalesce.offset"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Offset 'absent' on array{required: int, nullable: int|null, optional?: int, nested: array{leaf: int}} on left side of ?? does not exist.",
+            "line": 27,
+            "ignorable": true,
+            "identifier": "nullCoalesce.offset"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Offset 'leaf' on array{leaf: int} on left side of ?? always exists and is not nullable.",
+            "line": 27,
+            "ignorable": true,
+            "identifier": "nullCoalesce.offset"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Offset 'required' on array{required: int, nullable: int|null, optional?: int, nested: array{leaf: int}} on left side of ??= always exists and is not nullable.",
+            "line": 28,
+            "ignorable": true,
+            "identifier": "nullCoalesce.offset"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Offset 'absentAssignment' on array{required: int} on left side of ??= does not exist.",
+            "line": 36,
+            "ignorable": true,
+            "identifier": "nullCoalesce.offset"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Property AdvancedIssetSettings\\Properties::$initialized in isset() is not nullable nor uninitialized.",
+            "line": 58,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Property AdvancedIssetSettings\\Properties::$initialized on left side of ?? is not nullable nor uninitialized.",
+            "line": 59,
+            "ignorable": true,
+            "identifier": "nullCoalesce.initializedProperty"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Property AdvancedIssetSettings\\Properties::$initialized on left side of ??= is not nullable nor uninitialized.",
+            "line": 60,
+            "ignorable": true,
+            "identifier": "nullCoalesce.initializedProperty"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Property AdvancedIssetSettings\\Properties::$defaulted (int) in isset() is not nullable.",
+            "line": 66,
+            "ignorable": true,
+            "identifier": "isset.property"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Property AdvancedIssetSettings\\Properties::$defaulted (int) on left side of ?? is not nullable.",
+            "line": 67,
+            "ignorable": true,
+            "identifier": "nullCoalesce.property"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Property AdvancedIssetSettings\\Properties::$defaulted (int) on left side of ??= is not nullable.",
+            "line": 68,
+            "ignorable": true,
+            "identifier": "nullCoalesce.property"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $missingObject in isset() is never defined.",
+            "line": 71,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $missingCoalesceObject on left side of ?? is never defined.",
+            "line": 72,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Expression on left side of ?? is not nullable.",
+            "line": 82,
+            "ignorable": true,
+            "identifier": "nullCoalesce.expr"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Expression on left side of ?? is always null.",
+            "line": 83,
+            "ignorable": true,
+            "identifier": "nullCoalesce.expr"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Property AdvancedIssetSettings\\Properties::$defaulted (int) on left side of ?? is not nullable.",
+            "line": 84,
+            "ignorable": true,
+            "identifier": "nullCoalesce.property"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Property AdvancedIssetSettings\\Properties::$defaulted (int) does not accept string.",
+            "line": 89,
+            "ignorable": true,
+            "identifier": "assign.propertyType"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Offset 'missing' on array{required: object} in isset() does not exist.",
+            "line": 97,
+            "ignorable": true,
+            "identifier": "isset.offset"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Offset 'missing' on array{required: object} on left side of ?? does not exist.",
+            "line": 98,
+            "ignorable": true,
+            "identifier": "nullCoalesce.offset"
+        }
+    ],
+    "3-off": [
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $defined in isset() always exists and is not nullable.",
+            "line": 13,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $missing in isset() is never defined.",
+            "line": 13,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $null in isset() always exists and is always null.",
+            "line": 13,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $defined in isset() always exists and is not nullable.",
+            "line": 14,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $laterMissing in isset() is never defined.",
+            "line": 14,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $defined on left side of ?? always exists and is not nullable.",
+            "line": 15,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $missingCoalesce on left side of ?? is never defined.",
+            "line": 15,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $null on left side of ?? always exists and is always null.",
+            "line": 15,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $defined on left side of ??= always exists and is not nullable.",
+            "line": 16,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $neverAssigned on left side of ??= is never defined.",
+            "line": 18,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Property AdvancedIssetSettings\\Properties::$initialized in isset() is not nullable nor uninitialized.",
+            "line": 58,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Property AdvancedIssetSettings\\Properties::$initialized on left side of ?? is not nullable nor uninitialized.",
+            "line": 59,
+            "ignorable": true,
+            "identifier": "nullCoalesce.initializedProperty"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Property AdvancedIssetSettings\\Properties::$initialized on left side of ??= is not nullable nor uninitialized.",
+            "line": 60,
+            "ignorable": true,
+            "identifier": "nullCoalesce.initializedProperty"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $missingObject in isset() is never defined.",
+            "line": 71,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $missingCoalesceObject on left side of ?? is never defined.",
+            "line": 72,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Property AdvancedIssetSettings\\Properties::$defaulted (int) does not accept string.",
+            "line": 89,
+            "ignorable": true,
+            "identifier": "assign.propertyType"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Offset 'missing' on array{required: object} in isset() does not exist.",
+            "line": 97,
+            "ignorable": true,
+            "identifier": "isset.offset"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Offset 'missing' on array{required: object} on left side of ?? does not exist.",
+            "line": 98,
+            "ignorable": true,
+            "identifier": "nullCoalesce.offset"
+        }
+    ],
+    "4-default": [
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $defined in isset() always exists and is not nullable.",
+            "line": 13,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $missing in isset() is never defined.",
+            "line": 13,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $null in isset() always exists and is always null.",
+            "line": 13,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $defined in isset() always exists and is not nullable.",
+            "line": 14,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $laterMissing in isset() is never defined.",
+            "line": 14,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $defined on left side of ?? always exists and is not nullable.",
+            "line": 15,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $missingCoalesce on left side of ?? is never defined.",
+            "line": 15,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $null on left side of ?? always exists and is always null.",
+            "line": 15,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $defined on left side of ??= always exists and is not nullable.",
+            "line": 16,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $neverAssigned on left side of ??= is never defined.",
+            "line": 18,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Offset 'required' on array{required: int, nullable: int|null, optional?: int, nested: array{leaf: int}} in isset() always exists and is not nullable.",
+            "line": 24,
+            "ignorable": true,
+            "identifier": "isset.offset"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Offset 'absent' on array{required: int, nullable: int|null, optional?: int, nested: array{leaf: int}} in isset() does not exist.",
+            "line": 25,
+            "ignorable": true,
+            "identifier": "isset.offset"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Offset 'leaf' on array{leaf: int} in isset() always exists and is not nullable.",
+            "line": 25,
+            "ignorable": true,
+            "identifier": "isset.offset"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Offset 'required' on array{required: int, nullable: int|null, optional?: int, nested: array{leaf: int}} on left side of ?? always exists and is not nullable.",
+            "line": 26,
+            "ignorable": true,
+            "identifier": "nullCoalesce.offset"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Offset 'absent' on array{required: int, nullable: int|null, optional?: int, nested: array{leaf: int}} on left side of ?? does not exist.",
+            "line": 27,
+            "ignorable": true,
+            "identifier": "nullCoalesce.offset"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Offset 'leaf' on array{leaf: int} on left side of ?? always exists and is not nullable.",
+            "line": 27,
+            "ignorable": true,
+            "identifier": "nullCoalesce.offset"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Offset 'required' on array{required: int, nullable: int|null, optional?: int, nested: array{leaf: int}} on left side of ??= always exists and is not nullable.",
+            "line": 28,
+            "ignorable": true,
+            "identifier": "nullCoalesce.offset"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Offset 'absentAssignment' on array{required: int} on left side of ??= does not exist.",
+            "line": 36,
+            "ignorable": true,
+            "identifier": "nullCoalesce.offset"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Property AdvancedIssetSettings\\Properties::$initialized in isset() is not nullable nor uninitialized.",
+            "line": 58,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Property AdvancedIssetSettings\\Properties::$initialized on left side of ?? is not nullable nor uninitialized.",
+            "line": 59,
+            "ignorable": true,
+            "identifier": "nullCoalesce.initializedProperty"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Property AdvancedIssetSettings\\Properties::$initialized on left side of ??= is not nullable nor uninitialized.",
+            "line": 60,
+            "ignorable": true,
+            "identifier": "nullCoalesce.initializedProperty"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Property AdvancedIssetSettings\\Properties::$defaulted (int) in isset() is not nullable.",
+            "line": 66,
+            "ignorable": true,
+            "identifier": "isset.property"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Property AdvancedIssetSettings\\Properties::$defaulted (int) on left side of ?? is not nullable.",
+            "line": 67,
+            "ignorable": true,
+            "identifier": "nullCoalesce.property"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Property AdvancedIssetSettings\\Properties::$defaulted (int) on left side of ??= is not nullable.",
+            "line": 68,
+            "ignorable": true,
+            "identifier": "nullCoalesce.property"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $missingObject in isset() is never defined.",
+            "line": 71,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $missingCoalesceObject on left side of ?? is never defined.",
+            "line": 72,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Expression on left side of ?? is not nullable.",
+            "line": 82,
+            "ignorable": true,
+            "identifier": "nullCoalesce.expr"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Expression on left side of ?? is always null.",
+            "line": 83,
+            "ignorable": true,
+            "identifier": "nullCoalesce.expr"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Property AdvancedIssetSettings\\Properties::$defaulted (int) on left side of ?? is not nullable.",
+            "line": 84,
+            "ignorable": true,
+            "identifier": "nullCoalesce.property"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Property AdvancedIssetSettings\\Properties::$defaulted (int) does not accept string.",
+            "line": 89,
+            "ignorable": true,
+            "identifier": "assign.propertyType"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Call to function strlen() on a separate line has no effect.",
+            "line": 90,
+            "ignorable": true,
+            "identifier": "function.resultUnused"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Offset 'missing' on array{required: object} in isset() does not exist.",
+            "line": 97,
+            "ignorable": true,
+            "identifier": "isset.offset"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Offset 'missing' on array{required: object} on left side of ?? does not exist.",
+            "line": 98,
+            "ignorable": true,
+            "identifier": "nullCoalesce.offset"
+        }
+    ],
+    "4-on": [
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $defined in isset() always exists and is not nullable.",
+            "line": 13,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $missing in isset() is never defined.",
+            "line": 13,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $null in isset() always exists and is always null.",
+            "line": 13,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $defined in isset() always exists and is not nullable.",
+            "line": 14,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $laterMissing in isset() is never defined.",
+            "line": 14,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $defined on left side of ?? always exists and is not nullable.",
+            "line": 15,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $missingCoalesce on left side of ?? is never defined.",
+            "line": 15,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $null on left side of ?? always exists and is always null.",
+            "line": 15,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $defined on left side of ??= always exists and is not nullable.",
+            "line": 16,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $neverAssigned on left side of ??= is never defined.",
+            "line": 18,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Offset 'required' on array{required: int, nullable: int|null, optional?: int, nested: array{leaf: int}} in isset() always exists and is not nullable.",
+            "line": 24,
+            "ignorable": true,
+            "identifier": "isset.offset"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Offset 'absent' on array{required: int, nullable: int|null, optional?: int, nested: array{leaf: int}} in isset() does not exist.",
+            "line": 25,
+            "ignorable": true,
+            "identifier": "isset.offset"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Offset 'leaf' on array{leaf: int} in isset() always exists and is not nullable.",
+            "line": 25,
+            "ignorable": true,
+            "identifier": "isset.offset"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Offset 'required' on array{required: int, nullable: int|null, optional?: int, nested: array{leaf: int}} on left side of ?? always exists and is not nullable.",
+            "line": 26,
+            "ignorable": true,
+            "identifier": "nullCoalesce.offset"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Offset 'absent' on array{required: int, nullable: int|null, optional?: int, nested: array{leaf: int}} on left side of ?? does not exist.",
+            "line": 27,
+            "ignorable": true,
+            "identifier": "nullCoalesce.offset"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Offset 'leaf' on array{leaf: int} on left side of ?? always exists and is not nullable.",
+            "line": 27,
+            "ignorable": true,
+            "identifier": "nullCoalesce.offset"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Offset 'required' on array{required: int, nullable: int|null, optional?: int, nested: array{leaf: int}} on left side of ??= always exists and is not nullable.",
+            "line": 28,
+            "ignorable": true,
+            "identifier": "nullCoalesce.offset"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Offset 'absentAssignment' on array{required: int} on left side of ??= does not exist.",
+            "line": 36,
+            "ignorable": true,
+            "identifier": "nullCoalesce.offset"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Property AdvancedIssetSettings\\Properties::$initialized in isset() is not nullable nor uninitialized.",
+            "line": 58,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Property AdvancedIssetSettings\\Properties::$initialized on left side of ?? is not nullable nor uninitialized.",
+            "line": 59,
+            "ignorable": true,
+            "identifier": "nullCoalesce.initializedProperty"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Property AdvancedIssetSettings\\Properties::$initialized on left side of ??= is not nullable nor uninitialized.",
+            "line": 60,
+            "ignorable": true,
+            "identifier": "nullCoalesce.initializedProperty"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Property AdvancedIssetSettings\\Properties::$defaulted (int) in isset() is not nullable.",
+            "line": 66,
+            "ignorable": true,
+            "identifier": "isset.property"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Property AdvancedIssetSettings\\Properties::$defaulted (int) on left side of ?? is not nullable.",
+            "line": 67,
+            "ignorable": true,
+            "identifier": "nullCoalesce.property"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Property AdvancedIssetSettings\\Properties::$defaulted (int) on left side of ??= is not nullable.",
+            "line": 68,
+            "ignorable": true,
+            "identifier": "nullCoalesce.property"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $missingObject in isset() is never defined.",
+            "line": 71,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $missingCoalesceObject on left side of ?? is never defined.",
+            "line": 72,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Expression on left side of ?? is not nullable.",
+            "line": 82,
+            "ignorable": true,
+            "identifier": "nullCoalesce.expr"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Expression on left side of ?? is always null.",
+            "line": 83,
+            "ignorable": true,
+            "identifier": "nullCoalesce.expr"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Property AdvancedIssetSettings\\Properties::$defaulted (int) on left side of ?? is not nullable.",
+            "line": 84,
+            "ignorable": true,
+            "identifier": "nullCoalesce.property"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Property AdvancedIssetSettings\\Properties::$defaulted (int) does not accept string.",
+            "line": 89,
+            "ignorable": true,
+            "identifier": "assign.propertyType"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Call to function strlen() on a separate line has no effect.",
+            "line": 90,
+            "ignorable": true,
+            "identifier": "function.resultUnused"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Offset 'missing' on array{required: object} in isset() does not exist.",
+            "line": 97,
+            "ignorable": true,
+            "identifier": "isset.offset"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Offset 'missing' on array{required: object} on left side of ?? does not exist.",
+            "line": 98,
+            "ignorable": true,
+            "identifier": "nullCoalesce.offset"
+        }
+    ],
+    "4-off": [
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $defined in isset() always exists and is not nullable.",
+            "line": 13,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $missing in isset() is never defined.",
+            "line": 13,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $null in isset() always exists and is always null.",
+            "line": 13,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $defined in isset() always exists and is not nullable.",
+            "line": 14,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $laterMissing in isset() is never defined.",
+            "line": 14,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $defined on left side of ?? always exists and is not nullable.",
+            "line": 15,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $missingCoalesce on left side of ?? is never defined.",
+            "line": 15,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $null on left side of ?? always exists and is always null.",
+            "line": 15,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $defined on left side of ??= always exists and is not nullable.",
+            "line": 16,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $neverAssigned on left side of ??= is never defined.",
+            "line": 18,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Property AdvancedIssetSettings\\Properties::$initialized in isset() is not nullable nor uninitialized.",
+            "line": 58,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Property AdvancedIssetSettings\\Properties::$initialized on left side of ?? is not nullable nor uninitialized.",
+            "line": 59,
+            "ignorable": true,
+            "identifier": "nullCoalesce.initializedProperty"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Property AdvancedIssetSettings\\Properties::$initialized on left side of ??= is not nullable nor uninitialized.",
+            "line": 60,
+            "ignorable": true,
+            "identifier": "nullCoalesce.initializedProperty"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $missingObject in isset() is never defined.",
+            "line": 71,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $missingCoalesceObject on left side of ?? is never defined.",
+            "line": 72,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Property AdvancedIssetSettings\\Properties::$defaulted (int) does not accept string.",
+            "line": 89,
+            "ignorable": true,
+            "identifier": "assign.propertyType"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Call to function strlen() on a separate line has no effect.",
+            "line": 90,
+            "ignorable": true,
+            "identifier": "function.resultUnused"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Offset 'missing' on array{required: object} in isset() does not exist.",
+            "line": 97,
+            "ignorable": true,
+            "identifier": "isset.offset"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Offset 'missing' on array{required: object} on left side of ?? does not exist.",
+            "line": 98,
+            "ignorable": true,
+            "identifier": "nullCoalesce.offset"
+        }
+    ],
+    "5-default": [
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $defined in isset() always exists and is not nullable.",
+            "line": 13,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $missing in isset() is never defined.",
+            "line": 13,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $null in isset() always exists and is always null.",
+            "line": 13,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $defined in isset() always exists and is not nullable.",
+            "line": 14,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $laterMissing in isset() is never defined.",
+            "line": 14,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $defined on left side of ?? always exists and is not nullable.",
+            "line": 15,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $missingCoalesce on left side of ?? is never defined.",
+            "line": 15,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $null on left side of ?? always exists and is always null.",
+            "line": 15,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $defined on left side of ??= always exists and is not nullable.",
+            "line": 16,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $neverAssigned on left side of ??= is never defined.",
+            "line": 18,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Offset 'required' on array{required: int, nullable: int|null, optional?: int, nested: array{leaf: int}} in isset() always exists and is not nullable.",
+            "line": 24,
+            "ignorable": true,
+            "identifier": "isset.offset"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Offset 'absent' on array{required: int, nullable: int|null, optional?: int, nested: array{leaf: int}} in isset() does not exist.",
+            "line": 25,
+            "ignorable": true,
+            "identifier": "isset.offset"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Offset 'leaf' on array{leaf: int} in isset() always exists and is not nullable.",
+            "line": 25,
+            "ignorable": true,
+            "identifier": "isset.offset"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Offset 'required' on array{required: int, nullable: int|null, optional?: int, nested: array{leaf: int}} on left side of ?? always exists and is not nullable.",
+            "line": 26,
+            "ignorable": true,
+            "identifier": "nullCoalesce.offset"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Offset 'absent' on array{required: int, nullable: int|null, optional?: int, nested: array{leaf: int}} on left side of ?? does not exist.",
+            "line": 27,
+            "ignorable": true,
+            "identifier": "nullCoalesce.offset"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Offset 'leaf' on array{leaf: int} on left side of ?? always exists and is not nullable.",
+            "line": 27,
+            "ignorable": true,
+            "identifier": "nullCoalesce.offset"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Offset 'required' on array{required: int, nullable: int|null, optional?: int, nested: array{leaf: int}} on left side of ??= always exists and is not nullable.",
+            "line": 28,
+            "ignorable": true,
+            "identifier": "nullCoalesce.offset"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Offset 'absentAssignment' on array{required: int} on left side of ??= does not exist.",
+            "line": 36,
+            "ignorable": true,
+            "identifier": "nullCoalesce.offset"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Property AdvancedIssetSettings\\Properties::$initialized in isset() is not nullable nor uninitialized.",
+            "line": 58,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Property AdvancedIssetSettings\\Properties::$initialized on left side of ?? is not nullable nor uninitialized.",
+            "line": 59,
+            "ignorable": true,
+            "identifier": "nullCoalesce.initializedProperty"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Property AdvancedIssetSettings\\Properties::$initialized on left side of ??= is not nullable nor uninitialized.",
+            "line": 60,
+            "ignorable": true,
+            "identifier": "nullCoalesce.initializedProperty"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Property AdvancedIssetSettings\\Properties::$defaulted (int) in isset() is not nullable.",
+            "line": 66,
+            "ignorable": true,
+            "identifier": "isset.property"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Property AdvancedIssetSettings\\Properties::$defaulted (int) on left side of ?? is not nullable.",
+            "line": 67,
+            "ignorable": true,
+            "identifier": "nullCoalesce.property"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Property AdvancedIssetSettings\\Properties::$defaulted (int) on left side of ??= is not nullable.",
+            "line": 68,
+            "ignorable": true,
+            "identifier": "nullCoalesce.property"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $missingObject in isset() is never defined.",
+            "line": 71,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $missingCoalesceObject on left side of ?? is never defined.",
+            "line": 72,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Expression on left side of ?? is not nullable.",
+            "line": 82,
+            "ignorable": true,
+            "identifier": "nullCoalesce.expr"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Expression on left side of ?? is always null.",
+            "line": 83,
+            "ignorable": true,
+            "identifier": "nullCoalesce.expr"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Property AdvancedIssetSettings\\Properties::$defaulted (int) on left side of ?? is not nullable.",
+            "line": 84,
+            "ignorable": true,
+            "identifier": "nullCoalesce.property"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Property AdvancedIssetSettings\\Properties::$defaulted (int) does not accept string.",
+            "line": 89,
+            "ignorable": true,
+            "identifier": "assign.propertyType"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Call to function strlen() on a separate line has no effect.",
+            "line": 90,
+            "ignorable": true,
+            "identifier": "function.resultUnused"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Parameter #1 $string of function strlen expects string, int given.",
+            "line": 90,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Offset 'missing' on array{required: object} in isset() does not exist.",
+            "line": 97,
+            "ignorable": true,
+            "identifier": "isset.offset"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Offset 'missing' on array{required: object} on left side of ?? does not exist.",
+            "line": 98,
+            "ignorable": true,
+            "identifier": "nullCoalesce.offset"
+        }
+    ],
+    "5-on": [
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $defined in isset() always exists and is not nullable.",
+            "line": 13,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $missing in isset() is never defined.",
+            "line": 13,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $null in isset() always exists and is always null.",
+            "line": 13,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $defined in isset() always exists and is not nullable.",
+            "line": 14,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $laterMissing in isset() is never defined.",
+            "line": 14,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $defined on left side of ?? always exists and is not nullable.",
+            "line": 15,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $missingCoalesce on left side of ?? is never defined.",
+            "line": 15,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $null on left side of ?? always exists and is always null.",
+            "line": 15,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $defined on left side of ??= always exists and is not nullable.",
+            "line": 16,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $neverAssigned on left side of ??= is never defined.",
+            "line": 18,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Offset 'required' on array{required: int, nullable: int|null, optional?: int, nested: array{leaf: int}} in isset() always exists and is not nullable.",
+            "line": 24,
+            "ignorable": true,
+            "identifier": "isset.offset"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Offset 'absent' on array{required: int, nullable: int|null, optional?: int, nested: array{leaf: int}} in isset() does not exist.",
+            "line": 25,
+            "ignorable": true,
+            "identifier": "isset.offset"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Offset 'leaf' on array{leaf: int} in isset() always exists and is not nullable.",
+            "line": 25,
+            "ignorable": true,
+            "identifier": "isset.offset"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Offset 'required' on array{required: int, nullable: int|null, optional?: int, nested: array{leaf: int}} on left side of ?? always exists and is not nullable.",
+            "line": 26,
+            "ignorable": true,
+            "identifier": "nullCoalesce.offset"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Offset 'absent' on array{required: int, nullable: int|null, optional?: int, nested: array{leaf: int}} on left side of ?? does not exist.",
+            "line": 27,
+            "ignorable": true,
+            "identifier": "nullCoalesce.offset"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Offset 'leaf' on array{leaf: int} on left side of ?? always exists and is not nullable.",
+            "line": 27,
+            "ignorable": true,
+            "identifier": "nullCoalesce.offset"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Offset 'required' on array{required: int, nullable: int|null, optional?: int, nested: array{leaf: int}} on left side of ??= always exists and is not nullable.",
+            "line": 28,
+            "ignorable": true,
+            "identifier": "nullCoalesce.offset"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Offset 'absentAssignment' on array{required: int} on left side of ??= does not exist.",
+            "line": 36,
+            "ignorable": true,
+            "identifier": "nullCoalesce.offset"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Property AdvancedIssetSettings\\Properties::$initialized in isset() is not nullable nor uninitialized.",
+            "line": 58,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Property AdvancedIssetSettings\\Properties::$initialized on left side of ?? is not nullable nor uninitialized.",
+            "line": 59,
+            "ignorable": true,
+            "identifier": "nullCoalesce.initializedProperty"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Property AdvancedIssetSettings\\Properties::$initialized on left side of ??= is not nullable nor uninitialized.",
+            "line": 60,
+            "ignorable": true,
+            "identifier": "nullCoalesce.initializedProperty"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Property AdvancedIssetSettings\\Properties::$defaulted (int) in isset() is not nullable.",
+            "line": 66,
+            "ignorable": true,
+            "identifier": "isset.property"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Property AdvancedIssetSettings\\Properties::$defaulted (int) on left side of ?? is not nullable.",
+            "line": 67,
+            "ignorable": true,
+            "identifier": "nullCoalesce.property"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Property AdvancedIssetSettings\\Properties::$defaulted (int) on left side of ??= is not nullable.",
+            "line": 68,
+            "ignorable": true,
+            "identifier": "nullCoalesce.property"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $missingObject in isset() is never defined.",
+            "line": 71,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $missingCoalesceObject on left side of ?? is never defined.",
+            "line": 72,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Expression on left side of ?? is not nullable.",
+            "line": 82,
+            "ignorable": true,
+            "identifier": "nullCoalesce.expr"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Expression on left side of ?? is always null.",
+            "line": 83,
+            "ignorable": true,
+            "identifier": "nullCoalesce.expr"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Property AdvancedIssetSettings\\Properties::$defaulted (int) on left side of ?? is not nullable.",
+            "line": 84,
+            "ignorable": true,
+            "identifier": "nullCoalesce.property"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Property AdvancedIssetSettings\\Properties::$defaulted (int) does not accept string.",
+            "line": 89,
+            "ignorable": true,
+            "identifier": "assign.propertyType"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Call to function strlen() on a separate line has no effect.",
+            "line": 90,
+            "ignorable": true,
+            "identifier": "function.resultUnused"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Parameter #1 $string of function strlen expects string, int given.",
+            "line": 90,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Offset 'missing' on array{required: object} in isset() does not exist.",
+            "line": 97,
+            "ignorable": true,
+            "identifier": "isset.offset"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Offset 'missing' on array{required: object} on left side of ?? does not exist.",
+            "line": 98,
+            "ignorable": true,
+            "identifier": "nullCoalesce.offset"
+        }
+    ],
+    "5-off": [
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $defined in isset() always exists and is not nullable.",
+            "line": 13,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $missing in isset() is never defined.",
+            "line": 13,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $null in isset() always exists and is always null.",
+            "line": 13,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $defined in isset() always exists and is not nullable.",
+            "line": 14,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $laterMissing in isset() is never defined.",
+            "line": 14,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $defined on left side of ?? always exists and is not nullable.",
+            "line": 15,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $missingCoalesce on left side of ?? is never defined.",
+            "line": 15,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $null on left side of ?? always exists and is always null.",
+            "line": 15,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $defined on left side of ??= always exists and is not nullable.",
+            "line": 16,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $neverAssigned on left side of ??= is never defined.",
+            "line": 18,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Property AdvancedIssetSettings\\Properties::$initialized in isset() is not nullable nor uninitialized.",
+            "line": 58,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Property AdvancedIssetSettings\\Properties::$initialized on left side of ?? is not nullable nor uninitialized.",
+            "line": 59,
+            "ignorable": true,
+            "identifier": "nullCoalesce.initializedProperty"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Property AdvancedIssetSettings\\Properties::$initialized on left side of ??= is not nullable nor uninitialized.",
+            "line": 60,
+            "ignorable": true,
+            "identifier": "nullCoalesce.initializedProperty"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $missingObject in isset() is never defined.",
+            "line": 71,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $missingCoalesceObject on left side of ?? is never defined.",
+            "line": 72,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Property AdvancedIssetSettings\\Properties::$defaulted (int) does not accept string.",
+            "line": 89,
+            "ignorable": true,
+            "identifier": "assign.propertyType"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Call to function strlen() on a separate line has no effect.",
+            "line": 90,
+            "ignorable": true,
+            "identifier": "function.resultUnused"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Parameter #1 $string of function strlen expects string, int given.",
+            "line": 90,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Offset 'missing' on array{required: object} in isset() does not exist.",
+            "line": 97,
+            "ignorable": true,
+            "identifier": "isset.offset"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Offset 'missing' on array{required: object} on left side of ?? does not exist.",
+            "line": 98,
+            "ignorable": true,
+            "identifier": "nullCoalesce.offset"
+        }
+    ],
+    "9-default": [
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $defined in isset() always exists and is not nullable.",
+            "line": 13,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $missing in isset() is never defined.",
+            "line": 13,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $null in isset() always exists and is always null.",
+            "line": 13,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $defined in isset() always exists and is not nullable.",
+            "line": 14,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $laterMissing in isset() is never defined.",
+            "line": 14,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $defined on left side of ?? always exists and is not nullable.",
+            "line": 15,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $missingCoalesce on left side of ?? is never defined.",
+            "line": 15,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $null on left side of ?? always exists and is always null.",
+            "line": 15,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $defined on left side of ??= always exists and is not nullable.",
+            "line": 16,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $neverAssigned on left side of ??= is never defined.",
+            "line": 18,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Offset 'required' on array{required: int, nullable: int|null, optional?: int, nested: array{leaf: int}} in isset() always exists and is not nullable.",
+            "line": 24,
+            "ignorable": true,
+            "identifier": "isset.offset"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Offset 'absent' on array{required: int, nullable: int|null, optional?: int, nested: array{leaf: int}} in isset() does not exist.",
+            "line": 25,
+            "ignorable": true,
+            "identifier": "isset.offset"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Offset 'leaf' on array{leaf: int} in isset() always exists and is not nullable.",
+            "line": 25,
+            "ignorable": true,
+            "identifier": "isset.offset"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Offset 'required' on array{required: int, nullable: int|null, optional?: int, nested: array{leaf: int}} on left side of ?? always exists and is not nullable.",
+            "line": 26,
+            "ignorable": true,
+            "identifier": "nullCoalesce.offset"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Offset 'absent' on array{required: int, nullable: int|null, optional?: int, nested: array{leaf: int}} on left side of ?? does not exist.",
+            "line": 27,
+            "ignorable": true,
+            "identifier": "nullCoalesce.offset"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Offset 'leaf' on array{leaf: int} on left side of ?? always exists and is not nullable.",
+            "line": 27,
+            "ignorable": true,
+            "identifier": "nullCoalesce.offset"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Offset 'required' on array{required: int, nullable: int|null, optional?: int, nested: array{leaf: int}} on left side of ??= always exists and is not nullable.",
+            "line": 28,
+            "ignorable": true,
+            "identifier": "nullCoalesce.offset"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Offset 'absentAssignment' on array{required: int} on left side of ??= does not exist.",
+            "line": 36,
+            "ignorable": true,
+            "identifier": "nullCoalesce.offset"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Property AdvancedIssetSettings\\Properties::$initialized in isset() is not nullable nor uninitialized.",
+            "line": 58,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Property AdvancedIssetSettings\\Properties::$initialized on left side of ?? is not nullable nor uninitialized.",
+            "line": 59,
+            "ignorable": true,
+            "identifier": "nullCoalesce.initializedProperty"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Property AdvancedIssetSettings\\Properties::$initialized on left side of ??= is not nullable nor uninitialized.",
+            "line": 60,
+            "ignorable": true,
+            "identifier": "nullCoalesce.initializedProperty"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Property AdvancedIssetSettings\\Properties::$defaulted (int) in isset() is not nullable.",
+            "line": 66,
+            "ignorable": true,
+            "identifier": "isset.property"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Property AdvancedIssetSettings\\Properties::$defaulted (int) on left side of ?? is not nullable.",
+            "line": 67,
+            "ignorable": true,
+            "identifier": "nullCoalesce.property"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Property AdvancedIssetSettings\\Properties::$defaulted (int) on left side of ??= is not nullable.",
+            "line": 68,
+            "ignorable": true,
+            "identifier": "nullCoalesce.property"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $missingObject in isset() is never defined.",
+            "line": 71,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $missingCoalesceObject on left side of ?? is never defined.",
+            "line": 72,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Expression on left side of ?? is not nullable.",
+            "line": 82,
+            "ignorable": true,
+            "identifier": "nullCoalesce.expr"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Expression on left side of ?? is always null.",
+            "line": 83,
+            "ignorable": true,
+            "identifier": "nullCoalesce.expr"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Property AdvancedIssetSettings\\Properties::$defaulted (int) on left side of ?? is not nullable.",
+            "line": 84,
+            "ignorable": true,
+            "identifier": "nullCoalesce.property"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Property AdvancedIssetSettings\\Properties::$defaulted (int) does not accept string.",
+            "line": 89,
+            "ignorable": true,
+            "identifier": "assign.propertyType"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Call to function strlen() on a separate line has no effect.",
+            "line": 90,
+            "ignorable": true,
+            "identifier": "function.resultUnused"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Parameter #1 $string of function strlen expects string, int given.",
+            "line": 90,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Offset 'missing' on array{required: object} in isset() does not exist.",
+            "line": 97,
+            "ignorable": true,
+            "identifier": "isset.offset"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Offset 'missing' on array{required: object} on left side of ?? does not exist.",
+            "line": 98,
+            "ignorable": true,
+            "identifier": "nullCoalesce.offset"
+        }
+    ],
+    "9-on": [
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $defined in isset() always exists and is not nullable.",
+            "line": 13,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $missing in isset() is never defined.",
+            "line": 13,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $null in isset() always exists and is always null.",
+            "line": 13,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $defined in isset() always exists and is not nullable.",
+            "line": 14,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $laterMissing in isset() is never defined.",
+            "line": 14,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $defined on left side of ?? always exists and is not nullable.",
+            "line": 15,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $missingCoalesce on left side of ?? is never defined.",
+            "line": 15,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $null on left side of ?? always exists and is always null.",
+            "line": 15,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $defined on left side of ??= always exists and is not nullable.",
+            "line": 16,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $neverAssigned on left side of ??= is never defined.",
+            "line": 18,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Offset 'required' on array{required: int, nullable: int|null, optional?: int, nested: array{leaf: int}} in isset() always exists and is not nullable.",
+            "line": 24,
+            "ignorable": true,
+            "identifier": "isset.offset"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Offset 'absent' on array{required: int, nullable: int|null, optional?: int, nested: array{leaf: int}} in isset() does not exist.",
+            "line": 25,
+            "ignorable": true,
+            "identifier": "isset.offset"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Offset 'leaf' on array{leaf: int} in isset() always exists and is not nullable.",
+            "line": 25,
+            "ignorable": true,
+            "identifier": "isset.offset"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Offset 'required' on array{required: int, nullable: int|null, optional?: int, nested: array{leaf: int}} on left side of ?? always exists and is not nullable.",
+            "line": 26,
+            "ignorable": true,
+            "identifier": "nullCoalesce.offset"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Offset 'absent' on array{required: int, nullable: int|null, optional?: int, nested: array{leaf: int}} on left side of ?? does not exist.",
+            "line": 27,
+            "ignorable": true,
+            "identifier": "nullCoalesce.offset"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Offset 'leaf' on array{leaf: int} on left side of ?? always exists and is not nullable.",
+            "line": 27,
+            "ignorable": true,
+            "identifier": "nullCoalesce.offset"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Offset 'required' on array{required: int, nullable: int|null, optional?: int, nested: array{leaf: int}} on left side of ??= always exists and is not nullable.",
+            "line": 28,
+            "ignorable": true,
+            "identifier": "nullCoalesce.offset"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Offset 'absentAssignment' on array{required: int} on left side of ??= does not exist.",
+            "line": 36,
+            "ignorable": true,
+            "identifier": "nullCoalesce.offset"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Property AdvancedIssetSettings\\Properties::$initialized in isset() is not nullable nor uninitialized.",
+            "line": 58,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Property AdvancedIssetSettings\\Properties::$initialized on left side of ?? is not nullable nor uninitialized.",
+            "line": 59,
+            "ignorable": true,
+            "identifier": "nullCoalesce.initializedProperty"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Property AdvancedIssetSettings\\Properties::$initialized on left side of ??= is not nullable nor uninitialized.",
+            "line": 60,
+            "ignorable": true,
+            "identifier": "nullCoalesce.initializedProperty"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Property AdvancedIssetSettings\\Properties::$defaulted (int) in isset() is not nullable.",
+            "line": 66,
+            "ignorable": true,
+            "identifier": "isset.property"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Property AdvancedIssetSettings\\Properties::$defaulted (int) on left side of ?? is not nullable.",
+            "line": 67,
+            "ignorable": true,
+            "identifier": "nullCoalesce.property"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Property AdvancedIssetSettings\\Properties::$defaulted (int) on left side of ??= is not nullable.",
+            "line": 68,
+            "ignorable": true,
+            "identifier": "nullCoalesce.property"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $missingObject in isset() is never defined.",
+            "line": 71,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $missingCoalesceObject on left side of ?? is never defined.",
+            "line": 72,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Expression on left side of ?? is not nullable.",
+            "line": 82,
+            "ignorable": true,
+            "identifier": "nullCoalesce.expr"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Expression on left side of ?? is always null.",
+            "line": 83,
+            "ignorable": true,
+            "identifier": "nullCoalesce.expr"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Property AdvancedIssetSettings\\Properties::$defaulted (int) on left side of ?? is not nullable.",
+            "line": 84,
+            "ignorable": true,
+            "identifier": "nullCoalesce.property"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Property AdvancedIssetSettings\\Properties::$defaulted (int) does not accept string.",
+            "line": 89,
+            "ignorable": true,
+            "identifier": "assign.propertyType"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Call to function strlen() on a separate line has no effect.",
+            "line": 90,
+            "ignorable": true,
+            "identifier": "function.resultUnused"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Parameter #1 $string of function strlen expects string, int given.",
+            "line": 90,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Offset 'missing' on array{required: object} in isset() does not exist.",
+            "line": 97,
+            "ignorable": true,
+            "identifier": "isset.offset"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Offset 'missing' on array{required: object} on left side of ?? does not exist.",
+            "line": 98,
+            "ignorable": true,
+            "identifier": "nullCoalesce.offset"
+        }
+    ],
+    "9-off": [
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $defined in isset() always exists and is not nullable.",
+            "line": 13,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $missing in isset() is never defined.",
+            "line": 13,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $null in isset() always exists and is always null.",
+            "line": 13,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $defined in isset() always exists and is not nullable.",
+            "line": 14,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $laterMissing in isset() is never defined.",
+            "line": 14,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $defined on left side of ?? always exists and is not nullable.",
+            "line": 15,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $missingCoalesce on left side of ?? is never defined.",
+            "line": 15,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $null on left side of ?? always exists and is always null.",
+            "line": 15,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $defined on left side of ??= always exists and is not nullable.",
+            "line": 16,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $neverAssigned on left side of ??= is never defined.",
+            "line": 18,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Property AdvancedIssetSettings\\Properties::$initialized in isset() is not nullable nor uninitialized.",
+            "line": 58,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Property AdvancedIssetSettings\\Properties::$initialized on left side of ?? is not nullable nor uninitialized.",
+            "line": 59,
+            "ignorable": true,
+            "identifier": "nullCoalesce.initializedProperty"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Property AdvancedIssetSettings\\Properties::$initialized on left side of ??= is not nullable nor uninitialized.",
+            "line": 60,
+            "ignorable": true,
+            "identifier": "nullCoalesce.initializedProperty"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $missingObject in isset() is never defined.",
+            "line": 71,
+            "ignorable": true,
+            "identifier": "isset.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Variable $missingCoalesceObject on left side of ?? is never defined.",
+            "line": 72,
+            "ignorable": true,
+            "identifier": "nullCoalesce.variable"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Property AdvancedIssetSettings\\Properties::$defaulted (int) does not accept string.",
+            "line": 89,
+            "ignorable": true,
+            "identifier": "assign.propertyType"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Call to function strlen() on a separate line has no effect.",
+            "line": 90,
+            "ignorable": true,
+            "identifier": "function.resultUnused"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Parameter #1 $string of function strlen expects string, int given.",
+            "line": 90,
+            "ignorable": true,
+            "identifier": "argument.type"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Offset 'missing' on array{required: object} in isset() does not exist.",
+            "line": 97,
+            "ignorable": true,
+            "identifier": "isset.offset"
+        },
+        {
+            "file": "$ROOT/advanced-settings.php",
+            "message": "Offset 'missing' on array{required: object} on left side of ?? does not exist.",
+            "line": 98,
+            "ignorable": true,
+            "identifier": "nullCoalesce.offset"
+        }
+    ]
+}

@@ -46,6 +46,8 @@ pub(crate) struct Checks {
     check_argument_types: bool,
     check_arguments_passed_by_reference: bool,
     check_this_only: bool,
+    /// [`Project::check_advanced_isset`], otherwise config.level4.neon's default.
+    check_advanced_isset: bool,
     generic_iterable_classes: bool,
     /// [`Project::new_static_in_abstract_class_static_method`].
     new_static_in_abstract_class_static_method: bool,
@@ -123,6 +125,7 @@ impl Checks {
             check_argument_types: project.check_function_argument_types.unwrap_or(project.level >= 5),
             check_arguments_passed_by_reference: project.check_arguments_passed_by_reference.unwrap_or(project.level >= 5),
             check_this_only: project.check_this_only.unwrap_or(project.level < 2),
+            check_advanced_isset: project.check_advanced_isset.unwrap_or(project.level >= 4),
             generic_iterable_classes: project.check_generic_iterable_classes,
             new_static_in_abstract_class_static_method: project.new_static_in_abstract_class_static_method,
             php_version: project.php_version,
@@ -280,6 +283,7 @@ fn checker<'a, 'arena>(
         check_argument_types: project.check_argument_types,
         check_arguments_passed_by_reference: project.check_arguments_passed_by_reference,
         check_this_only: project.check_this_only,
+        check_advanced_isset: project.check_advanced_isset,
         generic_iterable_classes: project.generic_iterable_classes,
         new_static_in_abstract_class_static_method: project.new_static_in_abstract_class_static_method,
         larastan: project.larastan.as_ref(),

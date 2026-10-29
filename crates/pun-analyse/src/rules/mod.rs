@@ -888,6 +888,8 @@ pub struct Checker<'a, 'arena> {
     check_argument_types: bool,
     check_arguments_passed_by_reference: bool,
     check_this_only: bool,
+    /// IssetCheck's independent advanced offset, property and leaf checks.
+    check_advanced_isset: bool,
     generic_iterable_classes: bool,
     /// [`driver::Checks`]'s `featureToggles.newStaticInAbstractClassStaticMethod`.
     new_static_in_abstract_class_static_method: bool,
