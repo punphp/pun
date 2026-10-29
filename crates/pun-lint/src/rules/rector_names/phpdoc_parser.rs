@@ -661,6 +661,115 @@ impl<'a> DocParser<'a> {
     }
 }
 
+/// `StringUnescaper::unescapeString()` of the string token `token`, its quotes included.
+pub(crate) fn unescape_string(token: &str) -> Vec<u8> {
+    let inner = &token[1..token.len() - 1];
+    if token.starts_with('\'') {
+        return inner.replace("\\\\", "\\").replace("\\'", "'").into_bytes();
+    }
+    // `parseEscapeSequences()`
+    static RE: OnceLock<pcre2::bytes::Regex> = OnceLock::new();
+    let re = RE.get_or_init(|| {
+        pcre2::bytes::Regex::new(r"\\([\\nrtfve]|[xX][0-9a-fA-F]{1,2}|[0-7]{1,3}|u\{([0-9a-fA-F]+)\})").expect("escapes")
+    });
+    let value = inner.replace("\\\"", "\"").into_bytes();
+    let mut out = Vec::new();
+    let mut last = 0;
+    for caps in re.captures_iter(&value).flatten() {
+        let whole = caps.get(0).expect("match");
+        let group = |g: usize| caps.get(g).map(|m| &value[m.start()..m.end()]).expect("group");
+        let escape = group(1);
+        out.extend_from_slice(&value[last..whole.start()]);
+        let number = |digits: &[u8], radix| u32::from_str_radix(std::str::from_utf8(digits).expect("ascii"), radix).unwrap_or(u32::MAX);
+        match escape[0] {
+            b'\\' => out.push(b'\\'),
+            b'n' => out.push(b'\n'),
+            b'r' => out.push(b'\r'),
+            b't' => out.push(b'\t'),
+            b'f' => out.push(0x0c),
+            b'v' => out.push(0x0b),
+            b'e' => out.push(0x1b),
+            b'x' | b'X' => out.push(number(&escape[1..], 16) as u8),
+            // `codePointToUtf8()`
+            b'u' => {
+                let n = number(group(2), 16);
+                match n {
+                    0..=0x7f => out.push(n as u8),
+                    0x80..=0x7ff => out.extend([(n >> 6) as u8 + 0xc0, (n & 0x3f) as u8 + 0x80]),
+                    0x800..=0xffff => out.extend([(n >> 12) as u8 + 0xe0, (n >> 6 & 0x3f) as u8 + 0x80, (n & 0x3f) as u8 + 0x80]),
+                    0x10000..=0x1fffff => out.extend([
+                        (n >> 18) as u8 + 0xf0,
+                        (n >> 12 & 0x3f) as u8 + 0x80,
+                        (n >> 6 & 0x3f) as u8 + 0x80,
+                        (n & 0x3f) as u8 + 0x80,
+                    ]),
+                    _ => out.extend("\u{fffd}".as_bytes()),
+                }
+            }
+            // `chr(octdec())`, modulo 256
+            _ => out.push(number(escape, 8) as u8),
+        }
+        last = whole.end();
+    }
+    out.extend_from_slice(&value[last..]);
+    out
+}
+
+/// `ConstExprStringNode::__toString()` of `value` written in `quote`: single-quoted with `addcslashes($value,
+/// '\'\\')`, else `escapeDoubleQuotedString()`.
+pub(crate) fn print_string(value: &[u8], quote: u8) -> String {
+    if quote == b'\'' {
+        let value = String::from_utf8_lossy(value);
+        return format!("'{}'", value.replace('\\', "\\\\").replace('\'', "\\'"));
+    }
+    // `addcslashes($value, "\n\r\t\f\v\$\"\\")`
+    let mut escaped = Vec::new();
+    for &b in value {
+        match b {
+            b'\n' => escaped.extend(b"\\n"),
+            b'\r' => escaped.extend(b"\\r"),
+            b'\t' => escaped.extend(b"\\t"),
+            0x0c => escaped.extend(b"\\f"),
+            0x0b => escaped.extend(b"\\v"),
+            b'$' | b'"' | b'\\' => escaped.extend([b'\\', b]),
+            _ => escaped.push(b),
+        }
+    }
+    // control characters and bytes that are no UTF-8, each as `\xhh`
+    static RE: OnceLock<pcre2::bytes::Regex> = OnceLock::new();
+    let re = RE.get_or_init(|| {
+        pcre2::bytes::RegexBuilder::new()
+            .extended(true)
+            .build(
+                r"(
+                  [\x00-\x08\x0E-\x1F]
+                | [\xC0-\xC1]
+                | [\xF5-\xFF]
+                | \xE0(?=[\x80-\x9F])
+                | \xF0(?=[\x80-\x8F])
+                | [\xC2-\xDF](?![\x80-\xBF])
+                | [\xE0-\xEF](?![\x80-\xBF]{2})
+                | [\xF0-\xF4](?![\x80-\xBF]{3})
+                | (?<=[\x00-\x7F\xF5-\xFF])[\x80-\xBF]
+                | (?<![\xC2-\xDF]|[\xE0-\xEF]|[\xE0-\xEF][\x80-\xBF]|[\xF0-\xF4]|[\xF0-\xF4][\x80-\xBF]|[\xF0-\xF4][\x80-\xBF]{2})[\x80-\xBF]
+                | (?<=[\xE0-\xEF])[\x80-\xBF](?![\x80-\xBF])
+                | (?<=[\xF0-\xF4])[\x80-\xBF](?![\x80-\xBF]{2})
+                | (?<=[\xF0-\xF4][\x80-\xBF])[\x80-\xBF](?![\x80-\xBF])
+            )",
+            )
+            .expect("utf-8 regex")
+    });
+    let mut out = Vec::new();
+    let mut last = 0;
+    for m in re.find_iter(&escaped).flatten() {
+        out.extend_from_slice(&escaped[last..m.start()]);
+        out.extend(format!("\\x{:02x}", escaped[m.start()]).bytes());
+        last = m.end();
+    }
+    out.extend_from_slice(&escaped[last..]);
+    format!("\"{}\"", String::from_utf8_lossy(&out))
+}
+
 /// `MULTI_NEW_LINES_REGEX`: a run of two or more line breaks made its last one.
 fn collapse_newlines(value: &str) -> String {
     static RE: OnceLock<pcre2::bytes::Regex> = OnceLock::new();

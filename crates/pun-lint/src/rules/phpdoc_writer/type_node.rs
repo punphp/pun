@@ -53,8 +53,8 @@ impl TypeNode {
     }
 
     /// [`Self::from_parsed`] that prints object shapes, conditionals, offset accesses and quoted strings too; `quote`
-    /// gives the quote a string was written in.
-    pub fn from_parsed_all(node: &Node, quote: &dyn Fn(&str) -> Option<u8>) -> Option<TypeNode> {
+    /// gives a string as written.
+    pub fn from_parsed_all(node: &Node, quote: &dyn Fn(&str) -> Option<String>) -> Option<TypeNode> {
         from_parsed(node, false, Some(quote))
     }
 
@@ -64,7 +64,7 @@ impl TypeNode {
     }
 }
 
-fn from_parsed(node: &Node, in_array: bool, all: Option<&dyn Fn(&str) -> Option<u8>>) -> Option<TypeNode> {
+fn from_parsed(node: &Node, in_array: bool, all: Option<&dyn Fn(&str) -> Option<String>>) -> Option<TypeNode> {
     Some(match node {
         Node::Ident(name) => TypeNode::Identifier(name.clone()),
         Node::This => TypeNode::ident("$this"),
@@ -109,7 +109,7 @@ fn from_parsed(node: &Node, in_array: bool, all: Option<&dyn Fn(&str) -> Option<
                         None => None,
                         Some(ShapeKey::Int(k) | ShapeKey::Ident(k)) => Some(k.clone()),
                         Some(ShapeKey::Fetch(class, name)) => Some(format!("{class}::{name}")),
-                        Some(ShapeKey::Str(k)) => Some(quoted(k, all?(k)?)),
+                        Some(ShapeKey::Str(k)) => Some(all?(k)?),
                     };
                     Some((key, i.optional, from_parsed(&i.value, false, all)?))
                 })
@@ -149,13 +149,13 @@ fn from_parsed(node: &Node, in_array: bool, all: Option<&dyn Fn(&str) -> Option<
         Node::Const(ConstExpr::Int(v) | ConstExpr::Float(v)) => TypeNode::Raw(v.clone()),
         Node::Const(ConstExpr::Fetch(class, name)) => TypeNode::Raw(format!("{class}::{name}")),
         // `ObjectShapeNode`, `ObjectShapeItemNode`
-        Node::Const(ConstExpr::Str(v)) if all.is_some() => TypeNode::Raw(quoted(v, all?(v)?)),
+        Node::Const(ConstExpr::Str(v)) if all.is_some() => TypeNode::Raw(all?(v)?),
         Node::ObjectShape(items) if all.is_some() => TypeNode::Raw(format!(
             "object{{{}}}",
             items
                 .iter()
                 .map(|(key, optional, value)| {
-                    let key = all?(key).map_or_else(|| key.clone(), |q| quoted(key, q));
+                    let key = all?(key).unwrap_or_else(|| key.clone());
                     Some(format!("{key}{}: {}", if *optional { "?" } else { "" }, from_parsed(value, false, all)?))
                 })
                 .collect::<Option<Vec<_>>>()?
@@ -300,31 +300,4 @@ fn print_array(inner: &TypeNode, generic_parent: bool) -> String {
         }
         _ => format!("{printed}[]"),
     }
-}
-
-/// `ConstExprStringNode::__toString()` of `value` written in `quote`: single-quoted with
-/// `addcslashes($value, '\'\\')`, else `escapeDoubleQuotedString()` (`addcslashes()` of line breaks, tabs, `\f`,
-/// `\v`, `$`, `"` and `\\`, then each control character as `\xHH`; a Rust string holds no invalid UTF-8).
-pub(crate) fn quoted(value: &str, quote: u8) -> String {
-    if quote == b'\'' {
-        return format!("'{}'", value.replace('\\', "\\\\").replace('\'', "\\'"));
-    }
-    let mut out = String::from('"');
-    for c in value.chars() {
-        match c {
-            '\n' => out.push_str("\\n"),
-            '\r' => out.push_str("\\r"),
-            '\t' => out.push_str("\\t"),
-            '\x0C' => out.push_str("\\f"),
-            '\x0B' => out.push_str("\\v"),
-            '$' | '"' | '\\' => {
-                out.push('\\');
-                out.push(c);
-            }
-            '\x00'..='\x08' | '\x0E'..='\x1F' => out.push_str(&format!("\\x{:02x}", c as u32)),
-            _ => out.push(c),
-        }
-    }
-    out.push('"');
-    out
 }

@@ -11,7 +11,7 @@
 use pun_phpstan::phpdoc::{self, Node, ShapeKey};
 
 use super::phpdoc_parser::{self as parser, ArrayItem, Key, Val, t};
-use crate::rules::phpdoc_writer::type_node::{TypeNode, quoted};
+use crate::rules::phpdoc_writer::type_node::TypeNode;
 
 /// How a typed tag's value is laid out around its type.
 #[derive(Clone, Debug)]
@@ -39,8 +39,8 @@ pub(crate) struct Typed {
     /// The type, or a template's bound (none without one).
     types: Vec<Node>,
     description: String,
-    /// The strings written in the value, each with its quote ([`strings_of`]).
-    strings: Vec<(String, u8)>,
+    /// The strings written in the value, each as printed ([`strings_of`]).
+    strings: Vec<(String, String)>,
     /// The identifiers [`Doc::set_ident`] replaced: a new `IdentifierTypeNode` has no `PARENT` attribute, so the
     /// name importing no longer sees its template tag.
     replaced: Vec<usize>,
@@ -86,9 +86,9 @@ pub(crate) struct Other {
     description: Option<String>,
     /// `TemplatePhpDocNodeVisitor::resolvePreposition()` of each `@method` template.
     prepositions: Vec<String>,
-    /// The quote of each string in the `@method` parameters' defaults, in order.
-    quotes: Vec<u8>,
-    strings: Vec<(String, u8)>,
+    /// Each string in the `@method` parameters' defaults as printed, in order.
+    quotes: Vec<String>,
+    strings: Vec<(String, String)>,
 }
 
 impl Other {
@@ -202,8 +202,8 @@ impl Other {
     }
 }
 
-/// `ConstExprNode::__toString()`; `quotes` gives each string's quote.
-fn const_expr(expr: &phpdoc::ConstExpr, quotes: &mut std::slice::Iter<'_, u8>) -> Option<String> {
+/// `ConstExprNode::__toString()`; `quotes` gives each string as printed.
+fn const_expr(expr: &phpdoc::ConstExpr, quotes: &mut std::slice::Iter<'_, String>) -> Option<String> {
     use phpdoc::ConstExpr as C;
     Some(match expr {
         C::Int(v) | C::Float(v) => v.clone(),
@@ -212,7 +212,7 @@ fn const_expr(expr: &phpdoc::ConstExpr, quotes: &mut std::slice::Iter<'_, u8>) -
         C::Null => "null".into(),
         C::Fetch(class, name) if class.is_empty() => name.clone(),
         C::Fetch(class, name) => format!("{class}::{name}"),
-        C::Str(v) => quoted(v, *quotes.next()?),
+        C::Str(_) => quotes.next()?.clone(),
         C::Array(items) => {
             let mut printed = Vec::new();
             for (key, value) in items {
@@ -831,26 +831,23 @@ fn other(tag: phpdoc::Tag, value: &str, description: impl Fn(usize) -> String) -
     }))
 }
 
-/// The strings written in `value`, each as `StringUnescaper` reads it and as written, with its quote.
-fn strings_of(value: &str) -> Vec<(String, u8)> {
+/// The strings written in `value`: each as `pun_phpstan` reads it (`StringUnescaper`, the bytes that are no UTF-8
+/// replaced) and as `ConstExprStringNode` prints it.
+fn strings_of(value: &str) -> Vec<(String, String)> {
     let mut strings = Vec::new();
     for tok in parser::tokenize(value) {
         if let t::SINGLE_QUOTED_STRING | t::DOUBLE_QUOTED_STRING = tok.ty {
-            let inner = &value[tok.start + 1..tok.end - 1];
-            let quote = value.as_bytes()[tok.start];
-            let unescaped = match quote {
-                b'\'' => inner.replace("\\\\", "\\").replace("\\'", "'"),
-                _ => inner.replace("\\\"", "\""),
-            };
-            strings.extend([(unescaped, quote), (inner.to_string(), quote)]);
+            let unescaped = parser::unescape_string(&value[tok.start..tok.end]);
+            let printed = parser::print_string(&unescaped, value.as_bytes()[tok.start]);
+            strings.push((String::from_utf8_lossy(&unescaped).into_owned(), printed));
         }
     }
     strings
 }
 
-/// The quote the string `value` was written in.
-fn quote_of(strings: &[(String, u8)], value: &str) -> Option<u8> {
-    strings.iter().find(|(s, _)| s == value).map(|(_, q)| *q)
+/// The string `value` as printed.
+fn quote_of(strings: &[(String, String)], value: &str) -> Option<String> {
+    strings.iter().find(|(s, _)| s == value).map(|(_, printed)| printed.clone())
 }
 
 /// Where the type at the start of `value` (after white space) ends.
@@ -873,9 +870,9 @@ fn tokens_from(value: &str, at: usize) -> Vec<parser::Tok> {
         .collect()
 }
 
-/// `parseMethodTagValue()` on `value`: where its description starts, the preposition of each template, and the quote
-/// of each string in the parameters' defaults.
-fn scan_method(value: &str) -> Option<(usize, Vec<String>, Vec<u8>)> {
+/// `parseMethodTagValue()` on `value`: where its description starts, the preposition of each template, and each
+/// string in the parameters' defaults as printed.
+fn scan_method(value: &str) -> Option<(usize, Vec<String>, Vec<String>)> {
     let (first, mut end) = type_end(value, 0)?;
     if first == Node::Ident("static".into()) {
         end = type_end(value, end)?.1;
@@ -925,7 +922,10 @@ fn scan_method(value: &str) -> Option<(usize, Vec<String>, Vec<u8>)> {
                 t::OPEN_PARENTHESES | t::OPEN_ANGLE_BRACKET | t::OPEN_SQUARE_BRACKET | t::OPEN_CURLY_BRACKET => depth += 1,
                 t::CLOSE_PARENTHESES | t::CLOSE_ANGLE_BRACKET | t::CLOSE_SQUARE_BRACKET | t::CLOSE_CURLY_BRACKET => depth -= 1,
                 t::EQUAL if depth == 0 => default = true,
-                t::SINGLE_QUOTED_STRING | t::DOUBLE_QUOTED_STRING if default => quotes.push(value.as_bytes()[tok.start]),
+                t::SINGLE_QUOTED_STRING | t::DOUBLE_QUOTED_STRING if default => {
+                    let unescaped = parser::unescape_string(&value[tok.start..tok.end]);
+                    quotes.push(parser::print_string(&unescaped, value.as_bytes()[tok.start]));
+                }
                 _ => {}
             }
         }

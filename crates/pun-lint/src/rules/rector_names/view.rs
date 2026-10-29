@@ -149,6 +149,8 @@ pub(crate) enum StmtKind {
     Namespace,
     /// The `Nop` php-parser adds for comments after the last statement.
     Nop,
+    /// `InlineHTML`: the text after `?>`.
+    Inline,
     Other,
 }
 
@@ -689,7 +691,8 @@ impl Walk {
             Node::TraitUseAbsoluteMethodReference(reference) => {
                 self.name(&reference.trait_name, Kind::Class);
             }
-            Node::TraitUsePrecedenceAdaptation(adaptation) => {
+            // (Mago gives the names of a `TraitUseAdaptation`'s precedence, never the precedence node itself)
+            Node::TraitUseAdaptation(mago_syntax::cst::TraitUseAdaptation::Precedence(adaptation)) => {
                 for id in adaptation.trait_names.iter() {
                     self.name(id, Kind::Class);
                 }
@@ -771,6 +774,7 @@ fn stmt_list<'a, 'b: 'a>(
             }
             Statement::Declare(_) => StmtKind::Declare,
             Statement::Namespace(_) => StmtKind::Namespace,
+            Statement::Inline(_) => StmtKind::Inline,
             _ => StmtKind::Other,
         };
         let span = node_span(statement);

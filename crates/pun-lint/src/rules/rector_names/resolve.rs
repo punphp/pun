@@ -283,9 +283,8 @@ fn resolve_tag_class(ctx: &Context<'_>, scope: Scope<'_>, tag: &str) -> Option<S
             }
             return match_name_with_uses(scope.uses, tag);
         }
-        if tag.starts_with('\\') && has_class(ctx, tag) {
-            return Some(tag.to_string());
-        }
+        // `isPreslashedExistingClass()` gives the tag itself, as `resolve_tag()` does without a match (no import
+        // matches a name with a leading `\\`)
     }
     match_name_with_uses(scope.uses, tag)
 }

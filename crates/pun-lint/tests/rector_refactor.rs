@@ -77,6 +77,17 @@ fn everywhere(make: impl Fn() -> Box<dyn Rule>, class: &str, php_version: u32) {
     }
 }
 
+/// The PHP files under `dir`, recursively: `(path, code)`.
+fn php_files(dir: &Path, out: &mut Vec<(String, String)>) {
+    for path in std::fs::read_dir(dir).unwrap().map(|e| e.unwrap().path()) {
+        if path.is_dir() {
+            php_files(&path, out);
+        } else if path.extension().is_some_and(|e| e == "php") {
+            out.push((path.to_string_lossy().into_owned(), std::fs::read_to_string(&path).unwrap()));
+        }
+    }
+}
+
 /// `configure` rejects each of `bad` with the message `error`.
 fn rejects(mut rule: impl Rule, bad: &[(Value, &str)]) {
     for (options, error) in bad {
@@ -716,6 +727,23 @@ fn rename_class() {
         80400,
         &[],
     );
+
+    // OracleCrlf*: files whose lines end in `\r\n`, read as written (the runner makes them `\n`), without the format
+    // step (the laravel format makes them `\n` too)
+    let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/rector/RenameClassRector");
+    let mut extra = Vec::new();
+    for dir in ["Source", "Stubs"] {
+        php_files(&root.join(dir), &mut extra);
+    }
+    for (dir, options) in [("OracleCrlf", &options), ("OracleCrlfAutoImportNames", &auto)] {
+        let linter = Linter::new(vec![configured(RenameClass::default(), options)], 80400);
+        for path in std::fs::read_dir(root.join(dir)).unwrap().map(|e| e.unwrap().path()) {
+            let content = std::fs::read_to_string(&path).unwrap();
+            let (input, expected) = content.split_once("-----\n").unwrap();
+            let fixed = pun_lint::rules::facts::with_sources(extra.clone(), || linter.fix(&path, input)).unwrap();
+            assert_eq!(fixed.source, expected, "{}", path.display());
+        }
+    }
 
     rejects(
         RenameClass::default(),

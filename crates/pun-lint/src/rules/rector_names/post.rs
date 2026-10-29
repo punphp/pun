@@ -834,9 +834,9 @@ impl<'s> Session<'s> {
         if !has_class(self.ctx, class) {
             return false;
         }
+        // (`name` has no leading `\\` here)
         match name.find(&format!("\\{short}")) {
             None => !self.has_import(class),
-            Some(0) => true,
             Some(p) => name[..p].trim_start_matches('\\').split('\\').count() > 1,
         }
     }
@@ -889,11 +889,8 @@ impl<'s> Session<'s> {
         let root = &self.view.roots[r];
         let list = &mut self.lists[r];
         let is_old = |item: &Item, kind: StmtKind| matches!(item, Item::Old(i) if root.stmts[*i].kind == kind);
-        let is_use = |item: &Item| match item {
-            Item::Old(i) => matches!(root.stmts[*i].kind, StmtKind::Use(_)),
-            Item::New { .. } => true,
-            Item::Nop(_) => false,
-        };
+        // (no new import is in the list yet)
+        let is_use = |item: &Item| matches!(item, Item::Old(i) if matches!(root.stmts[*i].kind, StmtKind::Use(_)));
         // a `Use_`, not a `GroupUse`, with comments: they move to the first new import
         let mirror = |list: &mut ListState, new_uses: &mut Vec<Item>, at: usize| {
             if let Some(Item::Old(i)) = list.items.get(at)
@@ -986,8 +983,7 @@ impl<'s> Session<'s> {
                 }
                 let comments = match item {
                     Item::Old(i) => (root.stmts[*i].comment_start < root.stmts[*i].span.start && !list.cleared[*i]).then_some(*i),
-                    Item::New { comments, .. } => *comments,
-                    Item::Nop(_) => None,
+                    Item::New { comments: c, .. } | Item::Nop(c) => *c,
                 };
                 if key == first_key && let Some(c) = comments {
                     new_items.push(Item::Nop(Some(c)));
@@ -1120,11 +1116,9 @@ impl<'s> Session<'s> {
                 }
                 let u = &root.uses[k];
                 let spans: Vec<Span> = u.items.iter().map(|i| i.span).collect();
-                let edit = match differ::removed_items(&spans, kept, u.span.start) {
-                    Some((pieces, end)) => (Span::new(u.span.start, end), render_pieces(source, &pieces, &edits)),
-                    None => (u.span, print_use(&self.current_uses_of(r, k))),
-                };
-                edits.push(edit);
+                // (an item is kept: a `use` without any is gone)
+                let (pieces, end) = differ::removed_items(&spans, kept, u.span.start)?;
+                edits.push((Span::new(u.span.start, end), render_pieces(source, &pieces, &edits)));
             }
         }
         // the statement lists
@@ -1155,7 +1149,7 @@ impl<'s> Session<'s> {
                     end: s.span.end,
                 })
                 .collect();
-            let new: Vec<NewItem> = list.items.iter().map(|item| self.new_item(r, item, &edits)).collect();
+            let new: Vec<NewItem> = list.items.iter().map(|item| self.new_item(r, item)).collect();
             let has_nop = list.items.iter().any(|i| matches!(i, Item::Nop(_)));
             let pos = root.header.as_ref().map_or(0, |h| h.list_pos);
             // php-parser checks the braces of a single statement's list
@@ -1208,29 +1202,25 @@ impl<'s> Session<'s> {
     }
 
     /// The differ's item for `item` of the root `r`.
-    fn new_item(&self, r: usize, item: &Item, edits: &[(Span, String)]) -> NewItem {
+    fn new_item(&self, r: usize, item: &Item) -> NewItem {
         let root = &self.view.roots[r];
         let list = &self.lists[r];
         match item {
-            Item::Old(i) if list.reprinted[*i] => NewItem {
-                key: None,
-                text: match root.stmts[*i].kind {
-                    StmtKind::Use(k) => print_use(&self.current_uses_of(r, k)),
-                    _ => render(self.source, edits, root.stmts[*i].span.start, root.stmts[*i].span.end),
-                },
-                comments: match list.cleared[*i] {
-                    true => Comments::None,
-                    false => Comments::Of(*i),
-                },
-            },
-            Item::Old(i) => NewItem {
-                key: Some(*i),
-                text: String::new(),
-                comments: match list.cleared[*i] {
-                    true => Comments::None,
-                    false => Comments::Of(*i),
-                },
-            },
+            // a `use` printed anew (the only statement that is), or the old statement kept
+            Item::Old(i) => {
+                let reprinted = match (list.reprinted[*i], root.stmts[*i].kind) {
+                    (true, StmtKind::Use(k)) => Some(k),
+                    _ => None,
+                };
+                NewItem {
+                    key: reprinted.is_none().then_some(*i),
+                    text: reprinted.map_or_else(String::new, |k| print_use(&self.current_uses_of(r, k))),
+                    comments: match list.cleared[*i] {
+                        true => Comments::None,
+                        false => Comments::Of(*i),
+                    },
+                }
+            }
             Item::New { kind, name, comments } => NewItem {
                 key: None,
                 text: print_use(&new_use_view(*kind, name)),
@@ -1311,6 +1301,18 @@ impl<'s> Session<'s> {
                     let span = root.stmts[*i].span;
                     match (list.reprinted[*i], root.stmts[*i].kind) {
                         (true, StmtKind::Use(k)) => text.push_str(&print_use(&self.current_uses_of(r, k))),
+                        // `pStmt_InlineHTML()`: `?>`, the line break the closing tag took (`hasLeadingNewline`, also
+                        // set on HTML that starts the file), the HTML, `<?php `
+                        (_, StmtKind::Inline) => {
+                            let html = &self.source[span.start..span.end];
+                            let rest = html.strip_prefix("\r\n").or_else(|| html.strip_prefix('\n'));
+                            let (newline, value) = match rest {
+                                _ if span.start == 0 => ("\n", html),
+                                Some(rest) => ("\n", rest),
+                                None => ("", html),
+                            };
+                            text.push_str(&format!("?>{newline}{value}<?php "));
+                        }
                         // the printer copies the statement, its indentation made the level's
                         _ => {
                             let printed = render(self.source, edits, span.start, span.end);
@@ -1364,9 +1366,7 @@ fn should_skip_name(name: &str, kind: Kind, uses: &[UseView]) -> bool {
             if !item.last().eq_ignore_ascii_case(short) {
                 continue;
             }
-            if item.alias.as_deref() == Some(name) {
-                return true;
-            }
+            // (an alias, one part, is never the qualified `name`)
             return format!("{prefix}{}", item.name) != name;
         }
     }
@@ -1397,10 +1397,8 @@ fn is_import_used(item: &UseItemView, case_sensitive: bool, names: &[String], na
         return true;
     }
     let last_name = last(&compared).to_string();
-    let mut prefix = format!("{last_name}\\");
-    if prefix == "\\" {
-        prefix = format!("{compared}\\");
-    }
+    // (an import's name never ends with `\\`: its last part is never empty)
+    let prefix = format!("{last_name}\\");
     for name in names {
         if name.starts_with('\\') {
             continue;

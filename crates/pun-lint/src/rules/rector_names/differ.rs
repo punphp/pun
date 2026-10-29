@@ -79,15 +79,16 @@ fn comment_spans(source: &str, old: &OldItem) -> Vec<Span> {
         .collect()
 }
 
-/// `TokenStream::haveTagInRange()`: an opening or closing tag in `[from, to)`.
+/// `TokenStream::haveTagInRange()`: an opening or closing tag in `[from, to)`. The file is read from its start, since
+/// `from` may follow inline HTML, where the lexer is not inside PHP code.
 fn have_tag_in_range(source: &str, from: usize, to: usize) -> bool {
-    from < to
-        && tokens(source, from, to).iter().any(|t| {
-            matches!(
+    crate::rules::php_parser::tokens(source).iter().any(|t| {
+        (from..to).contains(&t.start)
+            && matches!(
                 t.kind,
                 TokenKind::OpenTag | TokenKind::EchoTag | TokenKind::ShortOpenTag | TokenKind::CloseTag
             )
-        })
+    })
 }
 
 /// `pArray()` on a statement list from `pos` (where the list's subnode starts): the pieces up to the end of the last

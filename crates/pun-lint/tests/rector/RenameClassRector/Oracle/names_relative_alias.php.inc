@@ -1,0 +1,15 @@
+<?php
+
+namespace Bar;
+
+use Foo\Bar;
+
+new Bar\Baz\Qux();
+new \Rector\Tests\Renaming\Rector\Name\RenameClassRector\Source\OldClass();
+-----
+<?php
+
+namespace Bar;
+
+new Bar\Baz\Qux();
+new \Rector\Tests\Renaming\Rector\Name\RenameClassRector\Source\NewClass();
