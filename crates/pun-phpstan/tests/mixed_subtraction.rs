@@ -362,3 +362,70 @@ fn subtraction_descriptions_follow_runtime_type_not_rendered_delimiters() {
     }
     assert!(failures.is_empty(), "{}", failures.join("\n"));
 }
+
+// Exclusions retain the positive identity for iteration, but not for containment or precise unions.
+#[test]
+fn object_exclusions_keep_identity_through_public_queries_and_unions() {
+    use pun_phpstan::resolve::resolve_str;
+    use serde_json::json;
+
+    fn input(spec: &Value) -> Type {
+        if let Some(name) = spec.as_str() {
+            return resolve_str(name, None);
+        }
+        if let Some(object) = spec.get("object") {
+            return Type::object_subtracted(input(object), input(&spec["excluded"]));
+        }
+        Type::Union(
+            spec["union"]
+                .as_array()
+                .unwrap()
+                .iter()
+                .map(input)
+                .collect(),
+        )
+    }
+
+    let describe =
+        |t: &Type| [Level::Precise, Level::Value, Level::TypeOnly].map(|level| t.describe(level));
+    let tri = |result: Tri| match result {
+        Tri::Yes => "Yes",
+        Tri::Maybe => "Maybe",
+        Tri::No => "No",
+    };
+    let oracle: Value =
+        serde_json::from_str(include_str!("fixtures/object-subtraction-api.json")).unwrap();
+    let types: BTreeMap<_, _> = oracle["inputs"]
+        .as_object()
+        .unwrap()
+        .iter()
+        .map(|(name, spec)| (name.as_str(), input(spec)))
+        .collect();
+    for (name, expected) in oracle["queries"].as_object().unwrap() {
+        let t = &types[name.as_str()];
+        assert_eq!(
+            json!({
+                "descriptions": describe(t), "names": t.object_class_names(),
+                "key": describe(&t.iterable_key_type()), "value": describe(&t.iterable_value_type()),
+            }),
+            *expected,
+            "{name}"
+        );
+    }
+    for (pair, expected) in oracle["super"].as_object().unwrap() {
+        let (a, b) = pair.split_once(':').unwrap();
+        assert_eq!(
+            json!(tri(is_super_type_of(&types[a], &types[b]))),
+            *expected,
+            "{pair}"
+        );
+    }
+    for (pair, expected) in oracle["unions"].as_object().unwrap() {
+        let (a, b) = pair.split_once(':').unwrap();
+        assert_eq!(
+            json!(describe(&union(vec![types[a].clone(), types[b].clone()]))),
+            *expected,
+            "{pair}"
+        );
+    }
+}

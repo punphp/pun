@@ -1,0 +1,142 @@
+{
+    "inputs": {
+        "exception": "Exception",
+        "runtime": "RuntimeException",
+        "logic": "LogicException",
+        "std": "stdClass",
+        "mixed": "mixed",
+        "never": "never",
+        "not-runtime": {
+            "object": "Exception",
+            "excluded": "RuntimeException"
+        },
+        "not-logic": {
+            "object": "Exception",
+            "excluded": "LogicException"
+        },
+        "throwable-not-runtime": {
+            "object": "Throwable",
+            "excluded": "RuntimeException"
+        },
+        "logic-not-exception": {
+            "object": "LogicException",
+            "excluded": "Exception"
+        },
+        "iterator-not-array": {
+            "object": "Iterator<int, string>",
+            "excluded": "ArrayIterator<int, string>"
+        },
+        "union": {
+            "union": [
+                "RuntimeException",
+                "LogicException"
+            ]
+        }
+    },
+    "queries": {
+        "not-runtime": {
+            "descriptions": [
+                "Exception~RuntimeException",
+                "Exception",
+                "Exception"
+            ],
+            "names": [
+                "Exception"
+            ],
+            "key": [
+                "*ERROR*",
+                "mixed",
+                "mixed"
+            ],
+            "value": [
+                "*ERROR*",
+                "mixed",
+                "mixed"
+            ]
+        },
+        "iterator-not-array": {
+            "descriptions": [
+                "Iterator~ArrayIterator<int, string><int, string>",
+                "Iterator<int, string>",
+                "Iterator<int, string>"
+            ],
+            "names": [
+                "Iterator"
+            ],
+            "key": [
+                "int",
+                "int",
+                "int"
+            ],
+            "value": [
+                "string",
+                "string",
+                "string"
+            ]
+        }
+    },
+    "super": {
+        "not-runtime:exception": "Maybe",
+        "exception:not-runtime": "Yes",
+        "not-runtime:runtime": "No",
+        "runtime:not-runtime": "No",
+        "not-runtime:logic": "Yes",
+        "logic:not-runtime": "Maybe",
+        "not-runtime:std": "No",
+        "std:not-runtime": "No",
+        "not-runtime:not-logic": "Maybe",
+        "not-logic:not-runtime": "Maybe",
+        "not-runtime:throwable-not-runtime": "Maybe",
+        "throwable-not-runtime:not-runtime": "Yes",
+        "not-runtime:logic-not-exception": "No",
+        "logic-not-exception:not-runtime": "No",
+        "not-runtime:union": "Maybe",
+        "union:not-runtime": "Maybe",
+        "not-runtime:mixed": "Maybe",
+        "mixed:not-runtime": "Yes",
+        "not-runtime:never": "Yes",
+        "never:not-runtime": "No"
+    },
+    "unions": {
+        "not-runtime:logic": [
+            "Exception~RuntimeException",
+            "Exception",
+            "Exception"
+        ],
+        "logic:not-runtime": [
+            "Exception~RuntimeException",
+            "Exception",
+            "Exception"
+        ],
+        "not-runtime:runtime": [
+            "Exception",
+            "Exception",
+            "Exception"
+        ],
+        "runtime:not-runtime": [
+            "Exception",
+            "Exception",
+            "Exception"
+        ],
+        "not-runtime:std": [
+            "Exception~RuntimeException|stdClass",
+            "Exception|stdClass",
+            "Exception|stdClass"
+        ],
+        "std:not-runtime": [
+            "Exception~RuntimeException|stdClass",
+            "Exception|stdClass",
+            "Exception|stdClass"
+        ],
+        "not-runtime:not-logic": [
+            "Exception",
+            "Exception",
+            "Exception"
+        ],
+        "not-logic:not-runtime": [
+            "Exception",
+            "Exception",
+            "Exception"
+        ]
+    }
+}
