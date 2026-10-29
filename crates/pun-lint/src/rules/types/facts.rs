@@ -507,16 +507,15 @@ impl Facts {
                             if !matches!(a.lhs, Expression::Variable(Variable::Direct(_)) | Expression::Array(_) | Expression::List(_)) {
                                 continue;
                             }
-                            // a value read from a variable such a value reached last (`$files = [$files]`) is untyped
+                            // a value passed on from a variable such a value reached last (`$files = [$files]`) is
+                            // untyped; one a call makes of it (`array_keys($files)`) is not
                             let mut reads_this = false;
-                            any_node(Node::Expression(a.rhs), &mut |r| {
-                                if let Node::DirectVariable(v) = r {
-                                    let last = (writes.iter())
-                                        .filter(|(name, end, _)| *name == v.name && *end <= v.span.start.offset)
-                                        .max_by_key(|(_, end, _)| *end);
-                                    reads_this |= matches!(last, Some((_, _, true)));
-                                }
-                            });
+                            for v in passed_on(a.rhs) {
+                                let last = (writes.iter())
+                                    .filter(|(name, end, _)| *name == v.name && *end <= v.span.start.offset)
+                                    .max_by_key(|(_, end, _)| *end);
+                                reads_this |= matches!(last, Some((_, _, true)));
+                            }
                             let this = a.operator.is_assign() && own(a.span()) && (from_this(a.rhs) || reads_this);
                             writes.extend(targets.into_iter().map(|t| (t, a.span().end.offset, this)));
                         }
@@ -881,6 +880,23 @@ fn mixed_math(operator: &BinaryOperator<'_>, left: Operand, right: Operand) -> O
 
 /// Whether PHPStan, inside a trait, leaves the value of `expr` untyped: `$this`, or a property, method call, offset or clone
 /// of it; a constant of `self` or `static`.
+
+/// The variables whose value `e` is or holds as it is: `e` itself, an offset of it, the branches of a ternary or `??`,
+/// the values of an array literal, through parentheses.
+fn passed_on<'a>(e: &'a Expression<'a>) -> Vec<&'a mago_syntax::cst::DirectVariable<'a>> {
+    match e {
+        Expression::Variable(Variable::Direct(v)) => vec![v],
+        Expression::Parenthesized(p) => passed_on(p.expression),
+        Expression::ArrayAccess(a) => passed_on(a.array),
+        Expression::Conditional(c) => c.then.into_iter().chain([c.r#else]).flat_map(passed_on).collect(),
+        Expression::Binary(b) if matches!(b.operator, BinaryOperator::NullCoalesce(_)) => {
+            [b.lhs, b.rhs].into_iter().flat_map(passed_on).collect()
+        }
+        Expression::Array(a) => a.elements.iter().filter_map(|e| e.get_value()).flat_map(passed_on).collect(),
+        Expression::LegacyArray(a) => a.elements.iter().filter_map(|e| e.get_value()).flat_map(passed_on).collect(),
+        _ => Vec::new(),
+    }
+}
 fn from_this(expr: &Expression<'_>) -> bool {
     match expr {
         Expression::Variable(Variable::Direct(v)) => v.name == b"$this",

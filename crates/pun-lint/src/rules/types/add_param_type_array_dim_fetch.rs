@@ -6,7 +6,8 @@
 //! PHPStan types a closure's parameter from the call it is passed to; Pun skips where that type is a union Mago does
 //! not infer: `debug_backtrace()`'s frames passed alongside, the match groups of `preg_replace_callback()` with a
 //! digits-only group, and items of constant shapes whose literal values differ (a `@template-covariant` value keeps
-//! them apart). An offset Mago has no type for may be an integer.
+//! them apart). An offset Mago has no type for may be an integer: Pun skips there (Mago
+//! gives no types for ModelInspectorTest.php after the method-call rule's fix to it, where Rector adds `array`).
 
 use mago_codex::ttype::TType;
 use mago_codex::ttype::atomic::TAtomic;
