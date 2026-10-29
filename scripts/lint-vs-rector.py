@@ -28,6 +28,11 @@ bench = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(bench)
 
 
+# Rector classes whose refactor() always returns null after changing the node in place, so Rector's JSON never names
+# them: RequestStaticValidateToInjectRector rewrites the calls inside traverseNodesWithCallable.
+UNREPORTED = ["RectorLaravel\\Rector\\StaticCall\\RequestStaticValidateToInjectRector"]
+
+
 def pairs_of_rector(rector: subprocess.CompletedProcess, pun_id: dict[str, str]) -> set[tuple[str, str]]:
     out = rector.stdout
     if "{" not in out:
@@ -60,10 +65,10 @@ def compare(name: str, pun: str, env: dict) -> bool:
     env = {**env, "PHP_INI_SCAN_DIR": f"{env.get('PHP_INI_SCAN_DIR', '')}:{ini}"}
     # Rector's bin skips the project's vendor/autoload.php when the project requires rector/rector itself (as
     # Pinkary does), and then cannot reflect any vendor class: load it explicitly.
-    rector = subprocess.run(["php", str(bench.RECTOR), "process", "--dry-run", "--clear-cache",
-                             "--no-progress-bar", "--output-format=json", "--memory-limit=-1", "--config",
-                             "pun-bench-rector.php", "--autoload-file", "pun-bench-autoload.php"],
-                            cwd=work, env=env, capture_output=True, text=True)
+    rector_args = ["php", str(bench.RECTOR), "process", "--dry-run", "--clear-cache", "--no-progress-bar",
+                   "--output-format=json", "--memory-limit=-1", "--config", "pun-bench-rector.php", "--autoload-file",
+                   "pun-bench-autoload.php"]
+    rector = subprocess.run(rector_args, cwd=work, env=env, capture_output=True, text=True)
     # `--fix --test` writes nothing and lists the rules of every fix round: Rector reports a rule that applies to
     # another rule's output (ThrowIfRector, then ThrowIfAndThrowUnlessExceptionsToUseClassStringRector), which a
     # check-only run sees only in a later round. Only the rules with a Rector class: the Mago-ported ones have
@@ -77,6 +82,16 @@ def compare(name: str, pun: str, env: dict) -> bool:
     if ours.returncode not in (0, 1):
         sys.exit(f"pun lint exited {ours.returncode}: {ours.stderr.strip()[-500:]}")
     theirs, mine = pairs_of_rector(rector, pun_id), pairs_of_pun(ours.stdout)
+    # A rule whose refactor() changes the node in place and returns null is never in a file's applied_rectors: the
+    # files of a run with only that rule are its pairs.
+    for c in [c for c in UNREPORTED if c in classes]:
+        (work / "pun-bench-rector-one.php").write_text(bench.rector_config(name, [c]))
+        one = subprocess.run(rector_args[:-3] + ["pun-bench-rector-one.php", "--autoload-file", "pun-bench-autoload.php"],
+                             cwd=work, env=env, capture_output=True, text=True)
+        out = one.stdout
+        if "{" not in out:
+            sys.exit(f"Rector exited {one.returncode}: {(out + one.stderr).strip()[-1000:]}")
+        theirs |= {(d["file"], pun_id[c]) for d in json.loads(out[out.index("{"):]).get("file_diffs", [])}
     by_rule = defaultdict(list)
     for f, r in sorted(theirs - mine):
         by_rule[r].append(f"  rector only  {f}")

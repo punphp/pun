@@ -251,8 +251,6 @@ def write_configs(mode: str, name: str, work: Path, rector_rules: list[str]) -> 
         (work / "pun-bench-analyse.toml").write_text(
             '[analyse]\npreset = "basic"\npaths = [' + ", ".join(f'"{p}"' for p in paths) + f"]\nexclude = [{exclude}]\n")
     else:
-        paths = ", ".join(f"__DIR__.'/{p}'" for p in LINT[name])
-        rules = ", ".join(f"\\{c}::class" for c in rector_rules)
         # Every native lint rule, at `error`.
         (work / "pun-bench-lint.toml").write_text(
             "[lint.rules]\n" + "".join(f'"{i.removeprefix("lint/")}" = "error"\n' for i in native_rules()))
@@ -261,9 +259,21 @@ def write_configs(mode: str, name: str, work: Path, rector_rules: list[str]) -> 
         (work / "pun-bench-autoload.php").write_text(
             "<?php\n\n$loader = require __DIR__.'/vendor/autoload.php';\n$loader->unregister();\n"
             "$loader->register(false);\n")
-        (work / "pun-bench-rector.php").write_text(
-            "<?php\n\nreturn Rector\\Config\\RectorConfig::configure()\n"
+        (work / "pun-bench-rector.php").write_text(rector_config(name, rector_rules))
+
+
+def rector_config(name: str, rector_rules: list[str]) -> str:
+    """A rector.php that runs `rector_rules` on the paths of `name`'s rector.php."""
+    paths = ", ".join(f"__DIR__.'/{p}'" for p in LINT[name])
+    rules = ", ".join(f"\\{c}::class" for c in rector_rules)
+    # rector-laravel's node visitors (ArrayDimFetchContextNodeVisitor, which ServerVariableToRequestFacadeRector
+    # and RequestVariablesToRequestFacadeRector read): every rector-laravel set imports this file, and without it
+    # those rules rewrite assignments to superglobals into calls, which PHP rejects.
+    laravel = RECTOR.parent.parent / "driftingly/rector-laravel/config/config.php"
+    sets = f"    ->withSets(['{laravel}'])\n" if laravel.exists() else ""
+    return ("<?php\n\nreturn Rector\\Config\\RectorConfig::configure()\n"
             f"    ->withPaths([{paths}])\n"
+            f"{sets}"
             # Only the classes the Rector that runs has (a project without Pest's plugin lacks its rules), and none
             # that needs a configuration: unconfigured, Rector fails on every file, and Pun's port does nothing.
             f"    ->withRules(array_values(array_filter([{rules}], fn ($c) => class_exists($c)\n"
