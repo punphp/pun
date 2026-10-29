@@ -124,11 +124,19 @@ impl Pending {
     fn is_short_imported(&self, class: &str) -> bool {
         let short = last(class);
         self.constants.iter().any(|c| last(c) == short)
-            || self.uses.iter().chain(&self.functions).any(|c| last(c).eq_ignore_ascii_case(short))
+            || self
+                .uses
+                .iter()
+                .chain(&self.functions)
+                .any(|c| last(c).eq_ignore_ascii_case(short))
     }
 
     fn is_import_shortable(&self, class: &str) -> bool {
-        self.uses.iter().chain(&self.constants).chain(&self.functions).any(|c| c == class)
+        self.uses
+            .iter()
+            .chain(&self.constants)
+            .chain(&self.functions)
+            .any(|c| c == class)
     }
 
     fn is_empty(&self) -> bool {
@@ -177,7 +185,10 @@ impl<'s> Session<'s> {
             .iter()
             .map(|n| NameState {
                 fq: n.resolved.is_some(),
-                name: n.resolved.clone().unwrap_or_else(|| n.original().to_string()),
+                name: n
+                    .resolved
+                    .clone()
+                    .unwrap_or_else(|| n.original().to_string()),
                 original: n.resolved.as_ref().map(|_| n.original().to_string()),
                 text: None,
             })
@@ -222,7 +233,12 @@ impl<'s> Session<'s> {
         let tokens = crate::rules::php_parser::tokens(self.source);
         for token in tokens.iter().filter(|t| t.kind.is_comment()) {
             let text = &self.source[token.start..token.end];
-            if !(text.starts_with("/**") && text.as_bytes().get(3).is_some_and(|b| matches!(b, b' ' | b'\t' | b'\r' | b'\n'))) {
+            if !(text.starts_with("/**")
+                && text
+                    .as_bytes()
+                    .get(3)
+                    .is_some_and(|b| matches!(b, b' ' | b'\t' | b'\r' | b'\n')))
+            {
                 continue;
             }
             let span = Span::new(token.start, token.end);
@@ -233,7 +249,11 @@ impl<'s> Session<'s> {
                     (d.namespace.clone(), d.class.clone(), d.is_last)
                 }
                 // a `Nop`'s: `getDocComment()` reads its last doc
-                None => (self.namespace_at(span.start), None, nop_run(&tokens, span.end).0),
+                None => (
+                    self.namespace_at(span.start),
+                    None,
+                    nop_run(&tokens, span.end).0,
+                ),
             };
             let scope = Scope {
                 namespace: namespace.as_deref(),
@@ -244,7 +264,11 @@ impl<'s> Session<'s> {
             let doc = Doc::parse(
                 text,
                 &|tag| resolve::resolve_tag(ctx, scope, tag),
-                &|name| resolve::narrow(ctx, scope, name).class_name().map(str::to_string),
+                &|name| {
+                    resolve::narrow(ctx, scope, name)
+                        .class_name()
+                        .map(str::to_string)
+                },
             );
             self.docs.push(DocState {
                 span,
@@ -263,7 +287,11 @@ impl<'s> Session<'s> {
             .roots
             .iter()
             .filter(|r| r.is_namespace)
-            .find(|r| r.header.as_ref().is_some_and(|h| h.span.start <= at && at <= h.span.end.max(r.inner.end)))
+            .find(|r| {
+                r.header
+                    .as_ref()
+                    .is_some_and(|h| h.span.start <= at && at <= h.span.end.max(r.inner.end))
+            })
             .and_then(|r| r.name.clone())
     }
 
@@ -383,7 +411,13 @@ impl<'s> Session<'s> {
                 Item::Old(i) => {
                     if let StmtKind::Use(k) = root.stmts[*i].kind {
                         let mut u = root.uses[k].clone();
-                        u.items = u.items.into_iter().zip(&list.kept[k]).filter(|(_, k)| **k).map(|(i, _)| i).collect();
+                        u.items = u
+                            .items
+                            .into_iter()
+                            .zip(&list.kept[k])
+                            .filter(|(_, k)| **k)
+                            .map(|(i, _)| i)
+                            .collect();
                         uses.push(u);
                     }
                 }
@@ -496,7 +530,8 @@ impl<'s> Session<'s> {
                 removed_stmts.push(*i);
             }
         }
-        list.items.retain(|item| !matches!(item, Item::Old(i) if removed_stmts.contains(i)));
+        list.items
+            .retain(|item| !matches!(item, Item::Old(i) if removed_stmts.contains(i)));
         self.renamed.clear();
     }
 
@@ -514,7 +549,8 @@ impl<'s> Session<'s> {
             }
             // `FullyQualifiedNodeMapper`: an aliased name is no `FullyQualifiedObjectType`
             let original = self.names[i].original.clone().unwrap_or_default();
-            if !original.is_empty() && original != name && !name.ends_with(&format!("\\{original}")) {
+            if !original.is_empty() && original != name && !name.ends_with(&format!("\\{original}"))
+            {
                 continue;
             }
             // `resolveNameInUse()`
@@ -549,7 +585,8 @@ impl<'s> Session<'s> {
             }
             // the name as written at the node's first token
             let written = &self.view.names[i].written;
-            let unchanged = self.names[i].text.is_none() && !written.contains('\\') && *written == short;
+            let unchanged =
+                self.names[i].text.is_none() && !written.contains('\\') && *written == short;
             if !unchanged {
                 self.set_text(i, short);
             }
@@ -572,7 +609,9 @@ impl<'s> Session<'s> {
         let long_lower = class.to_ascii_lowercase();
         for aliased in self.aliased_uses() {
             let aliased = aliased.to_ascii_lowercase();
-            if aliased.ends_with(&format!("\\{short_lower}")) || (aliased == short_lower && long_lower == short_lower) {
+            if aliased.ends_with(&format!("\\{short_lower}"))
+                || (aliased == short_lower && long_lower == short_lower)
+            {
                 return true;
             }
         }
@@ -613,8 +652,8 @@ impl<'s> Session<'s> {
         }
         // `ReservedClassNameImportSkipVoter`
         const RESERVED: &[&str] = &[
-            "bool", "false", "float", "int", "null", "parent", "self", "static", "string", "true", "void", "never",
-            "iterable", "object", "mixed", "array", "callable",
+            "bool", "false", "float", "int", "null", "parent", "self", "static", "string", "true",
+            "void", "never", "iterable", "object", "mixed", "array", "callable",
         ];
         if RESERVED.contains(&short_lower.as_str()) {
             return true;
@@ -676,12 +715,19 @@ impl<'s> Session<'s> {
                 if let Some(original) = &state.original
                     && !original.contains('\\')
                 {
-                    entries.push((self.view.names[i].span.start, original.clone(), state.name.clone()));
+                    entries.push((
+                        self.view.names[i].span.start,
+                        original.clone(),
+                        state.name.clone(),
+                    ));
                 }
             }
             entries.sort_by_key(|e| e.0);
             let mut map: Vec<(String, String)> = Vec::new();
-            let insert = |map: &mut Vec<(String, String)>, k: String, v: String| match map.iter_mut().find(|e| e.0 == k) {
+            let insert = |map: &mut Vec<(String, String)>, k: String, v: String| match map
+                .iter_mut()
+                .find(|e| e.0 == k)
+            {
                 Some(e) => e.1 = v,
                 None => map.push((k, v)),
             };
@@ -698,7 +744,13 @@ impl<'s> Session<'s> {
                     });
                     if u.prefix.is_none() && still {
                         let mut u = u.clone();
-                        u.items = u.items.into_iter().zip(&self.lists[r].kept[k]).filter(|(_, k)| **k).map(|(i, _)| i).collect();
+                        u.items = u
+                            .items
+                            .into_iter()
+                            .zip(&self.lists[r].kept[k])
+                            .filter(|(_, k)| **k)
+                            .map(|(i, _)| i)
+                            .collect();
                         stmt_uses.push(u);
                     }
                 }
@@ -728,7 +780,9 @@ impl<'s> Session<'s> {
     fn import_doc_names(&mut self, options: Options) {
         for d in 0..self.docs.len() {
             // a doc no node takes is a `Nop`'s, a statement's
-            let owned = self.docs[d].view.is_none_or(|v| self.view.docs[v].owners.stmt || self.view.docs[v].owners.param);
+            let owned = self.docs[d]
+                .view
+                .is_none_or(|v| self.view.docs[v].owners.stmt || self.view.docs[v].owners.param);
             if !owned || !self.docs[d].last {
                 continue;
             }
@@ -743,28 +797,55 @@ impl<'s> Session<'s> {
             let class = self.docs[d].class.clone();
             let mut doc = doc;
             for ident in doc.idents() {
-                let annotation = matches!(doc.children[ident.child].value, super::doc::Value::Annotation(_));
+                let annotation = matches!(
+                    doc.children[ident.child].value,
+                    super::doc::Value::Annotation(_)
+                );
                 match (annotation, ident.index) {
                     // the annotation's own name is read twice: as the tag (`@` and `\` trimmed,
                     // `enterSpacelessPhpDocTagNode()`) and as its identifier (`processDoctrineAnnotationTagValueNode()`)
                     (true, 0) => {
                         let tag = doc.children[ident.child].tag.clone().unwrap_or_default();
-                        if let Some(short) = self.import_doc_name(tag.trim_start_matches(['@', '\\']), false, namespace.as_deref(), class.as_deref(), options) {
+                        if let Some(short) = self.import_doc_name(
+                            tag.trim_start_matches(['@', '\\']),
+                            false,
+                            namespace.as_deref(),
+                            class.as_deref(),
+                            options,
+                        ) {
                             doc.set_tag(ident.child, &format!("@{short}"));
                         }
-                        if let Some(short) = self.import_doc_name(&ident.name, false, namespace.as_deref(), class.as_deref(), options) {
+                        if let Some(short) = self.import_doc_name(
+                            &ident.name,
+                            false,
+                            namespace.as_deref(),
+                            class.as_deref(),
+                            options,
+                        ) {
                             doc.set_ident(&ident, &short);
                         }
                     }
                     // a nested annotation's identifier (`processDoctrineAnnotationTagValueNode()`, which reads it
                     // without a `\`)
                     (true, _) => {
-                        if let Some(short) = self.import_doc_name(&ident.name, false, namespace.as_deref(), class.as_deref(), options) {
+                        if let Some(short) = self.import_doc_name(
+                            &ident.name,
+                            false,
+                            namespace.as_deref(),
+                            class.as_deref(),
+                            options,
+                        ) {
                             doc.set_ident(&ident, &short);
                         }
                     }
                     (false, _) if ident.name.contains('\\') => {
-                        if let Some(short) = self.import_doc_name(&ident.name, ident.template_parent, namespace.as_deref(), class.as_deref(), options) {
+                        if let Some(short) = self.import_doc_name(
+                            &ident.name,
+                            ident.template_parent,
+                            namespace.as_deref(),
+                            class.as_deref(),
+                            options,
+                        ) {
                             doc.set_ident(&ident, &short);
                         }
                     }
@@ -787,7 +868,11 @@ impl<'s> Session<'s> {
         options: Options,
     ) -> Option<String> {
         let uses = self.current_uses(self.uses_root());
-        let scope = Scope { namespace, class, uses: &uses };
+        let scope = Scope {
+            namespace,
+            class,
+            uses: &uses,
+        };
         let ty = resolve::map_identifier(self.ctx, scope, name);
         let fq = ty.fully_qualified()?.to_string();
         if template_parent {
@@ -845,23 +930,47 @@ impl<'s> Session<'s> {
             }
         }
         let r = self.view.placement_root();
-        let namespace = self.view.roots[r].is_namespace.then(|| self.view.roots[r].name.clone()).flatten();
+        let namespace = self.view.roots[r]
+            .is_namespace
+            .then(|| self.view.roots[r].name.clone())
+            .flatten();
         let is_namespace = self.view.roots[r].is_namespace;
         if !is_namespace {
             classes.retain(|c| c.contains('\\'));
         }
-        classes.retain(|c| !self.used.0.iter().any(|t| matches!(t, ObjType::Fq(n) if n == c)));
-        let constants: Vec<String> =
-            self.pending.constants.iter().filter(|c| !self.used.2.contains(c)).cloned().collect();
-        let functions: Vec<String> =
-            self.pending.functions.iter().filter(|c| !self.used.1.contains(c)).cloned().collect();
+        classes.retain(|c| {
+            !self
+                .used
+                .0
+                .iter()
+                .any(|t| matches!(t, ObjType::Fq(n) if n == c))
+        });
+        let constants: Vec<String> = self
+            .pending
+            .constants
+            .iter()
+            .filter(|c| !self.used.2.contains(c))
+            .cloned()
+            .collect();
+        let functions: Vec<String> = self
+            .pending
+            .functions
+            .iter()
+            .filter(|c| !self.used.1.contains(c))
+            .cloned()
+            .collect();
         let mut new_uses = Vec::new();
-        for (kind, list) in [(Kind::Class, &classes), (Kind::Constant, &constants), (Kind::Function, &functions)] {
+        for (kind, list) in [
+            (Kind::Class, &classes),
+            (Kind::Constant, &constants),
+            (Kind::Function, &functions),
+        ] {
             for name in list {
                 let current = namespace.as_ref().is_some_and(|ns| {
                     name.starts_with(&format!("{ns}\\")) && format!("{ns}\\{}", last(name)) == *name
                 });
-                if current || (namespace.is_none() && !name.trim_start_matches('\\').contains('\\')) {
+                if current || (namespace.is_none() && !name.trim_start_matches('\\').contains('\\'))
+                {
                     continue;
                 }
                 new_uses.push(Item::New {
@@ -932,7 +1041,9 @@ impl<'s> Session<'s> {
             let root = &self.view.roots[r];
             let namespace = root.name.clone();
             let list = &mut self.lists[r];
-            let first_key = usize::from(matches!(list.items.first(), Some(Item::Old(i)) if root.stmts[*i].kind == StmtKind::Declare));
+            let first_key = usize::from(
+                matches!(list.items.first(), Some(Item::Old(i)) if root.stmts[*i].kind == StmtKind::Declare),
+            );
             let lower: Vec<String> = names.iter().map(|n| n.to_ascii_lowercase()).collect();
             let mut new_items = Vec::new();
             for (key, item) in list.items.iter().enumerate() {
@@ -940,7 +1051,13 @@ impl<'s> Session<'s> {
                     Item::Old(i) => match root.stmts[*i].kind {
                         StmtKind::Use(k) if root.uses[k].prefix.is_none() => (
                             root.uses[k].kind.unwrap(),
-                            root.uses[k].items.iter().zip(&list.kept[k]).filter(|(_, k)| **k).map(|(i, _)| i.clone()).collect(),
+                            root.uses[k]
+                                .items
+                                .iter()
+                                .zip(&list.kept[k])
+                                .filter(|(_, k)| **k)
+                                .map(|(i, _)| i.clone())
+                                .collect(),
                             Some(k),
                         ),
                         _ => {
@@ -959,9 +1076,17 @@ impl<'s> Session<'s> {
                 }
                 let case_sensitive = kind == Kind::Constant;
                 let list_names = if case_sensitive { &names } else { &lower };
-                let namespace = namespace.as_ref().map(|n| if case_sensitive { n.clone() } else { n.to_ascii_lowercase() });
-                let used: Vec<bool> =
-                    items.iter().map(|i| is_import_used(i, case_sensitive, list_names, namespace.as_deref())).collect();
+                let namespace = namespace.as_ref().map(|n| {
+                    if case_sensitive {
+                        n.clone()
+                    } else {
+                        n.to_ascii_lowercase()
+                    }
+                });
+                let used: Vec<bool> = items
+                    .iter()
+                    .map(|i| is_import_used(i, case_sensitive, list_names, namespace.as_deref()))
+                    .collect();
                 if let Some(k) = k {
                     let mut at = 0;
                     for flag in list.kept[k].iter_mut().filter(|f| **f) {
@@ -974,10 +1099,14 @@ impl<'s> Session<'s> {
                     continue;
                 }
                 let comments = match item {
-                    Item::Old(i) => (root.stmts[*i].comment_start < root.stmts[*i].span.start && !list.cleared[*i]).then_some(*i),
+                    Item::Old(i) => (root.stmts[*i].comment_start < root.stmts[*i].span.start
+                        && !list.cleared[*i])
+                        .then_some(*i),
                     Item::New { comments: c, .. } | Item::Nop(c) => *c,
                 };
-                if key == first_key && let Some(c) = comments {
+                if key == first_key
+                    && let Some(c) = comments
+                {
                     new_items.push(Item::Nop(Some(c)));
                 }
             }
@@ -1013,7 +1142,11 @@ impl<'s> Session<'s> {
         }
         // a `GroupUse` is no `Use_`: its prefix and its items are names
         for root in &self.view.roots {
-            for u in root.uses.iter().filter(|u| u.prefix.is_some() && inside(u.span)) {
+            for u in root
+                .uses
+                .iter()
+                .filter(|u| u.prefix.is_some() && inside(u.span))
+            {
                 code.push((u.span.start, u.prefix.clone().unwrap()));
                 for item in &u.items {
                     code.push((item.name_span.start, item.name.clone()));
@@ -1068,7 +1201,8 @@ impl<'s> Session<'s> {
             }
             match d.view {
                 Some(v) => {
-                    let edit = DocTarget::of(source, self.view.docs[v].node_start).edit(source, &doc.print());
+                    let edit = DocTarget::of(source, self.view.docs[v].node_start)
+                        .edit(source, &doc.print());
                     edits.push((edit.span, edit.text));
                 }
                 // a `Nop` printed anew: its comments, then the empty statement on the next line (its indentation
@@ -1084,7 +1218,10 @@ impl<'s> Session<'s> {
         // a class's `implements` without the names it dropped
         for class in &self.view.class_likes {
             let spans: Vec<Span> = class.implements.iter().map(|i| i.0).collect();
-            let kept: Vec<bool> = spans.iter().map(|s| !self.implements_removed.contains(s)).collect();
+            let kept: Vec<bool> = spans
+                .iter()
+                .map(|s| !self.implements_removed.contains(s))
+                .collect();
             if kept.iter().all(|k| *k) {
                 continue;
             }
@@ -1110,7 +1247,10 @@ impl<'s> Session<'s> {
                 let spans: Vec<Span> = u.items.iter().map(|i| i.span).collect();
                 // (an item is kept: a `use` without any is gone)
                 let (pieces, end) = differ::removed_items(&spans, kept, u.span.start)?;
-                edits.push((Span::new(u.span.start, end), render_pieces(source, &pieces, &edits)));
+                edits.push((
+                    Span::new(u.span.start, end),
+                    render_pieces(source, &pieces, &edits),
+                ));
             }
         }
         // the statement lists
@@ -1141,7 +1281,11 @@ impl<'s> Session<'s> {
                     end: s.span.end,
                 })
                 .collect();
-            let new: Vec<NewItem> = list.items.iter().map(|item| self.new_item(r, item)).collect();
+            let new: Vec<NewItem> = list
+                .items
+                .iter()
+                .map(|item| self.new_item(r, item))
+                .collect();
             let has_nop = list.items.iter().any(|i| matches!(i, Item::Nop(_)));
             let pos = root.header.as_ref().map_or(0, |h| h.list_pos);
             // php-parser checks the braces of a single statement's list
@@ -1162,7 +1306,10 @@ impl<'s> Session<'s> {
                     // follows becomes inline HTML (the page shows it, or PHP code turns into text); Rector writes that,
                     // Pun leaves the file alone
                     let stmts = &root.stmts;
-                    if stmts[..stmts.len() - 1].iter().any(|s| self.source[..s.span.end].ends_with("?>")) {
+                    if stmts[..stmts.len() - 1]
+                        .iter()
+                        .any(|s| self.source[..s.span.end].ends_with("?>"))
+                    {
                         return None;
                     }
                     segments.push(self.fallback(r, &edits));
@@ -1171,7 +1318,12 @@ impl<'s> Session<'s> {
             }
         }
         // a braced namespace printed `namespace X;` beside one still braced: Rector writes that mix, which PHP rejects
-        let braced = |r: &usize| self.view.roots[*r].header.as_ref().is_some_and(|h| h.braced);
+        let braced = |r: &usize| {
+            self.view.roots[*r]
+                .header
+                .as_ref()
+                .is_some_and(|h| h.braced)
+        };
         if self.semicolon_namespaces()
             && fell_back.iter().any(braced)
             && (0..self.view.roots.len()).any(|r| braced(&r) && !fell_back.contains(&r))
@@ -1180,11 +1332,11 @@ impl<'s> Session<'s> {
         }
         // the segments take the place of the edits inside them
         let mut all: Vec<(Span, String)> = segments.clone();
-        all.extend(
-            edits
-                .into_iter()
-                .filter(|(s, _)| !segments.iter().any(|(g, _)| g.start <= s.start && s.end <= g.end)),
-        );
+        all.extend(edits.into_iter().filter(|(s, _)| {
+            !segments
+                .iter()
+                .any(|(g, _)| g.start <= s.start && s.end <= g.end)
+        }));
         let mut text = render(source, &all, 0, source.len());
         // `BetterStandardPrinter::printFormatPreserving()`: a new line in case of added statements
         if file_count_changed && !text.ends_with('\n') {
@@ -1196,7 +1348,13 @@ impl<'s> Session<'s> {
     /// The old `use` statement `k` of the root `r` with its kept items.
     fn current_uses_of(&self, r: usize, k: usize) -> UseView {
         let mut u = self.view.roots[r].uses[k].clone();
-        u.items = u.items.into_iter().zip(&self.lists[r].kept[k]).filter(|(_, k)| **k).map(|(i, _)| i).collect();
+        u.items = u
+            .items
+            .into_iter()
+            .zip(&self.lists[r].kept[k])
+            .filter(|(_, k)| **k)
+            .map(|(i, _)| i)
+            .collect();
         u
     }
 
@@ -1213,14 +1371,19 @@ impl<'s> Session<'s> {
                 };
                 NewItem {
                     key: reprinted.is_none().then_some(*i),
-                    text: reprinted.map_or_else(String::new, |k| print_use(&self.current_uses_of(r, k))),
+                    text: reprinted
+                        .map_or_else(String::new, |k| print_use(&self.current_uses_of(r, k))),
                     comments: match list.cleared[*i] {
                         true => Comments::None,
                         false => Comments::Of(*i),
                     },
                 }
             }
-            Item::New { kind, name, comments } => NewItem {
+            Item::New {
+                kind,
+                name,
+                comments,
+            } => NewItem {
                 key: None,
                 text: print_use(&new_use_view(*kind, name)),
                 comments: match comments {
@@ -1252,9 +1415,16 @@ impl<'s> Session<'s> {
             .filter(|t| t.kind.is_comment() && t.start >= stmt.comment_start && t.end <= end)
             .map(|t| {
                 let span = Span::new(t.start, t.end);
-                match self.docs.iter().find(|d| d.span == span).and_then(|d| d.doc.as_ref().filter(|doc| doc.is_changed())) {
+                match self
+                    .docs
+                    .iter()
+                    .find(|d| d.span == span)
+                    .and_then(|d| d.doc.as_ref().filter(|doc| doc.is_changed()))
+                {
                     Some(doc) => doc.print(),
-                    None => self.source[t.start..t.end].trim_end_matches(['\n', '\r']).to_string(),
+                    None => self.source[t.start..t.end]
+                        .trim_end_matches(['\n', '\r'])
+                        .to_string(),
                 }
             })
             .collect()
@@ -1262,7 +1432,11 @@ impl<'s> Session<'s> {
 
     /// `canUseSemicolonNamespaces`: no namespace of the file is without a name.
     fn semicolon_namespaces(&self) -> bool {
-        !self.view.roots.iter().any(|r| r.is_namespace && r.name.is_none())
+        !self
+            .view
+            .roots
+            .iter()
+            .any(|r| r.is_namespace && r.name.is_none())
     }
 
     /// `pStmt_Namespace()`, or the file's `"<?php\n" . pStmts()`, where `pArray()` gives up on the list of the root `r`.
@@ -1272,7 +1446,13 @@ impl<'s> Session<'s> {
         // `namespace X;` and the statements, or `namespace X {` and the statements indented
         let (mut text, level) = match (&root.name, root.is_namespace) {
             (Some(name), _) if self.semicolon_namespaces() => (format!("namespace {name};\n"), 0),
-            (name, true) => (format!("namespace{} {{", name.as_ref().map_or(String::new(), |n| format!(" {n}"))), 4),
+            (name, true) => (
+                format!(
+                    "namespace{} {{",
+                    name.as_ref().map_or(String::new(), |n| format!(" {n}"))
+                ),
+                4,
+            ),
             (_, false) => ("<?php\n".to_string(), 0),
         };
         let nl = format!("\n{}", " ".repeat(level));
@@ -1280,7 +1460,9 @@ impl<'s> Session<'s> {
             let comments = match item {
                 Item::Old(i) if !list.cleared[*i] => self.comment_texts(r, *i),
                 Item::Nop(Some(i)) => self.comment_texts(r, *i),
-                Item::New { comments: Some(i), .. } => self.comment_texts(r, *i),
+                Item::New {
+                    comments: Some(i), ..
+                } => self.comment_texts(r, *i),
                 _ => Vec::new(),
             };
             if !comments.is_empty() {
@@ -1299,12 +1481,16 @@ impl<'s> Session<'s> {
                 Item::Old(i) => {
                     let span = root.stmts[*i].span;
                     match (list.reprinted[*i], root.stmts[*i].kind) {
-                        (true, StmtKind::Use(k)) => text.push_str(&print_use(&self.current_uses_of(r, k))),
+                        (true, StmtKind::Use(k)) => {
+                            text.push_str(&print_use(&self.current_uses_of(r, k)))
+                        }
                         // `pStmt_InlineHTML()`: `?>`, the line break the closing tag took (`hasLeadingNewline`, also
                         // set on HTML that starts the file), the HTML, `<?php `
                         (_, StmtKind::Inline) => {
                             let html = &self.source[span.start..span.end];
-                            let rest = html.strip_prefix("\r\n").or_else(|| html.strip_prefix('\n'));
+                            let rest = html
+                                .strip_prefix("\r\n")
+                                .or_else(|| html.strip_prefix('\n'));
                             let (newline, value) = match rest {
                                 _ if span.start == 0 => ("\n", html),
                                 Some(rest) => ("\n", rest),
@@ -1315,12 +1501,15 @@ impl<'s> Session<'s> {
                         // the printer copies the statement, its indentation made the level's
                         _ => {
                             let printed = render(self.source, edits, span.start, span.end);
-                            let adjustment = level as isize - indentation(self.source, span.start) as isize;
+                            let adjustment =
+                                level as isize - indentation(self.source, span.start) as isize;
                             text.push_str(&differ::token_code(&printed, adjustment));
                         }
                     }
                 }
-                Item::New { kind, name, .. } => text.push_str(&print_use(&new_use_view(*kind, name))),
+                Item::New { kind, name, .. } => {
+                    text.push_str(&print_use(&new_use_view(*kind, name)))
+                }
                 Item::Nop(_) => {}
             }
         }
@@ -1331,7 +1520,10 @@ impl<'s> Session<'s> {
             Some(h) if h.braced => h.span,
             // `Parser::fixupNamespaceAttributes()`: a namespace without braces ends with its last statement, before a
             // closing tag
-            Some(h) => Span::new(h.span.start, root.stmts.last().map_or(root.inner.start, |s| s.span.end)),
+            Some(h) => Span::new(
+                h.span.start,
+                root.stmts.last().map_or(root.inner.start, |s| s.span.end),
+            ),
             None => Span::new(0, self.source.len()),
         };
         (span, text)
@@ -1387,7 +1579,12 @@ fn alias_of(uses: &[UseView], name: &str) -> Option<String> {
 }
 
 /// `UnusedImportRemovingPostRector::isUseImportUsed()`.
-fn is_import_used(item: &UseItemView, case_sensitive: bool, names: &[String], namespace: Option<&str>) -> bool {
+fn is_import_used(
+    item: &UseItemView,
+    case_sensitive: bool,
+    names: &[String],
+    namespace: Option<&str>,
+) -> bool {
     let mut compared = item.alias.clone().unwrap_or_else(|| item.name.clone());
     if !case_sensitive {
         compared = compared.to_ascii_lowercase();
@@ -1475,7 +1672,10 @@ fn render_pieces(source: &str, pieces: &[Piece], edits: &[(Span, String)]) -> St
 /// `source[from..to]` with the edits that lie inside it; of two that overlap, the one that starts first, the longer
 /// at one start (an edit that holds others was rendered with them).
 fn render(source: &str, edits: &[(Span, String)], from: usize, to: usize) -> String {
-    let mut inside: Vec<&(Span, String)> = edits.iter().filter(|(s, _)| from <= s.start && s.end <= to).collect();
+    let mut inside: Vec<&(Span, String)> = edits
+        .iter()
+        .filter(|(s, _)| from <= s.start && s.end <= to)
+        .collect();
     inside.sort_by_key(|(s, _)| (s.start, std::cmp::Reverse(s.end)));
     let mut out = String::new();
     let mut at = from;

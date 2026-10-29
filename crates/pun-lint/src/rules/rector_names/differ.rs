@@ -9,8 +9,8 @@
 use mago_syntax::token::TokenKind;
 use pun_problem::Span;
 
-use crate::rules::phpunit::{Elem, coalesce_replacements, diff};
 use crate::rules::phpunit::annotations::reformatted;
+use crate::rules::phpunit::{Elem, coalesce_replacements, diff};
 use crate::rules::rector_conditions::indentation;
 use crate::rules::rector_stmts::tokens;
 
@@ -86,7 +86,10 @@ fn have_tag_in_range(source: &str, from: usize, to: usize) -> bool {
         (from..to).contains(&t.start)
             && matches!(
                 t.kind,
-                TokenKind::OpenTag | TokenKind::EchoTag | TokenKind::ShortOpenTag | TokenKind::CloseTag
+                TokenKind::OpenTag
+                    | TokenKind::EchoTag
+                    | TokenKind::ShortOpenTag
+                    | TokenKind::CloseTag
             )
     })
 }
@@ -191,7 +194,12 @@ fn keys(n: usize, new: &[NewItem]) -> Vec<usize> {
 }
 
 /// The text of `comments` (`pComments()`), `None` when there are none.
-fn comments_text(source: &str, old: &[OldItem], comments: &Comments, indent: usize) -> Option<String> {
+fn comments_text(
+    source: &str,
+    old: &[OldItem],
+    comments: &Comments,
+    indent: usize,
+) -> Option<String> {
     match comments {
         Comments::Of(o) => {
             let printed = print_comments(source, &old[*o], indent);
@@ -199,7 +207,13 @@ fn comments_text(source: &str, old: &[OldItem], comments: &Comments, indent: usi
         }
         Comments::Printed(texts) => {
             let nl = format!("\n{}", " ".repeat(indent));
-            Some(texts.iter().map(|t| reformatted(t).replace('\n', &nl)).collect::<Vec<_>>().join(&nl))
+            Some(
+                texts
+                    .iter()
+                    .map(|t| reformatted(t).replace('\n', &nl))
+                    .collect::<Vec<_>>()
+                    .join(&nl),
+            )
         }
         Comments::None => None,
     }
@@ -237,7 +251,10 @@ pub(crate) fn token_code(text: &str, indent: isize) -> String {
     };
     let mut out = String::new();
     let mut at = 0;
-    for span in strings.iter().chain(std::iter::once(&Span::new(text.len(), text.len()))) {
+    for span in strings
+        .iter()
+        .chain(std::iter::once(&Span::new(text.len(), text.len())))
+    {
         out.push_str(&text[at..span.start].replace(&from, &to));
         out.push_str(&text[span.start..span.end]);
         at = span.end;
@@ -260,7 +277,9 @@ fn string_spans(text: &str, scripting: bool) -> Vec<Span> {
                     spans.push(Span::new(from, end));
                 }
             }
-            TokenKind::LiteralString | TokenKind::StringPart if heredoc.is_none() => spans.push(Span::new(start, end)),
+            TokenKind::LiteralString | TokenKind::StringPart if heredoc.is_none() => {
+                spans.push(Span::new(start, end))
+            }
             _ => {}
         }
     }
@@ -269,7 +288,11 @@ fn string_spans(text: &str, scripting: bool) -> Vec<Span> {
 
 /// `pArray()` on a list of `use` items from which some are removed: the pieces from `pos` to the end of the last
 /// item it printed, or `None` where it gives up (every item removed from the start).
-pub(crate) fn removed_items(old: &[Span], kept: &[bool], pos: usize) -> Option<(Vec<Piece>, usize)> {
+pub(crate) fn removed_items(
+    old: &[Span],
+    kept: &[bool],
+    pos: usize,
+) -> Option<(Vec<Piece>, usize)> {
     let mut out = Vec::new();
     let mut pos = pos;
     let mut skip_removed = false;
@@ -289,4 +312,3 @@ pub(crate) fn removed_items(old: &[Span], kept: &[bool], pos: usize) -> Option<(
     }
     (!skip_removed).then_some((out, pos))
 }
-

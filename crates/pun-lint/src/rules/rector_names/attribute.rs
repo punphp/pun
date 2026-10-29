@@ -93,7 +93,9 @@ fn map_item(item: &ArrayItem, nested: bool) -> Item {
     let key = match &item.key {
         // (a key is never an annotation: the parsers read `@A` before `=` as a string)
         Some(Key::Val(key)) => {
-            let Mapped::Expr(expr) = map_val(key, nested) else { unreachable!("an annotation key") };
+            let Mapped::Expr(expr) = map_val(key, nested) else {
+                unreachable!("an annotation key")
+            };
             Some(expr)
         }
         Some(Key::Int(key)) => Some(Expr::Int(*key)),
@@ -109,7 +111,13 @@ fn map_item(item: &ArrayItem, nested: bool) -> Item {
                     class: String::new(),
                     values: Vec::new(),
                 }));
-                return map_item(&ArrayItem { key: None, value: annotation }, nested);
+                return map_item(
+                    &ArrayItem {
+                        key: None,
+                        value: annotation,
+                    },
+                    nested,
+                );
             }
             None
         }
@@ -122,7 +130,9 @@ fn map_val(value: &Val, nested: bool) -> Mapped {
     Mapped::Expr(match value {
         Val::List(items) => Expr::Array(map_array(items, nested)),
         // `ClassConstFetchAnnotationToAttributeMapper`
-        Val::Str(value) if value.contains("::") && !value.starts_with('"') => class_const_fetch(value),
+        Val::Str(value) if value.contains("::") && !value.starts_with('"') => {
+            class_const_fetch(value)
+        }
         // `ConstExprNodeAnnotationToAttributeMapper`
         Val::Const(value) => match value.as_str() {
             "true" => Expr::Const("true"),
@@ -157,7 +167,10 @@ fn map_val(value: &Val, nested: bool) -> Mapped {
                 true => Vec::new(),
                 false => inline_array_node(map_array(&annotation.values, nested)),
             };
-            Expr::New(annotation.identifier.trim_start_matches('@').to_string(), args)
+            Expr::New(
+                annotation.identifier.trim_start_matches('@').to_string(),
+                args,
+            )
         }
         Val::Annotation(_) => return Mapped::Remove,
         // `StringAnnotationToAttributeMapper`
@@ -192,7 +205,10 @@ fn class_const_fetch(value: &str) -> Expr {
     let [class, constant] = value.split("::").collect::<Vec<_>>()[..] else {
         return string();
     };
-    if class.is_empty() || !is_class_name(class.trim_start_matches('\\')) || !is_constant_name(constant) {
+    if class.is_empty()
+        || !is_class_name(class.trim_start_matches('\\'))
+        || !is_constant_name(constant)
+    {
         return string();
     }
     Expr::ClassConst(class.to_string(), constant.to_string())
@@ -203,7 +219,8 @@ fn is_constant_name(name: &str) -> bool {
     let b = name.as_bytes();
     !b.is_empty()
         && (b[0].is_ascii_alphabetic() || b[0] == b'_' || b[0] >= 0x80)
-        && b.iter().all(|c| c.is_ascii_alphanumeric() || *c == b'_' || *c >= 0x80)
+        && b.iter()
+            .all(|c| c.is_ascii_alphanumeric() || *c == b'_' || *c >= 0x80)
 }
 
 /// `AttributeArrayNameInliner::inlineArrayNode()`: a string key names the argument.
@@ -233,7 +250,9 @@ pub(crate) fn create(
 ) -> Attribute {
     // `getValuesWithSilentKey()`
     let mut values = annotation.values.clone();
-    if let Some((_, key)) = SILENT_KEYS.iter().find(|(class, _)| *class == annotation.class)
+    if let Some((_, key)) = SILENT_KEYS
+        .iter()
+        .find(|(class, _)| *class == annotation.class)
         && let Some(item) = values.iter_mut().find(|i| i.key.is_none())
     {
         item.key = Some(Key::Val(Val::Str(key.to_string())));
@@ -247,7 +266,10 @@ pub(crate) fn create(
             && let Expr::Str(value, _) = &item.value
             && !value.is_empty()
         {
-            item.value = Expr::ClassConst(format!("\\{}", value.trim_start_matches('\\')), "class".into());
+            item.value = Expr::ClassConst(
+                format!("\\{}", value.trim_start_matches('\\')),
+                "class".into(),
+            );
         }
     }
     let mut args: Vec<Arg> = items
@@ -289,7 +311,9 @@ pub(crate) fn create(
     }
     // `AttributeArrayNameInliner::inlineArray()`
     for arg in &mut args {
-        if config.attribute_class == "OpenApi\\Attributes\\Property" && arg.name.as_deref() == Some("example") {
+        if config.attribute_class == "OpenApi\\Attributes\\Property"
+            && arg.name.as_deref() == Some("example")
+        {
             continue;
         }
         if let Expr::Str(string, _) = &arg.value
@@ -321,7 +345,10 @@ pub(crate) fn is_invalid(attribute: &Attribute) -> bool {
 }
 
 fn invalid_arg(arg: &Arg) -> bool {
-    arg.name.as_deref().is_some_and(|name| !is_constant_name(name)) || invalid_expr(&arg.value)
+    arg.name
+        .as_deref()
+        .is_some_and(|name| !is_constant_name(name))
+        || invalid_expr(&arg.value)
 }
 
 fn invalid_expr(expr: &Expr) -> bool {
@@ -331,7 +358,12 @@ fn invalid_expr(expr: &Expr) -> bool {
             let tokens = pun_tokens::tokenize(source.as_bytes());
             let name = matches!(
                 tokens.last().and_then(|t| t.kind),
-                Some(Kind::T_STRING | Kind::T_NAME_QUALIFIED | Kind::T_NAME_FULLY_QUALIFIED | Kind::T_STATIC)
+                Some(
+                    Kind::T_STRING
+                        | Kind::T_NAME_QUALIFIED
+                        | Kind::T_NAME_FULLY_QUALIFIED
+                        | Kind::T_STATIC
+                )
             );
             tokens.len() != 4 || !name || args.iter().any(invalid_arg)
         }
@@ -345,7 +377,10 @@ fn invalid_expr(expr: &Expr) -> bool {
 fn decorate(attribute_class: &str, attribute: &mut Attribute) {
     match attribute_class {
         "Doctrine\\ORM\\Mapping\\Column" => {
-            if let Some(arg) = attribute.args.iter_mut().find(|a| a.name.as_deref() == Some("nullable"))
+            if let Some(arg) = attribute
+                .args
+                .iter_mut()
+                .find(|a| a.name.as_deref() == Some("nullable"))
                 && let Expr::Str(value, _) = &arg.value
                 && (value == "true" || value == "false")
             {
@@ -397,7 +432,11 @@ pub(crate) fn resolve_value(value: &str, original: Option<&str>) -> (String, Str
         let mut keep_joining = true;
         let mut joined = String::new();
         let mut previous_end_slash = false;
-        for (key, line) in value.split('\n').map(|l| l.strip_suffix('\r').unwrap_or(l)).enumerate() {
+        for (key, line) in value
+            .split('\n')
+            .map(|l| l.strip_suffix('\r').unwrap_or(l))
+            .enumerate()
+        {
             if keep_joining {
                 joined.push_str(line.trim_end_matches('\\'));
             }
@@ -444,7 +483,10 @@ pub(crate) fn trailing_comment(original: &str) -> Option<String> {
                 if depth == 0 {
                     let comment = original[i + 1..].trim_matches(PHP_WS);
                     // keep only a real doc comment, not leftover annotation syntax
-                    return comment.chars().any(char::is_alphabetic).then(|| comment.to_string());
+                    return comment
+                        .chars()
+                        .any(char::is_alphabetic)
+                        .then(|| comment.to_string());
                 }
             }
             None => {}
@@ -496,8 +538,16 @@ pub(crate) fn attribute_name(
         let new_import = attribute_parts[..import_parts.min(attribute_parts.len())].join("\\");
         // `array_slice($attributeParts, -$shortNamePartCount)`, all of them for none
         let short_parts = attribute_parts.len() - import_parts.min(attribute_parts.len());
-        let rest = &attribute_parts[attribute_parts.len() - if short_parts == 0 { attribute_parts.len() } else { short_parts }..];
-        return (format!("{alias}\\{}", rest.join("\\")), Some((i, new_import)));
+        let rest = &attribute_parts[attribute_parts.len()
+            - if short_parts == 0 {
+                attribute_parts.len()
+            } else {
+                short_parts
+            }..];
+        return (
+            format!("{alias}\\{}", rest.join("\\")),
+            Some((i, new_import)),
+        );
     }
     // 3. the class is not aliased and is completely new... return the FQN version
     (format!("\\{}", config.attribute_class), None)
@@ -506,7 +556,10 @@ pub(crate) fn attribute_name(
 /// PHP's `ltrim($string, $characters)`, `..` making a range.
 fn ltrim<'a>(string: &'a str, characters: &str) -> &'a str {
     let set = character_mask(characters);
-    let at = string.bytes().position(|b| !set[b as usize]).unwrap_or(string.len());
+    let at = string
+        .bytes()
+        .position(|b| !set[b as usize])
+        .unwrap_or(string.len());
     &string[at..]
 }
 
@@ -532,9 +585,9 @@ fn character_mask(characters: &str) -> [bool; 256] {
 /// PHP's `is_numeric()` on a string: leading white space, a sign, digits with an optional fraction and exponent,
 /// trailing white space.
 pub(crate) fn is_numeric(value: &str) -> bool {
-    let trimmed = value.trim_start_matches([' ', '\t', '\n', '\r', '\x0B', '\x0C']).trim_end_matches([
-        ' ', '\t', '\n', '\r', '\x0B', '\x0C',
-    ]);
+    let trimmed = value
+        .trim_start_matches([' ', '\t', '\n', '\r', '\x0B', '\x0C'])
+        .trim_end_matches([' ', '\t', '\n', '\r', '\x0B', '\x0C']);
     let body = trimmed.strip_prefix(['+', '-']).unwrap_or(trimmed);
     let (mantissa, exponent) = match body.find(['e', 'E']) {
         Some(at) => (&body[..at], Some(&body[at + 1..])),
@@ -545,7 +598,9 @@ pub(crate) fn is_numeric(value: &str) -> bool {
         None => (mantissa, None),
     };
     let digits = |s: &str| s.bytes().all(|c| c.is_ascii_digit());
-    let mantissa_ok = digits(int) && fraction.is_none_or(digits) && !(int.is_empty() && fraction.is_none_or(str::is_empty));
+    let mantissa_ok = digits(int)
+        && fraction.is_none_or(digits)
+        && !(int.is_empty() && fraction.is_none_or(str::is_empty));
     let exponent_ok = exponent.is_none_or(|e| {
         let e = e.strip_prefix(['+', '-']).unwrap_or(e);
         !e.is_empty() && digits(e)
@@ -622,7 +677,9 @@ fn single_quoted(value: &str) -> String {
     for (i, c) in value.char_indices() {
         let escape = match c {
             '\'' => true,
-            '\\' => matches!(b.get(i + 1), None | Some(b'\'' | b'\\')) || (i > 0 && b[i - 1] == b'\\'),
+            '\\' => {
+                matches!(b.get(i + 1), None | Some(b'\'' | b'\\')) || (i > 0 && b[i - 1] == b'\\')
+            }
             _ => false,
         };
         if escape {
@@ -653,9 +710,21 @@ fn format_g(value: f64, precision: usize) -> String {
     let trim = |s: &str| s.trim_end_matches('0').trim_end_matches('.').to_string();
     if exp < -4 || exp >= precision as i32 {
         let mantissa = trim(mantissa);
-        let mantissa = if mantissa.contains('.') { mantissa } else { format!("{mantissa}.0") };
-        return format!("{mantissa}E{}{}", if exp < 0 { '-' } else { '+' }, exp.abs());
+        let mantissa = if mantissa.contains('.') {
+            mantissa
+        } else {
+            format!("{mantissa}.0")
+        };
+        return format!(
+            "{mantissa}E{}{}",
+            if exp < 0 { '-' } else { '+' },
+            exp.abs()
+        );
     }
     let fixed = format!("{:.*}", (precision as i32 - 1 - exp) as usize, value);
-    if fixed.contains('.') { trim(&fixed) } else { fixed }
+    if fixed.contains('.') {
+        trim(&fixed)
+    } else {
+        fixed
+    }
 }

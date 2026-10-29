@@ -159,7 +159,9 @@ fn narrow_from(ctx: &Context<'_>, scope: Scope<'_>, class_name: &str, preslash: 
     }
     // `resolveNamespacedNonExistingObjectType()`
     match scope.namespace {
-        Some(ns) if !preslash && !class_name.contains('\\') => DocType::NonExisting(format!("{ns}\\{class_name}")),
+        Some(ns) if !preslash && !class_name.contains('\\') => {
+            DocType::NonExisting(format!("{ns}\\{class_name}"))
+        }
         _ => DocType::NonExisting(class_name.to_string()),
     }
 }
@@ -170,7 +172,11 @@ fn is_class_template(ctx: &Context<'_>, class: &str, name: &str) -> bool {
     facts(ctx)
         .documented()
         .get_class_like(class.as_bytes())
-        .is_some_and(|c| c.template_types.iter().any(|(k, _)| k.as_bytes() == name.as_bytes()))
+        .is_some_and(|c| {
+            c.template_types
+                .iter()
+                .any(|(k, _)| k.as_bytes() == name.as_bytes())
+        })
 }
 
 /// `ObjectTypeSpecifier::matchAliasedObjectType()`.
@@ -188,7 +194,10 @@ fn match_aliased(uses: &[UseView], class_name: &str) -> Option<DocType> {
             }
             // `$fullyQualifiedName . ltrim($className, $alias)`: the alias's characters stop at its `\`
             if let Some(rest) = class_name.strip_prefix(&format!("{alias}\\")) {
-                return Some(DocType::Aliased(class_name.to_string(), format!("{use_name}\\{rest}")));
+                return Some(DocType::Aliased(
+                    class_name.to_string(),
+                    format!("{use_name}\\{rest}"),
+                ));
             }
         }
     }
@@ -204,7 +213,10 @@ fn match_shortened(uses: &[UseView], class_name: &str) -> Option<DocType> {
             // `matchPartialNamespaceObjectType()`
             let last = item.last();
             if class_name == last {
-                return Some(DocType::Shortened(class_name.to_string(), format!("{prefix}{}", item.name)));
+                return Some(DocType::Shortened(
+                    class_name.to_string(),
+                    format!("{prefix}{}", item.name),
+                ));
             }
             if let Some(after) = class_name.strip_prefix(&format!("{last}\\")) {
                 let connected = format!("{prefix}{}\\{after}", item.name);

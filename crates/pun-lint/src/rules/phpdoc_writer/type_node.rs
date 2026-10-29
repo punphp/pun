@@ -54,7 +54,10 @@ impl TypeNode {
 
     /// [`Self::from_parsed`] that prints object shapes, conditionals, offset accesses and quoted strings too; `quote`
     /// gives a string as written.
-    pub fn from_parsed_all(node: &Node, quote: &dyn Fn(&str) -> Option<String>) -> Option<TypeNode> {
+    pub fn from_parsed_all(
+        node: &Node,
+        quote: &dyn Fn(&str) -> Option<String>,
+    ) -> Option<TypeNode> {
         from_parsed(node, false, Some(quote))
     }
 
@@ -64,7 +67,11 @@ impl TypeNode {
     }
 }
 
-fn from_parsed(node: &Node, in_array: bool, all: Option<&dyn Fn(&str) -> Option<String>>) -> Option<TypeNode> {
+fn from_parsed(
+    node: &Node,
+    in_array: bool,
+    all: Option<&dyn Fn(&str) -> Option<String>>,
+) -> Option<TypeNode> {
     Some(match node {
         Node::Ident(name) => TypeNode::Identifier(name.clone()),
         Node::This => TypeNode::ident("$this"),
@@ -120,12 +127,18 @@ fn from_parsed(node: &Node, in_array: bool, all: Option<&dyn Fn(&str) -> Option<
                 None => String::new(),
                 Some((None, value)) => format!("<{}>", from_parsed(value, false, all)?),
                 Some((Some(key), value)) => {
-                    format!("<{}, {}>", from_parsed(key, false, all)?, from_parsed(value, false, all)?)
+                    format!(
+                        "<{}, {}>",
+                        from_parsed(key, false, all)?,
+                        from_parsed(value, false, all)?
+                    )
                 }
             },
         },
         // `CallableTypePhpDocNodeVisitor`: without its templates
-        Node::Callable { ident, params, ret, .. } => TypeNode::Callable {
+        Node::Callable {
+            ident, params, ret, ..
+        } => TypeNode::Callable {
             ident: ident.clone(),
             // `CallableTypeParameterNode`
             params: params
@@ -138,7 +151,11 @@ fn from_parsed(node: &Node, in_array: bool, all: Option<&dyn Fn(&str) -> Option<
                         if p.variadic { "..." } else { "" },
                         p.name
                     );
-                    Some(format!("{}{}", printed.trim(), if p.optional { "=" } else { "" }))
+                    Some(format!(
+                        "{}{}",
+                        printed.trim(),
+                        if p.optional { "=" } else { "" }
+                    ))
                 })
                 .collect::<Option<_>>()?,
             // a union return is written in parentheses
@@ -156,13 +173,23 @@ fn from_parsed(node: &Node, in_array: bool, all: Option<&dyn Fn(&str) -> Option<
                 .iter()
                 .map(|(key, optional, value)| {
                     let key = all?(key).unwrap_or_else(|| key.clone());
-                    Some(format!("{key}{}: {}", if *optional { "?" } else { "" }, from_parsed(value, false, all)?))
+                    Some(format!(
+                        "{key}{}: {}",
+                        if *optional { "?" } else { "" },
+                        from_parsed(value, false, all)?
+                    ))
                 })
                 .collect::<Option<Vec<_>>>()?
                 .join(", ")
         )),
         // `ConditionalTypeNode`, `ConditionalTypeForParameterNode`
-        Node::Conditional { subject, target, then, otherwise, negated } if all.is_some() => TypeNode::Raw(format!(
+        Node::Conditional {
+            subject,
+            target,
+            then,
+            otherwise,
+            negated,
+        } if all.is_some() => TypeNode::Raw(format!(
             "({} {} {} ? {} : {})",
             from_parsed(subject, false, all)?,
             if *negated { "is not" } else { "is" },
@@ -170,7 +197,13 @@ fn from_parsed(node: &Node, in_array: bool, all: Option<&dyn Fn(&str) -> Option<
             from_parsed(then, false, all)?,
             from_parsed(otherwise, false, all)?
         )),
-        Node::ConditionalForParameter { param, target, then, otherwise, negated } if all.is_some() => TypeNode::Raw(format!(
+        Node::ConditionalForParameter {
+            param,
+            target,
+            then,
+            otherwise,
+            negated,
+        } if all.is_some() => TypeNode::Raw(format!(
             "({param} {} {} ? {} : {})",
             if *negated { "is not" } else { "is" },
             from_parsed(target, false, all)?,
@@ -181,7 +214,9 @@ fn from_parsed(node: &Node, in_array: bool, all: Option<&dyn Fn(&str) -> Option<
         Node::OffsetAccess(base, offset) if all.is_some() => {
             let printed = from_parsed(base, true, all)?;
             TypeNode::Raw(match **base {
-                Node::Callable { .. } | Node::Nullable(_) => format!("({printed})[{}]", from_parsed(offset, false, all)?),
+                Node::Callable { .. } | Node::Nullable(_) => {
+                    format!("({printed})[{}]", from_parsed(offset, false, all)?)
+                }
                 _ => format!("{printed}[{}]", from_parsed(offset, false, all)?),
             })
         }
@@ -192,9 +227,7 @@ fn from_parsed(node: &Node, in_array: bool, all: Option<&dyn Fn(&str) -> Option<
 impl fmt::Display for TypeNode {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            TypeNode::Identifier(name) | TypeNode::Raw(name) => {
-                f.write_str(name)
-            }
+            TypeNode::Identifier(name) | TypeNode::Raw(name) => f.write_str(name),
             TypeNode::Array {
                 inner,
                 generic_parent,
@@ -249,7 +282,11 @@ impl fmt::Display for TypeNode {
                     (true, "mixed") => String::new(),
                     (true, _) => "()".to_string(),
                 };
-                let ret = if ret != "mixed" || !params.is_empty() { format!(":{ret}") } else { String::new() };
+                let ret = if ret != "mixed" || !params.is_empty() {
+                    format!(":{ret}")
+                } else {
+                    String::new()
+                };
                 write!(f, "{ident}{params}{ret}")
             }
         }

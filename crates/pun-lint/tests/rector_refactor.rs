@@ -14,10 +14,10 @@ mod lint_c;
 use lint_c::{run_class, run_class_at, run_class_with, run_dirs};
 use mago_syntax::cst::Node;
 use pun_lint::rules::{
-    AddOverrideAttribute, AnnotationToAttribute, NoExtraArguments, PreferClassNameConstant, RemoveFunctionArgument,
-    RemoveFunctionCall, RenameCast, RenameClass, RenameClassConstant, RenameConstant, RenameFunction,
-    RenameMethod, ReplaceArrayAccess, ReplaceFunctionWithConstant, ReplaceFunctionWithNew,
-    ReplaceFunctionWithStatic, RequireStrictInArray,
+    AddOverrideAttribute, AnnotationToAttribute, NoExtraArguments, PreferClassNameConstant,
+    RemoveFunctionArgument, RemoveFunctionCall, RenameCast, RenameClass, RenameClassConstant,
+    RenameConstant, RenameFunction, RenameMethod, ReplaceArrayAccess, ReplaceFunctionWithConstant,
+    ReplaceFunctionWithNew, ReplaceFunctionWithStatic, RequireStrictInArray,
 };
 use pun_lint::{Linter, Rule};
 use serde_json::{Value, json};
@@ -83,7 +83,10 @@ fn php_files(dir: &Path, out: &mut Vec<(String, String)>) {
         if path.is_dir() {
             php_files(&path, out);
         } else if path.extension().is_some_and(|e| e == "php") {
-            out.push((path.to_string_lossy().into_owned(), std::fs::read_to_string(&path).unwrap()));
+            out.push((
+                path.to_string_lossy().into_owned(),
+                std::fs::read_to_string(&path).unwrap(),
+            ));
         }
     }
 }
@@ -647,19 +650,43 @@ fn rename_class() {
             format!("{source}InterfaceAndClass\\SomeBasicDateTime"),
             format!("{source}InterfaceAndClass\\SomeBasicDateTimeInterface"),
         ),
-        (format!("{source}OldClassWithTypo"), format!("{source}NewClassWithoutTypo")),
+        (
+            format!("{source}OldClassWithTypo"),
+            format!("{source}NewClassWithoutTypo"),
+        ),
         ("Countable".into(), "stdClass".into()),
-        ("Twig_Extension_Sandbox".into(), "Twig\\Extension\\SandboxExtension".into()),
-        ("MyNamespace\\MylegacyClass".into(), "MyNewNamespace\\MyNewClass".into()),
-        (format!("{fixture}SingularClass"), format!("{fixture}DuplicatedClass")),
-        (format!("{source}Contract\\FirstInterface"), format!("{source}Contract\\ThirdInterface")),
-        (format!("{source}Contract\\SecondInterface"), format!("{source}Contract\\ThirdInterface")),
+        (
+            "Twig_Extension_Sandbox".into(),
+            "Twig\\Extension\\SandboxExtension".into(),
+        ),
+        (
+            "MyNamespace\\MylegacyClass".into(),
+            "MyNewNamespace\\MyNewClass".into(),
+        ),
+        (
+            format!("{fixture}SingularClass"),
+            format!("{fixture}DuplicatedClass"),
+        ),
+        (
+            format!("{source}Contract\\FirstInterface"),
+            format!("{source}Contract\\ThirdInterface"),
+        ),
+        (
+            format!("{source}Contract\\SecondInterface"),
+            format!("{source}Contract\\ThirdInterface"),
+        ),
         (
             "Acme\\Foo\\DoNotUpdateExistingTargetNamespace".into(),
             "Acme\\Bar\\DoNotUpdateExistingTargetNamespace".into(),
         ),
-        (format!("{source}SomeNonFinalClass"), format!("{source}SomeFinalClass")),
-        ("Doctrine\\DBAL\\DBALException".into(), "Doctrine\\DBAL\\Exception".into()),
+        (
+            format!("{source}SomeNonFinalClass"),
+            format!("{source}SomeFinalClass"),
+        ),
+        (
+            "Doctrine\\DBAL\\DBALException".into(),
+            "Doctrine\\DBAL\\Exception".into(),
+        ),
         ("NotExistsClass".into(), "NewClass".into()),
         ("foo".into(), "Bar\\Foo".into()),
         (
@@ -670,7 +697,10 @@ fn rename_class() {
             "Symfony\\Component\\Serializer\\Normalizer\\ObjectNormalizer".into(),
             "Symfony\\Component\\Serializer\\Normalizer\\NormalizerInterface".into(),
         ),
-        ("MyNamespace\\AbstractMigration".into(), "MyNamespace\\BaseMigration".into()),
+        (
+            "MyNamespace\\AbstractMigration".into(),
+            "MyNamespace\\BaseMigration".into(),
+        ),
     ] {
         options.insert(old, json!(new));
     }
@@ -683,12 +713,22 @@ fn rename_class() {
         80400,
         &[],
     );
-    everywhere(|| configured(RenameClass::default(), &options), "RenameClassRector", 80400);
+    everywhere(
+        || configured(RenameClass::default(), &options),
+        "RenameClassRector",
+        80400,
+    );
     let linter = Linter::new(vec![configured(RenameClass::default(), &options)], 80400);
-    let dir = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/rector/RenameClassRector/FixtureUnformattable");
+    let dir = Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("tests/rector/RenameClassRector/FixtureUnformattable");
     for path in std::fs::read_dir(dir).unwrap().map(|e| e.unwrap().path()) {
         let input = std::fs::read_to_string(&path).unwrap();
-        assert_eq!(linter.fix(&path, &input).unwrap().source, input, "{}", path.display());
+        assert_eq!(
+            linter.fix(&path, &input).unwrap().source,
+            input,
+            "{}",
+            path.display()
+        );
     }
 
     let auto = json!({
@@ -705,7 +745,11 @@ fn rename_class() {
     run_dirs(
         vec![configured(RenameClass::default(), &auto)],
         "RenameClassRector",
-        &["FixtureAutoImportNames", "OracleAutoImportNames", "PunAutoImportNames"],
+        &[
+            "FixtureAutoImportNames",
+            "OracleAutoImportNames",
+            "PunAutoImportNames",
+        ],
         80400,
         &[],
     );
@@ -745,12 +789,20 @@ fn rename_class() {
     for dir in ["Source", "Stubs"] {
         php_files(&root.join(dir), &mut extra);
     }
-    for (dir, options) in [("OracleCrlf", &options), ("OracleCrlfAutoImportNames", &auto)] {
+    for (dir, options) in [
+        ("OracleCrlf", &options),
+        ("OracleCrlfAutoImportNames", &auto),
+    ] {
         let linter = Linter::new(vec![configured(RenameClass::default(), options)], 80400);
-        for path in std::fs::read_dir(root.join(dir)).unwrap().map(|e| e.unwrap().path()) {
+        for path in std::fs::read_dir(root.join(dir))
+            .unwrap()
+            .map(|e| e.unwrap().path())
+        {
             let content = std::fs::read_to_string(&path).unwrap();
             let (input, expected) = content.split_once("-----\n").unwrap();
-            let fixed = pun_lint::rules::facts::with_sources(extra.clone(), || linter.fix(&path, input)).unwrap();
+            let fixed =
+                pun_lint::rules::facts::with_sources(extra.clone(), || linter.fix(&path, input))
+                    .unwrap();
             assert_eq!(fixed.source, expected, "{}", path.display());
         }
     }
@@ -760,7 +812,10 @@ fn rename_class() {
         &[
             (json!([]), "options must be a table"),
             (json!({"A": 1}), "`A` must be a string"),
-            (json!({"import-names": "yes"}), "`import-names` must be a boolean"),
+            (
+                json!({"import-names": "yes"}),
+                "`import-names` must be a boolean",
+            ),
         ],
     );
 }
@@ -812,17 +867,30 @@ fn annotation_to_attribute() {
         80400,
         &[],
     );
-    everywhere(|| configured(AnnotationToAttribute::default(), &options), "AnnotationToAttributeRector", 80400);
-    let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/rector/AnnotationToAttributeRector");
+    everywhere(
+        || configured(AnnotationToAttribute::default(), &options),
+        "AnnotationToAttributeRector",
+        80400,
+    );
+    let root =
+        Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/rector/AnnotationToAttributeRector");
     let mut extra = Vec::new();
     for dir in ["Source", "Stubs"] {
         php_files(&root.join(dir), &mut extra);
     }
-    let linter = Linter::new(vec![configured(AnnotationToAttribute::default(), &options)], 80400);
-    for path in std::fs::read_dir(root.join("FixtureUnformattable")).unwrap().map(|e| e.unwrap().path()) {
+    let linter = Linter::new(
+        vec![configured(AnnotationToAttribute::default(), &options)],
+        80400,
+    );
+    for path in std::fs::read_dir(root.join("FixtureUnformattable"))
+        .unwrap()
+        .map(|e| e.unwrap().path())
+    {
         let content = std::fs::read_to_string(&path).unwrap();
         let (input, expected) = content.split_once("-----\n").unwrap();
-        let fixed = pun_lint::rules::facts::with_sources(extra.clone(), || linter.fix(&path, input)).unwrap();
+        let fixed =
+            pun_lint::rules::facts::with_sources(extra.clone(), || linter.fix(&path, input))
+                .unwrap();
         assert_eq!(fixed.source, expected, "{}", path.display());
     }
     run_dirs(
@@ -854,7 +922,8 @@ fn annotation_to_attribute() {
         {"tag": format!("{php81}NotNumber")},
         {"tag": format!("{source}GenericAnnotation")},
     ]});
-    let source_php81 = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/rector/AnnotationToAttributeRector/SourcePhp81");
+    let source_php81 = Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("tests/rector/AnnotationToAttributeRector/SourcePhp81");
     run_dirs(
         vec![configured(AnnotationToAttribute::default(), &nested)],
         "AnnotationToAttributeRector",
@@ -866,12 +935,27 @@ fn annotation_to_attribute() {
         AnnotationToAttribute::default(),
         &[
             (json!([]), "options must be a table"),
-            (json!({"items": [{"attribute-class": "A"}]}), "each of `items` needs `tag`"),
-            (json!({"items": [{"tag": "A b"}]}), "\"A b\" is not a valid class name"),
+            (
+                json!({"items": [{"attribute-class": "A"}]}),
+                "each of `items` needs `tag`",
+            ),
+            (
+                json!({"items": [{"tag": "A b"}]}),
+                "\"A b\" is not a valid class name",
+            ),
             (json!({"items": [{"tag": 1}]}), "`tag` must be a string"),
-            (json!({"items": [{"tag": "A", "class-reference-fields": [1]}]}), "`class-reference-fields` must be a list of strings"),
-            (json!({"items": [{"tag": "A", "class-reference-fields": "f"}]}), "`class-reference-fields` must be a list of strings"),
-            (json!({"items": [{"tag": "A", "use-value-as-attribute-argument": 1}]}), "`use-value-as-attribute-argument` must be a boolean"),
+            (
+                json!({"items": [{"tag": "A", "class-reference-fields": [1]}]}),
+                "`class-reference-fields` must be a list of strings",
+            ),
+            (
+                json!({"items": [{"tag": "A", "class-reference-fields": "f"}]}),
+                "`class-reference-fields` must be a list of strings",
+            ),
+            (
+                json!({"items": [{"tag": "A", "use-value-as-attribute-argument": 1}]}),
+                "`use-value-as-attribute-argument` must be a boolean",
+            ),
         ],
     );
 }

@@ -54,10 +54,16 @@ pub(crate) mod t {
 /// `Lexer::generateRegexp()`'s alternatives in order (PCRE alternation: the first that matches wins).
 const PATTERNS: &[(u8, &str)] = &[
     (t::HORIZONTAL_WS, r"[\x09\x20]++"),
-    (t::IDENTIFIER, r"(?:[\\]?+[a-z_\x80-\xFF][0-9a-z_\x80-\xFF-]*+)++"),
+    (
+        t::IDENTIFIER,
+        r"(?:[\\]?+[a-z_\x80-\xFF][0-9a-z_\x80-\xFF-]*+)++",
+    ),
     (t::THIS_VARIABLE, r"\$this(?![0-9a-z_\x80-\xFF])"),
     (t::VARIABLE, r"\$[a-z_\x80-\xFF][0-9a-z_\x80-\xFF]*+"),
-    (t::REFERENCE, r"&(?=\s*+(?:[.,=)]|(?:\$(?!this(?![0-9a-z_\x80-\xFF])))))"),
+    (
+        t::REFERENCE,
+        r"&(?=\s*+(?:[.,=)]|(?:\$(?!this(?![0-9a-z_\x80-\xFF])))))",
+    ),
     (t::UNION, r"\|"),
     (t::INTERSECTION, "&"),
     (t::NULLABLE, r"\?"),
@@ -121,8 +127,14 @@ pub(crate) fn tokenize(input: &str) -> Vec<Tok> {
     let mut locations = re.capture_locations();
     let mut tokens = Vec::new();
     let mut offset = 0;
-    while let Some(found) = re.captures_read_at(&mut locations, input.as_bytes(), offset).ok().flatten() {
-        let group = (1..=PATTERNS.len()).find(|g| locations.get(*g).is_some()).unwrap_or_default();
+    while let Some(found) = re
+        .captures_read_at(&mut locations, input.as_bytes(), offset)
+        .ok()
+        .flatten()
+    {
+        let group = (1..=PATTERNS.len())
+            .find(|g| locations.get(*g).is_some())
+            .unwrap_or_default();
         tokens.push(Tok {
             ty: PATTERNS[group - 1].0,
             start: found.start(),
@@ -179,7 +191,8 @@ impl<'a> Iter<'a> {
 
     /// `currentTokenValue()`; past the end, `""`.
     pub fn value(&self) -> &'a str {
-        self.token(self.index).map_or("", |t| &self.text[t.start..t.end])
+        self.token(self.index)
+            .map_or("", |t| &self.text[t.start..t.end])
     }
 
     pub fn is(&self, types: &[u8]) -> bool {
@@ -315,7 +328,10 @@ pub(crate) enum Value {
     /// `GenericTagValueNode`: its value, runs of line breaks made one (`MULTI_NEW_LINES_REGEX`).
     Generic(String),
     /// `DoctrineTagValueNode`: the arguments as phpdoc-parser prints them, and the description.
-    Doctrine { args: Vec<Printed>, description: String },
+    Doctrine {
+        args: Vec<Printed>,
+        description: String,
+    },
     /// `InvalidTagValueNode`: the description read after it.
     Invalid(String),
 }
@@ -417,14 +433,18 @@ const KNOWN: &[&str] = &[
 ];
 
 /// The doc parser: the doc's text and tokens, and `type_end`, which reads a type from a byte of the text (to the end
-/// of its line) and gives where it ends, `None` where phpdoc-parser's `TypeParser` throws.
+/// of its line) and gives where it ends, or where phpdoc-parser's `TypeParser` throws.
 pub(crate) struct DocParser<'a> {
     pub iter: Iter<'a>,
-    type_end: &'a dyn Fn(usize) -> Option<usize>,
+    type_end: &'a dyn Fn(usize) -> Result<usize, usize>,
 }
 
 impl<'a> DocParser<'a> {
-    pub fn new(text: &'a str, toks: &'a [Tok], type_end: &'a dyn Fn(usize) -> Option<usize>) -> DocParser<'a> {
+    pub fn new(
+        text: &'a str,
+        toks: &'a [Tok],
+        type_end: &'a dyn Fn(usize) -> Result<usize, usize>,
+    ) -> DocParser<'a> {
         DocParser {
             iter: Iter::new(text, toks),
             type_end,
@@ -450,7 +470,9 @@ impl<'a> DocParser<'a> {
     /// `parseChildAndStoreItsPositions()`: a child that throws is an empty text.
     fn parse_child_and_store_its_positions(&mut self) -> RawChild {
         let start = self.iter.index;
-        let kind = self.parse_child().unwrap_or_else(|_| Kind::Text(String::new()));
+        let kind = self
+            .parse_child()
+            .unwrap_or_else(|_| Kind::Text(String::new()));
         RawChild {
             start,
             end: self.iter.index,
@@ -491,8 +513,12 @@ impl<'a> DocParser<'a> {
     fn parse_tag_value(&mut self, tag: &str) -> Value {
         self.iter.push();
         let parsed = match tag {
-            "@phpstan-type" | "@psalm-type" | "@phan-type" => self.parse_type_alias().map(|()| Value::Known),
-            "@phpstan-import-type" | "@psalm-import-type" => self.parse_type_alias_import().map(|()| Value::Known),
+            "@phpstan-type" | "@psalm-type" | "@phan-type" => {
+                self.parse_type_alias().map(|()| Value::Known)
+            }
+            "@phpstan-import-type" | "@psalm-import-type" => {
+                self.parse_type_alias_import().map(|()| Value::Known)
+            }
             _ if KNOWN.contains(&tag) => {
                 self.parse_text();
                 Ok(Value::Known)
@@ -500,7 +526,9 @@ impl<'a> DocParser<'a> {
             _ if self.iter.is(&[t::OPEN_PARENTHESES]) => self
                 .parse_doctrine_tag_value()
                 .map(|(args, description)| Value::Doctrine { args, description }),
-            _ => Ok(Value::Generic(collapse_newlines(&self.parse_optional_description_after_doctrine_tag()))),
+            _ => Ok(Value::Generic(collapse_newlines(
+                &self.parse_optional_description_after_doctrine_tag(),
+            ))),
         };
         match parsed {
             Ok(value) => {
@@ -525,14 +553,16 @@ impl<'a> DocParser<'a> {
         self.iter.consume(t::IDENTIFIER)?;
         self.iter.try_consume(t::EQUAL);
         let start = self.iter.toks[self.iter.index].start;
-        if let Some(end) = (self.type_end)(start) {
-            while self.iter.ty() != t::END && self.iter.toks[self.iter.index].start < end {
-                self.iter.next();
-            }
-            if self.iter.is(&[t::CLOSE_PHPDOC, t::PHPDOC_EOL]) {
-                return Ok(());
-            }
+        let end = (self.type_end)(start);
+        while self.iter.ty() != t::END
+            && self.iter.toks[self.iter.index].start < end.unwrap_or_else(|at| at)
+        {
+            self.iter.next();
         }
+        if end.is_ok() && self.iter.is(&[t::CLOSE_PHPDOC, t::PHPDOC_EOL]) {
+            return Ok(());
+        }
+        // the `ParserException`, at the token it throws at: `parseOptionalDescription()`
         self.parse_text();
         Ok(())
     }
@@ -557,7 +587,11 @@ impl<'a> DocParser<'a> {
         let mut text = String::new();
         let mut savepoint = false;
         loop {
-            let piece = format!("{}{}", it.skipped_ws(), it.join_until(&[t::PHPDOC_EOL, t::CLOSE_PHPDOC, t::END]));
+            let piece = format!(
+                "{}{}",
+                it.skipped_ws(),
+                it.join_until(&[t::PHPDOC_EOL, t::CLOSE_PHPDOC, t::END])
+            );
             text.push_str(&piece);
             if !it.is(&[t::PHPDOC_EOL, t::CLOSE_PHPDOC]) {
                 break;
@@ -580,7 +614,9 @@ impl<'a> DocParser<'a> {
         }
         if savepoint {
             it.rollback();
-            text = text.trim_end_matches(|c| it.newline().contains(c)).to_string();
+            text = text
+                .trim_end_matches(|c| it.newline().contains(c))
+                .to_string();
         }
         text.trim_matches([' ', '\t']).to_string()
     }
@@ -594,14 +630,21 @@ impl<'a> DocParser<'a> {
             let piece = format!(
                 "{}{}",
                 self.iter.skipped_ws(),
-                self.iter
-                    .join_until(&[t::PHPDOC_TAG, t::DOCTRINE_TAG, t::PHPDOC_EOL, t::CLOSE_PHPDOC, t::END])
+                self.iter.join_until(&[
+                    t::PHPDOC_TAG,
+                    t::DOCTRINE_TAG,
+                    t::PHPDOC_EOL,
+                    t::CLOSE_PHPDOC,
+                    t::END
+                ])
             );
             text.push_str(&piece);
             if !self.iter.is(&[t::PHPDOC_EOL, t::CLOSE_PHPDOC]) {
                 if !self.iter.preceded_by_ws() {
                     let rest = self.parse_text();
-                    return format!("{text}{rest}").trim_matches([' ', '\t']).to_string();
+                    return format!("{text}{rest}")
+                        .trim_matches([' ', '\t'])
+                        .to_string();
                 }
                 if self.iter.is(&[t::PHPDOC_TAG]) {
                     self.iter.push();
@@ -613,7 +656,8 @@ impl<'a> DocParser<'a> {
                             ..
                         } => true,
                         Kind::Tag {
-                            value: Value::Invalid(_), ..
+                            value: Value::Invalid(_),
+                            ..
                         } => {
                             self.iter.push();
                             self.iter.next();
@@ -625,7 +669,9 @@ impl<'a> DocParser<'a> {
                     };
                     if !stops {
                         let rest = self.parse_text();
-                        return format!("{text}{rest}").trim_matches([' ', '\t']).to_string();
+                        return format!("{text}{rest}")
+                            .trim_matches([' ', '\t'])
+                            .to_string();
                     }
                 }
                 break;
@@ -670,17 +716,27 @@ pub(crate) fn unescape_string(token: &str) -> Vec<u8> {
     // `parseEscapeSequences()`
     static RE: OnceLock<pcre2::bytes::Regex> = OnceLock::new();
     let re = RE.get_or_init(|| {
-        pcre2::bytes::Regex::new(r"\\([\\nrtfve]|[xX][0-9a-fA-F]{1,2}|[0-7]{1,3}|u\{([0-9a-fA-F]+)\})").expect("escapes")
+        pcre2::bytes::Regex::new(
+            r"\\([\\nrtfve]|[xX][0-9a-fA-F]{1,2}|[0-7]{1,3}|u\{([0-9a-fA-F]+)\})",
+        )
+        .expect("escapes")
     });
     let value = inner.replace("\\\"", "\"").into_bytes();
     let mut out = Vec::new();
     let mut last = 0;
     for caps in re.captures_iter(&value).flatten() {
         let whole = caps.get(0).expect("match");
-        let group = |g: usize| caps.get(g).map(|m| &value[m.start()..m.end()]).expect("group");
+        let group = |g: usize| {
+            caps.get(g)
+                .map(|m| &value[m.start()..m.end()])
+                .expect("group")
+        };
         let escape = group(1);
         out.extend_from_slice(&value[last..whole.start()]);
-        let number = |digits: &[u8], radix| u32::from_str_radix(std::str::from_utf8(digits).expect("ascii"), radix).unwrap_or(u32::MAX);
+        let number = |digits: &[u8], radix| {
+            u32::from_str_radix(std::str::from_utf8(digits).expect("ascii"), radix)
+                .unwrap_or(u32::MAX)
+        };
         match escape[0] {
             b'\\' => out.push(b'\\'),
             b'n' => out.push(b'\n'),
@@ -696,7 +752,11 @@ pub(crate) fn unescape_string(token: &str) -> Vec<u8> {
                 match n {
                     0..=0x7f => out.push(n as u8),
                     0x80..=0x7ff => out.extend([(n >> 6) as u8 + 0xc0, (n & 0x3f) as u8 + 0x80]),
-                    0x800..=0xffff => out.extend([(n >> 12) as u8 + 0xe0, (n >> 6 & 0x3f) as u8 + 0x80, (n & 0x3f) as u8 + 0x80]),
+                    0x800..=0xffff => out.extend([
+                        (n >> 12) as u8 + 0xe0,
+                        (n >> 6 & 0x3f) as u8 + 0x80,
+                        (n & 0x3f) as u8 + 0x80,
+                    ]),
                     0x10000..=0x1fffff => out.extend([
                         (n >> 18) as u8 + 0xf0,
                         (n >> 12 & 0x3f) as u8 + 0x80,
@@ -774,12 +834,17 @@ pub(crate) fn print_string(value: &[u8], written: &str) -> String {
 /// `MULTI_NEW_LINES_REGEX`: a run of two or more line breaks made its last one.
 fn collapse_newlines(value: &str) -> String {
     static RE: OnceLock<pcre2::bytes::Regex> = OnceLock::new();
-    let re = RE.get_or_init(|| pcre2::bytes::Regex::new(r"(\r\n|\n){2,}").expect("new lines regex"));
+    let re =
+        RE.get_or_init(|| pcre2::bytes::Regex::new(r"(\r\n|\n){2,}").expect("new lines regex"));
     replace_all(re, value, |caps| caps[caps.len() - 1].to_string())
 }
 
 /// `preg_replace_callback()` with `re`, `f` given the match and its groups.
-pub(crate) fn replace_all(re: &pcre2::bytes::Regex, value: &str, f: impl Fn(&[&str]) -> String) -> String {
+pub(crate) fn replace_all(
+    re: &pcre2::bytes::Regex,
+    value: &str,
+    f: impl Fn(&[&str]) -> String,
+) -> String {
     let mut out = String::new();
     let mut last = 0;
     for caps in re.captures_iter(value.as_bytes()).flatten() {
@@ -872,7 +937,9 @@ fn parse_doctrine_argument(it: &mut Iter<'_>) -> Parsed<Printed> {
     it.push();
     let key = it.value().to_string();
     it.next();
-    let keyed = it.consume(t::EQUAL).and_then(|()| parse_doctrine_argument_value(it));
+    let keyed = it
+        .consume(t::EQUAL)
+        .and_then(|()| parse_doctrine_argument_value(it));
     match keyed {
         Ok(value) => {
             it.drop_save();
@@ -959,8 +1026,13 @@ fn parse_doctrine_array_key(it: &mut Iter<'_>) -> Parsed<Printed> {
         t::SINGLE_QUOTED_STRING => {
             it.next();
             // `ConstExprStringNode` single-quoted: `StringUnescaper::unescapeString()`, printed with `addcslashes()`
-            let unescaped = value[1..value.len() - 1].replace("\\\\", "\\").replace("\\'", "'");
-            Ok(Printed::text(format!("'{}'", unescaped.replace('\\', "\\\\").replace('\'', "\\'"))))
+            let unescaped = value[1..value.len() - 1]
+                .replace("\\\\", "\\")
+                .replace("\\'", "'");
+            Ok(Printed::text(format!(
+                "'{}'",
+                unescaped.replace('\\', "\\\\").replace('\'', "\\'")
+            )))
         }
         t::IDENTIFIER => {
             it.push();
@@ -1152,7 +1224,11 @@ impl std::fmt::Display for ArrayItem {
 
 /// The items joined by `, ` (`printValuesContent()`, `CurlyListNode::implode()`).
 pub(crate) fn join(items: &[ArrayItem]) -> String {
-    items.iter().map(ToString::to_string).collect::<Vec<_>>().join(", ")
+    items
+        .iter()
+        .map(ToString::to_string)
+        .collect::<Vec<_>>()
+        .join(", ")
 }
 
 /// Why Rector's annotation parsers give no values: PHP throws (an object as an array key), or never returns (a
@@ -1162,7 +1238,10 @@ pub(crate) struct Unparsable;
 
 /// Rector's `StaticDoctrineAnnotationParser` on the annotation content `content`; `resolve_tag` is
 /// `ClassAnnotationMatcher::resolveTagFullyQualifiedName()`, for the nested annotations.
-pub(crate) fn annotation_values(content: &str, resolve_tag: &dyn Fn(&str) -> String) -> Result<Vec<ArrayItem>, Unparsable> {
+pub(crate) fn annotation_values(
+    content: &str,
+    resolve_tag: &dyn Fn(&str) -> String,
+) -> Result<Vec<ArrayItem>, Unparsable> {
     let toks = tokenize(content);
     let mut parser = Static {
         it: Iter::new(content, &toks),
@@ -1286,10 +1365,15 @@ impl Static<'_, '_> {
     }
 
     /// `parseMultilineOrWhiteSpacedString()`.
-    fn parse_multiline_or_white_spaced_string(&mut self, mut current: String) -> Result<String, Unparsable> {
+    fn parse_multiline_or_white_spaced_string(
+        &mut self,
+        mut current: String,
+    ) -> Result<String, Unparsable> {
         while current.starts_with('"') && !current.ends_with('"') {
             // past the end, Rector never returns
-            (self.it.index < self.it.toks.len()).then_some(()).ok_or(Unparsable)?;
+            (self.it.index < self.it.toks.len())
+                .then_some(())
+                .ok_or(Unparsable)?;
             if !self.it.is(&[t::PHPDOC_EOL]) {
                 current.push(' ');
             }
@@ -1398,7 +1482,10 @@ impl Static<'_, '_> {
 /// `array_merge($values, [$key => $value])` or `$values[] = $value`: a string key already there keeps its place and
 /// takes the new value, integer keys are numbered again; an object key throws.
 fn merge(values: &mut Vec<(PhpKey, Val)>, resolved: Resolved) -> Result<(), Unparsable> {
-    let next = values.iter().filter(|(k, _)| matches!(k, PhpKey::Int(_))).count() as i64;
+    let next = values
+        .iter()
+        .filter(|(k, _)| matches!(k, PhpKey::Int(_)))
+        .count() as i64;
     let (key, value) = match resolved {
         Resolved::Value(value) => (PhpKey::Int(next), value),
         Resolved::Keyed(Val::Str(key), value) => match php_int_key(&key) {
@@ -1407,7 +1494,10 @@ fn merge(values: &mut Vec<(PhpKey, Val)>, resolved: Resolved) -> Result<(), Unpa
         },
         Resolved::Keyed(..) => return Err(Unparsable),
     };
-    match values.iter_mut().find(|(k, _)| matches!(k, PhpKey::Str(_)) && *k == key) {
+    match values
+        .iter_mut()
+        .find(|(k, _)| matches!(k, PhpKey::Str(_)) && *k == key)
+    {
         Some(existing) => existing.1 = value,
         None => values.push((key, value)),
     }
@@ -1441,7 +1531,9 @@ fn create_array_item(key: Option<Key>, value: Val) -> ArrayItem {
         value => value,
     };
     let key = match key {
-        Some(Key::Val(Val::Str(k))) if quoted(&k, '"') => Some(Key::Val(Val::StringNode(k[1..k.len() - 1].replace("\"\"", "\"")))),
+        Some(Key::Val(Val::Str(k))) if quoted(&k, '"') => Some(Key::Val(Val::StringNode(
+            k[1..k.len() - 1].replace("\"\"", "\""),
+        ))),
         key => key,
     };
     ArrayItem { key, value }

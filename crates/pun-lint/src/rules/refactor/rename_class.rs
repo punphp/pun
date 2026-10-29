@@ -74,7 +74,9 @@ impl Rule for RenameClass {
                     continue;
                 }
             };
-            *flag = value.as_bool().ok_or_else(|| format!("`{key}` must be a boolean"))?;
+            *flag = value
+                .as_bool()
+                .ok_or_else(|| format!("`{key}` must be a boolean"))?;
         }
         Ok(())
     }
@@ -118,7 +120,10 @@ impl Rule for RenameClass {
         out.push(report(
             Span::new(start, end),
             "Replace the renamed classes by their new names.".into(),
-            vec![Edit::new(Span::new(start, end), fixed[start..new_end].to_string())],
+            vec![Edit::new(
+                Span::new(start, end),
+                fixed[start..new_end].to_string(),
+            )],
         ));
     }
 }
@@ -219,7 +224,10 @@ impl RenameClass {
             let scope = session.doc_scope(d);
             // `ClassRenamePhpDocNodeVisitor`: each identifier whose object type is an old class
             for ident in doc.idents() {
-                let Some(class) = doc_type(ctx, scope, &ident.name).class_name().map(str::to_string) else {
+                let Some(class) = doc_type(ctx, scope, &ident.name)
+                    .class_name()
+                    .map(str::to_string)
+                else {
                     continue;
                 };
                 if let Some((old, new)) = self.renames.iter().find(|(old, _)| *old == class) {
@@ -252,8 +260,10 @@ impl RenameClass {
                     "Symfony\\Component\\Validator\\Constraints\\Choice" => {
                         if let Some(item) = items.iter_mut().find(|i| i.key_is("callback"))
                             && let Val::Curly(values) = &mut item.value
-                            && let Some(Val::StringNode(callback_class)) = values.first_mut().map(|v| &mut v.value)
-                            && let Some((old, new)) = self.renames.iter().find(|(old, _)| old == callback_class)
+                            && let Some(Val::StringNode(callback_class)) =
+                                values.first_mut().map(|v| &mut v.value)
+                            && let Some((old, new)) =
+                                self.renames.iter().find(|(old, _)| old == callback_class)
                         {
                             collected.push(old.clone());
                             *callback_class = new.clone();
@@ -372,7 +382,12 @@ fn dedupe_implements(session: &mut Session<'_>) {
     for class in session.view.class_likes.iter().filter(|c| c.is_class) {
         let mut seen: Vec<String> = Vec::new();
         // each `implements` name is one of the file's names
-        for (span, i) in class.implements.iter().filter_map(|(span, _)| Some((span, session.view.names.iter().position(|n| n.span == *span)?))) {
+        for (span, i) in class.implements.iter().filter_map(|(span, _)| {
+            Some((
+                span,
+                session.view.names.iter().position(|n| n.span == *span)?,
+            ))
+        }) {
             let name = session.name_string(i);
             if seen.contains(&name) {
                 removed.push(*span);

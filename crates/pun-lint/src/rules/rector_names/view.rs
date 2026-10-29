@@ -52,7 +52,9 @@ impl PhpName {
     pub fn original(&self) -> &str {
         let written = self.written.trim_start_matches('\\');
         match written.get(..10) {
-            Some(prefix) if written.len() > 10 && prefix.eq_ignore_ascii_case("namespace\\") => &written[10..],
+            Some(prefix) if written.len() > 10 && prefix.eq_ignore_ascii_case("namespace\\") => {
+                &written[10..]
+            }
             _ => written,
         }
     }
@@ -265,7 +267,8 @@ impl FileView {
         walk.view.names.sort_by_key(|n| n.span.start);
         let mut view = walk.view;
         let all = crate::rules::php_parser::tokens(source);
-        view.roots[0].stmts = stmt_list(source, &all, program.statements.iter(), view.roots[0].inner);
+        view.roots[0].stmts =
+            stmt_list(source, &all, program.statements.iter(), view.roots[0].inner);
         let mut root = 0;
         for statement in program.statements.iter() {
             let Statement::Namespace(namespace) = statement else {
@@ -427,14 +430,16 @@ impl Walk {
     }
 
     fn uses(&mut self, r#use: &Use<'_>) {
-        let item = |name: &Identifier<'_>, alias: &Option<UseItemAlias<'_>>, kind: Kind, span| UseItemView {
-            name: text(name).trim_start_matches('\\').to_string(),
-            name_span: node_span(name),
-            alias: alias
-                .as_ref()
-                .map(|a| String::from_utf8_lossy(a.identifier.value).into_owned()),
-            kind,
-            span,
+        let item = |name: &Identifier<'_>, alias: &Option<UseItemAlias<'_>>, kind: Kind, span| {
+            UseItemView {
+                name: text(name).trim_start_matches('\\').to_string(),
+                name_span: node_span(name),
+                alias: alias
+                    .as_ref()
+                    .map(|a| String::from_utf8_lossy(a.identifier.value).into_owned()),
+                kind,
+                span,
+            }
         };
         let kind_of = |t: &UseType<'_>| match t {
             UseType::Function(_) => Kind::Function,
@@ -492,7 +497,10 @@ impl Walk {
             let alias = item.alias_or_last().to_string();
             match item.kind {
                 Kind::Class => self.aliases.class.insert(alias.to_ascii_lowercase(), name),
-                Kind::Function => self.aliases.function.insert(alias.to_ascii_lowercase(), name),
+                Kind::Function => self
+                    .aliases
+                    .function
+                    .insert(alias.to_ascii_lowercase(), name),
                 Kind::Constant => self.aliases.constant.insert(alias, name),
             };
         }
@@ -686,7 +694,9 @@ impl Walk {
                 self.name(&reference.trait_name, Kind::Class);
             }
             // (Mago gives the names of a `TraitUseAdaptation`'s precedence, never the precedence node itself)
-            Node::TraitUseAdaptation(mago_syntax::cst::TraitUseAdaptation::Precedence(adaptation)) => {
+            Node::TraitUseAdaptation(mago_syntax::cst::TraitUseAdaptation::Precedence(
+                adaptation,
+            )) => {
                 for id in adaptation.trait_names.iter() {
                     self.name(id, Kind::Class);
                 }
