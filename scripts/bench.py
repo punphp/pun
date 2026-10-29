@@ -256,9 +256,19 @@ def write_configs(mode: str, name: str, work: Path, rector_rules: list[str]) -> 
         # Every native lint rule, at `error`.
         (work / "pun-bench-lint.toml").write_text(
             "[lint.rules]\n" + "".join(f'"{i.removeprefix("lint/")}" = "error"\n' for i in native_rules()))
+        # The pinned Rector needs the project's classes, loaded after its own: Composer prepends its loader, which
+        # would let the project's rector-laravel shadow the pinned one.
+        (work / "pun-bench-autoload.php").write_text(
+            "<?php\n\n$loader = require __DIR__.'/vendor/autoload.php';\n$loader->unregister();\n"
+            "$loader->register(false);\n")
         (work / "pun-bench-rector.php").write_text(
             "<?php\n\nreturn Rector\\Config\\RectorConfig::configure()\n"
-            f"    ->withPaths([{paths}])\n    ->withRules([{rules}])\n    ->withPhpVersion(80400)\n"
+            f"    ->withPaths([{paths}])\n"
+            # Only the classes the Rector that runs has (a project without Pest's plugin lacks its rules), and none
+            # that needs a configuration: unconfigured, Rector fails on every file, and Pun's port does nothing.
+            f"    ->withRules(array_values(array_filter([{rules}], fn ($c) => class_exists($c)\n"
+            "        && ! is_subclass_of($c, \\Rector\\Contract\\Rector\\ConfigurableRectorInterface::class))))\n"
+            "    ->withPhpVersion(80400)\n"
             # Rector's 120 s per batch of files times out on a busy machine, and a timed-out batch's files go
             # unprocessed.
             "    ->withParallel(timeoutSeconds: 900);\n")
@@ -378,9 +388,8 @@ def bench_mode(mode: str) -> None:
         commands = {
             "phpstan-cold": phpstan + ["pun-bench-cold.neon"],
             "phpstan-warm": phpstan + ["pun-bench-warm.neon"],
-            # The pinned Rector lives outside the project, so it needs the project's autoloader for its classes.
             "rector-ported": ["php", str(RECTOR)] + rector + ["pun-bench-rector.php", "--autoload-file",
-                                                           "vendor/autoload.php"],
+                                                           "pun-bench-autoload.php"],
             # The project's own Rector install: its rector.php loads sets (Pest's, for one) from its vendor/.
             "rector-full": ["php", "vendor/bin/rector"] + rector + ["rector.php"],
             "pun": [pun, "analyse", "--config", "pun-bench-analyse.toml", "--format=json"] if mode == "analyse"

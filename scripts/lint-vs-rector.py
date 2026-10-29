@@ -62,7 +62,7 @@ def compare(name: str, pun: str, env: dict) -> bool:
     # Pinkary does), and then cannot reflect any vendor class: load it explicitly.
     rector = subprocess.run(["php", str(bench.RECTOR), "process", "--dry-run", "--clear-cache",
                              "--no-progress-bar", "--output-format=json", "--memory-limit=-1", "--config",
-                             "pun-bench-rector.php", "--autoload-file", "vendor/autoload.php"],
+                             "pun-bench-rector.php", "--autoload-file", "pun-bench-autoload.php"],
                             cwd=work, env=env, capture_output=True, text=True)
     # `--fix --test` writes nothing and lists the rules of every fix round: Rector reports a rule that applies to
     # another rule's output (ThrowIfRector, then ThrowIfAndThrowUnlessExceptionsToUseClassStringRector), which a
