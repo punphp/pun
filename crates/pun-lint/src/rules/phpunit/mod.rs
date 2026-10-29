@@ -88,7 +88,7 @@ mod require_data_provider_newlines;
 mod require_exact_test_argument_type;
 mod require_final_test_case;
 mod require_mock_expects;
-mod require_strict_types_in_tests;
+pub(crate) mod require_strict_types_in_tests;
 mod require_string_assert_argument;
 
 pub use add_allow_mock_objects_attribute::AddAllowMockObjectsAttribute;

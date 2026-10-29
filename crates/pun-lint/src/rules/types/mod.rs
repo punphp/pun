@@ -63,12 +63,12 @@ mod doctrine_repository;
 pub(crate) mod docblock;
 mod native;
 mod never;
-mod no_nullsafe_on_non_null;
+pub(crate) mod no_nullsafe_on_non_null;
 mod prefer_identical_same_type;
 mod prefer_instanceof;
 mod prefer_specific_return_type;
 pub(crate) mod property_type;
-mod rector_type;
+pub(crate) mod rector_type;
 pub(crate) mod silent_void;
 mod type_factory;
 

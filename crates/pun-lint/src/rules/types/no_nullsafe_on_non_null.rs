@@ -90,14 +90,14 @@ impl Rule for NoNullsafeOnNonNull {
 }
 
 /// A function or method a call reaches: its declaring class for a method, and its name.
-struct Callee<'f> {
-    metadata: &'f FunctionLikeMetadata,
+pub(crate) struct Callee<'f> {
+    pub(crate) metadata: &'f FunctionLikeMetadata,
     class: Option<String>,
     name: Vec<u8>,
 }
 
 /// `ReflectionResolver::resolveFunctionLikeReflectionFromCall` for a function, method or static method call.
-fn callee<'f>(
+pub(crate) fn callee<'f>(
     facts: &'f Facts,
     ancestors: &[Node<'_, '_>],
     scope: Option<&ClassScope>,

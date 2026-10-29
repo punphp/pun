@@ -40,65 +40,81 @@ impl Rule for RequireStrictTypesInTests {
         out: &mut Vec<Report>,
     ) {
         let Node::Program(program) = node else { return };
-        let has_strict_types = program.statements.iter().any(|statement| {
-            matches!(statement, Statement::Declare(d) if d.items.iter().any(|i| i.name.value == b"strict_types"))
-        });
-        if has_strict_types || contains_html(node, ancestors) || !first_class_is_test(ctx, node) {
+        if has_strict_types(&program.statements)
+            || contains_html(node, ancestors)
+            || !first_class_is_test(ctx, node)
+        {
             return;
         }
-        let source = ctx.source;
-        let list = open_list(source, &program.statements, 0, source.len());
-        let first = list.with_comments(source, 0);
-        let last_end = list.stmts.last().map_or(0, |s| node_span(*s).end);
-        // php-parser moves the statements after a namespace without braces into it, a trailing `Nop` too
-        let in_namespace = matches!(
-            list.stmts.last(),
-            Some(Statement::Namespace(Namespace {
-                body: NamespaceBody::Implicit(_),
-                ..
-            }))
-        );
-        let nop = list.nop || closing_nop(source, &program.statements, last_end).is_some();
-        let edit = if list.stmts.len() + usize::from(nop && !in_namespace) == 1 {
-            let mut text = format!("<?php\n\n{DECLARE}\n");
-            let start = node_span(list.stmts[0]).start;
-            for comment in tokens(source, list.before(source, 0), start)
-                .into_iter()
-                .filter(|t| t.kind.is_comment())
-            {
-                text.push('\n');
-                text.push_str(&source[comment.start..comment.end]);
-            }
-            // php-parser's namespace without braces ends with its last statement (a `?>` after it is not one)
-            let end = match list.stmts[0] {
-                Statement::Namespace(Namespace {
-                    body: NamespaceBody::Implicit(body),
-                    ..
-                }) => {
-                    let terminator = node_span(&body.terminator).end;
-                    let inner = open_list(source, &body.statements, terminator, source.len());
-                    let end = printed(source, &inner).end.max(terminator);
-                    closing_nop(source, &body.statements, end).unwrap_or(end)
-                }
-                statement => node_span(statement).end,
-            };
-            text.push('\n');
-            text.push_str(&source[start..end]);
-            text.push('\n');
-            Edit::new(Span::new(0, source.len()), text)
-        } else {
-            Edit::new(
-                Span::new(first.start, first.start),
-                format!("{DECLARE}\n\n"),
-            )
-        };
+        let (at, edit) = declare_strict_types(ctx.source, &program.statements);
         out.push(report(
-            Span::new(first.start, first.start),
+            at,
             "Declare strict types in a test file.",
             Safety::Unsafe,
             vec![edit],
         ));
     }
+}
+
+/// `DeclareStrictTypeFinder::hasDeclareStrictTypes`: a top-level `declare` with a `strict_types` key (in that case).
+pub(crate) fn has_strict_types(statements: &Sequence<'_, Statement<'_>>) -> bool {
+    statements.iter().any(|statement| {
+        matches!(statement, Statement::Declare(d) if d.items.iter().any(|i| i.name.value == b"strict_types"))
+    })
+}
+
+/// The edit of `$node->stmts = array_merge([$declaresStrictType, new Nop()], $node->stmts)` on a file whose top-level
+/// statements are `statements`, as php-parser's printer writes it, and where it is reported.
+pub(crate) fn declare_strict_types(
+    source: &str,
+    statements: &Sequence<'_, Statement<'_>>,
+) -> (Span, Edit) {
+    let list = open_list(source, statements, 0, source.len());
+    let first = list.with_comments(source, 0);
+    let last_end = list.stmts.last().map_or(0, |s| node_span(*s).end);
+    // php-parser moves the statements after a namespace without braces into it, a trailing `Nop` too
+    let in_namespace = matches!(
+        list.stmts.last(),
+        Some(Statement::Namespace(Namespace {
+            body: NamespaceBody::Implicit(_),
+            ..
+        }))
+    );
+    let nop = list.nop || closing_nop(source, statements, last_end).is_some();
+    let edit = if list.stmts.len() + usize::from(nop && !in_namespace) == 1 {
+        let mut text = format!("<?php\n\n{DECLARE}\n");
+        let start = node_span(list.stmts[0]).start;
+        for comment in tokens(source, list.before(source, 0), start)
+            .into_iter()
+            .filter(|t| t.kind.is_comment())
+        {
+            text.push('\n');
+            text.push_str(&source[comment.start..comment.end]);
+        }
+        // php-parser's namespace without braces ends with its last statement (a `?>` after it is not one)
+        let end = match list.stmts[0] {
+            Statement::Namespace(Namespace {
+                body: NamespaceBody::Implicit(body),
+                ..
+            }) => {
+                let terminator = node_span(&body.terminator).end;
+                let inner = open_list(source, &body.statements, terminator, source.len());
+                let end = printed(source, &inner).end.max(terminator);
+                closing_nop(source, &body.statements, end).unwrap_or(end)
+            }
+            statement => node_span(statement).end,
+        };
+        text.push('\n');
+        text.push_str(&source[start..end]);
+        text.push('\n');
+        Edit::new(Span::new(0, source.len()), text)
+    } else {
+        Edit::new(
+            Span::new(first.start, first.start),
+            format!("{DECLARE}\n\n"),
+        )
+    };
+    (Span::new(first.start, first.start), edit)
 }
 
 /// The end of a `?>` among `statements` after `after` with comments before it: php-parser reads the tag as `;`, and

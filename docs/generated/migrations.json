@@ -6515,7 +6515,7 @@
         "rules": [
           "lint/php-8.5/no-null-array-key"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -6973,7 +6973,7 @@
         "rules": [
           "lint/classes/add-dynamic-properties"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -9617,7 +9617,7 @@
         "rules": [
           "lint/statements/add-safe-strict-types"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {

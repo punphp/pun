@@ -3340,7 +3340,7 @@
         "CompleteDynamicPropertiesRector",
         "Rector\\CodeQuality\\Rector\\Class_\\CompleteDynamicPropertiesRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/classes/add-stringable",
@@ -10349,7 +10349,7 @@
         "ArrayKeyExistsNullToEmptyStringRector",
         "Rector\\Php85\\Rector\\FuncCall\\ArrayKeyExistsNullToEmptyStringRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/php-8.5/no-null-debug-info",
@@ -13577,7 +13577,7 @@
         "SafeDeclareStrictTypes",
         "SafeDeclareStrictTypesRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/statements/no-empty",

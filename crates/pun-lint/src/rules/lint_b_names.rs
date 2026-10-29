@@ -215,3 +215,13 @@ pub fn function_call_matches(
 pub fn resolve_class_at(ancestors: &[Node<'_, '_>], offset: u32, name: &[u8]) -> Vec<u8> {
     scope(ancestors, offset).resolve(Kind::Class, name).0
 }
+
+/// The function name `identifier` stands for (without a leading `\`), and whether an explicit rule resolved it (a
+/// leading `\`, `namespace\` or a `use function` import); otherwise the name is the namespaced one, which PHP falls
+/// back from to the global function.
+pub fn resolve_function(
+    ancestors: &[Node<'_, '_>],
+    identifier: &Identifier<'_>,
+) -> (Vec<u8>, bool) {
+    scope(ancestors, identifier.span().start.offset).resolve(Kind::Function, identifier.value())
+}

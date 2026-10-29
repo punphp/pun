@@ -1,6 +1,8 @@
 //! The ported rules. Each file is one Pun rule, ported function by function from its upstream source.
 
 mod add_csv_escape_argument;
+mod add_dynamic_properties;
+mod add_safe_strict_types;
 mod mago_helpers;
 mod mago_restricted;
 mod mago_calls;
@@ -112,6 +114,7 @@ mod no_nested_ternary;
 mod no_null_debug_info;
 mod no_null_property_init;
 mod no_null_tag_value;
+mod no_null_array_key;
 mod no_out_of_range_chr;
 mod no_overwritten_assignment;
 mod no_parameter_shadowing;
@@ -362,6 +365,9 @@ pub use no_nested_ternary::NoNestedTernary;
 pub use no_null_debug_info::NoNullDebugInfo;
 pub use no_null_property_init::NoNullPropertyInit;
 pub use no_null_tag_value::NoNullTagValue;
+pub use add_dynamic_properties::AddDynamicProperties;
+pub use add_safe_strict_types::AddSafeStrictTypes;
+pub use no_null_array_key::NoNullArrayKey;
 pub use no_out_of_range_chr::NoOutOfRangeChr;
 pub use no_overwritten_assignment::NoOverwrittenAssignment;
 pub use no_parameter_shadowing::NoParameterShadowing;
@@ -562,6 +568,9 @@ pub const PROJECT_RULES: &[&str] = &[
     "lint/dead-code/no-invalid-return-tag",
     "lint/dead-code/no-useless-phpdoc-type",
     "lint/complexity/no-redundant-nullable-check",
+    "lint/php-8.5/no-null-array-key",
+    "lint/statements/add-safe-strict-types",
+    "lint/classes/add-dynamic-properties",
     "lint/dead-code/no-unused-assignment",
     "lint/laravel/add-factory-extends-phpdoc",
     "lint/laravel/add-has-factory-trait",
@@ -711,6 +720,9 @@ fn ungrouped() -> Vec<Box<dyn Rule>> {
         Box::new(PreferRoundModeEnum),
         Box::new(NoFinfoBufferContext),
         Box::new(NoNullDebugInfo),
+        Box::new(NoNullArrayKey),
+        Box::new(AddSafeStrictTypes),
+        Box::new(AddDynamicProperties),
         Box::new(NoOutOfRangeChr),
         Box::new(PreferOrdFirstByte),
         Box::new(PreferArrayFirstLast),
