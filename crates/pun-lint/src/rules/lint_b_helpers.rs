@@ -297,12 +297,7 @@ pub fn constant(ancestors: &[Node<'_, '_>], expr: &Expression<'_>, at: usize) ->
         Known::Hint(_) => return None,
     };
     match expr {
-        Expression::Literal(Literal::Integer(i)) => {
-            Some(match i.value.and_then(|v| i64::try_from(v).ok()) {
-                Some(v) => Constant::Int(v),
-                None => Constant::Float(float_of(i.raw)?),
-            })
-        }
+        Expression::Literal(Literal::Integer(i)) => Some(Constant::Int(i.value? as i64)),
         Expression::Literal(Literal::Float(f)) => Some(Constant::Float(f.value.into_inner())),
         Expression::Literal(Literal::String(s)) => Some(Constant::String(s.value?.to_vec())),
         Expression::Literal(Literal::True(_)) => Some(Constant::Bool(true)),
@@ -344,29 +339,6 @@ pub fn constant(ancestors: &[Node<'_, '_>], expr: &Expression<'_>, at: usize) ->
         }
         _ => None,
     }
-}
-
-/// PHP reads an integer literal too big for `int` as a float.
-fn float_of(raw: &[u8]) -> Option<f64> {
-    let digits: String = String::from_utf8_lossy(raw)
-        .chars()
-        .filter(|c| *c != '_')
-        .collect();
-    let lower = digits.to_ascii_lowercase();
-    let (radix, body) = if let Some(h) = lower.strip_prefix("0x") {
-        (16, h)
-    } else if let Some(b) = lower.strip_prefix("0b") {
-        (2, b)
-    } else if let Some(o) = lower.strip_prefix("0o") {
-        (8, o)
-    } else if lower.len() > 1 && lower.starts_with('0') {
-        (8, &lower[1..])
-    } else {
-        (10, lower.as_str())
-    };
-    body.chars().try_fold(0f64, |acc, c| {
-        Some(acc * f64::from(radix) + f64::from(c.to_digit(radix)?))
-    })
 }
 
 fn instantiates(ancestors: &[Node<'_, '_>], new: &Instantiation<'_>, class: &str) -> bool {

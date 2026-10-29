@@ -161,12 +161,6 @@ fn atomic_of(atomic: &TAtomic) -> PType {
 /// still does).
 fn literal(expr: &Expression<'_>) -> Option<PType> {
     Some(match unparenthesize(expr) {
-        // php-parser lexes an integer above `PHP_INT_MAX` as a float
-        Expression::Literal(Literal::Integer(i))
-            if i.value.is_some_and(|v| v > i64::MAX as u64) =>
-        {
-            PType::Float { constant: true }
-        }
         Expression::Literal(Literal::Integer(_)) => PType::Integer { constant: true },
         Expression::Literal(Literal::Float(_)) => PType::Float { constant: true },
         Expression::Literal(Literal::String(s)) => PType::String {
