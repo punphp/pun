@@ -12,6 +12,8 @@
 //! Oracle73/ at 8.4, 7.4 and 7.3. ArgumentFuncCallToMethodCallRector's Oracle/rector_error_* are files Rector stops on
 //! with an error and leaves as they were (a first-class callable, arguments without `method-if-args`), as is
 //! StaticCallToMethodCallRector's Oracle/circular_parents (a class among its own parents).
+//! StaticCallToMethodCallRector's OracleNoFormat/ (at 8.0) is compared on the rule's fix alone: the laravel preset's
+//! format fails on its `- -1`, which PHP accepts.
 //!
 //! Pun/ (at the PHP version of the rule's Fixture) and Pun74/ (at 7.4) hold the cases where Rector writes broken code
 //! and Pun leaves the class alone, each with its reason in the file's first comment:
@@ -148,6 +150,19 @@ fn static_call_to_method_call() {
         70400,
         &[],
     );
+    // The laravel preset's format fails on `- -1` and `+ +1` (pun-format's own bug), so these Oracle cases are
+    // compared on the rule's fix alone.
+    let linter = Linter::new(vec![static_rule(&options)], 80000);
+    let dir = Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("tests/rector")
+        .join(STATIC)
+        .join("OracleNoFormat");
+    for path in std::fs::read_dir(dir).unwrap().map(|e| e.unwrap().path()) {
+        let content = std::fs::read_to_string(&path).unwrap();
+        let (input, expected) = content.split_once("-----\n").unwrap();
+        let fixed = linter.fix(&path, input).unwrap();
+        assert_eq!(fixed.source, expected, "{}", path.display());
+    }
     everywhere(
         || static_rule(&options),
         Box::new(ReplaceStaticWithMethod::default()),
@@ -237,4 +252,17 @@ fn argument_func_call_to_method_call() {
             ),
         ],
     );
+}
+
+/// Both rules are among every rule, and the CLI scans the project for them (they read parents in other files).
+#[test]
+fn registered() {
+    let ids: Vec<&str> = pun_lint::rules::all().iter().map(|r| r.id()).collect();
+    for id in [
+        "lint/refactor/replace-static-with-method",
+        "lint/laravel/prefer-constructor-injection",
+    ] {
+        assert!(ids.contains(&id), "{id}");
+        assert!(pun_lint::rules::PROJECT_RULES.contains(&id), "{id}");
+    }
 }
