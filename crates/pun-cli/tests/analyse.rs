@@ -59,38 +59,12 @@ fn run(dir: &Path, program: &[&str], args: &[&str]) -> (String, Option<i32>) {
     (String::from_utf8(out.stdout).unwrap(), out.status.code())
 }
 
-#[test]
-fn formats_match_phpstan() {
+fn formats_match_phpstan(name: &str, source: &str) {
     let Some(phar) = phpstan() else { return };
     let phar = phar.to_str().unwrap();
-    for (name, source) in [
-        ("errors", ERRORS),
-        ("clean", CLEAN),
-        ("non-ignorable", NON_IGNORABLE),
-        (
-            "dumps",
-            "<?php\n\\PHPStan\\dumpType(1, true); // @phpstan-ignore phpstan.dumpType\n\\PHPStan\\dumpPhpDocType(['value' => 2]);\n",
-        ),
-    ] {
-        let d = sample(name, source);
-        for f in FORMATS {
-            let format = format!("--error-format={f}");
-            let want = run(
-                &d,
-                &[
-                    "php",
-                    phar,
-                    "analyse",
-                    "--no-progress",
-                    "-c",
-                    "phpstan.neon",
-                ],
-                &[&format],
-            );
-            let got = run(&d, &[PUN, "analyse"], &[&format]);
-            assert_eq!(got, want, "{name} {f}");
-        }
-        // `-v`: raw adds each identifier.
+    let d = sample(name, source);
+    for f in FORMATS {
+        let format = format!("--error-format={f}");
         let want = run(
             &d,
             &[
@@ -100,16 +74,54 @@ fn formats_match_phpstan() {
                 "--no-progress",
                 "-c",
                 "phpstan.neon",
-                "-v",
             ],
-            &["--error-format=raw"],
+            &[&format],
         );
-        assert_eq!(
-            run(&d, &[PUN, "analyse"], &["--error-format=raw", "-v"]),
-            want,
-            "{name} raw -v"
-        );
+        let got = run(&d, &[PUN, "analyse"], &[&format]);
+        assert_eq!(got, want, "{name} {f}");
     }
+    // `-v`: raw adds each identifier.
+    let want = run(
+        &d,
+        &[
+            "php",
+            phar,
+            "analyse",
+            "--no-progress",
+            "-c",
+            "phpstan.neon",
+            "-v",
+        ],
+        &["--error-format=raw"],
+    );
+    assert_eq!(
+        run(&d, &[PUN, "analyse"], &["--error-format=raw", "-v"]),
+        want,
+        "{name} raw -v"
+    );
+}
+
+#[test]
+fn formats_match_phpstan_errors() {
+    formats_match_phpstan("errors", ERRORS);
+}
+
+#[test]
+fn formats_match_phpstan_clean() {
+    formats_match_phpstan("clean", CLEAN);
+}
+
+#[test]
+fn formats_match_phpstan_non_ignorable() {
+    formats_match_phpstan("non-ignorable", NON_IGNORABLE);
+}
+
+#[test]
+fn formats_match_phpstan_dumps() {
+    formats_match_phpstan(
+        "dumps",
+        "<?php\n\\PHPStan\\dumpType(1, true); // @phpstan-ignore phpstan.dumpType\n\\PHPStan\\dumpPhpDocType(['value' => 2]);\n",
+    );
 }
 
 #[test]
