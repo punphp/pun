@@ -422,6 +422,7 @@ pub(crate) fn to_array_key(t: &Type) -> Type {
         // ObjectTypeTrait, ArrayTypeTrait, ResourceType, CallableType, IterableType, VoidType: an ErrorType (a mixed)
         Type::Void
         | Type::Resource
+        | Type::NonexistentParent
         | Type::ObjectWithoutClass
         | Type::Object(..)
         | Type::Static(..)
@@ -562,9 +563,7 @@ fn identifier(name: &str, scope: &dyn Scope) -> Type {
             "parent" => {
                 return match scope.parent() {
                     Some(parent) => Type::Object(parent, vec![], false),
-                    // NonexistentParentClassType, described as `parent`
-                    // ponytail: it is an object of a class that does not exist; add its own type if a rule asks more
-                    None => Type::Object("parent".to_string(), vec![], false),
+                    None => Type::NonexistentParent,
                 };
             }
             "static" => {
@@ -691,7 +690,7 @@ fn generic(base: &str, args: &[Node], scope: &dyn Scope) -> Type {
         },
         "class-string" | "interface-string" => match types.as_slice() {
             // (a `TemplateMixedType` is a `MixedType`)
-            [g] if g.is_object_yes()
+            [g] if g.is_object().yes()
                 // (an `ErrorType` is a `MixedType`)
                 || matches!(g, Type::Mixed { .. } | Type::Error)
                 || matches!(g, Type::Template(t) if matches!(t.bound, Type::Mixed { .. })) =>
@@ -799,7 +798,7 @@ fn offset_value(t: &Type, o: &Type) -> Option<Type> {
             Type::ConstInt(_) | Type::Int => intersect(vec![Type::String, Type::Accessory(Accessory::NonEmptyString)]),
             _ => Type::Error,
         },
-        Type::Int | Type::ConstInt(_) | Type::Float | Type::ConstFloat(_) | Type::Bool | Type::ConstBool(_) | Type::Null => {
+        Type::NonexistentParent | Type::Int | Type::ConstInt(_) | Type::Float | Type::ConstFloat(_) | Type::Bool | Type::ConstBool(_) | Type::Null => {
             Type::Error
         }
         Type::Union(types) => {
@@ -845,28 +844,6 @@ pub fn key_or_value_of(t: &Type, value: bool) -> Type {
         return Type::Error;
     }
     if value { t.iterable_value_type() } else { t.iterable_key_type() }
-}
-
-impl Type {
-    fn is_object_yes(&self) -> bool {
-        match self {
-            Type::Object(..)
-            | Type::ObjectWithoutClass
-            | Type::Static(..)
-            | Type::This(_)
-            | Type::ObjectShape(_)
-            | Type::Closure(_) => true,
-            Type::Template(t) => t.bound.is_object_yes(),
-            Type::Union(types) | Type::Intersection(types) => {
-                if matches!(self, Type::Union(_)) {
-                    types.iter().all(Type::is_object_yes)
-                } else {
-                    types.iter().any(Type::is_object_yes)
-                }
-            }
-            _ => false,
-        }
-    }
 }
 
 fn generic_object(base: &str, mut types: Vec<Type>, scope: &dyn Scope) -> Type {

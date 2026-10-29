@@ -251,6 +251,9 @@ pub enum Type {
     StringNotAcceptingStringable,
     Resource,
     ObjectWithoutClass,
+    /// PHPStan's `NonexistentParentClassType`: an object without a class identity or member capabilities.
+    /// This is not the named `parent` retained by unresolved native type hints.
+    NonexistentParent,
     /// `ObjectType` / `GenericObjectType`: written name, arguments and per-value `asFinal()` override.
     /// The override affects reflection/containment, not equals() or the printed class name.
     Object(String, Vec<Type>, bool),
@@ -523,6 +526,23 @@ impl Type {
 
     pub fn is_boolean(&self) -> Tri {
         self.query_with_mixed_domain(Self::is_boolean, || Type::Bool, false, &|t| Tri::from(matches!(t, Type::Bool | Type::ConstBool(_))))
+    }
+
+    /// `isObject()`, not `ObjectWithoutClassType::isSuperTypeOf()`: the latter rejects nonexistent parent.
+    pub fn is_object(&self) -> Tri {
+        self.query_c_with_mixed_domain(Self::is_object, || Type::ObjectWithoutClass, true, &|t| match t {
+            Type::NonexistentParent
+            | Type::ObjectWithoutClass
+            | Type::Object(..)
+            | Type::Static(..)
+            | Type::This(_)
+            | Type::EnumCase(..)
+            | Type::ObjectShape(_)
+            | Type::Closure(_) => Tri::Yes,
+            Type::Iterable(..)
+            | Type::Accessory(Accessory::HasMethod(_) | Accessory::HasOffsetValue(..)) => Tri::Maybe,
+            _ => Tri::No,
+        })
     }
 
     fn is_class_string(&self) -> Tri {
@@ -922,7 +942,7 @@ impl Type {
                     if inner.is_empty()
                         && (matches!(self, Type::Union(_))
                             || matches!(self, Type::Benevolent(_))
-                                && is_super_type_of(&Type::ObjectWithoutClass, t).yes())
+                                && t.is_object().yes())
                     {
                         return Vec::new();
                     }
@@ -943,6 +963,7 @@ impl Type {
             Type::Reasoned(t, _) => t.iterable_key_type(),
             Type::SubtractedObject { object, .. } => object.iterable_key_type(),
             Type::LateArrayShape(s) => s.resolve().iterable_key_type(),
+            Type::NonexistentParent => Type::Error,
             Type::StrictMixed => self.clone(),
             Type::Template(t) if matches!(t.bound, Type::StrictMixed) => self.clone(),
             _ if self.is_callable_array() => {
@@ -976,6 +997,7 @@ impl Type {
             Type::Reasoned(t, _) => t.iterable_value_type(),
             Type::SubtractedObject { object, .. } => object.iterable_value_type(),
             Type::LateArrayShape(s) => s.resolve().iterable_value_type(),
+            Type::NonexistentParent => Type::Error,
             Type::StrictMixed => self.clone(),
             Type::Template(t) if matches!(t.bound, Type::StrictMixed) => self.clone(),
             Type::Intersection(types) if self.is_callable_array() => intersect(vec![
@@ -1089,6 +1111,7 @@ impl Type {
             Type::ClassString(Some(t)) => format!("class-string<{}>", t.describe(level)),
             Type::Resource => "resource".to_string(),
             Type::ObjectWithoutClass => "object".to_string(),
+            Type::NonexistentParent => "parent".to_string(),
             Type::Object(class, args, _) => {
                 let mut name = match level {
                     Level::Precise => class.clone(),
@@ -1699,9 +1722,21 @@ fn describe_union(types: &[Type], level: Level) -> String {
             };
             names.push(if wrap { format!("({d})") } else { d });
         }
-        // ponytail: at the precise level PHPStan numbers equal descriptions (`T#1|T#2`); no union of Pun's holds two
-        // members that describe the same precisely, so only the other levels dedupe
-        if level != Level::Precise {
+        // UnionType::describe(): number every occurrence of a duplicated precise description.
+        if level == Level::Precise {
+            let mut counts = std::collections::HashMap::new();
+            for name in &names {
+                *counts.entry(name.clone()).or_insert(0) += 1;
+            }
+            let mut indices = std::collections::HashMap::new();
+            for name in &mut names {
+                if counts[name] > 1 {
+                    let index = indices.entry(name.clone()).or_insert(0);
+                    *index += 1;
+                    *name = format!("{name}#{index}");
+                }
+            }
+        } else {
             let mut seen = std::collections::HashSet::new();
             names.retain(|n| seen.insert(n.clone()));
         }
@@ -2704,6 +2739,7 @@ pub fn is_super_type_of(a: &Type, b: &Type) -> Tri {
             }
             is_sub_type_of(b, a)
         }
+        T::NonexistentParent => Tri::from(matches!(b, T::NonexistentParent)),
         T::IntRange(..) | T::Int | T::ConstInt(_) => Tri::No,
         T::Null => Tri::from(matches!(b, T::Null)),
         T::Void => Tri::from(matches!(b, T::Void)),
@@ -2859,6 +2895,8 @@ pub fn is_super_type_of(a: &Type, b: &Type) -> Tri {
             _ => Tri::No,
         },
         T::ObjectShape(props) => match b {
+            // NonexistentParentClassType is an object but has no instance properties, even optional ones.
+            T::NonexistentParent => Tri::from(props.iter().all(|(_, _, optional)| *optional)),
             // a final class without a required property; ponytail: otherwise maybe, the property types are not
             // compared
             _ if b.object_class_names().iter().any(|c| {

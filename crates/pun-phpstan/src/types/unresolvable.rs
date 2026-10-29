@@ -98,6 +98,7 @@ impl PartialEq for Type {
             (T::StrictMixed, T::Template(t)) => matches!(t.bound, T::StrictMixed),
             (T::StrictMixed, T::StrictMixed)
             | (T::Error, T::Error)
+            | (T::NonexistentParent, T::NonexistentParent)
             | (T::Void, T::Void)
             | (T::Null, T::Null)
             | (T::Bool, T::Bool)

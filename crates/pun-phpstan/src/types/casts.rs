@@ -31,7 +31,7 @@ pub fn cast_is_error(t: &Type, cast: Cast, sm: StrictMixed) -> bool {
         T::StrictMixed => true,
         T::Mixed { .. } | T::SubtractedMixed { .. } | T::Wildcard | T::Error => cast == C::BitwiseNot,
         T::Never(_) | T::OffsetAccess(..) | T::Projection(..) => false,
-        T::Void => true,
+        T::Void | T::NonexistentParent => true,
         T::Null | T::Bool | T::ConstBool(_) => cast == C::BitwiseNot,
         T::Int | T::ConstInt(_) | T::IntRange(..) | T::Float | T::ConstFloat(_) => false,
         T::String | T::StringAcceptingStringable | T::StringNotAcceptingStringable | T::ClassString(_) => {
