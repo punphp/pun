@@ -11,7 +11,7 @@
 use pun_phpstan::phpdoc::{self, Node, ShapeKey};
 
 use super::phpdoc_parser::{self as parser, ArrayItem, Key, Val, t};
-use crate::rules::phpdoc_writer::type_node::TypeNode;
+use crate::rules::phpdoc_writer::type_node::{TypeNode, quoted};
 
 /// How a typed tag's value is laid out around its type.
 #[derive(Clone, Debug)]
@@ -39,6 +39,8 @@ pub(crate) struct Typed {
     /// The type, or a template's bound (none without one).
     types: Vec<Node>,
     description: String,
+    /// The strings written in the value, each with its quote ([`strings_of`]).
+    strings: Vec<(String, u8)>,
     /// The identifiers [`Doc::set_ident`] replaced: a new `IdentifierTypeNode` has no `PARENT` attribute, so the
     /// name importing no longer sees its template tag.
     replaced: Vec<usize>,
@@ -66,10 +68,153 @@ pub(crate) enum Value {
     /// `GenericTagValueNode`: its value.
     Generic(String),
     Annotation(Annotation),
-    /// Any other tag (`@method`, `@phpstan-assert`, a value its parser rejects...): the identifiers in it, never
-    /// reprinted.
-    Other(Vec<String>),
+    /// Any other tag phpdoc-parser gives a value node of its own (`@method`, `@phpstan-type`,
+    /// `@phpstan-import-type`, `@phpstan-assert`, a typeless `@param`...).
+    Other(Other),
 }
+
+/// A tag value `pun_phpstan` parses, with what its node prints that `pun_phpstan` leaves out.
+#[derive(Clone, Debug)]
+pub(crate) struct Other {
+    value: phpdoc::TagValue,
+    description: String,
+    /// `TemplatePhpDocNodeVisitor::resolvePreposition()` of each `@method` template.
+    prepositions: Vec<String>,
+    /// The quote of each string in the `@method` parameters' defaults, in order.
+    quotes: Vec<u8>,
+    strings: Vec<(String, u8)>,
+}
+
+impl Other {
+    /// The tag's `IdentifierTypeNode`s in `PhpDocNodeTraverser` order, with whether the parent of each is a template
+    /// (a `@method` template is a `SpacingAwareTemplateTagValueNode` without its lower bound and default).
+    fn idents_mut(&mut self, f: &mut dyn FnMut(&mut String, bool)) {
+        match &mut self.value {
+            phpdoc::TagValue::Method {
+                ret, params, templates, ..
+            } => {
+                if let Some(ret) = ret {
+                    walk(ret, false, f);
+                }
+                for bound in templates.iter_mut().filter_map(|t| t.bound.as_mut()) {
+                    walk(bound, true, f);
+                }
+                for ty in params.iter_mut().filter_map(|p| p.ty.as_mut()) {
+                    walk(ty, false, f);
+                }
+            }
+            phpdoc::TagValue::TypeAlias(_, Ok(ty)) | phpdoc::TagValue::Assert { ty, .. } => walk(ty, false, f),
+            phpdoc::TagValue::TypeAliasImport(_, from, _) => f(from, false),
+            _ => {}
+        }
+    }
+
+    /// The value node's `__toString()`.
+    fn print(&self) -> Option<String> {
+        let quote = |v: &str| quote_of(&self.strings, v);
+        let ty = |node: &Node| TypeNode::from_parsed_all(node, &quote).map(|t| t.to_string());
+        let description = &self.description;
+        Some(match &self.value {
+            phpdoc::TagValue::Method {
+                is_static,
+                ret,
+                name,
+                params,
+                templates,
+            } => {
+                let mut quotes = self.quotes.iter();
+                let mut printed = Vec::new();
+                // `MethodTagValueParameterNode`
+                for p in params {
+                    let mut param = match &p.ty {
+                        Some(t) => format!("{} ", ty(t)?),
+                        None => String::new(),
+                    };
+                    param.push_str(if p.by_ref { "&" } else { "" });
+                    param.push_str(if p.variadic { "..." } else { "" });
+                    param.push_str(&p.name);
+                    if let Some(default) = &p.default {
+                        param.push_str(&format!(" = {}", const_expr(default, &mut quotes)?));
+                    }
+                    printed.push(param);
+                }
+                // `SpacingAwareTemplateTagValueNode`
+                let mut generics = Vec::new();
+                for (t, preposition) in templates.iter().zip(&self.prepositions) {
+                    generics.push(match &t.bound {
+                        Some(bound) => format!("{} {preposition} {}", t.name, ty(bound)?),
+                        None => t.name.clone(),
+                    });
+                }
+                format!(
+                    "{}{}{name}{}({}){}",
+                    if *is_static { "static " } else { "" },
+                    match ret {
+                        Some(ret) => format!("{} ", ty(ret)?),
+                        None => String::new(),
+                    },
+                    match generics.is_empty() {
+                        true => String::new(),
+                        false => format!("<{}>", generics.join(", ")),
+                    },
+                    printed.join(", "),
+                    match description.is_empty() {
+                        true => String::new(),
+                        false => format!(" {description}"),
+                    },
+                )
+            }
+            phpdoc::TagValue::TypeAlias(alias, Ok(t)) => format!("{alias} {}", ty(t)?),
+            phpdoc::TagValue::TypeAliasImport(alias, from, as_) => match as_ {
+                Some(as_) => format!("{alias} from {from} as {as_}"),
+                None => format!("{alias} from {from}"),
+            },
+            phpdoc::TagValue::Assert {
+                ty: t,
+                parameter,
+                member,
+                negated,
+                equality,
+            } => format!(
+                "{}{}{} {parameter}{} {description}",
+                if *negated { "!" } else { "" },
+                if *equality { "=" } else { "" },
+                ty(t)?,
+                match member {
+                    Some((property, false)) => format!("->{property}"),
+                    Some((method, true)) => format!("->{method}()"),
+                    None => String::new(),
+                },
+            ),
+            _ => return None,
+        })
+    }
+}
+
+/// `ConstExprNode::__toString()`; `quotes` gives each string's quote.
+fn const_expr(expr: &phpdoc::ConstExpr, quotes: &mut std::slice::Iter<'_, u8>) -> Option<String> {
+    use phpdoc::ConstExpr as C;
+    Some(match expr {
+        C::Int(v) | C::Float(v) => v.clone(),
+        C::True => "true".into(),
+        C::False => "false".into(),
+        C::Null => "null".into(),
+        C::Fetch(class, name) if class.is_empty() => name.clone(),
+        C::Fetch(class, name) => format!("{class}::{name}"),
+        C::Str(v) => quoted(v, *quotes.next()?),
+        C::Array(items) => {
+            let mut printed = Vec::new();
+            for (key, value) in items {
+                printed.push(match key {
+                    Some(key) => format!("{} => {}", const_expr(key, quotes)?, const_expr(value, quotes)?),
+                    None => const_expr(value, quotes)?,
+                });
+            }
+            format!("[{}]", printed.join(", "))
+        }
+    })
+}
+
 
 #[derive(Clone, Debug)]
 pub(crate) struct Child {
@@ -80,8 +225,6 @@ pub(crate) struct Child {
     pub value: Value,
     /// Whether a node inside was replaced (`ChangedPhpDocNodeVisitor`): the child is reprinted.
     pub changed: bool,
-    /// Whether the change cannot be reprinted as Rector does.
-    unprintable: bool,
 }
 
 /// An `IdentifierTypeNode` of the doc: its child, its place among the child's identifiers, its name, and whether its
@@ -216,7 +359,6 @@ impl Doc {
                 tag,
                 value,
                 changed: false,
-                unprintable: false,
             });
         }
         Some(Doc {
@@ -259,7 +401,7 @@ impl Doc {
                     push(&annotation.identifier, false);
                     nested_identifiers(&annotation.values, &mut |name| push(name, false));
                 }
-                Value::Other(names) => names.iter().for_each(|n| push(n, false)),
+                Value::Other(other) => other.clone().idents_mut(&mut |name, parent| push(name, parent)),
                 Value::Text | Value::Generic(_) => {}
             }
         }
@@ -295,7 +437,16 @@ impl Doc {
                     }
                 });
             }
-            _ => child.unprintable = true,
+            Value::Other(other) => {
+                let mut index = 0;
+                other.idents_mut(&mut |current, _| {
+                    if index == ident.index {
+                        *current = name.to_string();
+                    }
+                    index += 1;
+                });
+            }
+            Value::Text | Value::Generic(_) => {}
         }
     }
 
@@ -454,7 +605,7 @@ impl Doc {
         self.children
             .iter()
             .filter(|c| c.changed)
-            .all(|c| !c.unprintable && print_child(c).is_some())
+            .all(|c| print_child(c).is_some())
     }
 
     /// Whether a child changed.
@@ -633,31 +784,142 @@ fn is_class_name(name: &str) -> bool {
         })
 }
 
-/// The names of the identifiers in a tag `pun_phpstan` parses but Pun does not reprint.
-fn other_idents(tag: &phpdoc::Tag) -> Vec<String> {
-    let mut nodes: Vec<Node> = Vec::new();
-    let template = |t: &phpdoc::TemplateTag, nodes: &mut Vec<Node>| {
-        nodes.extend([&t.bound, &t.lower, &t.default].into_iter().flatten().cloned());
-    };
+/// The `Other` value of the tag `name` that `pun_phpstan` parsed as `tag`; `value` is the doc's text from the
+/// tag's value to the end of the child, and `None` where Pun does not find where its description starts.
+fn other(tag: phpdoc::Tag, value: &str, description: impl Fn(usize) -> String) -> Option<Value> {
+    let (mut prepositions, mut quotes, mut description_at) = (Vec::new(), Vec::new(), None);
     match &tag.value {
-        phpdoc::TagValue::Method {
-            ret, params, templates, ..
-        } => {
-            nodes.extend(ret.iter().cloned());
-            for t in templates {
-                template(t, &mut nodes);
-            }
-            nodes.extend(params.iter().filter_map(|p| p.ty.clone()));
+        phpdoc::TagValue::Method { .. } => {
+            let (at, p, q) = scan_method(value)?;
+            (prepositions, quotes, description_at) = (p, q, Some(at));
         }
-        phpdoc::TagValue::TypeAlias(_, Ok(t)) | phpdoc::TagValue::Assert { ty: t, .. } => nodes.push(t.clone()),
-        phpdoc::TagValue::TypeAliasImport(_, from, _) => nodes.push(Node::Ident(from.clone())),
+        phpdoc::TagValue::Assert { .. } => description_at = Some(scan_assert(value)?),
         _ => {}
     }
-    let mut names = Vec::new();
-    for mut node in nodes {
-        walk(&mut node, false, &mut |name, _| names.push(name.clone()));
+    Some(Value::Other(Other {
+        value: tag.value,
+        description: description_at.map(description).unwrap_or_default(),
+        prepositions,
+        quotes,
+        strings: strings_of(value),
+    }))
+}
+
+/// The strings written in `value`, each as `StringUnescaper` reads it and as written, with its quote.
+fn strings_of(value: &str) -> Vec<(String, u8)> {
+    let mut strings = Vec::new();
+    for tok in parser::tokenize(value) {
+        if let t::SINGLE_QUOTED_STRING | t::DOUBLE_QUOTED_STRING = tok.ty {
+            let inner = &value[tok.start + 1..tok.end - 1];
+            let quote = value.as_bytes()[tok.start];
+            let unescaped = match quote {
+                b'\'' => inner.replace("\\\\", "\\").replace("\\'", "'"),
+                _ => inner.replace("\\\"", "\""),
+            };
+            strings.extend([(unescaped, quote), (inner.to_string(), quote)]);
+        }
     }
-    names
+    strings
+}
+
+/// The quote the string `value` was written in.
+fn quote_of(strings: &[(String, u8)], value: &str) -> Option<u8> {
+    strings.iter().find(|(s, _)| s == value).map(|(_, q)| *q)
+}
+
+/// Where the type at the start of `value` (after white space) ends.
+fn type_end(value: &str, at: usize) -> Option<(Node, usize)> {
+    let start = at + value[at..].len() - value[at..].trim_start_matches([' ', '\t']).len();
+    let (node, offset) = phpdoc::parse_prefix(&value[start..]).ok()?;
+    Some((node, start + offset))
+}
+
+/// The tokens of `value` from `at`, white space left out, each with its bytes made absolute.
+fn tokens_from(value: &str, at: usize) -> Vec<parser::Tok> {
+    parser::tokenize(&value[at..])
+        .into_iter()
+        .filter(|t| t.ty != t::HORIZONTAL_WS)
+        .map(|t| parser::Tok {
+            ty: t.ty,
+            start: at + t.start,
+            end: at + t.end,
+        })
+        .collect()
+}
+
+/// `parseMethodTagValue()` on `value`: where its description starts, the preposition of each template, and the quote
+/// of each string in the parameters' defaults.
+fn scan_method(value: &str) -> Option<(usize, Vec<String>, Vec<u8>)> {
+    let (first, mut end) = type_end(value, 0)?;
+    if first == Node::Ident("static".into()) {
+        end = type_end(value, end)?.1;
+    }
+    let toks = tokens_from(value, end);
+    let mut i = usize::from(toks[0].ty == t::IDENTIFIER);
+    let text = |tok: &parser::Tok| &value[tok.start..tok.end];
+    // the tokens of each bracketed run, split at its commas: `<...>`, then `(...)`
+    let run = |open: u8, close: u8, i: &mut usize| -> Vec<Vec<parser::Tok>> {
+        let mut parts = vec![Vec::new()];
+        if toks[*i].ty != open {
+            return Vec::new();
+        }
+        *i += 1;
+        let mut depth = 1;
+        loop {
+            let tok = toks[*i];
+            *i += 1;
+            match tok.ty {
+                t::OPEN_PARENTHESES | t::OPEN_ANGLE_BRACKET | t::OPEN_SQUARE_BRACKET | t::OPEN_CURLY_BRACKET => depth += 1,
+                t::CLOSE_PARENTHESES | t::CLOSE_ANGLE_BRACKET | t::CLOSE_SQUARE_BRACKET | t::CLOSE_CURLY_BRACKET => depth -= 1,
+                t::COMMA if depth == 1 => {
+                    parts.push(Vec::new());
+                    continue;
+                }
+                _ => {}
+            }
+            if depth == 0 && tok.ty == close || *i == toks.len() {
+                return parts;
+            }
+            parts.last_mut().unwrap().push(tok);
+        }
+    };
+    let prepositions = run(t::OPEN_ANGLE_BRACKET, t::CLOSE_ANGLE_BRACKET, &mut i)
+        .iter()
+        .map(|part| {
+            let found = part.iter().find(|tok| tok.ty == t::IDENTIFIER && matches!(text(tok), "as" | "of"));
+            found.map_or("of", |tok| text(tok)).to_string()
+        })
+        .collect();
+    let mut quotes = Vec::new();
+    for part in run(t::OPEN_PARENTHESES, t::CLOSE_PARENTHESES, &mut i) {
+        let mut depth = 0;
+        let mut default = false;
+        for tok in part {
+            match tok.ty {
+                t::OPEN_PARENTHESES | t::OPEN_ANGLE_BRACKET | t::OPEN_SQUARE_BRACKET | t::OPEN_CURLY_BRACKET => depth += 1,
+                t::CLOSE_PARENTHESES | t::CLOSE_ANGLE_BRACKET | t::CLOSE_SQUARE_BRACKET | t::CLOSE_CURLY_BRACKET => depth -= 1,
+                t::EQUAL if depth == 0 => default = true,
+                t::SINGLE_QUOTED_STRING | t::DOUBLE_QUOTED_STRING if default => quotes.push(value.as_bytes()[tok.start]),
+                _ => {}
+            }
+        }
+    }
+    Some((toks.get(i.checked_sub(1)?)?.end, prepositions, quotes))
+}
+
+/// `parseAssertTagValue()` on `value`: where its description starts.
+fn scan_assert(value: &str) -> Option<usize> {
+    let at = value.len() - value.trim_start_matches([' ', '\t', '!', '=']).len();
+    let (_, end) = type_end(value, at)?;
+    let toks = tokens_from(value, end);
+    let mut i = 1;
+    if toks[i].ty == t::ARROW {
+        i += 2;
+        if toks[i].ty == t::OPEN_PARENTHESES {
+            i += 2;
+        }
+    }
+    Some(toks[i - 1].end)
 }
 
 /// The value of the tag `name` from `from` to `to` (bytes of the doc), as `DoctrineAnnotationDecorator` leaves it;
@@ -686,14 +948,12 @@ fn tag_value(
             // a value its parser rejects is an `InvalidTagValueNode`, which the decorator makes an annotation of the
             // tag's name; a parsed `@method` and its kin keep their own value node
             let doc = format!("/** {} */", &text[from - name.len()..to]);
-            let tag = phpdoc::tags(&doc).and_then(|tags| tags.into_iter().next());
-            match tag.as_ref().map(|t| &t.value) {
-                Some(phpdoc::TagValue::Invalid(..)) => {
-                    let description = generic_value(text, tokens, from, to);
-                    process_doctrine(bare, description, None, resolve_tag, narrow)
-                }
-                _ => Some(Value::Other(tag.map(|t| other_idents(&t)).unwrap_or_default())),
+            let tag = phpdoc::tags(&doc)?.into_iter().next()?;
+            if let phpdoc::TagValue::Invalid(..) = tag.value {
+                let description = generic_value(text, tokens, from, to);
+                return process_doctrine(bare, description, None, resolve_tag, narrow);
             }
+            other(tag, &text[from..to], |at| generic_value(text, tokens, from + at, to).replace('\n', "\n * "))
         }
         parser::Value::Invalid(description) => process_doctrine(bare, description, None, resolve_tag, narrow),
         parser::Value::Doctrine { args, description } => {
@@ -885,7 +1145,8 @@ fn print_child(child: &Child) -> Option<String> {
     let name = child.tag.as_deref()?;
     match &child.value {
         Value::Typed(typed) => {
-            let ty = |i: usize| -> Option<String> { Some(TypeNode::from_parsed(&typed.types[i])?.to_string()) };
+            let quote = |v: &str| quote_of(&typed.strings, v);
+            let ty = |i: usize| -> Option<String> { Some(TypeNode::from_parsed_all(&typed.types[i], &quote)?.to_string()) };
             let description = &typed.description;
             let value = match &typed.form {
                 Form::Param {
@@ -917,6 +1178,7 @@ fn print_child(child: &Child) -> Option<String> {
             (true, true) => format!("{name}()"),
             (true, false) => name.to_string(),
         }),
+        Value::Other(other) => Some(format!("{name} {}", other.print()?).trim().to_string()),
         _ => None,
     }
 }
@@ -964,10 +1226,21 @@ fn typed(text: &str, tokens: &[parser::Tok], name: &str, from: usize, to: usize)
                 break;
             }
         }
-        // a lower bound or a default Pun does not read
-        let next = &value[skip(at)..];
-        if next.starts_with("super ") || next.starts_with('=') {
-            return None;
+        // a lower bound and a default, parsed: `SpacingAwareTemplateTagValueNode` keeps neither, so they are neither
+        // traversed nor printed
+        let ident_char = |c: u8| c.is_ascii_alphanumeric() || matches!(c, b'_' | b'-' | b'\\') || c >= 0x80;
+        for word in ["super", "="] {
+            let next = skip(at);
+            let after = &value[next..];
+            let found = match word {
+                "super" => after.starts_with(word) && !after[5..].bytes().next().is_some_and(ident_char),
+                _ => after.starts_with('=') && !after.starts_with("=>"),
+            };
+            if found {
+                let from = skip(next + word.len());
+                let (_, offset) = phpdoc::parse_prefix(&value[from..]).ok()?;
+                at = from + value[from..from + offset].trim_end_matches([' ', '\t']).len();
+            }
         }
         (
             Form::Template {
@@ -1048,6 +1321,7 @@ fn typed(text: &str, tokens: &[parser::Tok], name: &str, from: usize, to: usize)
         form,
         types,
         description,
+        strings: strings_of(value),
         replaced: Vec::new(),
     }))
 }

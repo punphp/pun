@@ -49,7 +49,13 @@ impl TypeNode {
     /// The node phpdoc-parser parses from `node`, as Rector's `PhpDocNodeMapper` leaves it. `None` for a node Pun
     /// does not print as Rector does (a quoted string, an object shape, a conditional, an offset access).
     pub fn from_parsed(node: &Node) -> Option<TypeNode> {
-        from_parsed(node, false)
+        from_parsed(node, false, None)
+    }
+
+    /// [`Self::from_parsed`] that prints object shapes, conditionals, offset accesses and quoted strings too; `quote`
+    /// gives the quote a string was written in.
+    pub fn from_parsed_all(node: &Node, quote: &dyn Fn(&str) -> Option<u8>) -> Option<TypeNode> {
+        from_parsed(node, false, Some(quote))
     }
 
     /// `SpacingAwareArrayTypeNode::isGenericArrayCandidate()`'s other half: a union or an array.
@@ -58,34 +64,34 @@ impl TypeNode {
     }
 }
 
-fn from_parsed(node: &Node, in_array: bool) -> Option<TypeNode> {
+fn from_parsed(node: &Node, in_array: bool, all: Option<&dyn Fn(&str) -> Option<u8>>) -> Option<TypeNode> {
     Some(match node {
         Node::Ident(name) => TypeNode::Identifier(name.clone()),
         Node::This => TypeNode::ident("$this"),
-        Node::Nullable(inner) => TypeNode::Nullable(Box::new(from_parsed(inner, false)?)),
+        Node::Nullable(inner) => TypeNode::Nullable(Box::new(from_parsed(inner, false, all)?)),
         // `UnionTypeNodePhpDocNodeVisitor`: a union written in parentheses (inside `[]`, a callable's return) is wrapped
         Node::Union(types) => TypeNode::Union {
             types: types
                 .iter()
-                .map(|t| from_parsed(t, false))
+                .map(|t| from_parsed(t, false, all))
                 .collect::<Option<_>>()?,
             wrapped: in_array,
         },
         Node::Inter(types) => TypeNode::Intersection(
             types
                 .iter()
-                .map(|t| from_parsed(t, false))
+                .map(|t| from_parsed(t, false, all))
                 .collect::<Option<_>>()?,
         ),
         Node::Array(inner) => TypeNode::Array {
-            inner: Box::new(from_parsed(inner, true)?),
+            inner: Box::new(from_parsed(inner, true, all)?),
             generic_parent: false,
         },
         Node::Generic { base, args } => TypeNode::Generic {
             base: base.clone(),
             args: args
                 .iter()
-                .map(|t| from_parsed(t, false))
+                .map(|t| from_parsed(t, false, all))
                 .collect::<Option<_>>()?,
         },
         Node::ArrayShape {
@@ -103,18 +109,18 @@ fn from_parsed(node: &Node, in_array: bool) -> Option<TypeNode> {
                         None => None,
                         Some(ShapeKey::Int(k) | ShapeKey::Ident(k)) => Some(k.clone()),
                         Some(ShapeKey::Fetch(class, name)) => Some(format!("{class}::{name}")),
-                        Some(ShapeKey::Str(_)) => return None,
+                        Some(ShapeKey::Str(k)) => Some(quoted(k, all?(k)?)),
                     };
-                    Some((key, i.optional, from_parsed(&i.value, false)?))
+                    Some((key, i.optional, from_parsed(&i.value, false, all)?))
                 })
                 .collect::<Option<_>>()?,
             sealed: *sealed,
             // `ArrayShapeUnsealedTypeNode`
             unsealed: match unsealed {
                 None => String::new(),
-                Some((None, value)) => format!("<{}>", from_parsed(value, false)?),
+                Some((None, value)) => format!("<{}>", from_parsed(value, false, all)?),
                 Some((Some(key), value)) => {
-                    format!("<{}, {}>", from_parsed(key, false)?, from_parsed(value, false)?)
+                    format!("<{}, {}>", from_parsed(key, false, all)?, from_parsed(value, false, all)?)
                 }
             },
         },
@@ -127,7 +133,7 @@ fn from_parsed(node: &Node, in_array: bool) -> Option<TypeNode> {
                 .map(|p| {
                     let printed = format!(
                         "{} {}{}{}",
-                        from_parsed(&p.ty, false)?,
+                        from_parsed(&p.ty, false, all)?,
                         if p.by_ref { "&" } else { "" },
                         if p.variadic { "..." } else { "" },
                         p.name
@@ -136,12 +142,49 @@ fn from_parsed(node: &Node, in_array: bool) -> Option<TypeNode> {
                 })
                 .collect::<Option<_>>()?,
             // a union return is written in parentheses
-            ret: Box::new(from_parsed(ret, true)?),
+            ret: Box::new(from_parsed(ret, true, all)?),
         },
         // `ConstTypeNode`: a number or `Class::NAME` (`true`, `false`, `null` and `NAME` are identifiers, and an
         // array is no type; a string is printed in its own quotes, which Pun's node does not keep)
         Node::Const(ConstExpr::Int(v) | ConstExpr::Float(v)) => TypeNode::Raw(v.clone()),
         Node::Const(ConstExpr::Fetch(class, name)) => TypeNode::Raw(format!("{class}::{name}")),
+        // `ObjectShapeNode`, `ObjectShapeItemNode`
+        Node::Const(ConstExpr::Str(v)) if all.is_some() => TypeNode::Raw(quoted(v, all?(v)?)),
+        Node::ObjectShape(items) if all.is_some() => TypeNode::Raw(format!(
+            "object{{{}}}",
+            items
+                .iter()
+                .map(|(key, optional, value)| {
+                    let key = all?(key).map_or_else(|| key.clone(), |q| quoted(key, q));
+                    Some(format!("{key}{}: {}", if *optional { "?" } else { "" }, from_parsed(value, false, all)?))
+                })
+                .collect::<Option<Vec<_>>>()?
+                .join(", ")
+        )),
+        // `ConditionalTypeNode`, `ConditionalTypeForParameterNode`
+        Node::Conditional { subject, target, then, otherwise, negated } if all.is_some() => TypeNode::Raw(format!(
+            "({} {} {} ? {} : {})",
+            from_parsed(subject, false, all)?,
+            if *negated { "is not" } else { "is" },
+            from_parsed(target, false, all)?,
+            from_parsed(then, false, all)?,
+            from_parsed(otherwise, false, all)?
+        )),
+        Node::ConditionalForParameter { param, target, then, otherwise, negated } if all.is_some() => TypeNode::Raw(format!(
+            "({param} {} {} ? {} : {})",
+            if *negated { "is not" } else { "is" },
+            from_parsed(target, false, all)?,
+            from_parsed(then, false, all)?,
+            from_parsed(otherwise, false, all)?
+        )),
+        // `OffsetAccessTypeNode`: a callable or a nullable base in parentheses (a union is written in them)
+        Node::OffsetAccess(base, offset) if all.is_some() => {
+            let printed = from_parsed(base, true, all)?;
+            TypeNode::Raw(match **base {
+                Node::Callable { .. } | Node::Nullable(_) => format!("({printed})[{}]", from_parsed(offset, false, all)?),
+                _ => format!("{printed}[{}]", from_parsed(offset, false, all)?),
+            })
+        }
         _ => return None,
     })
 }
@@ -257,4 +300,31 @@ fn print_array(inner: &TypeNode, generic_parent: bool) -> String {
         }
         _ => format!("{printed}[]"),
     }
+}
+
+/// `ConstExprStringNode::__toString()` of `value` written in `quote`: single-quoted with
+/// `addcslashes($value, '\'\\')`, else `escapeDoubleQuotedString()` (`addcslashes()` of line breaks, tabs, `\f`,
+/// `\v`, `$`, `"` and `\\`, then each control character as `\xHH`; a Rust string holds no invalid UTF-8).
+pub(crate) fn quoted(value: &str, quote: u8) -> String {
+    if quote == b'\'' {
+        return format!("'{}'", value.replace('\\', "\\\\").replace('\'', "\\'"));
+    }
+    let mut out = String::from('"');
+    for c in value.chars() {
+        match c {
+            '\n' => out.push_str("\\n"),
+            '\r' => out.push_str("\\r"),
+            '\t' => out.push_str("\\t"),
+            '\x0C' => out.push_str("\\f"),
+            '\x0B' => out.push_str("\\v"),
+            '$' | '"' | '\\' => {
+                out.push('\\');
+                out.push(c);
+            }
+            '\x00'..='\x08' | '\x0E'..='\x1F' => out.push_str(&format!("\\x{:02x}", c as u32)),
+            _ => out.push(c),
+        }
+    }
+    out.push('"');
+    out
 }
