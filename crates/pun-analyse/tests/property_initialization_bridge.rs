@@ -25,6 +25,16 @@ fn called_method_summaries_reach_public_property_consumers() {
     );
 }
 
+#[test]
+fn called_method_compound_consumers_match_complete_phpstan_records() {
+    check_property_initialization_consumers(
+        "called-methods-compound.php",
+        include_str!(
+            "fixtures/property-initialization-bridge/called-methods-compound-phpstan.json"
+        ),
+    );
+}
+
 fn check_property_initialization_consumers(file: &str, capture: &str) {
     let root =
         Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/property-initialization-bridge");

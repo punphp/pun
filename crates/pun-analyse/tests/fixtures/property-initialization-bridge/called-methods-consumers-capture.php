@@ -1,10 +1,11 @@
 <?php
-// php called-methods-consumers-capture.php /absolute/phpstan.phar [output.json]
+// php called-methods-consumers-capture.php /absolute/phpstan.phar [output.json] [fixture.php]
 // Complete diagnostics, PHPStan 2.3.1 / cb3b7e99489b2e3789ee2eec10501cb7a72580ea.
 declare(strict_types=1);
 
 $phar = realpath($argv[1]);
 $root = __DIR__;
+$fixture = $argv[3] ?? 'called-methods-consumers.php';
 foreach (['AMP_CURRENT_THREAD_ID', 'AUGMENT_AGENT', 'AI_AGENT', 'CURSOR_TRACE_ID', 'CURSOR_AGENT',
     'GEMINI_CLI', 'CODEX_SANDBOX', 'CODEX_THREAD_ID', 'OPENCODE_CLIENT', 'OPENCODE', 'CLAUDECODE',
     'CLAUDE_CODE', 'REPL_ID'] as $name) {
@@ -16,7 +17,7 @@ foreach ([0, 1, 4] as $level) {
     foreach (['default' => null, 'on' => true, 'off' => false] as $mode => $advanced) {
         $case = "$level-$mode";
         $config = "parameters:\n    level: $level\n    phpVersion: 80500\n    paths:\n        - "
-            . json_encode("$root/called-methods-consumers.php", JSON_UNESCAPED_SLASHES) . "\n";
+            . json_encode("$root/$fixture", JSON_UNESCAPED_SLASHES) . "\n";
         if ($advanced !== null) {
             $config .= '    checkAdvancedIsset: ' . ($advanced ? 'true' : 'false') . "\n";
         }

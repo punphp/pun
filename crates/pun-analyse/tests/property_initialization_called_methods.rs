@@ -277,3 +277,14 @@ fn called_method_recursive_constructor_discarded_returns_and_final_branches_matc
         None,
     );
 }
+
+#[test]
+fn called_method_compound_reflections_match_phpstan() {
+    check_called_methods(
+        include_bytes!("fixtures/property-initialization-bridge/called-methods-compound.php"),
+        include_str!(
+            "fixtures/property-initialization-bridge/called-methods-compound-markers.json"
+        ),
+        None,
+    );
+}

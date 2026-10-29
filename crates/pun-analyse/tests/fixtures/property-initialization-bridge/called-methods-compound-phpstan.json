@@ -1,0 +1,815 @@
+{
+    "0-default": [],
+    "0-on": [],
+    "0-off": [],
+    "1-default": [
+        {
+            "file": "$ROOT/called-methods-compound.php",
+            "message": "Property CalledMethodCompound\\AOwner::$value in isset() is not nullable nor uninitialized.",
+            "line": 16,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/called-methods-compound.php",
+            "message": "Property CalledMethodCompound\\ZOwner::$value in isset() is not nullable nor uninitialized.",
+            "line": 34,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/called-methods-compound.php",
+            "message": "Property CalledMethodCompound\\AIntersectionWide::$value in isset() is not nullable nor uninitialized.",
+            "line": 48,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/called-methods-compound.php",
+            "message": "Property CalledMethodCompound\\ZIntersectionWide::$value in isset() is not nullable nor uninitialized.",
+            "line": 78,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/called-methods-compound.php",
+            "message": "Property CalledMethodCompound\\VariadicIntersection::$value in isset() is not nullable nor uninitialized.",
+            "line": 138,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/called-methods-compound.php",
+            "message": "Property CalledMethodCompound\\FilteredUnion::$value in isset() is not nullable nor uninitialized.",
+            "line": 152,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/called-methods-compound.php",
+            "message": "Property CalledMethodCompound\\FilteredUnion::$value in isset() is not nullable nor uninitialized.",
+            "line": 155,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/called-methods-compound.php",
+            "message": "Property CalledMethodCompound\\ScalarUnion::$value in isset() is not nullable nor uninitialized.",
+            "line": 163,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/called-methods-compound.php",
+            "message": "Property CalledMethodCompound\\ScalarUnion::$value in isset() is not nullable nor uninitialized.",
+            "line": 166,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        }
+    ],
+    "1-on": [
+        {
+            "file": "$ROOT/called-methods-compound.php",
+            "message": "Property CalledMethodCompound\\AOwner::$value in isset() is not nullable nor uninitialized.",
+            "line": 16,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/called-methods-compound.php",
+            "message": "Property CalledMethodCompound\\ZOwner::$value in isset() is not nullable nor uninitialized.",
+            "line": 34,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/called-methods-compound.php",
+            "message": "Property CalledMethodCompound\\AIntersectionWide::$value in isset() is not nullable nor uninitialized.",
+            "line": 48,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/called-methods-compound.php",
+            "message": "Property CalledMethodCompound\\ZIntersectionWide::$value in isset() is not nullable nor uninitialized.",
+            "line": 78,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/called-methods-compound.php",
+            "message": "Property CalledMethodCompound\\VariadicIntersection::$value in isset() is not nullable nor uninitialized.",
+            "line": 138,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/called-methods-compound.php",
+            "message": "Property CalledMethodCompound\\FilteredUnion::$value in isset() is not nullable nor uninitialized.",
+            "line": 152,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/called-methods-compound.php",
+            "message": "Property CalledMethodCompound\\FilteredUnion::$value in isset() is not nullable nor uninitialized.",
+            "line": 155,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/called-methods-compound.php",
+            "message": "Property CalledMethodCompound\\ScalarUnion::$value in isset() is not nullable nor uninitialized.",
+            "line": 163,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/called-methods-compound.php",
+            "message": "Property CalledMethodCompound\\ScalarUnion::$value in isset() is not nullable nor uninitialized.",
+            "line": 166,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        }
+    ],
+    "1-off": [
+        {
+            "file": "$ROOT/called-methods-compound.php",
+            "message": "Property CalledMethodCompound\\AOwner::$value in isset() is not nullable nor uninitialized.",
+            "line": 16,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/called-methods-compound.php",
+            "message": "Property CalledMethodCompound\\ZOwner::$value in isset() is not nullable nor uninitialized.",
+            "line": 34,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/called-methods-compound.php",
+            "message": "Property CalledMethodCompound\\AIntersectionWide::$value in isset() is not nullable nor uninitialized.",
+            "line": 48,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/called-methods-compound.php",
+            "message": "Property CalledMethodCompound\\ZIntersectionWide::$value in isset() is not nullable nor uninitialized.",
+            "line": 78,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/called-methods-compound.php",
+            "message": "Property CalledMethodCompound\\VariadicIntersection::$value in isset() is not nullable nor uninitialized.",
+            "line": 138,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/called-methods-compound.php",
+            "message": "Property CalledMethodCompound\\FilteredUnion::$value in isset() is not nullable nor uninitialized.",
+            "line": 152,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/called-methods-compound.php",
+            "message": "Property CalledMethodCompound\\FilteredUnion::$value in isset() is not nullable nor uninitialized.",
+            "line": 155,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/called-methods-compound.php",
+            "message": "Property CalledMethodCompound\\ScalarUnion::$value in isset() is not nullable nor uninitialized.",
+            "line": 163,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/called-methods-compound.php",
+            "message": "Property CalledMethodCompound\\ScalarUnion::$value in isset() is not nullable nor uninitialized.",
+            "line": 166,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        }
+    ],
+    "4-default": [
+        {
+            "file": "$ROOT/called-methods-compound.php",
+            "message": "Expression \"isset($this->value)\" on a separate line does not do anything.",
+            "line": 11,
+            "ignorable": true,
+            "identifier": "expr.resultUnused"
+        },
+        {
+            "file": "$ROOT/called-methods-compound.php",
+            "message": "Expression \"isset($this->value)\" on a separate line does not do anything.",
+            "line": 16,
+            "ignorable": true,
+            "identifier": "expr.resultUnused"
+        },
+        {
+            "file": "$ROOT/called-methods-compound.php",
+            "message": "Property CalledMethodCompound\\AOwner::$value in isset() is not nullable nor uninitialized.",
+            "line": 16,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/called-methods-compound.php",
+            "message": "Expression \"isset($this->value)\" on a separate line does not do anything.",
+            "line": 29,
+            "ignorable": true,
+            "identifier": "expr.resultUnused"
+        },
+        {
+            "file": "$ROOT/called-methods-compound.php",
+            "message": "Expression \"isset($this->value)\" on a separate line does not do anything.",
+            "line": 34,
+            "ignorable": true,
+            "identifier": "expr.resultUnused"
+        },
+        {
+            "file": "$ROOT/called-methods-compound.php",
+            "message": "Property CalledMethodCompound\\ZOwner::$value in isset() is not nullable nor uninitialized.",
+            "line": 34,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/called-methods-compound.php",
+            "message": "Expression \"isset($this->value)\" on a separate line does not do anything.",
+            "line": 48,
+            "ignorable": true,
+            "identifier": "expr.resultUnused"
+        },
+        {
+            "file": "$ROOT/called-methods-compound.php",
+            "message": "Property CalledMethodCompound\\AIntersectionWide::$value in isset() is not nullable nor uninitialized.",
+            "line": 48,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/called-methods-compound.php",
+            "message": "Expression \"isset($this->value)\" on a separate line does not do anything.",
+            "line": 50,
+            "ignorable": true,
+            "identifier": "expr.resultUnused"
+        },
+        {
+            "file": "$ROOT/called-methods-compound.php",
+            "message": "Expression \"isset($this->value)\" on a separate line does not do anything.",
+            "line": 63,
+            "ignorable": true,
+            "identifier": "expr.resultUnused"
+        },
+        {
+            "file": "$ROOT/called-methods-compound.php",
+            "message": "Expression \"isset($this->value)\" on a separate line does not do anything.",
+            "line": 65,
+            "ignorable": true,
+            "identifier": "expr.resultUnused"
+        },
+        {
+            "file": "$ROOT/called-methods-compound.php",
+            "message": "Expression \"isset($this->value)\" on a separate line does not do anything.",
+            "line": 78,
+            "ignorable": true,
+            "identifier": "expr.resultUnused"
+        },
+        {
+            "file": "$ROOT/called-methods-compound.php",
+            "message": "Property CalledMethodCompound\\ZIntersectionWide::$value in isset() is not nullable nor uninitialized.",
+            "line": 78,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/called-methods-compound.php",
+            "message": "Expression \"isset($this->value)\" on a separate line does not do anything.",
+            "line": 80,
+            "ignorable": true,
+            "identifier": "expr.resultUnused"
+        },
+        {
+            "file": "$ROOT/called-methods-compound.php",
+            "message": "Expression \"isset($this->value)\" on a separate line does not do anything.",
+            "line": 93,
+            "ignorable": true,
+            "identifier": "expr.resultUnused"
+        },
+        {
+            "file": "$ROOT/called-methods-compound.php",
+            "message": "Expression \"isset($this->value)\" on a separate line does not do anything.",
+            "line": 95,
+            "ignorable": true,
+            "identifier": "expr.resultUnused"
+        },
+        {
+            "file": "$ROOT/called-methods-compound.php",
+            "message": "Expression \"isset($this->value)\" on a separate line does not do anything.",
+            "line": 108,
+            "ignorable": true,
+            "identifier": "expr.resultUnused"
+        },
+        {
+            "file": "$ROOT/called-methods-compound.php",
+            "message": "Expression \"isset($this->value)\" on a separate line does not do anything.",
+            "line": 110,
+            "ignorable": true,
+            "identifier": "expr.resultUnused"
+        },
+        {
+            "file": "$ROOT/called-methods-compound.php",
+            "message": "Expression \"isset($this->value)\" on a separate line does not do anything.",
+            "line": 123,
+            "ignorable": true,
+            "identifier": "expr.resultUnused"
+        },
+        {
+            "file": "$ROOT/called-methods-compound.php",
+            "message": "Expression \"isset($this->value)\" on a separate line does not do anything.",
+            "line": 125,
+            "ignorable": true,
+            "identifier": "expr.resultUnused"
+        },
+        {
+            "file": "$ROOT/called-methods-compound.php",
+            "message": "Expression \"isset($this->value)\" on a separate line does not do anything.",
+            "line": 138,
+            "ignorable": true,
+            "identifier": "expr.resultUnused"
+        },
+        {
+            "file": "$ROOT/called-methods-compound.php",
+            "message": "Property CalledMethodCompound\\VariadicIntersection::$value in isset() is not nullable nor uninitialized.",
+            "line": 138,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/called-methods-compound.php",
+            "message": "Expression \"isset($this->value)\" on a separate line does not do anything.",
+            "line": 140,
+            "ignorable": true,
+            "identifier": "expr.resultUnused"
+        },
+        {
+            "file": "$ROOT/called-methods-compound.php",
+            "message": "Expression \"isset($this->value)\" on a separate line does not do anything.",
+            "line": 152,
+            "ignorable": true,
+            "identifier": "expr.resultUnused"
+        },
+        {
+            "file": "$ROOT/called-methods-compound.php",
+            "message": "Property CalledMethodCompound\\FilteredUnion::$value in isset() is not nullable nor uninitialized.",
+            "line": 152,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/called-methods-compound.php",
+            "message": "Property CalledMethodCompound\\FilteredUnion::$value in isset() is not nullable nor uninitialized.",
+            "line": 155,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/called-methods-compound.php",
+            "message": "Expression \"isset($this->value)\" on a separate line does not do anything.",
+            "line": 163,
+            "ignorable": true,
+            "identifier": "expr.resultUnused"
+        },
+        {
+            "file": "$ROOT/called-methods-compound.php",
+            "message": "Property CalledMethodCompound\\ScalarUnion::$value in isset() is not nullable nor uninitialized.",
+            "line": 163,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/called-methods-compound.php",
+            "message": "Property CalledMethodCompound\\ScalarUnion::$value in isset() is not nullable nor uninitialized.",
+            "line": 166,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        }
+    ],
+    "4-on": [
+        {
+            "file": "$ROOT/called-methods-compound.php",
+            "message": "Expression \"isset($this->value)\" on a separate line does not do anything.",
+            "line": 11,
+            "ignorable": true,
+            "identifier": "expr.resultUnused"
+        },
+        {
+            "file": "$ROOT/called-methods-compound.php",
+            "message": "Expression \"isset($this->value)\" on a separate line does not do anything.",
+            "line": 16,
+            "ignorable": true,
+            "identifier": "expr.resultUnused"
+        },
+        {
+            "file": "$ROOT/called-methods-compound.php",
+            "message": "Property CalledMethodCompound\\AOwner::$value in isset() is not nullable nor uninitialized.",
+            "line": 16,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/called-methods-compound.php",
+            "message": "Expression \"isset($this->value)\" on a separate line does not do anything.",
+            "line": 29,
+            "ignorable": true,
+            "identifier": "expr.resultUnused"
+        },
+        {
+            "file": "$ROOT/called-methods-compound.php",
+            "message": "Expression \"isset($this->value)\" on a separate line does not do anything.",
+            "line": 34,
+            "ignorable": true,
+            "identifier": "expr.resultUnused"
+        },
+        {
+            "file": "$ROOT/called-methods-compound.php",
+            "message": "Property CalledMethodCompound\\ZOwner::$value in isset() is not nullable nor uninitialized.",
+            "line": 34,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/called-methods-compound.php",
+            "message": "Expression \"isset($this->value)\" on a separate line does not do anything.",
+            "line": 48,
+            "ignorable": true,
+            "identifier": "expr.resultUnused"
+        },
+        {
+            "file": "$ROOT/called-methods-compound.php",
+            "message": "Property CalledMethodCompound\\AIntersectionWide::$value in isset() is not nullable nor uninitialized.",
+            "line": 48,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/called-methods-compound.php",
+            "message": "Expression \"isset($this->value)\" on a separate line does not do anything.",
+            "line": 50,
+            "ignorable": true,
+            "identifier": "expr.resultUnused"
+        },
+        {
+            "file": "$ROOT/called-methods-compound.php",
+            "message": "Expression \"isset($this->value)\" on a separate line does not do anything.",
+            "line": 63,
+            "ignorable": true,
+            "identifier": "expr.resultUnused"
+        },
+        {
+            "file": "$ROOT/called-methods-compound.php",
+            "message": "Expression \"isset($this->value)\" on a separate line does not do anything.",
+            "line": 65,
+            "ignorable": true,
+            "identifier": "expr.resultUnused"
+        },
+        {
+            "file": "$ROOT/called-methods-compound.php",
+            "message": "Expression \"isset($this->value)\" on a separate line does not do anything.",
+            "line": 78,
+            "ignorable": true,
+            "identifier": "expr.resultUnused"
+        },
+        {
+            "file": "$ROOT/called-methods-compound.php",
+            "message": "Property CalledMethodCompound\\ZIntersectionWide::$value in isset() is not nullable nor uninitialized.",
+            "line": 78,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/called-methods-compound.php",
+            "message": "Expression \"isset($this->value)\" on a separate line does not do anything.",
+            "line": 80,
+            "ignorable": true,
+            "identifier": "expr.resultUnused"
+        },
+        {
+            "file": "$ROOT/called-methods-compound.php",
+            "message": "Expression \"isset($this->value)\" on a separate line does not do anything.",
+            "line": 93,
+            "ignorable": true,
+            "identifier": "expr.resultUnused"
+        },
+        {
+            "file": "$ROOT/called-methods-compound.php",
+            "message": "Expression \"isset($this->value)\" on a separate line does not do anything.",
+            "line": 95,
+            "ignorable": true,
+            "identifier": "expr.resultUnused"
+        },
+        {
+            "file": "$ROOT/called-methods-compound.php",
+            "message": "Expression \"isset($this->value)\" on a separate line does not do anything.",
+            "line": 108,
+            "ignorable": true,
+            "identifier": "expr.resultUnused"
+        },
+        {
+            "file": "$ROOT/called-methods-compound.php",
+            "message": "Expression \"isset($this->value)\" on a separate line does not do anything.",
+            "line": 110,
+            "ignorable": true,
+            "identifier": "expr.resultUnused"
+        },
+        {
+            "file": "$ROOT/called-methods-compound.php",
+            "message": "Expression \"isset($this->value)\" on a separate line does not do anything.",
+            "line": 123,
+            "ignorable": true,
+            "identifier": "expr.resultUnused"
+        },
+        {
+            "file": "$ROOT/called-methods-compound.php",
+            "message": "Expression \"isset($this->value)\" on a separate line does not do anything.",
+            "line": 125,
+            "ignorable": true,
+            "identifier": "expr.resultUnused"
+        },
+        {
+            "file": "$ROOT/called-methods-compound.php",
+            "message": "Expression \"isset($this->value)\" on a separate line does not do anything.",
+            "line": 138,
+            "ignorable": true,
+            "identifier": "expr.resultUnused"
+        },
+        {
+            "file": "$ROOT/called-methods-compound.php",
+            "message": "Property CalledMethodCompound\\VariadicIntersection::$value in isset() is not nullable nor uninitialized.",
+            "line": 138,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/called-methods-compound.php",
+            "message": "Expression \"isset($this->value)\" on a separate line does not do anything.",
+            "line": 140,
+            "ignorable": true,
+            "identifier": "expr.resultUnused"
+        },
+        {
+            "file": "$ROOT/called-methods-compound.php",
+            "message": "Expression \"isset($this->value)\" on a separate line does not do anything.",
+            "line": 152,
+            "ignorable": true,
+            "identifier": "expr.resultUnused"
+        },
+        {
+            "file": "$ROOT/called-methods-compound.php",
+            "message": "Property CalledMethodCompound\\FilteredUnion::$value in isset() is not nullable nor uninitialized.",
+            "line": 152,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/called-methods-compound.php",
+            "message": "Property CalledMethodCompound\\FilteredUnion::$value in isset() is not nullable nor uninitialized.",
+            "line": 155,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/called-methods-compound.php",
+            "message": "Expression \"isset($this->value)\" on a separate line does not do anything.",
+            "line": 163,
+            "ignorable": true,
+            "identifier": "expr.resultUnused"
+        },
+        {
+            "file": "$ROOT/called-methods-compound.php",
+            "message": "Property CalledMethodCompound\\ScalarUnion::$value in isset() is not nullable nor uninitialized.",
+            "line": 163,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/called-methods-compound.php",
+            "message": "Property CalledMethodCompound\\ScalarUnion::$value in isset() is not nullable nor uninitialized.",
+            "line": 166,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        }
+    ],
+    "4-off": [
+        {
+            "file": "$ROOT/called-methods-compound.php",
+            "message": "Expression \"isset($this->value)\" on a separate line does not do anything.",
+            "line": 11,
+            "ignorable": true,
+            "identifier": "expr.resultUnused"
+        },
+        {
+            "file": "$ROOT/called-methods-compound.php",
+            "message": "Expression \"isset($this->value)\" on a separate line does not do anything.",
+            "line": 16,
+            "ignorable": true,
+            "identifier": "expr.resultUnused"
+        },
+        {
+            "file": "$ROOT/called-methods-compound.php",
+            "message": "Property CalledMethodCompound\\AOwner::$value in isset() is not nullable nor uninitialized.",
+            "line": 16,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/called-methods-compound.php",
+            "message": "Expression \"isset($this->value)\" on a separate line does not do anything.",
+            "line": 29,
+            "ignorable": true,
+            "identifier": "expr.resultUnused"
+        },
+        {
+            "file": "$ROOT/called-methods-compound.php",
+            "message": "Expression \"isset($this->value)\" on a separate line does not do anything.",
+            "line": 34,
+            "ignorable": true,
+            "identifier": "expr.resultUnused"
+        },
+        {
+            "file": "$ROOT/called-methods-compound.php",
+            "message": "Property CalledMethodCompound\\ZOwner::$value in isset() is not nullable nor uninitialized.",
+            "line": 34,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/called-methods-compound.php",
+            "message": "Expression \"isset($this->value)\" on a separate line does not do anything.",
+            "line": 48,
+            "ignorable": true,
+            "identifier": "expr.resultUnused"
+        },
+        {
+            "file": "$ROOT/called-methods-compound.php",
+            "message": "Property CalledMethodCompound\\AIntersectionWide::$value in isset() is not nullable nor uninitialized.",
+            "line": 48,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/called-methods-compound.php",
+            "message": "Expression \"isset($this->value)\" on a separate line does not do anything.",
+            "line": 50,
+            "ignorable": true,
+            "identifier": "expr.resultUnused"
+        },
+        {
+            "file": "$ROOT/called-methods-compound.php",
+            "message": "Expression \"isset($this->value)\" on a separate line does not do anything.",
+            "line": 63,
+            "ignorable": true,
+            "identifier": "expr.resultUnused"
+        },
+        {
+            "file": "$ROOT/called-methods-compound.php",
+            "message": "Expression \"isset($this->value)\" on a separate line does not do anything.",
+            "line": 65,
+            "ignorable": true,
+            "identifier": "expr.resultUnused"
+        },
+        {
+            "file": "$ROOT/called-methods-compound.php",
+            "message": "Expression \"isset($this->value)\" on a separate line does not do anything.",
+            "line": 78,
+            "ignorable": true,
+            "identifier": "expr.resultUnused"
+        },
+        {
+            "file": "$ROOT/called-methods-compound.php",
+            "message": "Property CalledMethodCompound\\ZIntersectionWide::$value in isset() is not nullable nor uninitialized.",
+            "line": 78,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/called-methods-compound.php",
+            "message": "Expression \"isset($this->value)\" on a separate line does not do anything.",
+            "line": 80,
+            "ignorable": true,
+            "identifier": "expr.resultUnused"
+        },
+        {
+            "file": "$ROOT/called-methods-compound.php",
+            "message": "Expression \"isset($this->value)\" on a separate line does not do anything.",
+            "line": 93,
+            "ignorable": true,
+            "identifier": "expr.resultUnused"
+        },
+        {
+            "file": "$ROOT/called-methods-compound.php",
+            "message": "Expression \"isset($this->value)\" on a separate line does not do anything.",
+            "line": 95,
+            "ignorable": true,
+            "identifier": "expr.resultUnused"
+        },
+        {
+            "file": "$ROOT/called-methods-compound.php",
+            "message": "Expression \"isset($this->value)\" on a separate line does not do anything.",
+            "line": 108,
+            "ignorable": true,
+            "identifier": "expr.resultUnused"
+        },
+        {
+            "file": "$ROOT/called-methods-compound.php",
+            "message": "Expression \"isset($this->value)\" on a separate line does not do anything.",
+            "line": 110,
+            "ignorable": true,
+            "identifier": "expr.resultUnused"
+        },
+        {
+            "file": "$ROOT/called-methods-compound.php",
+            "message": "Expression \"isset($this->value)\" on a separate line does not do anything.",
+            "line": 123,
+            "ignorable": true,
+            "identifier": "expr.resultUnused"
+        },
+        {
+            "file": "$ROOT/called-methods-compound.php",
+            "message": "Expression \"isset($this->value)\" on a separate line does not do anything.",
+            "line": 125,
+            "ignorable": true,
+            "identifier": "expr.resultUnused"
+        },
+        {
+            "file": "$ROOT/called-methods-compound.php",
+            "message": "Expression \"isset($this->value)\" on a separate line does not do anything.",
+            "line": 138,
+            "ignorable": true,
+            "identifier": "expr.resultUnused"
+        },
+        {
+            "file": "$ROOT/called-methods-compound.php",
+            "message": "Property CalledMethodCompound\\VariadicIntersection::$value in isset() is not nullable nor uninitialized.",
+            "line": 138,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/called-methods-compound.php",
+            "message": "Expression \"isset($this->value)\" on a separate line does not do anything.",
+            "line": 140,
+            "ignorable": true,
+            "identifier": "expr.resultUnused"
+        },
+        {
+            "file": "$ROOT/called-methods-compound.php",
+            "message": "Expression \"isset($this->value)\" on a separate line does not do anything.",
+            "line": 152,
+            "ignorable": true,
+            "identifier": "expr.resultUnused"
+        },
+        {
+            "file": "$ROOT/called-methods-compound.php",
+            "message": "Property CalledMethodCompound\\FilteredUnion::$value in isset() is not nullable nor uninitialized.",
+            "line": 152,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/called-methods-compound.php",
+            "message": "Property CalledMethodCompound\\FilteredUnion::$value in isset() is not nullable nor uninitialized.",
+            "line": 155,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/called-methods-compound.php",
+            "message": "Expression \"isset($this->value)\" on a separate line does not do anything.",
+            "line": 163,
+            "ignorable": true,
+            "identifier": "expr.resultUnused"
+        },
+        {
+            "file": "$ROOT/called-methods-compound.php",
+            "message": "Property CalledMethodCompound\\ScalarUnion::$value in isset() is not nullable nor uninitialized.",
+            "line": 163,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        },
+        {
+            "file": "$ROOT/called-methods-compound.php",
+            "message": "Property CalledMethodCompound\\ScalarUnion::$value in isset() is not nullable nor uninitialized.",
+            "line": 166,
+            "ignorable": true,
+            "identifier": "isset.initializedProperty"
+        }
+    ]
+}

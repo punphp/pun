@@ -136,6 +136,9 @@ pub struct MethodResolutionResult {
     pub template_result: TemplateResult,
     /// A list of resolved methods, each with its template result and identifiers.
     pub resolved_methods: Vec<ResolvedMethod>,
+    /// Ordered union / uniquely widest intersection reflection for virtual markers.
+    /// Different declarations tied on width need a shared ordered-intersection carrier.
+    pub(crate) property_initialization_method: Option<MethodIdentifier>,
     /// Undocumented calls handled by `__call` or `__callStatic` whose diagnostics
     /// must wait until return-type providers have had an opportunity to resolve them.
     pub undocumented_methods: Vec<UndocumentedMethod>,
@@ -404,6 +407,35 @@ pub(crate) fn resolve_method_targets_after_receiver<'ctx, 'ast, 'arena, A: Arena
                     }
                 }
 
+                if !context.settings.property_initialization_observations.is_empty()
+                    && matches!(selector, ClassLikeMemberSelector::Identifier(_))
+                    && object_type.types.iter().all(|atomic| matches!(atomic, TAtomic::Object(_)) || atomic.is_null() || atomic.is_never())
+                    && let Some(first) = resolved_methods.first()
+                {
+                    // The work stack visits union members in reverse semantic order.
+                    // Overwrite with each nonempty member: PHPStan filters missing
+                    // methods, then UnionTypeMethodReflection uses its first member.
+                    // Within one member, variadic wins, then parameter count. The
+                    // candidates already have duplicate method identifiers removed.
+                    let rank = |id: MethodIdentifier| {
+                        let metadata = context.codebase.get_method_by_id(&id).unwrap();
+                        (metadata.parameters.iter().any(|parameter| parameter.flags.is_variadic()), metadata.parameters.len())
+                    };
+                    let mut selected = Some(first.method_identifier);
+                    let mut widest = rank(first.method_identifier);
+                    for method in resolved_methods.iter().skip(1) {
+                        let width = rank(method.method_identifier);
+                        if width > widest {
+                            widest = width;
+                            selected = Some(method.method_identifier);
+                        } else if width == widest {
+                            // Mago can reverse the root/intersection order relative
+                            // to PHPStan. Do not invent the first declaration on a tie.
+                            selected = None;
+                        }
+                    }
+                    result.property_initialization_method = selected;
+                }
                 result.resolved_methods.extend(resolved_methods);
             }
         }

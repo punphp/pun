@@ -365,11 +365,15 @@ where
             Some(FunctionLikeIdentifier::Method(_, name)) if name.as_bytes().eq_ignore_ascii_case(b"__construct"))
         && artifacts.get_expression_type(object).is_some_and(crate::property_initialization::has_this_type)
     {
-        method_resolution.resolved_methods.first().map(|method| method.method_identifier).filter(|id| {
+        method_resolution.property_initialization_method.or_else(|| {
+            // Preserve the old unambiguous boundary for carriers whose compound
+            // reflection order is not available (for example array-containing unions).
+            method_resolution.resolved_methods.first().map(|method| method.method_identifier)
+                .filter(|id| method_resolution.resolved_methods.iter().all(|method| method.method_identifier == *id))
+        }).filter(|id| {
             block_context.scope.get_class_like_name().is_some_and(|class| {
                 class.as_bytes().eq_ignore_ascii_case(id.get_class_name().as_bytes())
             })
-                && method_resolution.resolved_methods.iter().all(|method| method.method_identifier == *id)
         })
     } else {
         None
