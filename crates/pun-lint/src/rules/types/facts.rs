@@ -239,6 +239,13 @@ impl Facts {
             .map(|t| t.as_ref())
     }
 
+    /// Whether PHPStan leaves the value at `span` untyped in its full scope as in its native one: inside a trait, a
+    /// value that comes from `$this`.
+    pub fn is_untyped(&self, span: Span) -> bool {
+        let analysis = self.artifacts.get_or_init(|| self.analyse());
+        analysis.untyped.contains(&(span.start as u32, span.end as u32))
+    }
+
     /// The declared return type of the built-in function `call` calls (PHP's own signature, not the stub's
     /// docblock), when it calls one.
     fn builtin_return<'s>(
@@ -482,16 +489,37 @@ impl Facts {
                     if let Node::Method(_) = m
                         && own(m.span())
                     {
-                        let mut writes: Vec<(&[u8], u32, bool)> = Vec::new();
+                        let mut assignments = Vec::new();
                         any_node(m, &mut |a| {
-                            if let Node::Assignment(a) = a
-                                && let Expression::Variable(Variable::Direct(v)) = a.lhs
-                            {
-                                let this =
-                                    a.operator.is_assign() && own(a.span()) && from_this(a.rhs);
-                                writes.push((v.name, a.span().end.offset, this));
+                            if let Node::Assignment(a) = a {
+                                assignments.push(a);
                             }
                         });
+                        let mut writes: Vec<(&[u8], u32, bool)> = Vec::new();
+                        for a in assignments {
+                            // the variables written: one, or those a destructuring (`[$a, $b] = ...`) lists
+                            let mut targets: Vec<&[u8]> = Vec::new();
+                            any_node(Node::Expression(a.lhs), &mut |t| {
+                                if let Node::DirectVariable(v) = t {
+                                    targets.push(v.name);
+                                }
+                            });
+                            if !matches!(a.lhs, Expression::Variable(Variable::Direct(_)) | Expression::Array(_) | Expression::List(_)) {
+                                continue;
+                            }
+                            // a value read from a variable such a value reached last (`$files = [$files]`) is untyped
+                            let mut reads_this = false;
+                            any_node(Node::Expression(a.rhs), &mut |r| {
+                                if let Node::DirectVariable(v) = r {
+                                    let last = (writes.iter())
+                                        .filter(|(name, end, _)| *name == v.name && *end <= v.span.start.offset)
+                                        .max_by_key(|(_, end, _)| *end);
+                                    reads_this |= matches!(last, Some((_, _, true)));
+                                }
+                            });
+                            let this = a.operator.is_assign() && own(a.span()) && (from_this(a.rhs) || reads_this);
+                            writes.extend(targets.into_iter().map(|t| (t, a.span().end.offset, this)));
+                        }
                         if !writes.iter().any(|w| w.2) {
                             return;
                         }

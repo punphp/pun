@@ -75,6 +75,9 @@ pub(crate) fn param_declaration_in(
     php_version: u32,
     order: &[String],
 ) -> Option<String> {
+    if has_array_intersection(t) {
+        return None;
+    }
     let expanded = expand(&t.types)?;
     declaration_of(normalize_bool(union_order(&expanded)), codebase, php_version, order)
 }
@@ -195,6 +198,66 @@ pub(crate) fn doc_order(source: &str, ancestors: &[Node<'_, '_>]) -> Vec<String>
         .collect()
 }
 
+/// The values' types of a constant array in the order PHPStan's `ConstantArrayType` keeps them, the order its keys
+/// were set: the literal's own where `expr` is one; Mago's where its keys are integers. `None` for a constant array
+/// with string keys that is not a literal, whose order Mago does not keep (it sorts the keys).
+pub(crate) fn constant_values<'ast, 'arena>(
+    facts: &Facts,
+    ancestors: &[Node<'ast, 'arena>],
+    expr: &'ast Expression<'arena>,
+    values: &[TUnion],
+) -> Option<Vec<TAtomic>> {
+    use mago_syntax::cst::ArrayElement;
+    let flat: Vec<TAtomic> = values.iter().flat_map(|v| v.types.iter().cloned()).collect();
+    // a variable last assigned a literal with the same values
+    let source = assigned(ancestors, expr);
+    let expr = if std::ptr::eq(source, expr) {
+        expr
+    } else {
+        match constant_values(facts, ancestors, source, values) {
+            Some(types) if types.len() == flat.len()
+                && types.iter().all(|t| flat.contains(t)) =>
+            {
+                return Some(types);
+            }
+            _ => expr,
+        }
+    };
+    let elements: Vec<&ArrayElement<'_>> = match crate::syntax::unparenthesize(expr) {
+        Expression::Array(a) => a.elements.iter().collect(),
+        Expression::LegacyArray(a) => a.elements.iter().collect(),
+        _ => {
+            let string_keyed = type_of(facts, expr).is_some_and(|t| {
+                t.types.iter().any(|a| {
+                    matches!(a, TAtomic::Array(TArray::Keyed(k))
+                        if k.known_items.iter().flat_map(|i| i.keys()).any(|key| !key.is_integer()))
+                })
+            });
+            return (!string_keyed || flat.iter().all(|t| *t == flat[0])).then_some(flat);
+        }
+    };
+    let mut out = Vec::new();
+    for element in elements {
+        let value = match element {
+            ArrayElement::KeyValue(e) => e.value,
+            ArrayElement::Value(e) => e.value,
+            _ => return None,
+        };
+        out.extend(type_of(facts, value)?.types.iter().cloned());
+    }
+    Some(out)
+}
+
+/// Whether an array's item type has an array that is not a constant one but a list or non-empty: PHPStan has
+/// `ArrayType&AccessoryArrayListType` (or `&NonEmptyArrayType`) there, which Rector's `NodeTypeCorrector` removes from
+/// the type of an expression but not from its items, and `IntersectionTypeMapper` maps an intersection that is not of
+/// objects to nothing (checked with Rector 2.6.1).
+fn has_array_intersection(item: &TUnion) -> bool {
+    item.types
+        .iter()
+        .any(|t| matches!(t, TAtomic::Array(a) if !a.is_sealed() && (matches!(a, TArray::List(_)) || a.is_non_empty())))
+}
+
 /// The members of a union as PHPStan has them: a template type is its bound, `array-key` is `int|string` and
 /// `scalar` is `int|float|string|bool`. `None` for a template bound that is `mixed`.
 fn expand(types: &[TAtomic]) -> Option<Vec<TAtomic>> {
@@ -277,6 +340,35 @@ fn member(t: &TAtomic, codebase: &CodebaseMetadata, php_version: u32) -> Option<
         {
             Some("self".to_string())
         }
+        // `TypeCombinator::intersect()` keeps of `A&B` the one that is a subtype of the other
+        TAtomic::Object(TObject::Named(named)) if !named.is_this && !named.is_static && named.intersection_types.is_some() => {
+            let plain = |n: &mago_codex::ttype::atomic::object::named::TNamedObject| {
+                let mut n = n.clone();
+                n.intersection_types = None;
+                n
+            };
+            let mut all = vec![plain(named)];
+            for other in named.intersection_types.iter().flat_map(|o| o.iter()) {
+                let TAtomic::Object(TObject::Named(other)) = other else {
+                    return atomic_declaration(t, codebase, php_version);
+                };
+                all.push(plain(other));
+            }
+            let narrower = |n: &&mago_codex::ttype::atomic::object::named::TNamedObject| {
+                !all.iter().any(|m| {
+                    !m.name.as_bytes().eq_ignore_ascii_case(n.name.as_bytes())
+                        && codebase.is_instance_of(m.name.as_bytes(), n.name.as_bytes())
+                })
+            };
+            let kept: Vec<_> = all.iter().filter(narrower).cloned().collect();
+            let Some((first, rest)) = kept.split_first() else {
+                return atomic_declaration(t, codebase, php_version);
+            };
+            let mut first = first.clone();
+            first.intersection_types = (!rest.is_empty())
+                .then(|| Box::new(rest.iter().map(|r| TAtomic::Object(TObject::Named(r.clone()))).collect()));
+            atomic_declaration(&TAtomic::Object(TObject::Named(first)), codebase, php_version)
+        }
         TAtomic::Object(TObject::Named(named)) if named.is_static => {
             let mut plain = named.clone();
             plain.is_static = false;
@@ -311,18 +403,284 @@ pub(crate) enum ArrayShape {
 
 /// The array shape of PHPStan's `getType()` of `expr`. A non-empty array counts only where a docblock makes it one:
 /// Mago also knows it of built-in calls (`explode()`, `Enum::cases()`) and literals, where PHPStan does not.
-pub(crate) fn array_shape_of(facts: &Facts, expr: &Expression<'_>) -> Option<ArrayShape> {
-    let t = type_of(facts, expr)?;
+pub(crate) fn array_shape_of(
+    facts: &Facts,
+    ancestors: &[Node<'_, '_>],
+    expr: &Expression<'_>,
+) -> Option<ArrayShape> {
+    // `array_slice($array, 0)` with a positive length or none keeps a non-empty array non-empty
+    if let Some(sliced) = head_slice(expr)
+        && matches!(array_shape_of(facts, ancestors, sliced), Some(ArrayShape::General(None)))
+    {
+        return Some(ArrayShape::General(None));
+    }
     let span = crate::syntax::node_span(crate::syntax::unparenthesize(expr));
+    // a value PHPStan does not type, or a literal array of one, is (an array of) `mixed`
+    let literal = match crate::syntax::unparenthesize(expr) {
+        Expression::Array(a) => a.elements.iter().collect(),
+        Expression::LegacyArray(a) => a.elements.iter().collect(),
+        _ => Vec::new(),
+    };
+    if facts.is_untyped(span)
+        || literal.iter().filter_map(|e| e.get_value()).any(|v| facts.is_untyped(crate::syntax::node_span(v)))
+    {
+        return None;
+    }
+    let t = type_of(facts, expr)?;
     let native_non_empty = facts.native_type(span).is_some_and(|n| {
         n.types
             .iter()
             .any(|a| matches!(a, TAtomic::Array(a) if a.is_non_empty()))
     });
-    if non_empty_call(expr) {
-        return Some(ArrayShape::General(None));
+    if cased_explode(ancestors, expr) {
+        return Some(ArrayShape::General(Some(TUnion::from_vec(vec![TAtomic::Scalar(TScalar::string())]))));
     }
-    array_shape(t, !native_non_empty)
+    if non_empty_call(expr) {
+        return Some(ArrayShape::General(match array_shape(t, false) {
+            Some(ArrayShape::General(Some(item))) => accessory_string(&item),
+            _ => None,
+        }));
+    }
+    array_shape(t, !native_non_empty || emptiness_checked(ancestors, expr))
+}
+
+/// Whether `expr` is a variable that an `empty()` or `!` before it in its function tests, which narrows it in PHPStan
+/// as in Mago (an early return on it leaves it non-empty).
+fn emptiness_checked(ancestors: &[Node<'_, '_>], expr: &Expression<'_>) -> bool {
+    use mago_syntax::cst::{UnaryPrefixOperator, Variable};
+    let Expression::Variable(Variable::Direct(variable)) = crate::syntax::unparenthesize(expr) else { return false };
+    let Some(scope) = ancestors.iter().rev().find(|a| {
+        matches!(a, Node::Function(_) | Node::Method(_) | Node::Closure(_) | Node::ArrowFunction(_))
+    }) else {
+        return false;
+    };
+    let at = crate::syntax::node_span(expr).start;
+    let is_it = |e: &Expression<'_>| {
+        matches!(crate::syntax::unparenthesize(e), Expression::Variable(Variable::Direct(v)) if v.name == variable.name)
+    };
+    let mut checked = false;
+    traverse(*scope, &mut |node| {
+        checked |= crate::syntax::node_span(&node).end <= at
+            && match node {
+                Node::EmptyConstruct(e) => is_it(e.value),
+                Node::UnaryPrefix(u) => matches!(u.operator, UnaryPrefixOperator::Not(_)) && is_it(u.operand),
+                _ => false,
+            };
+        Flow::Continue
+    });
+    checked
+}
+
+/// `AccessoryNonEmptyArrayTypeCorrector`: the item type of a non-empty array whose items are strings with an accessory
+/// (`non-empty-string`, `lowercase-string`, ...: an `IntersectionType` in PHPStan) is `string`, of others `mixed`.
+/// A literal `''` may be among them (Mago's lowercase of a string that may be empty).
+fn accessory_string(item: &TUnion) -> Option<TUnion> {
+    use mago_codex::ttype::atomic::scalar::string::{TStringCasing, TStringLiteral};
+    let accessory = |a: &TAtomic| match a {
+        TAtomic::Scalar(TScalar::String(s)) => match &s.literal {
+            None => s.is_non_empty || s.is_truthy || s.is_numeric || s.casing != TStringCasing::Unspecified,
+            Some(TStringLiteral::Value(v)) => v.is_empty(),
+            Some(_) => false,
+        },
+        _ => false,
+    };
+    (item.types.iter().all(accessory)
+        && item.types.iter().any(|a| matches!(a, TAtomic::Scalar(TScalar::String(s)) if s.literal.is_none())))
+    .then(|| TUnion::from_vec(vec![TAtomic::Scalar(TScalar::string())]))
+}
+
+/// The members of the item type of the array `$this->name` reads, as written in the property's docblock (`@var
+/// array<int, string|int|null>`), each a lowercase short name, with `array` for an array type and `string` for a
+/// class string: PHPStan keeps a declared union in the order written, where Mago sorts it. `None` where the property
+/// is not one array or a member is not a plain type.
+fn declared_items(facts: &Facts, ancestors: &[Node<'_, '_>], expr: &Expression<'_>) -> Option<Vec<String>> {
+    use mago_syntax::cst::{Access, ClassLikeMemberSelector, Variable};
+    let Expression::Access(Access::Property(fetch)) = crate::syntax::unparenthesize(expr) else { return None };
+    let (Expression::Variable(Variable::Direct(this)), ClassLikeMemberSelector::Identifier(name)) =
+        (crate::syntax::unparenthesize(fetch.object), &fetch.property)
+    else {
+        return None;
+    };
+    if this.name != b"$this" {
+        return None;
+    }
+    let class = super::class_scope(ancestors)?.name?;
+    let property = facts.documented().get_declaring_property(class.as_bytes(), &[b"$", name.value].concat())?;
+    let span = property.type_metadata.as_ref()?.span;
+    let source = facts.source_of(span.file_id)?;
+    let text = source.get(span.start.offset as usize..span.end.offset as usize)?.trim();
+    let item = match text.strip_suffix("[]") {
+        Some(item) => item.trim().trim_start_matches('(').trim_end_matches(')'),
+        None => {
+            let (head, rest) = text.split_once('<')?;
+            if !["array", "list", "non-empty-array", "non-empty-list"].contains(&head.trim().to_ascii_lowercase().as_str()) {
+                return None;
+            }
+            top_level(rest.strip_suffix('>')?, ',').pop()?
+        }
+    };
+    top_level(item, '|').into_iter().map(declared_member).collect()
+}
+
+/// `text` split at each `separator` outside brackets.
+fn top_level(text: &str, separator: char) -> Vec<&str> {
+    let mut parts = Vec::new();
+    let (mut depth, mut start) = (0i32, 0);
+    for (i, c) in text.char_indices() {
+        match c {
+            '<' | '(' | '{' | '[' => depth += 1,
+            '>' | ')' | '}' | ']' => depth -= 1,
+            _ if c == separator && depth == 0 => {
+                parts.push(text[start..i].trim());
+                start = i + 1;
+            }
+            _ => {}
+        }
+    }
+    parts.push(text[start..].trim());
+    parts
+}
+
+/// A member of a docblock union as [`declared_items`] names it.
+fn declared_member(member: &str) -> Option<String> {
+    let lower = member.to_ascii_lowercase();
+    if lower.ends_with("[]") || ["array<", "list<", "non-empty-array<", "non-empty-list<"].iter().any(|p| lower.starts_with(p)) {
+        return Some("array".to_string());
+    }
+    if member.contains(['<', '(', '{', '&', ' ', '\'', '"']) {
+        return None;
+    }
+    Some(
+        match lower.as_str() {
+            "integer" => "int",
+            "boolean" => "bool",
+            "double" => "float",
+            "class-string" | "non-empty-string" => "string",
+            "array" | "list" => "array",
+            other => other.rsplit('\\').next().unwrap_or(other),
+        }
+        .to_string(),
+    )
+}
+
+/// [`param_declaration`] of `item`, the item type of the array `expr`, its members in the declared order where
+/// [`declared_items`] names each of them.
+pub(crate) fn item_declaration(
+    facts: &Facts,
+    ancestors: &[Node<'_, '_>],
+    expr: &Expression<'_>,
+    item: &TUnion,
+    php_version: u32,
+) -> Option<String> {
+    if has_array_intersection(item) {
+        return None;
+    }
+    let declaration = param_declaration(item, &facts.codebase, php_version)?;
+    let names: Vec<&str> = declaration.split('|').collect();
+    let key = |n: &str| n.rsplit('\\').next().unwrap_or(n).to_ascii_lowercase();
+    let Some(order) = declared_items(facts, ancestors, expr) else { return Some(declaration) };
+    if names.len() < 2 {
+        return Some(declaration);
+    }
+    let mut ordered: Vec<&str> = Vec::new();
+    // `TypeCombinator::union` puts `null` last
+    for o in order.iter().filter(|o| *o != "null").chain(order.iter().filter(|o| *o == "null")) {
+        if let Some(n) = names.iter().find(|n| key(n) == *o)
+            && !ordered.contains(n)
+        {
+            ordered.push(n);
+        }
+    }
+    Some(if ordered.len() == names.len() { ordered.join("|") } else { declaration })
+}
+
+/// The array of `array_slice($array, 0)` or `array_slice($array, 0, $n)` with a positive literal `$n`.
+fn head_slice<'a>(expr: &'a Expression<'a>) -> Option<&'a Expression<'a>> {
+    use crate::rules::lint_b_helpers::value;
+    use crate::rules::rector_code_quality::named;
+    use mago_syntax::cst::{Call, Literal};
+    let Expression::Call(Call::Function(call)) = crate::syntax::unparenthesize(expr) else { return None };
+    let args: Vec<&Expression<'_>> = call.argument_list.arguments.iter().map(value).collect();
+    let int = |i: usize| match args.get(i).map(|e| crate::syntax::unparenthesize(e)) {
+        Some(Expression::Literal(Literal::Integer(i))) => i.value,
+        _ => None,
+    };
+    (named(call, "array_slice") && int(1) == Some(0) && (args.len() == 2 || int(2).is_some_and(|n| n > 0)))
+        .then(|| args[0])
+}
+/// The value of `expr` where it is a variable: the right-hand side of its last `=` before `expr` in its function.
+fn assigned<'ast, 'arena>(
+    ancestors: &[Node<'ast, 'arena>],
+    expr: &'ast Expression<'arena>,
+) -> &'ast Expression<'arena> {
+    use mago_syntax::cst::{AssignmentOperator, Variable};
+    let Expression::Variable(Variable::Direct(variable)) = crate::syntax::unparenthesize(expr) else { return expr };
+    let Some(scope) = ancestors.iter().rev().find(|a| {
+        matches!(a, Node::Function(_) | Node::Method(_) | Node::Closure(_) | Node::ArrowFunction(_))
+    }) else {
+        return expr;
+    };
+    let at = crate::syntax::node_span(expr).start;
+    let mut value = expr;
+    traverse(*scope, &mut |node| {
+        if let Node::Assignment(a) = node
+            && matches!(a.operator, AssignmentOperator::Assign(_))
+            && crate::syntax::node_span(&node).end <= at
+            && matches!(crate::syntax::unparenthesize(a.lhs), Expression::Variable(Variable::Direct(v)) if v.name == variable.name)
+        {
+            value = a.rhs;
+        }
+        Flow::Continue
+    });
+    value
+}
+
+/// Whether `expr` is (a variable assigned) `explode()` without a limit of a lowercase or uppercase string
+/// (`strtolower()` and the like, or a variable assigned one): PHPStan's `ExplodeFunctionDynamicReturnTypeExtension`
+/// gives it `non-empty-list<lowercase-string>`, whose item `AccessoryNonEmptyArrayTypeCorrector` makes `string`.
+/// Not where a `str_contains()`, `str_starts_with()` or `str_ends_with()` of the haystack proves the delimiter is
+/// there: the extension then gives an unsealed constant array. PHPStan finds that call only by its fully qualified
+/// name, so an unqualified one counts outside a namespace only (checked with Rector 2.6.1).
+fn cased_explode<'ast, 'arena>(ancestors: &[Node<'ast, 'arena>], expr: &'ast Expression<'arena>) -> bool {
+    use crate::rules::lint_b_helpers::value;
+    use crate::rules::rector_code_quality::named;
+    use mago_syntax::cst::{Call, FunctionCall, Identifier, Variable};
+    fn call_of<'b>(e: &'b Expression<'b>) -> Option<&'b FunctionCall<'b>> {
+        match crate::syntax::unparenthesize(e) {
+            Expression::Call(Call::Function(call)) => Some(call),
+            _ => None,
+        }
+    }
+    let Some(call) = call_of(assigned(ancestors, expr)).filter(|c| named(c, "explode")) else { return false };
+    let args: Vec<&Expression<'_>> = call.argument_list.arguments.iter().map(value).collect();
+    let [_, haystack] = args.as_slice() else { return false };
+    let cased = call_of(assigned(ancestors, haystack)).is_some_and(|c| {
+        ["strtolower", "mb_strtolower", "strtoupper", "mb_strtoupper"].iter().any(|n| named(c, n))
+    });
+    if !cased {
+        return false;
+    }
+    let Expression::Variable(Variable::Direct(variable)) = crate::syntax::unparenthesize(haystack) else { return true };
+    let Some(scope) = ancestors.iter().rev().find(|a| {
+        matches!(a, Node::Function(_) | Node::Method(_) | Node::Closure(_) | Node::ArrowFunction(_))
+    }) else {
+        return true;
+    };
+    let global = !ancestors.iter().any(|a| matches!(a, Node::Namespace(_)));
+    let mut proven = false;
+    traverse(*scope, &mut |node| {
+        if let Node::FunctionCall(c) = node
+            && ["str_contains", "str_starts_with", "str_ends_with"].iter().any(|n| named(c, n))
+            && (global || matches!(c.function, Expression::Identifier(Identifier::FullyQualified(_))))
+            && c.argument_list.arguments.iter().next().is_some_and(|a| {
+                matches!(crate::syntax::unparenthesize(value(a)), Expression::Variable(Variable::Direct(v)) if v.name == variable.name)
+            })
+        {
+            proven = true;
+        }
+        Flow::Continue
+    });
+    !proven
 }
 
 /// A call PHPStan's return type extensions make a non-empty list where Mago gives a list (checked with Rector 2.6.1):
@@ -405,7 +763,7 @@ fn one_array_shape(array: &TArray, non_empty: bool) -> Option<ArrayShape> {
                 ArrayShape::Constant(known.values().map(|(_, v)| v.clone()).collect())
             }
             Some(_) => return None,
-            None if list.non_empty && non_empty => ArrayShape::General(None),
+            None if list.non_empty && non_empty => ArrayShape::General(accessory_string(&list.element_type)),
             None => ArrayShape::General(Some((*list.element_type).clone())),
         },
         TArray::Keyed(keyed) => match (&keyed.known_items, &keyed.parameters) {
@@ -413,7 +771,7 @@ fn one_array_shape(array: &TArray, non_empty: bool) -> Option<ArrayShape> {
                 ArrayShape::Constant(known.iter().flat_map(|k| k.values()).map(|(_, v)| v.clone()).collect())
             }
             (Some(_), Some(_)) => return None,
-            (None, Some(_)) if keyed.non_empty && non_empty => ArrayShape::General(None),
+            (None, Some((_, value))) if keyed.non_empty && non_empty => ArrayShape::General(accessory_string(value)),
             (None, Some((_, value))) => ArrayShape::General(Some((**value).clone())),
         },
     })
@@ -436,6 +794,32 @@ pub(crate) fn item_type(shape: &ArrayShape) -> Option<TUnion> {
         }
         ArrayShape::General(value) => value.clone(),
     }
+}
+
+/// `TypeCombinator::union()` of a constant array's values (`types`, in order): the types that are not constant scalars
+/// keep their order, then come the constant scalars (`null` and literal values), by kind in the order the kinds come.
+pub(crate) fn constant_values_union(types: &[TAtomic]) -> Vec<TAtomic> {
+    let kind = |t: &TAtomic| match t {
+        TAtomic::Null => Some(0),
+        TAtomic::Scalar(s) if s.is_literal_value() => Some(match s {
+            TScalar::Integer(_) => 1,
+            TScalar::String(_) => 2,
+            TScalar::Float(_) => 3,
+            _ => 4,
+        }),
+        _ => None,
+    };
+    let mut out: Vec<TAtomic> = types.iter().filter(|t| kind(t).is_none()).cloned().collect();
+    let mut kinds: Vec<u8> = Vec::new();
+    for k in types.iter().filter_map(kind) {
+        if !kinds.contains(&k) {
+            kinds.push(k);
+        }
+    }
+    for k in kinds {
+        out.extend(types.iter().filter(|t| kind(t) == Some(k)).cloned());
+    }
+    out
 }
 
 /// What [`traverse`] does after a node.

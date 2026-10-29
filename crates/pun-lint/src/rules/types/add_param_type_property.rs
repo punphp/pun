@@ -3,17 +3,17 @@
 //! `ParamTypeAddGuard`: an untyped parameter of a method that the method assigns to properties of its own class
 //! (`$this->name = $name`) gets the union of those properties' native types, unless the method overrides a parent's.
 //!
-//! Known difference on laravel-framework: Rector writes `array|null|bool|int|float|string $value = true` on
-//! `Connection::recordsHaveBeenModified()`, which assigns `$value` to an untyped property inside
-//! `if (! $this->recordsModified)`: PHPStan's type of the property there is its falsy values (`0|0.0|''|'0'|array{}|
-//! false|null`), generalized, where Pun reads the property's missing native type and skips it.
+//!
+//! Inside `if (! $this->name)`, PHPStan's native type of an untyped property is its falsy values (`0|0.0|''|'0'|
+//! array{}|false|null`), which Rector generalizes to `array|null|bool|int|float|string`.
 
 use mago_codex::ttype::atomic::TAtomic;
 use mago_codex::ttype::union::TUnion;
 use mago_syntax::cst::{
-    AssignmentOperator, ClassLikeMemberSelector, Expression, MethodBody, Modifier, Node, NodeKind,
-    Variable,
+    AssignmentOperator, ClassLikeMemberSelector, Expression, IfBody, MethodBody, Modifier, Node, NodeKind,
+    UnaryPrefixOperator, Variable,
 };
+use pun_problem::Span;
 
 use super::facts::{Facts, facts};
 use super::has_parent_class_method;
@@ -26,6 +26,9 @@ use crate::{Context, Report, Rule};
 
 /// `PhpVersionFeature::TYPED_PROPERTIES`.
 const TYPED_PROPERTIES: u32 = 70400;
+
+/// `PhpVersionFeature::UNION_TYPES`.
+const UNION_TYPES: u32 = 80000;
 
 pub struct AddParamTypeProperty;
 
@@ -106,14 +109,29 @@ fn own_class(facts: &Facts, ancestors: &[Node<'_, '_>]) -> Option<String> {
     }
 }
 
-/// The native types (`None` for `mixed`) of the properties `$name` is assigned to in `body`, outside nested classes
-/// and functions (closures are looked into); `None` when it is assigned to none.
-fn property_types(
-    facts: &Facts,
-    class: &str,
-    body: Node<'_, '_>,
-    name: &[u8],
-) -> Option<Vec<Option<TUnion>>> {
+/// PHPStan's native type of a property `$name` is assigned to.
+enum PropertyType {
+    /// The declared type, `None` for `mixed`.
+    Native(Option<TUnion>),
+    /// An untyped property's falsy values, inside `if (! $this->property)`.
+    Falsy,
+}
+
+/// The native types of the properties `$name` is assigned to in `body`, outside nested classes and functions
+/// (closures are looked into); `None` when it is assigned to none.
+fn property_types(facts: &Facts, class: &str, body: Node<'_, '_>, name: &[u8]) -> Option<Vec<PropertyType>> {
+    // the statements `if (! $this->property)` runs, by property
+    let mut falsy: Vec<(Vec<u8>, Span)> = Vec::new();
+    walk(body, &mut |node| {
+        if let Node::If(i) = node
+            && let Expression::UnaryPrefix(u) = unparenthesize(i.condition)
+            && matches!(u.operator, UnaryPrefixOperator::Not(_))
+            && let Some(property) = local_property(u.operand)
+            && let IfBody::Statement(s) = &i.body
+        {
+            falsy.push((property, node_span(s.statement)));
+        }
+    });
     let mut types = Vec::new();
     walk(body, &mut |node| {
         let Node::Assignment(assign) = node else {
@@ -131,7 +149,14 @@ fn property_types(
             .codebase
             .get_declaring_property(class.as_bytes(), &property)
             .and_then(|p| p.type_declaration_metadata.as_ref());
-        types.push(declared.map(|t| t.type_union.clone()));
+        let at = node_span(assign);
+        types.push(match declared {
+            Some(t) => PropertyType::Native(Some(t.type_union.clone())),
+            None if falsy.iter().any(|(p, s)| *p == property && s.start <= at.start && at.end <= s.end) => {
+                PropertyType::Falsy
+            }
+            None => PropertyType::Native(None),
+        });
     });
     (!types.is_empty()).then_some(types)
 }
@@ -161,10 +186,13 @@ fn local_property(expr: &Expression<'_>) -> Option<Vec<u8>> {
 
 /// `createMixedPassedOrUnionType` of the property types, as a parameter type; none when one is `mixed`, untyped or
 /// declared so (Rector writes no type for a `mixed` property, checked with Rector 2.6.1).
-fn declaration(facts: &Facts, types: &[Option<TUnion>], php_version: u32) -> Option<String> {
+fn declaration(facts: &Facts, types: &[PropertyType], php_version: u32) -> Option<String> {
+    if types.iter().all(|t| matches!(t, PropertyType::Falsy)) {
+        return (php_version >= UNION_TYPES).then(|| "array|null|bool|int|float|string".to_string());
+    }
     let mut atomics: Vec<TAtomic> = Vec::new();
     for t in types {
-        let t = t.as_ref()?;
+        let PropertyType::Native(Some(t)) = t else { return None };
         for a in t.types.iter() {
             if !atomics.contains(a) {
                 atomics.push(a.clone());

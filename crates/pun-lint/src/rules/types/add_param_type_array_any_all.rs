@@ -4,15 +4,17 @@
 //! the array's item type when it has none; with `array_find()`/`array_find_key()` too, a nullable one (`?T`) is
 //! narrowed to an item type that cannot be `null`.
 //!
-//! Known differences on laravel-framework: Pun adds `?UploadedFile` over `$files` that `is_array()` and a wrap made
-//! an array, where PHPStan's item type is `mixed` (InteractsWithInput), and writes a property docblock's union in
-//! Mago's sorted order, `string|\Closure`, where PHPStan keeps the written `\Closure|string` (Events/Dispatcher.php).
+//! A property's docblock union keeps its written order (`@var array<string, \Closure|string>`), and a constant
+//! array's values the order of its keys, as PHPStan has them.
 
 use mago_codex::ttype::atomic::TAtomic;
 use mago_syntax::cst::{Expression, FunctionLikeParameterList, Hint, Node, NodeKind};
 
 use super::facts::facts;
-use super::param::{add_hint, array_shape_of, is_mixed, item_type, param_declaration, report};
+use super::param::{
+    ArrayShape, add_hint, array_shape_of, constant_values, constant_values_union, is_mixed, item_declaration, item_type,
+    param_declaration_unsorted, report,
+};
 use crate::rules::laravel::get_arg;
 use crate::rules::lint_b_helpers::value;
 use crate::rules::rector_code_quality::named;
@@ -42,11 +44,11 @@ impl Rule for AddParamTypeArrayAnyAll {
     fn visit<'ast, 'arena>(
         &self,
         node: Node<'ast, 'arena>,
-        _ancestors: &[Node<'ast, 'arena>],
+        ancestors: &[Node<'ast, 'arena>],
         ctx: &Context<'_>,
         out: &mut Vec<Report>,
     ) {
-        visit(node, ctx, out, &["array_any", "array_all"], false);
+        visit(node, ancestors, ctx, out, &["array_any", "array_all"], false);
     }
 }
 
@@ -66,12 +68,13 @@ impl Rule for PreferNarrowParamType {
     fn visit<'ast, 'arena>(
         &self,
         node: Node<'ast, 'arena>,
-        _ancestors: &[Node<'ast, 'arena>],
+        ancestors: &[Node<'ast, 'arena>],
         ctx: &Context<'_>,
         out: &mut Vec<Report>,
     ) {
         visit(
             node,
+            ancestors,
             ctx,
             out,
             &["array_any", "array_all", "array_find", "array_find_key"],
@@ -81,7 +84,14 @@ impl Rule for PreferNarrowParamType {
 }
 
 /// The shared `refactor()`: `narrow` for the nullable parameter of `NarrowArrayAnyAllNullableParamTypeRector`.
-fn visit(node: Node<'_, '_>, ctx: &Context<'_>, out: &mut Vec<Report>, names: &[&str], narrow: bool) {
+fn visit(
+    node: Node<'_, '_>,
+    ancestors: &[Node<'_, '_>],
+    ctx: &Context<'_>,
+    out: &mut Vec<Report>,
+    names: &[&str],
+    narrow: bool,
+) {
     let Node::FunctionCall(call) = node else { return };
     if !names.iter().any(|n| named(call, n)) {
         return;
@@ -104,16 +114,22 @@ fn visit(node: Node<'_, '_>, ctx: &Context<'_>, out: &mut Vec<Report>, names: &[
         _ => return,
     };
     let facts = facts(ctx);
-    let Some(item) = array_shape_of(&facts, value(array))
-        .as_ref()
-        .and_then(item_type)
-    else {
+    let Some(shape) = array_shape_of(&facts, ancestors, value(array)) else { return };
+    let Some(item) = item_type(&shape) else {
         return;
     };
     if is_mixed(&item) || (narrow && item.types.iter().any(|t| matches!(t, TAtomic::Null))) {
         return;
     }
-    let Some(declaration) = param_declaration(&item, &facts.codebase, ctx.php_version) else {
+    let declaration = match shape {
+        // `ConstantArrayType::getItemType()`, PHPStan's union of the values in the order their keys were set
+        ArrayShape::Constant(values) => {
+            let Some(types) = constant_values(&facts, ancestors, value(array), &values) else { return };
+            param_declaration_unsorted(&constant_values_union(&types), &facts.codebase, ctx.php_version)
+        }
+        ArrayShape::General(_) => item_declaration(&facts, ancestors, value(array), &item, ctx.php_version),
+    };
+    let Some(declaration) = declaration else {
         return;
     };
     let edit = match hint_span {

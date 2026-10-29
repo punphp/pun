@@ -3,16 +3,16 @@
 //! `array_map()`, `usort()` or `array_filter()` with two arguments, a closure or arrow function with one untyped
 //! parameter gets the array's item type.
 //!
-//! Known differences on laravel-framework, where Mago infers an item type PHPStan does not: Pun adds one over a list
-//! that `empty()` has narrowed to non-empty (ScheduleTestCommand), over an array literal of destructured values
-//! (ParsesSqlServerConfigurationUrls) and over `array_slice()` of `explode()` (ExceptionReportingTest), and writes
-//! `int|string|null` where PHPStan keeps the literal keys' order `string|int|null` (Cloud/Queue.php).
+//! A constant array's values keep the order of its keys (of the literal, or of the literal last assigned to the
+//! variable); a property's docblock union keeps its written order.
 
 use mago_syntax::cst::{Node, NodeKind};
 
 use super::add_param_type_array_any_all::closure_params;
 use super::facts::facts;
-use super::param::{add_hint, array_shape_of, is_mixed, item_type, param_declaration, report};
+use super::param::{
+    ArrayShape, add_hint, array_shape_of, constant_values, constant_values_union, is_mixed, item_declaration, item_type, param_declaration_unsorted, report,
+};
 use crate::rules::laravel::get_arg;
 use crate::rules::lint_b_helpers::value;
 use crate::rules::rector_code_quality::named;
@@ -48,7 +48,7 @@ impl Rule for AddParamTypeArrayFunction {
     fn visit<'ast, 'arena>(
         &self,
         node: Node<'ast, 'arena>,
-        _ancestors: &[Node<'ast, 'arena>],
+        ancestors: &[Node<'ast, 'arena>],
         ctx: &Context<'_>,
         out: &mut Vec<Report>,
     ) {
@@ -78,18 +78,20 @@ impl Rule for AddParamTypeArrayFunction {
             return;
         };
         let facts = facts(ctx);
-        let Some(item) = array_shape_of(&facts, value(array))
-            .as_ref()
-            .and_then(item_type)
-        else {
-            return;
-        };
+        let Some(shape) = array_shape_of(&facts, ancestors, value(array)) else { return };
+        let Some(item) = item_type(&shape) else { return };
         if is_mixed(&item) {
             return;
         }
-        let Some(declaration) = param_declaration(&item, &facts.codebase, ctx.php_version) else {
-            return;
+        let declaration = match shape {
+            // `ConstantArrayType::getItemType()`, PHPStan's union of the values
+            ArrayShape::Constant(values) => {
+                let Some(types) = constant_values(&facts, ancestors, value(array), &values) else { return };
+                param_declaration_unsorted(&constant_values_union(&types), &facts.codebase, ctx.php_version)
+            }
+            ArrayShape::General(_) => item_declaration(&facts, ancestors, value(array), &item, ctx.php_version),
         };
+        let Some(declaration) = declaration else { return };
         out.push(report(
             node_span(call),
             "Add the array's item type to the callback's parameter.",

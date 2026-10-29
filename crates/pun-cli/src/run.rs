@@ -472,7 +472,10 @@ fn project_codebase(cfg: &Config) -> Result<()> {
     let project = pun_analyse::Project::from_config(&cfg.root, &params);
     // the runtime autoloader Rector loads looks in Composer's generated classmap first
     let classmap = composer_classmap(&cfg.root);
+    // and `vendor/autoload.php` requires Composer's own ClassLoader, which no autoload map lists
+    let class_loader = cfg.root.join("vendor/composer/ClassLoader.php");
     let mut by_class: HashMap<&[u8], &Path> = HashMap::new();
+    by_class.insert(b"composer\\autoload\\classloader", &class_loader);
     for (class, path) in &classmap {
         by_class.insert(class, path);
     }

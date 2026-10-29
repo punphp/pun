@@ -63,7 +63,7 @@ impl Rule for AddParamTypeArrayReduce {
         } else if let Some(initial) = args.get(2) {
             carry = type_of(&facts, value(initial)).and_then(|initial| combine(initial, returned));
         }
-        let value_type = array_shape_of(&facts, value(args[0])).as_ref().and_then(item_type);
+        let value_type = array_shape_of(&facts, ancestors, value(args[0])).as_ref().and_then(item_type);
         let params: Vec<&FunctionLikeParameter<'_>> = closure.parameter_list.parameters.iter().collect();
         let mut edits: Vec<Edit> = Vec::new();
         if let (Some(param), Some(t)) = (params.get(1), value_type) {

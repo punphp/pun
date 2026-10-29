@@ -3,13 +3,10 @@
 //! reads with a key (`$param['key']`) gets the `array` type, unless the body first uses it in a way an array would
 //! not allow, or its type may be a string, a union or an `ArrayAccess` object.
 //!
-//! Known differences on laravel-framework, where a closure's parameter type comes from the call it is passed to and
-//! Mago's inference is not PHPStan's: Rector adds `array` to `tap($array['posts']->toArray($request), fn)`
-//! (ResourceTest), where Mago has no type for the method call on a `mixed` offset; Pun adds it where PHPStan's type is
-//! a union of shapes: `debug_backtrace()`'s frames (HasRelationships), `preg_replace_callback()`'s match groups
-//! (EloquentModelLoadMissingTest) and `CursorPaginator::through()`'s items (CursorPaginatorTest). Pun also adds it to
-//! a closure that reads `$users[$key]` with the key of a `foreach` over a literal list (DatabaseEloquentFactoryTest),
-//! where PHPStan's key is the integer `0|1|...` and Rector skips an integer offset on a `mixed` value.
+//! PHPStan types a closure's parameter from the call it is passed to; Pun skips where that type is a union Mago does
+//! not infer: `debug_backtrace()`'s frames passed alongside, the match groups of `preg_replace_callback()` with a
+//! digits-only group, and items of constant shapes whose literal values differ (a `@template-covariant` value keeps
+//! them apart). An offset Mago has no type for counts only when it is a literal.
 
 use mago_codex::ttype::TType;
 use mago_codex::ttype::atomic::TAtomic;
@@ -18,8 +15,8 @@ use mago_codex::ttype::atomic::object::TObject;
 use mago_codex::ttype::atomic::scalar::TScalar;
 use mago_codex::ttype::union::TUnion;
 use mago_syntax::cst::{
-    Argument, AssignmentOperator, BinaryOperator, Call, Expression, FunctionLikeParameterList,
-    Instantiation, MethodBody, Modifier, Node, NodeKind, UnaryPrefixOperator, Variable,
+    Argument, AssignmentOperator, BinaryOperator, Call, ClassLikeMemberSelector, Expression, FunctionLikeParameterList,
+    Instantiation, Literal, MethodBody, Modifier, Node, NodeKind, UnaryPrefixOperator, Variable,
 };
 
 use super::class_scope;
@@ -28,6 +25,7 @@ use super::has_parent_class_method;
 use super::param::{Flow, add_hint, report, traverse};
 use crate::rules::class_method::type_of;
 use crate::rules::lint_b_helpers::value;
+use crate::rules::phpunit::string_value;
 use crate::rules::rector_code_quality::named;
 use crate::syntax::{node_span, unparenthesize};
 use pun_problem::Span;
@@ -85,9 +83,28 @@ impl Rule for AddParamTypeArrayDimFetch {
                         Node::Argument(_) | Node::PositionalArgument(_) | Node::NamedArgument(_)
                     )
                 });
+        // the match groups `preg_replace_callback()` passes for a pattern with a digits-only group are a union
+        let call = ancestors.iter().rev().find(|a| {
+            !matches!(
+                a,
+                Node::Expression(_)
+                    | Node::Parenthesized(_)
+                    | Node::Argument(_)
+                    | Node::PositionalArgument(_)
+                    | Node::NamedArgument(_)
+                    | Node::ArgumentList(_)
+            )
+        });
+        let numeric_matches = matches!(call, Some(Node::FunctionCall(call)) if named(call, "preg_replace_callback")
+            && call.argument_list.arguments.first().and_then(|a| string_value(value(a))).is_some_and(|p| numeric_group(&p)));
+        // PHPStan's `debug_backtrace()` is a list of frame shapes with optional keys (Mago's is `array`), so a callback
+        // passed alongside it gets a union
+        let frames = matches!(ancestors.iter().rev().find(|a| matches!(a, Node::ArgumentList(_))),
+            Some(Node::ArgumentList(list)) if list.arguments.iter().any(|a| matches!(unparenthesize(value(a)),
+                Expression::Call(Call::Function(f)) if named(f, "debug_backtrace"))));
         let mut edits = Vec::new();
-        for param in params.parameters.iter() {
-            if param.hint.is_some() || param.ellipsis.is_some() {
+        for (index, param) in params.parameters.iter().enumerate() {
+            if param.hint.is_some() || param.ellipsis.is_some() || (numeric_matches || frames) && index == 0 {
                 continue;
             }
             if let Some(default) = &param.default_value
@@ -115,6 +132,17 @@ impl Rule for AddParamTypeArrayDimFetch {
             edits,
         ));
     }
+}
+
+/// Whether the regex `pattern` has a capture group that matches digits only (`(\d+)`, `(?<id>[0-9]+)`): PHPStan's
+/// `RegexArrayShapeMatcher` types it `numeric-string`, which Rector's type corrector keeps, so the match groups are
+/// an array shape of more than one type.
+fn numeric_group(pattern: &str) -> bool {
+    static GROUP: std::sync::LazyLock<regex::Regex> = std::sync::LazyLock::new(|| {
+        regex::Regex::new(r"(?:^|[^\\])\((?:\?(?:P?<\w+>|'\w+'))?(?:(?:\\d|\[0-9\])(?:[+*?]|\{\d+(?:,\d*)?\})?)+\)")
+            .unwrap()
+    });
+    GROUP.is_match(pattern)
 }
 
 /// `getType($default)->isArray()->yes()`.
@@ -150,7 +178,17 @@ fn is_accessed_array_dim_fetch(
     let mut seen = false;
     // The assignment targets, whose type is the one after the assignment.
     let mut targets: Vec<Span> = Vec::new();
+    // Where a call whose `@phpstan-assert` narrows its argument (`$this->assertIsArray($param)`) ends: after it,
+    // PHPStan's type is the asserted one, as Mago's is.
+    let mut asserted: Vec<usize> = Vec::new();
     traverse(body, &mut |node| {
+        if let Node::MethodCall(c) = node
+            && let ClassLikeMemberSelector::Identifier(method) = &c.method
+            && c.argument_list.arguments.iter().any(|a| is_variable(value(a), name))
+            && type_of(facts, c.object).is_some_and(|t| asserts(facts, t, method.value))
+        {
+            asserted.push(node_span(c).end);
+        }
         if let Node::Assignment(a) = node
             && is_variable(a.lhs, name)
         {
@@ -196,7 +234,7 @@ fn is_accessed_array_dim_fetch(
         let at = node_span(access).start;
         let unassigned = !assigned.iter().any(|&end| end <= at);
         let narrowed;
-        if known && unassigned {
+        if known && unassigned && !asserted.iter().any(|&end| end <= at) {
             let here = variable;
             variable = initial;
             // A check that removes `null` (`if ($param)`) narrows it in both analysers.
@@ -239,7 +277,19 @@ fn is_accessed_array_dim_fetch(
             return Flow::Stop;
         }
         // skip integer in possibly string type as string can be accessed via int
-        if type_of(facts, access.index).is_some_and(is_integer) && variable.is_none_or(maybe_string) {
+        let integer = match type_of(facts, access.index) {
+            Some(index) => is_integer(index),
+            // Mago did not type the offset (it gives up on some files): only a literal tells
+            None => match unparenthesize(access.index) {
+                Expression::Literal(Literal::Integer(_)) => true,
+                Expression::Literal(Literal::String(_)) => false,
+                _ => {
+                    accessed = false;
+                    return Flow::Stop;
+                }
+            },
+        };
+        if integer && variable.is_none_or(maybe_string) {
             return Flow::Continue;
         }
         if variable.is_some_and(|t| is_union(t) || is_array_access(facts, t)) {
@@ -250,6 +300,12 @@ fn is_accessed_array_dim_fetch(
         Flow::Continue
     });
     accessed
+}
+
+/// Whether the method `method` of the object `t` asserts the type of an argument (`@phpstan-assert`).
+fn asserts(facts: &Facts, t: &TUnion, method: &[u8]) -> bool {
+    let [TAtomic::Object(TObject::Named(object))] = t.types.as_ref() else { return false };
+    facts.documented().get_declaring_method(object.name.as_bytes(), method).is_some_and(|m| !m.assertions.is_empty())
 }
 
 /// `shouldStop()`.
@@ -399,6 +455,8 @@ fn constant_array_is_union(array: &TArray) -> bool {
     for v in values {
         for a in v.types.iter() {
             let kind = match a {
+                // `TypeHasher` tells `ArrayType`s apart by their item type's precise description: `4` is not `5`
+                TAtomic::Scalar(s) if s.is_literal_value() && !s.is_bool() => a.get_id().to_string(),
                 TAtomic::Scalar(s) if s.is_int() => "int".to_string(),
                 TAtomic::Scalar(s) if s.is_float() => "float".to_string(),
                 TAtomic::Scalar(s) if s.is_any_string() => "string".to_string(),

@@ -36,7 +36,7 @@ impl Rule for AddParamTypeArrowDimFetch {
     fn visit<'ast, 'arena>(
         &self,
         node: Node<'ast, 'arena>,
-        _ancestors: &[Node<'ast, 'arena>],
+        ancestors: &[Node<'ast, 'arena>],
         ctx: &Context<'_>,
         out: &mut Vec<Report>,
     ) {
@@ -93,7 +93,7 @@ impl Rule for AddParamTypeArrowDimFetch {
         };
         traverse(scope, &mut look);
         let objects = matches!(
-            array_shape_of(&facts, value(args[array_at])),
+            array_shape_of(&facts, ancestors, value(args[array_at])),
             Some(ArrayShape::General(Some(item)))
                 if !item.types.is_empty() && item.types.iter().all(|t| matches!(t, TAtomic::Object(_)))
         );
