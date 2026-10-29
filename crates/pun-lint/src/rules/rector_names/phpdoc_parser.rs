@@ -315,7 +315,7 @@ pub(crate) enum Value {
     /// `GenericTagValueNode`: its value, runs of line breaks made one (`MULTI_NEW_LINES_REGEX`).
     Generic(String),
     /// `DoctrineTagValueNode`: the arguments as phpdoc-parser prints them, and the description.
-    Doctrine { args: Vec<String>, description: String },
+    Doctrine { args: Vec<Printed>, description: String },
     /// `InvalidTagValueNode`: the description read after it.
     Invalid(String),
 }
@@ -655,7 +655,7 @@ impl<'a> DocParser<'a> {
     }
 
     /// `parseDoctrineTagValue()`: the arguments as phpdoc-parser prints them, and the description.
-    fn parse_doctrine_tag_value(&mut self) -> Parsed<(Vec<String>, String)> {
+    fn parse_doctrine_tag_value(&mut self) -> Parsed<(Vec<Printed>, String)> {
         let args = parse_doctrine_arguments(&mut self.iter, false)?;
         Ok((args, self.parse_optional_description_after_doctrine_tag()))
     }
@@ -685,8 +685,45 @@ pub(crate) fn replace_all(re: &pcre2::bytes::Regex, value: &str, f: impl Fn(&[&s
     out
 }
 
+/// A Doctrine argument, array item or value as phpdoc-parser prints it: its pieces, each with whether it is an
+/// `IdentifierTypeNode` (a key, or a value that is a bare name).
+#[derive(Clone, Debug, Default, PartialEq)]
+pub(crate) struct Printed(pub Vec<(String, bool)>);
+
+impl Printed {
+    fn text(text: impl Into<String>) -> Printed {
+        Printed(vec![(text.into(), false)])
+    }
+
+    fn ident(name: &str) -> Printed {
+        Printed(vec![(name.to_string(), true)])
+    }
+
+    /// `self`, then `separator` and `other`.
+    fn then(mut self, separator: &str, other: Printed) -> Printed {
+        self.0.push((separator.to_string(), false));
+        self.0.extend(other.0);
+        self
+    }
+
+    /// `implode(', ', $items)` between `open` and `close`.
+    fn wrap(open: &str, items: Vec<Printed>, close: &str) -> Printed {
+        let mut printed = Printed::text(open);
+        for (i, item) in items.into_iter().enumerate() {
+            printed = printed.then(if i == 0 { "" } else { ", " }, item);
+        }
+        printed.then(close, Printed::default())
+    }
+}
+
+impl std::fmt::Display for Printed {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        self.0.iter().try_for_each(|(piece, _)| f.write_str(piece))
+    }
+}
+
 /// `parseDoctrineArguments()`.
-fn parse_doctrine_arguments(it: &mut Iter<'_>, deep: bool) -> Parsed<Vec<String>> {
+fn parse_doctrine_arguments(it: &mut Iter<'_>, deep: bool) -> Parsed<Vec<Printed>> {
     if !it.is(&[t::OPEN_PARENTHESES]) {
         return Ok(Vec::new());
     }
@@ -718,7 +755,7 @@ fn parse_doctrine_arguments(it: &mut Iter<'_>, deep: bool) -> Parsed<Vec<String>
 }
 
 /// `parseDoctrineArgument()`.
-fn parse_doctrine_argument(it: &mut Iter<'_>) -> Parsed<String> {
+fn parse_doctrine_argument(it: &mut Iter<'_>) -> Parsed<Printed> {
     if !it.is(&[t::IDENTIFIER]) {
         return parse_doctrine_argument_value(it);
     }
@@ -729,7 +766,7 @@ fn parse_doctrine_argument(it: &mut Iter<'_>) -> Parsed<String> {
     match keyed {
         Ok(value) => {
             it.drop_save();
-            Ok(format!("{key}={value}"))
+            Ok(Printed::ident(&key).then("=", value))
         }
         Err(Fail) => {
             it.rollback();
@@ -739,12 +776,12 @@ fn parse_doctrine_argument(it: &mut Iter<'_>) -> Parsed<String> {
 }
 
 /// `parseDoctrineArgumentValue()`, printed.
-fn parse_doctrine_argument_value(it: &mut Iter<'_>) -> Parsed<String> {
+fn parse_doctrine_argument_value(it: &mut Iter<'_>) -> Parsed<Printed> {
     if it.is(&[t::PHPDOC_TAG, t::DOCTRINE_TAG]) {
         let name = it.value().to_string();
         it.next();
         let args = parse_doctrine_arguments(it, true)?;
-        return Ok(format!("{name}({})", args.join(", ")));
+        return Ok(Printed::text(name).then("", Printed::wrap("(", args, ")")));
     }
     if it.try_consume(t::OPEN_CURLY_BRACKET) {
         let mut items = Vec::new();
@@ -758,7 +795,7 @@ fn parse_doctrine_argument_value(it: &mut Iter<'_>) -> Parsed<String> {
             }
         }
         it.consume(t::CLOSE_CURLY_BRACKET)?;
-        return Ok(format!("{{{}}}", items.join(", ")));
+        return Ok(Printed::wrap("{", items, "}"));
     }
     if it.is(&[t::IDENTIFIER]) {
         let identifier = it.value().to_string();
@@ -766,24 +803,24 @@ fn parse_doctrine_argument_value(it: &mut Iter<'_>) -> Parsed<String> {
         it.next();
         if !it.is(&[t::DOUBLE_COLON]) {
             it.drop_save();
-            return Ok(identifier);
+            return Ok(Printed::ident(&identifier));
         }
         it.rollback();
     }
     match parse_const_expr(it)? {
         Const::Array => Err(Fail),
-        Const::Printed(printed) | Const::Fetch(printed) => Ok(printed),
+        Const::Printed(printed) | Const::Fetch(printed) => Ok(Printed::text(printed)),
     }
 }
 
 /// `parseDoctrineArrayItem()`.
-fn parse_doctrine_array_item(it: &mut Iter<'_>) -> Parsed<String> {
+fn parse_doctrine_array_item(it: &mut Iter<'_>) -> Parsed<Printed> {
     it.push();
     let keyed = parse_doctrine_array_key(it).and_then(|key| {
         if !it.try_consume(t::EQUAL) {
             it.consume(t::COLON)?;
         }
-        Ok(format!("{key}={}", parse_doctrine_argument_value(it)?))
+        Ok(key.then("=", parse_doctrine_argument_value(it)?))
     });
     match keyed {
         Ok(item) => {
@@ -798,33 +835,33 @@ fn parse_doctrine_array_item(it: &mut Iter<'_>) -> Parsed<String> {
 }
 
 /// `parseDoctrineArrayKey()`, printed.
-fn parse_doctrine_array_key(it: &mut Iter<'_>) -> Parsed<String> {
+fn parse_doctrine_array_key(it: &mut Iter<'_>) -> Parsed<Printed> {
     let value = it.value().to_string();
     match it.ty() {
         t::INTEGER => {
             it.next();
-            Ok(value.replace('_', ""))
+            Ok(Printed::text(value.replace('_', "")))
         }
         t::DOCTRINE_ANNOTATION_STRING | t::DOUBLE_QUOTED_STRING => {
             it.next();
-            Ok(parse_doctrine_string(it, value))
+            Ok(Printed::text(parse_doctrine_string(it, value)))
         }
         t::SINGLE_QUOTED_STRING => {
             it.next();
             // `ConstExprStringNode` single-quoted: `StringUnescaper::unescapeString()`, printed with `addcslashes()`
             let unescaped = value[1..value.len() - 1].replace("\\\\", "\\").replace("\\'", "'");
-            Ok(format!("'{}'", unescaped.replace('\\', "\\\\").replace('\'', "\\'")))
+            Ok(Printed::text(format!("'{}'", unescaped.replace('\\', "\\\\").replace('\'', "\\'"))))
         }
         t::IDENTIFIER => {
             it.push();
             it.next();
             if !it.is(&[t::DOUBLE_COLON]) {
                 it.drop_save();
-                return Ok(value);
+                return Ok(Printed::ident(&value));
             }
             it.rollback();
             match parse_const_expr(it)? {
-                Const::Fetch(printed) => Ok(printed),
+                Const::Fetch(printed) => Ok(Printed::text(printed)),
                 _ => Err(Fail),
             }
         }

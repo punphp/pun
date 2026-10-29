@@ -166,8 +166,9 @@ fn narrow_from(ctx: &Context<'_>, scope: Scope<'_>, class_name: &str, preslash: 
 
 /// Whether `ClassReflection::getTemplateTags()` of `class` has `name`.
 fn is_class_template(ctx: &Context<'_>, class: &str, name: &str) -> bool {
+    // the templates are read from the docblocks
     facts(ctx)
-        .codebase
+        .documented()
         .get_class_like(class.as_bytes())
         .is_some_and(|c| c.template_types.iter().any(|(k, _)| k.as_bytes() == name.as_bytes()))
 }

@@ -62,11 +62,16 @@ pub(crate) struct Annotation {
 /// What a child of the doc is.
 #[derive(Clone, Debug)]
 pub(crate) enum Value {
-    /// `PhpDocTextNode`.
-    Text,
+    /// `PhpDocTextNode`: its text.
+    Text(String),
     Typed(Typed),
     /// `GenericTagValueNode`: its value.
     Generic(String),
+    /// `DoctrineTagValueNode` whose name is no class (a template): its arguments as phpdoc-parser prints them, and
+    /// its description.
+    Doctrine { args: Vec<parser::Printed>, description: String },
+    /// `InvalidTagValueNode` whose name is no class: its value.
+    Invalid(String),
     Annotation(Annotation),
     /// Any other tag phpdoc-parser gives a value node of its own (`@method`, `@phpstan-type`,
     /// `@phpstan-import-type`, `@phpstan-assert`, a typeless `@param`...).
@@ -77,7 +82,8 @@ pub(crate) enum Value {
 #[derive(Clone, Debug)]
 pub(crate) struct Other {
     value: phpdoc::TagValue,
-    description: String,
+    /// The `description` property, for a value node that has one.
+    description: Option<String>,
     /// `TemplatePhpDocNodeVisitor::resolvePreposition()` of each `@method` template.
     prepositions: Vec<String>,
     /// The quote of each string in the `@method` parameters' defaults, in order.
@@ -113,7 +119,7 @@ impl Other {
     fn print(&self) -> Option<String> {
         let quote = |v: &str| quote_of(&self.strings, v);
         let ty = |node: &Node| TypeNode::from_parsed_all(node, &quote).map(|t| t.to_string());
-        let description = &self.description;
+        let description = self.description.as_deref().unwrap_or_default();
         Some(match &self.value {
             phpdoc::TagValue::Method {
                 is_static,
@@ -186,6 +192,11 @@ impl Other {
                     None => String::new(),
                 },
             ),
+            phpdoc::TagValue::Param { ty: None, by_ref, variadic, name } => {
+                format!("{}{}{name} {description}", if *by_ref { "&" } else { "" }, if *variadic { "..." } else { "" })
+            }
+            phpdoc::TagValue::ParamName(name) => format!("{name} {description}"),
+            phpdoc::TagValue::Deprecated => description.to_string(),
             _ => return None,
         })
     }
@@ -218,8 +229,10 @@ fn const_expr(expr: &phpdoc::ConstExpr, quotes: &mut std::slice::Iter<'_, u8>) -
 
 #[derive(Clone, Debug)]
 pub(crate) struct Child {
-    /// `START_AND_END`: the first token and the token after the last.
-    start_end: (usize, usize),
+    /// `START_AND_END`: the first token and the token after the last; `None` for a node the decorator made.
+    start_end: Option<(usize, usize)>,
+    /// The node object's identity.
+    id: usize,
     /// The tag's name, its `@` included; `None` for text.
     pub tag: Option<String>,
     pub value: Value,
@@ -243,6 +256,8 @@ pub(crate) struct Doc {
     pub text: String,
     tokens: Vec<parser::Tok>,
     pub children: Vec<Child>,
+    /// The key of each child in PHP's array of them (`unset()` leaves gaps).
+    keys: Vec<usize>,
     single_line: bool,
     /// `LAST_PHP_DOC_TOKEN_POSITION`.
     last_token_position: Option<usize>,
@@ -341,32 +356,32 @@ impl Doc {
         let tokens = parser::tokenize(text);
         let type_end = |start: usize| phpdoc::parse_prefix(&text[start..]).ok().map(|(_, offset)| start + offset);
         let raw = parser::DocParser::new(text, &tokens, &type_end).parse_with_node();
-        let mut children = Vec::new();
+        let mut slots = Slots::default();
         for child in raw {
             let (tag, value) = match child.kind {
-                // `processTextSpacelessInTextNode()` splits a text with a `@\Class` into annotations
-                parser::Kind::Text(text) if text.contains("@\\") || text.contains("})") => return None,
-                parser::Kind::Text(_) => (None, Value::Text),
+                parser::Kind::Text(text) => (None, Value::Text(text)),
                 parser::Kind::Tag { name, value, .. } => {
                     let from = tokens[child.start].start + name.len();
                     let to = tokens[child.end].start;
-                    let value = tag_value(text, &tokens, &name, value, from, to, resolve_tag, narrow)?;
+                    let value = tag_value(text, &tokens, &name, value, from, to)?;
                     (Some(name), value)
                 }
             };
-            children.push(Child {
-                start_end: (child.start, child.end),
-                tag,
-                value,
-                changed: false,
-            });
+            let child = slots.child(Some((child.start, child.end)), tag, value);
+            let key = slots.items.len();
+            slots.items.push((key, child));
         }
+        merge_nested_doctrine_annotations(&mut slots);
+        transform(&mut slots, resolve_tag, narrow)?;
+        let (keys, children): (Vec<usize>, Vec<Child>) = slots.items.into_iter().unzip();
         Some(Doc {
             text: text.to_string(),
             single_line: !tokens.iter().any(|t| t.ty == t::PHPDOC_EOL),
-            last_token_position: children.last().map(|c| c.start_end.1),
+            // `setPositionOfLastToken()`
+            last_token_position: children.last().and_then(|c| c.start_end).map(|se| se.1),
             tokens,
             children,
+            keys,
         })
     }
 
@@ -402,7 +417,9 @@ impl Doc {
                     nested_identifiers(&annotation.values, &mut |name| push(name, false));
                 }
                 Value::Other(other) => other.clone().idents_mut(&mut |name, parent| push(name, parent)),
-                Value::Text | Value::Generic(_) => {}
+                // the `IdentifierTypeNode`s of a `DoctrineTagValueNode`'s keys and values
+                Value::Doctrine { args, .. } => args.iter().flat_map(|a| &a.0).filter(|p| p.1).for_each(|p| push(&p.0, false)),
+                Value::Text(_) | Value::Generic(_) | Value::Invalid(_) => {}
             }
         }
         out
@@ -446,7 +463,11 @@ impl Doc {
                     index += 1;
                 });
             }
-            Value::Text | Value::Generic(_) => {}
+            Value::Doctrine { args, .. } => {
+                let piece = args.iter_mut().flat_map(|a| &mut a.0).filter(|p| p.1).nth(ident.index);
+                piece.expect("a doctrine identifier").0 = name.to_string();
+            }
+            Value::Text(_) | Value::Generic(_) | Value::Invalid(_) => {}
         }
     }
 
@@ -604,7 +625,7 @@ impl Doc {
     pub fn reprintable(&self) -> bool {
         self.children
             .iter()
-            .filter(|c| c.changed)
+            .filter(|c| c.changed || c.start_end.is_none())
             .all(|c| print_child(c).is_some())
     }
 
@@ -618,25 +639,34 @@ impl Doc {
         let mut current = 0;
         let mut output = String::new();
         let count = self.children.len();
-        for (key, child) in self.children.iter().enumerate() {
-            // `printDocChildNode()`
-            if child.changed {
-                current = child.start_end.1;
-                let printed = print_child(child).unwrap_or_default();
-                if self.single_line {
-                    output.push_str(&format!(" {printed}"));
-                } else {
-                    output.push_str("\n *");
-                    if !printed.is_empty() {
+        for (child, key) in self.children.iter().zip(&self.keys) {
+            // `printDocChildNode()`, with the child's key in the array
+            let key = key + 1;
+            match child.start_end {
+                Some((start, end)) if !child.changed => {
+                    // `correctPreviouslyReprintedFirstNode()`
+                    if current == 0 && key != 1 {
+                        current = start - usize::from(self.tokens[start - 1].ty == t::PHPDOC_EOL);
+                    }
+                    let part = self.add_tokens_from_to(String::new(), current, end, count == key);
+                    current = end;
+                    output.push_str(part.trim_end_matches(PHP_WS));
+                }
+                start_end => {
+                    if let Some((_, end)) = start_end {
+                        current = end;
+                    }
+                    let printed = print_child(child).unwrap_or_default();
+                    if self.single_line {
                         output.push_str(&format!(" {printed}"));
+                    } else {
+                        output.push_str("\n *");
+                        if !printed.is_empty() {
+                            output.push_str(&format!(" {printed}"));
+                        }
                     }
                 }
-                continue;
             }
-            let end = child.start_end.1;
-            let part = self.add_tokens_from_to(String::new(), current, end, count == key + 1);
-            current = end;
-            output.push_str(part.trim_end_matches([' ', '\t', '\n', '\r', '\0', '\x0B']));
         }
         // `printEnd()`
         let last = self.last_token_position.unwrap_or(current);
@@ -794,11 +824,16 @@ fn other(tag: phpdoc::Tag, value: &str, description: impl Fn(usize) -> String) -
             (prepositions, quotes, description_at) = (p, q, Some(at));
         }
         phpdoc::TagValue::Assert { .. } => description_at = Some(scan_assert(value)?),
+        // `TypelessParamTagValueNode` and `ParamImmediatelyInvokedCallableTagValueNode` and its kin: after the name
+        phpdoc::TagValue::Param { .. } | phpdoc::TagValue::ParamName(_) => {
+            description_at = Some(tokens_from(value, 0).iter().find(|t| t.ty == t::VARIABLE)?.end)
+        }
+        phpdoc::TagValue::Deprecated => description_at = Some(0),
         _ => {}
     }
     Some(Value::Other(Other {
         value: tag.value,
-        description: description_at.map(description).unwrap_or_default(),
+        description: description_at.map(description),
         prepositions,
         quotes,
         strings: strings_of(value),
@@ -922,72 +957,196 @@ fn scan_assert(value: &str) -> Option<usize> {
     Some(toks[i - 1].end)
 }
 
-/// The value of the tag `name` from `from` to `to` (bytes of the doc), as `DoctrineAnnotationDecorator` leaves it;
-/// `None` where Pun does not follow the decorator.
-#[allow(clippy::too_many_arguments)]
-fn tag_value(
-    text: &str,
-    tokens: &[parser::Tok],
-    name: &str,
-    value: parser::Value,
-    from: usize,
-    to: usize,
-    resolve_tag: &dyn Fn(&str) -> String,
-    narrow: &dyn Fn(&str) -> Option<String>,
-) -> Option<Value> {
-    let bare = name.trim_start_matches('@');
+/// The value phpdoc-parser gives the tag `name` from `from` to `to` (bytes of the doc); `None` where Pun does not
+/// read it.
+fn tag_value(text: &str, tokens: &[parser::Tok], name: &str, value: parser::Value, from: usize, to: usize) -> Option<Value> {
     match value {
         parser::Value::Known => {
-            // `processDescriptionAsSpacelessPhpDoctagNode()` splits a description over lines with a `@\Class`
-            if text[from..to].contains("@\\") && text[from..to].contains('\n') {
-                return None;
-            }
             if let Some(value) = typed(text, tokens, name, from, to) {
                 return Some(value);
             }
-            // a value its parser rejects is an `InvalidTagValueNode`, which the decorator makes an annotation of the
-            // tag's name; a parsed `@method` and its kin keep their own value node
+            // a value its parser rejects is an `InvalidTagValueNode`; a parsed `@method` and its kin keep their own
+            // value node
             let doc = format!("/** {} */", &text[from - name.len()..to]);
             let tag = phpdoc::tags(&doc)?.into_iter().next()?;
             if let phpdoc::TagValue::Invalid(..) = tag.value {
-                let description = generic_value(text, tokens, from, to);
-                return process_doctrine(bare, description, None, resolve_tag, narrow);
+                return Some(Value::Invalid(generic_value(text, tokens, from, to)));
             }
             other(tag, &text[from..to], |at| generic_value(text, tokens, from + at, to).replace('\n', "\n * "))
         }
-        parser::Value::Invalid(description) => process_doctrine(bare, description, None, resolve_tag, narrow),
-        parser::Value::Doctrine { args, description } => {
-            process_doctrine(bare, args.join(", "), Some(description), resolve_tag, narrow)
-        }
-        parser::Value::Generic(value) => {
-            // `mergeNestedDoctrineAnnotations()` joins an open value with the tags after it
-            if !closed_content(&value) {
-                return None;
-            }
-            let class = resolve_tag(name);
-            if !class.contains('\\') && class != "Target" {
-                return Some(Value::Generic(value));
-            }
-            // `resolveFqnAnnotationSpacelessPhpDocTagNode()` splits a value with a `@\Class` into annotations
-            if value.contains("@\\") {
-                return None;
-            }
-            annotation(name, value, class, resolve_tag)
-        }
+        parser::Value::Invalid(description) => Some(Value::Invalid(description)),
+        parser::Value::Doctrine { args, description } => Some(Value::Doctrine { args, description }),
+        parser::Value::Generic(value) => Some(Value::Generic(value)),
     }
 }
 
-/// `DoctrineAnnotationDecorator::processDoctrine()`: `values` are the printed arguments of a `DoctrineTagValueNode`
-/// (with its `description`) or an `InvalidTagValueNode`'s value.
+/// PHP's `trim()` characters.
+const PHP_WS: [char; 6] = [' ', '\t', '\n', '\r', '\0', '\x0B'];
+
+/// The children of the doc while `DoctrineAnnotationDecorator` works on them: PHP's array, each child under its key.
+#[derive(Default)]
+struct Slots {
+    items: Vec<(usize, Child)>,
+    ids: usize,
+}
+
+impl Slots {
+    /// A new node object.
+    fn child(&mut self, start_end: Option<(usize, usize)>, tag: Option<String>, value: Value) -> Child {
+        self.ids += 1;
+        Child {
+            start_end,
+            id: self.ids,
+            tag,
+            value,
+            changed: false,
+        }
+    }
+
+    fn position(&self, key: usize) -> Option<usize> {
+        self.items.iter().position(|(k, _)| *k == key)
+    }
+
+    /// `$children[$key] = $child`: in its place, or last for a key the array lacks.
+    fn set(&mut self, key: usize, child: Child) {
+        match self.position(key) {
+            Some(at) => self.items[at].1 = child,
+            None => self.items.push((key, child)),
+        }
+    }
+
+    /// `unset($children[$key])`.
+    fn unset(&mut self, key: usize) {
+        self.items.retain(|(k, _)| *k != key);
+    }
+
+    /// `array_splice($children, $offset, 0, $nodes)`: inserted at the position `offset`, the keys made anew.
+    fn splice(&mut self, offset: usize, nodes: Vec<(String, Value)>) {
+        let nodes: Vec<(usize, Child)> = nodes.into_iter().map(|(tag, value)| (0, self.child(None, Some(tag), value))).collect();
+        let at = offset.min(self.items.len());
+        self.items.splice(at..at, nodes);
+        for (key, item) in self.items.iter_mut().enumerate() {
+            item.0 = key;
+        }
+    }
+
+    /// `while (isset($children[$key]) && $children[$key] !== $node) ++$key;`.
+    fn find(&self, mut key: usize, id: usize) -> usize {
+        while self.position(key).is_some_and(|at| self.items[at].1.id != id) {
+            key += 1;
+        }
+        key
+    }
+}
+
+/// `DoctrineAnnotationDecorator::mergeNestedDoctrineAnnotations()`: a generic value joined with the `})` text and
+/// the generic tags that follow it until it closes.
+fn merge_nested_doctrine_annotations(slots: &mut Slots) {
+    let mut removed = Vec::new();
+    for key in 0..slots.items.len() {
+        if removed.contains(&key) {
+            continue;
+        }
+        let Value::Generic(mut value) = slots.items[key].1.value.clone() else {
+            continue;
+        };
+        let mut start_end = slots.items[key].1.start_end;
+        for next in key + 1..slots.items.len() {
+            let child = &slots.items[next].1;
+            let combined = start_end.zip(child.start_end).map(|(a, b)| (a.0, b.1));
+            match (&child.tag, &child.value) {
+                // `NESTED_ANNOTATION_END_REGEX`; the child after the text goes too
+                (_, Value::Text(text)) if text.contains("})") => {
+                    value = format!("{value}\n{text}");
+                    start_end = combined;
+                    removed.extend([next, next + 1]);
+                }
+                (Some(name), Value::Generic(next_value)) => {
+                    if closed_content(&value) {
+                        break;
+                    }
+                    value = format!("{value}\n{name}{next_value}");
+                    start_end = combined;
+                    removed.push(next);
+                }
+                _ => {}
+            }
+        }
+        slots.items[key].1.value = Value::Generic(value);
+        slots.items[key].1.start_end = start_end;
+    }
+    slots.items.retain(|(key, _)| !removed.contains(key));
+}
+
+/// `transformGenericTagValueNodesToDoctrineAnnotationTagValueNodes()` over the children as the array held them
+/// when it started; `None` where Rector's annotation parsers never finish.
+fn transform(slots: &mut Slots, resolve_tag: &dyn Fn(&str) -> String, narrow: &dyn Fn(&str) -> Option<String>) -> Option<()> {
+    for (key, child) in slots.items.clone() {
+        let name = child.tag.clone().unwrap_or_default();
+        match &child.value {
+            // the `@\FQN` use case
+            Value::Text(text) => {
+                let nodes = resolve_fqn_annotations(text, resolve_tag)?;
+                if nodes.is_empty() {
+                    continue;
+                }
+                // `processTextSpacelessInTextNode()`
+                let other = first_text(text);
+                let keep = !other.starts_with("@\\") && !other.trim_matches(PHP_WS).is_empty();
+                if keep {
+                    let text = slots.child(None, None, Value::Text(other));
+                    slots.set(key, text);
+                } else {
+                    slots.unset(key);
+                }
+                slots.splice(key + usize::from(keep), nodes);
+            }
+            Value::Invalid(values) => process_doctrine(slots, &child, key, values.clone(), None, resolve_tag, narrow)?,
+            Value::Doctrine { args, description } => {
+                let values = args.iter().map(ToString::to_string).collect::<Vec<_>>().join(", ");
+                process_doctrine(slots, &child, key, values, Some(description), resolve_tag, narrow)?;
+            }
+            Value::Generic(value) => {
+                // known doc tag to annotation class
+                let class = resolve_tag(&name);
+                if !class.contains('\\') && class != "Target" {
+                    continue;
+                }
+                let key = slots.find(key, child.id);
+                let nodes = resolve_fqn_annotations(value, resolve_tag)?;
+                let content = match nodes.is_empty() {
+                    true => value.clone(),
+                    false => first_text(value),
+                };
+                // its `ORIG_NODE` set to null, Rector still prints it as written
+                let annotation = slots.child(child.start_end, child.tag.clone(), annotation(&name, content, class, resolve_tag)?);
+                slots.set(key, annotation);
+                if !nodes.is_empty() {
+                    slots.splice(key + 1, nodes);
+                }
+            }
+            _ => process_description_as_spaceless(slots, &child, key, resolve_tag)?,
+        }
+    }
+    Some(())
+}
+
+/// `processDoctrine()`: `values` are the printed arguments of a `DoctrineTagValueNode` (with its `description`) or
+/// an `InvalidTagValueNode`'s value. A name that is no class (a template) leaves the tag as it is.
+#[allow(clippy::too_many_arguments)]
 fn process_doctrine(
-    name: &str,
+    slots: &mut Slots,
+    child: &Child,
+    key: usize,
     values: String,
-    description: Option<String>,
+    description: Option<&String>,
     resolve_tag: &dyn Fn(&str) -> String,
     narrow: &dyn Fn(&str) -> Option<String>,
-) -> Option<Value> {
-    // a template is no object type: Rector leaves the tag a `DoctrineTagValueNode`
-    let class = narrow(name)?;
+) -> Option<()> {
+    let name = child.tag.as_deref().unwrap_or_default().trim_start_matches('@');
+    let Some(class) = narrow(name) else {
+        return Some(());
+    };
     let mut values = values;
     if !values.is_empty() {
         values = star_comment(&values);
@@ -995,7 +1154,80 @@ fn process_doctrine(
             values = format!("({values}){description}");
         }
     }
-    annotation(&format!("@{name}"), values, class, resolve_tag)
+    let tag = format!("@{name}");
+    let annotation = annotation(&tag, values, class, resolve_tag)?;
+    let annotation = slots.child(child.start_end, Some(tag), annotation);
+    // the key the child had when the decorator started
+    slots.set(key, annotation);
+    Some(())
+}
+
+/// `processDescriptionAsSpacelessPhpDoctagNode()`: a description over lines with `@\Class` annotations gives them as
+/// children after the tag, which moves to the end of the array without them.
+fn process_description_as_spaceless(slots: &mut Slots, child: &Child, key: usize, resolve_tag: &dyn Fn(&str) -> String) -> Option<()> {
+    let mut value = child.value.clone();
+    let Some(description) = value.description_mut() else {
+        return Some(());
+    };
+    if !description.contains('\n') {
+        return Some(());
+    }
+    let nodes = resolve_fqn_annotations(description, resolve_tag)?;
+    if nodes.is_empty() {
+        return Some(());
+    }
+    let key = slots.find(key, child.id);
+    slots.unset(key);
+    // `Strings::replace($description, LONG_ANNOTATION_REGEX, '')`, then `substr($description, 0, -7)`
+    let stripped = parser::replace_all(long_annotation(), description, |_| String::new());
+    let cut = stripped.len().saturating_sub(7);
+    *description = String::from_utf8_lossy(&stripped.as_bytes()[..cut]).into_owned();
+    let node = slots.child(None, child.tag.clone(), value);
+    slots.set(key, node);
+    slots.splice(key + 1, nodes);
+    Some(())
+}
+
+/// `LONG_ANNOTATION_REGEX`.
+fn long_annotation() -> &'static pcre2::bytes::Regex {
+    static RE: std::sync::OnceLock<pcre2::bytes::Regex> = std::sync::OnceLock::new();
+    RE.get_or_init(|| {
+        pcre2::bytes::Regex::new(r"@\\(?<class_name>.*?)(?<annotation_content>\(.*?\)|,|\r?\n|$)").expect("annotation regex")
+    })
+}
+
+/// `Strings::split($text, NEWLINE_ANNOTATION_FQCN_REGEX)[0]`: the text before the first line that starts with `@\`.
+fn first_text(text: &str) -> String {
+    static RE: std::sync::OnceLock<pcre2::bytes::Regex> = std::sync::OnceLock::new();
+    let re = RE.get_or_init(|| pcre2::bytes::Regex::new(r"\r?\n@\\").expect("new line annotation regex"));
+    let end = re.find(text.as_bytes()).ok().flatten().map_or(text.len(), |m| m.start());
+    text[..end].to_string()
+}
+
+/// `resolveFqnAnnotationSpacelessPhpDocTagNode()`: an annotation of each `@\Class` in `text`, with its tag; `None`
+/// where Rector's parsers never finish reading one.
+fn resolve_fqn_annotations(text: &str, resolve_tag: &dyn Fn(&str) -> String) -> Option<Vec<(String, Value)>> {
+    let mut nodes = Vec::new();
+    for caps in long_annotation().captures_iter(text.as_bytes()).flatten() {
+        let group = |name: &str| caps.name(name).map_or("", |m| &text[m.start()..m.end()]);
+        let open: Vec<&str> = group("class_name").split('(').collect();
+        // `resolveAnnotationContent()`
+        let content = match open.get(1).map(|o| o.trim_matches(PHP_WS)) {
+            Some(o) if !o.ends_with('{') && !o.is_empty() => format!("(\"{}\")", o.trim_matches(['"', '\''])),
+            _ => group("annotation_content").to_string(),
+        };
+        let tag = format!("@\\{}", open[0]);
+        let value = annotation(&tag, content, open[0].to_string(), resolve_tag)?;
+        nodes.push((tag, value));
+    }
+    Some(nodes)
+}
+
+impl Value {
+    /// The value node's `description` property, for one that has it.
+    fn description_mut(&mut self) -> Option<&mut String> {
+        match self { Value::Typed(typed) => Some(&mut typed.description), Value::Other(other) => other.description.as_mut(), _ => None }
+    }
 }
 
 /// `STAR_COMMENT_REGEX`: the `*` that starts a line (white space before it), removed.
@@ -1142,7 +1374,7 @@ fn array_items(values: &[ArrayItem], f: &mut dyn FnMut(&ArrayItem)) {
 
 /// `(string) $phpDocChildNode` of a changed child; `None` where Pun does not print it.
 fn print_child(child: &Child) -> Option<String> {
-    let name = child.tag.as_deref()?;
+    let name = child.tag.as_deref().unwrap_or_default();
     match &child.value {
         Value::Typed(typed) => {
             let quote = |v: &str| quote_of(&typed.strings, v);
@@ -1179,7 +1411,15 @@ fn print_child(child: &Child) -> Option<String> {
             (true, false) => name.to_string(),
         }),
         Value::Other(other) => Some(format!("{name} {}", other.print()?).trim().to_string()),
-        _ => None,
+        // `DoctrineTagValueNode::__toString()`: the annotation's name and arguments, then the description
+        Value::Doctrine { args, description } => {
+            let args = args.iter().map(ToString::to_string).collect::<Vec<_>>().join(", ");
+            Some(format!("{name}({args}) {description}").trim_matches(PHP_WS).to_string())
+        }
+        // `PhpDocTextNode` (no name), `GenericTagValueNode`, `InvalidTagValueNode`
+        Value::Text(value) | Value::Generic(value) | Value::Invalid(value) => {
+            Some(format!("{name} {value}").trim_matches(PHP_WS).to_string())
+        }
     }
 }
 
