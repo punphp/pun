@@ -5,9 +5,10 @@
 
 use super::doc::{Annotation, is_class_name};
 use super::phpdoc_parser::{ArrayItem, Key, Val, print_string};
+use pun_tokens::Kind;
 
 /// `DocTagNodeState::REMOVE_ARRAY`.
-const REMOVE_ARRAY: &str = "__REMOVE_ARRAY__";
+const REMOVE_ARRAY: &str = "__remove_array__";
 
 /// `SilentKeyMap::CLASS_NAMES_TO_SILENT_KEYS`.
 const SILENT_KEYS: &[(&str, &str)] = &[("Symfony\\Component\\Routing\\Annotation\\Route", "path")];
@@ -311,6 +312,32 @@ pub(crate) fn has_remove_array_state(attribute: &Attribute) -> bool {
     attribute.args.iter().any(|arg| {
         matches!(&arg.value, Expr::Array(items) if items.iter().any(|i| matches!(&i.value, Expr::Str(s, _) if s == REMOVE_ARRAY)))
     })
+}
+
+/// Whether Rector prints the attribute as code PHP does not parse (Pun only): an argument named by a number
+/// (`"1"="a"` gives `1: 'a'`) or a nested annotation whose name is no class name (`array(1)` gives `new array(1)`).
+pub(crate) fn is_invalid(attribute: &Attribute) -> bool {
+    attribute.args.iter().any(invalid_arg)
+}
+
+fn invalid_arg(arg: &Arg) -> bool {
+    arg.name.as_deref().is_some_and(|name| !is_constant_name(name)) || invalid_expr(&arg.value)
+}
+
+fn invalid_expr(expr: &Expr) -> bool {
+    match expr {
+        Expr::New(class, args) => {
+            let source = format!("<?php new {class}");
+            let tokens = pun_tokens::tokenize(source.as_bytes());
+            let name = matches!(
+                tokens.last().and_then(|t| t.kind),
+                Some(Kind::T_STRING | Kind::T_NAME_QUALIFIED | Kind::T_NAME_FULLY_QUALIFIED | Kind::T_STATIC)
+            );
+            tokens.len() != 4 || !name || args.iter().any(invalid_arg)
+        }
+        Expr::Array(items) => items.iter().any(|i| invalid_expr(&i.value)),
+        _ => false,
+    }
 }
 
 /// The converter attribute decorators: `DoctrineConverterAttributeDecorator` and

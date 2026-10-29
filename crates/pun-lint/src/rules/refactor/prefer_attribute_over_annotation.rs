@@ -157,7 +157,12 @@ impl AnnotationToAttribute {
             }
             // `Closure`, `ArrowFunction`: an expression's comments are not reprinted, so the doc stays as written and
             // the attributes go before the node (`attrGroups` inline, `' '`)
-            if let Node::Closure(_) | Node::ArrowFunction(_) = node {
+            let lists = match node {
+                Node::Closure(closure) => Some(closure.attribute_lists.last().map(|l| node_span(l).end)),
+                Node::ArrowFunction(arrow) => Some(arrow.attribute_lists.last().map(|l| node_span(l).end)),
+                _ => None,
+            };
+            if let Some(lists) = lists {
                 let start = node_span(&node).start;
                 // php-parser gives the comments to the outermost node that starts after them
                 if ancestors.iter().rev().take_while(|a| node_span(*a).start == start).any(|a| !matches!(a, Node::Expression(_))) {
@@ -165,11 +170,6 @@ impl AnnotationToAttribute {
                 }
                 let Some(doc_comment) = crate::rules::lint_b_doc::Doc::of(ctx.source, &ancestors, start) else {
                     continue;
-                };
-                let lists = match node {
-                    Node::Closure(closure) => closure.attribute_lists.last().map(|l| node_span(l).end),
-                    Node::ArrowFunction(arrow) => arrow.attribute_lists.last().map(|l| node_span(l).end),
-                    _ => unreachable!("a closure"),
                 };
                 let Some((_, groups)) = self.convert(ctx, &view, doc_comment.span, &original, &mut renamed)? else {
                     continue;
@@ -282,7 +282,8 @@ impl AnnotationToAttribute {
         for (i, new) in renames {
             renamed[i] = Some(new);
         }
-        if attributes.iter().any(attribute::has_remove_array_state) {
+        // (Pun only: and where Rector would print code PHP does not parse)
+        if attributes.iter().any(|a| attribute::has_remove_array_state(a) || attribute::is_invalid(a)) {
             return Vec::new();
         }
         // the annotations go, last first so the indexes hold; a text after the closing parenthesis stays

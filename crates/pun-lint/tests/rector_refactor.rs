@@ -832,6 +832,13 @@ fn annotation_to_attribute() {
         80000,
         &[],
     );
+    run_dirs(
+        vec![configured(AnnotationToAttribute::default(), &options)],
+        "AnnotationToAttributeRector",
+        &["OraclePhp74"],
+        70400,
+        &[],
+    );
     let multiple = json!({"items": [{"tag": "Doctrine\\ORM\\Mapping\\Entity"}, {"tag": "Doctrine\\ORM\\Mapping\\ManyToMany"}]});
     run_dirs(
         vec![configured(AnnotationToAttribute::default(), &multiple)],
