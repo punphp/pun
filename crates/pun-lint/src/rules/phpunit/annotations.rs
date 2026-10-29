@@ -47,7 +47,6 @@ impl<'s> Annotated<'s> {
                 &property.attribute_lists
             }
             Node::Interface(interface) => &interface.attribute_lists,
-            Node::Function(function) => &function.attribute_lists,
             Node::FunctionLikeParameter(parameter) => &parameter.attribute_lists,
             _ => return None,
         };
