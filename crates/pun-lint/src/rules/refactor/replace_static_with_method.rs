@@ -92,14 +92,16 @@ impl Rule for ReplaceStaticWithMethod {
                     }
                     _ => return Outcome::Keep,
                 };
-                let (Expression::Identifier(id), ClassLikeMemberSelector::Identifier(name)) = (class, selector)
+                let (Expression::Identifier(id), ClassLikeMemberSelector::Identifier(name)) =
+                    (class, selector)
                 else {
                     return Outcome::Keep;
                 };
                 let resolved = resolve_class_name(full, id);
                 let written = String::from_utf8_lossy(name.value);
                 let Some(item) = self.items.iter().find(|i| {
-                    i.static_class == resolved && (i.static_method == "*" || i.static_method == written)
+                    i.static_class == resolved
+                        && (i.static_method == "*" || i.static_method == written)
                 }) else {
                     return Outcome::Keep;
                 };
@@ -128,5 +130,8 @@ impl Rule for ReplaceStaticWithMethod {
 
 /// `ClassMethod::isStatic()`.
 fn is_static(method: &Method<'_>) -> bool {
-    method.modifiers.iter().any(|m| matches!(m, Modifier::Static(_)))
+    method
+        .modifiers
+        .iter()
+        .any(|m| matches!(m, Modifier::Static(_)))
 }

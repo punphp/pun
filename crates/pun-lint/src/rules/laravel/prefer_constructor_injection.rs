@@ -72,9 +72,9 @@ impl Rule for PreferConstructorInjection {
     fn configure(&mut self, options: &serde_json::Value) -> Result<(), String> {
         let mut out = Vec::new();
         for item in items(options)? {
-            let array = item
-                .as_object()
-                .is_some_and(|m| m.contains_key("array-method") || m.contains_key("non-array-method"));
+            let array = item.as_object().is_some_and(|m| {
+                m.contains_key("array-method") || m.contains_key("non-array-method")
+            });
             let injection = if array {
                 let map = object(item, &ARRAY, &ARRAY)?;
                 Injection::Array {
@@ -95,7 +95,12 @@ impl Rule for PreferConstructorInjection {
             };
             assert_class(injection.class())?;
             assert_function(injection.function())?;
-            if let Injection::Array { array_method, non_array_method, .. } = &injection {
+            if let Injection::Array {
+                array_method,
+                non_array_method,
+                ..
+            } = &injection
+            {
                 assert_method(array_method)?;
                 assert_method(non_array_method)?;
             }
@@ -128,7 +133,9 @@ impl Rule for PreferConstructorInjection {
             &|injector, n, full, method, scope| {
                 let (function, list) = match n {
                     Node::FunctionCall(c) => (c.function, Some(&c.argument_list)),
-                    Node::FunctionPartialApplication(p) if is_first_class(&p.argument_list) => (p.function, None),
+                    Node::FunctionPartialApplication(p) if is_first_class(&p.argument_list) => {
+                        (p.function, None)
+                    }
                     _ => return Outcome::Keep,
                 };
                 let Expression::Identifier(id) = function else {
@@ -152,16 +159,31 @@ impl Rule for PreferConstructorInjection {
                 };
                 let first = list.arguments.iter().next().map(|a| a.value());
                 match (item, first) {
-                    (Injection::Argument { method_if_no_args: Some(m), .. }, None) => {
-                        rewrite(format!("{receiver}->{m}"), Some(call_args(list)))
-                    }
+                    (
+                        Injection::Argument {
+                            method_if_no_args: Some(m),
+                            ..
+                        },
+                        None,
+                    ) => rewrite(format!("{receiver}->{m}"), Some(call_args(list))),
                     (_, None) => rewrite(receiver, None),
-                    (Injection::Argument { method_if_args: Some(m), .. }, Some(_)) => {
-                        rewrite(format!("{receiver}->{m}"), Some(call_args(list)))
-                    }
+                    (
+                        Injection::Argument {
+                            method_if_args: Some(m),
+                            ..
+                        },
+                        Some(_),
+                    ) => rewrite(format!("{receiver}->{m}"), Some(call_args(list))),
                     // `ShouldNotHappenException`
                     (Injection::Argument { .. }, Some(_)) => Outcome::Fail,
-                    (Injection::Array { array_method, non_array_method, .. }, Some(value)) => {
+                    (
+                        Injection::Array {
+                            array_method,
+                            non_array_method,
+                            ..
+                        },
+                        Some(value),
+                    ) => {
                         let method = match is_array(ctx, value) {
                             true => array_method,
                             false => non_array_method,
@@ -177,7 +199,10 @@ impl Rule for PreferConstructorInjection {
 
 /// The methods the rule walks: neither static nor abstract.
 fn visited(method: &Method<'_>) -> bool {
-    !method.modifiers.iter().any(|m| matches!(m, Modifier::Static(_)))
+    !method
+        .modifiers
+        .iter()
+        .any(|m| matches!(m, Modifier::Static(_)))
         && matches!(method.body, MethodBody::Concrete(_))
 }
 
@@ -186,5 +211,7 @@ fn is_array(ctx: &Context<'_>, expr: &Expression<'_>) -> bool {
     use mago_codex::ttype::atomic::TAtomic;
     facts(ctx)
         .native_type(node_span(unparenthesize(expr)))
-        .is_some_and(|t| !t.types.is_empty() && t.types.iter().all(|a| matches!(a, TAtomic::Array(_))))
+        .is_some_and(|t| {
+            !t.types.is_empty() && t.types.iter().all(|a| matches!(a, TAtomic::Array(_)))
+        })
 }

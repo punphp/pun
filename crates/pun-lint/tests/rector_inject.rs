@@ -10,10 +10,23 @@
 //! 8.4. Oracle/ holds extra inputs with what Rector wrote for them (`.oracle/rector-ecosystem`, the rule alone with the
 //! fixture's configuration and Source/ autoloaded), at the PHP version of the rule's Fixture; Oracle84/, Oracle74/ and
 //! Oracle73/ at 8.4, 7.4 and 7.3. ArgumentFuncCallToMethodCallRector's Oracle/rector_error_* are files Rector stops on
-//! with an error and leaves as they were (a first-class callable, arguments without `method-if-args`).
+//! with an error and leaves as they were (a first-class callable, arguments without `method-if-args`), as is
+//! StaticCallToMethodCallRector's Oracle/circular_parents (a class among its own parents).
 //!
-//! Pun/ holds the cases where Rector writes broken code and Pun leaves the class alone, each with its reason in the
-//! file's first comment:
+//! Pun/ (at the PHP version of the rule's Fixture) and Pun74/ (at 7.4) hold the cases where Rector writes broken code
+//! and Pun leaves the class alone, each with its reason in the file's first comment:
+//! - StaticCallToMethodCallRector/Pun/abstract_constructor: a promoted property in an abstract constructor.
+//! - StaticCallToMethodCallRector/Pun/abstract_parent_constructor: an abstract constructor copied with a body.
+//! - StaticCallToMethodCallRector/Pun/abstract_required_method: a body in an abstract `@required` method.
+//! - StaticCallToMethodCallRector/Pun/closure_in_constructor: `$application` in a closure that does not capture it.
+//! - StaticCallToMethodCallRector/Pun/constructor_after_method: the parameter `$application` declared twice.
+//! - StaticCallToMethodCallRector/Pun/constructor_parameter_of_the_name: the parameter `$application` declared twice.
+//! - StaticCallToMethodCallRector/Pun/function_in_method: `$this` in a function.
+//! - StaticCallToMethodCallRector/Pun/plain_parameter_of_the_name: `$this->application` read, never declared.
+//! - StaticCallToMethodCallRector/Pun/required_parameter_of_the_name: a property never assigned.
+//! - StaticCallToMethodCallRector/Pun74/abstract_constructor: a body in an abstract constructor.
+//! - StaticCallToMethodCallRector/Pun74/trait_constructor: `parent::__construct()` in a class without a parent.
+//! - StaticCallToMethodCallRector/Pun/constructor_call_then_method_call: `$this->application` read, never declared.
 //! - StaticCallToMethodCallRector/Pun/nested_class: `$this->application` in a nested class that has no such property.
 //! - StaticCallToMethodCallRector/Pun/parent_parameter_of_the_name: no dependency added, `$this->application` read.
 //! - StaticCallToMethodCallRector/Pun/trait_constructor: `parent::__construct()` in a class without a parent.
@@ -24,14 +37,72 @@
 
 mod lint_c;
 
+use std::path::Path;
+
 use lint_c::{run_class, run_class_at, run_dirs};
-use pun_lint::Rule;
+use mago_syntax::cst::Node;
 use pun_lint::rules::{PreferConstructorInjection, ReplaceStaticWithMethod};
+use pun_lint::{Linter, Rule};
 use serde_json::{Value, json};
 
 fn configured<R: Rule + 'static>(mut rule: R, options: &Value) -> Box<dyn Rule> {
     rule.configure(options).unwrap();
     Box::new(rule)
+}
+
+/// A rule called on every node, not only the kinds of its `targets()`.
+struct Everywhere(Box<dyn Rule>);
+
+impl Rule for Everywhere {
+    fn id(&self) -> &'static str {
+        self.0.id()
+    }
+
+    fn visit<'ast, 'arena>(
+        &self,
+        node: Node<'ast, 'arena>,
+        ancestors: &[Node<'ast, 'arena>],
+        ctx: &pun_lint::Context<'_>,
+        out: &mut Vec<pun_lint::Report>,
+    ) {
+        self.0.visit(node, ancestors, ctx, out);
+    }
+}
+
+/// On each input of tests/rector/<class>: called on every node, the rule `make` gives reports what it reports when
+/// called on its targets (`targets()` only spares the engine work), and unconfigured it reports nothing.
+fn everywhere(make: impl Fn() -> Box<dyn Rule>, unconfigured: Box<dyn Rule>, class: &str) {
+    let targeted = Linter::new(vec![make()], 80400);
+    let everywhere = Linter::new(vec![Box::new(Everywhere(make()))], 80400);
+    let unconfigured = Linter::new(vec![unconfigured], 80400);
+    let root = Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("tests/rector")
+        .join(class);
+    let mut dirs: Vec<_> = std::fs::read_dir(&root)
+        .unwrap()
+        .map(|e| e.unwrap().path())
+        .collect();
+    dirs.retain(|d| !d.ends_with("Source"));
+    for path in dirs
+        .iter()
+        .flat_map(|d| std::fs::read_dir(d).unwrap())
+        .map(|e| e.unwrap().path())
+    {
+        let content = std::fs::read_to_string(&path).unwrap();
+        let input = content.split("-----\n").next().unwrap();
+        let reports = targeted.check(&path, input).unwrap();
+        assert_eq!(
+            everywhere.check(&path, input).unwrap(),
+            reports,
+            "{}",
+            path.display()
+        );
+        assert!(
+            unconfigured.check(&path, input).unwrap().is_empty(),
+            "{}",
+            path.display()
+        );
+    }
 }
 
 /// `configure` rejects each of `bad` with the message `error`.
@@ -61,14 +132,27 @@ fn static_rule(options: &Value) -> Box<dyn Rule> {
 fn static_call_to_method_call() {
     let options = static_options();
     run_class_at(vec![static_rule(&options)], STATIC, 80000);
-    let at = |sub: &str, version| run_dirs(vec![static_rule(&options)], STATIC, &[sub], version, &[]);
+    let at =
+        |sub: &str, version| run_dirs(vec![static_rule(&options)], STATIC, &[sub], version, &[]);
     at("Oracle84", 80400);
     at("Oracle74", 70400);
     at("Oracle73", 70300);
+    at("Pun74", 70400);
     let php74 = json!({"items": [
         {"static-class": "Illuminate\\Support\\Facades\\App", "static-method": "*", "class-type": "Illuminate\\Foundation\\Application", "method-name": "*"},
     ]});
-    run_dirs(vec![static_rule(&php74)], STATIC, &["FixturePhp74"], 70400, &[]);
+    run_dirs(
+        vec![static_rule(&php74)],
+        STATIC,
+        &["FixturePhp74"],
+        70400,
+        &[],
+    );
+    everywhere(
+        || static_rule(&options),
+        Box::new(ReplaceStaticWithMethod::default()),
+        STATIC,
+    );
     rejects(
         ReplaceStaticWithMethod::default(),
         &[
@@ -113,8 +197,11 @@ fn laravel_options() -> Value {
 #[test]
 fn argument_func_call_to_method_call() {
     let options = laravel_options();
-    run_class(
-        vec![configured(PreferConstructorInjection::default(), &options)],
+    let rule = || configured(PreferConstructorInjection::default(), &options);
+    run_class(vec![rule()], LARAVEL);
+    everywhere(
+        rule,
+        Box::new(PreferConstructorInjection::default()),
         LARAVEL,
     );
     rejects(

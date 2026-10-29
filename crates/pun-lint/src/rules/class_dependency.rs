@@ -31,7 +31,7 @@
 //! declares); a parent's private method and a static property (not readable through `$this->`); a constructor that
 //! comes from a trait or an interface, or an abstract or variadic parent constructor (Rector calls
 //! `parent::__construct()` where it does not exist, or adds a parameter PHP rejects); an abstract constructor or
-//! `@required` method.
+//! `@required` method. A class among its own parents is left alone too, as Rector stops there with an error.
 
 use std::rc::Rc;
 use std::sync::Arc;
@@ -102,11 +102,10 @@ pub(crate) fn call_args(list: &ArgumentList<'_>) -> Args {
 
 /// Whether a first-class callable's arguments are `(...)`.
 pub(crate) fn is_first_class(list: &PartialArgumentList<'_>) -> bool {
-    list.arguments.len() == 1
-        && matches!(
-            list.arguments.get(0),
-            Some(PartialArgument::VariadicPlaceholder(_))
-        )
+    matches!(
+        list.arguments.iter().collect::<Vec<_>>()[..],
+        [PartialArgument::VariadicPlaceholder(_)]
+    )
 }
 
 /// The first-class callable's `(...)`.
@@ -210,18 +209,25 @@ fn scope_of(path: &[Node<'_, '_>]) -> Scope {
 fn is_class_like(node: &Node<'_, '_>) -> bool {
     matches!(
         node,
-        Node::Class(_) | Node::AnonymousClass(_) | Node::Interface(_) | Node::Trait(_) | Node::Enum(_)
+        Node::Class(_)
+            | Node::AnonymousClass(_)
+            | Node::Interface(_)
+            | Node::Trait(_)
+            | Node::Enum(_)
     )
 }
 
 /// Whether the class sits in a method of a class (named or anonymous) that the rule walks, Rector having rewritten
 /// its calls from the outer class already.
-fn in_visited_method(ancestors: &[Node<'_, '_>], visit_method: &dyn Fn(&Method<'_>) -> bool) -> bool {
-    let Some(at) = ancestors.iter().rposition(|n| matches!(n, Node::Method(_))) else {
+fn in_visited_method(
+    ancestors: &[Node<'_, '_>],
+    visit_method: &dyn Fn(&Method<'_>) -> bool,
+) -> bool {
+    let Some((at, method)) = (ancestors.iter().enumerate().rev()).find_map(|(i, n)| match n {
+        Node::Method(m) => Some((i, *m)),
+        _ => None,
+    }) else {
         return false;
-    };
-    let Node::Method(method) = ancestors[at] else {
-        unreachable!()
     };
     let outer = ancestors[..at].iter().rev().find(|n| is_class_like(n));
     matches!(outer, Some(Node::Class(_) | Node::AnonymousClass(_))) && visit_method(method)
@@ -410,7 +416,11 @@ impl<'c, 'ast, 'arena> Injector<'c, 'ast, 'arena> {
             methods: None,
             properties: None,
             nearest: None,
-            ctor: if own.is_some() { Ctor::Own } else { Ctor::Missing },
+            ctor: if own.is_some() {
+                Ctor::Own
+            } else {
+                Ctor::Missing
+            },
             ctor_params: Vec::new(),
             ctor_stmts: Vec::new(),
             autowire_params: Vec::new(),
@@ -426,7 +436,12 @@ impl<'c, 'ast, 'arena> Injector<'c, 'ast, 'arena> {
 
     /// `matchTypeProvidingExpr` for the class `class` in `method`: the code of the expression to call on, or `None`
     /// where the call stays.
-    pub(crate) fn provide(&mut self, method: &Method<'_>, class: &str, scope: Scope) -> Option<String> {
+    pub(crate) fn provide(
+        &mut self,
+        method: &Method<'_>,
+        class: &str,
+        scope: Scope,
+    ) -> Option<String> {
         // Pun: Rector writes `$this` of the outer class in the nested one.
         if scope.nested {
             self.failed = true;
@@ -481,8 +496,16 @@ impl<'c, 'ast, 'arena> Injector<'c, 'ast, 'arena> {
 
     fn method_providing(&mut self, class: &str) -> Option<String> {
         if self.methods.is_none() {
-            let methods = methods_of(&self.facts, self.class, self.ancestors, &self.name, &self.name, &mut Vec::new());
-            self.methods = Some(methods);
+            let methods = methods_of(
+                &self.facts,
+                self.class,
+                self.ancestors,
+                &self.name,
+                &self.name,
+                &mut Vec::new(),
+            );
+            self.failed |= methods.is_none();
+            self.methods = Some(methods.unwrap_or_default());
         }
         let methods = self.methods.as_ref().unwrap();
         let documented = self.facts.documented();
@@ -491,7 +514,8 @@ impl<'c, 'ast, 'arena> Injector<'c, 'ast, 'arena> {
             let t = meta.return_type_metadata.as_ref()?;
             let private = (meta.method_metadata.as_ref())
                 .is_some_and(|mm| mm.visibility == Visibility::Private);
-            is_matching_type(&t.type_union, class).then(|| (m.name.clone(), m.from_parent && private))
+            is_matching_type(&t.type_union, class)
+                .then(|| (m.name.clone(), m.from_parent && private))
         })?;
         // Pun: a parent's private method is not callable here.
         self.failed |= private;
@@ -500,9 +524,16 @@ impl<'c, 'ast, 'arena> Injector<'c, 'ast, 'arena> {
 
     fn property_providing(&mut self, class: &str) -> Option<String> {
         if self.properties.is_none() {
-            let properties =
-                properties_of(&self.facts, self.class, self.ancestors, &self.name, &self.name, &mut Vec::new());
-            self.properties = Some(properties);
+            let properties = properties_of(
+                &self.facts,
+                self.class,
+                self.ancestors,
+                &self.name,
+                &self.name,
+                &mut Vec::new(),
+            );
+            self.failed |= properties.is_none();
+            self.properties = Some(properties.unwrap_or_default());
         }
         let properties = self.properties.as_ref().unwrap();
         let documented = self.facts.documented();
@@ -560,8 +591,22 @@ impl<'c, 'ast, 'arena> Injector<'c, 'ast, 'arena> {
     /// named `name`, `Some(true)` when it is a property autowiring fills (`detect()`), `Some(false)` for a promoted
     /// parameter it marks, `None` for any other.
     fn class_context_property(&self, name: &str) -> Option<Option<bool>> {
-        if let Some((index, _)) = self.class.property(name) {
-            return Some(self.is_autowired_member(index).then_some(true));
+        for (index, member) in self.class.members.iter().enumerate() {
+            let (lists, items): (_, Vec<&PropertyItem<'_>>) = match member {
+                ClassLikeMember::Property(Property::Plain(p)) => {
+                    (&p.attribute_lists, p.items.iter().collect())
+                }
+                ClassLikeMember::Property(Property::Hooked(p)) => {
+                    (&p.attribute_lists, vec![&p.item])
+                }
+                _ => continue,
+            };
+            if items
+                .iter()
+                .any(|item| &item.variable().name[1..] == name.as_bytes())
+            {
+                return Some(self.is_autowired_member(index, lists).then_some(true));
+            }
         }
         if self.new_properties.iter().any(|p| p.name == name) {
             return Some(None);
@@ -569,7 +614,10 @@ impl<'c, 'ast, 'arena> Injector<'c, 'ast, 'arena> {
         if let Some(own) = self.own {
             for p in own.parameter_list.parameters.iter() {
                 if !p.modifiers.is_empty() && &p.variable.name[1..] == name.as_bytes() {
-                    return Some(self.is_autowired_attributes(&p.attribute_lists).then_some(false));
+                    return Some(
+                        self.is_autowired_attributes(&p.attribute_lists)
+                            .then_some(false),
+                    );
                 }
             }
         }
@@ -587,7 +635,13 @@ impl<'c, 'ast, 'arena> Injector<'c, 'ast, 'arena> {
     /// The names of the parameters of the class's constructor as changed (`isParamInConstructor`).
     fn param_names(&self) -> Vec<String> {
         let mut names: Vec<String> = match &self.ctor {
-            Ctor::Own => self.own.map(params_of).unwrap_or_default().into_iter().map(|(n, _)| n).collect(),
+            Ctor::Own => self
+                .own
+                .map(params_of)
+                .unwrap_or_default()
+                .into_iter()
+                .map(|(n, _)| n)
+                .collect(),
             Ctor::Missing | Ctor::Fresh => Vec::new(),
             Ctor::FromParent(p) => p.params.iter().map(|p| p.name.clone()).collect(),
         };
@@ -608,7 +662,11 @@ impl<'c, 'ast, 'arena> Injector<'c, 'ast, 'arena> {
 
     /// `addPromotedProperty`.
     fn add_promoted_property(&mut self, name: &str, class: &str) {
-        let readonly = if self.ctx.php_version >= READONLY { "readonly " } else { "" };
+        let readonly = if self.ctx.php_version >= READONLY {
+            "readonly "
+        } else {
+            ""
+        };
         let param = Added {
             name: name.to_string(),
             text: format!("private {readonly}\\{class} ${name}"),
@@ -655,16 +713,34 @@ impl<'c, 'ast, 'arena> Injector<'c, 'ast, 'arena> {
     /// Whether the constructor parameter `name` exists, and then whether it is a promoted property.
     fn ctor_param(&self, name: &str) -> Option<bool> {
         let found = match &self.ctor {
-            Ctor::Own => self.own.map(params_of).unwrap_or_default().into_iter().find(|(n, _)| n == name).map(|(_, p)| p),
-            Ctor::FromParent(p) => p.params.iter().find(|p| p.name == name).map(|p| p.promoted.is_some()),
+            Ctor::Own => self
+                .own
+                .map(params_of)
+                .unwrap_or_default()
+                .into_iter()
+                .find(|(n, _)| n == name)
+                .map(|(_, p)| p),
+            Ctor::FromParent(p) => p
+                .params
+                .iter()
+                .find(|p| p.name == name)
+                .map(|p| p.promoted.is_some()),
             Ctor::Missing | Ctor::Fresh => None,
         };
-        found.or_else(|| self.ctor_params.iter().find(|a| a.name == name).map(|a| a.promoted))
+        found.or_else(|| {
+            self.ctor_params
+                .iter()
+                .find(|a| a.name == name)
+                .map(|a| a.promoted)
+        })
     }
 
     /// Whether the class's own constructor has a body to add to.
     fn ctor_has_body(&self) -> bool {
-        !matches!(self.ctor, Ctor::Own) || self.own.is_some_and(|m| matches!(m.body, MethodBody::Concrete(_)))
+        !matches!(self.ctor, Ctor::Own)
+            || self
+                .own
+                .is_some_and(|m| matches!(m.body, MethodBody::Concrete(_)))
     }
 
     /// `addConstructorDependencyWithCustomAssign` with `$this->name = $name`.
@@ -685,7 +761,11 @@ impl<'c, 'ast, 'arena> Injector<'c, 'ast, 'arena> {
         }
         let existing: Vec<(String, bool)> = match &self.ctor {
             Ctor::Own => self.own.map(params_of).unwrap_or_default(),
-            Ctor::FromParent(p) => p.params.iter().map(|p| (p.name.clone(), p.promoted.is_some())).collect(),
+            Ctor::FromParent(p) => p
+                .params
+                .iter()
+                .map(|p| (p.name.clone(), p.promoted.is_some()))
+                .collect(),
             _ => Vec::new(),
         };
         add_parameter_and_assign(
@@ -721,35 +801,37 @@ impl<'c, 'ast, 'arena> Injector<'c, 'ast, 'arena> {
             };
             let public = !(method.modifiers.iter())
                 .any(|m| matches!(m, Modifier::Private(_) | Modifier::Protected(_)));
-            (public && !is_magic(method.name.value) && self.is_autowired_member(i)).then_some(method)
+            (public
+                && !is_magic(method.name.value)
+                && self.is_autowired_member(i, &method.attribute_lists))
+            .then_some(method)
         })
     }
 
-    /// `detect()` on the member at `index`: an `@required` or `@inject` tag in its doc comment, or Symfony's
-    /// `Required` or Nette's `Inject` attribute.
-    fn is_autowired_member(&self, index: usize) -> bool {
+    /// `detect()` on the member at `index`, whose attributes are `lists`: an `@required` or `@inject` tag in its doc
+    /// comment, or Symfony's `Required` or Nette's `Inject` attribute.
+    fn is_autowired_member(&self, index: usize, lists: &Sequence<'_, AttributeList<'_>>) -> bool {
         let member = self.class.members.get(index).unwrap();
-        let lists = match member {
-            ClassLikeMember::Method(m) => &m.attribute_lists,
-            ClassLikeMember::Property(Property::Plain(p)) => &p.attribute_lists,
-            ClassLikeMember::Property(Property::Hooked(p)) => &p.attribute_lists,
-            _ => return false,
-        };
         let from = member_from(self.class.members, self.class.left_brace, index);
-        let tagged = doc_comment(self.ctx.source, from, node_span(member).start).is_some_and(|doc| {
-            let text = self.ctx.source[doc.start..doc.end].to_ascii_lowercase();
-            ["@required", "@inject"].iter().any(|tag| {
-                text.match_indices(tag).any(|(at, _)| {
-                    !text[at + tag.len()..].starts_with(|c: char| c.is_ascii_alphanumeric() || c == '_')
+        let tagged =
+            doc_comment(self.ctx.source, from, node_span(member).start).is_some_and(|doc| {
+                let text = self.ctx.source[doc.start..doc.end].to_ascii_lowercase();
+                ["@required", "@inject"].iter().any(|tag| {
+                    text.match_indices(tag).any(|(at, _)| {
+                        !text[at + tag.len()..]
+                            .starts_with(|c: char| c.is_ascii_alphanumeric() || c == '_')
+                    })
                 })
-            })
-        });
+            });
         tagged || self.is_autowired_attributes(lists)
     }
 
     fn is_autowired_attributes(&self, lists: &Sequence<'_, AttributeList<'_>>) -> bool {
-        has_attribute(self.ancestors, lists, "Symfony\\Contracts\\Service\\Attribute\\Required")
-            || has_attribute(self.ancestors, lists, "Nette\\DI\\Attributes\\Inject")
+        has_attribute(
+            self.ancestors,
+            lists,
+            "Symfony\\Contracts\\Service\\Attribute\\Required",
+        ) || has_attribute(self.ancestors, lists, "Nette\\DI\\Attributes\\Inject")
     }
 
     // Printing
@@ -762,11 +844,29 @@ impl<'c, 'ast, 'arena> Injector<'c, 'ast, 'arena> {
         if !self.new_properties.is_empty() || new_ctor {
             edits.push(self.insert_members(all, new_ctor));
         }
-        if let (Ctor::Own, Some(own)) = (&self.ctor, self.own) {
-            edits.extend(method_edits(source, all, own, &self.ctor_params, &self.ctor_stmts));
+        if let (Ctor::Own, Some(own)) = (&self.ctor, self.own)
+            && let MethodBody::Concrete(block) = &own.body
+        {
+            edits.extend(method_edits(
+                source,
+                all,
+                own,
+                block,
+                &self.ctor_params,
+                &self.ctor_stmts,
+            ));
         }
-        if let Some(method) = self.autowire {
-            edits.extend(method_edits(source, all, method, &self.autowire_params, &self.autowire_stmts));
+        if let Some(method) = self.autowire
+            && let MethodBody::Concrete(block) = &method.body
+        {
+            edits.extend(method_edits(
+                source,
+                all,
+                method,
+                block,
+                &self.autowire_params,
+                &self.autowire_stmts,
+            ));
         }
         edits
     }
@@ -783,7 +883,9 @@ impl<'c, 'ast, 'arena> Injector<'c, 'ast, 'arena> {
                     after = i.checked_sub(1);
                     break;
                 }
-                ClassLikeMember::Property(_) if !matches!(members.get(i + 1), Some(ClassLikeMember::Property(_))) => {
+                ClassLikeMember::Property(_)
+                    if !matches!(members.get(i + 1), Some(ClassLikeMember::Property(_))) =>
+                {
                     after = Some(i);
                     break;
                 }
@@ -824,7 +926,9 @@ impl<'c, 'ast, 'arena> Injector<'c, 'ast, 'arena> {
                 }
                 let start = node_span(members[0]).start;
                 let from = self.class.left_brace.end.offset as usize;
-                let at = comments_between(all, from, start).first().map_or(start, |c| c.start);
+                let at = comments_between(all, from, start)
+                    .first()
+                    .map_or(start, |c| c.start);
                 Edit::new(Span::new(at, at), text)
             }
         }
@@ -838,11 +942,19 @@ impl<'c, 'ast, 'arena> Injector<'c, 'ast, 'arena> {
         let mut stmts: Vec<String> = Vec::new();
         let (comments, head, params) = match &self.ctor {
             Ctor::FromParent(parent) => {
-                let args: Vec<String> = parent.params.iter().map(|p| format!("${}", p.name)).collect();
+                let args: Vec<String> = parent
+                    .params
+                    .iter()
+                    .map(|p| format!("${}", p.name))
+                    .collect();
                 stmts.push(format!("parent::__construct({});", args.join(", ")));
                 let comments = (!parent.comments.is_empty())
                     .then(|| print_comments(&parent.source, &parent.comments, &nl));
-                let mut head: String = parent.attributes.iter().map(|a| format!("{a}{nl}")).collect();
+                let mut head: String = parent
+                    .attributes
+                    .iter()
+                    .map(|a| format!("{a}{nl}"))
+                    .collect();
                 head.push_str(&parent.modifiers);
                 let multiline = (parent.params.iter())
                     .any(|p| !p.comments.is_empty() || !p.attributes.is_empty());
@@ -868,7 +980,8 @@ impl<'c, 'ast, 'arena> Injector<'c, 'ast, 'arena> {
                     items.extend(added.iter().map(|a| format!("{nl4}{a}")));
                     format!("{}{nl}", items.join(","))
                 } else {
-                    let mut all: Vec<&str> = parent.params.iter().map(|p| p.text.as_str()).collect();
+                    let mut all: Vec<&str> =
+                        parent.params.iter().map(|p| p.text.as_str()).collect();
                     all.extend(added);
                     all.join(", ")
                 };
@@ -925,10 +1038,27 @@ fn params_of(method: &Method<'_>) -> Vec<(String, bool)> {
 /// `ClassMethod::isMagic()`.
 fn is_magic(name: &[u8]) -> bool {
     const MAGIC: [&str; 17] = [
-        "__construct", "__destruct", "__call", "__callstatic", "__get", "__set", "__isset", "__unset", "__sleep",
-        "__wakeup", "__tostring", "__set_state", "__clone", "__invoke", "__debuginfo", "__serialize", "__unserialize",
+        "__construct",
+        "__destruct",
+        "__call",
+        "__callstatic",
+        "__get",
+        "__set",
+        "__isset",
+        "__unset",
+        "__sleep",
+        "__wakeup",
+        "__tostring",
+        "__set_state",
+        "__clone",
+        "__invoke",
+        "__debuginfo",
+        "__serialize",
+        "__unserialize",
     ];
-    MAGIC.iter().any(|m| m.as_bytes().eq_ignore_ascii_case(name))
+    MAGIC
+        .iter()
+        .any(|m| m.as_bytes().eq_ignore_ascii_case(name))
 }
 
 /// `isMatchingType`: not `mixed`, and without `null` exactly the object type of `class`.
@@ -946,9 +1076,14 @@ fn is_matching_type(t: &TUnion, class: &str) -> bool {
                 && n.intersection_types.is_none()
         }
         // a class the codebase does not know
-        [TAtomic::Reference(TReference::Symbol { name, parameters: None, intersection_types: None, .. })] => {
-            name.as_bytes() == class.as_bytes()
-        }
+        [
+            TAtomic::Reference(TReference::Symbol {
+                name,
+                parameters: None,
+                intersection_types: None,
+                ..
+            }),
+        ] => name.as_bytes() == class.as_bytes(),
         _ => false,
     }
 }
@@ -967,17 +1102,29 @@ fn print_property(p: &NewProperty, nl: &str) -> (Option<String>, String) {
 
 /// The edits for the parameters and statements added to the class's method `method`: after its last parameter and
 /// statement, or the whole method printed anew when its body was empty.
-fn method_edits(source: &str, all: &[Token], method: &Method<'_>, params: &[Added], stmts: &[String]) -> Vec<Edit> {
-    let MethodBody::Concrete(block) = &method.body else {
-        return Vec::new();
-    };
+fn method_edits(
+    source: &str,
+    all: &[Token],
+    method: &Method<'_>,
+    block: &Block<'_>,
+    params: &[Added],
+    stmts: &[String],
+) -> Vec<Edit> {
     let list = block_list(all, block);
     if !stmts.is_empty() && list.is_empty() {
-        return vec![Edit::new(node_span(method), reprint_method(source, all, method, params, stmts))];
+        return vec![Edit::new(
+            node_span(method),
+            reprint_method(source, all, method, params, stmts),
+        )];
     }
     let mut edits = Vec::new();
     let texts: Vec<&str> = params.iter().map(|a| a.text.as_str()).collect();
-    let existing: Vec<Span> = method.parameter_list.parameters.iter().map(|p| node_span(p)).collect();
+    let existing: Vec<Span> = method
+        .parameter_list
+        .parameters
+        .iter()
+        .map(|p| node_span(p))
+        .collect();
     if !texts.is_empty() {
         match existing.last() {
             None => {
@@ -996,7 +1143,10 @@ fn method_edits(source: &str, all: &[Token], method: &Method<'_>, params: &[Adde
         }
     }
     if !stmts.is_empty() {
-        let after = list.stmts.last().map_or(list.inner.start, |s| node_span(*s).end);
+        let after = list
+            .stmts
+            .last()
+            .map_or(list.inner.start, |s| node_span(*s).end);
         let (start, end) = match list.nop {
             true => {
                 let comments = comments_between(all, after, list.inner.end);
@@ -1013,17 +1163,30 @@ fn method_edits(source: &str, all: &[Token], method: &Method<'_>, params: &[Adde
 
 /// `isMultiline`: two items or more, with a line break before the end of each after the first.
 fn is_multiline(source: &str, items: &[Span]) -> bool {
-    items.len() >= 2 && items.windows(2).all(|w| source[w[0].end..w[1].end].contains('\n'))
+    items.len() >= 2
+        && items
+            .windows(2)
+            .all(|w| source[w[0].end..w[1].end].contains('\n'))
 }
 
 /// `pStmt_ClassMethod` for a method whose body was empty: its attributes and modifiers, its parameters (kept as
 /// written) with the new ones, and the new statements.
-fn reprint_method(source: &str, all: &[Token], method: &Method<'_>, params: &[Added], stmts: &[String]) -> String {
+fn reprint_method(
+    source: &str,
+    all: &[Token],
+    method: &Method<'_>,
+    params: &[Added],
+    stmts: &[String],
+) -> String {
     let level = indentation(source, node_span(method).start);
     let nl = format!("\n{}", " ".repeat(level));
     let nl4 = format!("\n{}", " ".repeat(level + 4));
     let text = |s: Span| &source[s.start..s.end];
-    let mut out: String = method.attribute_lists.iter().map(|a| format!("{}{nl}", text(node_span(a)))).collect();
+    let mut out: String = method
+        .attribute_lists
+        .iter()
+        .map(|a| format!("{}{nl}", text(node_span(a))))
+        .collect();
     out.push_str(&print_modifiers(&method.modifiers, false));
     out.push_str("function ");
     if method.ampersand.is_some() {
@@ -1034,10 +1197,21 @@ fn reprint_method(source: &str, all: &[Token], method: &Method<'_>, params: &[Ad
         .map(|p| {
             let s = node_span(p);
             let before = previous_token_end(source, all, s.start);
-            (comments_between(all, before, s.start), s, !p.attribute_lists.is_empty())
+            (
+                comments_between(all, before, s.start),
+                s,
+                !p.attribute_lists.is_empty(),
+            )
         })
         .collect();
-    let moved = |s: Span, to: usize| reprint(source, all, s, to as isize - indentation(source, s.start) as isize);
+    let moved = |s: Span, to: usize| {
+        reprint(
+            source,
+            all,
+            s,
+            to as isize - indentation(source, s.start) as isize,
+        )
+    };
     out.push('(');
     if originals.iter().all(|(c, _, a)| c.is_empty() && !a) {
         let mut items: Vec<String> = originals.iter().map(|(_, s, _)| moved(*s, level)).collect();
@@ -1091,14 +1265,29 @@ fn shape_of(
     if name.eq_ignore_ascii_case(current) {
         let resolve = |id: &Identifier<'_>| resolve_class_name(ancestors, id);
         let types = |list: &Option<Implements<'_>>| -> Vec<String> {
-            list.iter().flat_map(|i| i.types.iter().map(resolve)).collect()
+            list.iter()
+                .flat_map(|i| i.types.iter().map(resolve))
+                .collect()
         };
-        let parent = class.extends.as_ref().and_then(|e| e.types.iter().next()).map(resolve);
-        return Some(shape_from(class.members, parent, types(class.implements), &resolve));
+        let parent = class
+            .extends
+            .as_ref()
+            .and_then(|e| e.types.iter().next())
+            .map(resolve);
+        return Some(shape_from(
+            class.members,
+            parent,
+            types(class.implements),
+            &resolve,
+        ));
     }
     let meta = facts.codebase.get_class_like(name.as_bytes())?;
     let Some(source) = facts.source_of(meta.span.file_id) else {
-        let mut interfaces: Vec<String> = meta.direct_parent_interfaces.iter().map(|w| w.to_string()).collect();
+        let mut interfaces: Vec<String> = meta
+            .direct_parent_interfaces
+            .iter()
+            .map(|w| w.to_string())
+            .collect();
         interfaces.sort();
         let mut methods: Vec<String> = meta.methods.iter().map(|w| w.to_string()).collect();
         methods.sort();
@@ -1131,21 +1320,31 @@ fn shape_of(
             }
         };
         let names_of = |types: Option<&TokenSeparatedSequence<'_, Identifier<'_>>>| -> Vec<String> {
-            types.into_iter().flat_map(|t| t.iter().map(resolve)).collect()
+            types
+                .into_iter()
+                .flat_map(|t| t.iter().map(resolve))
+                .collect()
         };
         let found = match n {
-            Node::Class(c) if qualified(c.name.value).eq_ignore_ascii_case(&wanted) => Some(shape_from(
-                &c.members,
-                c.extends.as_ref().and_then(|e| e.types.iter().next()).map(resolve),
-                names_of(c.implements.as_ref().map(|i| &i.types)),
-                &resolve,
-            )),
-            Node::Interface(i) if qualified(i.name.value).eq_ignore_ascii_case(&wanted) => Some(shape_from(
-                &i.members,
-                None,
-                names_of(i.extends.as_ref().map(|e| &e.types)),
-                &resolve,
-            )),
+            Node::Class(c) if qualified(c.name.value).eq_ignore_ascii_case(&wanted) => {
+                Some(shape_from(
+                    &c.members,
+                    c.extends
+                        .as_ref()
+                        .and_then(|e| e.types.iter().next())
+                        .map(resolve),
+                    names_of(c.implements.as_ref().map(|i| &i.types)),
+                    &resolve,
+                ))
+            }
+            Node::Interface(i) if qualified(i.name.value).eq_ignore_ascii_case(&wanted) => {
+                Some(shape_from(
+                    &i.members,
+                    None,
+                    names_of(i.extends.as_ref().map(|e| &e.types)),
+                    &resolve,
+                ))
+            }
             Node::Trait(t) if qualified(t.name.value).eq_ignore_ascii_case(&wanted) => {
                 Some(shape_from(&t.members, None, Vec::new(), &resolve))
             }
@@ -1177,14 +1376,24 @@ fn shape_from(
         match member {
             ClassLikeMember::TraitUse(t) => shape.traits.extend(t.trait_names.iter().map(resolve)),
             ClassLikeMember::Method(m) => {
-                shape.methods.push(String::from_utf8_lossy(m.name.value).into_owned());
+                shape
+                    .methods
+                    .push(String::from_utf8_lossy(m.name.value).into_owned());
                 if m.name.value.eq_ignore_ascii_case(b"__construct") {
-                    for p in m.parameter_list.parameters.iter().filter(|p| !p.modifiers.is_empty()) {
+                    for p in m
+                        .parameter_list
+                        .parameters
+                        .iter()
+                        .filter(|p| !p.modifiers.is_empty())
+                    {
                         promoted.push(Member {
                             name: String::from_utf8_lossy(&p.variable.name[1..]).into_owned(),
                             declaring: String::new(),
                             from_parent: false,
-                            private: p.modifiers.iter().any(|m| matches!(m, Modifier::Private(_))),
+                            private: p
+                                .modifiers
+                                .iter()
+                                .any(|m| matches!(m, Modifier::Private(_))),
                             is_static: false,
                         });
                     }
@@ -1228,13 +1437,14 @@ fn methods_of(
     current: &str,
     name: &str,
     visited: &mut Vec<String>,
-) -> Vec<Member> {
+) -> Option<Vec<Member>> {
+    // a class among its own ancestors: Rector stops with an error
     if visited.iter().any(|v| v.eq_ignore_ascii_case(name)) {
-        return Vec::new();
+        return None;
     }
     visited.push(name.to_string());
     let Some(shape) = shape_of(facts, class, ancestors, current, name) else {
-        return Vec::new();
+        return Some(Vec::new());
     };
     let mut out: Vec<Member> = (shape.methods.iter())
         .map(|m| Member {
@@ -1246,14 +1456,17 @@ fn methods_of(
         })
         .collect();
     if let Some(parent) = &shape.parent {
-        for m in methods_of(facts, class, ancestors, current, parent, visited) {
+        for m in methods_of(facts, class, ancestors, current, parent, visited)? {
             if position(&out, &m.name, true).is_none() {
-                out.push(Member { from_parent: true, ..m });
+                out.push(Member {
+                    from_parent: true,
+                    ..m
+                });
             }
         }
     }
     for t in &shape.traits {
-        for m in methods_of(facts, class, ancestors, current, t, &mut visited.clone()) {
+        for m in methods_of(facts, class, ancestors, current, t, &mut visited.clone())? {
             match position(&out, &m.name, true) {
                 None => out.push(m),
                 Some(i) if out[i].from_parent => out[i] = m,
@@ -1262,13 +1475,13 @@ fn methods_of(
         }
     }
     for i in &shape.interfaces {
-        for m in methods_of(facts, class, ancestors, current, i, &mut visited.clone()) {
+        for m in methods_of(facts, class, ancestors, current, i, &mut visited.clone())? {
             if position(&out, &m.name, true).is_none() {
                 out.push(m);
             }
         }
     }
-    out
+    Some(out)
 }
 
 /// BetterReflection's `getProperties()` of `name`: its parent's non-private ones, its interfaces', its traits', then
@@ -1280,47 +1493,54 @@ fn properties_of(
     current: &str,
     name: &str,
     visited: &mut Vec<String>,
-) -> Vec<Member> {
+) -> Option<Vec<Member>> {
+    // a class among its own ancestors: Rector stops with an error
     if visited.iter().any(|v| v.eq_ignore_ascii_case(name)) {
-        return Vec::new();
+        return None;
     }
     visited.push(name.to_string());
     let Some(shape) = shape_of(facts, class, ancestors, current, name) else {
-        return Vec::new();
+        return Some(Vec::new());
     };
     let mut out: Vec<Member> = Vec::new();
     if let Some(parent) = &shape.parent {
         out.extend(
-            properties_of(facts, class, ancestors, current, parent, visited)
+            properties_of(facts, class, ancestors, current, parent, visited)?
                 .into_iter()
                 .filter(|p| !p.private),
         );
     }
     let own: Vec<Member> = (shape.properties.into_iter())
-        .map(|p| Member { declaring: name.to_string(), ..p })
+        .map(|p| Member {
+            declaring: name.to_string(),
+            ..p
+        })
         .collect();
     for i in &shape.interfaces {
-        for p in properties_of(facts, class, ancestors, current, i, &mut visited.clone()) {
-            match position(&out, &p.name, false) {
-                Some(at) => out[at] = p,
-                None => out.push(p),
-            }
+        for p in properties_of(facts, class, ancestors, current, i, &mut visited.clone())? {
+            upsert(&mut out, p);
         }
     }
     for t in &shape.traits {
-        for p in properties_of(facts, class, ancestors, current, t, &mut visited.clone()) {
-            if position(&own, &p.name, false).is_none() && position(&out, &p.name, false).is_none() {
+        for p in properties_of(facts, class, ancestors, current, t, &mut visited.clone())? {
+            if position(&own, &p.name, false).is_none() && position(&out, &p.name, false).is_none()
+            {
                 out.push(p);
             }
         }
     }
     for p in own {
-        match position(&out, &p.name, false) {
-            Some(at) => out[at] = p,
-            None => out.push(p),
-        }
+        upsert(&mut out, p);
     }
-    out
+    Some(out)
+}
+
+/// `p` in the place of the property of its name in `out`, else after them.
+fn upsert(out: &mut Vec<Member>, p: Member) {
+    match position(out, &p.name, false) {
+        Some(at) => out[at] = p,
+        None => out.push(p),
+    }
 }
 
 // The parent constructor
@@ -1348,10 +1568,15 @@ struct ParentParam {
 /// The nearest constructor among the class's ancestors (the class has none of its own).
 fn nearest_parent(facts: &Facts, name: &str) -> Nearest {
     let codebase = &facts.codebase;
-    let Some(id) = codebase.get_class_like(name.as_bytes()).and_then(|meta| {
+    let found = codebase.get_class_like(name.as_bytes()).and_then(|meta| {
         (meta.declaring_method_ids.iter())
             .find(|(m, _)| m.as_bytes().eq_ignore_ascii_case(b"__construct"))
             .map(|(_, id)| id.get_class_name().to_string())
+    });
+    let Some((id, method)) = found.and_then(|id| {
+        codebase
+            .get_method(id.as_bytes(), b"__construct")
+            .map(|method| (id, method))
     }) else {
         return Nearest::None;
     };
@@ -1360,9 +1585,6 @@ fn nearest_parent(facts: &Facts, name: &str) -> Nearest {
     if id.eq_ignore_ascii_case(name) || !matches!(kind, Some(SymbolKind::Class)) {
         return Nearest::Fail;
     }
-    let Some(method) = codebase.get_method(id.as_bytes(), b"__construct") else {
-        return Nearest::None;
-    };
     let meta = method.method_metadata.clone().unwrap_or_default();
     if meta.is_final {
         return Nearest::Final;
@@ -1436,15 +1658,26 @@ fn parent_ctor(source: Arc<str>, at: usize) -> Option<ParentCtor> {
         params.push(ParentParam {
             name: String::from_utf8_lossy(&p.variable.name[1..]).into_owned(),
             comments: comments_between(&all, previous_token_end(&source, &all, s.start), s.start),
-            attributes: p.attribute_lists.iter().map(|l| printer.attribute_list(l)).collect(),
+            attributes: p
+                .attribute_lists
+                .iter()
+                .map(|l| printer.attribute_list(l))
+                .collect(),
             text,
-            promoted: (!p.modifiers.is_empty())
-                .then(|| p.modifiers.iter().any(|m| matches!(m, Modifier::Private(_)))),
+            promoted: (!p.modifiers.is_empty()).then(|| {
+                p.modifiers
+                    .iter()
+                    .any(|m| matches!(m, Modifier::Private(_)))
+            }),
         });
     }
     Some(ParentCtor {
         comments: comments_between(&all, previous_token_end(&source, &all, start), start),
-        attributes: method.attribute_lists.iter().map(|l| printer.attribute_list(l)).collect(),
+        attributes: method
+            .attribute_lists
+            .iter()
+            .map(|l| printer.attribute_list(l))
+            .collect(),
         modifiers: print_modifiers(&method.modifiers, false),
         params,
         source: Arc::clone(&source),
@@ -1459,11 +1692,21 @@ fn param_modifiers(modifiers: &Sequence<'_, Modifier<'_>>) -> String {
         ("protected", has(|m| matches!(m, Modifier::Protected(_)))),
         ("private", has(|m| matches!(m, Modifier::Private(_)))),
         ("public(set)", has(|m| matches!(m, Modifier::PublicSet(_)))),
-        ("protected(set)", has(|m| matches!(m, Modifier::ProtectedSet(_)))),
-        ("private(set)", has(|m| matches!(m, Modifier::PrivateSet(_)))),
+        (
+            "protected(set)",
+            has(|m| matches!(m, Modifier::ProtectedSet(_))),
+        ),
+        (
+            "private(set)",
+            has(|m| matches!(m, Modifier::PrivateSet(_))),
+        ),
         ("readonly", has(|m| matches!(m, Modifier::Readonly(_)))),
     ];
-    order.iter().filter(|(_, on)| *on).map(|(n, _)| format!("{n} ")).collect()
+    order
+        .iter()
+        .filter(|(_, on)| *on)
+        .map(|(n, _)| format!("{n} "))
+        .collect()
 }
 
 /// php-parser's pretty printer for the parts of another file's code the injection copies, its names resolved as
@@ -1488,20 +1731,12 @@ impl Printer<'_, '_, '_> {
         match hint {
             Hint::Identifier(id) => self.class(id),
             Hint::Nullable(n) => format!("?{}", self.hint(n.hint)),
-            Hint::Union(u) => format!("{}|{}", self.union_member(u.left), self.union_member(u.right)),
+            Hint::Union(u) => format!("{}|{}", self.hint(u.left), self.hint(u.right)),
             Hint::Intersection(i) => format!("{}&{}", self.hint(i.left), self.hint(i.right)),
-            Hint::Parenthesized(p) => self.hint(p.hint),
+            // an intersection in a union
+            Hint::Parenthesized(p) => format!("({})", self.hint(p.hint)),
             Hint::Self_(_) | Hint::Parent(_) => self.text(hint),
             other => self.text(other).to_ascii_lowercase(),
-        }
-    }
-
-    /// An intersection in a union goes in parentheses.
-    fn union_member(&self, hint: &Hint<'_>) -> String {
-        match hint {
-            Hint::Intersection(_) => format!("({})", self.hint(hint)),
-            Hint::Parenthesized(p) => self.union_member(p.hint),
-            other => self.hint(other),
         }
     }
 
@@ -1510,7 +1745,11 @@ impl Printer<'_, '_, '_> {
             .map(|a| {
                 let args = match &a.argument_list {
                     Some(l) if !l.arguments.is_empty() => {
-                        let args: Vec<String> = l.arguments.iter().map(|arg| self.partial_argument(arg)).collect();
+                        let args: Vec<String> = l
+                            .arguments
+                            .iter()
+                            .map(|arg| self.partial_argument(arg))
+                            .collect();
                         format!("({})", args.join(", "))
                     }
                     _ => String::new(),
@@ -1523,10 +1762,12 @@ impl Printer<'_, '_, '_> {
 
     fn partial_argument(&self, arg: &PartialArgument<'_>) -> String {
         match arg {
-            PartialArgument::Positional(p) => {
-                format!("{}{}", if p.ellipsis.is_some() { "..." } else { "" }, self.expr(p.value))
-            }
-            PartialArgument::Named(n) => format!("{}: {}", String::from_utf8_lossy(n.name.value), self.expr(n.value)),
+            PartialArgument::Positional(p) if p.ellipsis.is_none() => self.expr(p.value),
+            PartialArgument::Named(n) => format!(
+                "{}: {}",
+                String::from_utf8_lossy(n.name.value),
+                self.expr(n.value)
+            ),
             other => self.text(other),
         }
     }
@@ -1535,8 +1776,13 @@ impl Printer<'_, '_, '_> {
     fn expr(&self, expr: &Expression<'_>) -> String {
         match expr {
             Expression::Parenthesized(p) => format!("({})", self.expr(p.expression)),
-            Expression::Literal(Literal::Integer(i)) => i.value.and_then(|v| print_int(i.raw, v)).unwrap_or_else(|| self.text(expr)),
-            Expression::Literal(Literal::Float(f)) => super::phpunit::print_float(f.value.into_inner()),
+            Expression::Literal(Literal::Integer(i)) => i
+                .value
+                .and_then(|v| print_int(i.raw, v))
+                .unwrap_or_else(|| self.text(expr)),
+            Expression::Literal(Literal::Float(f)) => {
+                super::phpunit::print_float(f.value.into_inner())
+            }
             Expression::Literal(Literal::String(s)) => s
                 .value
                 .and_then(|v| print_string(s.kind, v))
@@ -1545,7 +1791,11 @@ impl Printer<'_, '_, '_> {
             Expression::LegacyArray(a) => format!("array({})", self.elements(&a.elements)),
             Expression::UnaryPrefix(u) => match &u.operator {
                 UnaryPrefixOperator::Negation(_) | UnaryPrefixOperator::Plus(_) => {
-                    let op = if matches!(&u.operator, UnaryPrefixOperator::Negation(_)) { "-" } else { "+" };
+                    let op = if matches!(&u.operator, UnaryPrefixOperator::Negation(_)) {
+                        "-"
+                    } else {
+                        "+"
+                    };
                     let operand = self.expr(u.operand);
                     match operand.starts_with(op) {
                         true => format!("{op}({operand})"),
@@ -1554,38 +1804,44 @@ impl Printer<'_, '_, '_> {
                 }
                 _ => self.text(expr),
             },
-            Expression::Access(Access::ClassConstant(c)) => match unparenthesize(c.class) {
-                Expression::Identifier(id) => format!("{}::{}", self.class(id), self.text(&c.constant)),
-                _ => self.text(expr),
-            },
-            Expression::Instantiation(n) => match n.class {
-                Expression::Identifier(id) => {
-                    let args: Vec<String> = (n.argument_list.iter())
-                        .flat_map(|l| l.arguments.iter())
-                        .map(|a| match a {
-                            Argument::Positional(p) => {
-                                format!("{}{}", if p.ellipsis.is_some() { "..." } else { "" }, self.expr(p.value))
-                            }
-                            Argument::Named(n) => {
-                                format!("{}: {}", String::from_utf8_lossy(n.name.value), self.expr(n.value))
-                            }
-                        })
-                        .collect();
-                    format!("new {}({})", self.class(id), args.join(", "))
-                }
-                _ => self.text(expr),
-            },
+            Expression::Access(Access::ClassConstant(c)) => {
+                format!("{}::{}", self.class_expr(c.class), self.text(&c.constant))
+            }
+            Expression::Instantiation(n) => {
+                let args: Vec<String> = (n.argument_list.iter())
+                    .flat_map(|l| l.arguments.iter())
+                    .map(|a| match a {
+                        Argument::Positional(p) if p.ellipsis.is_none() => self.expr(p.value),
+                        Argument::Named(n) => format!(
+                            "{}: {}",
+                            String::from_utf8_lossy(n.name.value),
+                            self.expr(n.value)
+                        ),
+                        other => self.text(other),
+                    })
+                    .collect();
+                format!("new {}({})", self.class_expr(n.class), args.join(", "))
+            }
             _ => self.text(expr),
+        }
+    }
+
+    /// A class reference: a name fully qualified, `self` and the like as written.
+    fn class_expr(&self, class: &Expression<'_>) -> String {
+        match unparenthesize(class) {
+            Expression::Identifier(id) => self.class(id),
+            other => self.text(other),
         }
     }
 
     fn elements(&self, elements: &TokenSeparatedSequence<'_, ArrayElement<'_>>) -> String {
         let items: Vec<String> = (elements.iter())
             .map(|e| match e {
-                ArrayElement::KeyValue(kv) => format!("{} => {}", self.expr(kv.key), self.expr(kv.value)),
+                ArrayElement::KeyValue(kv) => {
+                    format!("{} => {}", self.expr(kv.key), self.expr(kv.value))
+                }
                 ArrayElement::Value(v) => self.expr(v.value),
-                ArrayElement::Variadic(v) => format!("...{}", self.expr(v.value)),
-                ArrayElement::Missing(_) => String::new(),
+                other => self.text(other),
             })
             .collect();
         items.join(", ")
