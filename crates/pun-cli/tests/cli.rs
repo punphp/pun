@@ -632,14 +632,14 @@ fn pun_only_behaviour() {
     // Lint rules count too, even for `pun format`; several are listed together.
     std::fs::write(
         dir.join("pun.toml"),
-        "[format]\npreset = \"empty\"\n[lint.rules]\n\"classes/add-dynamic-properties\" = \"error\"\n\"types/add-property-type-jms-object\" = \"error\"\n",
+        "[format]\npreset = \"empty\"\n[lint.rules]\n\"classes/add-dynamic-properties\" = \"error\"\n\"style/prefer-class-constant\" = \"error\"\n",
     )
     .unwrap();
     let (_, err, code) = pun(&dir, &["format", "--test"]);
     assert_eq!(
         (err, code),
         (
-            "x pun.toml  rules not supported by Pun yet: `lint/classes/add-dynamic-properties`, `lint/types/add-property-type-jms-object`\n  remove them from pun.toml to run the other rules\n".to_string(),
+            "x pun.toml  rules not supported by Pun yet: `lint/classes/add-dynamic-properties`, `lint/style/prefer-class-constant`\n  remove them from pun.toml to run the other rules\n".to_string(),
             Some(2)
         )
     );
@@ -649,7 +649,7 @@ fn pun_only_behaviour() {
         (out, code),
         (
             format!(
-                "pun lint: error: {}: rules not supported by Pun yet: `lint/classes/add-dynamic-properties`, `lint/types/add-property-type-jms-object`\n",
+                "pun lint: error: {}: rules not supported by Pun yet: `lint/classes/add-dynamic-properties`, `lint/style/prefer-class-constant`\n",
                 toml.display()
             ),
             Some(2)
