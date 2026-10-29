@@ -173,6 +173,7 @@ ANALYSE_EXCLUDE = {"laravel-framework": ["src/Illuminate/Testing/ParallelRunner.
 LINT = {
     "pinkary": ["app", "bootstrap/app.php", "config", "database", "public", "tests"],
     "laravel-framework": ["config", "src", "tests", "types"],
+    "dev-null": ["app", "bootstrap/app.php", "config", "database", "public", "routes", "tests"],
 }
 MODES = {
     "analyse": (["phpstan-cold", "phpstan-warm", "pun", "mago"], ANALYSE),
@@ -314,7 +315,8 @@ def count_of(tool: str, data) -> int:
     if tool.startswith("phpstan"):
         return data["totals"]["errors"] + data["totals"]["file_errors"]
     if tool.startswith("rector"):
-        return data["totals"]["changed_files"]
+        # Rector 2.8 lists the changed files but leaves totals.changed_files at 0.
+        return max(data["totals"]["changed_files"], len(data.get("changed_files", [])))
     if tool == "mago":
         return len(data["issues"] if isinstance(data, dict) else data)
     # `pun analyse --format=json` is PHPStan's json; `pun lint --format=json` lists the files with problems.
@@ -376,7 +378,9 @@ def bench_mode(mode: str) -> None:
         commands = {
             "phpstan-cold": phpstan + ["pun-bench-cold.neon"],
             "phpstan-warm": phpstan + ["pun-bench-warm.neon"],
-            "rector-ported": ["php", str(RECTOR)] + rector + ["pun-bench-rector.php"],
+            # The pinned Rector lives outside the project, so it needs the project's autoloader for its classes.
+            "rector-ported": ["php", str(RECTOR)] + rector + ["pun-bench-rector.php", "--autoload-file",
+                                                           "vendor/autoload.php"],
             # The project's own Rector install: its rector.php loads sets (Pest's, for one) from its vendor/.
             "rector-full": ["php", "vendor/bin/rector"] + rector + ["rector.php"],
             "pun": [pun, "analyse", "--config", "pun-bench-analyse.toml", "--format=json"] if mode == "analyse"
