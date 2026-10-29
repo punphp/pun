@@ -966,9 +966,18 @@ fn is_vendor_path(path: &str) -> bool {
     path.contains("/vendor/")
 }
 
+/// The paths of the files the codebases were built from, by file id (PHPStan's `ClassReflection::getFileName()`).
+static PATHS: LazyLock<RwLock<HashMap<FileId, Arc<str>>>> = LazyLock::new(Default::default);
+
+/// The path of the file `file` of the codebase.
+pub(crate) fn path_of(file: FileId) -> Option<Arc<str>> {
+    (PATHS.read().unwrap_or_else(|e| e.into_inner())).get(&file).cloned()
+}
+
 /// [`remember_source`] for the file `id` at `path`, which counts as vendor code when [`is_vendor_path`] says so.
 fn remember(id: FileId, path: &str, code: &str) {
     remember_source(id, code);
+    (PATHS.write().unwrap_or_else(|e| e.into_inner())).insert(id, Arc::from(path));
     if is_vendor_path(path) {
         (VENDOR.write().unwrap_or_else(|e| e.into_inner())).insert(id);
     }

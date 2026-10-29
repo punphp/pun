@@ -1,0 +1,9 @@
+{
+    "require": {
+        "monolog/monolog": "^2.0 || ^3.0",
+        "acme/single": "^1.0"
+    },
+    "require-dev": {
+        "acme/mixed": "1.0 - 2.0 || <3.0 || dev-main || foo1 || ^4.0"
+    }
+}

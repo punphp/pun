@@ -3,10 +3,17 @@
 //! the classes they use in Source/. Oracle/ holds extra inputs with what Rector 2.6.1 (the rule alone,
 //! `phpVersion(80400)`) wrote for them. Each must give the expected bytes, and the same after the laravel preset's
 //! format.
+//!
+//! The return type rules that write Rector's docblocks too (`ReturnTypeFromStrictNewArrayRector`,
+//! `PrivateMethodReturnTypeFromStrictNewArrayRector`, `NarrowObjectReturnTypeRector`,
+//! `ReturnTypeFromGetRepositoryDocblockRector` and `NarrowWideUnionReturnTypeRector`) run here as well, the last at
+//! PHP 8.0, as their config sets. NarrowWideUnionReturnTypeRector/Stubs holds the vendor classes the cases name (the
+//! monolog/monolog classes rector-src's test vendor has, and the Oracle cases' packages), under a `vendor/` path so they
+//! count as vendor code, and the composer.json the rule reads: Source/composer.json's requires, and those packages.
 
 mod lint_c;
 
-use lint_c::run_class;
+use lint_c::{run_class, run_class_at, run_class_stubs, run_dirs};
 use mago_syntax::cst::Node;
 use pun_lint::Rule;
 use pun_lint::rules::{
@@ -15,6 +22,10 @@ use pun_lint::rules::{
     AddReturnPhpdocCommonObject, AddReturnPhpdocDimAssignedObject, AddReturnPhpdocDirectArray, AddReturnPhpdocJsonArray,
     AddReturnPhpdocScalarArray, AddVarPhpdocFromConstructorParam, AddVarPhpdocFromDefault, AddVarPhpdocFromDimFetch,
     AddVarPhpdocFromGetter, PreferGenericCollectionPhpdoc,
+};
+use pun_lint::rules::{
+    AddPrivateMethodArrayReturnType, AddReturnTypeFromGetRepository, AddReturnTypeFromNewArray, NoUnusedReturnType,
+    PreferSpecificReturnType,
 };
 
 /// A rule called on every node, not only on its `targets()`.
@@ -120,4 +131,44 @@ fn class_method_array_docblock_param_from_local_calls() {
     check(|| Box::new(AddParamPhpdocFromLocalCalls),
         "ClassMethodArrayDocblockParamFromLocalCallsRector",
     );
+}
+
+#[test]
+fn return_type_from_strict_new_array() {
+    check(|| Box::new(AddReturnTypeFromNewArray), "ReturnTypeFromStrictNewArrayRector");
+}
+
+#[test]
+fn private_method_return_type_from_strict_new_array() {
+    check(|| Box::new(AddPrivateMethodArrayReturnType), "PrivateMethodReturnTypeFromStrictNewArrayRector");
+}
+
+#[test]
+fn narrow_object_return_type() {
+    check(|| Box::new(PreferSpecificReturnType), "NarrowObjectReturnTypeRector");
+}
+
+#[test]
+fn return_type_from_get_repository_docblock() {
+    for rule in [
+        Box::new(AddReturnTypeFromGetRepository) as Box<dyn Rule>,
+        Box::new(Everywhere(Box::new(AddReturnTypeFromGetRepository))),
+    ] {
+        run_class_stubs(vec![rule], "ReturnTypeFromGetRepositoryDocblockRector", 80400, &["doctrine-stubs"]);
+    }
+}
+
+#[test]
+fn narrow_wide_union_return_type() {
+    // the fixtures' config reads Source/composer.json and sets PHP 8.0; Stubs/composer.json has its requires and the
+    // packages of the Oracle cases' vendor classes; Php84/ holds the cases of intersections, run at PHP 8.4
+    let class = "NarrowWideUnionReturnTypeRector";
+    let composer_json =
+        std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/rector").join(class).join("Stubs/composer.json");
+    let rule = || NoUnusedReturnType {
+        composer_json: Some(composer_json.clone()),
+    };
+    run_class_at(vec![Box::new(rule())], class, 80000);
+    run_class_at(vec![Box::new(Everywhere(Box::new(rule())))], class, 80000);
+    run_dirs(vec![Box::new(rule())], class, &["Php84"], 80400, &[]);
 }

@@ -408,7 +408,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "dead-code/no-unused-private-property" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove unused private properties" }
 "dead-code/no-unused-promoted-property" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove unused promoted property" }
 "dead-code/no-unused-public-method-param" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove unused parameter in public method on final class without extends and interface" }
-"dead-code/no-unused-return-type" = { fix = "safe", sets = ["dead-code"], ported = false, status = "decided", summary = "Narrow overly wide union return type declaration if possible" }
+"dead-code/no-unused-return-type" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Narrow overly wide union return type declaration if possible" }
 "dead-code/no-unused-static" = { fix = "none", intent = "correctness", sets = ["code-quality"], ported = true, origin = "mago", status = "decided", summary = "Flags `static $x;` declarations whose name is never read or written" }
 "dead-code/no-unused-test-method-param" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove parameter of private test class method, that is overridden by direct assign before its first use" }
 "dead-code/no-useless-cast" = { fix = "safe", sets = ["dead-code"], ported = true, status = "decided", summary = "Remove casts to the type the value already has, including (string) inside concatenation." }
@@ -914,7 +914,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "types/add-param-type-spl-fixed-array" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add exact fixed array type in known cases" }
 "types/add-param-type-sprintf" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add string type to parameters used in sprintf calls" }
 "types/add-param-type-variable-call" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add closure param object type based on the argument the assigned closure variable is called with" }
-"types/add-private-method-array-return-type" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add strict return array type to private methods based on created empty array and returned" }
+"types/add-private-method-array-return-type" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add strict return array type to private methods based on created empty array and returned" }
 "types/add-property-type-assigns" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add typed property from assigned types" }
 "types/add-property-type-behat-context" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add known property types to Behat context static properties" }
 "types/add-property-type-constructor" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add typed properties based only on strict constructor types" }
@@ -929,10 +929,10 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "types/add-return-phpdoc-scalar-array" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add @return docblock for scalar array from strict array assignments" }
 "types/add-return-type-from-cast" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add return type to function like with return cast" }
 "types/add-return-type-from-constant" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add strict type declaration based on returned constants" }
-"types/add-return-type-from-get-repository" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add repository return type declaration based on @return docblock, when a method returns entity manager getRepository() fetch" }
+"types/add-return-type-from-get-repository" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add repository return type declaration based on @return docblock, when a method returns entity manager getRepository() fetch" }
 "types/add-return-type-from-native-call" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add strict return type based native function or native method" }
 "types/add-return-type-from-new" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add return type to function like with return new" }
-"types/add-return-type-from-new-array" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Add strict return array type based on created empty array and returned" }
+"types/add-return-type-from-new-array" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add strict return array type based on created empty array and returned" }
 "types/add-return-type-from-param" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add return type based on strict parameter type" }
 "types/add-return-type-from-parent" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add missing return type declaration based on parent class method" }
 "types/add-return-type-from-property" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Add return method return type based on strict typed property" }
@@ -955,7 +955,7 @@ laravel-12 = "Upgrade to Laravel 12: code a newer Laravel removes, deprecates or
 "types/prefer-identical-same-type" = { fix = "mixed", intent = "suspicious", sets = ["code-quality"], ported = true, status = "decided", summary = "Use ===/!== over ==/!=, if values have the same type" }
 "types/prefer-instanceof" = { fix = "unsafe", sets = ["code-quality"], ported = true, status = "decided", summary = "Use instanceof instead of is_a(), null checks or truthiness checks on nullable objects." }
 "types/prefer-narrow-param-type" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Narrow an already nullable array_any()/array_all()/array_find()/array_find_key() closure param to the non-nullable array item type" }
-"types/prefer-specific-return-type" = { fix = "unsafe", sets = ["types"], ported = false, status = "decided", summary = "Narrows return type from generic `object` or parent class to specific class in final classes/methods" }
+"types/prefer-specific-return-type" = { fix = "unsafe", sets = ["types"], ported = true, status = "decided", summary = "Narrows return type from generic `object` or parent class to specific class in final classes/methods" }
 "types/require-strict-param" = { fix = "mixed", intent = "suspicious", sets = ["coding-style"], ported = true, status = "decided", summary = "Functions should be used with `$strict` param set to `true`.", note = "fix is safe where the haystack type is known (Rector StrictInArray/StrictArraySearch), unsafe otherwise (CS-Fixer strict_param)" }
 
 [rules.analyse]

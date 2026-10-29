@@ -210,6 +210,7 @@ mod no_useless_var_tag;
 mod no_useless_param_tag;
 mod no_useless_return_tag;
 mod no_invalid_return_tag;
+mod no_unused_return_type;
 mod no_useless_phpdoc_type;
 mod no_redundant_nullable_check;
 mod no_unused_assignment;
@@ -455,6 +456,7 @@ pub use no_useless_var_tag::NoUselessVarTag;
 pub use no_useless_param_tag::NoUselessParamTag;
 pub use no_useless_return_tag::NoUselessReturnTag;
 pub use no_invalid_return_tag::NoInvalidReturnTag;
+pub use no_unused_return_type::NoUnusedReturnType;
 pub use no_useless_phpdoc_type::NoUselessPhpdocType;
 pub use no_redundant_nullable_check::NoRedundantNullableCheck;
 pub use no_unused_assignment::NoUnusedAssignment;
@@ -502,6 +504,7 @@ pub const PROJECT_RULES: &[&str] = &[
     "lint/dead-code/no-useless-constructor",
     "lint/dead-code/no-useless-override",
     "lint/dead-code/no-redundant-default-argument",
+    "lint/dead-code/no-unused-return-type",
     // rector-laravel's attribute rules ask whether the class extends a framework class
     "lint/laravel/prefer-aliases-attribute",
     "lint/laravel/prefer-appends-attribute",
@@ -864,6 +867,7 @@ fn ungrouped() -> Vec<Box<dyn Rule>> {
         Box::new(NoUselessReturnTag),
         Box::new(NoInvalidReturnTag),
         Box::new(NoUselessPhpdocType),
+        Box::new(NoUnusedReturnType::default()),
         Box::new(NoRedundantNullableCheck),
         Box::new(NoUnusedAssignment),
     ]

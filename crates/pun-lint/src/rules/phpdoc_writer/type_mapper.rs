@@ -84,6 +84,7 @@ impl Mapper {
                 types.iter().map(|t| self.map(t).to_string()).collect::<Vec<_>>().join(" & ")
             )),
             Type::Void => TypeNode::ident("void"),
+            Type::Intersection(_) => intersection(t),
             other => TypeNode::Raw(to_phpdoc(other)),
         }
     }
@@ -188,6 +189,38 @@ impl Mapper {
             base: "array".to_string(),
             args,
         }
+    }
+}
+
+/// `IntersectionTypeMapper::mapToPHPStanPhpDocTypeNode()`: PHPStan's own node (`list<T>`, `non-empty-array<K, V>`),
+/// the names among the root's direct children fully qualified unless they are scalar, array or explicit `mixed`
+/// types (the traversal goes no deeper than a node that is not a name).
+fn intersection(t: &Type) -> TypeNode {
+    let printed = to_phpdoc(t);
+    let Some(mut node) = pun_phpstan::phpdoc::parse(&printed)
+        .ok()
+        .and_then(|parsed| TypeNode::from_parsed(&parsed))
+    else {
+        return TypeNode::Raw(printed);
+    };
+    if let TypeNode::Generic { args: children, .. } | TypeNode::Intersection(children) = &mut node {
+        children.iter_mut().for_each(qualify);
+    }
+    node
+}
+
+/// A name the intersection's traversal prefixes with `\`: no scalar, array or explicit `mixed` type.
+fn qualify(node: &mut TypeNode) {
+    let TypeNode::Identifier(name) = node else {
+        return;
+    };
+    let t = crate::rules::types::compare::mapper::scalar_string_to_type(name);
+    let scalar = Type::Union(vec![Type::Int, Type::Float, Type::String, Type::Bool]);
+    let kept = matches!(t, Type::Accessory(_) | Type::Mixed { explicit: true })
+        || pun_phpstan::types::is_super_type_of(&scalar, &t).yes()
+        || t.is_array().yes();
+    if !kept {
+        *name = format!("\\{}", name.trim_start_matches('\\'));
     }
 }
 

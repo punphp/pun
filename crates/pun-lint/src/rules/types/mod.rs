@@ -45,8 +45,10 @@ mod add_property_type_setup;
 mod add_property_type_setup_docblock;
 mod add_return_type_from_cast;
 mod add_return_type_from_constant;
+mod add_return_type_from_get_repository;
 mod add_return_type_from_native_call;
 mod add_return_type_from_new;
+mod add_return_type_from_new_array;
 mod add_return_type_from_param;
 mod add_return_type_from_parent;
 mod add_return_type_from_property;
@@ -64,6 +66,7 @@ mod never;
 mod no_nullsafe_on_non_null;
 mod prefer_identical_same_type;
 mod prefer_instanceof;
+mod prefer_specific_return_type;
 pub(crate) mod property_type;
 mod rector_type;
 pub(crate) mod silent_void;
@@ -106,8 +109,10 @@ pub use add_property_type_setup::AddPropertyTypeSetup;
 pub use add_property_type_setup_docblock::AddPropertyTypeSetupDocblock;
 pub use add_return_type_from_cast::AddReturnTypeFromCast;
 pub use add_return_type_from_constant::AddReturnTypeFromConstant;
+pub use add_return_type_from_get_repository::AddReturnTypeFromGetRepository;
 pub use add_return_type_from_native_call::AddReturnTypeFromNativeCall;
 pub use add_return_type_from_new::AddReturnTypeFromNew;
+pub use add_return_type_from_new_array::{AddPrivateMethodArrayReturnType, AddReturnTypeFromNewArray};
 pub use add_return_type_from_param::AddReturnTypeFromParam;
 pub use add_return_type_from_parent::AddReturnTypeFromParent;
 pub use add_return_type_from_property::AddReturnTypeFromProperty;
@@ -124,6 +129,7 @@ pub(crate) use never::has_parent_class_method;
 pub use no_nullsafe_on_non_null::NoNullsafeOnNonNull;
 pub use prefer_identical_same_type::PreferIdenticalSameType;
 pub use prefer_instanceof::PreferInstanceof;
+pub use prefer_specific_return_type::PreferSpecificReturnType;
 
 use mago_syntax::cst::{
     Block, Expression, Extends, Identifier, MethodBody, Modifier, Node, Return, Sequence, Statement,
@@ -145,6 +151,8 @@ pub(crate) fn all() -> Vec<Box<dyn Rule>> {
         Box::new(AddFunctionVoidReturn),
         Box::new(AddArrowFunctionReturn),
         Box::new(AddBoolReturnFromConst),
+        Box::new(AddPrivateMethodArrayReturnType),
+        Box::new(AddReturnTypeFromNewArray),
         Box::new(AddReturnTypeFromConstant),
         Box::new(AddStringReturnFromScalar),
         Box::new(AddNumericReturnFromScalar),
@@ -163,6 +171,7 @@ pub(crate) fn all() -> Vec<Box<dyn Rule>> {
         Box::new(AddReturnTypeFromNativeCall),
         Box::new(AddReturnTypeFromTypedCall),
         Box::new(AddMagicMethodTypes),
+        Box::new(PreferSpecificReturnType),
         Box::new(AddUnionReturn),
         Box::new(AddClosureNeverReturn),
         Box::new(AddClosureReturn),
@@ -184,6 +193,7 @@ pub(crate) fn all() -> Vec<Box<dyn Rule>> {
         Box::new(AddPropertyTypeSetup),
         Box::new(AddPropertyTypeSetupDocblock),
         Box::new(AddDoctrineRepositoryReturnType),
+        Box::new(AddReturnTypeFromGetRepository),
         // the docblock rules, in Rector's order (src/Config/Level/TypeDeclarationDocblocksLevel.php)
         Box::new(AddVarPhpdocFromDefault),
         Box::new(AddParamPhpdocFromDimFetch),
