@@ -488,6 +488,7 @@ fn unconfigured_rules_do_nothing() {
             "RemoveFuncCallRector",
         ),
         (Box::new(RenameCast::default()), "RenameCastRector"),
+        (Box::new(RenameClass::default()), "RenameClassRector"),
         (
             Box::new(RenameClassConstant::default()),
             "RenameClassConstFetchRector",

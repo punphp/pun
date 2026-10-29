@@ -6,7 +6,6 @@
 
 use std::collections::HashMap;
 
-use mago_span::HasSpan;
 use mago_syntax::cst::*;
 use pun_problem::Span;
 
@@ -37,7 +36,7 @@ pub(crate) struct PhpName {
     pub static_call: bool,
     /// `IS_CLASS_EXTENDS` (a class's parent, not an interface's).
     pub extends: bool,
-    /// `IS_CLASS_IMPLEMENT` (a class's interfaces, not an enum's).
+    /// `IS_CLASS_IMPLEMENT`: a class's interfaces, and an enum's (where Rector sets nothing).
     pub implements: bool,
     /// `CLASS_CONST_FETCH_NAME`: the constant `Name::CONSTANT` fetches.
     pub class_const_fetch: Option<String>,
@@ -51,11 +50,6 @@ impl PhpName {
     /// `Name::toString()` of the original name: the written name without its leading `\`.
     pub fn original(&self) -> &str {
         self.written.trim_start_matches('\\')
-    }
-
-    /// Whether the original name is unqualified (one part).
-    pub fn is_unqualified(&self) -> bool {
-        !self.written.contains('\\')
     }
 }
 
@@ -201,8 +195,6 @@ pub(crate) struct DocView {
     pub owners: Owners,
     /// Where the node it belongs to starts.
     pub node_start: usize,
-    /// The end of the token before the node: the node's comments are between it and `node_start`.
-    pub comments_from: usize,
     /// Whether it is the node's last doc comment (`getDocComment()`).
     pub is_last: bool,
     /// The namespace it is in.
@@ -242,7 +234,6 @@ impl FileView {
     /// Read `program` (of `source`).
     pub fn of(source: &str, program: &Program<'_>) -> FileView {
         let mut walk = Walk {
-            source,
             view: FileView::default(),
             namespace: None,
             aliases: Aliases::default(),
@@ -304,8 +295,7 @@ struct Aliases {
     constant: HashMap<String, String>,
 }
 
-struct Walk<'s> {
-    source: &'s str,
+struct Walk {
     view: FileView,
     namespace: Option<String>,
     aliases: Aliases,
@@ -358,7 +348,7 @@ fn is_special_class_name(name: &str) -> bool {
     matches!(name.to_ascii_lowercase().as_str(), "self" | "parent" | "static")
 }
 
-impl Walk<'_> {
+impl Walk {
     /// php-parser's `NameContext::getResolvedName()` (`$type` the kind) of the name written `written`.
     fn resolve(&self, written: &str, kind: Kind) -> Option<String> {
         // don't resolve special class names
@@ -561,13 +551,15 @@ impl Walk<'_> {
         name
     }
 
-    fn implements(&mut self, implements: &Implements<'_>, flag: bool) {
+    /// The names of an `implements` clause, kept as the class's list when `of_class` (an enum's too are interfaces
+    /// only, which Rector does not check: Pun keeps the code valid).
+    fn implements(&mut self, implements: &Implements<'_>, of_class: bool) {
         let mut list = Vec::new();
         for id in implements.types.iter() {
             list.push((node_span(id), text(id)));
-            self.name(id, Kind::Class).implements = flag;
+            self.name(id, Kind::Class).implements = true;
         }
-        if flag {
+        if of_class {
             let class = self.view.class_likes.last_mut().unwrap();
             class.implements_span = Some(Span::new(list[0].0.start, list.last().unwrap().0.end));
             class.implements = list;
@@ -576,7 +568,7 @@ impl Walk<'_> {
 
     fn doc(&mut self, node: &Node<'_, '_>) {
         let start = node_span(node).start;
-        let Some((from, docs)) = self.comments.get(&start).cloned() else {
+        let Some((_, docs)) = self.comments.get(&start).cloned() else {
             return;
         };
         let stmt = matches!(node, Node::Statement(_) | Node::ClassLikeMember(_));
@@ -610,7 +602,6 @@ impl Walk<'_> {
                         renamed,
                     },
                     node_start: start,
-                    comments_from: from,
                     is_last: i + 1 == count,
                     namespace: self.namespace.clone(),
                     class: self.classes.last().cloned(),
@@ -778,11 +769,16 @@ fn stmt_list<'a, 'b: 'a>(
             _ => StmtKind::Other,
         };
         let span = node_span(statement);
-        let before = crate::rules::php_parser::previous_token_end(source, all, span.start);
-        let comment_start = all
-            .iter()
-            .find(|t| t.start >= before && t.end <= span.start && t.kind.is_comment())
-            .map_or(span.start, |t| t.start);
+        // `InlineHTML` takes no comments (and may come before any open tag)
+        let comment_start = match statement {
+            Statement::Inline(_) => span.start,
+            _ => {
+                let before = crate::rules::php_parser::previous_token_end(source, all, span.start);
+                all.iter()
+                    .find(|t| t.start >= before && t.end <= span.start && t.kind.is_comment())
+                    .map_or(span.start, |t| t.start)
+            }
+        };
         list.push(StmtView {
             span,
             comment_start,
@@ -809,9 +805,4 @@ fn stmt_list<'a, 'b: 'a>(
 /// close tag takes.
 fn is_inline_html(inline: &Inline<'_>) -> bool {
     !(matches!(inline.value, b"\n" | b"\r\n") && inline.span.start.offset > 0)
-}
-
-/// The start of `span`, for a Mago node.
-pub(crate) fn start_of(node: &impl HasSpan) -> usize {
-    node.span().start.offset as usize
 }

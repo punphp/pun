@@ -39,6 +39,9 @@ pub(crate) struct Typed {
     /// The type, or a template's bound (none without one).
     types: Vec<Node>,
     description: String,
+    /// The identifiers [`Doc::set_ident`] replaced: a new `IdentifierTypeNode` has no `PARENT` attribute, so the
+    /// name importing no longer sees its template tag.
+    replaced: Vec<usize>,
 }
 
 /// One argument of a Doctrine annotation, as Rector's `ArrayParser` makes its `ArrayItemNode`.
@@ -54,6 +57,8 @@ pub(crate) enum ItemValue {
     String(String),
     /// Any other value as written: a name, a constant, a number, `true`, `false`, `null`.
     Plain(String),
+    /// `CurlyListNode`: a `{...}` list of values without keys.
+    Curly(Vec<ItemValue>),
 }
 
 /// A Doctrine annotation: Rector's `SpacelessPhpDocTagNode` with a `DoctrineAnnotationTagValueNode`.
@@ -61,12 +66,9 @@ pub(crate) enum ItemValue {
 pub(crate) struct Annotation {
     /// The class `ClassAnnotationMatcher` resolves the tag name to (`RESOLVED_CLASS`).
     pub class: String,
-    /// The arguments, `None` where Pun does not read them (a `{...}` list, a nested annotation, a multi-line value,
-    /// a description after the `)`).
+    /// The arguments (none for a generic tag whose name is a class), `None` where Pun does not read them (a nested
+    /// annotation, a multi-line value, a description after the `)`).
     pub items: Option<Vec<Item>>,
-    /// Whether the tag has parentheses (phpdoc-parser's `DoctrineTagValueNode`) rather than being a generic tag
-    /// whose name is a class.
-    parenthesized: bool,
     /// The names inside the arguments `UnusedImportRemovingPostRector` reads: nested annotations' names, and the
     /// classes of `Class::NAME` values.
     pub inner_names: Vec<String>,
@@ -75,8 +77,8 @@ pub(crate) struct Annotation {
 /// What a child of the doc is.
 #[derive(Clone, Debug)]
 pub(crate) enum Value {
-    /// `PhpDocTextNode`: its text.
-    Text(String),
+    /// `PhpDocTextNode`.
+    Text,
     Typed(Typed),
     /// `GenericTagValueNode`: its value.
     Generic(String),
@@ -276,9 +278,13 @@ impl Doc {
             match &c.value {
                 Value::Typed(typed) => {
                     let template = matches!(typed.form, Form::Template { .. });
+                    let mut at = 0;
                     for t in &typed.types {
                         let mut t = t.clone();
-                        walk(&mut t, template, &mut |name, parent| push(name, parent));
+                        walk(&mut t, template, &mut |name, parent| {
+                            push(name, parent && !typed.replaced.contains(&at));
+                            at += 1;
+                        });
                     }
                 }
                 Value::Annotation(annotation) => {
@@ -287,7 +293,7 @@ impl Doc {
                     let _ = annotation;
                 }
                 Value::Other(names) => names.iter().for_each(|n| push(n, false)),
-                Value::Text(_) | Value::Generic(_) => {}
+                Value::Text | Value::Generic(_) => {}
             }
         }
         out
@@ -309,6 +315,7 @@ impl Doc {
                         index += 1;
                     });
                 }
+                typed.replaced.push(ident.index);
             }
             // the annotation's name is printed from the tag, never from its identifier
             _ => child.unprintable = true,
@@ -320,10 +327,17 @@ impl Doc {
         let child = &mut self.children[child];
         child.changed = true;
         if let Value::Annotation(annotation) = &child.value
-            && (annotation.items.is_none() || !annotation.parenthesized)
+            && annotation.items.is_none()
         {
             child.unprintable = true;
         }
+    }
+
+    /// `NameImportingPhpDocNodeVisitor::enterSpacelessPhpDocTagNode()`: the annotation `child` named `name` (its
+    /// `@` included), its value reprinted as `processDoctrineAnnotationTagValueNode()` marks it changed.
+    pub fn set_tag(&mut self, child: usize, name: &str) {
+        self.children[child].tag = Some(name.to_string());
+        self.set_changed(child);
     }
 
     /// `hasByTypes(NodeTypes::TYPE_AWARE_NODES)`.
@@ -678,11 +692,10 @@ fn child_value(
     let first = &text[tokens[start].1..tokens[start].2];
     let Some(name) = (tokens[start].0 == Kind::Other).then(|| tag_name(first)).flatten() else {
         // a text node; one with `})` is merged into the generic tag before it (`mergeNestedDoctrineAnnotations()`)
-        let child_text = joined(text, tokens, start, end);
-        if child_text.contains("})") {
+        if joined(text, tokens, start, end).contains("})") {
             return None;
         }
-        return Some((None, Value::Text(child_text)));
+        return Some((None, Value::Text));
     };
     let value_from = from + name.len();
     let rest = &text[value_from..to];
@@ -709,7 +722,7 @@ fn child_value(
     if trimmed.starts_with('(') {
         // phpdoc-parser's `DoctrineTagValueNode`, which the decorator always takes for an annotation
         let class = resolve_tag(name);
-        return Some((tag, Value::Annotation(annotation(text, tokens, start, end, value_from, class, true))));
+        return Some((tag, Value::Annotation(annotation(text, tokens, end, value_from, class, true))));
     }
     let value = generic_value(text, tokens, value_from, to);
     // `transformGenericTagValueNodesToDoctrineAnnotationTagValueNodes()`
@@ -718,7 +731,7 @@ fn child_value(
         if !closed_content(&value) {
             return None;
         }
-        return Some((tag, Value::Annotation(annotation(text, tokens, start, end, value_from, class, false))));
+        return Some((tag, Value::Annotation(annotation(text, tokens, end, value_from, class, false))));
     }
     if !closed_content(&value) {
         return None;
@@ -830,14 +843,12 @@ fn closed_content(value: &str) -> bool {
 fn annotation(
     text: &str,
     tokens: &[(Kind, usize, usize)],
-    start: usize,
     end: usize,
     value_from: usize,
     class: String,
     parenthesized: bool,
 ) -> Annotation {
     let value = generic_value(text, tokens, value_from, tokens[end].1);
-    let _ = start;
     let inner_names = inner_names(&value);
     let items = match parenthesized {
         true => flat_items(&value),
@@ -846,7 +857,6 @@ fn annotation(
     Annotation {
         class,
         items,
-        parenthesized,
         inner_names,
     }
 }
@@ -890,10 +900,10 @@ fn inner_names(value: &str) -> Vec<String> {
 }
 
 /// The arguments of `(...)` as `ArrayParser` makes them, where each is `key=value` or a value, the value a `"..."`
-/// string or a plain word on the one line; `None` otherwise.
+/// string, a plain word or a `{...}` list of those (`CurlyListNode`) on the one line; `None` otherwise.
 fn flat_items(value: &str) -> Option<Vec<Item>> {
     let inner = value.strip_prefix('(')?.trim_end().strip_suffix(')')?;
-    if inner.contains(['\n', '{', '}', '@', '(', ')']) {
+    if inner.contains(['\n', '@', '(', ')']) {
         return None;
     }
     let mut items = Vec::new();
@@ -909,41 +919,74 @@ fn flat_items(value: &str) -> Option<Vec<Item>> {
             key = Some(rest[..word_len].to_string());
             rest = rest[word_len..].trim_start()[1..].trim_start();
         }
-        let (value, after) = if let Some(quoted) = rest.strip_prefix('"') {
-            // `""` stands for one `"`
-            let mut end = None;
-            let qb = quoted.as_bytes();
-            let mut i = 0;
-            while i < qb.len() {
-                if qb[i] == b'"' {
-                    if qb.get(i + 1) == Some(&b'"') {
-                        i += 2;
-                        continue;
-                    }
-                    end = Some(i);
-                    break;
+        let (value, after) = match rest.strip_prefix('{') {
+            Some(list) => {
+                let (inside, after) = list.split_once('}')?;
+                let mut values = Vec::new();
+                let mut rest = inside.trim();
+                while !rest.is_empty() {
+                    let (value, after) = item_value(rest)?;
+                    values.push(value);
+                    rest = next_item(after)?;
                 }
-                i += 1;
+                (ItemValue::Curly(values), after)
             }
-            let end = end?;
-            (ItemValue::String(quoted[..end].replace("\"\"", "\"")), &quoted[end + 1..])
-        } else {
-            let len = rest.find(',').unwrap_or(rest.len());
-            let plain = rest[..len].trim();
-            if plain.is_empty() || plain.contains([' ', '\t', '\'', '=']) {
-                return None;
-            }
-            (ItemValue::Plain(plain.to_string()), &rest[len..])
+            None => item_value(rest)?,
         };
         items.push(Item { key, value });
-        let after = after.trim_start();
-        rest = match after.strip_prefix(',') {
-            Some(next) => next.trim_start(),
-            None if after.is_empty() => after,
-            None => return None,
-        };
+        rest = next_item(after)?;
     }
     Some(items)
+}
+
+/// What follows a value: the next item after its `,`, `""` at the end, `None` for anything else.
+fn next_item(after: &str) -> Option<&str> {
+    let after = after.trim_start();
+    match after.strip_prefix(',') {
+        Some(next) => Some(next.trim_start()),
+        None if after.is_empty() => Some(after),
+        None => None,
+    }
+}
+
+/// A `"..."` string or a plain word at the start of `rest`, and what follows it.
+fn item_value(rest: &str) -> Option<(ItemValue, &str)> {
+    if let Some(quoted) = rest.strip_prefix('"') {
+        // `""` stands for one `"`
+        let qb = quoted.as_bytes();
+        let mut i = 0;
+        while i < qb.len() {
+            if qb[i] == b'"' {
+                if qb.get(i + 1) == Some(&b'"') {
+                    i += 2;
+                    continue;
+                }
+                return Some((ItemValue::String(quoted[..i].replace("\"\"", "\"")), &quoted[i + 1..]));
+            }
+            i += 1;
+        }
+        return None;
+    }
+    let len = rest.find(',').unwrap_or(rest.len());
+    let plain = rest[..len].trim();
+    if plain.is_empty() || plain.contains([' ', '\t', '\'', '=', '{', '}']) {
+        return None;
+    }
+    Some((ItemValue::Plain(plain.to_string()), &rest[len..]))
+}
+
+/// `ArrayItemNode::__toString()`'s value: a `StringNode` quoted, `true` and `false` as constants, `null` empty.
+fn print_value(value: &ItemValue) -> String {
+    match value {
+        ItemValue::String(s) => format!("\"{}\"", s.replace('"', "\"\"")),
+        ItemValue::Plain(p) => match p.to_ascii_lowercase().as_str() {
+            "true" | "false" => p.to_ascii_lowercase(),
+            "null" => String::new(),
+            _ => p.clone(),
+        },
+        // `CurlyListNode::implode()`
+        ItemValue::Curly(values) => format!("{{{}}}", values.iter().map(print_value).collect::<Vec<_>>().join(", ")),
+    }
 }
 
 /// `(string) $phpDocChildNode` of a changed child; `None` where Pun does not print it.
@@ -977,23 +1020,13 @@ fn print_child(child: &Child) -> Option<String> {
             };
             Some(format!("{name} {}", value.trim()).trim().to_string())
         }
-        Value::Annotation(Annotation {
-            items: Some(items),
-            parenthesized: true,
-            ..
-        }) => {
-            // `SpacelessPhpDocTagNode`: the name, then the annotation's `(%s)` of its items
+        Value::Annotation(Annotation { items: Some(items), .. }) => {
+            // `SpacelessPhpDocTagNode`: the name, then the annotation's `(%s)` of its items (nothing without items:
+            // `DoctrineAnnotationTagValueNode::__toString()` of a changed node without values)
             let printed: Vec<String> = items
                 .iter()
                 .map(|item| {
-                    let value = match &item.value {
-                        ItemValue::String(s) => format!("\"{}\"", s.replace('"', "\"\"")),
-                        ItemValue::Plain(p) => match p.to_ascii_lowercase().as_str() {
-                            "true" | "false" => p.to_ascii_lowercase(),
-                            "null" => String::new(),
-                            _ => p.clone(),
-                        },
-                    };
+                    let value = print_value(&item.value);
                     match &item.key {
                         Some(key) => format!("{key}={value}"),
                         None => value,
@@ -1136,5 +1169,6 @@ fn typed(text: &str, tokens: &[(Kind, usize, usize)], name: &str, from: usize, t
         form,
         types,
         description,
+        replaced: Vec::new(),
     }))
 }

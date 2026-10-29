@@ -96,45 +96,25 @@ impl Rule for RenameClass {
         if self.renames.is_empty() {
             return;
         }
-        let mut session = Session::new(ctx, program);
-        self.rename_names(ctx, &mut session);
-        self.rename_docs(ctx, &mut session);
-        dedupe_implements(&mut session);
-        let Some(mut fixed) = session.finish(self.options, true) else {
+        let Some(fixed) = self.fix(ctx, program) else {
             return;
         };
-        // `FileProcessor::processFile()`: the post rectors run again on a changed file until it no longer changes;
-        // the rule does not (the names it made carry `CREATED_BY_RULE`), and nothing is left to rename
-        let mut carry = session.carry();
-        while fixed != ctx.source {
-            let Some(next) = post_again(ctx, &fixed, self.options, &mut carry) else {
-                return;
-            };
-            if next == fixed {
-                break;
-            }
-            fixed = next;
-        }
-        if fixed == ctx.source {
-            return;
-        }
+        // the changed region: the common prefix and suffix off, by characters
         let source = ctx.source;
-        let prefix = source.bytes().zip(fixed.bytes()).take_while(|(a, b)| a == b).count();
-        let suffix = source[prefix..]
-            .bytes()
-            .rev()
-            .zip(fixed[prefix..].bytes().rev())
+        let prefix: usize = source
+            .chars()
+            .zip(fixed.chars())
             .take_while(|(a, b)| a == b)
-            .count();
-        let (mut start, mut end) = (prefix, source.len() - suffix);
-        let mut new_end = fixed.len() - suffix;
-        while !source.is_char_boundary(start) || !fixed.is_char_boundary(start) {
-            start -= 1;
-        }
-        while !source.is_char_boundary(end) || !fixed.is_char_boundary(new_end) {
-            end += 1;
-            new_end += 1;
-        }
+            .map(|(a, _)| a.len_utf8())
+            .sum();
+        let suffix: usize = source[prefix..]
+            .chars()
+            .rev()
+            .zip(fixed[prefix..].chars().rev())
+            .take_while(|(a, b)| a == b)
+            .map(|(a, _)| a.len_utf8())
+            .sum();
+        let (start, end, new_end) = (prefix, source.len() - suffix, fixed.len() - suffix);
         out.push(report(
             Span::new(start, end),
             "Replace the renamed classes by their new names.".into(),
@@ -144,6 +124,26 @@ impl Rule for RenameClass {
 }
 
 impl RenameClass {
+    /// The file with the renames and the post rectors, `None` where it does not change or Pun does not follow Rector.
+    fn fix(&self, ctx: &Context<'_>, program: &mago_syntax::cst::Program<'_>) -> Option<String> {
+        let mut session = Session::new(ctx, program);
+        self.rename_names(ctx, &mut session);
+        self.rename_docs(ctx, &mut session);
+        dedupe_implements(&mut session);
+        let mut fixed = session.finish(self.options, true)?;
+        // `FileProcessor::processFile()`: the post rectors run again on a changed file until it no longer changes;
+        // the rule does not (the names it made carry `CREATED_BY_RULE`), and nothing is left to rename
+        let mut carry = session.carry();
+        while fixed != ctx.source {
+            let next = post_again(ctx, &fixed, self.options, &mut carry)?;
+            if next == fixed {
+                break;
+            }
+            fixed = next;
+        }
+        (fixed != ctx.source).then_some(fixed)
+    }
+
     /// `ClassRenamer::refactorName()` on each fully qualified name.
     fn rename_names(&self, ctx: &Context<'_>, session: &mut Session<'_>) {
         let codebase = &facts(ctx).codebase;
@@ -252,8 +252,18 @@ impl RenameClass {
                 };
                 let mut changed = false;
                 match class {
-                    // a callback is a `{...}` list, which Pun does not read
-                    "Symfony\\Component\\Validator\\Constraints\\Choice" => {}
+                    // `processAssertChoiceTagValueNode()`: the class of a `callback={"Class", "method"}`
+                    "Symfony\\Component\\Validator\\Constraints\\Choice" => {
+                        if let Some(item) = items.iter_mut().find(|i| i.key.as_deref() == Some("callback"))
+                            && let ItemValue::Curly(values) = &mut item.value
+                            && let Some(ItemValue::String(callback_class)) = values.first_mut()
+                            && let Some((old, new)) = self.renames.iter().find(|(old, _)| old == callback_class)
+                        {
+                            collected.push(old.clone());
+                            *callback_class = new.clone();
+                            changed = true;
+                        }
+                    }
                     "Doctrine\\ORM\\Mapping\\OneToMany" => {
                         let key = if embedded { "class" } else { "targetEntity" };
                         if let Some(item) = items.iter_mut().find(|i| i.key.as_deref() == Some(key))
@@ -288,8 +298,9 @@ impl RenameClass {
                                 && let ItemValue::String(value) = &item.value
                                 && value == old
                             {
+                                // without a reprint (Rector resets `ORIG_NODE` of the silent item only), the
+                                // printer keeps this item as written unless the silent one changed too
                                 item.value = ItemValue::String(new.clone());
-                                changed = true;
                             }
                         }
                     }
@@ -331,9 +342,7 @@ fn post_again(
         path: ctx.path,
         php_version: ctx.php_version,
     };
-    if !program.errors.is_empty() {
-        return None;
-    }
+    program.errors.is_empty().then_some(())?;
     let mut session = Session::new(&next, program);
     session.resume(std::mem::replace(carry, session.carry()));
     let fixed = session.finish(options, true);

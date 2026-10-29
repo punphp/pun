@@ -176,6 +176,9 @@ a map keeps its keys (`"refactor/rename-function" = { view = "Laravel\\Templatin
 value objects goes under `items`, with each object's properties in kebab-case
 (`"refactor/remove-function-argument" = { items = [{ function = "ldap_first_attribute", argument-position = 2 }] }`).
 Names are checked as Rector checks them, so `"1f" is not a valid function name` is a config error.
+`"refactor/rename-class"` also takes Rector's import settings beside its map of old to new class names:
+`import-names` (`importNames()`, off), `import-short-classes` (`importShortClasses()`, on) and
+`remove-unused-imports` (`removeUnusedImports()`, off).
 
 `pun migrate` translates names and values. The [rule reference](/docs/rules) lists options for each rule.
 

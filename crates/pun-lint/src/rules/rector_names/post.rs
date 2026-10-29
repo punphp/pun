@@ -758,7 +758,7 @@ impl<'s> Session<'s> {
                         continue;
                     };
                     match annotation {
-                        true => self.unsupported = true,
+                        true => doc.set_tag(ident.child, &format!("@{short}")),
                         false => doc.set_ident(&ident, &short),
                     }
                 }
