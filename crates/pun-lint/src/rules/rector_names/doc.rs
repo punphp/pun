@@ -741,11 +741,9 @@ impl Doc {
         let current: Vec<Option<String>> = self.children.iter().map(text).collect();
         let mut jumps = Vec::new();
         let mut last_end: Option<usize> = None;
-        for (_, child) in &removed {
-            // it's not there when comment block has empty row "\s\*\n"
-            let Some((start, end)) = child.start_end else {
-                continue;
-            };
+        // it's not there when comment block has empty row "\s\*\n"
+        let starts_ends = removed.iter().filter_map(|(_, c)| Some((c, c.start_end?)));
+        for (child, (start, end)) in starts_ends {
             if current.contains(&text(child)) {
                 continue;
             }

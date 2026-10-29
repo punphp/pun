@@ -8,7 +8,7 @@ use Foo\Baz;
 class A
 {
     /**
-     * See {@link x} and {@see Bar} or {@uses} {@used-by  Baz::run()}.
+     * See {@link x} and {@see Bar} or {@uses} {@see } {@used-by  Baz::run()}.
      */
     public function run()
     {
@@ -27,7 +27,7 @@ use Foo\Baz;
 class A
 {
     /**
-     * See {@link x} and {@see Bar} or {@uses} {@used-by  Baz::run()}.
+     * See {@link x} and {@see Bar} or {@uses} {@see } {@used-by  Baz::run()}.
      */
     public function run()
     {
