@@ -102,8 +102,15 @@ impl ObjType {
     }
 }
 
+/// What [`Session::carry`] hands to the next round of a file.
+pub(crate) struct Carry {
+    pending: Pending,
+    used: (Vec<ObjType>, Vec<String>, Vec<String>),
+    short_names: Option<Vec<(String, String)>>,
+}
+
 /// `PendingImports`.
-#[derive(Default)]
+#[derive(Clone, Default)]
 struct Pending {
     uses: Vec<String>,
     functions: Vec<String>,
@@ -277,6 +284,23 @@ impl<'s> Session<'s> {
         state.text = Some(format!("\\{new}"));
     }
 
+    /// What a round of the file leaves for the next (`FileProcessor::processFile()` runs the post rectors again on
+    /// a changed file): the `FileNode`'s `PendingImports` and `UsedImports`, and `ShortNameResolver`'s cache by path.
+    pub fn carry(&self) -> Carry {
+        Carry {
+            pending: self.pending.clone(),
+            used: self.used.clone(),
+            short_names: self.short_names.clone(),
+        }
+    }
+
+    /// Start as the next round after the one that left `carry`.
+    pub fn resume(&mut self, carry: Carry) {
+        self.pending = carry.pending;
+        self.used = carry.used;
+        self.short_names = carry.short_names;
+    }
+
     /// `RenamedNameCollector::add()`.
     pub fn collect_renamed(&mut self, old: &str) {
         if !self.renamed.iter().any(|r| r == old) {
@@ -409,9 +433,9 @@ impl<'s> Session<'s> {
         self.used_import_types().iter().any(|t| t.equals(class))
     }
 
-    /// Run the post rectors and print the file: the new source, `None` where nothing changed or Pun does not follow
-    /// Rector. `has_renames` is whether `RenamedClassesDataCollector` holds renames.
-    pub fn finish(mut self, options: Options, has_renames: bool) -> Option<String> {
+    /// Run the post rectors and print the file: the new source (the old one where nothing changed), `None` where Pun
+    /// does not follow Rector. `has_renames` is whether `RenamedClassesDataCollector` holds renames.
+    pub fn finish(&mut self, options: Options, has_renames: bool) -> Option<String> {
         if self.unsupported {
             return None;
         }
@@ -431,8 +455,7 @@ impl<'s> Session<'s> {
         if self.unsupported {
             return None;
         }
-        let printed = self.print()?;
-        (printed != self.source).then_some(printed)
+        self.print()
     }
 
     /// `ClassRenamingPostRector`: `FileNode::removeImports()` of the renamed classes.
@@ -855,7 +878,6 @@ impl<'s> Session<'s> {
         self.used.0.extend(classes.into_iter().map(ObjType::Fq));
         self.used.1.extend(functions);
         self.used.2.extend(constants);
-        self.pending = Pending::default();
         if new_uses.is_empty() {
             return;
         }

@@ -19,7 +19,7 @@ use serde_json::Value;
 
 use super::report;
 use crate::rules::rector_names::doc::ItemValue;
-use crate::rules::rector_names::post::{Options, Session, doc_type};
+use crate::rules::rector_names::post::{Carry, Options, Session, doc_type};
 use crate::rules::rector_names::resolve::{has_class, resolve_tag};
 use crate::rules::types::facts::facts;
 use crate::{Context, Report, Rule};
@@ -100,9 +100,24 @@ impl Rule for RenameClass {
         self.rename_names(ctx, &mut session);
         self.rename_docs(ctx, &mut session);
         dedupe_implements(&mut session);
-        let Some(fixed) = session.finish(self.options, true) else {
+        let Some(mut fixed) = session.finish(self.options, true) else {
             return;
         };
+        // `FileProcessor::processFile()`: the post rectors run again on a changed file until it no longer changes;
+        // the rule does not (the names it made carry `CREATED_BY_RULE`), and nothing is left to rename
+        let mut carry = session.carry();
+        while fixed != ctx.source {
+            let Some(next) = post_again(ctx, &fixed, self.options, &mut carry) else {
+                return;
+            };
+            if next == fixed {
+                break;
+            }
+            fixed = next;
+        }
+        if fixed == ctx.source {
+            return;
+        }
         let source = ctx.source;
         let prefix = source.bytes().zip(fixed.bytes()).take_while(|(a, b)| a == b).count();
         let suffix = source[prefix..]
@@ -295,6 +310,35 @@ impl RenameClass {
             }
         }
     }
+}
+
+/// The post rectors on `source`, Rector's next round of the file, with what the round before left (`carry`); `None`
+/// where Pun does not follow them.
+fn post_again(
+    ctx: &Context<'_>,
+    source: &str,
+    options: Options,
+    carry: &mut Carry,
+) -> Option<String> {
+    let arena = mago_allocator::LocalArena::new();
+    let file = mago_database::file::File::ephemeral(
+        std::borrow::Cow::Borrowed(b"rename-class.php"),
+        std::borrow::Cow::Owned(source.as_bytes().to_vec()),
+    );
+    let program = mago_syntax::parser::parse_file(&arena, &file);
+    let next = Context {
+        source,
+        path: ctx.path,
+        php_version: ctx.php_version,
+    };
+    if !program.errors.is_empty() {
+        return None;
+    }
+    let mut session = Session::new(&next, program);
+    session.resume(std::mem::replace(carry, session.carry()));
+    let fixed = session.finish(options, true);
+    *carry = session.carry();
+    fixed
 }
 
 /// `Strings::replace($value, '#\b' . preg_quote($old, '#') . 'b#', $new)`.

@@ -116,10 +116,11 @@ pub(crate) fn map_identifier(ctx: &Context<'_>, scope: Scope<'_>, name: &str) ->
     if is_keyword(&name.to_ascii_lowercase()) {
         return DocType::Other;
     }
-    if let Some(fq) = name.strip_prefix('\\') {
-        return DocType::FullyQualified(fq.to_string());
+    // a `FullyQualifiedObjectType` without the `\`, narrowed `$withPreslash`
+    match name.strip_prefix('\\') {
+        Some(class_name) => narrow_from(ctx, scope, class_name, true),
+        None => narrow(ctx, scope, name.trim_start_matches('@')),
     }
-    narrow(ctx, scope, name.trim_start_matches('@'))
 }
 
 /// `ObjectTypeSpecifier::narrowToFullyQualifiedOrAliasedObjectType()` of `ObjectType($class_name)`, without a
@@ -128,11 +129,19 @@ pub(crate) fn narrow(ctx: &Context<'_>, scope: Scope<'_>, class_name: &str) -> D
     if let Some(fq) = class_name.strip_prefix('\\') {
         return DocType::FullyQualified(fq.to_string());
     }
-    if let Some(aliased) = match_aliased(scope.uses, class_name) {
-        return aliased;
-    }
-    if let Some(shortened) = match_shortened(scope.uses, class_name) {
-        return shortened;
+    narrow_from(ctx, scope, class_name, false)
+}
+
+/// The rest of `narrowToFullyQualifiedOrAliasedObjectType()`, for a class name without a leading `\`; `preslash`
+/// is `$withPreslash`, a doc identifier written with one.
+fn narrow_from(ctx: &Context<'_>, scope: Scope<'_>, class_name: &str, preslash: bool) -> DocType {
+    if !preslash {
+        if let Some(aliased) = match_aliased(scope.uses, class_name) {
+            return aliased;
+        }
+        if let Some(shortened) = match_shortened(scope.uses, class_name) {
+            return shortened;
+        }
     }
     if has_class(ctx, class_name) {
         return DocType::FullyQualified(class_name.to_string());
@@ -150,7 +159,7 @@ pub(crate) fn narrow(ctx: &Context<'_>, scope: Scope<'_>, class_name: &str) -> D
     }
     // `resolveNamespacedNonExistingObjectType()`
     match scope.namespace {
-        Some(ns) if !class_name.contains('\\') => DocType::NonExisting(format!("{ns}\\{class_name}")),
+        Some(ns) if !preslash && !class_name.contains('\\') => DocType::NonExisting(format!("{ns}\\{class_name}")),
         _ => DocType::NonExisting(class_name.to_string()),
     }
 }
