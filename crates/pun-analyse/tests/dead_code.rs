@@ -201,3 +201,53 @@ fn native_continuation_through_project_inference_matches_phpstan() {
     actual.sort();
     assert_eq!(serde_json::to_value(actual).unwrap(), expected["errors"]);
 }
+
+/// Default ImpossibleCheckTypeFunctionCallRule tips use native argument decisions, not PHPDoc syntax.
+#[test]
+fn function_certainty_tips_match_phpstan_full_records() {
+    let fixtures = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures");
+    let expected: Value =
+        serde_json::from_str(include_str!("fixtures/dead_code/certainty/expected.json")).unwrap();
+    let mut differences = Vec::new();
+    for (case, file) in [
+        ("shapes", "dead_code/certainty/shapes.php"),
+        ("certainty", "native-calls/certainty.php"),
+        ("controls", "dead_code/certainty/controls.php"),
+    ] {
+        for level in [0, 4, 5] {
+            let mut project = Project::new(vec![fixtures.join(file)], vec![]);
+            project.level = level;
+            project.php_version = 80500;
+            let mut actual: Vec<_> = run(&project)
+                .unwrap()
+                .into_iter()
+                .map(|error| {
+                    (
+                        Path::new(&error.file)
+                            .file_name()
+                            .unwrap()
+                            .to_str()
+                            .unwrap()
+                            .to_owned(),
+                        error.line,
+                        error.identifier,
+                        error.message,
+                        error.tip,
+                        error.can_be_ignored,
+                    )
+                })
+                .collect();
+            actual.sort();
+            let key = format!("{case}-{level}");
+            let actual = serde_json::to_value(actual).unwrap();
+            if actual != expected["cases"][&key] {
+                differences.push(serde_json::json!({"case": key, "actual": actual, "expected": expected["cases"][&key]}));
+            }
+        }
+    }
+    assert!(
+        differences.is_empty(),
+        "{}",
+        serde_json::to_string_pretty(&differences).unwrap()
+    );
+}

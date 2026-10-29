@@ -3,7 +3,8 @@
 //!
 //! A call's condition reports through FunctionCallConstantConditionRule's collector, unless an ImpossibleCheckType rule
 //! owns the call. Not ported: ConstantConditionInTraitRule (nothing reports in a trait) and the
-//! `treatPhpDocTypesAsCertain` and possibly impure tips.
+//! global `treatPhpDocTypesAsCertain` options and possibly impure tips. Default function-call certainty tips
+//! use the available native argument observations; unavailable transfers are not inconclusive decisions.
 
 use std::borrow::Cow;
 use std::collections::{BTreeMap, BTreeSet, HashMap, HashSet};
@@ -34,6 +35,30 @@ use super::no_discard::unparen;
 use super::noop::{self, asserts, function_of};
 
 const REMOVE_TIP: &str = "Remove remaining cases below this one and this error will disappear too.";
+const PHPDOC_TIP: &str = "Because the type is coming from a PHPDoc, you can turn off this check by setting <fg=cyan>treatPhpDocTypesAsCertain: false</> in your <fg=cyan>%configurationFile%</>.";
+
+#[derive(Clone, Copy)]
+enum CheckTypes {
+    Full,
+    Native,
+}
+
+impl CheckTypes {
+    fn map<'a>(self, c: &'a Checker<'_, '_>) -> &'a HashMap<Span, TUnion> {
+        match self {
+            Self::Full => &c.types,
+            Self::Native => &c.native_types,
+        }
+    }
+
+    fn argument(self, c: &Checker, expression: &Expression) -> Option<Type> {
+        match self {
+            Self::Full => c.phpstan_type(expression),
+            // Selected conversion must not recover a dependency from the full expression map.
+            Self::Native => c.phpstan_type_in(expression, &c.native_types),
+        }
+    }
+}
 
 /// The functions with a TypeSpecifier extension or a `($value is T ? true : false)` stub return. The stubs with
 /// `@phpstan-assert-if-true =T` (is_resource(), ctype_alpha(), file functions...) set the call as the root
@@ -474,6 +499,11 @@ impl Checker<'_, '_> {
     /// determineContext() asks a void function for its `@phpstan-assert` tags, anything else in a truthy context
     /// for its `@phpstan-assert-if-true` tags. An unresolved template makes the call the root expression.
     fn asserted(&self, f: &FunctionLikeMetadata, args: &ArgumentList) -> Option<bool> {
+        self.asserted_with(f, args, CheckTypes::Full).flatten()
+    }
+
+    /// Outer None is an unsupported assertion or unavailable input, not a maybe comparison.
+    fn asserted_with(&self, f: &FunctionLikeMetadata, args: &ArgumentList, types: CheckTypes) -> Option<Option<bool>> {
         let void = f.return_type_metadata.as_ref().is_some_and(|r| r.type_union.is_void());
         let assertions = if void { &f.assertions } else { &f.if_true_assertions };
         if !void && f.assertions_inferred
@@ -492,7 +522,7 @@ impl Checker<'_, '_> {
                 Argument::Named(a) if name.as_bytes()[1..] == *a.name.value => Some(a.value),
                 _ => None,
             })?;
-            let given = self.type_of(arg)?;
+            let given = types.map(self).get(&arg.span())?;
             for assertion in assertions {
                 let (Assertion::IsType(a) | Assertion::IsNotType(a)) = assertion else {
                     return None;
@@ -521,7 +551,7 @@ impl Checker<'_, '_> {
                 };
             }
         }
-        all
+        Some(all)
     }
 
     fn asserting(&self, on: &Expression, method: &ClassLikeMemberSelector) -> bool {
@@ -891,20 +921,11 @@ pub(in super::super) fn function_check(c: &mut Checker, call: &FunctionCall) {
     }
     let name = noop::source(c, call.function.span());
     let subject = format!("function {}", name.trim_start_matches('\\'));
-    // ImpossibleCheckTypeHelper: assert() is decided by its argument
-    let value = if name.trim_start_matches('\\').eq_ignore_ascii_case("assert") {
-        call.argument_list.arguments.first().and_then(|a| c.truthiness(a.value()))
-    } else {
-        let asserted = match function_of(c, call.function) {
-            Some(noop::Function::User(f)) => c.asserted(f, &call.argument_list),
-            Some(noop::Function::Builtin(b)) if let Some(value) = c.special(&b.name.to_ascii_lowercase(), &call.argument_list) => {
-                return impossible_check(c, call.span(), value, "function", subject, &call.argument_list);
-            }
-            _ => None,
-        };
-        c.exact(call.span()).or(asserted)
-    };
-    impossible_check(c, call.span(), value, "function", subject, &call.argument_list);
+    let value = c.function_decision(call, CheckTypes::Full).flatten();
+    // ImpossibleCheckTypeFunctionCallRule reruns the same helper without PHPDoc certainty.
+    // Either native polarity suppresses the tip. Only an available but undecided answer adds it.
+    let phpdoc = value.is_some() && c.function_decision(call, CheckTypes::Native) == Some(None);
+    impossible_check(c, call.span(), value, "function", subject, &call.argument_list, phpdoc);
 }
 
 pub(in super::super) fn method_check(c: &mut Checker, call: &MethodCall) {
@@ -935,7 +956,7 @@ fn method_report(
         _ => return,
     };
     let value = c.exact(span).or(asserted);
-    impossible_check(c, span, value, identifier, subject, args);
+    impossible_check(c, span, value, identifier, subject, args, false);
 }
 
 fn impossible_check(
@@ -945,6 +966,7 @@ fn impossible_check(
     identifier: &str,
     subject: String,
     args: &ArgumentList,
+    phpdoc: bool,
 ) {
     let last = c.last_condition(span);
     let Some(value) = value.filter(|v| !(*v && last == Some(true))) else {
@@ -964,7 +986,8 @@ fn impossible_check(
         }
     };
     let (text, suffix) = if value { ("true", "alreadyNarrowedType") } else { ("false", "impossibleType") };
-    let tip = (value && last == Some(false)).then_some(REMOVE_TIP);
+    // RuleErrorBuilder::tip replaces the certainty tip with the remaining-cases tip.
+    let tip = if value && last == Some(false) { Some(REMOVE_TIP) } else { phpdoc.then_some(PHPDOC_TIP) };
     let line = c.line_of(span);
     c.condition_error(
         span,
@@ -1135,17 +1158,58 @@ fn decided(t: Tri) -> Option<bool> {
 }
 
 impl Checker<'_, '_> {
+    /// The bounded ImpossibleCheckTypeHelper decision, with identical expression positions in both lanes.
+    /// None is unavailable/unported. Some(None) means the supported helper genuinely cannot decide.
+    fn function_decision(&self, call: &FunctionCall, types: CheckTypes) -> Option<Option<bool>> {
+        let args = &call.argument_list;
+        if noop::source(self, call.function.span())
+            .trim_start_matches('\\')
+            .eq_ignore_ascii_case("assert")
+        {
+            let ty = types
+                .map(self)
+                .get(&args.arguments.first()?.value().span())
+                .filter(|ty| !ty.types.is_empty() && !ty.is_never())?;
+            return Some(if ty.is_always_truthy() {
+                Some(true)
+            } else if ty.is_always_falsy() {
+                Some(false)
+            } else {
+                None
+            });
+        }
+        match function_of(self, call.function)? {
+            noop::Function::User(function) => {
+                let asserted = self.asserted_with(function, args, types);
+                match types {
+                    CheckTypes::Full => Some(self.exact(call.span()).or(asserted.flatten())),
+                    CheckTypes::Native => asserted,
+                }
+            }
+            noop::Function::Builtin(function) => {
+                self.special(&function.name.to_ascii_lowercase(), args, types, call.span())
+            }
+        }
+    }
+
     /// ImpossibleCheckTypeHelper's own answers for in_array(), method_exists(), property_exists() and the
-    /// class_exists() family, with what their TypeSpecifying extensions narrow; `None` for the other functions.
-    fn special(&self, name: &str, args: &ArgumentList) -> Option<Option<bool>> {
-        let arg = |i: usize| args.arguments.get(i).and_then(|a| self.phpstan_type(a.value()));
+    /// class_exists() family, plus the sure-type entries of ordinary type predicates.
+    fn special(&self, name: &str, args: &ArgumentList, types: CheckTypes, call: Span) -> Option<Option<bool>> {
+        let arg = |i: usize| args.arguments.get(i).and_then(|a| types.argument(self, a.value()));
         Some(match name {
-            "in_array" => super::super::declared::with_classes(self, || self.in_array(arg(0)?, arg(1)?, arg(2))),
-            "method_exists" => (|| self.method_exists(arg(0)?, arg(1)?))(),
-            "property_exists" => (|| self.property_exists(arg(0)?, arg(1)?))(),
+            // getArgumentType(..., phpDocFlavour: true) retains the full strict flag in either lane.
+            "in_array" => {
+                let needle = arg(0)?;
+                let haystack = arg(1)?;
+                super::super::declared::with_classes(self, || self.in_array(
+                    needle, haystack, args.arguments.get(2).and_then(|a| self.phpstan_type(a.value())),
+                ))
+            }
+            "method_exists" => self.method_exists(arg(0)?, arg(1)?),
+            "property_exists" => self.property_exists(arg(0)?, arg(1)?),
             // the always true result is suppressed: autoloading can fail
             "class_exists" | "interface_exists" | "trait_exists" | "enum_exists" => {
-                let strings = arg(0).map(|t| constant_strings(&t)).unwrap_or_default();
+                let strings = constant_strings(&arg(0)?);
                 let wrong_kind = |s: &String| {
                     self.codebase.get_class_like(s.trim_start_matches('\\').as_bytes()).is_some_and(|k| match name {
                         "class_exists" => matches!(k.kind, SymbolKind::Interface | SymbolKind::Trait),
@@ -1156,7 +1220,24 @@ impl Checker<'_, '_> {
                 };
                 (!strings.is_empty() && strings.iter().all(wrong_kind)).then_some(false)
             }
-            _ => return None,
+            _ => {
+                let query: fn(&Type) -> Tri = match name {
+                    "is_int" | "is_integer" | "is_long" => Type::is_integer,
+                    "is_string" => Type::is_string,
+                    "is_bool" => Type::is_boolean,
+                    "is_float" | "is_double" | "is_real" => Type::is_float,
+                    "is_null" => Type::is_null,
+                    "is_array" => Type::is_array,
+                    "is_object" => Type::is_object,
+                    "is_iterable" => Type::is_iterable,
+                    _ => return match types {
+                        CheckTypes::Full => Some(self.exact(call)),
+                        CheckTypes::Native => None,
+                    },
+                };
+                let argument = arg(0)?;
+                super::super::declared::with_classes(self, || decided(query(&argument)))
+            }
         })
     }
 
