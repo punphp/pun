@@ -14,7 +14,7 @@ mod lint_c;
 use lint_c::{run_class, run_class_at, run_class_with, run_dirs};
 use mago_syntax::cst::Node;
 use pun_lint::rules::{
-    AddOverrideAttribute, NoExtraArguments, PreferClassNameConstant, RemoveFunctionArgument,
+    AddOverrideAttribute, AnnotationToAttribute, NoExtraArguments, PreferClassNameConstant, RemoveFunctionArgument,
     RemoveFunctionCall, RenameCast, RenameClass, RenameClassConstant, RenameConstant, RenameFunction,
     RenameMethod, ReplaceArrayAccess, ReplaceFunctionWithConstant, ReplaceFunctionWithNew,
     ReplaceFunctionWithStatic, RequireStrictInArray,
@@ -64,7 +64,7 @@ fn everywhere(make: impl Fn() -> Box<dyn Rule>, class: &str, php_version: u32) {
         let Ok(entries) = std::fs::read_dir(root.join(dir)) else {
             continue;
         };
-        for path in entries.map(|e| e.unwrap().path()) {
+        for path in entries.map(|e| e.unwrap().path()).filter(|p| p.is_file()) {
             let content = std::fs::read_to_string(&path).unwrap();
             let input = content.split("-----\n").next().unwrap();
             assert_eq!(
@@ -761,6 +761,103 @@ fn rename_class() {
             (json!([]), "options must be a table"),
             (json!({"A": 1}), "`A` must be a string"),
             (json!({"import-names": "yes"}), "`import-names` must be a boolean"),
+        ],
+    );
+}
+
+/// AnnotationToAttributeRector, each upstream config on its own directories: Fixture, Oracle and Pun with
+/// config/configured_rule.php (Fixture/Behat/*, Fixture/Doctrine/* and Fixture/Symfony/* in their directories),
+/// FixtureMultipleCall with config/multiple_call_configured_rule.php at PHP 8.0, FixturePhp81 and OraclePhp81 with
+/// config/nested_attributes_php81.php at PHP 8.1. The classes Rector's test run autoloads from rector-src's stubs/
+/// are in Stubs/. Fixture/Doctrine/{doctrine_entity,handle_with_api_above,nullable_bool_value} are
+/// FixtureUnformattable/Doctrine_*: Pint (and so the laravel format) fails on their `\App\Some\Class::class`, so they run
+/// without the format step. FixturePhp81/{unique_constraints,new_line_after_open_parentheses} are OraclePhp81/, with what the
+/// rule writes alone: their change is NestedAnnotationToAttributeRector's, which the config runs beside it.
+#[test]
+fn annotation_to_attribute() {
+    let source = "Rector\\Tests\\Php80\\Rector\\Class_\\AnnotationToAttributeRector\\Source\\";
+    let options = json!({"items": [
+        {"tag": "Doctrine\\ORM\\Mapping\\Embeddable"},
+        {"tag": format!("{source}NotAnAttribute")},
+        {"tag": format!("{source}Annotation\\OpenApi\\PastAnnotation"), "attribute-class": format!("{source}Attribute\\OpenApi\\FutureAttribute")},
+        {"tag": format!("{source}Annotation\\OpenApi\\Annotation\\NestedPastAnnotation"), "attribute-class": format!("{source}Attribute\\OpenApi\\Attribute\\NestedFutureAttribute")},
+        {"tag": format!("{source}GenericAnnotation")},
+        {"tag": format!("{source}GenericSingleImplicitAnnotation")},
+        {"tag": "Symfony\\Component\\Routing\\Annotation\\Route"},
+        {"tag": "Doctrine\\ORM\\Mapping\\Entity", "class-reference-fields": ["repositoryClass"]},
+        {"tag": "Doctrine\\ORM\\Mapping\\DiscriminatorMap"},
+        {"tag": "Doctrine\\ORM\\Mapping\\Column"},
+        {"tag": "Symfony\\Component\\Validator\\Constraints\\Choice"},
+        {"tag": "Symfony\\Component\\Validator\\Constraints\\Length"},
+        {"tag": "Symfony\\Component\\Validator\\Constraints\\File"},
+        {"tag": "Sensio\\Bundle\\FrameworkExtraBundle\\Configuration\\ParamConverter"},
+        {"tag": format!("{source}UseAlias\\TestSmth")},
+        {"tag": format!("{source}UseAlias\\TestOther")},
+        {"tag": "Sensio\\Bundle\\FrameworkExtraBundle\\Configuration\\Security"},
+        {"tag": "Symfony\\Component\\Serializer\\Attribute\\Groups"},
+        {"tag": "When", "attribute-class": "Behat\\Step\\When", "use-value-as-attribute-argument": true},
+        {"tag": "Then", "attribute-class": "Behat\\Step\\Then", "use-value-as-attribute-argument": true},
+        {"tag": "Transform", "attribute-class": "Behat\\Transformation\\Transform", "use-value-as-attribute-argument": true},
+        {"tag": "OldName1", "attribute-class": format!("{source}Attribute\\NewName1")},
+        {"tag": "OldName2", "attribute-class": format!("{source}Attribute\\NewName2")},
+        {"tag": "SameName", "attribute-class": format!("{source}Attribute\\SameName")},
+        {"tag": format!("{source}Attribute\\OpenApi\\Annotation\\SomeProperty"), "attribute-class": format!("{source}Attribute\\OpenApi\\Attribute\\SomeProperty")},
+        {"tag": "OpenApi\\Annotations\\Property", "attribute-class": "OpenApi\\Attributes\\Property"},
+        {"tag": format!("{source}Attribute\\EmptyAttribute"), "class-reference-fields": ["foo"]},
+    ]});
+    run_dirs(
+        vec![configured(AnnotationToAttribute::default(), &options)],
+        "AnnotationToAttributeRector",
+        &["Fixture", "Oracle", "Pun"],
+        80400,
+        &[],
+    );
+    everywhere(|| configured(AnnotationToAttribute::default(), &options), "AnnotationToAttributeRector", 80400);
+    let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/rector/AnnotationToAttributeRector");
+    let mut extra = Vec::new();
+    for dir in ["Source", "Stubs"] {
+        php_files(&root.join(dir), &mut extra);
+    }
+    let linter = Linter::new(vec![configured(AnnotationToAttribute::default(), &options)], 80400);
+    for path in std::fs::read_dir(root.join("FixtureUnformattable")).unwrap().map(|e| e.unwrap().path()) {
+        let content = std::fs::read_to_string(&path).unwrap();
+        let (input, expected) = content.split_once("-----\n").unwrap();
+        let fixed = pun_lint::rules::facts::with_sources(extra.clone(), || linter.fix(&path, input)).unwrap();
+        assert_eq!(fixed.source, expected, "{}", path.display());
+    }
+    let multiple = json!({"items": [{"tag": "Doctrine\\ORM\\Mapping\\Entity"}, {"tag": "Doctrine\\ORM\\Mapping\\ManyToMany"}]});
+    run_dirs(
+        vec![configured(AnnotationToAttribute::default(), &multiple)],
+        "AnnotationToAttributeRector",
+        &["FixtureMultipleCall"],
+        80000,
+        &[],
+    );
+    let php81 = "Rector\\Tests\\Php80\\Rector\\Class_\\AnnotationToAttributeRector\\SourcePhp81\\";
+    let nested = json!({"items": [
+        {"tag": format!("{php81}All")},
+        {"tag": format!("{php81}Length")},
+        {"tag": format!("{php81}NotNumber")},
+        {"tag": format!("{source}GenericAnnotation")},
+    ]});
+    let source_php81 = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/rector/AnnotationToAttributeRector/SourcePhp81");
+    run_dirs(
+        vec![configured(AnnotationToAttribute::default(), &nested)],
+        "AnnotationToAttributeRector",
+        &["FixturePhp81", "OraclePhp81"],
+        80100,
+        &[&source_php81],
+    );
+    rejects(
+        AnnotationToAttribute::default(),
+        &[
+            (json!([]), "options must be a table"),
+            (json!({"items": [{"attribute-class": "A"}]}), "each of `items` needs `tag`"),
+            (json!({"items": [{"tag": "A b"}]}), "\"A b\" is not a valid class name"),
+            (json!({"items": [{"tag": 1}]}), "`tag` must be a string"),
+            (json!({"items": [{"tag": "A", "class-reference-fields": [1]}]}), "`class-reference-fields` must be a list of strings"),
+            (json!({"items": [{"tag": "A", "class-reference-fields": "f"}]}), "`class-reference-fields` must be a list of strings"),
+            (json!({"items": [{"tag": "A", "use-value-as-attribute-argument": 1}]}), "`use-value-as-attribute-argument` must be a boolean"),
         ],
     );
 }

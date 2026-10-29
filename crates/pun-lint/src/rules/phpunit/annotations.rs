@@ -29,7 +29,8 @@ pub(crate) struct Annotated<'s> {
 }
 
 impl<'s> Annotated<'s> {
-    /// The class, method, function or property `node`, whose ancestors are `ancestors`; `None` for any other node.
+    /// The class, method or property `node` (or interface, function or parameter), whose ancestors are `ancestors`;
+    /// `None` for any other node.
     pub(crate) fn of(
         source: &'s str,
         node: Node<'_, '_>,
@@ -45,6 +46,9 @@ impl<'s> Annotated<'s> {
             Node::Property(mago_syntax::cst::Property::Hooked(property)) => {
                 &property.attribute_lists
             }
+            Node::Interface(interface) => &interface.attribute_lists,
+            Node::Function(function) => &function.attribute_lists,
+            Node::FunctionLikeParameter(parameter) => &parameter.attribute_lists,
             _ => return None,
         };
         let start = node_span(&node).start;
@@ -68,6 +72,22 @@ impl<'s> Annotated<'s> {
         })
     }
 
+    /// [`Self::of`] with the doc comment php-parser's `getDocComment()` reads: the last among the node's comments,
+    /// which other comments may follow.
+    pub(crate) fn of_last(
+        source: &'s str,
+        node: Node<'_, '_>,
+        ancestors: &[Node<'_, '_>],
+    ) -> Option<Self> {
+        let mut annotated = Self::of(source, node, ancestors)?;
+        if annotated.doc.is_none() {
+            annotated.doc = Doc::last_of(source, ancestors, annotated.start);
+            // (a comment follows it)
+            annotated.other_comments = annotated.doc.is_some();
+        }
+        Some(annotated)
+    }
+
     /// The edits that give the doc comment `new_doc` (`""` removes it; a node without one gets it) and add `groups` (each `#[...]`) after the
     /// node's attributes: a line each, at the node's indentation. A changed doc is printed as php-parser's
     /// `pComments()` does (`Comment::getReformattedText()`, then a line break and the node's indentation before the
@@ -83,7 +103,17 @@ impl<'s> Annotated<'s> {
         if indent.contains('\t') {
             return None;
         }
-        let nl = format!("\n{indent}");
+        self.edits_at(source, new_doc, groups, &format!("\n{indent}"))
+    }
+
+    /// [`Self::edits`] with `nl` the line break and indentation the printer writes before the node.
+    pub(crate) fn edits_at(
+        &self,
+        source: &str,
+        new_doc: Option<&str>,
+        groups: &[String],
+        nl: &str,
+    ) -> Option<Vec<Edit>> {
         let mut edits = Vec::new();
         let mut at_start = self.start;
         let mut lead = String::new();

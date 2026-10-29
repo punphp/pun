@@ -59,6 +59,23 @@ pub(crate) struct Annotation {
     pub values: Vec<ArrayItem>,
 }
 
+impl Annotation {
+    /// `getOriginalContent()`.
+    pub fn original(&self) -> &str {
+        &self.original
+    }
+
+    /// `DoctrineAnnotationTagValueNode::__toString()` (the node is always changed): the values in parentheses, or
+    /// the empty parentheses as written.
+    pub fn values_string(&self) -> String {
+        match (self.values.is_empty(), self.original == "()") {
+            (false, _) => format!("({})", parser::join(&self.values)),
+            (true, true) => "()".to_string(),
+            (true, false) => String::new(),
+        }
+    }
+}
+
 /// What a child of the doc is.
 #[derive(Clone, Debug)]
 pub(crate) enum Value {
@@ -258,6 +275,8 @@ pub(crate) struct Doc {
     pub children: Vec<Child>,
     /// The key of each child in PHP's array of them (`unset()` leaves gaps).
     keys: Vec<usize>,
+    /// The children that went (`PhpDocTagRemover`, a `NODE_REMOVE` traversal) or were replaced, with their keys.
+    removed: Vec<(usize, Child)>,
     single_line: bool,
     /// `LAST_PHP_DOC_TOKEN_POSITION`.
     last_token_position: Option<usize>,
@@ -382,6 +401,7 @@ impl Doc {
             tokens,
             children,
             keys,
+            removed: Vec::new(),
         })
     }
 
@@ -621,6 +641,67 @@ impl Doc {
         names
     }
 
+    /// `PhpDocTagRemover::removeTagValueFromNode()`, a `NODE_REMOVE` traversal: the child `i` goes, the others keep
+    /// their keys (`unset()`).
+    pub fn remove(&mut self, i: usize) {
+        let child = self.children.remove(i);
+        let key = self.keys.remove(i);
+        self.removed.push((key, child));
+    }
+
+    /// `$phpDocNode->children[$key] = new PhpDocTextNode($text)`: the child `i` becomes a new text node.
+    pub fn replace_with_text(&mut self, i: usize, text: String) {
+        let text = Child {
+            start_end: None,
+            id: 0,
+            tag: None,
+            value: Value::Text(text),
+            changed: false,
+        };
+        let child = std::mem::replace(&mut self.children[i], text);
+        self.removed.push((self.keys[i], child));
+    }
+
+    /// `RemoveNodesStartAndEndResolver::resolve()`: for each child that went (`array_diff()` by the string of each,
+    /// in their order), the token before its line's first token and the token after it.
+    fn jumps(&self) -> Vec<(usize, usize)> {
+        let mut removed = self.removed.clone();
+        removed.sort_by_key(|(key, _)| *key);
+        let text = |c: &Child| c.start_end.map(|(start, end)| self.token_text(start, end));
+        let current: Vec<Option<String>> = self.children.iter().map(text).collect();
+        let mut jumps = Vec::new();
+        let mut last_end: Option<usize> = None;
+        for (_, child) in &removed {
+            // it's not there when comment block has empty row "\s\*\n"
+            let Some((start, end)) = child.start_end else {
+                continue;
+            };
+            if current.contains(&text(child)) {
+                continue;
+            }
+            // change start position to start of the line, so the whole line is removed
+            let mut seek = start as isize;
+            while seek >= 0 && self.tokens[seek as usize].ty != t::HORIZONTAL_WS {
+                if self.tokens[seek as usize].ty == t::PHPDOC_EOL {
+                    break;
+                }
+                // do not collide (`null < $seekPosition` is `false < (bool) $seekPosition`)
+                if last_end.map_or(seek != 0, |e| (e as isize) < seek) {
+                    break;
+                }
+                seek -= 1;
+            }
+            last_end = Some(end);
+            jumps.push(((seek - 1).max(0) as usize, end));
+        }
+        jumps
+    }
+
+    /// The doc's text from the token `start` to the one before `end`.
+    fn token_text(&self, start: usize, end: usize) -> String {
+        self.tokens[start..end].iter().map(|t| &self.text[t.start..t.end]).collect()
+    }
+
     /// Whether every changed child can be printed as Rector prints it.
     pub fn reprintable(&self) -> bool {
         self.children
@@ -636,6 +717,11 @@ impl Doc {
 
     /// `PhpDocInfoPrinter::printFormatPreserving()`. Call it only when [`Self::reprintable`] holds.
     pub fn print(&self) -> String {
+        // `EmptyPhpDocDetector::isPhpDocNodeEmpty()`
+        if self.children.iter().all(|c| matches!(&c.value, Value::Text(text) if text.is_empty())) {
+            return String::new();
+        }
+        let jumps = self.jumps();
         let mut current = 0;
         let mut output = String::new();
         let count = self.children.len();
@@ -648,7 +734,7 @@ impl Doc {
                     if current == 0 && key != 1 {
                         current = start - usize::from(self.tokens[start - 1].ty == t::PHPDOC_EOL);
                     }
-                    let part = self.add_tokens_from_to(String::new(), current, end, count == key);
+                    let part = self.add_tokens_from_to(String::new(), current, end, count == key, &jumps);
                     current = end;
                     output.push_str(part.trim_end_matches(PHP_WS));
                 }
@@ -672,7 +758,7 @@ impl Doc {
         let last = self.last_token_position.unwrap_or(current);
         output = match last {
             0 => output + "\n */",
-            _ => self.add_tokens_from_to(output, last, self.tokens.len(), true),
+            _ => self.add_tokens_from_to(output, last, self.tokens.len(), true, &jumps),
         };
         if !["//", "/**", "/*", "#"].iter().any(|s| output.starts_with(s)) && !output.is_empty() {
             output.insert_str(0, "/**");
@@ -682,8 +768,15 @@ impl Doc {
         callable_hotfix(&output)
     }
 
-    /// `addTokensFromTo()` (no child is removed).
-    fn add_tokens_from_to(&self, mut output: String, from: usize, to: usize, skip_empty_lines_above: bool) -> String {
+    /// `addTokensFromTo()`, the removed children's tokens skipped (`appendToOutput()`).
+    fn add_tokens_from_to(
+        &self,
+        mut output: String,
+        from: usize,
+        to: usize,
+        skip_empty_lines_above: bool,
+        jumps: &[(usize, usize)],
+    ) -> String {
         let text = |i: usize| self.tokens.get(i).map_or("", |t| &self.text[t.start..t.end]);
         let mut from = from;
         // include also space before, in case of inlined docs
@@ -694,8 +787,13 @@ impl Doc {
         if skip_empty_lines_above && text(from).contains('\n') && text(from + 1).contains('\n') {
             from += 1;
         }
-        for i in from..to {
+        let mut i = from;
+        while i < to {
+            while let Some(&(_, end)) = jumps.iter().find(|j| j.0 == i) {
+                i = end;
+            }
             output.push_str(text(i));
+            i += 1;
         }
         output
     }
@@ -795,7 +893,7 @@ fn const_fetches(node: &Node, f: &mut dyn FnMut(&str)) {
 }
 
 /// `RectorAssert::className()`.
-fn is_class_name(name: &str) -> bool {
+pub(crate) fn is_class_name(name: &str) -> bool {
     !name.is_empty()
         && name.split('\\').all(|part| {
             let b = part.as_bytes();
@@ -1398,11 +1496,7 @@ fn print_child(child: &Child) -> Option<String> {
             Some(format!("{name} {}", value.trim()).trim().to_string())
         }
         // `SpacelessPhpDocTagNode`: the name, then `DoctrineAnnotationTagValueNode::__toString()` (always changed)
-        Value::Annotation(a) => Some(match (a.values.is_empty(), a.original == "()") {
-            (false, _) => format!("{name}({})", parser::join(&a.values)),
-            (true, true) => format!("{name}()"),
-            (true, false) => name.to_string(),
-        }),
+        Value::Annotation(a) => Some(format!("{name}{}", a.values_string())),
         Value::Other(other) => Some(format!("{name} {}", other.print()?).trim().to_string()),
         // `DoctrineTagValueNode::__toString()`: the annotation's name and arguments, then the description
         Value::Doctrine { args, description } => {

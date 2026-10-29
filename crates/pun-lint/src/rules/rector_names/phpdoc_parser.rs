@@ -1094,7 +1094,7 @@ pub(crate) enum Val {
 #[derive(Clone, Debug, PartialEq)]
 pub(crate) enum Key {
     /// An integer key, never printed.
-    Int,
+    Int(i64),
     Val(Val),
 }
 
@@ -1235,7 +1235,7 @@ impl Static<'_, '_> {
             .map(|(natural, (key, value))| {
                 let key = match key {
                     PhpKey::Int(k) if k == natural as i64 => None,
-                    PhpKey::Int(_) => Some(Key::Int),
+                    PhpKey::Int(k) => Some(Key::Int(k)),
                     PhpKey::Str(k) => Some(Key::Val(Val::Str(k))),
                 };
                 create_array_item(key, value)

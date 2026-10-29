@@ -8,6 +8,7 @@
 //! Rector rule's `configure()` and its value objects do (`Assert`, `RectorAssert`).
 
 mod add_override_attribute;
+mod prefer_attribute_over_annotation;
 mod remove_function_argument;
 mod remove_function_call;
 mod rename_cast;
@@ -21,6 +22,7 @@ mod replace_function;
 mod replace_static_with_method;
 
 pub use add_override_attribute::AddOverrideAttribute;
+pub use prefer_attribute_over_annotation::AnnotationToAttribute;
 pub use remove_function_argument::RemoveFunctionArgument;
 pub use remove_function_call::RemoveFunctionCall;
 pub use rename_cast::RenameCast;
@@ -55,6 +57,7 @@ use crate::{Context, Report, Rule};
 pub fn all() -> Vec<Box<dyn Rule>> {
     vec![
         Box::new(AddOverrideAttribute),
+        Box::new(AnnotationToAttribute::default()),
         Box::new(RemoveFunctionArgument::default()),
         Box::new(ReplaceArrayAccess::default()),
         Box::new(RemoveFunctionCall::default()),
