@@ -262,6 +262,21 @@ def write_configs(mode: str, name: str, work: Path, rector_rules: list[str]) -> 
         (work / "pun-bench-rector.php").write_text(rector_config(name, rector_rules))
 
 
+# The configurable Rector classes whose Pun rule's default options are a Rector configuration, key for key: they run
+# with that configuration (Rector's own defaults), as Pun runs its rule without options.
+CONFIGURED = {
+    "Pest\\Rector\\Rules\\ChainExpectCallsRector": "['merge_different_variables' => true]",
+    "Rector\\CodeQuality\\Rector\\FunctionLike\\SimplifyUselessVariableRector": "['only_direct_assign' => false]",
+    "Rector\\Php55\\Rector\\String_\\StringClassNameToClassConstantRector": "[]",
+    "Rector\\TypeDeclaration\\Rector\\Property\\TypedPropertyFromAssignsRector": "['inline_public' => false]",
+    "RectorLaravel\\Rector\\Class_\\AddHasFactoryToModelsRector": "[]",
+    "RectorLaravel\\Rector\\MethodCall\\EloquentOrderByToLatestOrOldestRector":
+        "['allowed_patterns' => ['*_at', '*_date', '*_on']]",
+    "RectorLaravel\\Rector\\PropertyFetch\\OptionalToNullsafeOperatorRector": "['exclude_methods' => []]",
+    "RectorLaravel\\Rector\\StaticCall\\EloquentMagicMethodToQueryBuilderRector": "['exclude_methods' => []]",
+}
+
+
 def rector_config(name: str, rector_rules: list[str]) -> str:
     """A rector.php that runs `rector_rules` on the paths of `name`'s rector.php."""
     paths = ", ".join(f"__DIR__.'/{p}'" for p in LINT[name])
@@ -271,17 +286,25 @@ def rector_config(name: str, rector_rules: list[str]) -> str:
     # those rules rewrite assignments to superglobals into calls, which PHP rejects.
     laravel = RECTOR.parent.parent / "driftingly/rector-laravel/config/config.php"
     sets = f"    ->withSets(['{laravel}'])\n" if laravel.exists() else ""
-    return ("<?php\n\nreturn Rector\\Config\\RectorConfig::configure()\n"
+    configured = "".join(f"\\{c}::class => {CONFIGURED[c]}, " for c in rector_rules if c in CONFIGURED)
+    return ("<?php\n\n$config = Rector\\Config\\RectorConfig::configure()\n"
             f"    ->withPaths([{paths}])\n"
             f"{sets}"
             # Only the classes the Rector that runs has (a project without Pest's plugin lacks its rules), and none
-            # that needs a configuration: unconfigured, Rector fails on every file, and Pun's port does nothing.
+            # that needs a configuration: unconfigured, Rector fails on every file, and Pun's port does nothing. The
+            # CONFIGURED ones are registered after, with their configuration.
             f"    ->withRules(array_values(array_filter([{rules}], fn ($c) => class_exists($c)\n"
             "        && ! is_subclass_of($c, \\Rector\\Contract\\Rector\\ConfigurableRectorInterface::class))))\n"
             "    ->withPhpVersion(80400)\n"
             # Rector's 120 s per batch of files times out on a busy machine, and a timed-out batch's files go
             # unprocessed.
-            "    ->withParallel(timeoutSeconds: 900);\n")
+            "    ->withParallel(timeoutSeconds: 900);\n"
+            f"foreach ([{configured}] as $class => $configuration) {{\n"
+            "    if (class_exists($class)) {\n"
+            "        $config->withConfiguredRule($class, $configuration);\n"
+            "    }\n"
+            "}\n\n"
+            "return $config;\n")
 
 
 def native_rules() -> list[str]:
