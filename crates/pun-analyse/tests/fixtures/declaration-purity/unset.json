@@ -1,0 +1,800 @@
+{
+    "0": [
+        {
+            "file": "unset.php",
+            "line": 9,
+            "identifier": "phpstan.dumpType",
+            "message": "Dumped type: array{...<string, int>}",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "unset.php",
+            "line": 14,
+            "identifier": "phpstan.dumpType",
+            "message": "Dumped type: array{...<int, int>}",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "unset.php",
+            "line": 32,
+            "identifier": "phpstan.dumpType",
+            "message": "Dumped type: 1",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "unset.php",
+            "line": 41,
+            "identifier": "unset.possiblyHookedProperty",
+            "message": "Cannot unset property SentinelDeliveryEdges\\Properties::$value because it might have hooks in a subclass.",
+            "tip": null,
+            "ignorable": true
+        }
+    ],
+    "1": [
+        {
+            "file": "unset.php",
+            "line": 9,
+            "identifier": "phpstan.dumpType",
+            "message": "Dumped type: array{...<string, int>}",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "unset.php",
+            "line": 14,
+            "identifier": "phpstan.dumpType",
+            "message": "Dumped type: array{...<int, int>}",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "unset.php",
+            "line": 32,
+            "identifier": "phpstan.dumpType",
+            "message": "Dumped type: 1",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "unset.php",
+            "line": 41,
+            "identifier": "unset.possiblyHookedProperty",
+            "message": "Cannot unset property SentinelDeliveryEdges\\Properties::$value because it might have hooks in a subclass.",
+            "tip": null,
+            "ignorable": true
+        }
+    ],
+    "2": [
+        {
+            "file": "unset.php",
+            "line": 7,
+            "identifier": "void.pure",
+            "message": "Function SentinelDeliveryEdges\\openStrings() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "unset.php",
+            "line": 9,
+            "identifier": "phpstan.dumpType",
+            "message": "Dumped type: array{...<string, int>}",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "unset.php",
+            "line": 12,
+            "identifier": "void.pure",
+            "message": "Function SentinelDeliveryEdges\\openIntegers() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "unset.php",
+            "line": 14,
+            "identifier": "phpstan.dumpType",
+            "message": "Dumped type: array{...<int, int>}",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "unset.php",
+            "line": 17,
+            "identifier": "void.pure",
+            "message": "Function SentinelDeliveryEdges\\localVariable() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "unset.php",
+            "line": 18,
+            "identifier": "void.pure",
+            "message": "Function SentinelDeliveryEdges\\multipleVariables() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "unset.php",
+            "line": 19,
+            "identifier": "void.pure",
+            "message": "Function SentinelDeliveryEdges\\literalArray() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "unset.php",
+            "line": 20,
+            "identifier": "void.pure",
+            "message": "Function SentinelDeliveryEdges\\unsetThenReplace() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "unset.php",
+            "line": 22,
+            "identifier": "void.pure",
+            "message": "Function SentinelDeliveryEdges\\dynamicIndex() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "unset.php",
+            "line": 24,
+            "identifier": "void.pure",
+            "message": "Function SentinelDeliveryEdges\\localIndexWrite() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "unset.php",
+            "line": 32,
+            "identifier": "phpstan.dumpType",
+            "message": "Dumped type: 1",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "unset.php",
+            "line": 41,
+            "identifier": "unset.possiblyHookedProperty",
+            "message": "Cannot unset property SentinelDeliveryEdges\\Properties::$value because it might have hooks in a subclass.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "unset.php",
+            "line": 65,
+            "identifier": "void.pure",
+            "message": "Function SentinelDeliveryEdges\\referenceVariable() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "unset.php",
+            "line": 76,
+            "identifier": "void.pure",
+            "message": "Method SentinelDeliveryEdges\\LocalMethod::local() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "unset.php",
+            "line": 80,
+            "identifier": "void.pure",
+            "message": "Function SentinelDeliveryEdges\\parameterArrayStaysArray() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "unset.php",
+            "line": 82,
+            "identifier": "void.pure",
+            "message": "Function SentinelDeliveryEdges\\localObject() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "unset.php",
+            "line": 94,
+            "identifier": "void.pure",
+            "message": "Function SentinelDeliveryEdges\\pureIndexCall() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "unset.php",
+            "line": 108,
+            "identifier": "void.pure",
+            "message": "Function SentinelDeliveryEdges\\caughtOperand() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        }
+    ],
+    "4": [
+        {
+            "file": "unset.php",
+            "line": 7,
+            "identifier": "void.pure",
+            "message": "Function SentinelDeliveryEdges\\openStrings() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "unset.php",
+            "line": 9,
+            "identifier": "phpstan.dumpType",
+            "message": "Dumped type: array{...<string, int>}",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "unset.php",
+            "line": 12,
+            "identifier": "void.pure",
+            "message": "Function SentinelDeliveryEdges\\openIntegers() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "unset.php",
+            "line": 14,
+            "identifier": "phpstan.dumpType",
+            "message": "Dumped type: array{...<int, int>}",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "unset.php",
+            "line": 17,
+            "identifier": "void.pure",
+            "message": "Function SentinelDeliveryEdges\\localVariable() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "unset.php",
+            "line": 18,
+            "identifier": "void.pure",
+            "message": "Function SentinelDeliveryEdges\\multipleVariables() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "unset.php",
+            "line": 19,
+            "identifier": "void.pure",
+            "message": "Function SentinelDeliveryEdges\\literalArray() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "unset.php",
+            "line": 20,
+            "identifier": "void.pure",
+            "message": "Function SentinelDeliveryEdges\\unsetThenReplace() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "unset.php",
+            "line": 22,
+            "identifier": "void.pure",
+            "message": "Function SentinelDeliveryEdges\\dynamicIndex() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "unset.php",
+            "line": 24,
+            "identifier": "void.pure",
+            "message": "Function SentinelDeliveryEdges\\localIndexWrite() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "unset.php",
+            "line": 32,
+            "identifier": "phpstan.dumpType",
+            "message": "Dumped type: 1",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "unset.php",
+            "line": 41,
+            "identifier": "unset.possiblyHookedProperty",
+            "message": "Cannot unset property SentinelDeliveryEdges\\Properties::$value because it might have hooks in a subclass.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "unset.php",
+            "line": 65,
+            "identifier": "void.pure",
+            "message": "Function SentinelDeliveryEdges\\referenceVariable() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "unset.php",
+            "line": 76,
+            "identifier": "void.pure",
+            "message": "Method SentinelDeliveryEdges\\LocalMethod::local() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "unset.php",
+            "line": 80,
+            "identifier": "void.pure",
+            "message": "Function SentinelDeliveryEdges\\parameterArrayStaysArray() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "unset.php",
+            "line": 82,
+            "identifier": "void.pure",
+            "message": "Function SentinelDeliveryEdges\\localObject() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "unset.php",
+            "line": 94,
+            "identifier": "void.pure",
+            "message": "Function SentinelDeliveryEdges\\pureIndexCall() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "unset.php",
+            "line": 108,
+            "identifier": "void.pure",
+            "message": "Function SentinelDeliveryEdges\\caughtOperand() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        }
+    ],
+    "5": [
+        {
+            "file": "unset.php",
+            "line": 7,
+            "identifier": "void.pure",
+            "message": "Function SentinelDeliveryEdges\\openStrings() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "unset.php",
+            "line": 9,
+            "identifier": "phpstan.dumpType",
+            "message": "Dumped type: array{...<string, int>}",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "unset.php",
+            "line": 12,
+            "identifier": "void.pure",
+            "message": "Function SentinelDeliveryEdges\\openIntegers() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "unset.php",
+            "line": 14,
+            "identifier": "phpstan.dumpType",
+            "message": "Dumped type: array{...<int, int>}",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "unset.php",
+            "line": 17,
+            "identifier": "void.pure",
+            "message": "Function SentinelDeliveryEdges\\localVariable() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "unset.php",
+            "line": 18,
+            "identifier": "void.pure",
+            "message": "Function SentinelDeliveryEdges\\multipleVariables() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "unset.php",
+            "line": 19,
+            "identifier": "void.pure",
+            "message": "Function SentinelDeliveryEdges\\literalArray() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "unset.php",
+            "line": 20,
+            "identifier": "void.pure",
+            "message": "Function SentinelDeliveryEdges\\unsetThenReplace() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "unset.php",
+            "line": 22,
+            "identifier": "void.pure",
+            "message": "Function SentinelDeliveryEdges\\dynamicIndex() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "unset.php",
+            "line": 24,
+            "identifier": "void.pure",
+            "message": "Function SentinelDeliveryEdges\\localIndexWrite() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "unset.php",
+            "line": 32,
+            "identifier": "phpstan.dumpType",
+            "message": "Dumped type: 1",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "unset.php",
+            "line": 41,
+            "identifier": "unset.possiblyHookedProperty",
+            "message": "Cannot unset property SentinelDeliveryEdges\\Properties::$value because it might have hooks in a subclass.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "unset.php",
+            "line": 65,
+            "identifier": "void.pure",
+            "message": "Function SentinelDeliveryEdges\\referenceVariable() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "unset.php",
+            "line": 76,
+            "identifier": "void.pure",
+            "message": "Method SentinelDeliveryEdges\\LocalMethod::local() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "unset.php",
+            "line": 80,
+            "identifier": "void.pure",
+            "message": "Function SentinelDeliveryEdges\\parameterArrayStaysArray() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "unset.php",
+            "line": 82,
+            "identifier": "void.pure",
+            "message": "Function SentinelDeliveryEdges\\localObject() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "unset.php",
+            "line": 94,
+            "identifier": "void.pure",
+            "message": "Function SentinelDeliveryEdges\\pureIndexCall() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "unset.php",
+            "line": 108,
+            "identifier": "void.pure",
+            "message": "Function SentinelDeliveryEdges\\caughtOperand() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        }
+    ],
+    "8": [
+        {
+            "file": "unset.php",
+            "line": 7,
+            "identifier": "void.pure",
+            "message": "Function SentinelDeliveryEdges\\openStrings() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "unset.php",
+            "line": 9,
+            "identifier": "phpstan.dumpType",
+            "message": "Dumped type: array{...<string, int>}",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "unset.php",
+            "line": 12,
+            "identifier": "void.pure",
+            "message": "Function SentinelDeliveryEdges\\openIntegers() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "unset.php",
+            "line": 14,
+            "identifier": "phpstan.dumpType",
+            "message": "Dumped type: array{...<int, int>}",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "unset.php",
+            "line": 17,
+            "identifier": "void.pure",
+            "message": "Function SentinelDeliveryEdges\\localVariable() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "unset.php",
+            "line": 18,
+            "identifier": "void.pure",
+            "message": "Function SentinelDeliveryEdges\\multipleVariables() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "unset.php",
+            "line": 19,
+            "identifier": "void.pure",
+            "message": "Function SentinelDeliveryEdges\\literalArray() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "unset.php",
+            "line": 20,
+            "identifier": "void.pure",
+            "message": "Function SentinelDeliveryEdges\\unsetThenReplace() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "unset.php",
+            "line": 22,
+            "identifier": "void.pure",
+            "message": "Function SentinelDeliveryEdges\\dynamicIndex() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "unset.php",
+            "line": 24,
+            "identifier": "void.pure",
+            "message": "Function SentinelDeliveryEdges\\localIndexWrite() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "unset.php",
+            "line": 32,
+            "identifier": "phpstan.dumpType",
+            "message": "Dumped type: 1",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "unset.php",
+            "line": 41,
+            "identifier": "unset.possiblyHookedProperty",
+            "message": "Cannot unset property SentinelDeliveryEdges\\Properties::$value because it might have hooks in a subclass.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "unset.php",
+            "line": 65,
+            "identifier": "void.pure",
+            "message": "Function SentinelDeliveryEdges\\referenceVariable() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "unset.php",
+            "line": 76,
+            "identifier": "void.pure",
+            "message": "Method SentinelDeliveryEdges\\LocalMethod::local() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "unset.php",
+            "line": 80,
+            "identifier": "void.pure",
+            "message": "Function SentinelDeliveryEdges\\parameterArrayStaysArray() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "unset.php",
+            "line": 82,
+            "identifier": "void.pure",
+            "message": "Function SentinelDeliveryEdges\\localObject() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "unset.php",
+            "line": 94,
+            "identifier": "void.pure",
+            "message": "Function SentinelDeliveryEdges\\pureIndexCall() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "unset.php",
+            "line": 108,
+            "identifier": "void.pure",
+            "message": "Function SentinelDeliveryEdges\\caughtOperand() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        }
+    ],
+    "10": [
+        {
+            "file": "unset.php",
+            "line": 7,
+            "identifier": "void.pure",
+            "message": "Function SentinelDeliveryEdges\\openStrings() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "unset.php",
+            "line": 9,
+            "identifier": "phpstan.dumpType",
+            "message": "Dumped type: array{...<string, int>}",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "unset.php",
+            "line": 12,
+            "identifier": "void.pure",
+            "message": "Function SentinelDeliveryEdges\\openIntegers() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "unset.php",
+            "line": 14,
+            "identifier": "phpstan.dumpType",
+            "message": "Dumped type: array{...<int, int>}",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "unset.php",
+            "line": 17,
+            "identifier": "void.pure",
+            "message": "Function SentinelDeliveryEdges\\localVariable() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "unset.php",
+            "line": 18,
+            "identifier": "void.pure",
+            "message": "Function SentinelDeliveryEdges\\multipleVariables() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "unset.php",
+            "line": 19,
+            "identifier": "void.pure",
+            "message": "Function SentinelDeliveryEdges\\literalArray() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "unset.php",
+            "line": 20,
+            "identifier": "void.pure",
+            "message": "Function SentinelDeliveryEdges\\unsetThenReplace() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "unset.php",
+            "line": 22,
+            "identifier": "void.pure",
+            "message": "Function SentinelDeliveryEdges\\dynamicIndex() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "unset.php",
+            "line": 24,
+            "identifier": "void.pure",
+            "message": "Function SentinelDeliveryEdges\\localIndexWrite() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "unset.php",
+            "line": 32,
+            "identifier": "phpstan.dumpType",
+            "message": "Dumped type: 1",
+            "tip": null,
+            "ignorable": false
+        },
+        {
+            "file": "unset.php",
+            "line": 41,
+            "identifier": "unset.possiblyHookedProperty",
+            "message": "Cannot unset property SentinelDeliveryEdges\\Properties::$value because it might have hooks in a subclass.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "unset.php",
+            "line": 65,
+            "identifier": "void.pure",
+            "message": "Function SentinelDeliveryEdges\\referenceVariable() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "unset.php",
+            "line": 76,
+            "identifier": "void.pure",
+            "message": "Method SentinelDeliveryEdges\\LocalMethod::local() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "unset.php",
+            "line": 80,
+            "identifier": "void.pure",
+            "message": "Function SentinelDeliveryEdges\\parameterArrayStaysArray() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "unset.php",
+            "line": 82,
+            "identifier": "void.pure",
+            "message": "Function SentinelDeliveryEdges\\localObject() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "unset.php",
+            "line": 94,
+            "identifier": "void.pure",
+            "message": "Function SentinelDeliveryEdges\\pureIndexCall() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        },
+        {
+            "file": "unset.php",
+            "line": 108,
+            "identifier": "void.pure",
+            "message": "Function SentinelDeliveryEdges\\caughtOperand() returns void but does not have any side effects.",
+            "tip": null,
+            "ignorable": true
+        }
+    ]
+}

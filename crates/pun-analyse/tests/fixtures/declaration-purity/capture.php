@@ -2,19 +2,25 @@
 
 // php capture.php /absolute/path/to/phpstan-2.3.1.phar > expected.json
 // php capture.php /absolute/path/to/phpstan-2.3.1.phar constructors > constructors.json
+// php capture.php /absolute/path/to/phpstan-2.3.1.phar unset > unset.json
 $phar = $argv[1];
 require 'phar://' . $phar . '/vendor/autoload.php';
 $root = sys_get_temp_dir() . '/pun-declaration-purity-' . getmypid();
 mkdir($root);
 try {
     $files = [];
-    foreach (($argv[2] ?? null) === 'constructors' ? ['constructors'] : ['matrix', 'supported', 'boundaries'] as $name) {
+    $names = match ($argv[2] ?? null) {
+        'constructors' => ['constructors'],
+        'unset' => ['unset'],
+        default => ['matrix', 'supported', 'boundaries'],
+    };
+    foreach ($names as $name) {
         $files[] = $file = "$root/$name.php";
         copy(__DIR__ . "/$name.php", $file);
     }
     file_put_contents("$root/config.neon", "parameters:\n    phpVersion: 80500\n");
     $out = [];
-    foreach ([1, 2, 4, 10] as $level) {
+    foreach (($argv[2] ?? null) === 'unset' ? [0, 1, 2, 4, 5, 8, 10] : [1, 2, 4, 10] as $level) {
         $container = (new PHPStan\DependencyInjection\ContainerFactory($root))->create(
             "$root/cache", ['phar://' . $phar . "/conf/config.level$level.neon", "$root/config.neon"], $files,
         );

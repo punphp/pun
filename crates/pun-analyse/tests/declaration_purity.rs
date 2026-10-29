@@ -4,6 +4,52 @@ use pun_analyse::{Project, analyse_project};
 use serde_json::{Value, json};
 
 #[test]
+fn unset_declaration_effects_match_complete_phpstan_records() {
+    let root =
+        std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/declaration-purity");
+    let expected: Value =
+        serde_json::from_str(include_str!("fixtures/declaration-purity/unset.json")).unwrap();
+    let mut failures = Vec::new();
+    for level in [0, 1, 2, 4, 5, 8, 10] {
+        let mut project = Project::new(vec![root.join("unset.php")], Vec::new());
+        project.php_version = 80500;
+        project.level = level;
+        project.check_maybe_undefined_variables = level > 0;
+        let mut actual: Vec<_> = analyse_project(&project)
+            .unwrap()
+            .errors
+            .into_iter()
+            .map(|error| {
+                json!({
+                    "file": std::path::Path::new(&error.file).file_name().unwrap().to_str().unwrap(),
+                    "line": error.line, "identifier": error.identifier, "message": error.message,
+                    "tip": error.tip, "ignorable": error.can_be_ignored,
+                })
+            })
+            .collect();
+        actual.sort_by_key(|e| {
+            (
+                e["line"].as_i64().unwrap(),
+                e["message"].as_str().unwrap().to_owned(),
+            )
+        });
+        let want = expected[level.to_string()].as_array().unwrap();
+        if &actual != want {
+            failures.push(json!({
+                "level": level,
+                "missing": want.iter().filter(|record| !actual.contains(record)).collect::<Vec<_>>(),
+                "extra": actual.iter().filter(|record| !want.contains(record)).collect::<Vec<_>>(),
+            }));
+        }
+    }
+    assert!(
+        failures.is_empty(),
+        "{}",
+        serde_json::to_string_pretty(&failures).unwrap()
+    );
+}
+
+#[test]
 fn declaration_effects_match_the_oracle_without_claiming_unknown_producers() {
     assert!(pun_analyse::reports("void.pure"));
     let root =

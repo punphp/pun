@@ -97,14 +97,17 @@ pub(super) fn body(c: &Checker, b: &Block) -> Option<Effects> {
     Producer {
         c,
         arrays: HashSet::new(),
+        referenced: false,
     }
     .block(b)
 }
 
 struct Producer<'c, 'code, 'names> {
     c: &'c Checker<'code, 'names>,
-    /// Only proven literal-array containers. An unknown local may instead invoke ArrayAccess methods.
+    /// Proven plain-array containers. An unknown local may instead invoke ArrayAccess methods.
     arrays: HashSet<Vec<u8>>,
+    /// Offset unsets after aliases require a reference-aware scope transfer, not observed array types.
+    referenced: bool,
 }
 
 impl Producer<'_, '_, '_> {
@@ -152,6 +155,15 @@ impl Producer<'_, '_, '_> {
                     None => Effects::default(),
                 };
                 effects.terminates = true;
+                Some(effects)
+            }
+            Statement::Unset(s) => {
+                let mut effects = Effects::default();
+                for value in s.values.iter() {
+                    effects.merge(self.unset(value)?);
+                }
+                // UnsetHandler forwards operand points but its statement is never always-terminating.
+                effects.terminates = false;
                 Some(effects)
             }
             Statement::If(i) => self.if_statement(i),
@@ -246,7 +258,7 @@ impl Producer<'_, '_, '_> {
     }
 
     fn branch(
-        &self,
+        &mut self,
         statements: &[Statement],
         effects: &mut Effects,
         continuing: &mut Option<HashSet<Vec<u8>>>,
@@ -254,8 +266,10 @@ impl Producer<'_, '_, '_> {
         let mut branch = Self {
             c: self.c,
             arrays: self.arrays.clone(),
+            referenced: self.referenced,
         };
         let result = branch.statements(statements)?;
+        self.referenced |= branch.referenced;
         effects.impure |= result.impure;
         effects.throws |= result.throws;
         effects.terminates &= result.terminates;
@@ -362,6 +376,7 @@ impl Producer<'_, '_, '_> {
             Expression::UnaryPrefix(u) if u.operator.is_reference() => {
                 let effects = self.expression(u.operand)?;
                 self.arrays.clear(); // An alias can subsequently replace the entire container.
+                self.referenced = true;
                 Some(effects)
             }
             Expression::UnaryPrefix(u)
@@ -489,6 +504,36 @@ impl Producer<'_, '_, '_> {
         }
     }
 
+    /// UnsetHandler evaluates each operand, then removes the local or virtually assigns its new array.
+    fn unset(&mut self, e: &Expression) -> Option<Effects> {
+        match e {
+            Expression::Variable(Variable::Direct(v)) => {
+                self.arrays.remove(v.name);
+                self.expression(e) // VariableHandler still produces superglobal access points.
+            }
+            Expression::ArrayAccess(a) => {
+                let Expression::Variable(Variable::Direct(v)) = a.array else {
+                    return None; // Nested/property roots need their own reads and virtual write-back.
+                };
+                // ArrayDimFetchHandler walks the dimension BEFORE reading the receiver. It may replace
+                // the container or escape an alias, so neither proof may be taken before this walk.
+                let mut effects = self.expression(a.index)?;
+                if self.referenced
+                    || (!self.array(a.array)
+                        && !self.c.type_of(a.array).is_some_and(|t| t.is_array()))
+                {
+                    return None; // Unknown/ArrayAccess containers need offsetGet AND offsetUnset points.
+                }
+                effects.merge(self.expression(a.array)?);
+                // Removing an offset preserves the container's array kind, unlike removing the local.
+                self.arrays.insert(v.name.to_vec());
+                Some(effects)
+            }
+            // Property unsets add an impure point; dynamic variables/static properties need producers.
+            _ => None,
+        }
+    }
+
     /// AssignHandler::prepareTarget()/processArrayDestructuring(). A root [] target is fixed up recursively;
     /// explicit list() does NOT fix up literal arrays in its items. Literal-array children are reads.
     fn target(&mut self, e: &Expression, fix_arrays: bool) -> Option<Effects> {
@@ -505,6 +550,7 @@ impl Producer<'_, '_, '_> {
             Expression::UnaryPrefix(u) if u.operator.is_reference() => {
                 let effects = self.target(u.operand, fix_arrays)?;
                 self.arrays.clear();
+                self.referenced = true;
                 Some(effects)
             }
             Expression::ArrayAccess(a)
