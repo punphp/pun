@@ -1158,6 +1158,13 @@ impl<'s> Session<'s> {
                     segments.push((Span::new(pos, end), text));
                 }
                 None => {
+                    // a statement that ends with `?>` before others: the printer writes `?>` again after it, so what
+                    // follows becomes inline HTML (the page shows it, or PHP code turns into text); Rector writes that,
+                    // Pun leaves the file alone
+                    let stmts = &root.stmts;
+                    if stmts[..stmts.len() - 1].iter().any(|s| self.source[..s.span.end].ends_with("?>")) {
+                        return None;
+                    }
                     segments.push(self.fallback(r, &edits));
                     fell_back.push(r);
                 }
