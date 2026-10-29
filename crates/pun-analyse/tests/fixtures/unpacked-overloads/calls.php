@@ -89,3 +89,15 @@ function namedConstructors(): void {
     );
     new \DatePeriod(isostr: 'R4/2012-07-01T00:00:00Z/P7D');
 }
+
+// The type walk skips abstract methods' default expressions. Both three-argument DatePeriod overloads
+// accept the arity, so selection must retain its unavailable-type fallback rather than assume a scored winner.
+interface DefaultPeriods {
+    /** @param \DatePeriod<\DateTime, null, positive-int> $period */
+    public function defaults(\DatePeriod $period = new \DatePeriod(new \DateTime('now'), new \DateInterval('P1D'), 5)): void;
+}
+
+abstract class AbstractPeriods {
+    /** @param \DatePeriod<\DateTime, null, positive-int> $period */
+    abstract public function defaults(\DatePeriod $period = new \DatePeriod(new \DateTime('now'), new \DateInterval('P1D'), 5)): void;
+}
