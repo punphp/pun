@@ -129,22 +129,22 @@ impl LateArrayShape {
     }
 
     pub fn describe(&self) -> String {
-        self.print(false)
+        display_bytes(&self.print(false))
     }
 
     pub fn phpdoc(&self) -> String {
-        self.print(true)
+        display_bytes(&self.print(true))
     }
 
-    fn print(&self, ast: bool) -> String {
+    pub(super) fn print(&self, ast: bool) -> Vec<u8> {
         // Printer and the AST's __toString() differ in union/intersection spacing and parentheses.
         // Template nodes print their names, not describe(precise)'s scope and inference strategy.
-        fn node(t: &Type, ast: bool) -> String {
+        fn node(t: &Type, ast: bool) -> Vec<u8> {
             let (types, separator) = match t {
-                Type::Template(t) => return t.name.clone(),
+                Type::Template(t) => return t.name.as_bytes().to_vec(),
                 Type::Union(ts) | Type::Benevolent(ts) => (ts, if ast { " | " } else { "|" }),
                 Type::Intersection(ts) => (ts, if ast { " & " } else { "&" }),
-                _ => return to_phpdoc(t),
+                _ => return to_phpdoc_bytes(t),
             };
             let text = sort_types(types)
                 .iter()
@@ -154,29 +154,33 @@ impl LateArrayShape {
                         && matches!(t, Type::Union(_) | Type::Benevolent(_))
                         && matches!(child, Type::Intersection(_))
                     {
-                        format!("({text})")
+                        description!("(", text, ")")
                     } else {
                         text
                     }
                 })
                 .collect::<Vec<_>>()
-                .join(separator);
-            if ast { format!("({text})") } else { text }
+                .join(separator.as_bytes());
+            if ast {
+                description!("(", text, ")")
+            } else {
+                text
+            }
         }
         let mut items: Vec<_> = self
             .items
             .iter()
             .map(|(k, v, o)| {
                 let key = k.as_ref().map(|k| match k {
-                    Type::Template(t) => t.name.clone(),
-                    Type::ConstString(s) if is_valid_identifier(&String::from_utf8_lossy(s)) => String::from_utf8_lossy(s).into_owned(),
+                    Type::Template(t) => t.name.as_bytes().to_vec(),
+                    Type::ConstString(s) if is_valid_identifier(s) => s.clone(),
                     _ => node(k, ast),
                 });
-                format!(
-                    "{}{}",
-                    key.map_or_else(String::new, |k| format!(
-                        "{k}{}: ",
-                        if *o { "?" } else { "" }
+                description!(
+                    key.map_or_else(Vec::new, |k| description!(
+                        k,
+                        if *o { "?" } else { "" },
+                        ": "
                     )),
                     node(v, ast)
                 )
@@ -186,14 +190,14 @@ impl LateArrayShape {
             items.push(k.as_ref().map_or_else(
                 || {
                     if v.is_plain_implicit_mixed() {
-                        "...".to_string()
+                        "...".into()
                     } else {
-                        format!("...<{}>", node(v, ast))
+                        description!("...<", node(v, ast), ">")
                     }
                 },
-                |k| format!("...<{}, {}>", node(k, ast), node(v, ast)),
+                |k| description!("...<", node(k, ast), ", ", node(v, ast), ">"),
             ));
         }
-        format!("{}{{{}}}", self.kind, items.join(", "))
+        description!(self.kind, "{", items.join(b", ".as_slice()), "}")
     }
 }

@@ -147,7 +147,7 @@ SHAPES;
         foreach (["\xff", "\xfe", "\xef\xbf\xbd", '1'] as $replacement) {
             $type = $resolver->resolve($input, $scope);
             $resolved = TemplateTypeHelper::resolveTemplateTypes($type, new TemplateTypeMap(['K' => new ConstantStringType($replacement)]), TemplateTypeVarianceMap::createEmpty(), TemplateTypeVariance::createStatic());
-            $lateRows[] = ['input' => $input, 'replacement' => bin2hex($replacement), 'entries' => shapeKeys($resolved)];
+            $lateRows[] = ['input' => $input, 'replacement' => bin2hex($replacement), 'entries' => shapeKeys($resolved), 'description' => $type->describe(VerbosityLevel::precise()), 'phpdoc' => (string) $type->toPhpDocNode()];
         }
     }
     $parserConfig = new PHPStan\PhpDocParser\ParserConfig([]);
@@ -276,9 +276,79 @@ SHAPES;
     foreach (["\xff", "\xfe", "\xef\xbf\xbd", '1'] as $replacement) {
         $type = $resolver->resolve($input, $scope);
         $resolved = TemplateTypeHelper::resolveTemplateTypes($type, new TemplateTypeMap(['K' => new ConstantStringType($replacement)]), TemplateTypeVarianceMap::createEmpty(), TemplateTypeVariance::createStatic());
-        $rawLateRows[] = ['source_hex' => bin2hex($input), 'replacement' => bin2hex($replacement), 'entries' => shapeKeys($resolved)];
+        $rawLateRows[] = ['source_hex' => bin2hex($input), 'replacement' => bin2hex($replacement), 'entries' => shapeKeys($resolved), 'description' => $type->describe(VerbosityLevel::precise()), 'phpdoc' => (string) $type->toPhpDocNode()];
     }
-    echo json_encode(['values' => $rows, 'pairs' => $pairs, 'escapes' => $escapes, 'identity_neighbors' => $neighbors, 'callable_neighbors' => $callableNeighbors, 'shape_keys' => $shapeRows, 'late_shape_keys' => $lateRows, 'raw_types' => $rawRows, 'raw_prefixes' => $prefixRows, 'raw_errors' => $errorRows, 'raw_docs' => $docRows, 'raw_late_shape_keys' => $rawLateRows, 'numeric_shape_keys' => $numericRows, 'numeric_late_shape_keys' => $numericLateRows], JSON_PRETTY_PRINT | JSON_INVALID_UTF8_SUBSTITUTE | JSON_THROW_ON_ERROR), "\n";
+    // UnionType groups rendered PHP bytes before JSON replaces invalid UTF-8. Include true
+    // duplicates, asymmetric multiplicities, nested keys/values and value-level truncation.
+    $unionDescriptions = [];
+    $wrappers = [
+        '%s', 'array<int, %s>', 'iterable<int, %s>', 'Box<%s>',
+        'array{payload: %s}', 'array{%s: int}', 'object{payload: %s}',
+        'array{payload?: %s, ...<string, int>}',
+        'callable(%s): array{%s: int}', 'Closure(%s): %s',
+        'array<int, %s>&non-empty-array', 'array<int, %s>&list',
+        '(int is int ? %s : string)',
+        'callable(): array{K: %s}', 'callable(array{K: int, %s?: string, ...<K, int>}): void',
+    ];
+    $a = '"\\xff"';
+    $b = '"\\xfe"';
+    $replacement = "'\xef\xbf\xbd'";
+    foreach ($wrappers as $wrapper) {
+        foreach ([[$a, $b], [$a, $a], [$a, $b, $a], [$replacement, $b, $replacement, $a]] as $literals) {
+            $inputs = array_map(static fn($literal) => sprintf($wrapper, $literal, $literal), $literals);
+            $type = new PHPStan\Type\UnionType(array_map(static fn($input) => $resolver->resolve($input, $scope), $inputs));
+            $descriptions = [];
+            foreach ([VerbosityLevel::typeOnly(), VerbosityLevel::value(), VerbosityLevel::precise()] as $level) {
+                $description = $type->describe($level);
+                $descriptions[] = ['hex' => bin2hex($description), 'display' => $description];
+            }
+            $unionDescriptions[] = ['inputs' => array_map(bin2hex(...), $inputs), 'descriptions' => $descriptions];
+        }
+    }
+    foreach ([
+        ['"abcdefghijklmnopqrst\\xff"', '"abcdefghijklmnopqrst\\xfe"'],
+        ['array{payload: "abcdefghijklmnopqrst\\xff"}', 'array{payload: "abcdefghijklmnopqrst\\xfe"}'],
+        // The ninth shape value is hidden at value verbosity, but not at precise verbosity.
+        ['array{0, 1, 2, 3, 4, 5, 6, 7, "\\xff"}', 'array{0, 1, 2, 3, 4, 5, 6, 7, "\\xfe"}'],
+    ] as $inputs) {
+        $type = new PHPStan\Type\UnionType(array_map(static fn($input) => $resolver->resolve($input), $inputs));
+        $descriptions = [];
+        foreach ([VerbosityLevel::typeOnly(), VerbosityLevel::value(), VerbosityLevel::precise()] as $level) {
+            $description = $type->describe($level);
+            $descriptions[] = ['hex' => bin2hex($description), 'display' => $description];
+        }
+        $unionDescriptions[] = ['inputs' => array_map(bin2hex(...), $inputs), 'descriptions' => $descriptions];
+    }
+    foreach ([['array<int, "\\xff">', 'array<string, int>'], ['array<int, "\\xfe">', 'array<string, int>']] as $inputs) {
+        $on = new PHPStan\Type\UnionType(array_map(static fn($input) => $resolver->resolve($input), $inputs));
+        $type = new PHPStan\Type\OffsetAccessType($on, new PHPStan\Type\IntegerType());
+        $descriptions = [];
+        foreach ([VerbosityLevel::typeOnly(), VerbosityLevel::value(), VerbosityLevel::precise()] as $level) {
+            $description = $type->describe($level);
+            $descriptions[] = ['hex' => bin2hex($description), 'display' => $description];
+        }
+        $unionDescriptions[] = ['inputs' => array_map(bin2hex(...), $inputs), 'offset' => true, 'descriptions' => $descriptions];
+    }
+    foreach (['callable', 'callable(): "\\xff"', 'Closure(): "\\xfe"'] as $input) {
+        $type = new PHPStan\Type\OffsetAccessType($resolver->resolve($input), new PHPStan\Type\IntegerType());
+        $descriptions = [];
+        foreach ([VerbosityLevel::typeOnly(), VerbosityLevel::value(), VerbosityLevel::precise()] as $level) {
+            $description = $type->describe($level);
+            $descriptions[] = ['hex' => bin2hex($description), 'display' => $description];
+        }
+        $unionDescriptions[] = ['inputs' => [bin2hex($input)], 'offset' => true, 'offset_leaf' => true, 'descriptions' => $descriptions];
+    }
+    $subtractedDescriptions = [];
+    foreach (['Iterator<"\\xff">', 'Iterator<"\\xfe">', 'Iterator<"\\xef\\xbf\\xbd">'] as $input) {
+        $excluded = new PHPStan\Type\UnionType([$resolver->resolve($input), $resolver->resolve('ArrayIterator<int>')]);
+        $type = new PHPStan\Type\ObjectType('Traversable', $excluded);
+        $descriptions = [];
+        foreach ([VerbosityLevel::typeOnly(), VerbosityLevel::value(), VerbosityLevel::precise()] as $level) {
+            $descriptions[] = $type->describe($level);
+        }
+        $subtractedDescriptions[] = ['input' => $input, 'descriptions' => $descriptions];
+    }
+    echo json_encode(['values' => $rows, 'pairs' => $pairs, 'escapes' => $escapes, 'identity_neighbors' => $neighbors, 'callable_neighbors' => $callableNeighbors, 'shape_keys' => $shapeRows, 'late_shape_keys' => $lateRows, 'raw_types' => $rawRows, 'raw_prefixes' => $prefixRows, 'raw_errors' => $errorRows, 'raw_docs' => $docRows, 'raw_late_shape_keys' => $rawLateRows, 'numeric_shape_keys' => $numericRows, 'numeric_late_shape_keys' => $numericLateRows, 'union_descriptions' => $unionDescriptions, 'subtracted_descriptions' => $subtractedDescriptions], JSON_PRETTY_PRINT | JSON_INVALID_UTF8_SUBSTITUTE | JSON_THROW_ON_ERROR), "\n";
 } finally {
     $items = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($root, FilesystemIterator::SKIP_DOTS), RecursiveIteratorIterator::CHILD_FIRST);
     foreach ($items as $item) {

@@ -5371,7 +5371,9 @@
                     ],
                     "6964656e746966696572"
                 ]
-            ]
+            ],
+            "description": "array{K: 'template', \ufffd: 'ff', \ufffd: 'fe', \ufffd: 'replacement', bare: 'identifier'}",
+            "phpdoc": "array{K: 'template', \ufffd: 'ff', \ufffd: 'fe', \ufffd: 'replacement', bare: 'identifier'}"
         },
         {
             "input": "array{K: 'template', \"\\xff\": 'ff', \"\\xfe\": 'fe', \"\\u{FFFD}\": 'replacement', bare: 'identifier'}",
@@ -5405,7 +5407,9 @@
                     ],
                     "6964656e746966696572"
                 ]
-            ]
+            ],
+            "description": "array{K: 'template', \ufffd: 'ff', \ufffd: 'fe', \ufffd: 'replacement', bare: 'identifier'}",
+            "phpdoc": "array{K: 'template', \ufffd: 'ff', \ufffd: 'fe', \ufffd: 'replacement', bare: 'identifier'}"
         },
         {
             "input": "array{K: 'template', \"\\xff\": 'ff', \"\\xfe\": 'fe', \"\\u{FFFD}\": 'replacement', bare: 'identifier'}",
@@ -5439,7 +5443,9 @@
                     ],
                     "6964656e746966696572"
                 ]
-            ]
+            ],
+            "description": "array{K: 'template', \ufffd: 'ff', \ufffd: 'fe', \ufffd: 'replacement', bare: 'identifier'}",
+            "phpdoc": "array{K: 'template', \ufffd: 'ff', \ufffd: 'fe', \ufffd: 'replacement', bare: 'identifier'}"
         },
         {
             "input": "array{K: 'template', \"\\xff\": 'ff', \"\\xfe\": 'fe', \"\\u{FFFD}\": 'replacement', bare: 'identifier'}",
@@ -5480,7 +5486,9 @@
                     ],
                     "6964656e746966696572"
                 ]
-            ]
+            ],
+            "description": "array{K: 'template', \ufffd: 'ff', \ufffd: 'fe', \ufffd: 'replacement', bare: 'identifier'}",
+            "phpdoc": "array{K: 'template', \ufffd: 'ff', \ufffd: 'fe', \ufffd: 'replacement', bare: 'identifier'}"
         },
         {
             "input": "array{K: 'template', \"\\x31\": 'one', '01': 'leading', '-1': 'negative', '+1': 'plus'}",
@@ -5521,7 +5529,9 @@
                     ],
                     "706c7573"
                 ]
-            ]
+            ],
+            "description": "array{K: 'template', '1': 'one', '01': 'leading', '-1': 'negative', '+1': 'plus'}",
+            "phpdoc": "array{K: 'template', '1': 'one', '01': 'leading', '-1': 'negative', '+1': 'plus'}"
         },
         {
             "input": "array{K: 'template', \"\\x31\": 'one', '01': 'leading', '-1': 'negative', '+1': 'plus'}",
@@ -5562,7 +5572,9 @@
                     ],
                     "706c7573"
                 ]
-            ]
+            ],
+            "description": "array{K: 'template', '1': 'one', '01': 'leading', '-1': 'negative', '+1': 'plus'}",
+            "phpdoc": "array{K: 'template', '1': 'one', '01': 'leading', '-1': 'negative', '+1': 'plus'}"
         },
         {
             "input": "array{K: 'template', \"\\x31\": 'one', '01': 'leading', '-1': 'negative', '+1': 'plus'}",
@@ -5603,7 +5615,9 @@
                     ],
                     "706c7573"
                 ]
-            ]
+            ],
+            "description": "array{K: 'template', '1': 'one', '01': 'leading', '-1': 'negative', '+1': 'plus'}",
+            "phpdoc": "array{K: 'template', '1': 'one', '01': 'leading', '-1': 'negative', '+1': 'plus'}"
         },
         {
             "input": "array{K: 'template', \"\\x31\": 'one', '01': 'leading', '-1': 'negative', '+1': 'plus'}",
@@ -5637,7 +5651,9 @@
                     ],
                     "706c7573"
                 ]
-            ]
+            ],
+            "description": "array{K: 'template', '1': 'one', '01': 'leading', '-1': 'negative', '+1': 'plus'}",
+            "phpdoc": "array{K: 'template', '1': 'one', '01': 'leading', '-1': 'negative', '+1': 'plus'}"
         }
     ],
     "raw_types": [
@@ -5910,7 +5926,9 @@
                     ],
                     "7265706c6163656d656e74"
                 ]
-            ]
+            ],
+            "description": "array{K: 'template', \ufffd: 'ff', \ufffd: 'fe', \ufffd: 'replacement'}",
+            "phpdoc": "array{K: 'template', \ufffd: 'ff', \ufffd: 'fe', \ufffd: 'replacement'}"
         },
         {
             "source_hex": "61727261797b4b3a202774656d706c617465272c2027ff273a20276666272c2027fe273a20276665272c2027efbfbd273a20277265706c6163656d656e74277d",
@@ -5937,7 +5955,9 @@
                     ],
                     "7265706c6163656d656e74"
                 ]
-            ]
+            ],
+            "description": "array{K: 'template', \ufffd: 'ff', \ufffd: 'fe', \ufffd: 'replacement'}",
+            "phpdoc": "array{K: 'template', \ufffd: 'ff', \ufffd: 'fe', \ufffd: 'replacement'}"
         },
         {
             "source_hex": "61727261797b4b3a202774656d706c617465272c2027ff273a20276666272c2027fe273a20276665272c2027efbfbd273a20277265706c6163656d656e74277d",
@@ -5964,7 +5984,9 @@
                     ],
                     "6665"
                 ]
-            ]
+            ],
+            "description": "array{K: 'template', \ufffd: 'ff', \ufffd: 'fe', \ufffd: 'replacement'}",
+            "phpdoc": "array{K: 'template', \ufffd: 'ff', \ufffd: 'fe', \ufffd: 'replacement'}"
         },
         {
             "source_hex": "61727261797b4b3a202774656d706c617465272c2027ff273a20276666272c2027fe273a20276665272c2027efbfbd273a20277265706c6163656d656e74277d",
@@ -5998,7 +6020,9 @@
                     ],
                     "7265706c6163656d656e74"
                 ]
-            ]
+            ],
+            "description": "array{K: 'template', \ufffd: 'ff', \ufffd: 'fe', \ufffd: 'replacement'}",
+            "phpdoc": "array{K: 'template', \ufffd: 'ff', \ufffd: 'fe', \ufffd: 'replacement'}"
         }
     ],
     "numeric_shape_keys": [
@@ -10173,6 +10197,1444 @@
                     true
                 ]
             }
+        }
+    ],
+    "union_descriptions": [
+        {
+            "inputs": [
+                "225c78666622",
+                "225c78666522"
+            ],
+            "descriptions": [
+                {
+                    "hex": "737472696e67",
+                    "display": "string"
+                },
+                {
+                    "hex": "27fe277c27ff27",
+                    "display": "'\ufffd'|'\ufffd'"
+                },
+                {
+                    "hex": "27fe277c27ff27",
+                    "display": "'\ufffd'|'\ufffd'"
+                }
+            ]
+        },
+        {
+            "inputs": [
+                "225c78666622",
+                "225c78666622"
+            ],
+            "descriptions": [
+                {
+                    "hex": "737472696e67",
+                    "display": "string"
+                },
+                {
+                    "hex": "27ff27",
+                    "display": "'\ufffd'"
+                },
+                {
+                    "hex": "27ff2723317c27ff272332",
+                    "display": "'\ufffd'#1|'\ufffd'#2"
+                }
+            ]
+        },
+        {
+            "inputs": [
+                "225c78666622",
+                "225c78666522",
+                "225c78666622"
+            ],
+            "descriptions": [
+                {
+                    "hex": "737472696e67",
+                    "display": "string"
+                },
+                {
+                    "hex": "27fe277c27ff27",
+                    "display": "'\ufffd'|'\ufffd'"
+                },
+                {
+                    "hex": "27fe277c27ff2723317c27ff272332",
+                    "display": "'\ufffd'|'\ufffd'#1|'\ufffd'#2"
+                }
+            ]
+        },
+        {
+            "inputs": [
+                "27efbfbd27",
+                "225c78666522",
+                "27efbfbd27",
+                "225c78666622"
+            ],
+            "descriptions": [
+                {
+                    "hex": "737472696e67",
+                    "display": "string"
+                },
+                {
+                    "hex": "27efbfbd277c27fe277c27ff27",
+                    "display": "'\ufffd'|'\ufffd'|'\ufffd'"
+                },
+                {
+                    "hex": "27efbfbd2723317c27efbfbd2723327c27fe277c27ff27",
+                    "display": "'\ufffd'#1|'\ufffd'#2|'\ufffd'|'\ufffd'"
+                }
+            ]
+        },
+        {
+            "inputs": [
+                "61727261793c696e742c20225c786666223e",
+                "61727261793c696e742c20225c786665223e"
+            ],
+            "descriptions": [
+                {
+                    "hex": "61727261793c696e742c20737472696e673e",
+                    "display": "array<int, string>"
+                },
+                {
+                    "hex": "61727261793c696e742c2027ff273e7c61727261793c696e742c2027fe273e",
+                    "display": "array<int, '\ufffd'>|array<int, '\ufffd'>"
+                },
+                {
+                    "hex": "61727261793c696e742c2027ff273e7c61727261793c696e742c2027fe273e",
+                    "display": "array<int, '\ufffd'>|array<int, '\ufffd'>"
+                }
+            ]
+        },
+        {
+            "inputs": [
+                "61727261793c696e742c20225c786666223e",
+                "61727261793c696e742c20225c786666223e"
+            ],
+            "descriptions": [
+                {
+                    "hex": "61727261793c696e742c20737472696e673e",
+                    "display": "array<int, string>"
+                },
+                {
+                    "hex": "61727261793c696e742c2027ff273e",
+                    "display": "array<int, '\ufffd'>"
+                },
+                {
+                    "hex": "61727261793c696e742c2027ff273e23317c61727261793c696e742c2027ff273e2332",
+                    "display": "array<int, '\ufffd'>#1|array<int, '\ufffd'>#2"
+                }
+            ]
+        },
+        {
+            "inputs": [
+                "61727261793c696e742c20225c786666223e",
+                "61727261793c696e742c20225c786665223e",
+                "61727261793c696e742c20225c786666223e"
+            ],
+            "descriptions": [
+                {
+                    "hex": "61727261793c696e742c20737472696e673e",
+                    "display": "array<int, string>"
+                },
+                {
+                    "hex": "61727261793c696e742c2027ff273e7c61727261793c696e742c2027fe273e",
+                    "display": "array<int, '\ufffd'>|array<int, '\ufffd'>"
+                },
+                {
+                    "hex": "61727261793c696e742c2027ff273e23317c61727261793c696e742c2027fe273e7c61727261793c696e742c2027ff273e2332",
+                    "display": "array<int, '\ufffd'>#1|array<int, '\ufffd'>|array<int, '\ufffd'>#2"
+                }
+            ]
+        },
+        {
+            "inputs": [
+                "61727261793c696e742c2027efbfbd273e",
+                "61727261793c696e742c20225c786665223e",
+                "61727261793c696e742c2027efbfbd273e",
+                "61727261793c696e742c20225c786666223e"
+            ],
+            "descriptions": [
+                {
+                    "hex": "61727261793c696e742c20737472696e673e",
+                    "display": "array<int, string>"
+                },
+                {
+                    "hex": "61727261793c696e742c2027efbfbd273e7c61727261793c696e742c2027fe273e7c61727261793c696e742c2027ff273e",
+                    "display": "array<int, '\ufffd'>|array<int, '\ufffd'>|array<int, '\ufffd'>"
+                },
+                {
+                    "hex": "61727261793c696e742c2027efbfbd273e23317c61727261793c696e742c2027fe273e7c61727261793c696e742c2027efbfbd273e23327c61727261793c696e742c2027ff273e",
+                    "display": "array<int, '\ufffd'>#1|array<int, '\ufffd'>|array<int, '\ufffd'>#2|array<int, '\ufffd'>"
+                }
+            ]
+        },
+        {
+            "inputs": [
+                "6974657261626c653c696e742c20225c786666223e",
+                "6974657261626c653c696e742c20225c786665223e"
+            ],
+            "descriptions": [
+                {
+                    "hex": "6974657261626c653c696e742c20737472696e673e",
+                    "display": "iterable<int, string>"
+                },
+                {
+                    "hex": "6974657261626c653c696e742c2027ff273e7c6974657261626c653c696e742c2027fe273e",
+                    "display": "iterable<int, '\ufffd'>|iterable<int, '\ufffd'>"
+                },
+                {
+                    "hex": "6974657261626c653c696e742c2027ff273e7c6974657261626c653c696e742c2027fe273e",
+                    "display": "iterable<int, '\ufffd'>|iterable<int, '\ufffd'>"
+                }
+            ]
+        },
+        {
+            "inputs": [
+                "6974657261626c653c696e742c20225c786666223e",
+                "6974657261626c653c696e742c20225c786666223e"
+            ],
+            "descriptions": [
+                {
+                    "hex": "6974657261626c653c696e742c20737472696e673e",
+                    "display": "iterable<int, string>"
+                },
+                {
+                    "hex": "6974657261626c653c696e742c2027ff273e",
+                    "display": "iterable<int, '\ufffd'>"
+                },
+                {
+                    "hex": "6974657261626c653c696e742c2027ff273e23317c6974657261626c653c696e742c2027ff273e2332",
+                    "display": "iterable<int, '\ufffd'>#1|iterable<int, '\ufffd'>#2"
+                }
+            ]
+        },
+        {
+            "inputs": [
+                "6974657261626c653c696e742c20225c786666223e",
+                "6974657261626c653c696e742c20225c786665223e",
+                "6974657261626c653c696e742c20225c786666223e"
+            ],
+            "descriptions": [
+                {
+                    "hex": "6974657261626c653c696e742c20737472696e673e",
+                    "display": "iterable<int, string>"
+                },
+                {
+                    "hex": "6974657261626c653c696e742c2027ff273e7c6974657261626c653c696e742c2027fe273e",
+                    "display": "iterable<int, '\ufffd'>|iterable<int, '\ufffd'>"
+                },
+                {
+                    "hex": "6974657261626c653c696e742c2027ff273e23317c6974657261626c653c696e742c2027fe273e7c6974657261626c653c696e742c2027ff273e2332",
+                    "display": "iterable<int, '\ufffd'>#1|iterable<int, '\ufffd'>|iterable<int, '\ufffd'>#2"
+                }
+            ]
+        },
+        {
+            "inputs": [
+                "6974657261626c653c696e742c2027efbfbd273e",
+                "6974657261626c653c696e742c20225c786665223e",
+                "6974657261626c653c696e742c2027efbfbd273e",
+                "6974657261626c653c696e742c20225c786666223e"
+            ],
+            "descriptions": [
+                {
+                    "hex": "6974657261626c653c696e742c20737472696e673e",
+                    "display": "iterable<int, string>"
+                },
+                {
+                    "hex": "6974657261626c653c696e742c2027efbfbd273e7c6974657261626c653c696e742c2027fe273e7c6974657261626c653c696e742c2027ff273e",
+                    "display": "iterable<int, '\ufffd'>|iterable<int, '\ufffd'>|iterable<int, '\ufffd'>"
+                },
+                {
+                    "hex": "6974657261626c653c696e742c2027efbfbd273e23317c6974657261626c653c696e742c2027fe273e7c6974657261626c653c696e742c2027efbfbd273e23327c6974657261626c653c696e742c2027ff273e",
+                    "display": "iterable<int, '\ufffd'>#1|iterable<int, '\ufffd'>|iterable<int, '\ufffd'>#2|iterable<int, '\ufffd'>"
+                }
+            ]
+        },
+        {
+            "inputs": [
+                "426f783c225c786666223e",
+                "426f783c225c786665223e"
+            ],
+            "descriptions": [
+                {
+                    "hex": "426f783c737472696e673e",
+                    "display": "Box<string>"
+                },
+                {
+                    "hex": "426f783c27ff273e7c426f783c27fe273e",
+                    "display": "Box<'\ufffd'>|Box<'\ufffd'>"
+                },
+                {
+                    "hex": "426f783c27ff273e7c426f783c27fe273e",
+                    "display": "Box<'\ufffd'>|Box<'\ufffd'>"
+                }
+            ]
+        },
+        {
+            "inputs": [
+                "426f783c225c786666223e",
+                "426f783c225c786666223e"
+            ],
+            "descriptions": [
+                {
+                    "hex": "426f783c737472696e673e",
+                    "display": "Box<string>"
+                },
+                {
+                    "hex": "426f783c27ff273e",
+                    "display": "Box<'\ufffd'>"
+                },
+                {
+                    "hex": "426f783c27ff273e23317c426f783c27ff273e2332",
+                    "display": "Box<'\ufffd'>#1|Box<'\ufffd'>#2"
+                }
+            ]
+        },
+        {
+            "inputs": [
+                "426f783c225c786666223e",
+                "426f783c225c786665223e",
+                "426f783c225c786666223e"
+            ],
+            "descriptions": [
+                {
+                    "hex": "426f783c737472696e673e",
+                    "display": "Box<string>"
+                },
+                {
+                    "hex": "426f783c27ff273e7c426f783c27fe273e",
+                    "display": "Box<'\ufffd'>|Box<'\ufffd'>"
+                },
+                {
+                    "hex": "426f783c27ff273e23317c426f783c27fe273e7c426f783c27ff273e2332",
+                    "display": "Box<'\ufffd'>#1|Box<'\ufffd'>|Box<'\ufffd'>#2"
+                }
+            ]
+        },
+        {
+            "inputs": [
+                "426f783c27efbfbd273e",
+                "426f783c225c786665223e",
+                "426f783c27efbfbd273e",
+                "426f783c225c786666223e"
+            ],
+            "descriptions": [
+                {
+                    "hex": "426f783c737472696e673e",
+                    "display": "Box<string>"
+                },
+                {
+                    "hex": "426f783c27efbfbd273e7c426f783c27fe273e7c426f783c27ff273e",
+                    "display": "Box<'\ufffd'>|Box<'\ufffd'>|Box<'\ufffd'>"
+                },
+                {
+                    "hex": "426f783c27efbfbd273e23317c426f783c27fe273e7c426f783c27efbfbd273e23327c426f783c27ff273e",
+                    "display": "Box<'\ufffd'>#1|Box<'\ufffd'>|Box<'\ufffd'>#2|Box<'\ufffd'>"
+                }
+            ]
+        },
+        {
+            "inputs": [
+                "61727261797b7061796c6f61643a20225c786666227d",
+                "61727261797b7061796c6f61643a20225c786665227d"
+            ],
+            "descriptions": [
+                {
+                    "hex": "61727261793c737472696e672c20737472696e673e",
+                    "display": "array<string, string>"
+                },
+                {
+                    "hex": "61727261797b7061796c6f61643a2027fe277d7c61727261797b7061796c6f61643a2027ff277d",
+                    "display": "array{payload: '\ufffd'}|array{payload: '\ufffd'}"
+                },
+                {
+                    "hex": "61727261797b7061796c6f61643a2027fe277d7c61727261797b7061796c6f61643a2027ff277d",
+                    "display": "array{payload: '\ufffd'}|array{payload: '\ufffd'}"
+                }
+            ]
+        },
+        {
+            "inputs": [
+                "61727261797b7061796c6f61643a20225c786666227d",
+                "61727261797b7061796c6f61643a20225c786666227d"
+            ],
+            "descriptions": [
+                {
+                    "hex": "61727261793c737472696e672c20737472696e673e",
+                    "display": "array<string, string>"
+                },
+                {
+                    "hex": "61727261797b7061796c6f61643a2027ff277d",
+                    "display": "array{payload: '\ufffd'}"
+                },
+                {
+                    "hex": "61727261797b7061796c6f61643a2027ff277d23317c61727261797b7061796c6f61643a2027ff277d2332",
+                    "display": "array{payload: '\ufffd'}#1|array{payload: '\ufffd'}#2"
+                }
+            ]
+        },
+        {
+            "inputs": [
+                "61727261797b7061796c6f61643a20225c786666227d",
+                "61727261797b7061796c6f61643a20225c786665227d",
+                "61727261797b7061796c6f61643a20225c786666227d"
+            ],
+            "descriptions": [
+                {
+                    "hex": "61727261793c737472696e672c20737472696e673e",
+                    "display": "array<string, string>"
+                },
+                {
+                    "hex": "61727261797b7061796c6f61643a2027fe277d7c61727261797b7061796c6f61643a2027ff277d",
+                    "display": "array{payload: '\ufffd'}|array{payload: '\ufffd'}"
+                },
+                {
+                    "hex": "61727261797b7061796c6f61643a2027fe277d7c61727261797b7061796c6f61643a2027ff277d23317c61727261797b7061796c6f61643a2027ff277d2332",
+                    "display": "array{payload: '\ufffd'}|array{payload: '\ufffd'}#1|array{payload: '\ufffd'}#2"
+                }
+            ]
+        },
+        {
+            "inputs": [
+                "61727261797b7061796c6f61643a2027efbfbd277d",
+                "61727261797b7061796c6f61643a20225c786665227d",
+                "61727261797b7061796c6f61643a2027efbfbd277d",
+                "61727261797b7061796c6f61643a20225c786666227d"
+            ],
+            "descriptions": [
+                {
+                    "hex": "61727261793c737472696e672c20737472696e673e",
+                    "display": "array<string, string>"
+                },
+                {
+                    "hex": "61727261797b7061796c6f61643a2027efbfbd277d7c61727261797b7061796c6f61643a2027fe277d7c61727261797b7061796c6f61643a2027ff277d",
+                    "display": "array{payload: '\ufffd'}|array{payload: '\ufffd'}|array{payload: '\ufffd'}"
+                },
+                {
+                    "hex": "61727261797b7061796c6f61643a2027efbfbd277d23317c61727261797b7061796c6f61643a2027efbfbd277d23327c61727261797b7061796c6f61643a2027fe277d7c61727261797b7061796c6f61643a2027ff277d",
+                    "display": "array{payload: '\ufffd'}#1|array{payload: '\ufffd'}#2|array{payload: '\ufffd'}|array{payload: '\ufffd'}"
+                }
+            ]
+        },
+        {
+            "inputs": [
+                "61727261797b225c786666223a20696e747d",
+                "61727261797b225c786665223a20696e747d"
+            ],
+            "descriptions": [
+                {
+                    "hex": "61727261793c737472696e672c20696e743e",
+                    "display": "array<string, int>"
+                },
+                {
+                    "hex": "61727261797bfe3a20696e747d7c61727261797bff3a20696e747d",
+                    "display": "array{\ufffd: int}|array{\ufffd: int}"
+                },
+                {
+                    "hex": "61727261797bfe3a20696e747d7c61727261797bff3a20696e747d",
+                    "display": "array{\ufffd: int}|array{\ufffd: int}"
+                }
+            ]
+        },
+        {
+            "inputs": [
+                "61727261797b225c786666223a20696e747d",
+                "61727261797b225c786666223a20696e747d"
+            ],
+            "descriptions": [
+                {
+                    "hex": "61727261793c737472696e672c20696e743e",
+                    "display": "array<string, int>"
+                },
+                {
+                    "hex": "61727261797bff3a20696e747d",
+                    "display": "array{\ufffd: int}"
+                },
+                {
+                    "hex": "61727261797bff3a20696e747d23317c61727261797bff3a20696e747d2332",
+                    "display": "array{\ufffd: int}#1|array{\ufffd: int}#2"
+                }
+            ]
+        },
+        {
+            "inputs": [
+                "61727261797b225c786666223a20696e747d",
+                "61727261797b225c786665223a20696e747d",
+                "61727261797b225c786666223a20696e747d"
+            ],
+            "descriptions": [
+                {
+                    "hex": "61727261793c737472696e672c20696e743e",
+                    "display": "array<string, int>"
+                },
+                {
+                    "hex": "61727261797bfe3a20696e747d7c61727261797bff3a20696e747d",
+                    "display": "array{\ufffd: int}|array{\ufffd: int}"
+                },
+                {
+                    "hex": "61727261797bfe3a20696e747d7c61727261797bff3a20696e747d23317c61727261797bff3a20696e747d2332",
+                    "display": "array{\ufffd: int}|array{\ufffd: int}#1|array{\ufffd: int}#2"
+                }
+            ]
+        },
+        {
+            "inputs": [
+                "61727261797b27efbfbd273a20696e747d",
+                "61727261797b225c786665223a20696e747d",
+                "61727261797b27efbfbd273a20696e747d",
+                "61727261797b225c786666223a20696e747d"
+            ],
+            "descriptions": [
+                {
+                    "hex": "61727261793c737472696e672c20696e743e",
+                    "display": "array<string, int>"
+                },
+                {
+                    "hex": "61727261797befbfbd3a20696e747d7c61727261797bfe3a20696e747d7c61727261797bff3a20696e747d",
+                    "display": "array{\ufffd: int}|array{\ufffd: int}|array{\ufffd: int}"
+                },
+                {
+                    "hex": "61727261797befbfbd3a20696e747d23317c61727261797befbfbd3a20696e747d23327c61727261797bfe3a20696e747d7c61727261797bff3a20696e747d",
+                    "display": "array{\ufffd: int}#1|array{\ufffd: int}#2|array{\ufffd: int}|array{\ufffd: int}"
+                }
+            ]
+        },
+        {
+            "inputs": [
+                "6f626a6563747b7061796c6f61643a20225c786666227d",
+                "6f626a6563747b7061796c6f61643a20225c786665227d"
+            ],
+            "descriptions": [
+                {
+                    "hex": "6f626a6563747b7061796c6f61643a20737472696e677d",
+                    "display": "object{payload: string}"
+                },
+                {
+                    "hex": "6f626a6563747b7061796c6f61643a2027ff277d7c6f626a6563747b7061796c6f61643a2027fe277d",
+                    "display": "object{payload: '\ufffd'}|object{payload: '\ufffd'}"
+                },
+                {
+                    "hex": "6f626a6563747b7061796c6f61643a2027ff277d7c6f626a6563747b7061796c6f61643a2027fe277d",
+                    "display": "object{payload: '\ufffd'}|object{payload: '\ufffd'}"
+                }
+            ]
+        },
+        {
+            "inputs": [
+                "6f626a6563747b7061796c6f61643a20225c786666227d",
+                "6f626a6563747b7061796c6f61643a20225c786666227d"
+            ],
+            "descriptions": [
+                {
+                    "hex": "6f626a6563747b7061796c6f61643a20737472696e677d",
+                    "display": "object{payload: string}"
+                },
+                {
+                    "hex": "6f626a6563747b7061796c6f61643a2027ff277d",
+                    "display": "object{payload: '\ufffd'}"
+                },
+                {
+                    "hex": "6f626a6563747b7061796c6f61643a2027ff277d23317c6f626a6563747b7061796c6f61643a2027ff277d2332",
+                    "display": "object{payload: '\ufffd'}#1|object{payload: '\ufffd'}#2"
+                }
+            ]
+        },
+        {
+            "inputs": [
+                "6f626a6563747b7061796c6f61643a20225c786666227d",
+                "6f626a6563747b7061796c6f61643a20225c786665227d",
+                "6f626a6563747b7061796c6f61643a20225c786666227d"
+            ],
+            "descriptions": [
+                {
+                    "hex": "6f626a6563747b7061796c6f61643a20737472696e677d",
+                    "display": "object{payload: string}"
+                },
+                {
+                    "hex": "6f626a6563747b7061796c6f61643a2027ff277d7c6f626a6563747b7061796c6f61643a2027fe277d",
+                    "display": "object{payload: '\ufffd'}|object{payload: '\ufffd'}"
+                },
+                {
+                    "hex": "6f626a6563747b7061796c6f61643a2027ff277d23317c6f626a6563747b7061796c6f61643a2027fe277d7c6f626a6563747b7061796c6f61643a2027ff277d2332",
+                    "display": "object{payload: '\ufffd'}#1|object{payload: '\ufffd'}|object{payload: '\ufffd'}#2"
+                }
+            ]
+        },
+        {
+            "inputs": [
+                "6f626a6563747b7061796c6f61643a2027efbfbd277d",
+                "6f626a6563747b7061796c6f61643a20225c786665227d",
+                "6f626a6563747b7061796c6f61643a2027efbfbd277d",
+                "6f626a6563747b7061796c6f61643a20225c786666227d"
+            ],
+            "descriptions": [
+                {
+                    "hex": "6f626a6563747b7061796c6f61643a20737472696e677d",
+                    "display": "object{payload: string}"
+                },
+                {
+                    "hex": "6f626a6563747b7061796c6f61643a2027efbfbd277d7c6f626a6563747b7061796c6f61643a2027fe277d7c6f626a6563747b7061796c6f61643a2027ff277d",
+                    "display": "object{payload: '\ufffd'}|object{payload: '\ufffd'}|object{payload: '\ufffd'}"
+                },
+                {
+                    "hex": "6f626a6563747b7061796c6f61643a2027efbfbd277d23317c6f626a6563747b7061796c6f61643a2027fe277d7c6f626a6563747b7061796c6f61643a2027efbfbd277d23327c6f626a6563747b7061796c6f61643a2027ff277d",
+                    "display": "object{payload: '\ufffd'}#1|object{payload: '\ufffd'}|object{payload: '\ufffd'}#2|object{payload: '\ufffd'}"
+                }
+            ]
+        },
+        {
+            "inputs": [
+                "61727261797b7061796c6f61643f3a20225c786666222c202e2e2e3c737472696e672c20696e743e7d",
+                "61727261797b7061796c6f61643f3a20225c786665222c202e2e2e3c737472696e672c20696e743e7d"
+            ],
+            "descriptions": [
+                {
+                    "hex": "61727261793c737472696e672c20696e747c737472696e673e",
+                    "display": "array<string, int|string>"
+                },
+                {
+                    "hex": "61727261797b7061796c6f61643f3a2027fe272c202e2e2e3c737472696e672c20696e743e7d7c61727261797b7061796c6f61643f3a2027ff272c202e2e2e3c737472696e672c20696e743e7d",
+                    "display": "array{payload?: '\ufffd', ...<string, int>}|array{payload?: '\ufffd', ...<string, int>}"
+                },
+                {
+                    "hex": "61727261797b7061796c6f61643f3a2027fe272c202e2e2e3c737472696e672c20696e743e7d7c61727261797b7061796c6f61643f3a2027ff272c202e2e2e3c737472696e672c20696e743e7d",
+                    "display": "array{payload?: '\ufffd', ...<string, int>}|array{payload?: '\ufffd', ...<string, int>}"
+                }
+            ]
+        },
+        {
+            "inputs": [
+                "61727261797b7061796c6f61643f3a20225c786666222c202e2e2e3c737472696e672c20696e743e7d",
+                "61727261797b7061796c6f61643f3a20225c786666222c202e2e2e3c737472696e672c20696e743e7d"
+            ],
+            "descriptions": [
+                {
+                    "hex": "61727261793c737472696e672c20696e747c737472696e673e",
+                    "display": "array<string, int|string>"
+                },
+                {
+                    "hex": "61727261797b7061796c6f61643f3a2027ff272c202e2e2e3c737472696e672c20696e743e7d",
+                    "display": "array{payload?: '\ufffd', ...<string, int>}"
+                },
+                {
+                    "hex": "61727261797b7061796c6f61643f3a2027ff272c202e2e2e3c737472696e672c20696e743e7d23317c61727261797b7061796c6f61643f3a2027ff272c202e2e2e3c737472696e672c20696e743e7d2332",
+                    "display": "array{payload?: '\ufffd', ...<string, int>}#1|array{payload?: '\ufffd', ...<string, int>}#2"
+                }
+            ]
+        },
+        {
+            "inputs": [
+                "61727261797b7061796c6f61643f3a20225c786666222c202e2e2e3c737472696e672c20696e743e7d",
+                "61727261797b7061796c6f61643f3a20225c786665222c202e2e2e3c737472696e672c20696e743e7d",
+                "61727261797b7061796c6f61643f3a20225c786666222c202e2e2e3c737472696e672c20696e743e7d"
+            ],
+            "descriptions": [
+                {
+                    "hex": "61727261793c737472696e672c20696e747c737472696e673e",
+                    "display": "array<string, int|string>"
+                },
+                {
+                    "hex": "61727261797b7061796c6f61643f3a2027fe272c202e2e2e3c737472696e672c20696e743e7d7c61727261797b7061796c6f61643f3a2027ff272c202e2e2e3c737472696e672c20696e743e7d",
+                    "display": "array{payload?: '\ufffd', ...<string, int>}|array{payload?: '\ufffd', ...<string, int>}"
+                },
+                {
+                    "hex": "61727261797b7061796c6f61643f3a2027fe272c202e2e2e3c737472696e672c20696e743e7d7c61727261797b7061796c6f61643f3a2027ff272c202e2e2e3c737472696e672c20696e743e7d23317c61727261797b7061796c6f61643f3a2027ff272c202e2e2e3c737472696e672c20696e743e7d2332",
+                    "display": "array{payload?: '\ufffd', ...<string, int>}|array{payload?: '\ufffd', ...<string, int>}#1|array{payload?: '\ufffd', ...<string, int>}#2"
+                }
+            ]
+        },
+        {
+            "inputs": [
+                "61727261797b7061796c6f61643f3a2027efbfbd272c202e2e2e3c737472696e672c20696e743e7d",
+                "61727261797b7061796c6f61643f3a20225c786665222c202e2e2e3c737472696e672c20696e743e7d",
+                "61727261797b7061796c6f61643f3a2027efbfbd272c202e2e2e3c737472696e672c20696e743e7d",
+                "61727261797b7061796c6f61643f3a20225c786666222c202e2e2e3c737472696e672c20696e743e7d"
+            ],
+            "descriptions": [
+                {
+                    "hex": "61727261793c737472696e672c20696e747c737472696e673e",
+                    "display": "array<string, int|string>"
+                },
+                {
+                    "hex": "61727261797b7061796c6f61643f3a2027efbfbd272c202e2e2e3c737472696e672c20696e743e7d7c61727261797b7061796c6f61643f3a2027fe272c202e2e2e3c737472696e672c20696e743e7d7c61727261797b7061796c6f61643f3a2027ff272c202e2e2e3c737472696e672c20696e743e7d",
+                    "display": "array{payload?: '\ufffd', ...<string, int>}|array{payload?: '\ufffd', ...<string, int>}|array{payload?: '\ufffd', ...<string, int>}"
+                },
+                {
+                    "hex": "61727261797b7061796c6f61643f3a2027efbfbd272c202e2e2e3c737472696e672c20696e743e7d23317c61727261797b7061796c6f61643f3a2027efbfbd272c202e2e2e3c737472696e672c20696e743e7d23327c61727261797b7061796c6f61643f3a2027fe272c202e2e2e3c737472696e672c20696e743e7d7c61727261797b7061796c6f61643f3a2027ff272c202e2e2e3c737472696e672c20696e743e7d",
+                    "display": "array{payload?: '\ufffd', ...<string, int>}#1|array{payload?: '\ufffd', ...<string, int>}#2|array{payload?: '\ufffd', ...<string, int>}|array{payload?: '\ufffd', ...<string, int>}"
+                }
+            ]
+        },
+        {
+            "inputs": [
+                "63616c6c61626c6528225c78666622293a2061727261797b225c786666223a20696e747d",
+                "63616c6c61626c6528225c78666522293a2061727261797b225c786665223a20696e747d"
+            ],
+            "descriptions": [
+                {
+                    "hex": "2863616c6c61626c6529",
+                    "display": "(callable)"
+                },
+                {
+                    "hex": "2863616c6c61626c652827fe27293a2061727261797bfe3a20696e747d297c2863616c6c61626c652827ff27293a2061727261797bff3a20696e747d29",
+                    "display": "(callable('\ufffd'): array{\ufffd: int})|(callable('\ufffd'): array{\ufffd: int})"
+                },
+                {
+                    "hex": "2863616c6c61626c652827fe27293a2061727261797bfe3a20696e747d297c2863616c6c61626c652827ff27293a2061727261797bff3a20696e747d29",
+                    "display": "(callable('\ufffd'): array{\ufffd: int})|(callable('\ufffd'): array{\ufffd: int})"
+                }
+            ]
+        },
+        {
+            "inputs": [
+                "63616c6c61626c6528225c78666622293a2061727261797b225c786666223a20696e747d",
+                "63616c6c61626c6528225c78666622293a2061727261797b225c786666223a20696e747d"
+            ],
+            "descriptions": [
+                {
+                    "hex": "2863616c6c61626c6529",
+                    "display": "(callable)"
+                },
+                {
+                    "hex": "2863616c6c61626c652827ff27293a2061727261797bff3a20696e747d29",
+                    "display": "(callable('\ufffd'): array{\ufffd: int})"
+                },
+                {
+                    "hex": "2863616c6c61626c652827ff27293a2061727261797bff3a20696e747d2923317c2863616c6c61626c652827ff27293a2061727261797bff3a20696e747d292332",
+                    "display": "(callable('\ufffd'): array{\ufffd: int})#1|(callable('\ufffd'): array{\ufffd: int})#2"
+                }
+            ]
+        },
+        {
+            "inputs": [
+                "63616c6c61626c6528225c78666622293a2061727261797b225c786666223a20696e747d",
+                "63616c6c61626c6528225c78666522293a2061727261797b225c786665223a20696e747d",
+                "63616c6c61626c6528225c78666622293a2061727261797b225c786666223a20696e747d"
+            ],
+            "descriptions": [
+                {
+                    "hex": "2863616c6c61626c6529",
+                    "display": "(callable)"
+                },
+                {
+                    "hex": "2863616c6c61626c652827fe27293a2061727261797bfe3a20696e747d297c2863616c6c61626c652827ff27293a2061727261797bff3a20696e747d29",
+                    "display": "(callable('\ufffd'): array{\ufffd: int})|(callable('\ufffd'): array{\ufffd: int})"
+                },
+                {
+                    "hex": "2863616c6c61626c652827fe27293a2061727261797bfe3a20696e747d297c2863616c6c61626c652827ff27293a2061727261797bff3a20696e747d2923317c2863616c6c61626c652827ff27293a2061727261797bff3a20696e747d292332",
+                    "display": "(callable('\ufffd'): array{\ufffd: int})|(callable('\ufffd'): array{\ufffd: int})#1|(callable('\ufffd'): array{\ufffd: int})#2"
+                }
+            ]
+        },
+        {
+            "inputs": [
+                "63616c6c61626c652827efbfbd27293a2061727261797b27efbfbd273a20696e747d",
+                "63616c6c61626c6528225c78666522293a2061727261797b225c786665223a20696e747d",
+                "63616c6c61626c652827efbfbd27293a2061727261797b27efbfbd273a20696e747d",
+                "63616c6c61626c6528225c78666622293a2061727261797b225c786666223a20696e747d"
+            ],
+            "descriptions": [
+                {
+                    "hex": "2863616c6c61626c6529",
+                    "display": "(callable)"
+                },
+                {
+                    "hex": "2863616c6c61626c652827efbfbd27293a2061727261797befbfbd3a20696e747d297c2863616c6c61626c652827fe27293a2061727261797bfe3a20696e747d297c2863616c6c61626c652827ff27293a2061727261797bff3a20696e747d29",
+                    "display": "(callable('\ufffd'): array{\ufffd: int})|(callable('\ufffd'): array{\ufffd: int})|(callable('\ufffd'): array{\ufffd: int})"
+                },
+                {
+                    "hex": "2863616c6c61626c652827efbfbd27293a2061727261797befbfbd3a20696e747d2923317c2863616c6c61626c652827efbfbd27293a2061727261797befbfbd3a20696e747d2923327c2863616c6c61626c652827fe27293a2061727261797bfe3a20696e747d297c2863616c6c61626c652827ff27293a2061727261797bff3a20696e747d29",
+                    "display": "(callable('\ufffd'): array{\ufffd: int})#1|(callable('\ufffd'): array{\ufffd: int})#2|(callable('\ufffd'): array{\ufffd: int})|(callable('\ufffd'): array{\ufffd: int})"
+                }
+            ]
+        },
+        {
+            "inputs": [
+                "436c6f7375726528225c78666622293a20225c78666622",
+                "436c6f7375726528225c78666522293a20225c78666522"
+            ],
+            "descriptions": [
+                {
+                    "hex": "28436c6f7375726529",
+                    "display": "(Closure)"
+                },
+                {
+                    "hex": "28436c6f737572652827fe27293a2027fe27297c28436c6f737572652827ff27293a2027ff2729",
+                    "display": "(Closure('\ufffd'): '\ufffd')|(Closure('\ufffd'): '\ufffd')"
+                },
+                {
+                    "hex": "28436c6f737572652827fe27293a2027fe27297c28436c6f737572652827ff27293a2027ff2729",
+                    "display": "(Closure('\ufffd'): '\ufffd')|(Closure('\ufffd'): '\ufffd')"
+                }
+            ]
+        },
+        {
+            "inputs": [
+                "436c6f7375726528225c78666622293a20225c78666622",
+                "436c6f7375726528225c78666622293a20225c78666622"
+            ],
+            "descriptions": [
+                {
+                    "hex": "28436c6f7375726529",
+                    "display": "(Closure)"
+                },
+                {
+                    "hex": "28436c6f737572652827ff27293a2027ff2729",
+                    "display": "(Closure('\ufffd'): '\ufffd')"
+                },
+                {
+                    "hex": "28436c6f737572652827ff27293a2027ff272923317c28436c6f737572652827ff27293a2027ff27292332",
+                    "display": "(Closure('\ufffd'): '\ufffd')#1|(Closure('\ufffd'): '\ufffd')#2"
+                }
+            ]
+        },
+        {
+            "inputs": [
+                "436c6f7375726528225c78666622293a20225c78666622",
+                "436c6f7375726528225c78666522293a20225c78666522",
+                "436c6f7375726528225c78666622293a20225c78666622"
+            ],
+            "descriptions": [
+                {
+                    "hex": "28436c6f7375726529",
+                    "display": "(Closure)"
+                },
+                {
+                    "hex": "28436c6f737572652827fe27293a2027fe27297c28436c6f737572652827ff27293a2027ff2729",
+                    "display": "(Closure('\ufffd'): '\ufffd')|(Closure('\ufffd'): '\ufffd')"
+                },
+                {
+                    "hex": "28436c6f737572652827fe27293a2027fe27297c28436c6f737572652827ff27293a2027ff272923317c28436c6f737572652827ff27293a2027ff27292332",
+                    "display": "(Closure('\ufffd'): '\ufffd')|(Closure('\ufffd'): '\ufffd')#1|(Closure('\ufffd'): '\ufffd')#2"
+                }
+            ]
+        },
+        {
+            "inputs": [
+                "436c6f737572652827efbfbd27293a2027efbfbd27",
+                "436c6f7375726528225c78666522293a20225c78666522",
+                "436c6f737572652827efbfbd27293a2027efbfbd27",
+                "436c6f7375726528225c78666622293a20225c78666622"
+            ],
+            "descriptions": [
+                {
+                    "hex": "28436c6f7375726529",
+                    "display": "(Closure)"
+                },
+                {
+                    "hex": "28436c6f737572652827efbfbd27293a2027efbfbd27297c28436c6f737572652827fe27293a2027fe27297c28436c6f737572652827ff27293a2027ff2729",
+                    "display": "(Closure('\ufffd'): '\ufffd')|(Closure('\ufffd'): '\ufffd')|(Closure('\ufffd'): '\ufffd')"
+                },
+                {
+                    "hex": "28436c6f737572652827efbfbd27293a2027efbfbd272923317c28436c6f737572652827efbfbd27293a2027efbfbd272923327c28436c6f737572652827fe27293a2027fe27297c28436c6f737572652827ff27293a2027ff2729",
+                    "display": "(Closure('\ufffd'): '\ufffd')#1|(Closure('\ufffd'): '\ufffd')#2|(Closure('\ufffd'): '\ufffd')|(Closure('\ufffd'): '\ufffd')"
+                }
+            ]
+        },
+        {
+            "inputs": [
+                "61727261793c696e742c20225c786666223e266e6f6e2d656d7074792d6172726179",
+                "61727261793c696e742c20225c786665223e266e6f6e2d656d7074792d6172726179"
+            ],
+            "descriptions": [
+                {
+                    "hex": "61727261793c696e742c20737472696e673e",
+                    "display": "array<int, string>"
+                },
+                {
+                    "hex": "6e6f6e2d656d7074792d61727261793c696e742c2027ff273e7c6e6f6e2d656d7074792d61727261793c696e742c2027fe273e",
+                    "display": "non-empty-array<int, '\ufffd'>|non-empty-array<int, '\ufffd'>"
+                },
+                {
+                    "hex": "6e6f6e2d656d7074792d61727261793c696e742c2027ff273e7c6e6f6e2d656d7074792d61727261793c696e742c2027fe273e",
+                    "display": "non-empty-array<int, '\ufffd'>|non-empty-array<int, '\ufffd'>"
+                }
+            ]
+        },
+        {
+            "inputs": [
+                "61727261793c696e742c20225c786666223e266e6f6e2d656d7074792d6172726179",
+                "61727261793c696e742c20225c786666223e266e6f6e2d656d7074792d6172726179"
+            ],
+            "descriptions": [
+                {
+                    "hex": "61727261793c696e742c20737472696e673e",
+                    "display": "array<int, string>"
+                },
+                {
+                    "hex": "6e6f6e2d656d7074792d61727261793c696e742c2027ff273e",
+                    "display": "non-empty-array<int, '\ufffd'>"
+                },
+                {
+                    "hex": "6e6f6e2d656d7074792d61727261793c696e742c2027ff273e23317c6e6f6e2d656d7074792d61727261793c696e742c2027ff273e2332",
+                    "display": "non-empty-array<int, '\ufffd'>#1|non-empty-array<int, '\ufffd'>#2"
+                }
+            ]
+        },
+        {
+            "inputs": [
+                "61727261793c696e742c20225c786666223e266e6f6e2d656d7074792d6172726179",
+                "61727261793c696e742c20225c786665223e266e6f6e2d656d7074792d6172726179",
+                "61727261793c696e742c20225c786666223e266e6f6e2d656d7074792d6172726179"
+            ],
+            "descriptions": [
+                {
+                    "hex": "61727261793c696e742c20737472696e673e",
+                    "display": "array<int, string>"
+                },
+                {
+                    "hex": "6e6f6e2d656d7074792d61727261793c696e742c2027ff273e7c6e6f6e2d656d7074792d61727261793c696e742c2027fe273e",
+                    "display": "non-empty-array<int, '\ufffd'>|non-empty-array<int, '\ufffd'>"
+                },
+                {
+                    "hex": "6e6f6e2d656d7074792d61727261793c696e742c2027ff273e23317c6e6f6e2d656d7074792d61727261793c696e742c2027fe273e7c6e6f6e2d656d7074792d61727261793c696e742c2027ff273e2332",
+                    "display": "non-empty-array<int, '\ufffd'>#1|non-empty-array<int, '\ufffd'>|non-empty-array<int, '\ufffd'>#2"
+                }
+            ]
+        },
+        {
+            "inputs": [
+                "61727261793c696e742c2027efbfbd273e266e6f6e2d656d7074792d6172726179",
+                "61727261793c696e742c20225c786665223e266e6f6e2d656d7074792d6172726179",
+                "61727261793c696e742c2027efbfbd273e266e6f6e2d656d7074792d6172726179",
+                "61727261793c696e742c20225c786666223e266e6f6e2d656d7074792d6172726179"
+            ],
+            "descriptions": [
+                {
+                    "hex": "61727261793c696e742c20737472696e673e",
+                    "display": "array<int, string>"
+                },
+                {
+                    "hex": "6e6f6e2d656d7074792d61727261793c696e742c2027efbfbd273e7c6e6f6e2d656d7074792d61727261793c696e742c2027fe273e7c6e6f6e2d656d7074792d61727261793c696e742c2027ff273e",
+                    "display": "non-empty-array<int, '\ufffd'>|non-empty-array<int, '\ufffd'>|non-empty-array<int, '\ufffd'>"
+                },
+                {
+                    "hex": "6e6f6e2d656d7074792d61727261793c696e742c2027efbfbd273e23317c6e6f6e2d656d7074792d61727261793c696e742c2027fe273e7c6e6f6e2d656d7074792d61727261793c696e742c2027efbfbd273e23327c6e6f6e2d656d7074792d61727261793c696e742c2027ff273e",
+                    "display": "non-empty-array<int, '\ufffd'>#1|non-empty-array<int, '\ufffd'>|non-empty-array<int, '\ufffd'>#2|non-empty-array<int, '\ufffd'>"
+                }
+            ]
+        },
+        {
+            "inputs": [
+                "61727261793c696e742c20225c786666223e266c697374",
+                "61727261793c696e742c20225c786665223e266c697374"
+            ],
+            "descriptions": [
+                {
+                    "hex": "6c6973743c737472696e673e",
+                    "display": "list<string>"
+                },
+                {
+                    "hex": "6c6973743c27ff273e7c6c6973743c27fe273e",
+                    "display": "list<'\ufffd'>|list<'\ufffd'>"
+                },
+                {
+                    "hex": "6c6973743c27ff273e7c6c6973743c27fe273e",
+                    "display": "list<'\ufffd'>|list<'\ufffd'>"
+                }
+            ]
+        },
+        {
+            "inputs": [
+                "61727261793c696e742c20225c786666223e266c697374",
+                "61727261793c696e742c20225c786666223e266c697374"
+            ],
+            "descriptions": [
+                {
+                    "hex": "6c6973743c737472696e673e",
+                    "display": "list<string>"
+                },
+                {
+                    "hex": "6c6973743c27ff273e",
+                    "display": "list<'\ufffd'>"
+                },
+                {
+                    "hex": "6c6973743c27ff273e23317c6c6973743c27ff273e2332",
+                    "display": "list<'\ufffd'>#1|list<'\ufffd'>#2"
+                }
+            ]
+        },
+        {
+            "inputs": [
+                "61727261793c696e742c20225c786666223e266c697374",
+                "61727261793c696e742c20225c786665223e266c697374",
+                "61727261793c696e742c20225c786666223e266c697374"
+            ],
+            "descriptions": [
+                {
+                    "hex": "6c6973743c737472696e673e",
+                    "display": "list<string>"
+                },
+                {
+                    "hex": "6c6973743c27ff273e7c6c6973743c27fe273e",
+                    "display": "list<'\ufffd'>|list<'\ufffd'>"
+                },
+                {
+                    "hex": "6c6973743c27ff273e23317c6c6973743c27fe273e7c6c6973743c27ff273e2332",
+                    "display": "list<'\ufffd'>#1|list<'\ufffd'>|list<'\ufffd'>#2"
+                }
+            ]
+        },
+        {
+            "inputs": [
+                "61727261793c696e742c2027efbfbd273e266c697374",
+                "61727261793c696e742c20225c786665223e266c697374",
+                "61727261793c696e742c2027efbfbd273e266c697374",
+                "61727261793c696e742c20225c786666223e266c697374"
+            ],
+            "descriptions": [
+                {
+                    "hex": "6c6973743c737472696e673e",
+                    "display": "list<string>"
+                },
+                {
+                    "hex": "6c6973743c27efbfbd273e7c6c6973743c27fe273e7c6c6973743c27ff273e",
+                    "display": "list<'\ufffd'>|list<'\ufffd'>|list<'\ufffd'>"
+                },
+                {
+                    "hex": "6c6973743c27efbfbd273e23317c6c6973743c27fe273e7c6c6973743c27efbfbd273e23327c6c6973743c27ff273e",
+                    "display": "list<'\ufffd'>#1|list<'\ufffd'>|list<'\ufffd'>#2|list<'\ufffd'>"
+                }
+            ]
+        },
+        {
+            "inputs": [
+                "28696e7420697320696e74203f20225c78666622203a20737472696e6729",
+                "28696e7420697320696e74203f20225c78666522203a20737472696e6729"
+            ],
+            "descriptions": [
+                {
+                    "hex": "28696e7420697320696e74203f20737472696e67203a20737472696e6729",
+                    "display": "(int is int ? string : string)"
+                },
+                {
+                    "hex": "28696e7420697320696e74203f2027fe27203a20737472696e67297c28696e7420697320696e74203f2027ff27203a20737472696e6729",
+                    "display": "(int is int ? '\ufffd' : string)|(int is int ? '\ufffd' : string)"
+                },
+                {
+                    "hex": "28696e7420697320696e74203f2027fe27203a20737472696e67297c28696e7420697320696e74203f2027ff27203a20737472696e6729",
+                    "display": "(int is int ? '\ufffd' : string)|(int is int ? '\ufffd' : string)"
+                }
+            ]
+        },
+        {
+            "inputs": [
+                "28696e7420697320696e74203f20225c78666622203a20737472696e6729",
+                "28696e7420697320696e74203f20225c78666622203a20737472696e6729"
+            ],
+            "descriptions": [
+                {
+                    "hex": "28696e7420697320696e74203f20737472696e67203a20737472696e6729",
+                    "display": "(int is int ? string : string)"
+                },
+                {
+                    "hex": "28696e7420697320696e74203f2027ff27203a20737472696e6729",
+                    "display": "(int is int ? '\ufffd' : string)"
+                },
+                {
+                    "hex": "28696e7420697320696e74203f2027ff27203a20737472696e672923317c28696e7420697320696e74203f2027ff27203a20737472696e67292332",
+                    "display": "(int is int ? '\ufffd' : string)#1|(int is int ? '\ufffd' : string)#2"
+                }
+            ]
+        },
+        {
+            "inputs": [
+                "28696e7420697320696e74203f20225c78666622203a20737472696e6729",
+                "28696e7420697320696e74203f20225c78666522203a20737472696e6729",
+                "28696e7420697320696e74203f20225c78666622203a20737472696e6729"
+            ],
+            "descriptions": [
+                {
+                    "hex": "28696e7420697320696e74203f20737472696e67203a20737472696e6729",
+                    "display": "(int is int ? string : string)"
+                },
+                {
+                    "hex": "28696e7420697320696e74203f2027fe27203a20737472696e67297c28696e7420697320696e74203f2027ff27203a20737472696e6729",
+                    "display": "(int is int ? '\ufffd' : string)|(int is int ? '\ufffd' : string)"
+                },
+                {
+                    "hex": "28696e7420697320696e74203f2027fe27203a20737472696e67297c28696e7420697320696e74203f2027ff27203a20737472696e672923317c28696e7420697320696e74203f2027ff27203a20737472696e67292332",
+                    "display": "(int is int ? '\ufffd' : string)|(int is int ? '\ufffd' : string)#1|(int is int ? '\ufffd' : string)#2"
+                }
+            ]
+        },
+        {
+            "inputs": [
+                "28696e7420697320696e74203f2027efbfbd27203a20737472696e6729",
+                "28696e7420697320696e74203f20225c78666522203a20737472696e6729",
+                "28696e7420697320696e74203f2027efbfbd27203a20737472696e6729",
+                "28696e7420697320696e74203f20225c78666622203a20737472696e6729"
+            ],
+            "descriptions": [
+                {
+                    "hex": "28696e7420697320696e74203f20737472696e67203a20737472696e6729",
+                    "display": "(int is int ? string : string)"
+                },
+                {
+                    "hex": "28696e7420697320696e74203f2027efbfbd27203a20737472696e67297c28696e7420697320696e74203f2027fe27203a20737472696e67297c28696e7420697320696e74203f2027ff27203a20737472696e6729",
+                    "display": "(int is int ? '\ufffd' : string)|(int is int ? '\ufffd' : string)|(int is int ? '\ufffd' : string)"
+                },
+                {
+                    "hex": "28696e7420697320696e74203f2027efbfbd27203a20737472696e672923317c28696e7420697320696e74203f2027efbfbd27203a20737472696e672923327c28696e7420697320696e74203f2027fe27203a20737472696e67297c28696e7420697320696e74203f2027ff27203a20737472696e6729",
+                    "display": "(int is int ? '\ufffd' : string)#1|(int is int ? '\ufffd' : string)#2|(int is int ? '\ufffd' : string)|(int is int ? '\ufffd' : string)"
+                }
+            ]
+        },
+        {
+            "inputs": [
+                "63616c6c61626c6528293a2061727261797b4b3a20225c786666227d",
+                "63616c6c61626c6528293a2061727261797b4b3a20225c786665227d"
+            ],
+            "descriptions": [
+                {
+                    "hex": "2863616c6c61626c6529",
+                    "display": "(callable)"
+                },
+                {
+                    "hex": "2863616c6c61626c6528293a2061727261797b4b3a2027fe277d297c2863616c6c61626c6528293a2061727261797b4b3a2027ff277d29",
+                    "display": "(callable(): array{K: '\ufffd'})|(callable(): array{K: '\ufffd'})"
+                },
+                {
+                    "hex": "2863616c6c61626c6528293a2061727261797b4b3a2027fe277d297c2863616c6c61626c6528293a2061727261797b4b3a2027ff277d29",
+                    "display": "(callable(): array{K: '\ufffd'})|(callable(): array{K: '\ufffd'})"
+                }
+            ]
+        },
+        {
+            "inputs": [
+                "63616c6c61626c6528293a2061727261797b4b3a20225c786666227d",
+                "63616c6c61626c6528293a2061727261797b4b3a20225c786666227d"
+            ],
+            "descriptions": [
+                {
+                    "hex": "2863616c6c61626c6529",
+                    "display": "(callable)"
+                },
+                {
+                    "hex": "2863616c6c61626c6528293a2061727261797b4b3a2027ff277d29",
+                    "display": "(callable(): array{K: '\ufffd'})"
+                },
+                {
+                    "hex": "2863616c6c61626c6528293a2061727261797b4b3a2027ff277d2923317c2863616c6c61626c6528293a2061727261797b4b3a2027ff277d292332",
+                    "display": "(callable(): array{K: '\ufffd'})#1|(callable(): array{K: '\ufffd'})#2"
+                }
+            ]
+        },
+        {
+            "inputs": [
+                "63616c6c61626c6528293a2061727261797b4b3a20225c786666227d",
+                "63616c6c61626c6528293a2061727261797b4b3a20225c786665227d",
+                "63616c6c61626c6528293a2061727261797b4b3a20225c786666227d"
+            ],
+            "descriptions": [
+                {
+                    "hex": "2863616c6c61626c6529",
+                    "display": "(callable)"
+                },
+                {
+                    "hex": "2863616c6c61626c6528293a2061727261797b4b3a2027fe277d297c2863616c6c61626c6528293a2061727261797b4b3a2027ff277d29",
+                    "display": "(callable(): array{K: '\ufffd'})|(callable(): array{K: '\ufffd'})"
+                },
+                {
+                    "hex": "2863616c6c61626c6528293a2061727261797b4b3a2027fe277d297c2863616c6c61626c6528293a2061727261797b4b3a2027ff277d2923317c2863616c6c61626c6528293a2061727261797b4b3a2027ff277d292332",
+                    "display": "(callable(): array{K: '\ufffd'})|(callable(): array{K: '\ufffd'})#1|(callable(): array{K: '\ufffd'})#2"
+                }
+            ]
+        },
+        {
+            "inputs": [
+                "63616c6c61626c6528293a2061727261797b4b3a2027efbfbd277d",
+                "63616c6c61626c6528293a2061727261797b4b3a20225c786665227d",
+                "63616c6c61626c6528293a2061727261797b4b3a2027efbfbd277d",
+                "63616c6c61626c6528293a2061727261797b4b3a20225c786666227d"
+            ],
+            "descriptions": [
+                {
+                    "hex": "2863616c6c61626c6529",
+                    "display": "(callable)"
+                },
+                {
+                    "hex": "2863616c6c61626c6528293a2061727261797b4b3a2027efbfbd277d297c2863616c6c61626c6528293a2061727261797b4b3a2027fe277d297c2863616c6c61626c6528293a2061727261797b4b3a2027ff277d29",
+                    "display": "(callable(): array{K: '\ufffd'})|(callable(): array{K: '\ufffd'})|(callable(): array{K: '\ufffd'})"
+                },
+                {
+                    "hex": "2863616c6c61626c6528293a2061727261797b4b3a2027efbfbd277d2923317c2863616c6c61626c6528293a2061727261797b4b3a2027efbfbd277d2923327c2863616c6c61626c6528293a2061727261797b4b3a2027fe277d297c2863616c6c61626c6528293a2061727261797b4b3a2027ff277d29",
+                    "display": "(callable(): array{K: '\ufffd'})#1|(callable(): array{K: '\ufffd'})#2|(callable(): array{K: '\ufffd'})|(callable(): array{K: '\ufffd'})"
+                }
+            ]
+        },
+        {
+            "inputs": [
+                "63616c6c61626c652861727261797b4b3a20696e742c20225c786666223f3a20737472696e672c202e2e2e3c4b2c20696e743e7d293a20766f6964",
+                "63616c6c61626c652861727261797b4b3a20696e742c20225c786665223f3a20737472696e672c202e2e2e3c4b2c20696e743e7d293a20766f6964"
+            ],
+            "descriptions": [
+                {
+                    "hex": "2863616c6c61626c6529",
+                    "display": "(callable)"
+                },
+                {
+                    "hex": "2863616c6c61626c652861727261797b4b3a20696e742c20fe3f3a20737472696e672c202e2e2e3c4b2c20696e743e7d293a20766f6964297c2863616c6c61626c652861727261797b4b3a20696e742c20ff3f3a20737472696e672c202e2e2e3c4b2c20696e743e7d293a20766f696429",
+                    "display": "(callable(array{K: int, \ufffd?: string, ...<K, int>}): void)|(callable(array{K: int, \ufffd?: string, ...<K, int>}): void)"
+                },
+                {
+                    "hex": "2863616c6c61626c652861727261797b4b3a20696e742c20fe3f3a20737472696e672c202e2e2e3c4b2c20696e743e7d293a20766f6964297c2863616c6c61626c652861727261797b4b3a20696e742c20ff3f3a20737472696e672c202e2e2e3c4b2c20696e743e7d293a20766f696429",
+                    "display": "(callable(array{K: int, \ufffd?: string, ...<K, int>}): void)|(callable(array{K: int, \ufffd?: string, ...<K, int>}): void)"
+                }
+            ]
+        },
+        {
+            "inputs": [
+                "63616c6c61626c652861727261797b4b3a20696e742c20225c786666223f3a20737472696e672c202e2e2e3c4b2c20696e743e7d293a20766f6964",
+                "63616c6c61626c652861727261797b4b3a20696e742c20225c786666223f3a20737472696e672c202e2e2e3c4b2c20696e743e7d293a20766f6964"
+            ],
+            "descriptions": [
+                {
+                    "hex": "2863616c6c61626c6529",
+                    "display": "(callable)"
+                },
+                {
+                    "hex": "2863616c6c61626c652861727261797b4b3a20696e742c20ff3f3a20737472696e672c202e2e2e3c4b2c20696e743e7d293a20766f696429",
+                    "display": "(callable(array{K: int, \ufffd?: string, ...<K, int>}): void)"
+                },
+                {
+                    "hex": "2863616c6c61626c652861727261797b4b3a20696e742c20ff3f3a20737472696e672c202e2e2e3c4b2c20696e743e7d293a20766f69642923317c2863616c6c61626c652861727261797b4b3a20696e742c20ff3f3a20737472696e672c202e2e2e3c4b2c20696e743e7d293a20766f6964292332",
+                    "display": "(callable(array{K: int, \ufffd?: string, ...<K, int>}): void)#1|(callable(array{K: int, \ufffd?: string, ...<K, int>}): void)#2"
+                }
+            ]
+        },
+        {
+            "inputs": [
+                "63616c6c61626c652861727261797b4b3a20696e742c20225c786666223f3a20737472696e672c202e2e2e3c4b2c20696e743e7d293a20766f6964",
+                "63616c6c61626c652861727261797b4b3a20696e742c20225c786665223f3a20737472696e672c202e2e2e3c4b2c20696e743e7d293a20766f6964",
+                "63616c6c61626c652861727261797b4b3a20696e742c20225c786666223f3a20737472696e672c202e2e2e3c4b2c20696e743e7d293a20766f6964"
+            ],
+            "descriptions": [
+                {
+                    "hex": "2863616c6c61626c6529",
+                    "display": "(callable)"
+                },
+                {
+                    "hex": "2863616c6c61626c652861727261797b4b3a20696e742c20fe3f3a20737472696e672c202e2e2e3c4b2c20696e743e7d293a20766f6964297c2863616c6c61626c652861727261797b4b3a20696e742c20ff3f3a20737472696e672c202e2e2e3c4b2c20696e743e7d293a20766f696429",
+                    "display": "(callable(array{K: int, \ufffd?: string, ...<K, int>}): void)|(callable(array{K: int, \ufffd?: string, ...<K, int>}): void)"
+                },
+                {
+                    "hex": "2863616c6c61626c652861727261797b4b3a20696e742c20fe3f3a20737472696e672c202e2e2e3c4b2c20696e743e7d293a20766f6964297c2863616c6c61626c652861727261797b4b3a20696e742c20ff3f3a20737472696e672c202e2e2e3c4b2c20696e743e7d293a20766f69642923317c2863616c6c61626c652861727261797b4b3a20696e742c20ff3f3a20737472696e672c202e2e2e3c4b2c20696e743e7d293a20766f6964292332",
+                    "display": "(callable(array{K: int, \ufffd?: string, ...<K, int>}): void)|(callable(array{K: int, \ufffd?: string, ...<K, int>}): void)#1|(callable(array{K: int, \ufffd?: string, ...<K, int>}): void)#2"
+                }
+            ]
+        },
+        {
+            "inputs": [
+                "63616c6c61626c652861727261797b4b3a20696e742c2027efbfbd273f3a20737472696e672c202e2e2e3c4b2c20696e743e7d293a20766f6964",
+                "63616c6c61626c652861727261797b4b3a20696e742c20225c786665223f3a20737472696e672c202e2e2e3c4b2c20696e743e7d293a20766f6964",
+                "63616c6c61626c652861727261797b4b3a20696e742c2027efbfbd273f3a20737472696e672c202e2e2e3c4b2c20696e743e7d293a20766f6964",
+                "63616c6c61626c652861727261797b4b3a20696e742c20225c786666223f3a20737472696e672c202e2e2e3c4b2c20696e743e7d293a20766f6964"
+            ],
+            "descriptions": [
+                {
+                    "hex": "2863616c6c61626c6529",
+                    "display": "(callable)"
+                },
+                {
+                    "hex": "2863616c6c61626c652861727261797b4b3a20696e742c20efbfbd3f3a20737472696e672c202e2e2e3c4b2c20696e743e7d293a20766f6964297c2863616c6c61626c652861727261797b4b3a20696e742c20fe3f3a20737472696e672c202e2e2e3c4b2c20696e743e7d293a20766f6964297c2863616c6c61626c652861727261797b4b3a20696e742c20ff3f3a20737472696e672c202e2e2e3c4b2c20696e743e7d293a20766f696429",
+                    "display": "(callable(array{K: int, \ufffd?: string, ...<K, int>}): void)|(callable(array{K: int, \ufffd?: string, ...<K, int>}): void)|(callable(array{K: int, \ufffd?: string, ...<K, int>}): void)"
+                },
+                {
+                    "hex": "2863616c6c61626c652861727261797b4b3a20696e742c20efbfbd3f3a20737472696e672c202e2e2e3c4b2c20696e743e7d293a20766f69642923317c2863616c6c61626c652861727261797b4b3a20696e742c20efbfbd3f3a20737472696e672c202e2e2e3c4b2c20696e743e7d293a20766f69642923327c2863616c6c61626c652861727261797b4b3a20696e742c20fe3f3a20737472696e672c202e2e2e3c4b2c20696e743e7d293a20766f6964297c2863616c6c61626c652861727261797b4b3a20696e742c20ff3f3a20737472696e672c202e2e2e3c4b2c20696e743e7d293a20766f696429",
+                    "display": "(callable(array{K: int, \ufffd?: string, ...<K, int>}): void)#1|(callable(array{K: int, \ufffd?: string, ...<K, int>}): void)#2|(callable(array{K: int, \ufffd?: string, ...<K, int>}): void)|(callable(array{K: int, \ufffd?: string, ...<K, int>}): void)"
+                }
+            ]
+        },
+        {
+            "inputs": [
+                "226162636465666768696a6b6c6d6e6f70717273745c78666622",
+                "226162636465666768696a6b6c6d6e6f70717273745c78666522"
+            ],
+            "descriptions": [
+                {
+                    "hex": "737472696e67",
+                    "display": "string"
+                },
+                {
+                    "hex": "276162636465666768696a6b6c6d6e6f7071727374e280a627",
+                    "display": "'abcdefghijklmnopqrst\u2026'"
+                },
+                {
+                    "hex": "276162636465666768696a6b6c6d6e6f7071727374fe277c276162636465666768696a6b6c6d6e6f7071727374ff27",
+                    "display": "'abcdefghijklmnopqrst\ufffd'|'abcdefghijklmnopqrst\ufffd'"
+                }
+            ]
+        },
+        {
+            "inputs": [
+                "61727261797b7061796c6f61643a20226162636465666768696a6b6c6d6e6f70717273745c786666227d",
+                "61727261797b7061796c6f61643a20226162636465666768696a6b6c6d6e6f70717273745c786665227d"
+            ],
+            "descriptions": [
+                {
+                    "hex": "61727261793c737472696e672c20737472696e673e",
+                    "display": "array<string, string>"
+                },
+                {
+                    "hex": "61727261797b7061796c6f61643a20276162636465666768696a6b6c6d6e6f7071727374e280a6277d",
+                    "display": "array{payload: 'abcdefghijklmnopqrst\u2026'}"
+                },
+                {
+                    "hex": "61727261797b7061796c6f61643a20276162636465666768696a6b6c6d6e6f7071727374ff277d7c61727261797b7061796c6f61643a20276162636465666768696a6b6c6d6e6f7071727374fe277d",
+                    "display": "array{payload: 'abcdefghijklmnopqrst\ufffd'}|array{payload: 'abcdefghijklmnopqrst\ufffd'}"
+                }
+            ]
+        },
+        {
+            "inputs": [
+                "61727261797b302c20312c20322c20332c20342c20352c20362c20372c20225c786666227d",
+                "61727261797b302c20312c20322c20332c20342c20352c20362c20372c20225c786665227d"
+            ],
+            "descriptions": [
+                {
+                    "hex": "6c6973743c696e747c737472696e673e",
+                    "display": "list<int|string>"
+                },
+                {
+                    "hex": "61727261797b302c20312c20322c20332c20342c20352c20362c20372c202e2e2e7d",
+                    "display": "array{0, 1, 2, 3, 4, 5, 6, 7, ...}"
+                },
+                {
+                    "hex": "61727261797b302c20312c20322c20332c20342c20352c20362c20372c2027ff277d7c61727261797b302c20312c20322c20332c20342c20352c20362c20372c2027fe277d",
+                    "display": "array{0, 1, 2, 3, 4, 5, 6, 7, '\ufffd'}|array{0, 1, 2, 3, 4, 5, 6, 7, '\ufffd'}"
+                }
+            ]
+        },
+        {
+            "inputs": [
+                "61727261793c696e742c20225c786666223e",
+                "61727261793c737472696e672c20696e743e"
+            ],
+            "offset": true,
+            "descriptions": [
+                {
+                    "hex": "2861727261793c696e742c2027ff273e7c61727261793c737472696e672c20696e743e295b696e745d",
+                    "display": "(array<int, '\ufffd'>|array<string, int>)[int]"
+                },
+                {
+                    "hex": "2861727261793c696e742c2027ff273e7c61727261793c737472696e672c20696e743e295b696e745d",
+                    "display": "(array<int, '\ufffd'>|array<string, int>)[int]"
+                },
+                {
+                    "hex": "2861727261793c696e742c2027ff273e7c61727261793c737472696e672c20696e743e295b696e745d",
+                    "display": "(array<int, '\ufffd'>|array<string, int>)[int]"
+                }
+            ]
+        },
+        {
+            "inputs": [
+                "61727261793c696e742c20225c786665223e",
+                "61727261793c737472696e672c20696e743e"
+            ],
+            "offset": true,
+            "descriptions": [
+                {
+                    "hex": "2861727261793c696e742c2027fe273e7c61727261793c737472696e672c20696e743e295b696e745d",
+                    "display": "(array<int, '\ufffd'>|array<string, int>)[int]"
+                },
+                {
+                    "hex": "2861727261793c696e742c2027fe273e7c61727261793c737472696e672c20696e743e295b696e745d",
+                    "display": "(array<int, '\ufffd'>|array<string, int>)[int]"
+                },
+                {
+                    "hex": "2861727261793c696e742c2027fe273e7c61727261793c737472696e672c20696e743e295b696e745d",
+                    "display": "(array<int, '\ufffd'>|array<string, int>)[int]"
+                }
+            ]
+        },
+        {
+            "inputs": [
+                "63616c6c61626c65"
+            ],
+            "offset": true,
+            "offset_leaf": true,
+            "descriptions": [
+                {
+                    "hex": "63616c6c61626c655b696e745d",
+                    "display": "callable[int]"
+                },
+                {
+                    "hex": "63616c6c61626c655b696e745d",
+                    "display": "callable[int]"
+                },
+                {
+                    "hex": "63616c6c61626c655b696e745d",
+                    "display": "callable[int]"
+                }
+            ]
+        },
+        {
+            "inputs": [
+                "63616c6c61626c6528293a20225c78666622"
+            ],
+            "offset": true,
+            "offset_leaf": true,
+            "descriptions": [
+                {
+                    "hex": "2863616c6c61626c6528293a2027ff27295b696e745d",
+                    "display": "(callable(): '\ufffd')[int]"
+                },
+                {
+                    "hex": "2863616c6c61626c6528293a2027ff27295b696e745d",
+                    "display": "(callable(): '\ufffd')[int]"
+                },
+                {
+                    "hex": "2863616c6c61626c6528293a2027ff27295b696e745d",
+                    "display": "(callable(): '\ufffd')[int]"
+                }
+            ]
+        },
+        {
+            "inputs": [
+                "436c6f7375726528293a20225c78666522"
+            ],
+            "offset": true,
+            "offset_leaf": true,
+            "descriptions": [
+                {
+                    "hex": "28436c6f7375726528293a2027fe27295b696e745d",
+                    "display": "(Closure(): '\ufffd')[int]"
+                },
+                {
+                    "hex": "28436c6f7375726528293a2027fe27295b696e745d",
+                    "display": "(Closure(): '\ufffd')[int]"
+                },
+                {
+                    "hex": "28436c6f7375726528293a2027fe27295b696e745d",
+                    "display": "(Closure(): '\ufffd')[int]"
+                }
+            ]
+        }
+    ],
+    "subtracted_descriptions": [
+        {
+            "input": "Iterator<\"\\xff\">",
+            "descriptions": [
+                "Traversable",
+                "Traversable",
+                "Traversable~((ArrayIterator&iterable<int>)|Iterator<mixed, '\ufffd'>)"
+            ]
+        },
+        {
+            "input": "Iterator<\"\\xfe\">",
+            "descriptions": [
+                "Traversable",
+                "Traversable",
+                "Traversable~((ArrayIterator&iterable<int>)|Iterator<mixed, '\ufffd'>)"
+            ]
+        },
+        {
+            "input": "Iterator<\"\\xef\\xbf\\xbd\">",
+            "descriptions": [
+                "Traversable",
+                "Traversable",
+                "Traversable~((ArrayIterator&iterable<int>)|Iterator<mixed, '\ufffd'>)"
+            ]
         }
     ]
 }

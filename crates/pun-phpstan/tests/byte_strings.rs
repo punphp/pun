@@ -3,6 +3,26 @@
 use pun_phpstan::types::{Accessory, Level, Type, accepts, is_super_type_of, union};
 use serde_json::{Value, json};
 
+struct ByteTemplates;
+
+impl pun_phpstan::resolve::Scope for ByteTemplates {
+    fn parent(&self) -> Option<String> {
+        None
+    }
+
+    fn template(&self, name: &str) -> Option<Type> {
+        (name == "K").then(|| {
+            Type::Template(Box::new(pun_phpstan::types::Template {
+                name: "K".into(),
+                scope: "function shapeBytes()".into(),
+                bound: Type::String,
+                default: None,
+                argument: false,
+            }))
+        })
+    }
+}
+
 fn bytes(hex: &Value) -> Vec<u8> {
     hex.as_str()
         .unwrap()
@@ -14,6 +34,65 @@ fn bytes(hex: &Value) -> Vec<u8> {
 
 fn hex(bytes: &[u8]) -> String {
     bytes.iter().map(|byte| format!("{byte:02x}")).collect()
+}
+
+#[test]
+fn union_descriptions_group_original_bytes_before_utf8_presentation() {
+    let oracle: Value =
+        serde_json::from_str(include_str!("fixtures/byte-strings/expected.json")).unwrap();
+    let mut failures = Vec::new();
+    for row in oracle["union_descriptions"].as_array().unwrap() {
+        let inputs: Vec<_> = row["inputs"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(bytes)
+            .collect();
+        let types: Vec<_> = inputs
+            .iter()
+            .map(|input| {
+                let node = pun_phpstan::phpdoc::parse(input).unwrap();
+                pun_phpstan::resolve::resolve_in(&node, &ByteTemplates)
+            })
+            .collect();
+        let ty = if row["offset_leaf"] == true {
+            types.into_iter().next().unwrap()
+        } else {
+            Type::Union(types)
+        };
+        let ty = if row["offset"] == true {
+            Type::OffsetAccess(Box::new(ty), Box::new(Type::Int))
+        } else {
+            ty
+        };
+        for (i, level) in [Level::TypeOnly, Level::Value, Level::Precise]
+            .into_iter()
+            .enumerate()
+        {
+            let got = ty.describe(level);
+            if got != row["descriptions"][i]["display"].as_str().unwrap() {
+                failures.push(format!(
+                    "{inputs:?} {level:?}: {got}; expected {}",
+                    row["descriptions"][i]["display"]
+                ));
+            }
+        }
+    }
+    assert!(failures.is_empty(), "{}", failures.join("\n"));
+    for row in oracle["subtracted_descriptions"].as_array().unwrap() {
+        let excluded = Type::Union(vec![
+            pun_phpstan::resolve::resolve_str(row["input"].as_str().unwrap(), None),
+            pun_phpstan::resolve::resolve_str("ArrayIterator<int>", None),
+        ]);
+        let ty = Type::SubtractedObject {
+            object: Box::new(Type::Object("Traversable".into(), vec![], false)),
+            excluded: Box::new(excluded),
+        };
+        assert_eq!(
+            json!([Level::TypeOnly, Level::Value, Level::Precise].map(|level| ty.describe(level))),
+            row["descriptions"]
+        );
+    }
 }
 
 #[test]
@@ -195,25 +274,10 @@ fn quoted_shape_keys_preserve_bytes_and_overwrite_only_equal_keys() {
 #[test]
 fn late_quoted_shape_keys_preserve_bytes_through_template_substitution() {
     use pun_phpstan::resolve::{Scope, resolve_in};
-    use pun_phpstan::types::{Template, infer_template_types, resolve_template_types};
+    use pun_phpstan::types::{infer_template_types, resolve_template_types};
 
-    struct TemplateScope(Type);
-    impl Scope for TemplateScope {
-        fn parent(&self) -> Option<String> {
-            None
-        }
-        fn template(&self, name: &str) -> Option<Type> {
-            (name == "K").then(|| self.0.clone())
-        }
-    }
-    let template = Type::Template(Box::new(Template {
-        name: "K".into(),
-        scope: "function shapeBytes()".into(),
-        bound: Type::String,
-        default: None,
-        argument: false,
-    }));
-    let scope = TemplateScope(template.clone());
+    let scope = ByteTemplates;
+    let template = scope.template("K").unwrap();
     let oracle: Value =
         serde_json::from_str(include_str!("fixtures/byte-strings/expected.json")).unwrap();
     for row in oracle["late_shape_keys"]
@@ -228,7 +292,11 @@ fn late_quoted_shape_keys_preserve_bytes_through_template_substitution() {
             .unwrap_or_else(|| row["input"].as_str().unwrap().as_bytes().to_vec());
         let node = pun_phpstan::phpdoc::parse(&input).unwrap();
         let ty = resolve_in(&node, &scope);
-        assert!(matches!(ty, Type::LateArrayShape(_)), "{input:?}");
+        let Type::LateArrayShape(shape) = &ty else {
+            panic!("expected deferred shape: {input:?}");
+        };
+        assert_eq!(shape.describe(), row["description"], "{input:?}");
+        assert_eq!(shape.phpdoc(), row["phpdoc"], "{input:?}");
         let replacement = Type::ConstString(bytes(&row["replacement"]));
         let map = infer_template_types(&template, &replacement);
         let resolved = resolve_template_types(&ty, &map);

@@ -9,6 +9,14 @@ use std::cmp::Ordering;
 
 use crate::symbols;
 
+// PHP descriptions are byte strings. Concatenation must not go through Display or UTF-8
+// substitution: UnionType compares these bytes, including inside shapes and callable nodes.
+macro_rules! description {
+    ($($part:expr),+ $(,)?) => {
+        [$(AsRef::<[u8]>::as_ref(&$part)),+].concat()
+    };
+}
+
 mod accepts;
 mod casts;
 mod extraction;
@@ -91,18 +99,18 @@ pub enum Level {
 }
 
 impl Level {
-    fn handle(self, type_only: impl FnOnce() -> String, value: impl FnOnce() -> String) -> String {
+    fn handle<T>(self, type_only: impl FnOnce() -> T, value: impl FnOnce() -> T) -> T {
         match self {
             Level::TypeOnly => type_only(),
             _ => value(),
         }
     }
-    fn handle3(
+    fn handle3<T>(
         self,
-        type_only: impl FnOnce() -> String,
-        value: impl FnOnce() -> String,
-        precise: impl FnOnce() -> String,
-    ) -> String {
+        type_only: impl FnOnce() -> T,
+        value: impl FnOnce() -> T,
+        precise: impl FnOnce() -> T,
+    ) -> T {
         match self {
             Level::TypeOnly => type_only(),
             Level::Value => value(),
@@ -1038,49 +1046,66 @@ impl Type {
     }
 
     pub fn describe(&self, level: Level) -> String {
+        display_bytes(&self.describe_bytes(level))
+    }
+
+    fn describe_bytes(&self, level: Level) -> Vec<u8> {
         self.describe_with_subtraction(level, None)
     }
 
-    fn describe_with_subtraction(&self, level: Level, excluded: Option<&Type>) -> String {
+    fn describe_with_subtraction(&self, level: Level, excluded: Option<&Type>) -> Vec<u8> {
         match self {
-            Type::Reasoned(t, _) => t.describe(level),
-            Type::LateArrayShape(s) => s.describe(),
-            Type::Mixed { .. } | Type::StrictMixed => "mixed".to_string(),
+            Type::Reasoned(t, _) => t.describe_bytes(level),
+            Type::LateArrayShape(s) => s.print(false),
+            Type::Mixed { .. } | Type::StrictMixed => "mixed".into(),
             Type::SubtractedObject { object, excluded } => {
                 object.describe_with_subtraction(level, Some(excluded))
             }
-            Type::SubtractedMixed { excluded, .. } => level.handle3(|| "mixed".into(), || "mixed".into(), || {
-                let description = excluded.describe(level);
-                // SubstractableTypeTrait groups unions and types with their own subtraction, not intersections.
-                // Template subclasses inherit the union class or delegate getSubtractedType() to their bound.
-                let mut class = excluded.unreasoned();
-                while let Type::Template(t) = class {
-                    class = t.bound.unreasoned();
-                }
-                if matches!(class, Type::Union(_) | Type::Benevolent(_) | Type::SubtractedMixed { .. } | Type::SubtractedObject { .. }) {
-                    format!("mixed~({description})")
-                } else {
-                    format!("mixed~{description}")
-                }
-            }),
+            Type::SubtractedMixed { excluded, .. } => level.handle3(
+                || "mixed".into(),
+                || "mixed".into(),
+                || {
+                    let description = excluded.describe_bytes(level);
+                    // SubstractableTypeTrait groups unions and types with their own subtraction, not intersections.
+                    // Template subclasses inherit the union class or delegate getSubtractedType() to their bound.
+                    let mut class = excluded.unreasoned();
+                    while let Type::Template(t) = class {
+                        class = t.bound.unreasoned();
+                    }
+                    if matches!(
+                        class,
+                        Type::Union(_)
+                            | Type::Benevolent(_)
+                            | Type::SubtractedMixed { .. }
+                            | Type::SubtractedObject { .. }
+                    ) {
+                        description!("mixed~(", description, ")")
+                    } else {
+                        description!("mixed~", description)
+                    }
+                },
+            ),
             Type::Error => level.handle3(|| "mixed".into(), || "mixed".into(), || "*ERROR*".into()),
-            Type::Never(NeverKind::NonAccepting) => "never".to_string(),
-            Type::Never(_) => "*NEVER*".to_string(),
-            Type::Void => "void".to_string(),
-            Type::Null => "null".to_string(),
-            Type::Bool => "bool".to_string(),
-            Type::ConstBool(b) => (if *b { "true" } else { "false" }).to_string(),
-            Type::Int => "int".to_string(),
-            Type::ConstInt(i) => level.handle(|| "int".into(), || i.to_string()),
+            Type::Never(NeverKind::NonAccepting) => "never".into(),
+            Type::Never(_) => "*NEVER*".into(),
+            Type::Void => "void".into(),
+            Type::Null => "null".into(),
+            Type::Bool => "bool".into(),
+            Type::ConstBool(b) => (if *b { "true" } else { "false" }).into(),
+            Type::Int => "int".into(),
+            Type::ConstInt(i) => level.handle(|| "int".into(), || i.to_string().into_bytes()),
             Type::IntRange(min, max) => format!(
                 "int<{}, {}>",
                 min.map_or("min".to_string(), |v| v.to_string()),
                 max.map_or("max".to_string(), |v| v.to_string())
-            ),
-            Type::Float => "float".to_string(),
-            Type::ConstFloat(f) => level.handle(|| "float".into(), || float_to_string(*f)),
+            )
+            .into_bytes(),
+            Type::Float => "float".into(),
+            Type::ConstFloat(f) => {
+                level.handle(|| "float".into(), || float_to_string(*f).into_bytes())
+            }
             Type::String | Type::StringAcceptingStringable | Type::StringNotAcceptingStringable => {
-                "string".to_string()
+                "string".into()
             }
             Type::ConstString(s) => level.handle3(
                 || "string".into(),
@@ -1107,20 +1132,23 @@ impl Type {
                 },
                 || export_string(s),
             ),
-            Type::ClassString(None) => "class-string".to_string(),
-            Type::ClassString(Some(t)) => format!("class-string<{}>", t.describe(level)),
-            Type::Resource => "resource".to_string(),
-            Type::ObjectWithoutClass => "object".to_string(),
-            Type::NonexistentParent => "parent".to_string(),
+            Type::ClassString(None) => "class-string".into(),
+            Type::ClassString(Some(t)) => {
+                description!("class-string<", t.describe_bytes(level), ">")
+            }
+            Type::Resource => "resource".into(),
+            Type::ObjectWithoutClass => "object".into(),
+            Type::NonexistentParent => "parent".into(),
             Type::Object(class, args, _) => {
                 let mut name = match level {
                     Level::Precise => class.clone(),
                     _ => canonical_class(class),
-                };
+                }
+                .into_bytes();
                 if level == Level::Precise
                     && let Some(excluded) = excluded
                 {
-                    let description = excluded.describe(level);
+                    let description = excluded.describe_bytes(level);
                     if matches!(
                         excluded,
                         Type::Union(_)
@@ -1128,51 +1156,67 @@ impl Type {
                             | Type::SubtractedMixed { .. }
                             | Type::SubtractedObject { .. }
                     ) {
-                        name.push_str(&format!("~({description})"));
+                        name.extend(description!("~(", description, ")"));
                     } else {
-                        name.push_str(&format!("~{description}"));
+                        name.extend(description!("~", description));
                     }
                 }
                 if args.is_empty() {
                     name
                 } else {
-                    let args: Vec<String> = args.iter().map(|a| a.describe(level)).collect();
-                    format!("{name}<{}>", args.join(", "))
+                    let args: Vec<_> = args.iter().map(|a| a.describe_bytes(level)).collect();
+                    description!(name, "<", args.join(b", ".as_slice()), ">")
                 }
             }
             Type::Static(class, args) => {
-                format!("static({})", static_of(class, args).describe_with_subtraction(level, excluded))
+                description!(
+                    "static(",
+                    static_of(class, args).describe_with_subtraction(level, excluded),
+                    ")"
+                )
             }
-            Type::This(class) => format!("$this({})", static_object(class).describe_with_subtraction(level, excluded)),
-            Type::EnumCase(class, case) => format!("{class}::{case}"),
-            Type::Wildcard => "*".to_string(),
+            Type::This(class) => description!(
+                "$this(",
+                static_object(class).describe_with_subtraction(level, excluded),
+                ")"
+            ),
+            Type::EnumCase(class, case) => format!("{class}::{case}").into_bytes(),
+            Type::Wildcard => "*".into(),
             // `TypeProjectionHelper::describe()`
-            Type::Projection(c, t) => format!("{} {}", variance_name(*c), t.describe(level)),
+            Type::Projection(c, t) => description!(variance_name(*c), " ", t.describe_bytes(level)),
             // (`Printer::print($this->toPhpDocNode())`)
-            Type::OffsetAccess(..) => to_phpdoc(self),
+            Type::OffsetAccess(..) => to_phpdoc_bytes(self),
             Type::Array(key, item) => {
                 let mixed_key = key.is_plain_implicit_mixed();
                 let mixed_item = item.is_plain_implicit_mixed();
                 if mixed_key || (level != Level::Precise && key.is_never()) {
                     if mixed_item || (level != Level::Precise && item.is_never()) {
-                        return "array".to_string();
+                        return "array".into();
                     }
-                    return format!("array<{}>", item.describe(level));
+                    return description!("array<", item.describe_bytes(level), ">");
                 }
-                format!("array<{}, {}>", key.describe(level), item.describe(level))
+                description!(
+                    "array<",
+                    key.describe_bytes(level),
+                    ", ",
+                    item.describe_bytes(level),
+                    ">"
+                )
             }
             Type::ConstArray(a) => a.describe(level),
             Type::Iterable(key, item) => {
                 if matches!(**key, Type::Mixed { .. }) {
                     if matches!(**item, Type::Mixed { .. }) {
-                        return "iterable".to_string();
+                        return "iterable".into();
                     }
-                    return format!("iterable<{}>", item.describe(level));
+                    return description!("iterable<", item.describe_bytes(level), ">");
                 }
-                format!(
-                    "iterable<{}, {}>",
-                    key.describe(level),
-                    item.describe(level)
+                description!(
+                    "iterable<",
+                    key.describe_bytes(level),
+                    ", ",
+                    item.describe_bytes(level),
+                    ">"
                 )
             }
             Type::Callable(sig) => level.handle(
@@ -1192,7 +1236,7 @@ impl Type {
                 level.handle(|| "Closure".into(), || print_callable("Closure", sig))
             }
             Type::Union(types) => describe_union(types, level),
-            Type::Benevolent(types) => format!("({})", describe_union(types, level)),
+            Type::Benevolent(types) => description!("(", describe_union(types, level), ")"),
             Type::Intersection(types) => match level {
                 Level::TypeOnly => describe_intersection_type(self, types, level),
                 _ => describe_intersection_itself(self, types, level),
@@ -1200,50 +1244,59 @@ impl Type {
             Type::Accessory(a) => a.describe(level),
             Type::Conditional(c) => {
                 let subject = match &c.subject {
-                    Subject::Parameter(p) => p.clone(),
-                    Subject::Type(t) => t.describe(level),
+                    Subject::Parameter(p) => p.as_bytes().to_vec(),
+                    Subject::Type(t) => t.describe_bytes(level),
                 };
-                format!(
-                    "({} {} {} ? {} : {})",
+                description!(
+                    "(",
                     subject,
+                    " ",
                     if c.negated { "is not" } else { "is" },
-                    c.target.describe(level),
-                    c.then.describe(level),
-                    c.otherwise.describe(level)
+                    " ",
+                    c.target.describe_bytes(level),
+                    " ? ",
+                    c.then.describe_bytes(level),
+                    " : ",
+                    c.otherwise.describe_bytes(level),
+                    ")"
                 )
             }
             Type::Template(t) => {
-                let mut basic = t.name.clone();
+                let mut basic = t.name.as_bytes().to_vec();
                 if !t.bound.is_implicit_or_explicit_plain_mixed() {
-                    basic.push_str(" of ");
-                    basic.push_str(&t.bound.describe(level));
+                    basic.extend_from_slice(b" of ");
+                    basic.extend(t.bound.describe_bytes(level));
                 }
                 if let Some(default) = &t.default {
-                    basic.push_str(" = ");
-                    basic.push_str(&default.describe(level));
+                    basic.extend_from_slice(b" = ");
+                    basic.extend(default.describe_bytes(level));
                 }
                 if level == Level::Precise {
-                    format!(
-                        "{basic} ({}, {})",
+                    description!(
+                        basic,
+                        " (",
                         t.scope,
-                        if t.argument { "argument" } else { "parameter" }
+                        ", ",
+                        if t.argument { "argument" } else { "parameter" },
+                        ")"
                     )
                 } else {
                     basic
                 }
             }
             Type::ObjectShape(props) => {
-                let items: Vec<String> = props
+                let items: Vec<_> = props
                     .iter()
                     .map(|(name, ty, optional)| {
-                        format!(
-                            "{name}{}: {}",
+                        description!(
+                            name,
                             if *optional { "?" } else { "" },
-                            ty.describe(level)
+                            ": ",
+                            ty.describe_bytes(level)
                         )
                     })
                     .collect();
-                format!("object{{{}}}", items.join(", "))
+                description!("object{", items.join(b", ".as_slice()), "}")
             }
         }
     }
@@ -1353,7 +1406,7 @@ impl Type {
 }
 
 impl Accessory {
-    fn describe(&self, level: Level) -> String {
+    fn describe(&self, level: Level) -> Vec<u8> {
         match self {
             Accessory::NonEmptyString => "non-empty-string",
             Accessory::NonFalsyString => "non-falsy-string",
@@ -1365,12 +1418,18 @@ impl Accessory {
             Accessory::DecimalIntString { inverse: true } => "non-decimal-int-string",
             Accessory::List => "list",
             Accessory::NonEmptyArray => "non-empty-array",
-            Accessory::HasMethod(name) => return format!("hasMethod({name})"),
+            Accessory::HasMethod(name) => return format!("hasMethod({name})").into_bytes(),
             Accessory::HasOffsetValue(key, value) => {
-                return format!("hasOffsetValue({}, {})", key.describe(level), value.describe(level));
+                return description!(
+                    "hasOffsetValue(",
+                    key.describe_bytes(level),
+                    ", ",
+                    value.describe_bytes(level),
+                    ")"
+                );
             }
         }
-        .to_string()
+        .into()
     }
 
     fn is_string_accessory(&self) -> bool {
@@ -1537,7 +1596,7 @@ pub fn float_to_string(f: f64) -> String {
 }
 
 /// `ConstantStringType::export()`
-fn export_string(value: &[u8]) -> String {
+fn export_string(value: &[u8]) -> Vec<u8> {
     let double = value.iter().any(|b| *b < 0x20);
     let quote = if double { b'"' } else { b'\'' };
     let mut out = vec![quote];
@@ -1557,11 +1616,15 @@ fn export_string(value: &[u8]) -> String {
         }
     }
     out.push(quote);
-    // Only diagnostic presentation needs UTF-8; type identity, queries and extraction retain bytes.
+    out
+}
+
+fn display_bytes(out: &[u8]) -> String {
+    // Only the public presentation boundary needs UTF-8; nested descriptions retain bytes.
     // json_encode(JSON_INVALID_UTF8_SUBSTITUTE) groups malformed sequences like php_next_utf8_char,
     // not Rust's UTF-8 decoder: a surrogate or overlong three-byte sequence gets one replacement.
     let mut display = String::new();
-    let mut bytes = out.as_slice();
+    let mut bytes = out;
     while !bytes.is_empty() {
         match std::str::from_utf8(bytes) {
             Ok(valid) => {
@@ -1600,7 +1663,8 @@ pub fn sort_types(types: &[Type]) -> Vec<Type> {
     sort::types(types)
 }
 
-fn compare_strings(a: &str, b: &str) -> Ordering {
+fn compare_strings(a: impl AsRef<[u8]>, b: impl AsRef<[u8]>) -> Ordering {
+    let (a, b) = (a.as_ref(), b.as_ref());
     let cmp = a.to_ascii_lowercase().cmp(&b.to_ascii_lowercase());
     if cmp != Ordering::Equal {
         cmp
@@ -1619,7 +1683,10 @@ fn compare_in_union(a: &Type, b: &Type) -> Ordering {
     }
     match (a, b) {
         (Type::Accessory(_), Type::Accessory(_)) => {
-            return compare_strings(&a.describe(Level::Value), &b.describe(Level::Value));
+            return compare_strings(
+                a.describe_bytes(Level::Value),
+                b.describe_bytes(Level::Value),
+            );
         }
         (Type::Accessory(_), _) => return Ordering::Greater,
         (_, Type::Accessory(_)) => return Ordering::Less,
@@ -1652,8 +1719,7 @@ fn compare_in_union(a: &Type, b: &Type) -> Ordering {
             return cmp;
         }
         // an int before the equal float (two equal numbers of one kind are one type)
-        return matches!(b_class, Type::ConstInt(_))
-            .cmp(&matches!(a_class, Type::ConstInt(_)));
+        return matches!(b_class, Type::ConstInt(_)).cmp(&matches!(a_class, Type::ConstInt(_)));
     }
     match (a_class, b_class) {
         (Type::IntRange(a_min, _), Type::IntRange(b_min, _)) => {
@@ -1671,19 +1737,31 @@ fn compare_in_union(a: &Type, b: &Type) -> Ordering {
     }
     let callable = |t: &Type| matches!(t, Type::Callable(_) | Type::Closure(_));
     if callable(a) && callable(b) {
-        return compare_strings(&a.describe(Level::Value), &b.describe(Level::Value));
+        return compare_strings(
+            a.describe_bytes(Level::Value),
+            b.describe_bytes(Level::Value),
+        );
     }
     if a.is_constant_array().yes() && b.is_constant_array().yes() {
         // `array{}` first
         let empty = |t: &Type| t.is_iterable_at_least_once().no();
-        return empty(b)
-            .cmp(&empty(a))
-            .then_with(|| compare_strings(&a.describe(Level::Value), &b.describe(Level::Value)));
+        return empty(b).cmp(&empty(a)).then_with(|| {
+            compare_strings(
+                a.describe_bytes(Level::Value),
+                b.describe_bytes(Level::Value),
+            )
+        });
     }
     if a.is_string().yes() && b.is_string().yes() {
-        return compare_strings(&a.describe(Level::Precise), &b.describe(Level::Precise));
+        return compare_strings(
+            a.describe_bytes(Level::Precise),
+            b.describe_bytes(Level::Precise),
+        );
     }
-    compare_strings(&a.describe(Level::TypeOnly), &b.describe(Level::TypeOnly))
+    compare_strings(
+        a.describe_bytes(Level::TypeOnly),
+        b.describe_bytes(Level::TypeOnly),
+    )
 }
 
 impl Type {
@@ -1704,11 +1782,11 @@ impl Type {
     }
 }
 
-fn describe_union(types: &[Type], level: Level) -> String {
-    let join = |types: &[Type]| -> String {
-        let mut names: Vec<String> = Vec::new();
+fn describe_union(types: &[Type], level: Level) -> Vec<u8> {
+    let join = |types: &[Type]| -> Vec<u8> {
+        let mut names = Vec::new();
         for (i, t) in types.iter().enumerate() {
-            let d = t.describe(level);
+            let d = t.describe_bytes(level);
             let wrap = match t {
                 Type::Closure(_) | Type::Callable(_) => true,
                 Type::Template(_) if matches!(t.scalar_class_type(), Type::Union(_)) => true,
@@ -1717,10 +1795,10 @@ fn describe_union(types: &[Type], level: Level) -> String {
                         && level != Level::Precise
                         && !matches!(tpl.bound, Type::Mixed { .. })
                 }
-                Type::Intersection(_) => d.contains('&'),
+                Type::Intersection(_) => d.contains(&b'&'),
                 _ => false,
             };
-            names.push(if wrap { format!("({d})") } else { d });
+            names.push(if wrap { description!("(", d, ")") } else { d });
         }
         // UnionType::describe(): number every occurrence of a duplicated precise description.
         if level == Level::Precise {
@@ -1733,7 +1811,7 @@ fn describe_union(types: &[Type], level: Level) -> String {
                 if counts[name] > 1 {
                     let index = indices.entry(name.clone()).or_insert(0);
                     *index += 1;
-                    *name = format!("{name}#{index}");
+                    name.extend(format!("#{index}").into_bytes());
                 }
             }
         } else {
@@ -1742,9 +1820,9 @@ fn describe_union(types: &[Type], level: Level) -> String {
         }
         if names.len() > 1024 {
             names.truncate(1024);
-            names.push("…".to_string());
+            names.push("…".into());
         }
-        names.join("|")
+        names.join(b"|".as_slice())
     };
     let sorted = sort_types(types);
     if level != Level::TypeOnly {
@@ -1757,7 +1835,9 @@ fn describe_union(types: &[Type], level: Level) -> String {
                 if t.is_constant_value().yes() && !matches!(t, Type::ConstBool(_)) {
                     match t.scalar_class_type() {
                         scalar @ (Type::ConstString(_) | Type::ConstInt(_)) => scalar.generalize(),
-                        Type::Bool | Type::String | Type::Int if matches!(t, Type::Template(_)) => t.clone(),
+                        Type::Bool | Type::String | Type::Int if matches!(t, Type::Template(_)) => {
+                            t.clone()
+                        }
                         _ => t.generalize(),
                     }
                 } else {
@@ -1772,7 +1852,7 @@ fn describe_union(types: &[Type], level: Level) -> String {
     }
 }
 
-fn describe_intersection_type(this: &Type, types: &[Type], level: Level) -> String {
+fn describe_intersection_type(this: &Type, types: &[Type], level: Level) -> Vec<u8> {
     let is_list = this.is_list().yes();
     let mut names = Vec::new();
     let mut value_type = None;
@@ -1789,23 +1869,25 @@ fn describe_intersection_type(this: &Type, types: &[Type], level: Level) -> Stri
         if matches!(t, Type::Accessory(_)) {
             continue;
         }
-        names.push(t.generalize().describe(level));
+        names.push(t.generalize().describe_bytes(level));
     }
     if is_list {
         let inner = match value_type {
-            Some(v) if !v.is_plain_implicit_mixed() => format!("<{}>", v.describe(level)),
-            _ => String::new(),
+            Some(v) if !v.is_plain_implicit_mixed() => {
+                description!("<", v.describe_bytes(level), ">")
+            }
+            _ => Vec::new(),
         };
-        names.push(format!("list{inner}"));
+        names.push(description!("list", inner));
     }
     names.sort_by(|a, b| compare_strings(a, b));
-    names.join("&")
+    names.join(b"&".as_slice())
 }
 
-fn describe_intersection_itself(this: &Type, types: &[Type], level: Level) -> String {
+fn describe_intersection_itself(this: &Type, types: &[Type], level: Level) -> Vec<u8> {
     let mut base: Vec<(usize, &Type)> = Vec::new();
     let mut to_describe: Vec<(usize, Type)> = Vec::new();
-    let mut skip_names: Vec<&str> = Vec::new();
+    let mut skip_names: Vec<&[u8]> = Vec::new();
     let is_list = this.is_list().yes();
     let is_array = this.is_array().yes();
     let is_non_empty_array = this.is_iterable_at_least_once().yes();
@@ -1814,7 +1896,7 @@ fn describe_intersection_itself(this: &Type, types: &[Type], level: Level) -> St
     let has_template_array = types
         .iter()
         .any(|t| matches!(t, Type::Template(t) if matches!(t.bound, Type::Array(..))));
-    let mut described: Vec<(usize, String)> = Vec::new();
+    let mut described = Vec::new();
     let sorted = sort_types(types);
     for (i, t) in sorted.iter().enumerate() {
         if level != Level::Precise
@@ -1834,7 +1916,7 @@ fn describe_intersection_itself(this: &Type, types: &[Type], level: Level) -> St
                 continue;
             }
             to_describe.push((i, t.clone()));
-            skip_names.push("string");
+            skip_names.push(b"string");
             continue;
         }
         if is_list || is_array {
@@ -1842,53 +1924,59 @@ fn describe_intersection_itself(this: &Type, types: &[Type], level: Level) -> St
                 Type::Array(key, value) => {
                     if is_list {
                         let inner = if value.is_plain_implicit_mixed() {
-                            String::new()
+                            Vec::new()
                         } else {
-                            format!("<{}>", value.describe(level))
+                            description!("<", value.describe_bytes(level), ">")
                         };
                         described.push((
                             i,
-                            format!(
-                                "{}{inner}",
+                            description!(
                                 if is_non_empty_array {
                                     "non-empty-list"
                                 } else {
                                     "list"
-                                }
+                                },
+                                inner
                             ),
                         ));
                     } else {
                         let inner = if !key.is_plain_implicit_mixed() {
-                            format!("<{}, {}>", key.describe(level), value.describe(level))
+                            description!(
+                                "<",
+                                key.describe_bytes(level),
+                                ", ",
+                                value.describe_bytes(level),
+                                ">"
+                            )
                         } else if !value.is_plain_implicit_mixed() {
-                            format!("<{}>", value.describe(level))
+                            description!("<", value.describe_bytes(level), ">")
                         } else {
-                            String::new()
+                            Vec::new()
                         };
                         let kind = if is_non_empty_array {
                             "non-empty-array"
                         } else {
                             "array"
                         };
-                        described.push((i, format!("{kind}{inner}")));
+                        described.push((i, description!(kind, inner)));
                     }
                     continue;
                 }
                 Type::ConstArray(a) => {
                     let d = a.describe(level);
                     let rest = d
-                        .strip_prefix("list")
+                        .strip_prefix(b"list")
                         .unwrap_or_else(|| &d["array".len()..]);
                     let mut begin = String::from(if is_list { "list" } else { "array" });
                     if is_non_empty_array && !t.is_iterable_at_least_once().yes() {
                         begin = format!("non-empty-{begin}");
                     }
-                    described.push((i, format!("{begin}{rest}")));
+                    described.push((i, description!(begin, rest)));
                     continue;
                 }
                 Type::Accessory(Accessory::NonEmptyArray | Accessory::List) => {
                     if has_template_array {
-                        described.push((i, t.describe(level)));
+                        described.push((i, t.describe_bytes(level)));
                     }
                     continue;
                 }
@@ -1897,56 +1985,55 @@ fn describe_intersection_itself(this: &Type, types: &[Type], level: Level) -> St
         }
         if matches!(t, Type::Callable(None)) {
             to_describe.push((i, t.clone()));
-            skip_names.push("object");
-            skip_names.push("string");
+            skip_names.push(b"object");
+            skip_names.push(b"string");
             continue;
         }
         // Every accessory was handled above (string ones always, array ones as `is_array`).
         base.push((i, t));
     }
     'base: for (i, t) in base {
-        let d = t.describe(level);
-        if (d == "object" || d == "string")
-            && skip_names.contains(&d.as_str())
+        let d = t.describe_bytes(level);
+        if (d == b"object" || d == b"string")
+            && skip_names.contains(&d.as_slice())
             && let Some(pos) = to_describe
                 .iter()
                 .position(|(_, x)| matches!(x, Type::Callable(None)))
         {
-            described.push((i, format!("callable-{d}")));
+            described.push((i, description!("callable-", d)));
             to_describe.remove(pos);
             continue 'base;
         }
-        if skip_names.contains(&d.as_str()) {
+        if skip_names.contains(&d.as_slice()) {
             continue;
         }
         described.push((i, d));
     }
     for (i, t) in to_describe {
-        described.push((i, t.describe(level)));
+        described.push((i, t.describe_bytes(level)));
     }
     described.sort_by_key(|(i, _)| *i);
     described
         .into_iter()
         .map(|(_, d)| d)
         .collect::<Vec<_>>()
-        .join("&")
+        .join(b"&".as_slice())
 }
 
 /// `Printer::print()` of `CallableType::toPhpDocNode()` / `ClosureType` with parameter names dropped.
-fn print_callable(ident: &str, sig: &Signature) -> String {
-    let params: Vec<String> = sig
+fn print_callable(ident: &str, sig: &Signature) -> Vec<u8> {
+    let params: Vec<_> = sig
         .params
         .iter()
         .map(|p| {
-            format!(
-                "{}{}{}",
-                to_phpdoc(&p.ty),
+            description!(
+                to_phpdoc_bytes(&p.ty),
                 if p.variadic { " ..." } else { "" },
                 if p.optional && !p.variadic { "=" } else { "" }
             )
         })
         .collect();
-    let ret = to_phpdoc(&sig.ret);
+    let ret = to_phpdoc_bytes(&sig.ret);
     let ret = if matches!(
         sig.ret,
         Type::Union(_)
@@ -1954,97 +2041,158 @@ fn print_callable(ident: &str, sig: &Signature) -> String {
             | Type::Intersection(_)
             | Type::Callable(Some(_))
             | Type::Closure(_)
-    ) && ret.contains(['|', '&', '('])
+    ) && ret.iter().any(|b| b"|&(".contains(b))
     {
-        format!("({ret})")
+        description!("(", ret, ")")
     } else {
         ret
     };
-    format!("{ident}{}({}): {ret}", print_templates(sig), params.join(", "))
+    description!(
+        ident,
+        print_templates(sig),
+        "(",
+        params.join(b", ".as_slice()),
+        "): ",
+        ret
+    )
 }
 
 /// A callable's `<T of Bound = Default, ...>` (its TemplateTagValueNodes, the bound always printed).
-fn print_templates(sig: &Signature) -> String {
+fn print_templates(sig: &Signature) -> Vec<u8> {
     if sig.templates.is_empty() {
-        return String::new();
+        return Vec::new();
     }
-    let tags: Vec<String> = sig
+    let tags: Vec<_> = sig
         .templates
         .iter()
         // (a TemplateTagValueNode of the bound only)
-        .map(|t| format!("{} of {}", t.name, to_phpdoc(&t.bound)))
+        .map(|t| description!(t.name, " of ", to_phpdoc_bytes(&t.bound)))
         .collect();
-    format!("<{}>", tags.join(", "))
+    description!("<", tags.join(b", ".as_slice()), ">")
 }
 
 /// `Printer::print($type->toPhpDocNode())`
 pub fn to_phpdoc(t: &Type) -> String {
+    display_bytes(&to_phpdoc_bytes(t))
+}
+
+fn to_phpdoc_bytes(t: &Type) -> Vec<u8> {
     match t {
-        Type::Reasoned(t, _) => to_phpdoc(t),
-        Type::LateArrayShape(s) => s.phpdoc(),
-        Type::Accessory(Accessory::HasMethod(_) | Accessory::HasOffsetValue(..)) => String::new(),
+        Type::Reasoned(t, _) => to_phpdoc_bytes(t),
+        Type::LateArrayShape(s) => s.print(true),
+        Type::Accessory(Accessory::HasMethod(_) | Accessory::HasOffsetValue(..)) => Vec::new(),
         Type::Intersection(types)
-            if types.iter().any(|t| matches!(t, Type::Accessory(Accessory::HasOffsetValue(..)))) =>
+            if types
+                .iter()
+                .any(|t| matches!(t, Type::Accessory(Accessory::HasOffsetValue(..)))) =>
         {
-            to_phpdoc(&intersect(types.iter().filter(|t| !matches!(t, Type::Accessory(Accessory::HasOffsetValue(..)))).cloned().collect()))
+            to_phpdoc_bytes(&intersect(
+                types
+                    .iter()
+                    .filter(|t| !matches!(t, Type::Accessory(Accessory::HasOffsetValue(..))))
+                    .cloned()
+                    .collect(),
+            ))
         }
         Type::Mixed { .. } | Type::StrictMixed | Type::SubtractedMixed { .. } | Type::Error => {
-            "mixed".to_string()
+            "mixed".into()
         }
-        Type::Never(_) => "never".to_string(),
-        Type::ConstInt(i) => i.to_string(),
-        Type::ConstFloat(f) => float_to_string(*f),
-        Type::ConstString(s) => format!(
-            "'{}'",
-            String::from_utf8_lossy(s)
-                .replace('\\', "\\\\")
-                .replace('\'', "\\'")
-        ),
+        Type::Never(_) => "never".into(),
+        Type::ConstInt(i) => i.to_string().into_bytes(),
+        Type::ConstFloat(f) => float_to_string(*f).into_bytes(),
+        Type::ConstString(s) => {
+            let mut out = vec![b'\''];
+            for &byte in s {
+                if matches!(byte, b'\\' | b'\'') {
+                    out.push(b'\\');
+                }
+                out.push(byte);
+            }
+            out.push(b'\'');
+            out
+        }
         Type::IntRange(min, max) => format!(
             "int<{}, {}>",
             min.map_or("min".to_string(), |v| v.to_string()),
             max.map_or("max".to_string(), |v| v.to_string())
-        ),
-        Type::ClassString(Some(g)) => format!("class-string<{}>", to_phpdoc(g)),
+        )
+        .into_bytes(),
+        Type::ClassString(Some(g)) => description!("class-string<", to_phpdoc_bytes(g), ">"),
         Type::Object(class, args, _) if !args.is_empty() => {
-            format!(
-                "{class}<{}>",
-                args.iter().map(to_phpdoc).collect::<Vec<_>>().join(", ")
+            description!(
+                class,
+                "<",
+                args.iter()
+                    .map(to_phpdoc_bytes)
+                    .collect::<Vec<_>>()
+                    .join(b", ".as_slice()),
+                ">"
             )
         }
-        Type::Object(class, _, _) => class.clone(),
-        Type::Static(..) => "static".to_string(),
-        Type::This(_) => "$this".to_string(),
+        Type::Object(class, _, _) => class.as_bytes().to_vec(),
+        Type::Static(..) => "static".into(),
+        Type::This(_) => "$this".into(),
         Type::Array(key, item) => {
             if key.is_plain_implicit_mixed() {
                 if item.is_plain_implicit_mixed() {
-                    return "array".to_string();
+                    return "array".into();
                 }
-                return format!("array<{}>", to_phpdoc(item));
+                return description!("array<", to_phpdoc_bytes(item), ">");
             }
-            format!("array<{}, {}>", to_phpdoc(key), to_phpdoc(item))
+            description!(
+                "array<",
+                to_phpdoc_bytes(key),
+                ", ",
+                to_phpdoc_bytes(item),
+                ">"
+            )
         }
         Type::ConstArray(array) => array.to_phpdoc(),
         Type::Iterable(key, item) => {
             if matches!(**key, Type::Mixed { .. }) {
                 if matches!(**item, Type::Mixed { .. }) {
-                    return "iterable".to_string();
+                    return "iterable".into();
                 }
-                return format!("iterable<{}>", to_phpdoc(item));
+                return description!("iterable<", to_phpdoc_bytes(item), ">");
             }
-            format!("iterable<{}, {}>", to_phpdoc(key), to_phpdoc(item))
+            description!(
+                "iterable<",
+                to_phpdoc_bytes(key),
+                ", ",
+                to_phpdoc_bytes(item),
+                ">"
+            )
         }
         Type::Union(types) | Type::Benevolent(types) => join_phpdoc(&sort_types(types), "|"),
         // `list<T>`, `non-empty-list<T>`, `non-empty-array<K, T>`
-        Type::Intersection(types) if let Some(Type::Array(key, item)) = types.iter().find(|t| matches!(t, Type::Array(..))) => {
+        Type::Intersection(types)
+            if let Some(Type::Array(key, item)) =
+                types.iter().find(|t| matches!(t, Type::Array(..))) =>
+        {
             let has = |a: Accessory| types.contains(&Type::Accessory(a));
-            match (types.len(), has(Accessory::List), has(Accessory::NonEmptyArray)) {
-                (2, true, false) if !item.is_plain_implicit_mixed() => format!("list<{}>", to_phpdoc(item)),
-                (3, true, true) if !item.is_plain_implicit_mixed() => format!("non-empty-list<{}>", to_phpdoc(item)),
-                (2, false, true) if !key.is_plain_implicit_mixed() && !item.is_plain_implicit_mixed() => {
-                    format!("non-empty-array<{}, {}>", to_phpdoc(key), to_phpdoc(item))
+            match (
+                types.len(),
+                has(Accessory::List),
+                has(Accessory::NonEmptyArray),
+            ) {
+                (2, true, false) if !item.is_plain_implicit_mixed() => {
+                    description!("list<", to_phpdoc_bytes(item), ">")
                 }
-                _ => t.describe(Level::Precise),
+                (3, true, true) if !item.is_plain_implicit_mixed() => {
+                    description!("non-empty-list<", to_phpdoc_bytes(item), ">")
+                }
+                (2, false, true)
+                    if !key.is_plain_implicit_mixed() && !item.is_plain_implicit_mixed() =>
+                {
+                    description!(
+                        "non-empty-array<",
+                        to_phpdoc_bytes(key),
+                        ", ",
+                        to_phpdoc_bytes(item),
+                        ">"
+                    )
+                }
+                _ => t.describe_bytes(Level::Precise),
             }
         }
         Type::Intersection(types)
@@ -2057,48 +2205,60 @@ pub fn to_phpdoc(t: &Type) -> String {
                 .filter(|t| !matches!(t, Type::Accessory(Accessory::HasMethod(_))))
                 .cloned()
                 .collect();
-            to_phpdoc(&intersect(printable))
+            to_phpdoc_bytes(&intersect(printable))
         }
-        Type::Intersection(types) if types.iter().any(|t| matches!(t, Type::StrictMixed)
-            || matches!(t, Type::Template(t) if matches!(t.bound, Type::StrictMixed))) => join_phpdoc(&sort_types(types), "&"),
-        Type::Intersection(_) => t.describe(Level::Precise),
-        Type::Template(tpl) => tpl.name.clone(),
-        Type::Callable(None) => "callable".to_string(),
+        Type::Intersection(types)
+            if types.iter().any(|t| {
+                matches!(t, Type::StrictMixed)
+                    || matches!(t, Type::Template(t) if matches!(t.bound, Type::StrictMixed))
+            }) =>
+        {
+            join_phpdoc(&sort_types(types), "&")
+        }
+        Type::Intersection(_) => t.describe_bytes(Level::Precise),
+        Type::Template(tpl) => tpl.name.as_bytes().to_vec(),
+        Type::Callable(None) => "callable".into(),
         Type::Callable(Some(sig)) => print_callable_named("callable", sig),
         Type::Closure(sig) => print_callable_named("Closure", sig),
-        Type::Projection(c, inner) => format!("{} {}", variance_name(*c), to_phpdoc(inner)),
+        Type::Projection(c, inner) => description!(variance_name(*c), " ", to_phpdoc_bytes(inner)),
         Type::OffsetAccess(t, o) => {
-            let on = to_phpdoc(t);
+            let on = to_phpdoc_bytes(t);
             // (Printer's parentheses around a union, intersection or callable)
-            let wrap = matches!(**t, Type::Union(_) | Type::Benevolent(_) | Type::Callable(Some(_)) | Type::Closure(_))
-                || (matches!(**t, Type::Intersection(_)) && on.contains('&'));
-            if wrap { format!("({on})[{}]", to_phpdoc(o)) } else { format!("{on}[{}]", to_phpdoc(o)) }
+            let wrap = matches!(
+                **t,
+                Type::Union(_) | Type::Benevolent(_) | Type::Callable(Some(_)) | Type::Closure(_)
+            ) || (matches!(**t, Type::Intersection(_)) && on.contains(&b'&'));
+            if wrap {
+                description!("(", on, ")[", to_phpdoc_bytes(o), "]")
+            } else {
+                description!(on, "[", to_phpdoc_bytes(o), "]")
+            }
         }
-        _ => t.describe(Level::Precise),
+        _ => t.describe_bytes(Level::Precise),
     }
 }
 
-fn join_phpdoc(types: &[Type], sep: &str) -> String {
+fn join_phpdoc(types: &[Type], sep: &str) -> Vec<u8> {
     types
         .iter()
         .map(|t| {
-            let s = to_phpdoc(t);
+            let s = to_phpdoc_bytes(t);
             if matches!(
                 t,
                 Type::Union(_) | Type::Benevolent(_) | Type::Intersection(_)
-            ) && s.contains(['|', '&'])
+            ) && s.iter().any(|b| b"|&".contains(b))
             {
-                format!("({s})")
+                description!("(", s, ")")
             } else {
                 s
             }
         })
         .collect::<Vec<_>>()
-        .join(sep)
+        .join(sep.as_bytes())
 }
 
-fn print_callable_named(ident: &str, sig: &Signature) -> String {
-    let params: Vec<String> = sig
+fn print_callable_named(ident: &str, sig: &Signature) -> Vec<u8> {
+    let params: Vec<_> = sig
         .params
         .iter()
         .map(|p| {
@@ -2107,14 +2267,14 @@ fn print_callable_named(ident: &str, sig: &Signature) -> String {
             } else {
                 format!("${}", p.name)
             };
-            let s = format!(
-                "{} {}{}{}",
-                to_phpdoc(&p.ty),
+            let s = description!(
+                to_phpdoc_bytes(&p.ty),
+                " ",
                 if p.by_ref { "&" } else { "" },
                 if p.variadic { "..." } else { "" },
                 name
             );
-            format!("{}{}", s.trim(), if p.optional { "=" } else { "" })
+            description!(s.trim_ascii(), if p.optional { "=" } else { "" })
         })
         .collect();
     let ret = match &sig.ret {
@@ -2122,10 +2282,17 @@ fn print_callable_named(ident: &str, sig: &Signature) -> String {
         | Type::Benevolent(_)
         | Type::Intersection(_)
         | Type::Callable(Some(_))
-        | Type::Closure(_)) => format!("({})", to_phpdoc(r)),
-        r => to_phpdoc(r),
+        | Type::Closure(_)) => description!("(", to_phpdoc_bytes(r), ")"),
+        r => to_phpdoc_bytes(r),
     };
-    format!("{ident}{}({}): {ret}", print_templates(sig), params.join(", "))
+    description!(
+        ident,
+        print_templates(sig),
+        "(",
+        params.join(b", ".as_slice()),
+        "): ",
+        ret
+    )
 }
 
 impl ConstArray {
@@ -2334,7 +2501,7 @@ impl ConstArray {
         self.optional.len() > 1 || self.optional[0] != self.keys.len() - 1
     }
 
-    fn describe(&self, level: Level) -> String {
+    fn describe(&self, level: Level) -> Vec<u8> {
         let name = if self.should_be_described_as_a_list() {
             "list"
         } else {
@@ -2342,16 +2509,24 @@ impl ConstArray {
         };
         if level == Level::TypeOnly {
             if self.is_iterable_at_least_once().no() {
-                return name.to_string();
+                return name.into();
             }
             let key = self.iterable_key_type();
             if key.is_benevolent_array_key() {
-                return format!("{name}<{}>", self.iterable_value_type().describe(level));
+                return description!(
+                    name,
+                    "<",
+                    self.iterable_value_type().describe_bytes(level),
+                    ">"
+                );
             }
-            return format!(
-                "{name}<{}, {}>",
-                key.describe(level),
-                self.iterable_value_type().describe(level)
+            return description!(
+                name,
+                "<",
+                key.describe_bytes(level),
+                ", ",
+                self.iterable_value_type().describe_bytes(level),
+                ">"
             );
         }
         let truncate = level == Level::Value;
@@ -2368,63 +2543,77 @@ impl ConstArray {
             }
             let key = match key {
                 Type::ConstString(s) if s.contains(&b'"') => {
-                    format!("'{}'", String::from_utf8_lossy(s))
+                    description!("'", s, "'")
                 }
                 Type::ConstString(s) if s.contains(&b'\'') => {
-                    format!("\"{}\"", String::from_utf8_lossy(s))
+                    description!("\"", s, "\"")
                 }
-                Type::ConstString(s) if !is_valid_identifier(&String::from_utf8_lossy(s)) => {
-                    format!("'{}'", String::from_utf8_lossy(s))
+                Type::ConstString(s) if !is_valid_identifier(s) => {
+                    description!("'", s, "'")
                 }
-                Type::ConstString(s) => String::from_utf8_lossy(s).into_owned(),
+                Type::ConstString(s) => s.clone(),
                 // the only other key type, a `ConstantIntegerType`
-                k => to_phpdoc(k),
+                k => to_phpdoc_bytes(k),
             };
-            let value = self.values[i].describe(level);
-            items.push(format!("{key}{}: {value}", if optional { "?" } else { "" }));
+            let value = self.values[i].describe_bytes(level);
+            items.push(description!(
+                key,
+                if optional { "?" } else { "" },
+                ": ",
+                value
+            ));
             values.push(value);
         }
-        let mut append = String::new();
+        let mut append = Vec::new();
         if truncate && items.len() > 8 {
             items.truncate(8);
             values.truncate(8);
-            append = ", ...".to_string();
+            append = ", ...".into();
         }
         if self.is_unsealed().yes()
             && let Some((key, value)) = &self.unsealed
         {
             if !items.is_empty() {
-                append.push_str(", ");
+                append.extend_from_slice(b", ");
             }
-            append.push_str("...");
-            let key_description = key.describe(Level::Precise);
+            append.extend_from_slice(b"...");
+            let key_description = key.describe_bytes(Level::Precise);
             if key.is_plain_implicit_mixed()
-                || (self.is_list.yes() && key_description == "int<0, max>")
+                || (self.is_list.yes() && key_description == b"int<0, max>")
             {
                 if !value.is_plain_implicit_mixed() {
-                    append.push_str(&format!("<{}>", value.describe(level)));
+                    append.extend(description!("<", value.describe_bytes(level), ">"));
                 }
             } else {
-                append.push_str(&format!(
-                    "<{}, {}>",
-                    key.describe(level),
-                    value.describe(level)
+                append.extend(description!(
+                    "<",
+                    key.describe_bytes(level),
+                    ", ",
+                    value.describe_bytes(level),
+                    ">"
                 ));
             }
         }
-        format!(
-            "{name}{{{}{append}}}",
+        description!(
+            name,
+            "{",
             if values_only {
-                values.join(", ")
+                values.join(b", ".as_slice())
             } else {
-                items.join(", ")
-            }
+                items.join(b", ".as_slice())
+            },
+            append,
+            "}"
         )
     }
 
     /// `ConstantArrayType::toPhpDocNode()`: unlike `describe()`, nested values and quoted keys use PHPDoc syntax.
-    fn to_phpdoc(&self) -> String {
-        let mut name = if self.should_be_described_as_a_list() { "list" } else { "array" };
+    fn to_phpdoc(&self) -> Vec<u8> {
+        let mut name = if self.should_be_described_as_a_list() {
+            "list"
+        } else {
+            "array"
+        };
         let mut items = Vec::new();
         let mut values = Vec::new();
         let mut values_only = true;
@@ -2434,13 +2623,16 @@ impl ConstArray {
                 values_only = false;
             }
             let key = match key {
-                Type::ConstString(s) if is_valid_identifier(&String::from_utf8_lossy(s)) => {
-                    String::from_utf8_lossy(s).into_owned()
-                }
-                key => to_phpdoc(key),
+                Type::ConstString(s) if is_valid_identifier(s) => s.clone(),
+                key => to_phpdoc_bytes(key),
             };
-            let value = to_phpdoc(&self.values[i]);
-            items.push(format!("{key}{}: {value}", if optional { "?" } else { "" }));
+            let value = to_phpdoc_bytes(&self.values[i]);
+            items.push(description!(
+                key,
+                if optional { "?" } else { "" },
+                ": ",
+                value
+            ));
             values.push(value);
         }
         let mut items = if values_only { values } else { items };
@@ -2448,20 +2640,26 @@ impl ConstArray {
             && let Some((key, value)) = &self.unsealed
         {
             let tail = if key.is_plain_implicit_mixed()
-                || (self.is_list.yes() && key.describe(Level::Precise) == "int<0, max>")
+                || (self.is_list.yes() && key.describe_bytes(Level::Precise) == b"int<0, max>")
             {
                 if value.is_plain_implicit_mixed() {
-                    "...".to_string()
+                    "...".into()
                 } else {
-                    format!("...<{}>", to_phpdoc(value))
+                    description!("...<", to_phpdoc_bytes(value), ">")
                 }
             } else {
                 name = "array";
-                format!("...<{}, {}>", to_phpdoc(key), to_phpdoc(value))
+                description!(
+                    "...<",
+                    to_phpdoc_bytes(key),
+                    ", ",
+                    to_phpdoc_bytes(value),
+                    ">"
+                )
             };
             items.push(tail);
         }
-        format!("{name}{{{}}}", items.join(", "))
+        description!(name, "{", items.join(b", ".as_slice()), "}")
     }
 
     fn generalize(&self) -> Type {
@@ -2503,8 +2701,8 @@ impl ConstArray {
     }
 }
 
-fn is_valid_identifier(s: &str) -> bool {
-    let mut bytes = s.bytes().peekable();
+fn is_valid_identifier(s: &[u8]) -> bool {
+    let mut bytes = s.iter().copied().peekable();
     let mut any = false;
     while bytes.peek().is_some() {
         if bytes.peek() == Some(&b'\\') {
