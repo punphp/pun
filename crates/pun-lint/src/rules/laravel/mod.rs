@@ -32,6 +32,7 @@ mod prefer_collected_by_attribute;
 mod prefer_class_container_key;
 mod prefer_closure_only_bind;
 mod prefer_collection_all;
+mod prefer_constructor_injection;
 mod prefer_date_facade;
 mod prefer_default_argument;
 mod prefer_dispatch_helper;
@@ -59,7 +60,7 @@ mod prefer_throw_if;
 mod prefer_to_route_helper;
 mod prefer_today;
 mod prefer_travel_to;
-mod property_attribute;
+pub(crate) mod property_attribute;
 mod property_rules;
 mod prefer_typed_assert_closure;
 mod prefer_validation_rule_array;
@@ -91,6 +92,7 @@ pub use prefer_collected_by_attribute::PreferCollectedByAttribute;
 pub use prefer_class_container_key::{ContainerService, PreferClassContainerKey};
 pub use prefer_closure_only_bind::PreferClosureOnlyBind;
 pub use prefer_collection_all::PreferCollectionAll;
+pub use prefer_constructor_injection::{Injection, PreferConstructorInjection};
 pub use prefer_date_facade::PreferDateFacade;
 pub use prefer_default_argument::PreferDefaultArgument;
 pub use prefer_dispatch_helper::PreferDispatchHelper;
@@ -231,6 +233,7 @@ pub(crate) fn all() -> Vec<Box<dyn Rule>> {
         Box::new(AddRelationGenerics),
         Box::new(AddTapClosureType),
         Box::new(NoAppArrayAccess),
+        Box::new(PreferConstructorInjection::default()),
     ]
 }
 

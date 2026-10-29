@@ -31,6 +31,7 @@ mod prefer_class_name_constant;
 mod no_unused_constructor_param;
 mod no_null_default_argument;
 mod add_param_type_sprintf;
+mod class_dependency;
 mod class_method;
 mod laravel;
 mod pest;
@@ -602,6 +603,10 @@ pub const PROJECT_RULES: &[&str] = &[
     "lint/phpunit/add-property-type-create-mock",
     "lint/phpunit/add-property-type-setup",
     "lint/phpunit/add-property-type-setup-docblock",
+    // ClassDependencyManipulator copies the parent constructor and TypeProvidingExprFromClassResolver reads inherited
+    // members
+    "lint/refactor/replace-static-with-method",
+    "lint/laravel/prefer-constructor-injection",
 ];
 
 /// Every rule, in a fixed order.

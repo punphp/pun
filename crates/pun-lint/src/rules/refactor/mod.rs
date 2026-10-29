@@ -17,6 +17,7 @@ mod rename_function;
 mod rename_method;
 mod replace_array_access;
 mod replace_function;
+mod replace_static_with_method;
 
 pub use add_override_attribute::AddOverrideAttribute;
 pub use remove_function_argument::RemoveFunctionArgument;
@@ -30,6 +31,7 @@ pub use replace_array_access::{ArrayAccessCall, ReplaceArrayAccess};
 pub use replace_function::{
     ReplaceFunctionWithConstant, ReplaceFunctionWithNew, ReplaceFunctionWithStatic,
 };
+pub use replace_static_with_method::{ReplaceStaticWithMethod, StaticToMethod};
 
 use std::sync::LazyLock;
 
@@ -62,6 +64,7 @@ pub fn all() -> Vec<Box<dyn Rule>> {
         Box::new(ReplaceFunctionWithConstant::default()),
         Box::new(ReplaceFunctionWithNew::default()),
         Box::new(ReplaceFunctionWithStatic::default()),
+        Box::new(ReplaceStaticWithMethod::default()),
     ]
 }
 

@@ -161,6 +161,7 @@ pub use prefer_stub_var::PreferStubVar;
 pub use prefer_test_attribute::PreferTestAttribute;
 pub use prefer_test_prefix::PreferTestPrefix;
 pub use prefer_test_with_attribute::PreferTestWithAttribute;
+pub(crate) use prefer_test_with_attribute::print_float;
 pub use prefer_this_call::PreferThisCall;
 pub use prefer_ticket_attribute::PreferTicketAttribute;
 pub use prefer_will_return_callback::PreferWillReturnCallback;
