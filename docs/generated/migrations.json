@@ -7905,7 +7905,7 @@
         "rules": [
           "lint/types/prefer-specific-return-type"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -7915,7 +7915,7 @@
         "rules": [
           "lint/dead-code/no-unused-return-type"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -8229,7 +8229,7 @@
         "rules": [
           "lint/types/add-private-method-array-return-type"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -9457,7 +9457,7 @@
         "rules": [
           "lint/types/add-return-type-from-get-repository"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {
@@ -9537,7 +9537,7 @@
         "rules": [
           "lint/types/add-return-type-from-new-array"
         ],
-        "note": "Same. Planned: not ported yet.",
+        "note": "Same.",
         "unsupported": false
       },
       {

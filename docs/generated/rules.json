@@ -6292,7 +6292,7 @@
         "NarrowWideUnionReturnTypeRector",
         "Rector\\DeadCode\\Rector\\FunctionLike\\NarrowWideUnionReturnTypeRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/dead-code/no-unused-static",
@@ -16257,7 +16257,7 @@
         "PrivateMethodReturnTypeFromStrictNewArrayRector",
         "Rector\\TypeDeclaration\\Rector\\ClassMethod\\PrivateMethodReturnTypeFromStrictNewArrayRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/types/add-property-type-assigns",
@@ -16557,7 +16557,7 @@
         "ReturnTypeFromGetRepositoryDocblock",
         "ReturnTypeFromGetRepositoryDocblockRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/types/add-return-type-from-native-call",
@@ -16617,7 +16617,7 @@
         "ReturnTypeFromStrictNewArray",
         "ReturnTypeFromStrictNewArrayRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/types/add-return-type-from-param",
@@ -17077,7 +17077,7 @@
         "NarrowObjectReturnTypeRector",
         "Rector\\TypeDeclaration\\Rector\\ClassMethod\\NarrowObjectReturnTypeRector"
       ],
-      "ported": false
+      "ported": true
     },
     {
       "id": "lint/types/require-strict-param",
